@@ -1,9 +1,6 @@
-node_modules
-*.log
-dist
-client/bower_components
-.tmp
-.grunt
-server/config/secrets.js
 .DS_Store
-.yo-rc.json
+.sass-cache
+public
+Desktop.ini
+node_modules
+app/assets/stylesheets/generated
