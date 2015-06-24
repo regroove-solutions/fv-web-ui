@@ -5,7 +5,7 @@ var React = require('react');
 var Router = require('./router');
 
 var AppWrapper = require('./views/AppWrapper');
-var ListView = require('./views/components/ListView');
+//var ListView = require('./views/components/ListView');
 
 var AppRouter = Backbone.Router.extend({
   initialize: function(app) {
@@ -13,13 +13,21 @@ var AppRouter = Backbone.Router.extend({
   },
   routes: {
     '': 'index',
-    'browse': 'browse'
+    'browse': 'browse',
+    'get-started': 'getStarted',
+    'contribute': 'contribute'
   },
   index: function() {
     this.app.appWrapper.changePage('')
   },
   browse: function() {
     this.app.appWrapper.changePage('browse');
+  },
+  getStarted: function() {
+    this.app.appWrapper.changePage('introduction');
+  },
+  contribute: function() {
+    this.app.appWrapper.changePage('contribute');
   }
 });
 

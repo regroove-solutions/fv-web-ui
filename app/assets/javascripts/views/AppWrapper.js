@@ -139,6 +139,22 @@ let AppWrapper = React.createClass({
           </div>
         break;
 
+        case 'introduction':
+          content = <div className="row">
+            <div className="col-xs-12">
+              This is an introduction
+            </div>
+          </div>
+        break;
+
+        case 'contribute':
+          content = <div className="row">
+            <div className="col-xs-12">
+              this is where you can contribute
+            </div>
+          </div>
+        break;
+
         default:
           content = <div className="row">
             <div className="col-xs-12">
@@ -213,7 +229,7 @@ let AppWrapper = React.createClass({
     return <div>
       <AppBar title={this.props.title} onLeftIconButtonTouchTap={this.onMenuToggleTouchTap} iconClassNameRight="muidocs-icon-navigation-expand-more"/>
       <AppLeftNav ref="leftNav" title={this.props.title} docked={false} router={this.props.router} menuItems={menuItems} />
-      {content}
+      <div className="main">{content}</div>
     </div>;
   },
 
