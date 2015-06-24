@@ -1,44 +1,12 @@
 var React = require('react');
 var Mui = require('material-ui');
-var DataGrid = require('react-datagrid');
-var Sorty = require('sorty'); // Underscore
 
 var AppBar = Mui.AppBar;
 var MenuItem = Mui.MenuItem;
 var List = Mui.List;
 var ListItem = Mui.ListItem;
+var BrowseDataGrid = require('./components/BrowseDataGrid');
 var AppLeftNav = require('./components/AppLeftNav');
-
-var dataOriginal = [
-    { id: '1', word: 'Wolf', translation: 'Bobson', category: 'Nature', status: 'Enabled'},
-    { id: '2', word: 'Spoon', translation: 'Mclaren', category: 'Kitchen', status: 'Draft'}
-]
-
-var data = [].concat(dataOriginal);
-
-var columns = [
-    { name: 'word', title: 'Word'},
-    { name: 'translation', title: 'Translation'},
-    { name: 'category', title: 'Category'},
-    { name: 'status', title: 'Status'}
-]
-
-var SORT_INFO = [ { name: 'word', dir: 'asc'}];
-
-function sort(arr){
-  return Sorty(SORT_INFO, arr)
-}
-//sort data array with the initial sort order
-data = sort(data);
-
-/**
-* Fix Sorting / use underscore for filtering, sorting, etc?
-* Save / restore state?
-*/
-var SELECTED_ID = null;
-
-
-require('!style!css!react-datagrid/dist/index.min.css');
 
 //var ListView = require('./components/ListView');
 
@@ -112,29 +80,12 @@ let AppWrapper = React.createClass({
 
       var content;
 
-      // Styles
-      var DataGridStyles = {
-        zIndex: 0
-      };
-
       switch (this.state.route){
         case 'browse':
+
           content = <div className="row">
             <div className="col-xs-12">
-              <DataGrid
-                idProperty="id"
-                dataSource={data}
-                columns={columns}
-                style={DataGridStyles}
-                //dataSource='http://5.101.99.47:8090/1000'
-                selected={SELECTED_ID}
-                sortInfo={SORT_INFO}
-                onFilter={this.handleFilter}
-                liveFilter={true}
-                showCellBorders={true}
-                onSortChange={this.handleSortChange}
-                onSelectionChange={this.onSelectionChange}
-                onColumnOrderChange={this.handleColumnOrderChange} />
+              <BrowseDataGrid client={this.props.client} language="Lilwat" />
             </div>
           </div>
         break;

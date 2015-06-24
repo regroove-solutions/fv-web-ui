@@ -62,6 +62,7 @@
     "material-ui": "^0.9.1",
     "merge-stream": "^0.1.7",
     "normalize.css": "^3.0.3",
+    "nuxeo": "^0.5.0",
     "object-assign": "^2.0.0",
     "pretty-hrtime": "~0.2.1",
     "react": "^0.13.3",

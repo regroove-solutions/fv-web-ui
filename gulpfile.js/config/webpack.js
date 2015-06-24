@@ -12,6 +12,10 @@ module.exports = function(env) {
 
     context: jsSrc,
 
+    node: {
+      fs: "empty"
+    },
+
     plugins: [],
 
     resolve: {
