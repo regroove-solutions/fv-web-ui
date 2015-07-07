@@ -1,13 +1,11 @@
 var React = require('react');
+var Backbone = require('backbone');
 var Sorty = require('sorty'); // Underscore
 var classNames = require('classnames');
 var Mui = require('material-ui');
 var DataGrid = require('react-datagrid');
 
 require('!style!css!react-datagrid/dist/index.min.css');
-
-var Word = require('models/Word');
-var Words = require('models/Words');
 
 class Definition extends React.Component {
 
@@ -29,6 +27,38 @@ class Definition extends React.Component {
 
 var nuxeoListDocs;
 var {Colors, Spacing, Typography} = Mui.Styles;
+
+     
+        /**
+         * Models
+         */
+        var Document = Backbone.Model.extend({
+            idAttribute: 'uid',
+            initialize: function (data){
+           if (data.parentRef != null && data.parentRef.length > 0 ) {
+ 
+               var setParent = data.parentRef;
+ 
+               if (data.type== "Workspace") {
+                       setParent = "#";
+               }
+ 
+               this.set('parent', setParent);
+               this.set('id', data.uid);
+               this.set('text', data.title);
+               this.set('definitions', data.properties['fv:definitions']);
+               this.set('pronunciation', data.properties['fv:pronunciation']);
+               this.set('subjects', data.properties['dc:subjects']);
+           }
+                }
+        });
+        
+        /**
+         * Collections
+         */
+        var Documents = Backbone.Collection.extend({
+            model: Document
+        });
 
 
 
@@ -118,7 +148,7 @@ function getData(client, language){
                   throw error;
                 }
 
-                nuxeoListDocs = new Words(response.entries);
+                nuxeoListDocs = new Documents(response.entries);
                 resolve(sort(nuxeoListDocs.toJSON()));
 
               });

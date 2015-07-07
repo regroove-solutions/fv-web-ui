@@ -46,19 +46,19 @@ var app = {
 	    //React.render(<AppBarWrapper title="First Voices"/>, document.getElementById('header-container'));
 	    //React.render(<LeftNavWrapper/>, document.getElementById('left-nav-container'));
 	    this.router = new Router(this);
-        this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
-        this.storeClient.header('X-NXDocumentProperties', '*');
+      this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
+      this.storeClient.header('X-NXDocumentProperties', '*');
 
-        var _this = this;
+      var _this = this;
 
-        this.storeClient.connect(function(error, client) {
-  if (error) {
-    // cannot connect
-    throw error;
-  }
+      this.storeClient.connect(function(error, client) {
+        if (error) {
+          // cannot connect
+          throw error;
+        }
  
-  // OK, the returned client is connected
-  _this.appWrapper = React.render(<AppWrapper client={_this.storeClient} router={_this.router} title="First Voices" />, document.getElementById('app-wrapper'));
+        // OK, the returned client is connected
+        _this.appWrapper = React.render(<AppWrapper client={_this.storeClient} router={_this.router} title="First Voices" />, document.getElementById('app-wrapper'));
         // Render essential views for layout
         
 
@@ -79,8 +79,7 @@ var app = {
         });*/
 
         return _this;
-});
-
+      });
 
     }
 };

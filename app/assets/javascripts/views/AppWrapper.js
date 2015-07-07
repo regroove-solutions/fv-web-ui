@@ -1,12 +1,14 @@
 var React = require('react');
 var Mui = require('material-ui');
+var classNames = require('classnames');
 
 var AppBar = Mui.AppBar;
 var MenuItem = Mui.MenuItem;
 var List = Mui.List;
 var ListItem = Mui.ListItem;
-var BrowseDataGrid = require('./components/BrowseDataGrid');
 var AppLeftNav = require('./components/AppLeftNav');
+var BrowseDataGrid = require('./components/BrowseDataGrid');
+var WordDetailsView = require('./components/WordDetailsView');
 
 //var ListView = require('./components/ListView');
 
@@ -16,7 +18,8 @@ let AppWrapper = React.createClass({
 
   getInitialState() {
     return {
-      route : this.props.state
+      route : this.props.state,
+      routeParams : {}
     }
   },
 
@@ -27,53 +30,12 @@ let AppWrapper = React.createClass({
     };
   },
 
-  changePage(destination) {
-    this.setState({route : destination});
+  changePage(destination, params = {}) {
+    this.setState({route : destination, routeParams: params.routeParams});
   },
 
-  handleColumnOrderChange(index, dropIndex){
-    var col = columns[index]
-    columns.splice(index, 1) //delete from index, 1 item
-    columns.splice(dropIndex, 0, col)
-    this.setState({})
-  },
-
-  handleSortChange(sortInfo){
-    SORT_INFO = sortInfo
-
-    data = [].concat(dataOriginal)
-    data = sort(data)
-
-    this.setState({})
-  },
-
-  handleFilter(column, value, allFilterValues){
-    //reset data to original data-array
-      data = dataOriginal
-
-      //go over all filters and apply them
-      Object.keys(allFilterValues).forEach(function(name){
-        var columnFilter = (allFilterValues[name] + '').toUpperCase()
-
-        if (columnFilter == ''){
-          return
-        }
-
-        data = data.filter(function(item){
-            if ((item[name] + '').toUpperCase().indexOf(columnFilter) === 0){
-                return true
-            }
-        })
-      })
-
-      this.setState({})
-  },
-
-  onSelectionChange(newSelectedId, data){
-    SELECTED_ID = newSelectedId
-
-    name = SELECTED_ID != null? data.firstName: 'none'
-    this.setState({})
+  redraw() {
+    this.render();
   },
 
   render() {
@@ -83,17 +45,107 @@ let AppWrapper = React.createClass({
       switch (this.state.route){
         case 'browse':
 
-          content = <div className="row">
-            <div className="col-xs-12">
-              <BrowseDataGrid client={this.props.client} language="Lilwat" />
+          content = <div className="languages-cont">
+
+            <div className="row">
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lilwat</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="#browse/Lilwat" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Sample Language</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                </div>
+              </div>
+
             </div>
+
+          </div>
+
+        break;
+
+        case 'browse/language':
+
+          content = <div className="row">
+
+            <div className="col-xs-12">
+              <BrowseDataGrid
+                router={this.props.router}
+                client={this.props.client}
+                className="browseDataGrid"
+                language={this.state.routeParams.language} />
+            </div>
+
+          </div>
+        break;
+
+        case 'browse/word':
+
+          content = <div className="row">
+
+            <div className="col-xs-12">
+              <WordDetailsView
+                router={this.props.router}
+                client={this.props.client}
+                className="wordDetailsView"
+                id={this.state.routeParams.word} />
+            </div>
+
           </div>
         break;
 
         case 'introduction':
           content = <div className="row">
             <div className="col-xs-12">
-              This is an introduction
+              <h2></h2>
+              <p></p>
             </div>
           </div>
         break;
@@ -110,7 +162,7 @@ let AppWrapper = React.createClass({
           content = <div className="row">
             <div className="col-xs-12">
               <h1>Welcome Friends!</h1>
-              <p>Lorem ipsum</p>
+              <p>This simple yet powerful web application is an example of consuming data from a robust Digital Asset Management system using a REST API.</p>
             </div>
             <div className="col-xs-4">
               <h2>Get Started</h2>

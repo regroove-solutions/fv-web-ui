@@ -14,6 +14,8 @@ var AppRouter = Backbone.Router.extend({
   routes: {
     '': 'index',
     'browse': 'browse',
+    'browse/:language': 'browseLanguage',
+    'browse/word/:word': 'browseWord',
     'get-started': 'getStarted',
     'contribute': 'contribute'
   },
@@ -22,6 +24,12 @@ var AppRouter = Backbone.Router.extend({
   },
   browse: function() {
     this.app.appWrapper.changePage('browse');
+  },
+  browseLanguage: function(language){
+    this.app.appWrapper.changePage('browse/language', { 'routeParams': {'language' : language} });
+  },
+  browseWord: function(word){
+    this.app.appWrapper.changePage('browse/word', { 'routeParams': {'word' : word} });
   },
   getStarted: function() {
     this.app.appWrapper.changePage('introduction');
