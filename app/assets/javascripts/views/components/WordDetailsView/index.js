@@ -56,7 +56,9 @@ function getData(client, word){
             }
 
             if (response.entries.length > 0) {
+            	response.entries[0].client = client;
                 currentWord = new Word(response.entries[0]);
+                //currentWord.setClient(client);
                 resolve(currentWord);
             } else {
               reject('Workspace not found');
@@ -109,7 +111,7 @@ class WordDetailsView extends React.Component {
         this.handleChange = this.handleChange.bind(this);
 
    this.state = {
-      word: new Word(),
+      word: new Word({client: props.client}),
       children: null
    };
 
@@ -147,6 +149,7 @@ class WordDetailsView extends React.Component {
   }
 
   handleEditTouchTap() {
+  	console.log(this.refs);
     this.refs.editDialog.show();
   }
 
@@ -209,6 +212,22 @@ var standardActions = [
 
 
 
+var editView;
+
+if (this.state.word.initialized) {
+	editView = <Dialog
+  id="editMe" 
+  ref="editDialog"
+  title={"Edit Entry " + this.state.word.get('title')}
+  actions={standardActions}
+  modal={this.state.modal}>
+  <div className="text-left">
+    <WordEditView word={this.state.word} />
+  </div>
+</Dialog>
+
+}
+
           /*<CardMedia overlay={<CardTitle title="Title" subtitle="Subtitle"/>}>
             <img src="http://lorempixel.com/600/337/nature/"/>
           </CardMedia>*/
@@ -226,7 +245,7 @@ var standardActions = [
     <div> 
           <CardText>
 
-<WordEditView word={this.state.word} />
+          {editView}
 
           <h2 style={this.getStyles().headline}>Definition</h2> 
 
@@ -255,17 +274,6 @@ var standardActions = [
   <img src={(pictures != undefined && pictures.length > 0) ? pictures[0].properties['picture:views'][2].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>
   </div>
 </Dialog>
-
-/*<Dialog
-  id="one11"
-  ref="editDialog"
-  title={"Edit Entry " + this.state.word.get('title')}
-  actions={standardActions}
-  modal={this.state.modal}>
-  <div className="text-left">
-    <WordEditView word={this.state.word} />
-  </div>
-</Dialog>*/
 
  <a label="Standard Actions" onTouchTap={this.handleStandardDialogTouchTap}>
  <img src={(pictures != undefined && pictures.length > 0) ? pictures[0].properties['picture:views'][0].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>

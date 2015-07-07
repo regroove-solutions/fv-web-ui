@@ -19,7 +19,7 @@ module.exports = function(env) {
     plugins: [],
 
     resolve: {
-      alias: { styles : path.resolve(paths.sourceAssets + '/stylesheets/'), models: jsSrc + '/models/' },
+      alias: { styles : path.resolve(paths.sourceAssets + '/stylesheets/'), models: path.resolve(paths.sourceAssets + '/javascripts/models/') },
       extensions: ['', '.js', '.less']
     },
 
