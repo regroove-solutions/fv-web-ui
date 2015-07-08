@@ -1,13 +1,10 @@
 var React = require('react');
-var Forms = require('newforms');
-var ReactBackbone = require('backbone-react-component');
-
 var t = require('tcomb-form');
 var Form = t.form.Form;
 
-
-var BootstrapForm = require('newforms-bootstrap');
 var Underscore = require('underscore');
+var _ = Underscore;
+
 var classNames = require('classnames');
 var Mui = require('material-ui');
 var {
@@ -17,8 +14,6 @@ var {
       Dialog
     } = Mui;
 
-var {Colors, Spacing, Typography} = Mui.Styles;
-
 var Word = require('models/Word');
 
 //var DataGrid = require('react-datagrid');
@@ -27,45 +22,7 @@ var Word = require('models/Word');
 
 // Typeahead - https://github.com/gcanti/tcomb-form/issues/138
 
-// define your domain model with tcomb
-// https://github.com/gcanti/tcomb
-var Person = t.struct({
-  name: t.Str,
-  surname: t.Str
-});
-
-var FormSample = React.createClass({
-
-  componentDidMount() {
-      this._getPartsOfSpeech(this.props.model.get('client')).then((function(parts_speech_val){
-      this.setState({
-        schema: this.props.model.getFormSchema({parts_speech: parts_speech_val})
-      });
-    }).bind(this));
-
-      this._getSubjects(this.props.model.get('client')).then((function(subjects_val){
-      this.setState({
-        schema: this.props.model.getFormSchema({subjects: subjects_val})
-      });
-    }).bind(this));
-  },
-
-  getInitialState() {
-    //console.log(this.props.model.get('parts_speech'));
-    return {
-      value: {
-        word: this.props.model.get('text'),
-        description: this.props.model.get('description'),
-        definitions: this.props.model.get('definitions'),
-        pronunciation: this.props.model.get('pronunciation'),
-        part_of_speech: this.props.model.get('part_of_speech'),
-        subjects: this.props.model.get('subjects')
-      },
-      schema: this.props.model.getFormSchema({})
-    };
-  },
-
-    _getSubjects: function(client) {
+ function getSubjects(client) {
 
   //var _this = this;
 
@@ -92,10 +49,10 @@ var FormSample = React.createClass({
 
         });
 
-    },
+    }
 
 
-    _getPartsOfSpeech: function(client) {
+  function getPartsOfSpeech(client) {
 
   //var _this = this;
 
@@ -122,140 +79,135 @@ var FormSample = React.createClass({
 
         });
 
-    },
-
-  onChange(value) {
-    this.setState({value});
-  },
-
-  save(e) {
-    // call getValue() to get the values of the form
-    var value = this.refs.form.getValue();
-    // if validation fails, value will be null
-    if (value) {
-      // value here is an instance of Person
-      console.log(value);
     }
 
-    e.preventDefault();
-  },
+class FormSample2 extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+    //this._getPartsOfSpeech = this._getPartsOfSpeech.bind(this);
+    //this._getSubjects = this._getSubjects.bind(this);
+    this._change = this._change.bind(this);
+    this._save = this._save.bind(this);
+
+   this.state = {
+      schema: null,
+      value: {
+        'dc:title': this.props.word.get('dc:title'),
+        'dc:description': props.word.get('dc:description'),
+        'fv:definitions': props.word.get('fv:definitions'),
+        'fv:pronunciation': props.word.get('fv:pronunciation'),
+        'fv:part_of_speech': props.word.get('fv:part_of_speech'),
+        'dc:subjects': props.word.get('dc:subjects')
+      },
+      options: {
+        fields: {
+          'dc:title': {
+            label: 'Word'
+          },
+          'dc:description': {
+            label: 'Cultural Note',
+            type: 'textarea'
+          },
+          'fv:definitions': {
+            label: 'Definitions'
+          },
+          'fv:pronunciation': {
+            label: 'Pronunciation'
+          },
+          'fv:part_of_speech': {
+            label: 'Part of Speech'
+          },
+          'dc:subjects': {
+            label: 'Subjects'
+          }
+        },
+        config: {
+          // for each of lg md sm xs you can specify the columns width
+          horizontal: {
+            md: [3, 9],
+            sm: [6, 6]
+          }
+        },
+        i18n: {
+          add: 'New Item',
+          down: '▼',
+          remove: 'Delete',
+          up: '▲',
+          optional: '(optional)'
+        }
+      },
+      word: props.word,
+   };
+
+   getPartsOfSpeech(props.client).then((function(parts_speech_val){
+
+      this.setState({
+        schema: props.word.getFormSchema({parts_speech: parts_speech_val})
+      });
+    }).bind(this));
+
+   getSubjects(props.client).then((function(subjects_val){
+      this.setState({
+        schema: props.word.getFormSchema({subjects: subjects_val})
+      });
+    }).bind(this));
+
+  }
+
+  _change(value) {
+    this.setState({value});
+  }
+
+  _save(evt) {
+
+    var client = this.state.word.get('client');
+    var value = this.refs.form.getValue();
+
+    var self = this;
+    // if validation fails, value will be null
+    if (value) {
+      client.document(this.state.word.get('id'))
+       .fetch(function(error, doc) {
+         if (error) {
+           throw error;
+         }
+
+          doc.set(value);
+          doc.save(function(error, doc) {
+            // console.log(doc);
+          });
+       });
+   }
+
+   evt.preventDefault();    
+  }
 
   render() {
 
-    return (
-      <div>
+var form = "";
+
+if (this.state.schema != undefined){
+ form = <form onSubmit={this._save}>
         <Form
           ref="form"
+          options={this.state.options}
+          type={this.state.schema} 
           value={this.state.value}
-          type={this.state.schema}
-        />
-        <button onClick={this.save}>Save</button>
+          onChange={this._change} />
+          <button type="submit" className={classNames('btn', 'btn-primary')}>Save Changes</button>
+      </form>;
+}
+
+    return (
+      <div className="form-horizontal">
+        {form}
       </div>
     );
   }
 
-});
 
-
-class Signup extends React.Component {
-
-  constructor(props) {
-    super(props);
-  }
-
-  _onSubmit() {
-    var form = this.refs.signupForm.getForm()
-    if (form.validate()) {
-      // ...
-    }
-  }
-
-
-  render() {
-
-    var FormSchema = Forms.Form.extend(this.props.schema);
-
-    return <form onSubmit={this._onSubmit}>
-      <Forms.RenderForm form={FormSchema} ref="signupForm">
-        <BootstrapForm/>
-      </Forms.RenderForm>
-      <button>Sign Up {this.state.model}</button>
-    </form>
-  }
-
-}
-
-var _ = Underscore;
-
-var currentWord;
-var {Colors, Spacing, Typography} = Mui.Styles;
-
-     // Query documents from Nuxeo
-  var workspace;
-
-
-function getData(client, word){
-
-  //var _this = this;
-
-  return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
-        function(resolve, reject) {
-
-          client.operation('Document.Query')
-            .params({
-              query: "SELECT * FROM Document WHERE (ecm:uuid = '" + word + "' AND ecm:primaryType = 'Word')"
-            })
-          .execute(function(error, response) {
-
-                // Handle error
-            if (error) {
-              throw error;
-            }
-
-            if (response.entries.length > 0) {
-                currentWord = new Word(response.entries[0]);
-                resolve(currentWord);
-            } else {
-              reject('Workspace not found');
-            }
-
-          });
-
-        });
-}
-
-function getChildren(client, word){
-
-  //var _this = this;
-
-  return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
-        function(resolve, reject) {
-
-          client.operation('Document.GetChildren')
-          .input(word)
-          /*.params({
-              query: "SELECT * FROM Document WHERE (ecm:uuid = '" + word + "' AND ecm:primaryType = 'Word')"
-          })*/
-          .execute(function(error, response) {
-
-                // Handle error
-            if (error) {
-              throw error;
-            }
-
-            if (response.entries.length > 0) {
-                resolve(response.entries);
-            } else {
-              reject('Workspace not found');
-            }
-
-          });
-
-        });
 }
 
 class WordEditView extends React.Component {
@@ -267,32 +219,6 @@ class WordEditView extends React.Component {
       word: props.word
    };
 
-   /*getData(props.client, props.id).then((function(word){
-      this.setState({
-        word: word
-      });
-    }).bind(this));
-
-   getChildren(props.client, props.id).then((function(children){
-      this.setState({
-        children: children
-      });
-    }).bind(this));*/
-  }
-
-  getStyles() {
-    return {
-      cursor: 'pointer',
-      //.mui-font-style-headline
-      fontSize: '24px',
-      color: Typography.textFullWhite,
-      lineHeight: Spacing.desktopKeylineIncrement + 'px',
-      fontWeight: Typography.fontWeightLight,
-      backgroundColor: Colors.cyan500,
-      paddingLeft: Spacing.desktopGutter,
-      paddingTop: '0px',
-      marginBottom: '8px'
-    };
   }
 
   componentDidMount() {
@@ -307,7 +233,7 @@ class WordEditView extends React.Component {
       };
 
     return <div>
-      <FormSample model={this.props.word}/>
+      <FormSample2 client={this.props.client} word={this.props.word}/>
     </div>;
   }
 

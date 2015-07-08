@@ -111,7 +111,8 @@ class WordDetailsView extends React.Component {
         this.handleChange = this.handleChange.bind(this);
 
    this.state = {
-      word: new Word({client: props.client}),
+      //word: new Word({client: props.client}),
+      word: null,
       children: null
    };
 
@@ -149,7 +150,6 @@ class WordDetailsView extends React.Component {
   }
 
   handleEditTouchTap() {
-  	console.log(this.refs);
     this.refs.editDialog.show();
   }
 
@@ -164,7 +164,18 @@ class WordDetailsView extends React.Component {
         zIndex: 0
       };
 
-var defs = this.state.word.get('definitions');
+
+var title, pronunciation, part_of_speech, description = "";
+
+
+if (this.state.word != null) {
+
+title = this.state.word.get('dc:title');
+description = this.state.word.get('dc:description');
+pronunciation = this.state.word.get('fv:pronunciation');
+part_of_speech = this.state.word.get('fv:part_of_speech');
+
+var defs = this.state.word.get('fv:definitions');
 var definitionsBody, subjectsBody, picturesBody = "";
 
 if (defs != undefined && defs.length > 0){
@@ -178,7 +189,7 @@ if (defs != undefined && defs.length > 0){
     definitionsBody += "</ul>";
 }
 
-var subjects = this.state.word.get('subjects');
+var subjects = this.state.word.get('dc:subjects');
 
 if (subjects != undefined && subjects.length > 0){
 
@@ -191,6 +202,7 @@ if (subjects != undefined && subjects.length > 0){
     subjectsBody += "</ul>";
 }
 
+}
 
 if (this.state.children != undefined && this.state.children.length > 0) {
   var pictures = _.filter(this.state.children, function(child){ if (child.type == 'Picture') return child; })
@@ -214,15 +226,15 @@ var standardActions = [
 
 var editView;
 
-if (this.state.word.initialized) {
+if (this.state.word != null && this.state.word.initialized) {
 	editView = <Dialog
   id="editMe" 
   ref="editDialog"
-  title={"Edit Entry " + this.state.word.get('title')}
+  title={"Edit Entry " + title}
   actions={standardActions}
   modal={this.state.modal}>
   <div className="text-left">
-    <WordEditView word={this.state.word} />
+    <WordEditView word={this.state.word} client={this.props.client} />
   </div>
 </Dialog>
 
@@ -237,8 +249,8 @@ if (this.state.word.initialized) {
         <Card>
 
           <CardHeader
-            title={this.state.word.get('title')}
-            subtitle={"Pronunciation: " + this.state.word.get('pronunciation')}
+            title={title}
+            subtitle={"Pronunciation: " + pronunciation}
             avatar="http://lorempixel.com/100/100/"/>
 <Tabs> 
   <Tab label="Definition" > 
@@ -250,10 +262,10 @@ if (this.state.word.initialized) {
           <h2 style={this.getStyles().headline}>Definition</h2> 
 
             <div>
-              <p>{this.state.word.get('description')}</p>
+              <p>{description}</p>
             </div>
 
-            <div dangerouslySetInnerHTML={{__html: (this.state.word.get('part_of_speech') != null) ? '<p><strong>Part of Speech</strong>: <span style="text-transform:capitalize;">' + this.state.word.get('part_of_speech') + "</span></p>" : ''}} />
+            <div dangerouslySetInnerHTML={{__html: (part_of_speech != null) ? '<p><strong>Part of Speech</strong>: <span style="text-transform:capitalize;">' + part_of_speech + "</span></p>" : ''}} />
             <div dangerouslySetInnerHTML={{__html: definitionsBody}} />
             <div dangerouslySetInnerHTML={{__html: subjectsBody}} />
 
@@ -267,7 +279,7 @@ if (this.state.word.initialized) {
       <div dangerouslySetInnerHTML={{__html: picturesBody}} />
 <Dialog
   ref="standardDialog"
-  title={"Photo of " + this.state.word.get('title')}
+  title={"Photo of " + title}
   actions={standardActions}
   modal={this.state.modal}>
   <div className="text-center">

@@ -23,12 +23,12 @@ var Word = Backbone.Model.extend({
 
        this.set('parent', setParent);
        this.set('id', data.uid);
-       this.set('text', data.title);
-       this.set('description', data.properties['dc:description']);
-       this.set('definitions', data.properties['fv:definitions']);
-       this.set('pronunciation', data.properties['fv:pronunciation']);
-       this.set('part_of_speech', data.properties['fv:part_of_speech']);
-       this.set('subjects', data.properties['dc:subjects']);
+       this.set('dc:title', data.title);
+       this.set('dc:description', data.properties['dc:description']);
+       this.set('fv:definitions', data.properties['fv:definitions']);
+       this.set('fv:pronunciation', data.properties['fv:pronunciation']);
+       this.set('fv:part_of_speech', data.properties['fv:part_of_speech']);
+       this.set('dc:subjects', data.properties['dc:subjects']);
 
 
        this.initialized = true;
@@ -45,12 +45,12 @@ var Word = Backbone.Model.extend({
       }
 
       return t.struct({
-        word: t.Str,
-        description: t.Str,
-        definitions: t.list(t.Str),
-        pronunciation: t.Str,
-        part_of_speech: t.enums(this.parts_speech),
-        subjects: t.list(t.enums(this.subjects))
+        'dc:title': t.Str,
+        'dc:description': t.Str,
+        'fv:pronunciation': t.Str,
+        'fv:part_of_speech': t.enums(this.parts_speech),
+        'fv:definitions': t.list(t.Str),
+        'dc:subjects': t.list(t.enums(this.subjects))
       });
     }
 });
