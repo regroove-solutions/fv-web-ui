@@ -12,6 +12,8 @@ var {
 var {Colors, Spacing, Typography} = Mui.Styles;
 
 var WordEditView = require('../WordEditView');
+var WordAddMediaView = require('../WordAddMediaView');
+
 var Word = require('models/Word');
 
 
@@ -24,16 +26,6 @@ var _ = Underscore;
 
 var currentWord;
 var {Colors, Spacing, Typography} = Mui.Styles;
-
-     
-        /**
-         * Models
-         */
-
-
-     // Query documents from Nuxeo
-  var workspace;
-
 
 function getData(client, word){
 
@@ -108,6 +100,7 @@ class WordDetailsView extends React.Component {
 
         this.handleStandardDialogTouchTap = this.handleStandardDialogTouchTap.bind(this);
         this.handleEditTouchTap = this.handleEditTouchTap.bind(this);
+        this.handleAddMedia = this.handleAddMedia.bind(this);
         this.handleChange = this.handleChange.bind(this);
 
    this.state = {
@@ -151,6 +144,10 @@ class WordDetailsView extends React.Component {
 
   handleEditTouchTap() {
     this.refs.editDialog.show();
+  }
+
+  handleAddMedia() {
+    this.refs.addMediaDialog.show();
   }
 
   handleChange(field) {
@@ -225,6 +222,7 @@ var standardActions = [
 
 
 var editView;
+var addMediaView;
 
 if (this.state.word != null && this.state.word.initialized) {
 	editView = <Dialog
@@ -234,10 +232,22 @@ if (this.state.word != null && this.state.word.initialized) {
   actions={standardActions}
   modal={this.state.modal}>
   <div className="text-left">
-    <WordEditView word={this.state.word} client={this.props.client} />
+    <WordEditView word={this.state.word} router={this.props.router} client={this.props.client} />
   </div>
 </Dialog>
-
+  addMediaView = <Dialog
+  id="addMediaView" 
+  ref="addMediaDialog"
+  title={"Contribute Media to " + title + " Entry"}
+  actions={standardActions}
+  modal={this.state.modal}>
+  <div className="text-left">
+    <WordAddMediaView
+      client={this.props.client}
+      router={this.props.router} 
+      word={this.state.word} />
+  </div>
+</Dialog>
 }
 
           /*<CardMedia overlay={<CardTitle title="Title" subtitle="Subtitle"/>}>
@@ -258,6 +268,8 @@ if (this.state.word != null && this.state.word.initialized) {
           <CardText>
 
           {editView}
+
+          {addMediaView}
 
           <h2 style={this.getStyles().headline}>Definition</h2> 
 
@@ -326,7 +338,7 @@ Your browser does not support the video tag.
   <ToolbarGroup key={0} float="right">
     <FontIcon className={classNames('glyphicon', 'glyphicon-pencil')} onTouchTap={this.handleEditTouchTap} />
     <ToolbarSeparator/>
-    <RaisedButton label="Contribute Media" primary={true} />
+    <RaisedButton onTouchTap={this.handleAddMedia} label="Contribute Media" primary={true} />
   </ToolbarGroup>
 </Toolbar>
 

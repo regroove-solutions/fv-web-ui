@@ -17,7 +17,8 @@ var AppRouter = Backbone.Router.extend({
     'browse/:language': 'browseLanguage',
     'browse/word/:word': 'browseWord',
     'get-started': 'getStarted',
-    'contribute': 'contribute'
+    'contribute': 'contribute',
+    'contribute/:language/word': 'contributeWord'
   },
   index: function() {
     this.app.appWrapper.changePage('')
@@ -36,6 +37,9 @@ var AppRouter = Backbone.Router.extend({
   },
   contribute: function() {
     this.app.appWrapper.changePage('contribute');
+  },
+  contributeWord: function(language) {
+    this.app.appWrapper.changePage('contribute/word', { 'routeParams': {'language' : language} });
   }
 });
 

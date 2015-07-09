@@ -1,118 +1,28 @@
 var React = require('react');
-var Backbone = require('backbone');
-var Sorty = require('sorty'); // Underscore
+var t = require('tcomb-form');
+var Form = t.form.Form;
+
+var Underscore = require('underscore');
+var _ = Underscore;
+
 var classNames = require('classnames');
 var Mui = require('material-ui');
-var DataGrid = require('react-datagrid');
+var {
+      Card, CardHeader, CardMedia, CardTitle, CardActions, CardText, Avatar, FlatButton,
+      Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator, DropDownMenu, DropDownIcon, FontIcon, RaisedButton,
+      Tabs, Tab,
+      Dialog
+    } = Mui;
 
-require('!style!css!react-datagrid/dist/index.min.css');
+var Word = require('models/Word');
 
-class Definition extends React.Component {
+//var DataGrid = require('react-datagrid');
 
-  render() {
+//require('!style!css!react-datagrid/dist/index.min.css');
 
-    var classes = classNames({
-      'label': true,
-      'label-primary': true,
-      'label-spaced': true
-    });
+// Typeahead - https://github.com/gcanti/tcomb-form/issues/138
 
-    return <span className={classes}>
-      {this.props.label}
-    </span>
-  }
-
-}
-
-
-var nuxeoListDocs;
-var {Colors, Spacing, Typography} = Mui.Styles;
-
-     
-        /**
-         * Models
-         */
-        var Document = Backbone.Model.extend({
-            idAttribute: 'uid',
-            initialize: function (data){
-           if (data.parentRef != null && data.parentRef.length > 0 ) {
- 
-               var setParent = data.parentRef;
- 
-               if (data.type== "Workspace") {
-                       setParent = "#";
-               }
- 
-               this.set('parent', setParent);
-               this.set('id', data.uid);
-               this.set('text', data.title);
-               this.set('definitions', data.properties['fv:definitions']);
-               this.set('pronunciation', data.properties['fv:pronunciation']);
-               this.set('subjects', data.properties['dc:subjects']);
-           }
-                }
-        });
-        
-        /**
-         * Collections
-         */
-        var Documents = Backbone.Collection.extend({
-            model: Document
-        });
-
-
-
-     // Query documents from Nuxeo
-  var workspace;
-
-var columns = [
-    //{ name: 'id', title: 'ID'},
-    { name: 'title', title: 'Word'},
-    { name: 'definitions', title: 'Definitions', render: function(v){
-      if (typeof v == 'object' && v.length > 0){
-
-        var rows = [];
-
-        v.forEach(function (li) {
-          rows.push(<Definition label={li} />);
-        }); 
-
-        return rows
-      }
-      
-    }}, // render function -- make a new React element for this
-    { name: 'pronunciation', title: 'Pronunciation'},
-    { name: 'subjects', title: 'Category', render: function(v){
-      if (typeof v == 'object' && v.length > 0){
-
-        var rows = [];
-
-        v.forEach(function (li) {
-          rows.push(<Definition label={li} />);
-        }); 
-
-        return rows
-      }
-      
-    }}
-]
-
-var SORT_INFO = [ { name: 'title', dir: 'asc'}];
-
-function sort(arr){
-  return Sorty(SORT_INFO, arr)
-}
-//sort data array with the initial sort order
-//data = sort(data);
-
-/**
-* Fix Sorting / use underscore for filtering, sorting, etc?
-* Save / restore state?
-*/
-var SELECTED_ID = null;
-
-
-function getData(client, language){
+ function getSubjects(client) {
 
   //var _this = this;
 
@@ -121,37 +31,16 @@ function getData(client, language){
         // reject the promise
         function(resolve, reject) {
 
-          client.operation('Document.Query')
-            .params({
-              query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
-            })
-          .execute(function(error, response) {
+            client.request('directory/subtopic')
+           .get(function(error, data) {
+             if (error) {
+               // something went wrong
+               throw error;
+             }
 
-                // Handle error
-            if (error) {
-              console.log('test');
-              throw error;
-            }
-            // Create a Workspace Document based on returned data
-            
-            if (response.entries.length > 0) {
-              var workspaceID = response.entries[0].uid;
-
-              client.operation('Document.Query')
-                .params({
-                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word')"
-                })
-              .execute(function(error, response) {
-
-                    // Handle error
-                if (error) {
-                  throw error;
-                }
-
-                nuxeoListDocs = new Documents(response.entries);
-                resolve(sort(nuxeoListDocs.toJSON()));
-
-              });
+            if (data.entries.length > 0) {
+                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                resolve(subtopics);
             } else {
               reject('Workspace not found');
             }
@@ -159,83 +48,252 @@ function getData(client, language){
           });
 
         });
-}
 
-class BrowseDataGrid extends React.Component {
+    }
+
+
+  function getPartsOfSpeech(client) {
+
+  //var _this = this;
+
+  return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+            client.request('directory/parts_speech')
+           .get(function(error, data) {
+             if (error) {
+               // something went wrong
+               throw error;
+             }
+
+            if (data.entries.length > 0) {
+                var parts_speech = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                resolve(parts_speech);
+            } else {
+              reject('Workspace not found');
+            }
+
+          });
+
+        });
+
+    }
+
+class FormSample2 extends React.Component {
 
   constructor(props) {
     super(props);
-    this.toggle = this.toggle.bind(this);
-    //this._getSelectedIndex = this._getSelectedIndex.bind(this);
-    this._onLeftNavChange = this._onLeftNavChange.bind(this);
-    this._onHeaderClick = this._onHeaderClick.bind(this);
 
-    // Hide columns for responsive view!!
-    console.log(window.innerWidth);
+    //this._getPartsOfSpeech = this._getPartsOfSpeech.bind(this);
+    //this._getSubjects = this._getSubjects.bind(this);
+    this._change = this._change.bind(this);
+    this._save = this._save.bind(this);
 
-    this.state = {
-      dataSource: getData(props.client, props.language)
-    };
-  }
 
-  handleColumnOrderChange(index, dropIndex){
-    var col = columns[index]
-    columns.splice(index, 1) //delete from index, 1 item
-    columns.splice(dropIndex, 0, col)
-    this.setState({})
-  }
+    var schema = t.struct({
+        /*'dc:title': t.Str,
+        'dc:description': t.Str,*/
+        'file': t.form.File
+    });
 
-  handleSortChange(sortInfo){
-    var data;
-
-    SORT_INFO = sortInfo
-
-    data = sort(nuxeoListDocs.toJSON())
-
-    this.setState({dataSource: data});
-  }
-
-  handleFilter(column, value, allFilterValues){
-    //reset data to original data-array
-      var data = nuxeoListDocs.toJSON()
-
-      //go over all filters and apply them
-      Object.keys(allFilterValues).forEach(function(name){
-        var columnFilter = (allFilterValues[name] + '').toUpperCase()
-
-        if (columnFilter == ''){
-          return
+   this.state = {
+      schema: schema,
+      options: {
+        fields: {
+          'dc:title': {
+            label: 'Media Title'
+          },
+          'dc:description': {
+            label: 'Media Description',
+            type: 'textarea'
+          },
+          'file': {
+            label: 'File',
+            type: 'file'
+          }
+        },
+        config: {
+          // for each of lg md sm xs you can specify the columns width
+          horizontal: {
+            md: [3, 9],
+            sm: [6, 6]
+          }
         }
-
-        data = data.filter(function(item){
-            if ((item[name] + '').toUpperCase().indexOf(columnFilter) === 0){
-                return true
-            }
-        })
-      })
-
-      this.setState({dataSource: data})
+      },
+      word: props.word,
+   };
   }
 
-  onSelectionChange(newSelectedId, data){
-    SELECTED_ID = newSelectedId;
-    this.props.router.navigate("browse/word/" + newSelectedId , {trigger: true});
+  _change(value) {
+    this.setState({value});
   }
 
-  getStyles() {
-    return {
-      cursor: 'pointer',
-      //.mui-font-style-headline
-      fontSize: '24px',
-      color: Typography.textFullWhite,
-      lineHeight: Spacing.desktopKeylineIncrement + 'px',
-      fontWeight: Typography.fontWeightLight,
-      backgroundColor: Colors.cyan500,
-      paddingLeft: Spacing.desktopGutter,
-      paddingTop: '0px',
-      marginBottom: '8px'
-    };
+  _save(evt) {
+
+
+/*
+    var value = this.refs.form.getValue();
+    if (value) {
+      console.log(value);
+      var fd = new FormData();
+      for (var k in value) {
+        var v = value[k];
+        if (t.form.File.is(v)) {
+          fd.append(k, v, v.name);
+        } else {
+          fd.append(k, v);
+        }
+      }
+      console.log(fd);
+      // process form data...
+    }*/
+
+
+
+
+
+    var client = this.state.word.get('client');
+    var value = this.refs.form.getValue();
+
+    var self = this;
+    // if validation fails, value will be null
+    if (value) {
+      //console.log(evt);
+//console.log(React.findDOMNode(this.refs.form.refs.input.refs.file).files[0]);
+      var fd = new FormData();
+      for (var k in value) {
+        var v = value[k];
+        if (t.form.File.is(v)) {
+          fd.append('userfile', v, v.name);
+          var fileMe = v;
+        } else {
+          fd.append(k, v);
+        }
+      }
+
+var formData = new FormData(document.getElementById("myForm"));
+/*
+formData.append("username", "Groucho");
+formData.append("accountnum", 123456); // number 123456 is immediately converted to a string "123456"
+
+// HTML file input, chosen by user
+formData.append("userfile", React.findDOMNode(this.refs.form.refs.input.refs.file));
+
+// JavaScript file-like object
+var content = '<a id="a"><b id="b">hey!</b></a>'; // the body of the new file...
+var blob = new Blob([content], { type: "text/xml"});
+
+formData.append("webmasterfile", blob);
+
+*/
+
+      client.operation('Document.Create')
+       .params({
+         type: 'Audio',
+         name: 'test1',
+         properties: 'dc:title=Test1'
+       })
+       .input(this.state.word.get('id'))
+       .execute(function(error, doc) {
+         if (error) {
+           // something went wrong
+           throw error;
+         }
+//console.log( doc.uid);
+             var uploader = client.operation("Blob.Attach")
+             .params({ document: doc.uid,
+               save : true,
+               xpath: "file:content"
+             }).uploader();
+
+             /*
+{ uploadProgressUpdatedCallback: function(fileIndex, file, newProgress) { 
+                  $(".progress div").width(newProgress + "%");
+                  $(".progress div").attr("aria-valuenow", newProgress + "%");
+                  $(".progress div span.sr-only span").text(newProgress + "%");
+                } }
+             */
+    var request = new XMLHttpRequest();
+request.open("POST", "http://foo.com/submitform.php");
+request.send(formData);
+    console.log(fileMe)
+             var aFileParts = ['<a id="a"><b id="b">hey!</b></a>']; // an array consisting of a single DOMString
+             var oMyBlob = new Blob(aFileParts, {type : 'text/html'}); // the blob
+    //console.log(oMyBlob);
+             uploader.uploadFile(oMyBlob, function(fileIndex, file, timeDiff) {
+              //console.log('here');
+                  // When done, execute the operation
+                  uploader.execute(function(error, data) {
+                    if (error) {
+                      // something went wrong
+                      console.log("error!!!");
+                      console.log(data);
+                      console.log(error);
+                      throw error;
+                    }
+                 
+                    // successfully attached blob
+                    console.log("attached");
+                    $(".progress div").addClass("progress-bar-success");
+                    $(".progress div").text("Upload Complete!");
+                  });
+                });
+
+             
+         
+         //console.log("here" + document.uid);
+         //console.log(docID);
+       //});
+
+         //self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
+       });
+   }
+
+   evt.preventDefault();    
   }
+
+  render() {
+
+var form = "";
+
+if (this.state.schema != undefined){
+ form = <form onSubmit={this._save} id="myForm" encType="multipart/form-data">
+        <Form
+          ref="form"
+          options={this.state.options}
+          type={this.state.schema} 
+          value={this.state.value}
+          onChange={this._change} />
+          <button type="submit" className={classNames('btn', 'btn-primary')}>Save Changes</button>
+      </form>;
+}
+
+    return (
+      <div className="form-horizontal">
+        {form}
+      </div>
+    );
+  }
+
+
+}
+
+class WordAddMediaView extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+   this.state = {
+      word: props.word
+   };
+
+  }
+
+  componentDidMount() {
+  }
+
 
   render() {
 
@@ -244,56 +302,20 @@ class BrowseDataGrid extends React.Component {
         zIndex: 0
       };
 
-    return (
-      <div>
-        <h2>{this.props.language}</h2>
-        <DataGrid
-          idProperty="id"
-          dataSource={this.state.dataSource}
-          columns={columns}
-          style={DataGridStyles}
-          selected={SELECTED_ID}
-          sortInfo={SORT_INFO}
-          onFilter={this.handleFilter.bind(this)}
-          onSortChange={this.handleSortChange.bind(this)}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          onColumnOrderChange={this.handleColumnOrderChange.bind(this)}
-          pagination={false}
-          liveFilter={true}
-          emptyText={'No records'}
-          showCellBorders={true} />
-      </div>
-    );
+
+    return <div>
+      <FormSample2
+        client={this.props.client}
+        router={this.props.router}
+        word={this.state.word} />
+    </div>;
   }
 
-  toggle() {
-    this.refs.leftNav.toggle();
-  }
-
-  /*_getSelectedIndex() {
-    var currentItem;
-
-    for (var i = menuItems.length - 1; i >= 0; i--) {
-      currentItem = menuItems[i];
-      if (currentItem.route && this.context.router.isActive(currentItem.route)) return i;
-    }
-  }*/
-
-  _onLeftNavChange(e, key, payload) {
-    this.props.router.navigate(payload.route, true);
-    //this.context.router.transitionTo(payload.route);
-  }
-
-  _onHeaderClick() {
-    this.props.router.navigate('', true);
-    //this.context.router.transitionTo('root');
-    this.refs.leftNav.close();
-  }
 
 }
 
-BrowseDataGrid.contextTypes = {
+WordAddMediaView.contextTypes = {
   router: React.PropTypes.func
 };
 
-module.exports = BrowseDataGrid;
+module.exports = WordAddMediaView;

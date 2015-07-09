@@ -1,118 +1,28 @@
 var React = require('react');
-var Backbone = require('backbone');
-var Sorty = require('sorty'); // Underscore
+var t = require('tcomb-form');
+var Form = t.form.Form;
+
+var Underscore = require('underscore');
+var _ = Underscore;
+
 var classNames = require('classnames');
 var Mui = require('material-ui');
-var DataGrid = require('react-datagrid');
+var {
+      Card, CardHeader, CardMedia, CardTitle, CardActions, CardText, Avatar, FlatButton,
+      Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator, DropDownMenu, DropDownIcon, FontIcon, RaisedButton,
+      Tabs, Tab,
+      Dialog
+    } = Mui;
 
-require('!style!css!react-datagrid/dist/index.min.css');
+var Word = require('models/Word');
 
-class Definition extends React.Component {
+//var DataGrid = require('react-datagrid');
 
-  render() {
+//require('!style!css!react-datagrid/dist/index.min.css');
 
-    var classes = classNames({
-      'label': true,
-      'label-primary': true,
-      'label-spaced': true
-    });
+// Typeahead - https://github.com/gcanti/tcomb-form/issues/138
 
-    return <span className={classes}>
-      {this.props.label}
-    </span>
-  }
-
-}
-
-
-var nuxeoListDocs;
-var {Colors, Spacing, Typography} = Mui.Styles;
-
-     
-        /**
-         * Models
-         */
-        var Document = Backbone.Model.extend({
-            idAttribute: 'uid',
-            initialize: function (data){
-           if (data.parentRef != null && data.parentRef.length > 0 ) {
- 
-               var setParent = data.parentRef;
- 
-               if (data.type== "Workspace") {
-                       setParent = "#";
-               }
- 
-               this.set('parent', setParent);
-               this.set('id', data.uid);
-               this.set('text', data.title);
-               this.set('definitions', data.properties['fv:definitions']);
-               this.set('pronunciation', data.properties['fv:pronunciation']);
-               this.set('subjects', data.properties['dc:subjects']);
-           }
-                }
-        });
-        
-        /**
-         * Collections
-         */
-        var Documents = Backbone.Collection.extend({
-            model: Document
-        });
-
-
-
-     // Query documents from Nuxeo
-  var workspace;
-
-var columns = [
-    //{ name: 'id', title: 'ID'},
-    { name: 'title', title: 'Word'},
-    { name: 'definitions', title: 'Definitions', render: function(v){
-      if (typeof v == 'object' && v.length > 0){
-
-        var rows = [];
-
-        v.forEach(function (li) {
-          rows.push(<Definition label={li} />);
-        }); 
-
-        return rows
-      }
-      
-    }}, // render function -- make a new React element for this
-    { name: 'pronunciation', title: 'Pronunciation'},
-    { name: 'subjects', title: 'Category', render: function(v){
-      if (typeof v == 'object' && v.length > 0){
-
-        var rows = [];
-
-        v.forEach(function (li) {
-          rows.push(<Definition label={li} />);
-        }); 
-
-        return rows
-      }
-      
-    }}
-]
-
-var SORT_INFO = [ { name: 'title', dir: 'asc'}];
-
-function sort(arr){
-  return Sorty(SORT_INFO, arr)
-}
-//sort data array with the initial sort order
-//data = sort(data);
-
-/**
-* Fix Sorting / use underscore for filtering, sorting, etc?
-* Save / restore state?
-*/
-var SELECTED_ID = null;
-
-
-function getData(client, language){
+ function getSubjects(client) {
 
   //var _this = this;
 
@@ -121,37 +31,16 @@ function getData(client, language){
         // reject the promise
         function(resolve, reject) {
 
-          client.operation('Document.Query')
-            .params({
-              query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
-            })
-          .execute(function(error, response) {
+            client.request('directory/subtopic')
+           .get(function(error, data) {
+             if (error) {
+               // something went wrong
+               throw error;
+             }
 
-                // Handle error
-            if (error) {
-              console.log('test');
-              throw error;
-            }
-            // Create a Workspace Document based on returned data
-            
-            if (response.entries.length > 0) {
-              var workspaceID = response.entries[0].uid;
-
-              client.operation('Document.Query')
-                .params({
-                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word')"
-                })
-              .execute(function(error, response) {
-
-                    // Handle error
-                if (error) {
-                  throw error;
-                }
-
-                nuxeoListDocs = new Documents(response.entries);
-                resolve(sort(nuxeoListDocs.toJSON()));
-
-              });
+            if (data.entries.length > 0) {
+                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                resolve(subtopics);
             } else {
               reject('Workspace not found');
             }
@@ -159,83 +48,187 @@ function getData(client, language){
           });
 
         });
-}
 
-class BrowseDataGrid extends React.Component {
+    }
+
+
+  function getPartsOfSpeech(client) {
+
+  //var _this = this;
+
+  return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+            client.request('directory/parts_speech')
+           .get(function(error, data) {
+             if (error) {
+               // something went wrong
+               throw error;
+             }
+
+            if (data.entries.length > 0) {
+                var parts_speech = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                resolve(parts_speech);
+            } else {
+              reject('Workspace not found');
+            }
+
+          });
+
+        });
+
+    }
+
+class FormSample2 extends React.Component {
 
   constructor(props) {
     super(props);
-    this.toggle = this.toggle.bind(this);
-    //this._getSelectedIndex = this._getSelectedIndex.bind(this);
-    this._onLeftNavChange = this._onLeftNavChange.bind(this);
-    this._onHeaderClick = this._onHeaderClick.bind(this);
 
-    // Hide columns for responsive view!!
-    console.log(window.innerWidth);
+    //this._getPartsOfSpeech = this._getPartsOfSpeech.bind(this);
+    //this._getSubjects = this._getSubjects.bind(this);
+    this._change = this._change.bind(this);
+    this._save = this._save.bind(this);
 
-    this.state = {
-      dataSource: getData(props.client, props.language)
-    };
-  }
-
-  handleColumnOrderChange(index, dropIndex){
-    var col = columns[index]
-    columns.splice(index, 1) //delete from index, 1 item
-    columns.splice(dropIndex, 0, col)
-    this.setState({})
-  }
-
-  handleSortChange(sortInfo){
-    var data;
-
-    SORT_INFO = sortInfo
-
-    data = sort(nuxeoListDocs.toJSON())
-
-    this.setState({dataSource: data});
-  }
-
-  handleFilter(column, value, allFilterValues){
-    //reset data to original data-array
-      var data = nuxeoListDocs.toJSON()
-
-      //go over all filters and apply them
-      Object.keys(allFilterValues).forEach(function(name){
-        var columnFilter = (allFilterValues[name] + '').toUpperCase()
-
-        if (columnFilter == ''){
-          return
+   this.state = {
+      schema: null,
+      /*value: {
+        'dc:title': this.props.word.get('dc:title'),
+        'dc:description': props.word.get('dc:description'),
+        'fv:definitions': props.word.get('fv:definitions'),
+        'fv:pronunciation': props.word.get('fv:pronunciation'),
+        'fv:part_of_speech': props.word.get('fv:part_of_speech'),
+        'dc:subjects': props.word.get('dc:subjects')
+      },*/
+      options: {
+        fields: {
+          'dc:title': {
+            label: 'Word'
+          },
+          'dc:description': {
+            label: 'Cultural Note',
+            type: 'textarea'
+          },
+          'fv:definitions': {
+            label: 'Definitions'
+          },
+          'fv:pronunciation': {
+            label: 'Pronunciation'
+          },
+          'fv:part_of_speech': {
+            label: 'Part of Speech'
+          },
+          'dc:subjects': {
+            label: 'Subjects'
+          }
+        },
+        config: {
+          // for each of lg md sm xs you can specify the columns width
+          horizontal: {
+            md: [3, 9],
+            sm: [6, 6]
+          }
+        },
+        i18n: {
+          add: 'New Item',
+          down: '▼',
+          remove: 'Delete',
+          up: '▲',
+          optional: '(optional)'
         }
+      },
+      word: props.word,
+   };
 
-        data = data.filter(function(item){
-            if ((item[name] + '').toUpperCase().indexOf(columnFilter) === 0){
-                return true
-            }
-        })
-      })
+   getPartsOfSpeech(props.client).then((function(parts_speech_val){
 
-      this.setState({dataSource: data})
+      this.setState({
+        schema: props.word.getFormSchema({parts_speech: parts_speech_val})
+      });
+    }).bind(this));
+
+   getSubjects(props.client).then((function(subjects_val){
+      this.setState({
+        schema: props.word.getFormSchema({subjects: subjects_val})
+      });
+    }).bind(this));
+
   }
 
-  onSelectionChange(newSelectedId, data){
-    SELECTED_ID = newSelectedId;
-    this.props.router.navigate("browse/word/" + newSelectedId , {trigger: true});
+  _change(value) {
+    this.setState({value});
   }
 
-  getStyles() {
-    return {
-      cursor: 'pointer',
-      //.mui-font-style-headline
-      fontSize: '24px',
-      color: Typography.textFullWhite,
-      lineHeight: Spacing.desktopKeylineIncrement + 'px',
-      fontWeight: Typography.fontWeightLight,
-      backgroundColor: Colors.cyan500,
-      paddingLeft: Spacing.desktopGutter,
-      paddingTop: '0px',
-      marginBottom: '8px'
-    };
+  _save(evt) {
+
+    var client = this.state.word.get('client');
+    var value = this.refs.form.getValue();
+
+    var self = this;
+    // if validation fails, value will be null
+    if (value) {
+
+      client.operation('Document.Create')
+       .params({
+         type: 'Word',
+         name: value['dc:title'],
+         properties: value
+       })
+       .input('doc:/default-domain/workspaces/' + self.props.language)
+       .execute(function(error, doc) {
+         if (error) {
+           // something went wrong
+           throw error;
+         }
+
+         self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
+       });
+   }
+
+   evt.preventDefault();    
   }
+
+  render() {
+
+var form = "";
+
+if (this.state.schema != undefined){
+ form = <form onSubmit={this._save}>
+        <Form
+          ref="form"
+          options={this.state.options}
+          type={this.state.schema} 
+          value={this.state.value}
+          onChange={this._change} />
+          <button type="submit" className={classNames('btn', 'btn-primary')}>Save Changes</button>
+      </form>;
+}
+
+    return (
+      <div className="form-horizontal">
+        {form}
+      </div>
+    );
+  }
+
+
+}
+
+class WordCreateView extends React.Component {
+
+  constructor(props) {
+    super(props);
+
+   this.state = {
+      word: new Word({client: props.client})
+   };
+
+  }
+
+  componentDidMount() {
+  }
+
 
   render() {
 
@@ -244,56 +237,16 @@ class BrowseDataGrid extends React.Component {
         zIndex: 0
       };
 
-    return (
-      <div>
-        <h2>{this.props.language}</h2>
-        <DataGrid
-          idProperty="id"
-          dataSource={this.state.dataSource}
-          columns={columns}
-          style={DataGridStyles}
-          selected={SELECTED_ID}
-          sortInfo={SORT_INFO}
-          onFilter={this.handleFilter.bind(this)}
-          onSortChange={this.handleSortChange.bind(this)}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          onColumnOrderChange={this.handleColumnOrderChange.bind(this)}
-          pagination={false}
-          liveFilter={true}
-          emptyText={'No records'}
-          showCellBorders={true} />
-      </div>
-    );
+    return <div>
+      <FormSample2 client={this.props.client} router={this.props.router} word={this.state.word} language={this.props.language} />
+    </div>;
   }
 
-  toggle() {
-    this.refs.leftNav.toggle();
-  }
-
-  /*_getSelectedIndex() {
-    var currentItem;
-
-    for (var i = menuItems.length - 1; i >= 0; i--) {
-      currentItem = menuItems[i];
-      if (currentItem.route && this.context.router.isActive(currentItem.route)) return i;
-    }
-  }*/
-
-  _onLeftNavChange(e, key, payload) {
-    this.props.router.navigate(payload.route, true);
-    //this.context.router.transitionTo(payload.route);
-  }
-
-  _onHeaderClick() {
-    this.props.router.navigate('', true);
-    //this.context.router.transitionTo('root');
-    this.refs.leftNav.close();
-  }
 
 }
 
-BrowseDataGrid.contextTypes = {
+WordCreateView.contextTypes = {
   router: React.PropTypes.func
 };
 
-module.exports = BrowseDataGrid;
+module.exports = WordCreateView;

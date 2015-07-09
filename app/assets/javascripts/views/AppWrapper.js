@@ -9,6 +9,7 @@ var ListItem = Mui.ListItem;
 var AppLeftNav = require('./components/AppLeftNav');
 var BrowseDataGrid = require('./components/BrowseDataGrid');
 var WordDetailsView = require('./components/WordDetailsView');
+var WordCreateView = require('./components/WordCreateView');
 
 //var ListView = require('./components/ListView');
 
@@ -53,7 +54,7 @@ let AppWrapper = React.createClass({
                 <div className="well">
                   <h3>Lilwat</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
-                  <a href="#browse/Lilwat" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                  <a href="/#browse/Lilwat" className={classNames('btn', 'btn-primary')}>Explore Language</a>
                 </div>
               </div>
 
@@ -144,16 +145,98 @@ let AppWrapper = React.createClass({
         case 'introduction':
           content = <div className="row">
             <div className="col-xs-12">
-              <h2></h2>
-              <p></p>
+              <h2>Getting Started</h2>
+              <p>Some getting started information could go here.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
             </div>
           </div>
         break;
 
         case 'contribute':
+
+          content = <div className="contribute-cont">
+
+            <div className="row">
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Suggest Words</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="/#contribute/Lilwat/word" className={classNames('btn', 'btn-primary')}>Suggest Word</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+              <div className="col-xs-3">
+                <div className="well">
+                  <h3>Lorem Ipsum</h3>
+                  <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
+                  <a href="" className={classNames('btn', 'btn-primary')}>Take Action</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        break;
+
+        case 'contribute/word':
           content = <div className="row">
             <div className="col-xs-12">
-              this is where you can contribute
+              <h2>{this.state.routeParams.language}: Contribute Word</h2>
+              <WordCreateView
+                client={this.props.client}
+                router={this.props.router} 
+                language={this.state.routeParams.language} />
             </div>
           </div>
         break;
@@ -167,41 +250,17 @@ let AppWrapper = React.createClass({
             <div className="col-xs-4">
               <h2>Get Started</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
+              <a href="/#get-started" className={classNames('btn', 'btn-primary')}>Get Started</a>
             </div>
             <div className="col-xs-4">
               <h2>Browse</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
+              <a href="/#browse" className={classNames('btn', 'btn-primary')}>Browse Languages</a>
             </div>
             <div className="col-xs-4">
               <h2>Contribute</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-            </div>
-            <div className="col-xs-12">
-              <header><h3>Latest Additions</h3></header>
-              <List>
-                <ListItem
-                  secondaryText={
-                    <p>
-                      <span>Brunch this weekend?</span><br/>
-                      I&apos;ll be in your neighborhood doing errands this weekend.
-                      Do you want to grab brunch?
-                    </p>
-                  }
-                  secondaryTextLines={2}>
-                  Brendan Lim
-                </ListItem>
-                <ListItem
-                  secondaryText={
-                    <p>
-                      <span>Brunch this weekend?</span><br/>
-                      I&apos;ll be in your neighborhood doing errands this weekend.
-                      Do you want to grab brunch?
-                    </p>
-                  }
-                  secondaryTextLines={2}>
-                  Brendan Lim
-                </ListItem>
-              </List>
+              <a href="/#contribute" className={classNames('btn', 'btn-primary')}>Start Contributing</a>
             </div>
           </div>
         break;

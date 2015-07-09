@@ -13,7 +13,10 @@ module.exports = function(env) {
     context: jsSrc,
 
     node: {
-      fs: "empty"
+      fs: "empty",
+      net: "empty",
+      tls: "empty",
+      console: true
     },
 
     plugins: [],
@@ -27,6 +30,7 @@ module.exports = function(env) {
       loaders: [
         { test: /\.js$/, loader: 'babel-loader?stage=1', exclude: /node_modules/ },
         { test: /\.less$/, loader: "style!css!less" },
+        { test: /\.json$/, loader: "json" },
         { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url?limit=10000&minetype=application/font-woff" },
         { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&minetype=application/octet-stream" },
         { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },

@@ -176,7 +176,7 @@ class FormSample2 extends React.Component {
 
           doc.set(value);
           doc.save(function(error, doc) {
-            // console.log(doc);
+            location.reload();
           });
        });
    }
