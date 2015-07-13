@@ -23,8 +23,8 @@ var app = {
         automationPath: 'site/automation',
         auth: {
           method: 'basic',
-          username: 'Administrator',
-          password: 'X7PcEXuaYsxmgjJ'
+          username: 'webapp',
+          password: '0vvWX09p6x0a83S'
         },
         timeout: 3000
     },
@@ -46,6 +46,7 @@ var app = {
 	    //React.render(<AppBarWrapper title="First Voices"/>, document.getElementById('header-container'));
 	    //React.render(<LeftNavWrapper/>, document.getElementById('left-nav-container'));
 	    this.router = new Router(this);
+	    console.log(this.nuxeoArgs);
       this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
       this.storeClient.header('X-NXDocumentProperties', '*');
 

@@ -214,7 +214,7 @@ var headers = {};
 
 headers["X-Batch-Id"]= 'batch-' + new Date().getTime() + '-' + Math.floor(Math.random() * 100000);
 headers["X-File-Idx"]= 0;
-headers["authorization"]= "Basic QWRtaW5pc3RyYXRvcjpYN1BjRVh1YVlzeG1nako=";
+headers["authorization"]= "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==";
 headers['Cache-Control'] = 'no-cache';
 headers["X-File-Name"]= encodeURIComponent(testFileObj.name);
 headers["X-File-Size"]= testFileObj.size;
