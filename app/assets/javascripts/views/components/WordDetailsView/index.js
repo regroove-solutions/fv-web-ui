@@ -143,7 +143,9 @@ class WordDetailsView extends React.Component {
   }
 
   handleEditTouchTap() {
-    this.refs.editDialog.show();
+    this.props.router.navigate("contribute/edit/" + this.state.word.get('id') , {trigger: true});
+    //this.refs.editDialog.show();
+
   }
 
   handleAddMedia() {
@@ -253,6 +255,53 @@ if (this.state.word != null && this.state.word.initialized) {
           /*<CardMedia overlay={<CardTitle title="Title" subtitle="Subtitle"/>}>
             <img src="http://lorempixel.com/600/337/nature/"/>
           </CardMedia>*/
+
+
+
+var picturesContent = [];
+var audioContent = [];
+var videoContent = [];
+
+if (pictures != undefined && pictures.length > 0) {
+
+  for (var i =0; i < pictures.length; i++) {
+
+  picturesContent.push(<div className="col-xs-12">
+    <img className="image" src={(pictures != undefined && pictures.length > 0) ? pictures[i].properties['picture:views'][2].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>
+   </div>);
+  }
+}
+
+if (audio != undefined && audio.length > 0) {
+
+  for (var i =0; i < pictures.length; i++) {
+
+  audioContent.push(<audio src={(audio != undefined && audio.length > 0) ? audio[i].properties['file:content'].data : ''} preload="auto" controls="controls">
+Your browser does not support the audio element.
+</audio>);
+  }
+}
+
+if (video != undefined && video.length > 0) {
+
+  for (var i =0; i < pictures.length; i++) {
+
+  videoContent.push(<video width="100%" height="auto" controls src={(video != undefined && video.length > 0) ? video[0].properties['vid:transcodedVideos'][0].content.data : ''} type={(video != undefined && video.length > 0) ? video[0].properties['vid:transcodedVideos'][0].content['mime-type'] : ''}>
+Your browser does not support the video tag.
+</video>);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
     return (
       <div>
 
@@ -260,7 +309,7 @@ if (this.state.word != null && this.state.word.initialized) {
 
           <CardHeader
             title={title}
-            subtitle={"Pronunciation: " + pronunciation}
+            subtitle={(pronunciation!=null) ? "Pronunciation: " + pronunciation : ""}
             avatar="http://lorempixel.com/100/100/"/>
 <Tabs> 
   <Tab label="Definition" > 
@@ -289,19 +338,7 @@ if (this.state.word != null && this.state.word.initialized) {
       <CardText>
       <h2 style={this.getStyles().headline}>Photos</h2> 
       <div dangerouslySetInnerHTML={{__html: picturesBody}} />
-<Dialog
-  ref="standardDialog"
-  title={"Photo of " + title}
-  actions={standardActions}
-  modal={this.state.modal}>
-  <div className="text-center">
-  <img src={(pictures != undefined && pictures.length > 0) ? pictures[0].properties['picture:views'][2].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>
-  </div>
-</Dialog>
-
- <a label="Standard Actions" onTouchTap={this.handleStandardDialogTouchTap}>
- <img src={(pictures != undefined && pictures.length > 0) ? pictures[0].properties['picture:views'][0].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>
- </a>
+      <div className="row">{picturesContent}</div>
       </CardText>
     </div> 
   </Tab> 
@@ -310,10 +347,8 @@ if (this.state.word != null && this.state.word.initialized) {
       <CardText>
       <h2 style={this.getStyles().headline}>Audio</h2> 
       <div dangerouslySetInnerHTML={{__html: picturesBody}} />
+      <div className="row">{audioContent}</div>
 
-<audio src={(audio != undefined && audio.length > 0) ? audio[0].properties['file:content'].data : ''} preload="auto" controls="controls">
-Your browser does not support the audio element.
-</audio>
       </CardText>
     </div> 
   </Tab> 
@@ -322,10 +357,7 @@ Your browser does not support the audio element.
       <CardText>
       <h2 style={this.getStyles().headline}>Video</h2> 
       <div dangerouslySetInnerHTML={{__html: picturesBody}} />
-
-<video width="320" height="240" controls src={(video != undefined && video.length > 0) ? video[0].properties['vid:transcodedVideos'][0].content.data : ''} type={(video != undefined && video.length > 0) ? video[0].properties['vid:transcodedVideos'][0].content['mime-type'] : ''}>
-Your browser does not support the video tag.
-</video>
+      <div className="row">{videoContent}</div>
       </CardText>
     </div> 
   </Tab> 
@@ -334,11 +366,11 @@ Your browser does not support the video tag.
         </Card>
 
 
-<Toolbar>
+<Toolbar className="toolbar">
   <ToolbarGroup key={0} float="right">
     <FontIcon className={classNames('glyphicon', 'glyphicon-pencil')} onTouchTap={this.handleEditTouchTap} />
     <ToolbarSeparator/>
-    <RaisedButton onTouchTap={this.handleAddMedia} label="Contribute Media" primary={true} />
+    <RaisedButton onTouchTap={this.handleAddMedia} label="Add Media" primary={true} />
   </ToolbarGroup>
 </Toolbar>
 

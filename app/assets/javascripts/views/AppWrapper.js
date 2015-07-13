@@ -9,6 +9,7 @@ var ListItem = Mui.ListItem;
 var AppLeftNav = require('./components/AppLeftNav');
 var BrowseDataGrid = require('./components/BrowseDataGrid');
 var WordDetailsView = require('./components/WordDetailsView');
+var WordEditView = require('./components/WordEditView');
 var WordCreateView = require('./components/WordCreateView');
 
 //var ListView = require('./components/ListView');
@@ -50,15 +51,15 @@ let AppWrapper = React.createClass({
 
             <div className="row">
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lilwat</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
-                  <a href="/#browse/Lilwat" className={classNames('btn', 'btn-primary')}>Explore Language</a>
+                  <a href="#browse/Lilwat" className={classNames('btn', 'btn-primary')}>Explore Language</a>
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -66,7 +67,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -74,7 +75,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -82,7 +83,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -90,7 +91,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -98,7 +99,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Sample Language</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -160,16 +161,16 @@ let AppWrapper = React.createClass({
 
             <div className="row">
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Suggest Words</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
                   <p><select><option>Select Language</option><option>Lilwat</option><option>Language 1</option><option>Language 2</option></select></p>
-                  <a href="/#contribute/Lilwat/word" className={classNames('btn', 'btn-primary')}>Suggest Word</a>
+                  <a href="#contribute/Lilwat/word" className={classNames('btn', 'btn-primary')}>Suggest Word</a>
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -178,7 +179,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -187,7 +188,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -196,7 +197,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -205,7 +206,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -214,7 +215,7 @@ let AppWrapper = React.createClass({
                 </div>
               </div>
 
-              <div className="col-xs-3">
+              <div className="col-xs-12 col-md-3">
                 <div className="well">
                   <h3>Lorem Ipsum</h3>
                   <p>Short description about language. Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
@@ -227,6 +228,20 @@ let AppWrapper = React.createClass({
 
           </div>
 
+        break;
+
+        case 'contribute/edit/word':
+
+          content = <div className="row">
+
+            <div className="col-xs-12">
+              <WordEditView
+                id={this.state.routeParams.word}
+                router={this.props.router}
+                client={this.props.client} />
+            </div>
+
+          </div>
         break;
 
         case 'contribute/word':
@@ -247,20 +262,20 @@ let AppWrapper = React.createClass({
               <h1>Welcome Friends!</h1>
               <p>This simple yet powerful web application is an example of consuming data from a robust Digital Asset Management system using a REST API.</p>
             </div>
-            <div className="col-xs-4">
+            <div className="col-xs-12 col-md-4">
               <h2>Get Started</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-              <a href="/#get-started" className={classNames('btn', 'btn-primary')}>Get Started</a>
+              <a href="#get-started" className={classNames('btn', 'btn-primary')}>Get Started</a>
             </div>
-            <div className="col-xs-4">
+            <div className="col-xs-12 col-md-4">
               <h2>Browse</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-              <a href="/#browse" className={classNames('btn', 'btn-primary')}>Browse Languages</a>
+              <a href="#browse" className={classNames('btn', 'btn-primary')}>Browse Languages</a>
             </div>
-            <div className="col-xs-4">
+            <div className="col-xs-12 col-md-4">
               <h2>Contribute</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-              <a href="/#contribute" className={classNames('btn', 'btn-primary')}>Start Contributing</a>
+              <a href="#contribute" className={classNames('btn', 'btn-primary')}>Start Contributing</a>
             </div>
           </div>
         break;

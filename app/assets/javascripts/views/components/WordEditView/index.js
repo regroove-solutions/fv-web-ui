@@ -21,6 +21,41 @@ var Word = require('models/Word');
 //require('!style!css!react-datagrid/dist/index.min.css');
 
 // Typeahead - https://github.com/gcanti/tcomb-form/issues/138
+var currentWord;
+
+function getData(client, word){
+
+  //var _this = this;
+
+  return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+          client.operation('Document.Query')
+            .params({
+              query: "SELECT * FROM Document WHERE (ecm:uuid = '" + word + "' AND ecm:primaryType = 'Word')"
+            })
+          .execute(function(error, response) {
+
+                // Handle error
+            if (error) {
+              throw error;
+            }
+
+            if (response.entries.length > 0) {
+              response.entries[0].client = client;
+                currentWord = new Word(response.entries[0]);
+                //currentWord.setClient(client);
+                resolve(currentWord);
+            } else {
+              reject('Workspace not found');
+            }
+
+          });
+
+        });
+}
 
  function getSubjects(client) {
 
@@ -39,7 +74,8 @@ var Word = require('models/Word');
              }
 
             if (data.entries.length > 0) {
-                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                //entry.properties.label
+                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.id]; }));
                 resolve(subtopics);
             } else {
               reject('Workspace not found');
@@ -69,7 +105,8 @@ var Word = require('models/Word');
              }
 
             if (data.entries.length > 0) {
-                var parts_speech = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+              //entry.properties.label
+                var parts_speech = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.id]; }));
                 resolve(parts_speech);
             } else {
               reject('Workspace not found');
@@ -93,8 +130,8 @@ class FormSample2 extends React.Component {
 
    this.state = {
       schema: null,
-      value: {
-        'dc:title': this.props.word.get('dc:title'),
+        value: {
+        'dc:title': props.word.get('dc:title'),
         'dc:description': props.word.get('dc:description'),
         'fv:definitions': props.word.get('fv:definitions'),
         'fv:pronunciation': props.word.get('fv:pronunciation'),
@@ -133,12 +170,11 @@ class FormSample2 extends React.Component {
         i18n: {
           add: 'New Item',
           down: '▼',
-          remove: 'Delete',
+          remove: 'X',
           up: '▲',
           optional: '(optional)'
         }
-      },
-      word: props.word,
+      }
    };
 
    getPartsOfSpeech(props.client).then((function(parts_speech_val){
@@ -162,13 +198,13 @@ class FormSample2 extends React.Component {
 
   _save(evt) {
 
-    var client = this.state.word.get('client');
+    var client = this.props.word.get('client');
     var value = this.refs.form.getValue();
 
     var self = this;
     // if validation fails, value will be null
     if (value) {
-      client.document(this.state.word.get('id'))
+      client.document(this.props.word.get('id'))
        .fetch(function(error, doc) {
          if (error) {
            throw error;
@@ -176,7 +212,7 @@ class FormSample2 extends React.Component {
 
           doc.set(value);
           doc.save(function(error, doc) {
-            location.reload();
+            self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
           });
        });
    }
@@ -216,8 +252,15 @@ class WordEditView extends React.Component {
     super(props);
 
    this.state = {
-      word: props.word
+      word: null
    };
+
+
+   getData(props.client, props.id).then((function(word){
+      this.setState({
+        word: word
+      });
+    }).bind(this));
 
   }
 
@@ -232,8 +275,12 @@ class WordEditView extends React.Component {
         zIndex: 0
       };
 
+    if (this.state.word != null) {
+      var renderForm = <FormSample2 client={this.props.client} router={this.props.router} word={this.state.word}/>;
+    }
+
     return <div>
-      <FormSample2 client={this.props.client} word={this.props.word}/>
+      {renderForm}
     </div>;
   }
 

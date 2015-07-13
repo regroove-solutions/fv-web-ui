@@ -1,4 +1,7 @@
 var React = require('react');
+var injectTapEventPlugin = require("react-tap-event-plugin");
+injectTapEventPlugin();
+
 var Sorty = require('sorty'); // Underscore
 var classNames = require('classnames');
 var Mui = require('material-ui');
@@ -31,13 +34,26 @@ var nuxeoListDocs;
 var {Colors, Spacing, Typography} = Mui.Styles;
 
 
+var Link = React.createClass({
+  render: function() {
+    return <a onTouchTap={this._handleTouchTap}>{this.props.value}</a>
+  },
+
+  _handleTouchTap: function() {
+    window.router.navigate("browse/word/" + this.props.id , {trigger: true});
+  }
+});
+
+
 
      // Query documents from Nuxeo
   var workspace;
 
 var columns = [
     //{ name: 'id', title: 'ID'},
-    { name: 'title', title: 'Word'},
+    { name: 'title', title: 'Word', render: function(v, data, cellProps){
+      return <Link id={data.id} value={v} />
+    }}/*,
     { name: 'definitions', title: 'Definitions', render: function(v){
       if (typeof v == 'object' && v.length > 0){
 
@@ -64,7 +80,7 @@ var columns = [
         return rows
       }
       
-    }}
+    }}*/
 ]
 
 var SORT_INFO = [ { name: 'title', dir: 'asc'}];
@@ -109,7 +125,7 @@ function getData(client, language){
 
               client.operation('Document.Query')
                 .params({
-                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word')"
+                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:currentLifeCycleState <> 'deleted')"
                 })
               .execute(function(error, response) {
 
@@ -146,6 +162,10 @@ class BrowseDataGrid extends React.Component {
     this.state = {
       dataSource: getData(props.client, props.language)
     };
+  }
+
+  componentDidMount(){
+    window.router = this.props.router;
   }
 
   handleColumnOrderChange(index, dropIndex){
@@ -211,6 +231,7 @@ class BrowseDataGrid extends React.Component {
 
       // Styles
       var DataGridStyles = {
+        height:"70vh",
         zIndex: 0
       };
 

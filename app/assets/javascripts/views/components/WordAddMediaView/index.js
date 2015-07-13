@@ -1,7 +1,9 @@
 var React = require('react');
 var t = require('tcomb-form');
+//var $ = require('jquery');
 var Form = t.form.Form;
 
+var FileReadStream = require('filestream/read');
 var Underscore = require('underscore');
 var _ = Underscore;
 
@@ -99,6 +101,7 @@ class FormSample2 extends React.Component {
     });
 
    this.state = {
+      uploading: false,
       schema: schema,
       options: {
         fields: {
@@ -132,6 +135,7 @@ class FormSample2 extends React.Component {
 
   _save(evt) {
 
+    this.setState({'uploading': true});
 
 /*
     var value = this.refs.form.getValue();
@@ -151,29 +155,27 @@ class FormSample2 extends React.Component {
     }*/
 
 
-
-
-
     var client = this.state.word.get('client');
     var value = this.refs.form.getValue();
 
     var self = this;
     // if validation fails, value will be null
     if (value) {
+      var testFileObj;
       //console.log(evt);
 //console.log(React.findDOMNode(this.refs.form.refs.input.refs.file).files[0]);
       var fd = new FormData();
       for (var k in value) {
         var v = value[k];
         if (t.form.File.is(v)) {
-          fd.append('userfile', v, v.name);
-          var fileMe = v;
+          fd.append(k, v, v.name);
+          testFileObj = v;
         } else {
           fd.append(k, v);
         }
       }
 
-var formData = new FormData(document.getElementById("myForm"));
+//var formData = new FormData($("#myForm"));
 /*
 formData.append("username", "Groucho");
 formData.append("accountnum", 123456); // number 123456 is immediately converted to a string "123456"
@@ -189,24 +191,129 @@ formData.append("webmasterfile", blob);
 
 */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var headers = {};
+
+
+headers["X-Batch-Id"]= 'batch-' + new Date().getTime() + '-' + Math.floor(Math.random() * 100000);
+headers["X-File-Idx"]= 0;
+headers["authorization"]= "Basic QWRtaW5pc3RyYXRvcjpYN1BjRVh1YVlzeG1nako=";
+headers['Cache-Control'] = 'no-cache';
+headers["X-File-Name"]= encodeURIComponent(testFileObj.name);
+headers["X-File-Size"]= testFileObj.size;
+headers["X-File-Type"]= testFileObj.type;
+headers["Content-Type"]= "binary/octet-stream";
+
+//console.log(headers);
+   var xhrParams = {
+      type: 'POST',
+      //timeout: this._timeout,
+      headers: headers,
+      cache: false,
+      contentType: false,
+      processData: false,
+      data: testFileObj,
+      url: 'http://ec2-50-112-240-83.us-west-2.compute.amazonaws.com/nuxeo/site/automation/batch/upload'//,
+      //xhrFields: this._client._xhrFields
+    };
+/*
+    $.ajax(xhrParams)
+      .done(function(data, textStatus, jqXHR) {
       client.operation('Document.Create')
        .params({
-         type: 'Audio',
-         name: 'test1',
-         properties: 'dc:title=Test1'
+         type: 'Picture',
+         name: 'myNewThingie333',
        })
-       .input(this.state.word.get('id'))
+       .param('properties',
+          {
+            "dc:title": "1002more!",
+            "file:content": {"upload-batch":data.batchId,"upload-fileId":"0"}
+          }
+        )
+       .input(self.state.word.get('id'))
        .execute(function(error, doc) {
          if (error) {
            // something went wrong
            throw error;
          }
+
+console.log(doc);
+       });
+      })
+      .fail(function(jqXHR, textStatus, errorThrown) {
+        console.log(errorThrown);
+      });*/
+
+
+
+
+    var request = new XMLHttpRequest();
+var self = this;
+request.onreadystatechange = function() {
+    if (request.readyState == 4) {
+      var jsonResponse = JSON.parse(request.responseText);
+      var nuxeoType = "File";
+//console.log(testFileObj.type.substring(0, testFileObj.type.indexOf('/')));
+
+      switch(testFileObj.type.substring(0, testFileObj.type.indexOf('/'))) {
+        case "image":
+          nuxeoType = "Picture";
+        break;
+        case "audio":
+          nuxeoType = "Audio";
+        break;
+        case "video":
+          nuxeoType = "Video";
+        break;
+      }
+
+      client.operation('Document.Create')
+       .params({
+         type: nuxeoType,
+         name: testFileObj.name,
+       })
+       .param('properties',
+          {
+            "dc:title": testFileObj.name,
+            "file:content": {"upload-batch":jsonResponse.batchId,"upload-fileId":"0"}
+          }
+        )
+       .input(self.state.word.get('id'))
+       .execute(function(error, doc) {
+         if (error) {
+           // something went wrong
+           throw error;
+         }
+
+         location.reload();
+
+         //self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
+
+//console.log(doc);
+
 //console.log( doc.uid);
-             var uploader = client.operation("Blob.Attach")
+             /*var uploader = client.operation("Blob.Attach")
              .params({ document: doc.uid,
                save : true,
                xpath: "file:content"
-             }).uploader();
+             }).uploader();*/
 
              /*
 { uploadProgressUpdatedCallback: function(fileIndex, file, newProgress) { 
@@ -215,15 +322,18 @@ formData.append("webmasterfile", blob);
                   $(".progress div span.sr-only span").text(newProgress + "%");
                 } }
              */
-    var request = new XMLHttpRequest();
-request.open("POST", "http://foo.com/submitform.php");
-request.send(formData);
-    console.log(fileMe)
-             var aFileParts = ['<a id="a"><b id="b">hey!</b></a>']; // an array consisting of a single DOMString
-             var oMyBlob = new Blob(aFileParts, {type : 'text/html'}); // the blob
+
+
+    //console.log(fileMe)
+             //var aFileParts = ['<a id="a"><b id="b">hey!</b></a>']; // an array consisting of a single DOMString
+             //var oMyBlob = new Blob(aFileParts, {type : 'text/html'}); // the blob
     //console.log(oMyBlob);
-             uploader.uploadFile(oMyBlob, function(fileIndex, file, timeDiff) {
-              //console.log('here');
+
+    //var ttt = new FileReadStream(fd, {chunkSize : 128965});
+
+/*
+             uploader.uploadFile(fd, function(fileIndex, file, timeDiff) {
+              console.log('here');
                   // When done, execute the operation
                   uploader.execute(function(error, data) {
                     if (error) {
@@ -236,11 +346,11 @@ request.send(formData);
                  
                     // successfully attached blob
                     console.log("attached");
-                    $(".progress div").addClass("progress-bar-success");
-                    $(".progress div").text("Upload Complete!");
+                    //$(".progress div").addClass("progress-bar-success");
+                    //$(".progress div").text("Upload Complete!");
                   });
                 });
-
+*/
              
          
          //console.log("here" + document.uid);
@@ -249,6 +359,20 @@ request.send(formData);
 
          //self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
        });
+    }
+}
+//console.log(testFileObj);
+request.open("POST", "http://ec2-50-112-240-83.us-west-2.compute.amazonaws.com/nuxeo/site/automation/batch/upload");
+request.setRequestHeader("X-Batch-Id", 'batch-' + new Date().getTime() + '-' + Math.floor(Math.random() * 100000));
+request.setRequestHeader("X-File-Idx", 0);
+request.setRequestHeader("authorization", "Basic QWRtaW5pc3RyYXRvcjpYN1BjRVh1YVlzeG1nako=");
+request.setRequestHeader("X-File-Name", encodeURIComponent(testFileObj.name));
+request.setRequestHeader("X-File-Size", testFileObj.size);
+request.setRequestHeader("X-File-Type", testFileObj.type);
+request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+request.setRequestHeader("Content-Type", "binary/octet-stream");
+request.send(testFileObj);
+
    }
 
    evt.preventDefault();    
@@ -266,12 +390,19 @@ if (this.state.schema != undefined){
           type={this.state.schema} 
           value={this.state.value}
           onChange={this._change} />
-          <button type="submit" className={classNames('btn', 'btn-primary')}>Save Changes</button>
+          <button type="submit" className={classNames('btn', 'btn-primary')}>Upload Media</button>
       </form>;
 }
 
+  var uploadText = "";
+
+  if (this.state.uploading) {
+    uploadText = <div className={classNames('alert', 'alert-info')} role="alert">Uploading... Please be patient...</div>
+  }
+
     return (
       <div className="form-horizontal">
+        {uploadText}
         {form}
       </div>
     );

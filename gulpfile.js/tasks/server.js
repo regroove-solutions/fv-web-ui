@@ -7,7 +7,7 @@ var logger   = require('morgan');
 var open     = require('open');
 
 gulp.task('server', function() {
-  var url = 'http://localhost:' + config.port;
+  var url = 'http://0.0.0.0:' + config.port;
 
   express()
     .use(compress())

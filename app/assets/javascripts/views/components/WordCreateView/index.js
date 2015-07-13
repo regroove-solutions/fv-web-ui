@@ -39,7 +39,8 @@ var Word = require('models/Word');
              }
 
             if (data.entries.length > 0) {
-                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.label]; }));
+                // entry.properties.label
+                var subtopics = _.object(_.map(data.entries, function(entry){ return [entry.properties.id, entry.properties.id]; }));
                 resolve(subtopics);
             } else {
               reject('Workspace not found');
@@ -133,7 +134,7 @@ class FormSample2 extends React.Component {
         i18n: {
           add: 'New Item',
           down: '▼',
-          remove: 'Delete',
+          remove: 'X',
           up: '▲',
           optional: '(optional)'
         }
