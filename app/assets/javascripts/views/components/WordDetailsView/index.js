@@ -70,11 +70,11 @@ function getChildren(client, word){
         // reject the promise
         function(resolve, reject) {
 
-          client.operation('Document.GetChildren')
-          .input(word)
-          /*.params({
-              query: "SELECT * FROM Document WHERE (ecm:uuid = '" + word + "' AND ecm:primaryType = 'Word')"
-          })*/
+
+          client.operation('Document.Query')
+            .params({
+              query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'Audio' OR ecm:primaryType = 'Video' OR ecm:primaryType = 'Picture'))"
+            })
           .execute(function(error, response) {
 
                 // Handle error
@@ -83,13 +83,12 @@ function getChildren(client, word){
             }
 
             if (response.entries.length > 0) {
-                resolve(response.entries);
+              resolve(response.entries);
             } else {
               reject('Workspace not found');
             }
 
           });
-
         });
 }
 
