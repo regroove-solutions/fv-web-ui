@@ -266,7 +266,7 @@ if (pictures != undefined && pictures.length > 0) {
   for (var i =0; i < pictures.length; i++) {
 
   picturesContent.push(<div className="col-xs-12">
-    <img className="image" src={(pictures != undefined && pictures.length > 0) ? pictures[i].properties['picture:views'][2].content.data : ''} alt="Thumbnail of {object.properties['dc:title']}"/>
+    <img className="image" src={(pictures != undefined && pictures[i].properties['picture:views'][2].content.data != "") ? pictures[i].properties['picture:views'][2].content.data : ''} alt=""/>
    </div>);
   }
 }
