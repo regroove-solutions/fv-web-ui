@@ -1,0 +1,8 @@
+{
+	"title": "First Voices",
+	"baseURL": "http://ec2-50-112-240-83.us-west-2.compute.amazonaws.com/nuxeo",
+	"auth": {
+		"username": "webapp",
+		"password": "0vvWX09p6x0a83S"
+	}
+}
