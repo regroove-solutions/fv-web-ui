@@ -1,8 +1,3 @@
-{#
-  Swig Templating!
-  Docs: http://paularmstrong.github.io/swig/docs/
-#}
-
 {% extends 'layouts/application.swig' %}
 
 {% block content %}

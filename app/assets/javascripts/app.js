@@ -4,9 +4,9 @@ var Backbone = require('backbone');
 var React = require('react');
 var Router = require('./router');
 var Nuxeo = require('nuxeo');
-//var $ = require('jquery');
 
 var AppWrapper = require('./views/AppWrapper');
+var ConfGlobal = require('./configuration/Global.json');
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
 
@@ -18,70 +18,62 @@ require("styles/main");
 var app = {
 
     nuxeoArgs: {
-        baseURL: 'http://ec2-50-112-240-83.us-west-2.compute.amazonaws.com/nuxeo',
+        baseURL: ConfGlobal.baseURL,
         restPath: 'site/api/v1',
         automationPath: 'site/automation',
         auth: {
           method: 'basic',
-          username: 'webapp',
-          password: '0vvWX09p6x0a83S'
+          username: ConfGlobal.auth.username,
+          password: ConfGlobal.auth.password
         },
-        timeout: 3000
+        timeout: 30000
     },
 
     init: function () {
 
-		//Needed for onTouchTap
-		//Can go away when react 1.0 release
-		//Check this repo:
-		//https://github.com/zilverline/react-tap-event-plugin
-		injectTapEventPlugin();
+		  //Needed for onTouchTap
+	   	//Can go away when react 1.0 release
+	 	  //Check this repo:
+  		//https://github.com/zilverline/react-tap-event-plugin
+      injectTapEventPlugin();
 
-        //Backbone.$ = $;
-
-        // Use GET and POST to support all browsers
-        // Also adds '_method' parameter with correct HTTP headers
-        //Backbone.emulateHTTP = true;
-
-	    //React.render(<AppBarWrapper title="First Voices"/>, document.getElementById('header-container'));
-	    //React.render(<LeftNavWrapper/>, document.getElementById('left-nav-container'));
 	    this.router = new Router(this);
-	    console.log(this.nuxeoArgs);
+
       this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
       this.storeClient.header('X-NXDocumentProperties', '*');
 
       var _this = this;
 
-      this.storeClient.connect(function(error, client) {
-        if (error) {
-          // cannot connect
-          throw error;
-        }
- 
-        // OK, the returned client is connected
-        _this.appWrapper = React.render(<AppWrapper client={_this.storeClient} router={_this.router} title="First Voices" />, document.getElementById('app-wrapper'));
-        // Render essential views for layout
-        
+      /**
+      * Workaround for logged in session. Logout before creating a client.
+      * Will only work if app and nuxeo on same domain (unless Access-Control-Allow-Origin is set)
+      */
+      var request = new XMLHttpRequest();
 
-        Backbone.history.start({pushState: false});
-
-        // Set up global click event handler to use pushState for links
-        // use 'data-bypass' attribute on anchors to allow normal link behavior
-        /*$(document).on('click', 'a:not([data-bypass])', function(event) {
-
-            var href = $(this).attr('href');
-            var protocol = this.protocol + '//';
-
-            if (href.slice(protocol.length) !== protocol) {
-              event.preventDefault();
-              app.router.navigate(href, true);
+      request.onreadystatechange = (function() {
+        if (request.readyState == 4) {
+          this.storeClient.connect(function(error, client) {
+            if (error) {
+              console.log(error);
+              throw error;
             }
 
-        });*/
+            _this.appWrapper = React.render(
+              <AppWrapper
+                client={_this.storeClient}
+                router={_this.router}
+                title={ConfGlobal.title} />,
+            document.getElementById('app-wrapper'));
 
-        return _this;
-      });
+            Backbone.history.start({pushState: false});
 
+            return _this;
+          });
+        }
+      }).bind(this);
+
+      request.open("GET", ConfGlobal.baseURL + "/logout");
+      request.send();
     }
 };
 

@@ -1,11 +1,9 @@
 'use strict';
 
 var Backbone = require('backbone');
-var React = require('react');
 var Router = require('./router');
 
 var AppWrapper = require('./views/AppWrapper');
-//var ListView = require('./views/components/ListView');
 
 var AppRouter = Backbone.Router.extend({
   initialize: function(app) {
@@ -28,10 +26,14 @@ var AppRouter = Backbone.Router.extend({
     this.app.appWrapper.changePage('browse');
   },
   browseLanguage: function(language){
-    this.app.appWrapper.changePage('browse/language', { 'routeParams': {'language' : language} });
+    this.app.appWrapper.changePage('browse/language', {
+      'routeParams': {'language' : language}
+    });
   },
   browseWord: function(word){
-    this.app.appWrapper.changePage('browse/word', { 'routeParams': {'word' : word} });
+    this.app.appWrapper.changePage('browse/word', {
+      'routeParams': {'word' : word}
+    });
   },
   getStarted: function() {
     this.app.appWrapper.changePage('introduction');
@@ -40,10 +42,14 @@ var AppRouter = Backbone.Router.extend({
     this.app.appWrapper.changePage('contribute');
   },
   editWord: function(word){
-    this.app.appWrapper.changePage('contribute/edit/word', { 'routeParams': {'word' : word} });
+    this.app.appWrapper.changePage('contribute/edit/word', {
+      'routeParams': {'word' : word}
+    });
   },
   contributeWord: function(language) {
-    this.app.appWrapper.changePage('contribute/word', { 'routeParams': {'language' : language} });
+    this.app.appWrapper.changePage('contribute/word', {
+      'routeParams': {'language' : language}
+    });
   }
 });
 
