@@ -5,6 +5,8 @@ var _ = require('underscore');
 var Word = require('models/Word');
 var Words = require('models/Words');
 
+var ConfGlobal = require('../configuration/Global.json');
+
 var WordOperations = {
   getMediaByWord: function (client, word) {
     return new Promise(
@@ -77,7 +79,7 @@ var WordOperations = {
             }
             // Create a Workspace Document based on returned data
             
-            if (response.entries.length > 0) {
+            if (response != null && response.entries.length > 0) {
               var workspaceID = response.entries[0].uid;
 
               client.operation('Document.Query')
@@ -100,6 +102,42 @@ var WordOperations = {
             }
 
           });
+    });
+  },
+  getMediaBlobById: function (client, media, mimeType) {
+
+    return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+			var request = new XMLHttpRequest();
+
+			request.onload = function(e) {
+				if (request.readyState == 4) {
+				    var uInt8Array = new Uint8Array(this.response);
+				    var i = uInt8Array.length;
+				    var biStr = new Array(i);
+				    while (i--) { 
+				    	biStr[i] = String.fromCharCode(uInt8Array[i]);
+				    }
+				    var data = biStr.join('');
+				    var base64 = window.btoa(data);
+
+					var dataUri = 'data:' + mimeType + ';base64,' + base64;
+					resolve(dataUri);
+				} else {
+					reject("Media not found");
+				}
+			}
+
+			request.open("POST", ConfGlobal.baseURL + "/site/automation/Blob.Get", true);
+			request.responseType = "arraybuffer";
+			request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
+			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+			request.setRequestHeader("Content-Type", "application/json");
+			request.send(JSON.stringify({input: media, xpath: 'file:content'}));
+
     });
   }
 }

@@ -23,12 +23,15 @@ class WordDetailsView extends React.Component {
    this.handleEditTouchTap = this.handleEditTouchTap.bind(this);
    this.handleAddMedia = this.handleAddMedia.bind(this);
    this.handleChange = this.handleChange.bind(this);
+   this.handleTabActive = this.handleTabActive.bind(this);
 
    this.state = {
       word: null,
-      children: null
+      children: null,
+      picturesContent: [],
+      videoContent: [],
+      audioContent: []
    };
-
 
    WordOperations.getWordById(props.client, props.id).then((function(word){
       this.setState({
@@ -41,6 +44,78 @@ class WordDetailsView extends React.Component {
         children: children
       });
     }).bind(this));
+  }
+
+  handleTabActive(tab) {
+
+    if (this.state.children != undefined && this.state.children.length > 0) {
+      switch(tab.props.id) {
+        case 'pictures':
+          if (this.state.picturesContent.length == 0) {
+            var pictures = _.filter(this.state.children, function(child){ if (child.type == 'Picture') return child; })
+
+            if (pictures != undefined && pictures.length > 0) {
+              this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
+              for (var i =0; i < pictures.length; i++) {
+                WordOperations.getMediaBlobById(this.props.client, pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(imageData){
+                  var tmpArray = [];
+
+                  tmpArray.push(<div key="picture-{i}" className="col-xs-12">
+                    <img className="image" src={imageData} alt=""/>
+                   </div>);
+
+                  this.setState({picturesContent: tmpArray});
+
+                }).bind(this));
+              }
+            }
+            else {
+              this.setState({picturesContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No photos are available. Please add some!</div>});
+            }
+          }
+        break;
+
+        case 'audio':
+          if (this.state.audioContent.length == 0) {
+            var audio = _.filter(this.state.children, function(child){ if (child.type == 'Audio') return child; })
+
+            if (audio != undefined && audio.length > 0) {
+              this.setState({audioContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
+              for (var i =0; i < audio.length; i++) {
+                WordOperations.getMediaBlobById(this.props.client, audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(audioData){
+                  var tmpArray = [];
+                  tmpArray.push(<audio key="audio-{i}" src={audioData} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
+                  this.setState({audioContent: tmpArray});
+                }).bind(this));
+              }
+            }
+            else {
+              this.setState({audioContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No audio clips are available. Please add some!</div>});
+            }
+          }
+        break;
+
+        case 'video':
+          if (this.state.videoContent.length == 0) {
+            var video = _.filter(this.state.children, function(child){ if (child.type == 'Video') return child; })
+
+            if (video != undefined && video.length > 0) {
+              this.setState({videoContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
+              for (var i =0; i < video.length; i++) {
+                WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(videoData){
+                  var tmpArray = [];
+                  tmpArray.push(<video key="video-{i}" width="100%" height="auto" controls src={videoData} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>Your browser does not support the video tag.</video>);
+                  this.setState({videoContent: tmpArray});
+                }).bind(this));
+              }
+            }
+            else {
+              this.setState({videoContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No videos are available. Please add some!</div>});
+            }
+          }
+        break;
+      }
+    }
   }
 
   handleEditTouchTap() {
@@ -59,6 +134,10 @@ class WordDetailsView extends React.Component {
 
     var title, pronunciation, part_of_speech, description = "";
 
+    var tabItemStyles = {
+      userSelect: 'none'
+    }
+
     if (this.state.word != null)
     {
       title = this.state.word.get('dc:title');
@@ -67,7 +146,7 @@ class WordDetailsView extends React.Component {
       part_of_speech = this.state.word.get('fv:part_of_speech');
 
       var defs = this.state.word.get('fv:definitions');
-      var definitionsBody, subjectsBody, picturesBody = "";
+      var definitionsBody, subjectsBody = "";
 
       if (defs != undefined && defs.length > 0){
 
@@ -95,12 +174,6 @@ class WordDetailsView extends React.Component {
 
     }
 
-    if (this.state.children != undefined && this.state.children.length > 0) {
-      var pictures = _.filter(this.state.children, function(child){ if (child.type == 'Picture') return child; })
-      var audio = _.filter(this.state.children, function(child){ if (child.type == 'Audio') return child; })
-      var video = _.filter(this.state.children, function(child){ if (child.type == 'Video') return child; })
-    }
-
     var addMediaView;
 
     if (this.state.word != null && this.state.word.initialized) {
@@ -119,39 +192,6 @@ class WordDetailsView extends React.Component {
       </Dialog>
     }
 
-    var picturesContent = [];
-    var audioContent = [];
-    var videoContent = [];
-
-    if (pictures != undefined && pictures.length > 0) {
-
-      for (var i =0; i < pictures.length; i++) {
-
-      picturesContent.push(<div className="col-xs-12">
-        <img className="image" src={(pictures != undefined && pictures[i].properties['picture:views'][2].content.data != "") ? pictures[i].properties['picture:views'][2].content.data : ''} alt=""/>
-       </div>);
-      }
-    }
-
-    if (audio != undefined && audio.length > 0) {
-
-      for (var i =0; i < pictures.length; i++) {
-
-      audioContent.push(<audio src={(audio != undefined && audio.length > 0) ? audio[i].properties['file:content'].data : ''} preload="auto" controls="controls">
-    Your browser does not support the audio element.
-    </audio>);
-      }
-    }
-
-    if (video != undefined && video.length > 0) {
-
-      for (var i =0; i < pictures.length; i++) {
-      videoContent.push(<video width="100%" height="auto" controls src={(video != undefined && video.length > 0) ? video[0].properties['file:content'].data : ''} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>
-    Your browser does not support the video tag.
-    </video>);
-      }
-    }
-
     return (
       <div>
 
@@ -162,7 +202,7 @@ class WordDetailsView extends React.Component {
             subtitle={(pronunciation!=null) ? "Pronunciation: " + pronunciation : ""}
             avatar="http://lorempixel.com/100/100/"/>
 
-          <Tabs> 
+          <Tabs tabItemContainerStyle={tabItemStyles}> 
             <Tab label="Definition" > 
               <div> 
                     <CardText>
@@ -182,31 +222,27 @@ class WordDetailsView extends React.Component {
                     </CardText>
               </div> 
             </Tab> 
-            <Tab label="Photos" > 
+            <Tab onActive={this.handleTabActive} label="Photos" id="pictures"> 
               <div> 
                 <CardText>
-                <h2>Photos</h2> 
-                <div dangerouslySetInnerHTML={{__html: picturesBody}} />
-                <div className="row">{picturesContent}</div>
+                  <h2>Photos</h2> 
+                  <div className="row">{this.state.picturesContent}</div>
                 </CardText>
               </div> 
             </Tab> 
-            <Tab label="Audio" > 
+            <Tab label="Audio" onActive={this.handleTabActive} id="audio"> 
               <div> 
                 <CardText>
-                <h2>Audio</h2> 
-                <div dangerouslySetInnerHTML={{__html: picturesBody}} />
-                <div className="row">{audioContent}</div>
-
+                  <h2>Audio</h2> 
+                  <div className="row">{this.state.audioContent}</div>
                 </CardText>
               </div> 
             </Tab> 
-            <Tab label="Video" > 
+            <Tab label="Video" onActive={this.handleTabActive} id="video"> 
               <div> 
                 <CardText>
-                <h2>Video</h2> 
-                <div dangerouslySetInnerHTML={{__html: picturesBody}} />
-                <div className="row">{videoContent}</div>
+                  <h2>Video</h2> 
+                  <div className="row">{this.state.videoContent}</div>
                 </CardText>
               </div> 
             </Tab> 
