@@ -7,6 +7,7 @@ var menuItems = [
     { route: 'get-started', text: 'Get Started' },
     { route: 'browse', text: 'Browse' },
     { route: 'contribute', text: 'Contribute' },
+    { route: 'play', text: 'Play' },
     { type: MenuItem.Types.SUBHEADER, text: 'External Resources' },
     { type: MenuItem.Types.LINK, payload: 'http://www.firstvoices.com/', text: 'First Voices', target: '_blank' },
     { type: MenuItem.Types.LINK, payload: 'http://www.gov.bc.ca/', text: 'Gov.bc.ca', target: '_blank' }

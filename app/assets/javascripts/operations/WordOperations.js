@@ -8,16 +8,22 @@ var Words = require('models/Words');
 var ConfGlobal = require('../configuration/Global.json');
 
 var WordOperations = {
-  getMediaByWord: function (client, word) {
+  getMediaByWord: function (client, word, query = null) {
+
     return new Promise(
       // The resolver function is called with the ability to resolve or
       // reject the promise
       function(resolve, reject) {
 
+        var addQuery = "";
+
+        if (query != null) {
+          addQuery = " AND " + query;
+        }
 
         client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'Audio' OR ecm:primaryType = 'Video' OR ecm:primaryType = 'Picture'))"
+            query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'Audio' OR ecm:primaryType = 'Video' OR ecm:primaryType = 'Picture'))" + addQuery
           })
         .execute(function(error, response) {
 
@@ -63,10 +69,8 @@ var WordOperations = {
         });
     });
   },
-  getWordsByLangauge : function (client, language) {
+  getWordsByLangauge : function (client, language, query = null) {
     return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
         function(resolve, reject) {
 
           client.operation('Document.Query')
@@ -77,18 +81,22 @@ var WordOperations = {
             if (error) {
               throw error;
             }
-            // Create a Workspace Document based on returned data
-            
+
             if (response != null && response.entries.length > 0) {
               var workspaceID = response.entries[0].uid;
 
+              var addQuery = "";
+
+              if (query != null) {
+                addQuery = " AND " + query;
+              }
+
               client.operation('Document.Query')
                 .params({
-                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:currentLifeCycleState <> 'deleted')"
+                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery
                 })
               .execute(function(error, response) {
 
-                    // Handle error
                 if (error) {
                   throw error;
                 }
@@ -107,8 +115,6 @@ var WordOperations = {
   getMediaBlobById: function (client, media, mimeType) {
 
     return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
         function(resolve, reject) {
 
 			var request = new XMLHttpRequest();

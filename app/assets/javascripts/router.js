@@ -17,13 +17,23 @@ var AppRouter = Backbone.Router.extend({
     'get-started': 'getStarted',
     'contribute': 'contribute',
     'contribute/edit/:word': 'editWord',
-    'contribute/:language/word': 'contributeWord'
+    'contribute/:language/word': 'contributeWord',
+    'play': 'play',
+    'play/:language/:game': 'playGame',
   },
   index: function() {
     this.app.appWrapper.changePage('')
   },
   browse: function() {
     this.app.appWrapper.changePage('browse');
+  },
+  play: function() {
+    this.app.appWrapper.changePage('play');
+  },
+  playGame: function(language, game){
+    this.app.appWrapper.changePage('play/game', {
+      'routeParams': {'game' : game, 'language' : language}
+    });
   },
   browseLanguage: function(language){
     this.app.appWrapper.changePage('browse/language', {

@@ -9,6 +9,8 @@ var WordDetailsView = require('./components/WordDetailsView');
 var WordEditView = require('./components/WordEditView');
 var WordCreateView = require('./components/WordCreateView');
 
+var GameWrapperView = require('./components/GameWrapperView');
+
 var ThemeManager = new Mui.Styles.ThemeManager();
 
 let AppWrapper = React.createClass({
@@ -34,7 +36,6 @@ let AppWrapper = React.createClass({
   },
 
   render() {
-
       var content;
 
       switch (this.state.route){
@@ -42,6 +43,12 @@ let AppWrapper = React.createClass({
         case 'browse':
 
           content = <div className="languages-cont">
+
+            <div className="row">
+              <div className="col-xs-12">
+                <h2>Browse Languages</h2>
+              </div>
+            </div>
 
             <div className="row">
 
@@ -107,6 +114,47 @@ let AppWrapper = React.createClass({
 
         break;
 
+        case 'play':
+
+          content = <div className="play-cont">
+
+            <div className="row">
+              <div className="col-xs-12">
+                <h2>Play Games</h2>
+              </div>
+            </div>
+
+            <div className="row">
+
+              <div className="col-xs-12 col-md-3">
+                <div className="well">
+                  <h3>Quiz</h3>
+                  <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="#play/Lilwat/quiz" className={classNames('btn', 'btn-primary')}>Play Game</a>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        break;
+
+        case 'play/game':
+
+          content = <div className="row">
+
+            <div className="col-xs-12">
+              <GameWrapperView
+                router={this.props.router}
+                client={this.props.client}
+                language={this.state.routeParams.language}
+                game={this.state.routeParams.game} />
+            </div>
+
+          </div>
+        break;
+
         case 'browse/language':
 
           content = <div className="row">
@@ -152,6 +200,12 @@ let AppWrapper = React.createClass({
         case 'contribute':
 
           content = <div className="contribute-cont">
+
+            <div className="row">
+              <div className="col-xs-12">
+                <h2>Contribute to a Language</h2>
+              </div>
+            </div>
 
             <div className="row">
 
