@@ -55,13 +55,13 @@ class WordDetailsView extends React.Component {
             var pictures = _.filter(this.state.children, function(child){ if (child.type == 'Picture') return child; })
 
             if (pictures != undefined && pictures.length > 0) {
-              this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-              for (var i =0; i < pictures.length; i++) {
-                WordOperations.getMediaBlobById(this.props.client, pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(imageData){
-                  var tmpArray = [];
+              var tmpArray = [];
 
-                  tmpArray.push(<div key="picture-{i}" className="col-xs-12">
-                    <img className="image" src={imageData} alt=""/>
+              this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
+              for (var i=0; i < pictures.length; i++) {
+                WordOperations.getMediaBlobById(this.props.client, pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(response){
+                  tmpArray.push(<div key={response.mediaId} className="col-xs-12">
+                    <img className="image" src={response.dataUri} alt=""/>
                    </div>);
 
                   this.setState({picturesContent: tmpArray});
@@ -80,11 +80,12 @@ class WordDetailsView extends React.Component {
             var audio = _.filter(this.state.children, function(child){ if (child.type == 'Audio') return child; })
 
             if (audio != undefined && audio.length > 0) {
+              var tmpArray = [];
+
               this.setState({audioContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
               for (var i =0; i < audio.length; i++) {
-                WordOperations.getMediaBlobById(this.props.client, audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(audioData){
-                  var tmpArray = [];
-                  tmpArray.push(<audio key="audio-{i}" src={audioData} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
+                WordOperations.getMediaBlobById(this.props.client, audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(response){
+                  tmpArray.push(<audio key={response.mediaId} src={response.dataUri} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
                   this.setState({audioContent: tmpArray});
                 }).bind(this));
               }
@@ -100,11 +101,12 @@ class WordDetailsView extends React.Component {
             var video = _.filter(this.state.children, function(child){ if (child.type == 'Video') return child; })
 
             if (video != undefined && video.length > 0) {
+              var tmpArray = [];
+
               this.setState({videoContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
               for (var i =0; i < video.length; i++) {
-                WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(videoData){
-                  var tmpArray = [];
-                  tmpArray.push(<video key="video-{i}" width="100%" height="auto" controls src={videoData} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>Your browser does not support the video tag.</video>);
+                WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(response){
+                  tmpArray.push(<video key={response.mediaId} width="100%" height="auto" controls src={response.dataUri} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>Your browser does not support the video tag.</video>);
                   this.setState({videoContent: tmpArray});
                 }).bind(this));
               }

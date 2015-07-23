@@ -34,8 +34,4 @@ class GameWrapperView extends React.Component {
   }
 }
 
-GameWrapperView.contextTypes = {
-  router: React.PropTypes.func
-};
-
 module.exports = GameWrapperView;

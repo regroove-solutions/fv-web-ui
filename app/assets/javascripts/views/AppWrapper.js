@@ -128,9 +128,17 @@ let AppWrapper = React.createClass({
 
               <div className="col-xs-12 col-md-3">
                 <div className="well">
-                  <h3>Quiz</h3>
+                  <h3>Single Photo Quiz</h3>
                   <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
                   <a href="#play/Lilwat/quiz" className={classNames('btn', 'btn-primary')}>Play Game</a>
+                </div>
+              </div>
+
+              <div className="col-xs-12 col-md-3">
+                <div className="well">
+                  <h3>Multiple Photo Quiz</h3>
+                  <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
+                  <a href="#play/Lilwat/quiz-multi" className={classNames('btn', 'btn-primary')}>Play Game</a>
                 </div>
               </div>
 

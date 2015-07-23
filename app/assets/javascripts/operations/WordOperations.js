@@ -131,7 +131,7 @@ var WordOperations = {
 				    var base64 = window.btoa(data);
 
 					var dataUri = 'data:' + mimeType + ';base64,' + base64;
-					resolve(dataUri);
+					resolve({dataUri: dataUri, mediaId: media});
 				} else {
 					reject("Media not found");
 				}
