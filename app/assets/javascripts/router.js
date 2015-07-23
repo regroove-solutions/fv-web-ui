@@ -18,8 +18,8 @@ var AppRouter = Backbone.Router.extend({
     'contribute': 'contribute',
     'contribute/edit/:word': 'editWord',
     'contribute/:language/word': 'contributeWord',
-    'play': 'play',
-    'play/:language/:game': 'playGame',
+    'play/:language': 'play',
+    'play/:language/:game/:category': 'playGame',
   },
   index: function() {
     this.app.appWrapper.changePage('')
@@ -27,12 +27,14 @@ var AppRouter = Backbone.Router.extend({
   browse: function() {
     this.app.appWrapper.changePage('browse');
   },
-  play: function() {
-    this.app.appWrapper.changePage('play');
+  play: function(language) {
+    this.app.appWrapper.changePage('play', {
+      'routeParams': {'language' : language}
+    });
   },
-  playGame: function(language, game){
+  playGame: function(language, game, category){
     this.app.appWrapper.changePage('play/game', {
-      'routeParams': {'game' : game, 'language' : language}
+      'routeParams': {'game' : game, 'language' : language, 'category' : category}
     });
   },
   browseLanguage: function(language){

@@ -16,6 +16,7 @@ var ThemeManager = new Mui.Styles.ThemeManager();
 let AppWrapper = React.createClass({
 
   getInitialState() {
+
     return {
       route : this.props.state,
       routeParams : {}
@@ -33,6 +34,22 @@ let AppWrapper = React.createClass({
       route : destination,
       routeParams: params.routeParams
     });
+  },
+
+  _changeQuizCategory(e){
+    var quizLink = document.getElementById('quiz');
+
+    if (this.state.routeParams) {
+      quizLink.href = "#play/" + this.state.routeParams.language + "/quiz/" + e.target.value;
+    }
+  },
+
+  _changeMultiQuizCategory(e){
+    var quizLink = document.getElementById('multi-quiz');
+
+    if (this.state.routeParams) {
+      quizLink.href = "#play/" + this.state.routeParams.language + "/multi-quiz/" + e.target.value;
+    }
   },
 
   render() {
@@ -130,7 +147,14 @@ let AppWrapper = React.createClass({
                 <div className="well">
                   <h3>Single Photo Quiz</h3>
                   <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
-                  <a href="#play/Lilwat/quiz" className={classNames('btn', 'btn-primary')}>Play Game</a>
+                  <p>
+                    <select onChange={this._changeQuizCategory}>
+                      <option value="biology">Select a category:</option>
+                      <option value="biology">Biology</option>
+                      <option value="culture">Culture</option>
+                    </select>
+                  </p>
+                  <a id="quiz" href="#play/Lilwat/quiz/biology" className={classNames('btn', 'btn-primary')}>Play Game</a>
                 </div>
               </div>
 
@@ -138,7 +162,14 @@ let AppWrapper = React.createClass({
                 <div className="well">
                   <h3>Multiple Photo Quiz</h3>
                   <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
-                  <a href="#play/Lilwat/quiz-multi" className={classNames('btn', 'btn-primary')}>Play Game</a>
+                  <p>
+                    <select onChange={this._changeMultiQuizCategory}>
+                      <option value="biology">Select a category:</option>
+                      <option value="biology">Biology</option>
+                      <option value="culture">Culture</option>
+                    </select>
+                  </p>
+                  <a id="multi-quiz" href="#play/Lilwat/multi-quiz" className={classNames('btn', 'btn-primary')}>Play Game</a>
                 </div>
               </div>
 
@@ -157,6 +188,7 @@ let AppWrapper = React.createClass({
                 router={this.props.router}
                 client={this.props.client}
                 language={this.state.routeParams.language}
+                category={this.state.routeParams.category}
                 game={this.state.routeParams.game} />
             </div>
 

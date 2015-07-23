@@ -1,8 +1,7 @@
 var React = require('react');
 
-//var classNames = require('classnames');
-
 var Quiz = require('./Games/Quiz');
+var MultiQuiz = require('./Games/MultiQuiz');
 
 class GameWrapperView extends React.Component {
 
@@ -18,9 +17,18 @@ class GameWrapperView extends React.Component {
 
     switch (this.props.game){
       case 'quiz':
-        label = "Quiz";
+        label = "Single Photo Quiz";
         content = <Quiz
                     client={this.props.client}
+                    category={this.props.category} 
+                    language={this.props.language} />;
+      break;
+
+      case 'multi-quiz':
+        label = "Multiple Photo Quiz";
+        content = <MultiQuiz
+                    client={this.props.client}
+                    category={this.props.category} 
                     language={this.props.language} />;
       break;
     }

@@ -18,9 +18,7 @@ class Answer extends React.Component {
 
     this._handleClick = this._handleClick.bind(this);
 
-    this.state = {
-      answer: props.word
-    };
+    this.state = {};
   }
 
 

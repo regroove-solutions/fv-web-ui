@@ -18,7 +18,7 @@ var Answer = require('./Answer');
 
 var loadingComponent = <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>;
 
-class Quiz extends React.Component {
+class MultiQuiz extends React.Component {
 
   constructor(props) {
     super(props);
@@ -57,22 +57,12 @@ class Quiz extends React.Component {
 
       words = _.sample(words, this.totalQuestion);
 
-      this.setState({currentAnswer: words[this.state.currentAnswerIndex]});
-
-      WordOperations.getMediaByWord(props.client, words[this.state.currentAnswerIndex].uid, "(ecm:primaryType='Picture')").then((function(correctAnswerMedia){
-        WordOperations.getMediaBlobById(props.client, correctAnswerMedia[0].uid, correctAnswerMedia[0].properties['file:content']['mime-type']).then((function(response){
-          this.setState({
-            correctAnswerMedia: <div className="imgCont"><img className="image" src={response.dataUri} alt=""/></div>
-          });
-
-          PubSub.publish( this.eventName + ":DATALOADED" );
-
-        }).bind(this));
-      }).bind(this));
-
       this.setState({
-        questions: words
+        questions: words,
+        currentAnswer: words[this.state.currentAnswerIndex]
       });
+
+      PubSub.publish( this.eventName + ":DATALOADED" );
 
     }).bind(this));
 
@@ -96,10 +86,10 @@ class Quiz extends React.Component {
     // If question being displayed for the first time
     if (!(this.state.currentAnswerIndex in this.state.displayedAnswers)) {
       if (incorrectAnswers.length != 0 ) {
-        tmpAnswers.push(<Answer key={this.state.questions[this.state.currentAnswerIndex].uid} selected={selected} data={this.state.questions[this.state.currentAnswerIndex]} correct="true" />);
+        tmpAnswers.push(<Answer key={this.state.questions[this.state.currentAnswerIndex].uid} client={this.props.client} selected={selected} data={this.state.questions[this.state.currentAnswerIndex]} correct="true" />);
 
         for (var i=0; i < 3; i++) {
-          tmpAnswers.push(<Answer key={incorrectAnswers[i].uid} selected={selected} data={incorrectAnswers[i]} correct="false" />);
+          tmpAnswers.push(<Answer key={incorrectAnswers[i].uid} client={this.props.client} selected={selected} data={incorrectAnswers[i]} correct="false" />);
         }
 
         var arrayvar = this.state.displayedAnswers.slice();
@@ -190,15 +180,16 @@ class Quiz extends React.Component {
 
   render() {
 
-    return <div className="quiz-container">
+    return <div className="multiquiz-container">
       <div className="row">
         <div className="col-xs-12">
           <LinearProgress style={this.linearProgressStyle} mode="determinate" value={((this.state.currentAnswerIndex + 1) / this.totalQuestion) * 100} />
         </div>
       </div>      
       <div className="row">
-        <div className="col-xs-12">
-          {this.state.correctAnswerMedia}
+        <div className={classNames('col-xs-12', 'text-center')}>
+          <hr />
+          {(this.state.currentAnswer != null) ? <h2>{this.state.currentAnswer.title}</h2> : loadingComponent}
         </div>
       </div>
       <div context="test" className={classNames('row', 'row-answers')}>
@@ -220,14 +211,14 @@ class Quiz extends React.Component {
   }
 }
 
-Quiz.contextTypes = {
+MultiQuiz.contextTypes = {
   muiTheme: React.PropTypes.object,
   router: React.PropTypes.func
 };
 
-Quiz.childContextTypes = {
+MultiQuiz.childContextTypes = {
   muiTheme: React.PropTypes.object
 };
 
 
-module.exports = Quiz;
+module.exports = MultiQuiz;

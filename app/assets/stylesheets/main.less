@@ -114,7 +114,7 @@ body{
 }
 
 .gameWrapperView{
-  .quiz-container{
+  .quiz-container, .multiquiz-container{
 
     .imgCont{
       max-height:50vh;
@@ -122,6 +122,24 @@ body{
       .image{
         max-width:100%;
         margin-top:-200px;
+      }
+    }
+
+    .imgContAnswer{
+      width:100%;
+      max-height:25vh;
+      overflow:hidden;
+      .image{
+        max-width:100%;
+        max-height:24vh;
+        margin:0;
+      }
+    }
+
+    .selectedImgContAnswer{
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+      .image{
+        border:3px solid #45E4D3;
       }
     }
 

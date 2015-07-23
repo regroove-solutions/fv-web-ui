@@ -27,7 +27,7 @@ var WordOperations = {
           })
         .execute(function(error, response) {
 
-              // Handle error
+          // Handle error
           if (error) {
             throw error;
           }
@@ -69,14 +69,17 @@ var WordOperations = {
         });
     });
   },
-  getWordsByLangauge : function (client, language, query = null) {
+  getWordsByLangauge : function (client, language, query = null, headers = null) {
     return new Promise(
         function(resolve, reject) {
 
+          if (headers != null)
+            client.headers(headers);
+
           client.operation('Document.Query')
-            .params({
-              query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
-            })
+          .params({
+            query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
+          })
           .execute(function(error, response) {
             if (error) {
               throw error;
