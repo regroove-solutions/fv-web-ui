@@ -96,6 +96,7 @@ class WordDetailsView extends React.Component {
           }
         break;
 
+        // TODO: http://stackoverflow.com/questions/16761927/aw-snap-when-data-uri-is-too-large
         case 'video':
           if (this.state.videoContent.length == 0) {
             var video = _.filter(this.state.children, function(child){ if (child.type == 'Video') return child; })
@@ -105,7 +106,98 @@ class WordDetailsView extends React.Component {
 
               this.setState({videoContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
               for (var i =0; i < video.length; i++) {
-                WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(response){
+
+
+/****
+***
+**
+Experiment to by pass large data-uri issues in chrome android
+Test also WebM format
+
+
+var FILE = 'http://ec2-50-112-240-83.us-west-2.compute.amazonaws.com/nuxeo/site/automation/Blob.Get';
+var NUM_CHUNKS = 5;
+
+
+window.MediaSource = window.MediaSource || window.WebKitMediaSource;
+if (!!!window.MediaSource) {
+  alert('MediaSource API is not available');
+}
+
+var mediaSource = new MediaSource();
+
+tmpArray.push(<video id="helloworld" key="helloworld" width="100%" height="auto" controls src={window.URL.createObjectURL(mediaSource)}>Your browser does not support the video tag.</video>);
+this.setState({videoContent: tmpArray});
+
+
+//http://stackoverflow.com/questions/22157623/h264-video-works-using-src-attribute-same-video-fails-using-the-mediasource-api
+function callback(e) {
+
+var videoObj = document.getElementById('helloworld');
+
+
+  var sourceBuffer = mediaSource.addSourceBuffer('video/mp4;codecs=avc1.4d0020,mp4a.40.2');
+
+  GET(FILE, function(uInt8Array) {
+    var file = new Blob([uInt8Array], {type: 'video/mp4'});
+    var chunkSize = Math.ceil(file.size / NUM_CHUNKS);
+
+    // Slice the video into NUM_CHUNKS and append each to the media element.
+    var i = 0;
+
+    (function readChunk_(i) {
+      var reader = new FileReader();
+
+      // Reads aren't guaranteed to finish in the same order they're started in,
+      // so we need to read + append the next chunk after the previous reader
+      // is done (onload is fired).
+      reader.onload = function(e) {
+        sourceBuffer.appendBuffer(new Uint8Array(e.target.result));
+        if (i == NUM_CHUNKS - 1) {
+          mediaSource.endOfStream();
+        } else {
+          if (videoObj.paused) {
+            videoObj.play(); // Start playing after 1st chunk is appended.
+          }
+          readChunk_(++i);
+        }
+      };
+
+      var startByte = chunkSize * i;
+      var chunk = file.slice(startByte, startByte + chunkSize);
+
+      reader.readAsArrayBuffer(chunk);
+    })(i);  // Start the recursive call by self calling.
+  });
+}
+
+mediaSource.addEventListener('sourceopen', callback, false);
+mediaSource.addEventListener('webkitsourceopen', callback, false);
+
+mediaSource.addEventListener('webkitsourceended', function(e) {
+//mdeiaready
+}, false);
+
+function GET(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', url, true);
+  xhr.responseType = 'arraybuffer';
+
+xhr.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
+xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.send(JSON.stringify({input: 'cdcdb2ea-9a66-4969-9a31-d38f7477e1e6', xpath: 'file:content'}));
+
+  xhr.onload = function(e) {
+    if (xhr.status != 200) {
+      alert("Unexpected status code " + xhr.status + " for " + url);
+      return false;
+    }
+    callback(new Uint8Array(xhr.response));
+  };
+}
+****/
+              WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(response){
                   tmpArray.push(<video key={response.mediaId} width="100%" height="auto" controls src={response.dataUri} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>Your browser does not support the video tag.</video>);
                   this.setState({videoContent: tmpArray});
                 }).bind(this));
