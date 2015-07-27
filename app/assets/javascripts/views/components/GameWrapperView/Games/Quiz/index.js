@@ -190,6 +190,12 @@ class Quiz extends React.Component {
 
   render() {
 
+    var main = this.state.correctAnswerMedia;
+
+    if (this.state.questions.length == 0) {
+      main = <div className={classNames('alert', 'alert-danger', 'text-center')} role="alert">No words found for this quiz yet. Please try a different category or add new words.</div>;
+    }
+
     return <div className="quiz-container">
       <div className="row">
         <div className="col-xs-12">
@@ -198,7 +204,7 @@ class Quiz extends React.Component {
       </div>      
       <div className="row">
         <div className="col-xs-12">
-          {this.state.correctAnswerMedia}
+          {main}
         </div>
       </div>
       <div context="test" className={classNames('row', 'row-answers')}>

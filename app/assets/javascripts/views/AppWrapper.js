@@ -1,4 +1,5 @@
 var React = require('react');
+var _ = require('underscore');
 var Mui = require('material-ui');
 var classNames = require('classnames');
 
@@ -11,6 +12,8 @@ var WordCreateView = require('./components/WordCreateView');
 
 var GameWrapperView = require('./components/GameWrapperView');
 
+var DirectoryOperations = require('operations/DirectoryOperations');
+
 var ThemeManager = new Mui.Styles.ThemeManager();
 
 let AppWrapper = React.createClass({
@@ -19,6 +22,7 @@ let AppWrapper = React.createClass({
 
     return {
       route : this.props.state,
+      subjects: [],
       routeParams : {}
     }
   },
@@ -34,14 +38,23 @@ let AppWrapper = React.createClass({
       route : destination,
       routeParams: params.routeParams
     });
+
+    DirectoryOperations.getSubjects(this.props.client).then((function(response){
+      this.setState({
+        subjects : response
+      });
+    }).bind(this));
+
   },
 
   _changeQuizCategory(e){
     var quizLink = document.getElementById('quiz');
 
-    if (this.state.routeParams) {
+    if (this.state.routeParams && e.target.value.length > 0) {
       quizLink.href = "#play/" + this.state.routeParams.language + "/quiz/" + e.target.value;
     }
+
+    e.preventDefault();
   },
 
   _changeMultiQuizCategory(e){
@@ -133,6 +146,20 @@ let AppWrapper = React.createClass({
 
         case 'play':
 
+          var subjectReactOptions = [];
+          var subjectsArray = [];
+
+          subjectsArray = _.sortBy(_.toArray(this.state.subjects), function (name) {return name});
+
+          if (subjectsArray.length > 0) {
+
+            _.each(subjectsArray, function(element, index) {
+              if (element != undefined) {
+                subjectReactOptions[index] = <option value={element} key={element}>{element}</option>;
+              }
+            });
+          }
+
           content = <div className="play-cont">
 
             <div className="row">
@@ -149,9 +176,8 @@ let AppWrapper = React.createClass({
                   <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
                   <p>
                     <select onChange={this._changeQuizCategory}>
-                      <option value="biology">Select a category:</option>
-                      <option value="biology">Biology</option>
-                      <option value="culture">Culture</option>
+                      <option>Select a category:</option>
+                      {subjectReactOptions}
                     </select>
                   </p>
                   <a id="quiz" href="#play/Lilwat/quiz/biology" className={classNames('btn', 'btn-primary')}>Play Game</a>
@@ -164,9 +190,8 @@ let AppWrapper = React.createClass({
                   <p>Lorem ipsum lorem ipsum lorem. Lorem ipsum lorem ipsum lorem.</p>
                   <p>
                     <select onChange={this._changeMultiQuizCategory}>
-                      <option value="biology">Select a category:</option>
-                      <option value="biology">Biology</option>
-                      <option value="culture">Culture</option>
+                      <option>Select a category:</option>
+                      {subjectReactOptions}
                     </select>
                   </p>
                   <a id="multi-quiz" href="#play/Lilwat/multi-quiz" className={classNames('btn', 'btn-primary')}>Play Game</a>

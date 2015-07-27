@@ -2,6 +2,7 @@ var path            = require('path')
 var paths           = require('./')
 var webpack         = require('webpack')
 var webpackManifest = require('../lib/webpackManifest')
+var StatsPlugin     = require('stats-webpack-plugin');
 
 module.exports = function(env) {
   var jsSrc = path.resolve(paths.sourceAssets + '/javascripts/')
@@ -81,6 +82,10 @@ module.exports = function(env) {
       }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin(),
+      new StatsPlugin('stats.json', {
+        chunkModules: true,
+        exclude: [/node_modules[\\\/]react/]
+      }),
       new webpack.NoErrorsPlugin()
     )
   }

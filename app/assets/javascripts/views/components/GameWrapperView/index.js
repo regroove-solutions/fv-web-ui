@@ -35,7 +35,6 @@ class GameWrapperView extends React.Component {
 
     return (
       <div className="gameWrapperView">
-        <h2>{label}</h2>
         {content}
       </div>
     );

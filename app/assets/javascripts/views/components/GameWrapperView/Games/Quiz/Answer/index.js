@@ -14,7 +14,7 @@ class Answer extends React.Component {
   constructor(props) {
     super(props);
 
-    this.eventName = this.constructor.name.toUpperCase();
+    this.eventName = "ANSWER";
 
     this._handleClick = this._handleClick.bind(this);
 

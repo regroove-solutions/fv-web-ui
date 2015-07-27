@@ -14,7 +14,7 @@ var ThemeManager = new Mui.Styles.ThemeManager();
 
 var WordOperations = require('operations/WordOperations');
 
-var Answer = require('./Answer');
+var AnswerMQ = require('./AnswerMQ');
 
 var loadingComponent = <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>;
 
@@ -67,7 +67,7 @@ class MultiQuiz extends React.Component {
     }).bind(this));
 
     // Subscribers
-    PubSub.subscribe( 'ANSWER:SELECTED', this.handleAnswerSelected );
+    PubSub.subscribe( 'ANSWERMQ:SELECTED', this.handleAnswerSelected );
     PubSub.subscribe( this.eventName + ':DATALOADED', this.displayAnswers );
   }
 
@@ -86,10 +86,10 @@ class MultiQuiz extends React.Component {
     // If question being displayed for the first time
     if (!(this.state.currentAnswerIndex in this.state.displayedAnswers)) {
       if (incorrectAnswers.length != 0 ) {
-        tmpAnswers.push(<Answer key={this.state.questions[this.state.currentAnswerIndex].uid} client={this.props.client} selected={selected} data={this.state.questions[this.state.currentAnswerIndex]} correct="true" />);
+        tmpAnswers.push(<AnswerMQ key={this.state.questions[this.state.currentAnswerIndex].uid} client={this.props.client} selected={selected} data={this.state.questions[this.state.currentAnswerIndex]} correct="true" />);
 
         for (var i=0; i < 3; i++) {
-          tmpAnswers.push(<Answer key={incorrectAnswers[i].uid} client={this.props.client} selected={selected} data={incorrectAnswers[i]} correct="false" />);
+          tmpAnswers.push(<AnswerMQ key={incorrectAnswers[i].uid} client={this.props.client} selected={selected} data={incorrectAnswers[i]} correct="false" />);
         }
 
         var arrayvar = this.state.displayedAnswers.slice();
@@ -180,6 +180,12 @@ class MultiQuiz extends React.Component {
 
   render() {
 
+    var main = (this.state.currentAnswer != null) ? <h2>{this.state.currentAnswer.title}</h2> : loadingComponent;
+
+    if (this.state.questions.length == 0) {
+      main = <div className={classNames('alert', 'alert-danger', 'text-center')} role="alert">No words found for this quiz yet. Please try a different category or add new words.</div>;
+    }
+
     return <div className="multiquiz-container">
       <div className="row">
         <div className="col-xs-12">
@@ -188,8 +194,7 @@ class MultiQuiz extends React.Component {
       </div>      
       <div className="row">
         <div className={classNames('col-xs-12', 'text-center')}>
-          <hr />
-          {(this.state.currentAnswer != null) ? <h2>{this.state.currentAnswer.title}</h2> : loadingComponent}
+          {main}
         </div>
       </div>
       <div context="test" className={classNames('row', 'row-answers')}>

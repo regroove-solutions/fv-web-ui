@@ -7,15 +7,23 @@ var {RaisedButton} = Mui;
 
 var WordOperations = require('operations/WordOperations');
 
+var injectTapEventPlugin = require("react-tap-event-plugin");
+
 // https://github.com/facebook/react/issues/3451#issuecomment-83000311
 var ThemeManager = new Mui.Styles.ThemeManager();
 
-class Answer extends React.Component {
+class AnswerMQ extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.eventName = this.constructor.name.toUpperCase();
+    //Needed for onTouchTap
+    //Can go away when react 1.0 release
+    //Check this repo:
+    //https://github.com/zilverline/react-tap-event-plugin
+    injectTapEventPlugin();
+
+    this.eventName = "ANSWERMQ";
 
     this._handleClick = this._handleClick.bind(this);
 
@@ -26,7 +34,7 @@ class Answer extends React.Component {
       answerMedia: []
     };
 
-    if (props.data.uid.length > 0) {
+    if (props.data != undefined && props.data.uid.length > 0) {
       WordOperations.getMediaByWord(props.client, props.data.uid, "(ecm:primaryType='Picture' OR ecm:primaryType='Audio')").then((function(answerMedia){
 
 
@@ -63,8 +71,15 @@ class Answer extends React.Component {
     }
 
     // TODO: Stop all other audio
-    var audio = document.getElementById(this.state.answer.uid + '-audio');
-    audio.play();
+    var selectedAudio = document.getElementById(this.state.answer.uid + '-audio');
+    var allAudio = document.getElementsByClassName('audio');
+
+    _.each(allAudio, function(element) {
+      element.pause();
+      element.currentTime = 0;
+    });
+
+    selectedAudio.play();
 
     PubSub.publish( this.eventName + ":SELECTED", this.props.data.uid );
   }
@@ -75,13 +90,13 @@ class Answer extends React.Component {
       <div className={classNames('imgContAnswer', (this.props.selected) ? 'selectedImgContAnswer' : '')}>
         {(this.state.image != null) ? <img onTouchTap={this._handleClick} className="image" src={this.state.image} alt=""/> : 'Loading...' }
       </div>
-      <audio src={this.state.audio} id={(this.state.answer != undefined) ? this.state.answer.uid + '-audio' : ''} preload="auto" />
+      <audio src={this.state.audio} className="audio" id={(this.state.answer != undefined) ? this.state.answer.uid + '-audio' : ''} preload="auto" />
     </div>;
   }
 }
 
-Answer.childContextTypes = {
+AnswerMQ.childContextTypes = {
   muiTheme: React.PropTypes.object
 };
 
-module.exports = Answer;
+module.exports = AnswerMQ;

@@ -197,10 +197,20 @@ xhr.setRequestHeader("Content-Type", "application/json");
   };
 }
 ****/
-              WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(response){
+
+              tmpArray.push(
+                  <video key="video" width="100%" height="auto" controls>
+                    <source src={video[i].properties['vid:transcodedVideos'][0].content.data} type="video/webm"/>
+                    <source src={video[i].properties['file:content'].data} type="video/mp4"/>
+                  </video>);
+
+              this.setState({videoContent: tmpArray});
+
+              /*WordOperations.getMediaBlobById(this.props.client, video[i].uid, video[i].properties['file:content']['mime-type']).then((function(response){
                   tmpArray.push(<video key={response.mediaId} width="100%" height="auto" controls src={response.dataUri} type={(video != undefined && video.length > 0) ? video[0].properties['file:content']['mime-type'] : ''}>Your browser does not support the video tag.</video>);
                   this.setState({videoContent: tmpArray});
                 }).bind(this));
+              */
               }
             }
             else {
