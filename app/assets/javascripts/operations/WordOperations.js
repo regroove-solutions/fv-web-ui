@@ -115,37 +115,37 @@ var WordOperations = {
           });
     });
   },
-  getMediaBlobById: function (client, media, mimeType) {
+  getMediaBlobById: function (client, media, mimeType, xpath = 'file:content') {
 
     return new Promise(
-        function(resolve, reject) {
+      function(resolve, reject) {
 
-			var request = new XMLHttpRequest();
+  			var request = new XMLHttpRequest();
 
-			request.onload = function(e) {
-				if (request.readyState == 4) {
-				    var uInt8Array = new Uint8Array(this.response);
-				    var i = uInt8Array.length;
-				    var biStr = new Array(i);
-				    while (i--) { 
-				    	biStr[i] = String.fromCharCode(uInt8Array[i]);
-				    }
-				    var data = biStr.join('');
-				    var base64 = window.btoa(data);
+  			request.onload = function(e) {
+  				if (request.readyState == 4) {
+  				    var uInt8Array = new Uint8Array(this.response);
+  				    var i = uInt8Array.length;
+  				    var biStr = new Array(i);
+  				    while (i--) { 
+  				    	biStr[i] = String.fromCharCode(uInt8Array[i]);
+  				    }
+  				    var data = biStr.join('');
+  				    var base64 = window.btoa(data);
 
-					var dataUri = 'data:' + mimeType + ';base64,' + base64;
-					resolve({dataUri: dataUri, mediaId: media});
-				} else {
-					reject("Media not found");
-				}
-			}
+  					var dataUri = 'data:' + mimeType + ';base64,' + base64;
+  					resolve({dataUri: dataUri, mediaId: media});
+  				} else {
+  					reject("Media not found");
+  				}
+  			}
 
-			request.open("POST", ConfGlobal.baseURL + "/site/automation/Blob.Get", true);
-			request.responseType = "arraybuffer";
-			request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
-			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-			request.setRequestHeader("Content-Type", "application/json");
-			request.send(JSON.stringify({input: media, xpath: 'file:content'}));
+  			request.open("POST", ConfGlobal.baseURL + "/site/automation/Blob.Get", true);
+  			request.responseType = "arraybuffer";
+  			request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
+  			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+  			request.setRequestHeader("Content-Type", "application/json");
+  			request.send(JSON.stringify({input: media, params: {xpath: xpath}}));
 
     });
   }

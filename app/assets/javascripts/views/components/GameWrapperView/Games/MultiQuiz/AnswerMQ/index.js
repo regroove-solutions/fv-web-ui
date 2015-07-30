@@ -44,7 +44,7 @@ class AnswerMQ extends React.Component {
 
         this.setState({answerMedia: tmpArray});
 
-        WordOperations.getMediaBlobById(props.client, this.state.answerMedia['picture'].uid, this.state.answerMedia['picture'].properties['file:content']['mime-type']).then((function(response){
+        WordOperations.getMediaBlobById(props.client, this.state.answerMedia['picture'].uid, this.state.answerMedia['picture'].properties['file:content']['mime-type'], 'picture:views/item[2]/content').then((function(response){
           this.setState({
             image: response.dataUri
           });
