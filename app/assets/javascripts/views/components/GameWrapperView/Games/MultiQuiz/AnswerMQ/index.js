@@ -75,8 +75,10 @@ class AnswerMQ extends React.Component {
     var allAudio = document.getElementsByClassName('audio');
 
     _.each(allAudio, function(element) {
-      element.pause();
-      element.currentTime = 0;
+      if (element != undefined && element.canplay) {
+        element.pause();
+        element.currentTime = 0;
+      }
     });
 
     selectedAudio.play();
@@ -90,7 +92,7 @@ class AnswerMQ extends React.Component {
       <div className={classNames('imgContAnswer', (this.props.selected) ? 'selectedImgContAnswer' : '')}>
         {(this.state.image != null) ? <img onTouchTap={this._handleClick} className="image" src={this.state.image} alt=""/> : 'Loading...' }
       </div>
-      <audio src={this.state.audio} className="audio" id={(this.state.answer != undefined) ? this.state.answer.uid + '-audio' : ''} preload="auto" />
+      <audio src={this.state.audio} className="audio" id={(this.state.answer != undefined) ? this.state.answer.uid + '-audio' : ''} type="audio/mp4" preload="auto" />
     </div>;
   }
 }
