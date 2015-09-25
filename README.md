@@ -1,49 +1,25 @@
-gulp-starter
-============
-## Revisions
-- Full asset pipeline and static html compilation
-- New directory structure
-- Replaced Browserify with [Webpack](http://webpack.github.io/docs/webpack-for-browserify-users.html)!
-  - Async CommonJS module requires
-  - Automatically splits out shared dependencies
-  - New `html` task w/ Swig templating/compiling
-- Replace CoffeeScript with ES6 ([Babel.js](http://babeljs.io/))
-- New `server` task to test production files locally
-- New `deploy` task to deploy the public directory to gh-pages
-- New `rev` task that revisions filenames and compress css and js
-- Use `gulp-watch` instead of `gulp.watch` (correctly handles new files)
-- New `build:production` task runs tests, compression + filename revisioning
-- Remove old examples and extraneous dependencies
-- Upgrade dependencies (BrowserSync 2!)
-- Added example Travis CI integration that runs karma tests and production build
+# FirstVoices Dictionary Prototype #
+<a rel="Exploration" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="Being designed and built, but in the lab. May change, disappear, or be buggy." style="border-width:0" src="http://bcdevexchange.org/badge/2.svg" title="Being designed and built, but in the lab. May change, disappear, or be buggy." /></a>
 
-## Live Demo
-http://greypants.github.io/gulp-starter/
-Result of running `gulp deploy`
+This is a responsive dictionary web-application for the FirstVoices language assets that uses [Nuxeo ECM](http://www.nuxeo.com/) as a back-end.
 
-## Install dependencies
-```
-npm install
-```
+## MEAN Stack##
+This web app is built using the following:
 
-## Start gulp
-```
-gulp
-```
-You may need to alias `gulp` to `node_modules/.bin/gulp`, or `npm install -g gulp`.
+-  [ReactJS](https://facebook.github.io/react/)
+-  [Webpack](https://webpack.github.io/)
+-  [Material-UI](https://github.com/callemall/material-ui)
 
-Start editing assets and views from the `gulp/assets` and `gulp/views` folder. Files compile to `public`.
+For additional dependencies see package.json.
 
-## Preview production environment
-```
-gulp build:production
-gulp server
-```
+This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/gulp-starter).
 
-## Deploy to GitHub pages
-```
-gulp deploy
-```
-This will run karma, build your files, revision and compress them, and copy the contents of the public folder to a `gh-pages` branch, and push it up to GitHub.
+## Getting Started ##
 
-[![Build Status](https://travis-ci.org/greypants/gulp-starter.svg?branch=static-server)](https://travis-ci.org/greypants/gulp-starter)
+You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads). Clone this repo from GitHub, change directory to the repo root.
+
+
+1. Run `npm install`*.
+2. Run `gulp` to start a Node server.  Defaults to [localhost:3000](http://localhost:3000).
+
+* On some Windows machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
