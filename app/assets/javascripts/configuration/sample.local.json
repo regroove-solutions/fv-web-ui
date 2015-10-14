@@ -1,0 +1,8 @@
+{
+	"title": "Sample Web App",
+	"baseURL": "http://instance.nuxeo.com",
+	"auth": {
+		"username": "user",
+		"password": "pass"
+	}
+}
