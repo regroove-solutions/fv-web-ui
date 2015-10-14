@@ -6,7 +6,7 @@ var Router = require('./router');
 var Nuxeo = require('nuxeo');
 
 var AppWrapper = require('./views/AppWrapper');
-var ConfGlobal = require('./configuration/Global.json');
+var ConfGlobal = require('./configuration/local.json');
 
 var injectTapEventPlugin = require("react-tap-event-plugin");
 

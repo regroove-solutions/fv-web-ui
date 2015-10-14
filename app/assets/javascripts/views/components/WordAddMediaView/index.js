@@ -13,8 +13,6 @@ var {
       Dialog
     } = Mui;
 
-var ConfGlobal = require('../../../configuration/Global.json');
-
 var Word = require('models/Word');
 
 class MediaUploader extends React.Component {
@@ -120,7 +118,7 @@ class MediaUploader extends React.Component {
         }
       }
 
-      request.open("POST", ConfGlobal.baseURL + "/site/automation/batch/upload");
+      request.open("POST", client._baseURL + "/site/automation/batch/upload");
       request.setRequestHeader("X-Batch-Id", 'batch-' + new Date().getTime() + '-' + Math.floor(Math.random() * 100000));
       request.setRequestHeader("X-File-Idx", 0);
       request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");

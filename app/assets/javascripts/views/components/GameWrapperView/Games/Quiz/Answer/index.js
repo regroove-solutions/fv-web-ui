@@ -4,8 +4,6 @@ var Mui = require('material-ui');
 var PubSub = require('pubsub-js');
 var {RaisedButton} = Mui;
 
-//var ConfGlobal = require('configuration/Global.json');
-
 // https://github.com/facebook/react/issues/3451#issuecomment-83000311
 var ThemeManager = new Mui.Styles.ThemeManager();
 

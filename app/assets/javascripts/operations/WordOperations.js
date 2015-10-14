@@ -5,9 +5,8 @@ var _ = require('underscore');
 var Word = require('models/Word');
 var Words = require('models/Words');
 
-var ConfGlobal = require('../configuration/Global.json');
-
 var WordOperations = {
+
   getMediaByWord: function (client, word, query = null) {
 
     return new Promise(
@@ -140,7 +139,7 @@ var WordOperations = {
   				}
   			}
 
-  			request.open("POST", ConfGlobal.baseURL + "/site/automation/Blob.Get", true);
+  			request.open("POST", client._baseURL + "/site/automation/Blob.Get", true);
   			request.responseType = "arraybuffer";
   			request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
   			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
