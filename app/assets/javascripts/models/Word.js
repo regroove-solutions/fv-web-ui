@@ -19,6 +19,13 @@ var Word = Backbone.Model.extend({
         'type': t.Str,
         'editable': true,
         'displayType': 'textarea',
+        'label': 'Description'
+      },
+      'cultural_note': {
+        'prefix' : 'fv',
+        'type': t.Str,
+        'editable': true,
+        'displayType': 'textarea',
         'label': 'Cultural Note'
       },
       'definitions': {
@@ -27,14 +34,20 @@ var Word = Backbone.Model.extend({
         'editable': true,
         'label': 'Definitions'
       },
+      'categories': {
+        'prefix' : 'fv-word',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Categories'
+      },
       'pronunciation': {
-        'prefix' : 'fv',
+        'prefix' : 'fv-word',
         'type': t.Str,
         'editable': true,
         'label': 'Pronunciation'
       },
       'part_of_speech': {
-        'prefix' : 'fv',
+        'prefix' : 'fv-word',
         'type': t.Str,
         'editable': true,
         'label': 'Part of Speech'
@@ -59,6 +72,7 @@ var Word = Backbone.Model.extend({
     },
     initialize: function (data){
       if (data != undefined ) {
+console.log(data);
         this.parts_speech = {};
         this.subjects = {};
 

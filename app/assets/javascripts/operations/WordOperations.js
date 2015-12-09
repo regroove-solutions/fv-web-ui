@@ -22,7 +22,7 @@ var WordOperations = {
 
         client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'Audio' OR ecm:primaryType = 'Video' OR ecm:primaryType = 'Picture'))" + addQuery
+            query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'FVAudio' OR ecm:primaryType = 'FVVideo' OR ecm:primaryType = 'FVPicture'))" + addQuery
           })
         .execute(function(error, response) {
 
@@ -48,11 +48,11 @@ var WordOperations = {
 
         client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM Document WHERE (ecm:uuid = '" + word + "' AND ecm:primaryType = 'Word')"
+            query: "SELECT * FROM FVWord WHERE (ecm:uuid = '" + word + "')"
           })
         .execute(function(error, response) {
 
-              // Handle error
+          // Handle error
           if (error) {
             throw error;
           }
@@ -77,7 +77,7 @@ var WordOperations = {
 
           client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
+            query: "SELECT * FROM FVDialect WHERE (dc:title = '" + language + "')"
           })
           .execute(function(error, response) {
             if (error) {
@@ -95,7 +95,7 @@ var WordOperations = {
 
               client.operation('Document.Query')
                 .params({
-                  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery
+                  query: "SELECT * FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery
                 })
               .execute(function(error, response) {
 

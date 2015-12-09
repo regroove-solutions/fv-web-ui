@@ -236,7 +236,7 @@ xhr.setRequestHeader("Content-Type", "application/json");
 
   render() {
 
-    var title, pronunciation, part_of_speech, description = "";
+    var title, pronunciation, part_of_speech, description, categories = "";
 
     var tabItemStyles = {
       userSelect: 'none'
@@ -246,8 +246,9 @@ xhr.setRequestHeader("Content-Type", "application/json");
     {
       title = this.state.word.get('dc:title');
       description = this.state.word.get('dc:description');
-      pronunciation = this.state.word.get('fv:pronunciation');
-      part_of_speech = this.state.word.get('fv:part_of_speech');
+      pronunciation = this.state.word.get('fv-word:pronunciation');
+      part_of_speech = this.state.word.get('fv-word:part_of_speech');
+      categories = this.state.word.get('fv-word:categories');
 
       var defs = this.state.word.get('fv:definitions');
       var definitionsBody, subjectsBody = "";
@@ -257,7 +258,7 @@ xhr.setRequestHeader("Content-Type", "application/json");
           definitionsBody = "<p><strong>Definitions:</strong></p>" + "<ul>"
 
               defs.map(function(object, i){
-                definitionsBody += '<li>' + object + '</li>';
+                definitionsBody += '<li><strong>' + object.language + '</strong>: ' + object.translation + '</li>';
             });
 
           definitionsBody += "</ul>";
@@ -318,6 +319,8 @@ xhr.setRequestHeader("Content-Type", "application/json");
                       <div>
                         <p>{description}</p>
                       </div>
+
+                      <p>{categories}</p>
 
                       <div dangerouslySetInnerHTML={{__html: (part_of_speech != null) ? '<p><strong>Part of Speech</strong>: <span style="text-transform:capitalize;">' + part_of_speech + "</span></p>" : ''}} />
                       <div dangerouslySetInnerHTML={{__html: definitionsBody}} />
