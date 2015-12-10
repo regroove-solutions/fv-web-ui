@@ -12,18 +12,11 @@ var Word = Backbone.Model.extend({
         'prefix' : 'dc',
         'type': t.Str,
         'editable': true,
-        'label': 'Title'
-      },
-      'description': {
-        'prefix' : 'dc',
-        'type': t.Str,
-        'editable': true,
-        'displayType': 'textarea',
-        'label': 'Description'
+        'label': 'Word'
       },
       'cultural_note': {
         'prefix' : 'fv',
-        'type': t.Str,
+        'type': t.list(t.Str),
         'editable': true,
         'displayType': 'textarea',
         'label': 'Cultural Note'
@@ -36,9 +29,15 @@ var Word = Backbone.Model.extend({
       },
       'categories': {
         'prefix' : 'fv-word',
-        'type': t.list(t.Str),
+        'type': t.list(t.Object),
         'editable': true,
         'label': 'Categories'
+      },
+      'literal_translation': {
+        'prefix' : 'fv',
+        'type': t.Str,
+        'editable': true,
+        'label': 'Literal Translation'
       },
       'pronunciation': {
         'prefix' : 'fv-word',
@@ -46,11 +45,47 @@ var Word = Backbone.Model.extend({
         'editable': true,
         'label': 'Pronunciation'
       },
+      'related_pictures': {
+        'prefix' : 'fv',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Related Pictures'
+      },
+      'related_audio': {
+        'prefix' : 'fv',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Related Audio'
+      },
+      'related_videos': {
+        'prefix' : 'fv',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Related Videos'
+      },
+      'related_phrases': {
+        'prefix' : 'fv-word',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Related Phrases'
+      },
+      'source': {
+        'prefix' : 'fv',
+        'type': t.list(t.Str),
+        'editable': true,
+        'label': 'Source'
+      },
       'part_of_speech': {
         'prefix' : 'fv-word',
         'type': t.Str,
         'editable': true,
         'label': 'Part of Speech'
+      },
+      'private': {
+        'prefix' : 'fv',
+        'type': t.Bool,
+        'editable': true,
+        'label': 'Private'
       },
       'subjects': {
         'prefix' : 'dc',
@@ -72,7 +107,7 @@ var Word = Backbone.Model.extend({
     },
     initialize: function (data){
       if (data != undefined ) {
-console.log(data);
+
         this.parts_speech = {};
         this.subjects = {};
 
