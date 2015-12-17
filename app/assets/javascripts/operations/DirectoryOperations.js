@@ -5,6 +5,10 @@ var _ = require('underscore');
 var Word = require('models/Word');
 var Words = require('models/Words');
 
+var LanguageFamily = require('models/LanguageFamily');
+var LanguageFamilies = require('models/LanguageFamilies');
+
+
 var DirectoryOperations = {
   getSubjects: function (client) {
     return new Promise(
@@ -91,7 +95,30 @@ var DirectoryOperations = {
 
           });
     });
-  }
+  },
+  getLanguageFamilies : function (client) {
+	    return new Promise(
+	        // The resolver function is called with the ability to resolve or
+	        // reject the promise
+	        function(resolve, reject) {
+
+	          client.operation('Document.Query')
+	            .params({
+	              query: "SELECT * FROM Document WHERE (ecm:primaryType = 'FVLanguageFamily' AND ecm:currentLifeCycleState <> 'deleted')"
+	           })
+	          .execute(function(error, response) {
+	            if (error) {
+	              throw error;
+	            }	            
+	            if (response.entries.length > 0) {
+	                var nuxeoListDocs = new LanguageFamilies(response.entries);
+	                resolve(nuxeoListDocs);
+	            } else {
+	              reject('No Language Families found');
+	            }
+	          });
+	    });
+	  }  
 }
 
 module.exports = DirectoryOperations;

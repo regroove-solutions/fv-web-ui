@@ -12,6 +12,7 @@ var AppRouter = Backbone.Router.extend({
   routes: {
     '': 'index',
     'browse': 'browse',
+    'browse/family': 'browseLanguageFamily',    
     'browse/:language': 'browseLanguage',
     'browse/word/:word': 'browseWord',
     'get-started': 'getStarted',
@@ -37,6 +38,9 @@ var AppRouter = Backbone.Router.extend({
       'routeParams': {'game' : game, 'language' : language, 'category' : category}
     });
   },
+  browseLanguageFamily: function(){
+    this.app.appWrapper.changePage('browse/family');
+  },  
   browseLanguage: function(language){
     this.app.appWrapper.changePage('browse/language', {
       'routeParams': {'language' : language}

@@ -6,6 +6,7 @@ var classNames = require('classnames');
 var AppBar = Mui.AppBar;
 var AppLeftNav = require('./components/AppLeftNav');
 var BrowseDataGrid = require('./components/BrowseDataGrid');
+var LanguageFamilyListView = require('./components/LanguageFamilyListView');
 var WordDetailsView = require('./components/WordDetailsView');
 var WordEditView = require('./components/WordEditView');
 var WordCreateView = require('./components/WordCreateView');
@@ -220,6 +221,16 @@ let AppWrapper = React.createClass({
           </div>
         break;
 
+        case 'browse/family':
+
+            content = <div className="row">
+	            <LanguageFamilyListView
+	            router={this.props.router}
+	            client={this.props.client}
+	            className="languageFamilyListView" />
+            </div>
+          break;        
+        
         case 'browse/language':
 
           content = <div className="row">
