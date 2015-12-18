@@ -7,6 +7,8 @@ var AppBar = Mui.AppBar;
 var AppLeftNav = require('./components/AppLeftNav');
 var BrowseDataGrid = require('./components/BrowseDataGrid');
 var LanguageFamilyListView = require('./components/LanguageFamilyListView');
+var LanguageListView = require('./components/LanguageListView');
+var DialectListView = require('./components/DialectListView');
 var WordDetailsView = require('./components/WordDetailsView');
 var WordEditView = require('./components/WordEditView');
 var WordCreateView = require('./components/WordCreateView');
@@ -224,12 +226,15 @@ let AppWrapper = React.createClass({
         case 'browse/family':
 
             content = <div className="row">
+            <div className="col-xs-12">
+	            <h2>All Language Families</h2>	    
 	            <LanguageFamilyListView
-	            router={this.props.router}
-	            client={this.props.client}
-	            className="languageFamilyListView" />
-            </div>
-          break;        
+		            router={this.props.router}
+		            client={this.props.client}
+		            className="languageFamilyListView" />
+	            </div>
+	        </div>    
+        break;        
         
         case 'browse/language':
 
@@ -246,6 +251,38 @@ let AppWrapper = React.createClass({
           </div>
         break;
 
+        case 'browse/languages':
+
+            content = <div className="row">
+	            <div className="col-xs-12">
+	            <h2>LanguageFamily:{this.state.routeParams.family}</h2>
+	            <h3>Languages</h3>
+		            <LanguageListView
+		            router={this.props.router}
+		            client={this.props.client}
+		            className="languageListView" 
+		            family={this.state.routeParams.family} />
+	            </div>
+	        </div>    
+        break;          
+
+        case 'browse/dialects':
+
+            content = <div className="row">
+	            <div className="col-xs-12">
+	            <h2>LanguageFamily:{this.state.routeParams.family}</h2>
+	            <h3>Language:{this.state.routeParams.language}</h3>
+	            <h4>Dialects</h4>
+		            <DialectListView
+		            router={this.props.router}
+		            client={this.props.client}
+		            className="dialectListView" 
+		            family={this.state.routeParams.family} 
+		            language={this.state.routeParams.language}  />
+	            </div>
+	        </div>    
+        break;           
+        
         case 'browse/word':
 
           content = <div className="row">

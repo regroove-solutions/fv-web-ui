@@ -7,6 +7,9 @@ var Words = require('models/Words');
 
 var LanguageFamily = require('models/LanguageFamily');
 var LanguageFamilies = require('models/LanguageFamilies');
+var Languages = require('models/Languages');
+var Language = require('models/Language');
+var Dialects = require('models/Dialects');
 
 
 var DirectoryOperations = {
@@ -118,7 +121,77 @@ var DirectoryOperations = {
 	            }
 	          });
 	    });
-	  }  
+	  },
+  
+  getLanguages : function (client, family) {
+	  return new Promise(
+		  // The resolver function is called with the ability to resolve or
+		  // reject the promise
+		  function(resolve, reject) {
+
+			  client.operation('Document.Query')
+			  .params({
+				  query: "SELECT * FROM FVLanguageFamily WHERE (dc:title = '" + family + "' AND ecm:currentLifeCycleState <> 'deleted')"
+			  })
+			  .execute(function(error, response) {
+				  if (error) {
+					  throw error;
+				  }
+				  if (response != null && response.entries.length > 0) {
+				      var familyID = response.entries[0].uid;
+				      //console.log(familyID);
+				      
+		              client.operation('Document.Query')
+		                .params({
+		                  query: "SELECT * FROM FVLanguage WHERE (fva:family = '" + familyID + "' AND ecm:currentLifeCycleState <> 'deleted')"
+		                })
+		              .execute(function(error, response) {
+		                if (error) {
+		                  throw error;
+		                }
+			            var nuxeoListDocs = new Languages(response.entries);
+			            resolve(nuxeoListDocs);
+		              });      
+				  }				  
+			  });
+	  });  
+  },
+  
+  getDialects : function (client, language) {
+	  return new Promise(
+		  // The resolver function is called with the ability to resolve or
+		  // reject the promise
+		  function(resolve, reject) {
+
+			  client.operation('Document.Query')
+			  .params({
+				  query: "SELECT * FROM FVLanguage WHERE (dc:title = '" + language + "' AND ecm:currentLifeCycleState <> 'deleted')"
+			  })
+			  .execute(function(error, response) {
+				  if (error) {
+					  throw error;
+				  }
+				  if (response != null && response.entries.length > 0) {
+				      var languageID = response.entries[0].uid;
+				      //console.log(languageID);
+				      
+		              client.operation('Document.Query')
+		                .params({
+		                  query: "SELECT * FROM FVDialect WHERE (fva:language = '" + languageID + "' AND ecm:currentLifeCycleState <> 'deleted')"
+		                })
+		              .execute(function(error, response) {
+		                if (error) {
+		                  throw error;
+		                }
+			            var nuxeoListDocs = new Dialects(response.entries);
+			            resolve(nuxeoListDocs);
+		              });      
+				  }				  
+			  });
+	  });  
+  }  
+  
+  
 }
 
 module.exports = DirectoryOperations;

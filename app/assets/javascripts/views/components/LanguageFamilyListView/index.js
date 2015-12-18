@@ -7,10 +7,11 @@ var DirectoryOperations = require('../../../operations/DirectoryOperations');
 
 class LanguageFamilyListItem extends React.Component {
 
-	render() {		
+	render() {
+		var languageFamilyLink = "#browse/family/" + this.props.title;
 		return (
 			<div className="languageFamilyListItem">
-				{this.props.title}	
+				<span>{this.props.title} </span><a href={languageFamilyLink}>[Explore Languages]</a>
 			</div>
 		);
 	}
@@ -24,10 +25,10 @@ class LanguageFamilyList extends React.Component {
 	    var languageFamilyListItems = [];
 	
 	    this.props.data.each(function(family) {
-	    	var id = family.get("id")
-	    	//console.log(id);
+	    	var id = family.get("id");
+	    	console.log(id);
 	    	var title = family.get("dc:title");
-	    	//console.log(title);
+	    	console.log(title);
 	    	languageFamilyListItems.push(<LanguageFamilyListItem key={id} title={title} />);
 	    });
 	    	
