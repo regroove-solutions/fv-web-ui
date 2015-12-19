@@ -18,29 +18,19 @@ class LanguageFamilyListItem extends React.Component {
 }
 
 class LanguageFamilyList extends React.Component {
-	
-	constructor(props) {
-		super(props);    
-		console.log(this.props.data);
-	    var languageFamilyListItems = [];
-	
-	    this.props.data.each(function(family) {
-	    	var id = family.get("id");
-	    	console.log(id);
-	    	var title = family.get("dc:title");
-	    	console.log(title);
-	    	languageFamilyListItems.push(<LanguageFamilyListItem key={id} title={title} />);
-	    });
-	    	
-	    this.state = {
-	    		languageFamilyListItems: languageFamilyListItems
-    	};
-	}
 
 	render() {		
+	    var languageFamilyListItems = [];
+		
+	    this.props.data.each(function(family) {
+	    	var id = family.get("id");
+	    	var title = family.get("dc:title");
+	    	languageFamilyListItems.push(<LanguageFamilyListItem key={id} title={title} />);
+	    });
+		
 		return (
 			<div className="languageFamilyList">
-				{this.state.languageFamilyListItems}	
+				{languageFamilyListItems}	
 			</div>
 		);
 	}

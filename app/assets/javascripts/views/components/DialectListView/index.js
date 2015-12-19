@@ -17,32 +17,17 @@ class DialectListItem extends React.Component {
 
 class DialectList extends React.Component {
 	
-	constructor(props) {
-		super(props);    
-		console.log(this.props.data);
-		console.log(this.props.data.length);
-		
+	render() {		
 	    var dialectListItems = [];
 	    
 	    this.props.data.each(function(dialect) {
-	    	console.log(dialect);
 	    	var id = dialect.get("id");
-	    	//console.log(id);	
 	    	var title = dialect.get("title");
-	    	//console.log(title);	    	
 	    	dialectListItems.push(<DialectListItem key={id} title={title} />);
-	    });
-	    	
-	    this.state = {
-	    	dialectListItems: dialectListItems
-    	};
-	}
-
-	render() {
-		
+	    });		
 	    return (
 			<div className="dialectList">
-				{this.state.dialectListItems}
+				{dialectListItems}
 			</div>
 		);
 	}
