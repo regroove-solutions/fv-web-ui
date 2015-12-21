@@ -8,7 +8,7 @@ var DirectoryOperations = require('../../../operations/DirectoryOperations');
 class LanguageFamilyListItem extends React.Component {
 
 	render() {
-		var languageFamilyLink = "#browse/family/" + this.props.title;
+		var languageFamilyLink = "#explore/" + this.props.title;
 		return (
 			<div className="languageFamilyListItem">
 				<span>{this.props.title} </span><a href={languageFamilyLink}>[Explore Languages]</a>

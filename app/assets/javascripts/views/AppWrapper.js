@@ -222,20 +222,7 @@ let AppWrapper = React.createClass({
 
           </div>
         break;
-
-        case 'browse/family':
-
-            content = <div className="row">
-            <div className="col-xs-12">
-	            <h2>All Language Families</h2>	    
-	            <LanguageFamilyListView
-		            router={this.props.router}
-		            client={this.props.client}
-		            className="languageFamilyListView" />
-	            </div>
-	        </div>    
-        break;        
-        
+               
         case 'browse/language':
 
           content = <div className="row">
@@ -251,7 +238,20 @@ let AppWrapper = React.createClass({
           </div>
         break;
 
-        case 'browse/languages':
+        case 'explore/families':
+
+            content = <div className="row">
+            <div className="col-xs-12">
+	            <h2>All Language Families</h2>	    
+	            <LanguageFamilyListView
+		            router={this.props.router}
+		            client={this.props.client}
+		            className="languageFamilyListView" />
+	            </div>
+	        </div>    
+        break;         
+        
+        case 'explore/languages':
 
             content = <div className="row">
 	            <div className="col-xs-12">
@@ -266,7 +266,7 @@ let AppWrapper = React.createClass({
 	        </div>    
         break;          
 
-        case 'browse/dialects':
+        case 'explore/dialects':
 
             content = <div className="row">
 	            <div className="col-xs-12">
@@ -438,6 +438,11 @@ let AppWrapper = React.createClass({
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
               <a href="#contribute" className={classNames('btn', 'btn-primary')}>Start Contributing</a>
             </div>
+            <div className="col-xs-12 col-md-4">
+              <h2>Explore</h2>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
+              <a href="#explore" className={classNames('btn', 'btn-primary')}>Explore Language Families</a>
+            </div>            
           </div>
         break;
       }

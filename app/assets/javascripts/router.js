@@ -12,9 +12,9 @@ var AppRouter = Backbone.Router.extend({
   routes: {
     '': 'index',
     'browse': 'browse',
-    'browse/family': 'browseLanguageFamily',
-    'browse/family/:family': 'browseLanguages',
-    'browse/family/:family/:language': 'browseDialects',     
+    'explore': 'exploreLanguageFamilies',
+    'explore/:family': 'exploreLanguages',
+    'explore/:family/:language': 'exploreDialects',     
     'browse/:language': 'browseLanguage',
     'browse/word/:word': 'browseWord',
     'get-started': 'getStarted',
@@ -39,22 +39,22 @@ var AppRouter = Backbone.Router.extend({
     this.app.appWrapper.changePage('play/game', {
       'routeParams': {'game' : game, 'language' : language, 'category' : category}
     });
-  },
-  browseLanguageFamily: function(){
-    this.app.appWrapper.changePage('browse/family');
-  },  
+  }, 
   browseLanguage: function(language){
     this.app.appWrapper.changePage('browse/language', {
       'routeParams': {'language' : language}
     });
   },
-  browseLanguages: function(family){
-	this.app.appWrapper.changePage('browse/languages', {
+  exploreLanguageFamilies: function(){
+	    this.app.appWrapper.changePage('explore/families');
+  },   
+  exploreLanguages: function(family){
+	this.app.appWrapper.changePage('explore/languages', {
 	  'routeParams': {'family' : family}
 	});
   },  
-  browseDialects: function(family, language){
-	this.app.appWrapper.changePage('browse/dialects', {
+  exploreDialects: function(family, language){
+	this.app.appWrapper.changePage('explore/dialects', {
 	  'routeParams': {'family' : family, 'language' : language}
 	});
   },   

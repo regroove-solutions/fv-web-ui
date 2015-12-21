@@ -128,7 +128,10 @@ var DirectoryOperations = {
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
 		  function(resolve, reject) {
-
+			  
+			  // Escape single quotes
+			  family = family.replace("'", "\\'");			  
+			  
 			  client.operation('Document.Query')
 			  .params({
 				  query: "SELECT * FROM FVLanguageFamily WHERE (dc:title = '" + family + "' AND ecm:currentLifeCycleState <> 'deleted')"
@@ -163,6 +166,9 @@ var DirectoryOperations = {
 		  // reject the promise
 		  function(resolve, reject) {
 
+			  // Escape single quotes
+			  language = language.replace("'", "\\'");					  
+			  
 			  client.operation('Document.Query')
 			  .params({
 				  query: "SELECT * FROM FVLanguage WHERE (dc:title = '" + language + "' AND ecm:currentLifeCycleState <> 'deleted')"
