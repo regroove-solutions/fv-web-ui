@@ -13,7 +13,19 @@ var LanguageFamily = Backbone.Model.extend({
         'type': t.Str,
         'editable': true,
         'label': 'Language Family'
-      }
+      },
+      'description': {
+          'prefix' : 'dc',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Description'
+      },
+      'countries': {
+          'prefix' : 'fvlanguagefamily',
+          'type': t.list(t.Str),
+          'editable': true,
+          'label': 'Countries'
+      }        
     },
     idAttribute: 'uid',
     initialized: false,

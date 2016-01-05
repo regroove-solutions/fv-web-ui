@@ -9,11 +9,20 @@ class LanguageListItem extends React.Component {
 
 	render() {		
 		var dialectsLink = "#explore/" + this.props.family + "/" + this.props.title;
-
+		var inlineStyles = {
+				height: '200px'
+		};
+		
 		return (
-			<div className="dialectListItem">
-				<span>{this.props.title} </span><a href={dialectsLink}>[Explore Dialects]</a>
-			</div>
+				
+            <div className="col-xs-12 col-md-3">
+	            <div className="well" style={inlineStyles}>
+	              <h3>{this.props.title}</h3>
+	              <p>{this.props.description}</p>
+	              <a href={dialectsLink} className={classNames('btn', 'btn-primary')}>Explore the {this.props.title} dialects</a>
+	            </div>
+            </div>				
+			
 		);
 	}
 }
@@ -27,7 +36,8 @@ class LanguageList extends React.Component {
 	    this.props.data.each(function(language) {
 	    	var id = language.get("id");
 	    	var title = language.get("dc:title");
-	    	languageListItems.push(<LanguageListItem key={id} title={title} family={family} />);	    	
+	    	var description = language.get("dc:description");	    	
+	    	languageListItems.push(<LanguageListItem key={id} title={title} family={family} description={description} />);	    	
 	    });		
 	    	
 	    return (

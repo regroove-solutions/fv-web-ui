@@ -39,7 +39,7 @@ class BrowseDataGrid extends React.Component {
     //console.log(window.innerWidth);
 
     this.state = {
-      dataSource:  WordOperations.getWordsByLangauge(props.client, props.language)
+      dataSource:  WordOperations.getWordsByLangauge(props.client, props.dialect)
     };
   }
 
@@ -62,7 +62,7 @@ class BrowseDataGrid extends React.Component {
 
     return (
       <div>
-        <h2>{this.props.language}</h2>
+        <h2>{this.props.dialect}</h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
