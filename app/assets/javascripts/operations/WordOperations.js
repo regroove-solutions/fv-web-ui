@@ -74,18 +74,18 @@ var WordOperations = {
         });
     });
   },
-  getWordsByLangauge : function (client, language, query = null, headers = null) {
+  getWordsByDialect : function (client, dialect, query = null, headers = null, params = null) {
     return new Promise(
         function(resolve, reject) {
 
           if (headers != null)
             client.headers(headers);
 
-          language = StringHelpers.clean(language);
+          dialect = StringHelpers.clean(dialect);
 
           client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM FVDialect WHERE (dc:title = '" + language + "')"
+            query: "SELECT * FROM FVDialect WHERE (dc:title = '" + dialect + "')"
           })
           .execute(function(error, response) {
             if (error) {
@@ -93,8 +93,8 @@ var WordOperations = {
             }
 
             if (response != null && response.entries.length > 0) {
+              var defaultParams = {};
               var workspaceID = response.entries[0].uid;
-
               var addQuery = "";
 
               if (query != null) {
@@ -103,24 +103,81 @@ var WordOperations = {
 
               workspaceID = StringHelpers.clean(workspaceID);
 
+              // Change header to select only relevant schemas
+              //client.header('X-NXproperties', 'fv-word');
+
+              defaultParams.query = "SELECT * FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery;
+              defaultParams = Object.assign(defaultParams, params);
+
               client.operation('Document.Query')
-                .params({
-                  query: "SELECT * FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery
-                })
-              .execute(function(error, response) {
+                .params(defaultParams)
+                .execute(function(error, response) {
 
-                if (error) {
-                  throw error;
-                }
+                  if (error) {
+                    throw error;
+                  }
 
-                var nuxeoListDocs = new Words(response.entries);
-                resolve(nuxeoListDocs.toJSON());
+                  var nuxeoListDocs = new Words(response.entries);
 
-              });
+                  resolve(nuxeoListDocs.toJSON());
+
+                });
             } else {
               reject('Workspace not found');
             }
+          });
+    });
+  },
+  getWordCountByDialect : function (client, dialect, query = null, headers = null, params = null) {
+    return new Promise(
+        function(resolve, reject) {
 
+          if (headers != null)
+            client.headers(headers);
+
+          dialect = StringHelpers.clean(dialect);
+
+          client.operation('Document.Query')
+          .params({
+            query: "SELECT * FROM FVDialect WHERE (dc:title = '" + dialect + "')"
+          })
+          .execute(function(error, response) {
+            if (error) {
+              throw error;
+            }
+
+            if (response != null && response.entries.length > 0) {
+              var defaultParams = {};
+              var workspaceID = response.entries[0].uid;
+              var addQuery = "";
+
+              if (query != null) {
+                addQuery = " AND " + query;
+              }
+
+              workspaceID = StringHelpers.clean(workspaceID);
+
+              // Change header to select only relevant schemas
+              //client.header('X-NXproperties', 'fv-word');
+
+              defaultParams.query = "SELECT COUNT(ecm:uuid) FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery;
+              defaultParams = Object.assign(defaultParams, params);
+
+              client.operation('Repository.ResultSetPageProvider')
+                .params(defaultParams)
+                .execute(function(error, response) {
+
+                  if (error) {
+                    throw error;
+                  }
+
+                  // TODO: More predictable way to get this value
+                  resolve(_.values(response.entries[0])[0]);
+
+                });
+            } else {
+              reject('Workspace not found');
+            }
           });
     });
   },

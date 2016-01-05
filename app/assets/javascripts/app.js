@@ -40,7 +40,7 @@ var app = {
 	    this.router = new Router(this);
 
       this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
-      this.storeClient.header('X-NXDocumentProperties', '*');
+      this.storeClient.header('X-NXproperties', '*');
 
       var _this = this;
 

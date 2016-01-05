@@ -35,17 +35,36 @@ var columns = [
 ]
 
 var SELECTED_ID = null;
+var PAGE = 0;
+var PAGE_SIZE = 100;
 
 class BrowseDataGrid extends React.Component {
 
   constructor(props) {
     super(props);
 
+    // Grant access to object inside methods
+    this._onSelectionChange = this._onSelectionChange.bind(this);
+    this._onPageChange = this._onPageChange.bind(this);
+    this._onPageSizeChange = this._onPageSizeChange.bind(this);
+
     // Hide columns for responsive view!!
     //console.log(window.innerWidth);
 
     this.state = {
-      dataSource:  WordOperations.getWordsByLangauge(props.client, props.language)
+      dataSource:  WordOperations.getWordsByDialect(
+        props.client,
+        props.language,
+        null,
+        {'X-NXproperties': 'fv-word'},
+        {'currentPageIndex': PAGE, 'pageSize': PAGE_SIZE}
+      ),
+      dataSourceCount: WordOperations.getWordCountByDialect(
+        props.client,
+        props.language,
+        null,
+        {'X-NXproperties': 'ecm'}
+      ).then(function(value){return value;})
     };
   }
 
@@ -53,34 +72,68 @@ class BrowseDataGrid extends React.Component {
     window.router = this.props.router;
   }
 
-  onSelectionChange(newSelectedId, data){
+  _onSelectionChange(newSelectedId, data){
     SELECTED_ID = newSelectedId;
     this.props.router.navigate("browse/word/" + newSelectedId , {trigger: true});
   }
 
+  _onPageChange(page) {
+    PAGE = page;
+    this.setState({
+      dataSource:  WordOperations.getWordsByDialect(
+        this.props.client,
+        this.props.language,
+        null,
+        {'X-NXproperties': 'fv-word'},
+        {'currentPageIndex': PAGE, 'pageSize': PAGE_SIZE})
+      });
+  }
+
+  _onPageSizeChange(pageSize, props) {
+    console.log('test123');
+    /*if (pageSize > PAGE_SIZE){
+        //when page size gets bigger, the page may not exist
+        //so make sure you update that as well
+        PAGE = Math.min(PAGE, Math.ceil(props.dataSourceCount / pageSize));
+    }
+    PAGE_SIZE = pageSize;
+    this.setState({});*/
+  }
+
   render() {
 
-      // Styles
-      var DataGridStyles = {
-        height:"70vh",
-        zIndex: 0
-      };
+    var HTML = null;
 
-    return (
-      <div>
+    // Styles
+    var DataGridStyles = {
+      height:"70vh",
+      zIndex: 0
+    };
+
+    if (this.state.dataSourceCount == 0) {
+      HTML = <div>Loading...</div>;
+    } else {
+      HTML = <div>
         <h2>{this.props.language}</h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
+          dataSourceCount={this.state.dataSourceCount}
           columns={columns}
           style={DataGridStyles}
           selected={SELECTED_ID}
-          onSelectionChange={this.onSelectionChange.bind(this)}
-          pagination={false}
+          onSelectionChange={this._onSelectionChange}
+          pagination={true}
+          page={PAGE}
+          pageSize={PAGE_SIZE}
+          onPageChange={this._onPageChange}
+          onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}
           showCellBorders={true} />
       </div>
-    );
+    }
+
+    return HTML;
   }
 }
 
