@@ -5,6 +5,8 @@ var _ = require('underscore');
 var Word = require('models/Word');
 var Words = require('models/Words');
 
+var StringHelpers = require('common/StringHelpers');
+
 var WordOperations = {
 
   getMediaByWord: function (client, word, query = null) {
@@ -19,6 +21,8 @@ var WordOperations = {
         if (query != null) {
           addQuery = " AND " + query;
         }
+
+        word = StringHelpers.clean(word);
 
         client.operation('Document.Query')
           .params({
@@ -45,6 +49,8 @@ var WordOperations = {
       // The resolver function is called with the ability to resolve or
       // reject the promise
       function(resolve, reject) {
+
+        word = StringHelpers.clean(word);
 
         client.operation('Document.Query')
           .params({
@@ -75,6 +81,8 @@ var WordOperations = {
           if (headers != null)
             client.headers(headers);
 
+          language = StringHelpers.clean(language);
+
           client.operation('Document.Query')
           .params({
             query: "SELECT * FROM FVDialect WHERE (dc:title = '" + language + "')"
@@ -92,6 +100,8 @@ var WordOperations = {
               if (query != null) {
                 addQuery = " AND " + query;
               }
+
+              workspaceID = StringHelpers.clean(workspaceID);
 
               client.operation('Document.Query')
                 .params({
@@ -114,6 +124,9 @@ var WordOperations = {
           });
     });
   },
+  /**
+  * TODO: Fix so this does not expose the hash via the request
+  */
   getMediaBlobById: function (client, media, mimeType, xpath = 'file:content') {
 
     return new Promise(

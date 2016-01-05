@@ -27,7 +27,8 @@ module.exports = function(env) {
         styles : path.resolve(paths.sourceAssets + '/stylesheets/'),
         models: path.resolve(paths.sourceAssets + '/javascripts/models/'),
         conf: path.resolve(paths.sourceAssets + '/javascripts/configuration/'),
-        operations: path.resolve(paths.sourceAssets + '/javascripts/operations/')
+        operations: path.resolve(paths.sourceAssets + '/javascripts/operations/'),
+        common: path.resolve(paths.sourceAssets + '/javascripts/common/')
       },
       extensions: ['', '.js', '.less']
     },

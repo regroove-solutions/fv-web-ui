@@ -11,6 +11,7 @@ var Languages = require('models/Languages');
 var Language = require('models/Language');
 var Dialects = require('models/Dialects');
 
+var StringHelpers = require('common/StringHelpers');
 
 var DirectoryOperations = {
   getSubjects: function (client) {
@@ -63,6 +64,8 @@ var DirectoryOperations = {
         // The resolver function is called with the ability to resolve or
         // reject the promise
         function(resolve, reject) {
+
+          language = StringHelpers.clean(StringHelpers);
 
           client.operation('Document.Query')
             .params({
@@ -130,7 +133,7 @@ var DirectoryOperations = {
 		  function(resolve, reject) {
 			  
 			  // Escape single quotes
-			  family = family.replace("'", "\\'");			  
+			  family = StringHelpers.clean(family);
 			  
 			  client.operation('Document.Query')
 			  .params({
@@ -167,7 +170,7 @@ var DirectoryOperations = {
 		  function(resolve, reject) {
 
 			  // Escape single quotes
-			  language = language.replace("'", "\\'");					  
+			  language = StringHelpers.clean(language);
 			  
 			  client.operation('Document.Query')
 			  .params({
@@ -179,7 +182,8 @@ var DirectoryOperations = {
 				  }
 				  if (response != null && response.entries.length > 0) {
 				      var languageID = response.entries[0].uid;
-				      //console.log(languageID);
+
+				      languageID = StringHelpers.clean(languageID);
 				      
 		              client.operation('Document.Query')
 		                .params({

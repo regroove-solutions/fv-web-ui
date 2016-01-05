@@ -25,7 +25,13 @@ var Link = React.createClass({
 var columns = [
     { name: 'title', title: 'Word', render: function(v, data, cellProps){
       return <Link id={data.id} value={v} />
-    }}
+    }},
+    {
+      name: 'fv-word:part_of_speech', title: 'Part of Speech'
+    },
+    {
+      name: 'fv:literal_translation', title: 'Literal Translation'
+    }
 ]
 
 var SELECTED_ID = null;
