@@ -13,7 +13,31 @@ var Dialect = Backbone.Model.extend({
         'type': t.Str,
         'editable': true,
         'label': 'Dialect'
-      }
+      },
+      'description': {
+          'prefix' : 'dc',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Description'
+      },
+      'country': {
+          'prefix' : 'fvdialect',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Country'
+      },
+      'region': {
+          'prefix' : 'fvdialect',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Region'
+      },
+      'dominant_language': {
+          'prefix' : 'fvdialect',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Dominant Language'
+      }       
     },
     idAttribute: 'uid',
     initialized: false,

@@ -14,7 +14,8 @@ var AppRouter = Backbone.Router.extend({
     'browse': 'browse',
     'explore': 'exploreLanguageFamilies',
     'explore/:family': 'exploreLanguages',
-    'explore/:family/:language': 'exploreDialects',     
+    'explore/:family/:language': 'exploreDialects', 
+    'explore/:family/:language/:dialect': 'exploreDialect',         
     'browse/:language': 'browseLanguage',
     'browse/word/:word': 'browseWord',
     'get-started': 'getStarted',
@@ -57,7 +58,12 @@ var AppRouter = Backbone.Router.extend({
 	this.app.appWrapper.changePage('explore/dialects', {
 	  'routeParams': {'family' : family, 'language' : language}
 	});
-  },   
+  },
+  exploreDialect: function(family, language, dialect){
+		this.app.appWrapper.changePage('explore/dialect', {
+		  'routeParams': {'family' : family, 'language' : language, 'dialect' : dialect}
+		});
+	  },    
   browseWord: function(word){
     this.app.appWrapper.changePage('browse/word', {
       'routeParams': {'word' : word}

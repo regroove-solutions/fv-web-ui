@@ -13,7 +13,13 @@ var Language = Backbone.Model.extend({
         'type': t.Str,
         'editable': true,
         'label': 'Language'
-      }
+      },
+      'description': {
+          'prefix' : 'dc',
+          'type': t.Str,
+          'editable': true,
+          'label': 'Description'
+      }      
     },
     idAttribute: 'uid',
     initialized: false,

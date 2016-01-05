@@ -8,29 +8,50 @@ var DirectoryOperations = require('../../../operations/DirectoryOperations');
 class LanguageFamilyListItem extends React.Component {
 
 	render() {
-		var languageFamilyLink = "#explore/" + this.props.title;
-		return (
-			<div className="languageFamilyListItem">
-				<span>{this.props.title} </span><a href={languageFamilyLink}>[Explore Languages]</a>
-			</div>
+		var languagesLink = "#explore/" + this.props.title;
+		var inlineStyles = {
+				height: '200px'
+		};
+		
+		return (	
+				
+            <div className="col-xs-12 col-md-3">
+	            <div className="well" style={inlineStyles}>
+	              <h3>{this.props.title}</h3>
+	              <p>{this.props.description}</p>
+	              <p>Countries: {this.props.countries}</p>	              
+	              <a href={languagesLink} className={classNames('btn', 'btn-primary')}>Explore the {this.props.title} languages</a>
+	            </div>
+            </div>			
+			
 		);
 	}
 }
 
 class LanguageFamilyList extends React.Component {
 
-	render() {		
-	    var languageFamilyListItems = [];
-		
+	constructor(props) {
+		super(props);
+
+		var languageFamilyItems = [];
+
 	    this.props.data.each(function(family) {
 	    	var id = family.get("id");
 	    	var title = family.get("dc:title");
-	    	languageFamilyListItems.push(<LanguageFamilyListItem key={id} title={title} />);
+	    	var description = family.get("dc:description");	
+	    	var countries = family.get("fvlanguagefamily:countries");	
+	    	languageFamilyItems.push(<LanguageFamilyListItem key={id} title={title} description={description} countries={countries} />);
 	    });
-		
+
+		this.state = {
+			languageFamilyListItems: languageFamilyItems
+    	};
+	}
+
+	render() {
 		return (
 			<div className="languageFamilyList">
-				{languageFamilyListItems}	
+				{this.state.languageFamilyListItems}	
 			</div>
 		);
 	}

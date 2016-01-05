@@ -54,14 +54,14 @@ class BrowseDataGrid extends React.Component {
     this.state = {
       dataSource:  WordOperations.getWordsByDialect(
         props.client,
-        props.language,
+        props.dialect,
         null,
         {'X-NXproperties': 'fv-word'},
         {'currentPageIndex': PAGE, 'pageSize': PAGE_SIZE}
       ),
       dataSourceCount: WordOperations.getWordCountByDialect(
         props.client,
-        props.language,
+        props.dialect,
         null,
         {'X-NXproperties': 'ecm'}
       ).then(function(value){return value;})
@@ -114,7 +114,8 @@ class BrowseDataGrid extends React.Component {
       HTML = <div>Loading...</div>;
     } else {
       HTML = <div>
-        <h2>{this.props.language}</h2>
+        <div>
+        <h2>{this.props.dialect}</h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
@@ -130,6 +131,7 @@ class BrowseDataGrid extends React.Component {
           onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}
           showCellBorders={true} />
+        </div>
       </div>
     }
 
