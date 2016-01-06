@@ -6,18 +6,18 @@ var DirectoryOperations = require('../../../operations/DirectoryOperations');
 class DialectListItem extends React.Component {
 
 	render() {		
-		var dialectLink = "#explore/" + this.props.family + "/" + this.props.language + "/" + this.props.title;;
+		var dialectLink = "#explore/" + this.props.family + "/" + this.props.language + "/" + this.props.title;
 		
 		return (
 	
-            <div className="col-xs-12 col-md-3">
+            <div className="col-xs-12 col-md-12">
 	            <div className="well">
 	              <h3>{this.props.title}</h3>
-	              <p>{this.props.description}</p>
-	              <p>Country: {this.props.country}</p>
-	              <p>Region: {this.props.region}</p>
-	              <p>Dominant Language: {this.props.dominantLanguage}</p>
-	              <a href={dialectLink} className={classNames('btn', 'btn-primary')}>Explore the {this.props.title} dialect</a>
+	              <p dangerouslySetInnerHTML={{__html: this.props.description}} />
+	              <p><strong>Country:</strong> {this.props.country}</p>
+	              <p><strong>Region:</strong> {this.props.region}</p>
+	              <p><strong>Dominant Language:</strong> {this.props.dominantLanguage}</p>
+	              <a href={dialectLink} className={classNames('btn', 'btn-primary')}>Explore Dialect</a>
 	            </div>
 	        </div>				
 			

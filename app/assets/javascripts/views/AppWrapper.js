@@ -251,12 +251,14 @@ let AppWrapper = React.createClass({
 	        </div>    
         break;         
         
-        case 'explore/languages':
+        case 'explore/family':
 
             content = <div className="row">
 		        <div className="col-xs-12">
-		          	<h2>LanguageFamily:{this.state.routeParams.family} > Languages</h2>
-			        <LanguageListView
+		          	<h4><a href="#explore">All Language Families</a> > {this.state.routeParams.family}</h4>
+	            	<h2>{this.state.routeParams.family} Family</h2>
+	            	<h3>Languages</h3>
+		          	<LanguageListView
 			            router={this.props.router}
 			            client={this.props.client}
 			            className="languageListView" 
@@ -265,12 +267,14 @@ let AppWrapper = React.createClass({
 	        </div>    
         break;          
 
-        case 'explore/dialects':
+        case 'explore/language':
 
             content = <div className="row">
 	            <div className="col-xs-12">
-	            	<h2>LanguageFamily:{this.state.routeParams.family} > Language:{this.state.routeParams.language} > Dialects</h2>
-		            <DialectListView
+	            	<h4><a href="#explore">All Language Families</a> > <a href={"#explore/" + this.state.routeParams.family}>{this.state.routeParams.family}</a> > {this.state.routeParams.language}</h4>
+	            	<h2>{this.state.routeParams.language} Language</h2>
+	            	<h3>Dialects</h3>
+	            	<DialectListView
 			            router={this.props.router}
 			            client={this.props.client}
 			            className="dialectListView" 
@@ -283,14 +287,14 @@ let AppWrapper = React.createClass({
         case 'explore/dialect':
 
             content = <div className="row">
-
+              <h4><a href="#explore">All Language Families</a> > <a href={"#explore/" + this.state.routeParams.family}>{this.state.routeParams.family}</a> > <a href={"#explore/" + this.state.routeParams.family + "/" + this.state.routeParams.language}>{this.state.routeParams.language}</a> > {this.state.routeParams.dialect}</h4>
               <div className="col-xs-12">
                 <BrowseDataGrid
                   router={this.props.router}
                   client={this.props.client}
                   className="browseDataGrid"
-  		            family={this.state.routeParams.family} 
-		              language={this.state.routeParams.language}                	  
+  		          family={this.state.routeParams.family} 
+		          language={this.state.routeParams.language}                	  
                   dialect={this.state.routeParams.dialect} />
               </div>
 
@@ -443,20 +447,15 @@ let AppWrapper = React.createClass({
               <a href="#get-started" className={classNames('btn', 'btn-primary')}>Get Started</a>
             </div>
             <div className="col-xs-12 col-md-4">
-              <h2>Browse</h2>
+              <h2>Explore</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-              <a href="#browse" className={classNames('btn', 'btn-primary')}>Browse Languages</a>
-            </div>
+              <a href="#explore" className={classNames('btn', 'btn-primary')}>Explore Language Families</a>
+            </div>  
             <div className="col-xs-12 col-md-4">
               <h2>Contribute</h2>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
               <a href="#contribute" className={classNames('btn', 'btn-primary')}>Start Contributing</a>
-            </div>
-            <div className="col-xs-12 col-md-4">
-              <h2>Explore</h2>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum</p>
-              <a href="#explore" className={classNames('btn', 'btn-primary')}>Explore Language Families</a>
-            </div>            
+            </div>          
           </div>
         break;
       }
