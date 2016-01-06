@@ -77,6 +77,7 @@ var WordOperations = {
   getWordsByDialect : function (client, dialect, query = null, headers = null, params = null) {
     return new Promise(
         function(resolve, reject) {
+
           if (headers != null)
             client.headers(headers);
 
@@ -116,6 +117,9 @@ var WordOperations = {
                   }
 
                   var nuxeoListDocs = new Words(response.entries);
+
+                  // Set client header to * (default)
+                  client.header('X-NXproperties', '*');
 
                   resolve(nuxeoListDocs.toJSON());
 
@@ -168,6 +172,8 @@ var WordOperations = {
                   if (error) {
                     throw error;
                   }
+
+                  client.header('X-NXproperties', '*');
 
                   // TODO: More predictable way to get this value
                   resolve(_.values(response.entries[0])[0]);

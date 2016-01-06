@@ -156,7 +156,7 @@ class BrowseDataGrid extends React.Component {
     } else {
       HTML = <div>
         <div>
-        <h2>{this.props.dialect} <a href={this.props.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[Nuxeo]</a></h2>
+        <h2>{this.props.dialect}</h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
@@ -174,6 +174,7 @@ class BrowseDataGrid extends React.Component {
           emptyText={'No records'}
           showCellBorders={true} />
         </div>
+        <div className="pull-right"><small><a href={this.props.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[View in Nuxeo]</a></small></div>
       </div>
     }
 
