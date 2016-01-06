@@ -77,7 +77,6 @@ var WordOperations = {
   getWordsByDialect : function (client, dialect, query = null, headers = null, params = null) {
     return new Promise(
         function(resolve, reject) {
-
           if (headers != null)
             client.headers(headers);
 
@@ -106,9 +105,8 @@ var WordOperations = {
               // Change header to select only relevant schemas
               //client.header('X-NXproperties', 'fv-word');
 
-              defaultParams.query = "SELECT * FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery;
+              defaultParams.query = "SELECT * FROM FVWord WHERE (fva:dialect = '" + workspaceID + "' AND ecm:currentLifeCycleState <> 'deleted')" + addQuery + " ORDER BY dc:title";
               defaultParams = Object.assign(defaultParams, params);
-
               client.operation('Document.Query')
                 .params(defaultParams)
                 .execute(function(error, response) {

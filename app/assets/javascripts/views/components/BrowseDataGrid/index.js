@@ -24,19 +24,53 @@ var Link = React.createClass({
 
 var columns = [
     { name: 'title', title: 'Word', render: function(v, data, cellProps){
-      return <Link id={data.id} value={v} />
+      return <Link id={data.id} key={data.id} value={v} />
+    }},
+    {
+      name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps){
+      if (v != undefined && v.length > 0) {
+        var rows = [];
+
+        for (var i = 0; i < v.length ; ++i) {
+          rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
+        }
+
+        return  <div><table className="innerRowTable" border="1" cellspacing="5" cellpadding="5" id={data['dc:title']} key={data.id}>
+                    {rows}
+                </table></div>
+      }
+    }},
+    {
+      name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps){
+      if (v != undefined && v.length > 0) {
+        var rows = [];
+
+        for (var i = 0; i < v.length ; ++i) {
+          rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
+        }
+
+        return  <div><table className="innerRowTable" id={data['dc:title']} key={data.id}>
+                    {rows}
+                </table></div>
+      }
     }},
     {
       name: 'fv-word:part_of_speech', title: 'Part of Speech'
     },
     {
-      name: 'fv:literal_translation', title: 'Literal Translation'
-    }
+      name: 'fv-word:pronunciation', title: 'Pronunciation'
+    },
+    {
+      name: 'fv-word:categories', title: 'Categories'
+    },
 ]
 
+/**
+* Set some initial values
+*/
 var SELECTED_ID = null;
-var PAGE = 0;
-var PAGE_SIZE = 100;
+var PAGE = 1;
+var PAGE_SIZE = 50;
 
 class BrowseDataGrid extends React.Component {
 
@@ -52,24 +86,35 @@ class BrowseDataGrid extends React.Component {
     //console.log(window.innerWidth);
 
     this.state = {
-      dataSource:  WordOperations.getWordsByDialect(
-        props.client,
-        props.dialect,
-        null,
-        {'X-NXproperties': 'fv-word'},
-        {'currentPageIndex': PAGE, 'pageSize': PAGE_SIZE}
-      ),
-      dataSourceCount: WordOperations.getWordCountByDialect(
-        props.client,
-        props.dialect,
-        null,
-        {'X-NXproperties': 'ecm'}
-      ).then(function(value){return value;})
+      dataSource: this._getWordsByDialect(props, PAGE, PAGE_SIZE),
+      dataSourceCount: 0
     };
+
+    WordOperations.getWordCountByDialect(
+        props.client,
+        props.dialect,
+        null,
+        // Use same schemas to make use of caching
+        {'X-NXproperties': 'dublincore, fv-word, fvcore'}
+    ).then((function(count){
+          this.setState({
+            dataSourceCount: count
+          });
+    }).bind(this));
   }
 
   componentDidMount(){
     window.router = this.props.router;
+  }
+
+  _getWordsByDialect(props, page, pageSize, query = null) {
+    return WordOperations.getWordsByDialect(
+        props.client,
+        props.dialect,
+        query,
+        {'X-NXproperties': 'dublincore, fv-word, fvcore'},
+        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
+    );
   }
 
   _onSelectionChange(newSelectedId, data){
@@ -80,24 +125,20 @@ class BrowseDataGrid extends React.Component {
   _onPageChange(page) {
     PAGE = page;
     this.setState({
-      dataSource:  WordOperations.getWordsByDialect(
-        this.props.client,
-        this.props.language,
-        null,
-        {'X-NXproperties': 'fv-word'},
-        {'currentPageIndex': PAGE, 'pageSize': PAGE_SIZE})
-      });
+      dataSource: this._getWordsByDialect(this.props, PAGE, PAGE_SIZE)
+    });
   }
 
   _onPageSizeChange(pageSize, props) {
-    console.log('test123');
-    /*if (pageSize > PAGE_SIZE){
+    if (pageSize > PAGE_SIZE){
         //when page size gets bigger, the page may not exist
         //so make sure you update that as well
-        PAGE = Math.min(PAGE, Math.ceil(props.dataSourceCount / pageSize));
+        PAGE = Math.min(PAGE, Math.ceil(this.state.dataSourceCount / pageSize));
     }
     PAGE_SIZE = pageSize;
-    this.setState({});*/
+    this.setState({
+      dataSource: this._getWordsByDialect(this.props, PAGE, PAGE_SIZE)
+    });
   }
 
   render() {
@@ -115,12 +156,13 @@ class BrowseDataGrid extends React.Component {
     } else {
       HTML = <div>
         <div>
-        <h2>{this.props.dialect}</h2>
+        <h2>{this.props.dialect} <a href={this.props.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[Nuxeo]</a></h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
           dataSourceCount={this.state.dataSourceCount}
           columns={columns}
+          rowHeight="55"
           style={DataGridStyles}
           selected={SELECTED_ID}
           onSelectionChange={this._onSelectionChange}
