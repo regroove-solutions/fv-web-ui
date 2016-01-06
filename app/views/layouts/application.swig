@@ -11,7 +11,7 @@
 
     {% block head %}{% endblock %}
   </head>
-  <body>
+  <body id="body">
 
     <div id="wrapper">
 

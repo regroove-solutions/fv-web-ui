@@ -9,14 +9,14 @@ class LanguageListItem extends React.Component {
 
 	render() {		
 		var languageLink = "#explore/" + this.props.family + "/" + this.props.title;
-		var inlineStyles = {
+		/*var inlineStyles = {
 				height: '200px'
-		};
+		};*/
 		
 		return (
 				
             <div className="col-xs-12 col-md-12">
-	            <div className="well" style={inlineStyles}>
+	            <div className="well">
 	              <h3>{this.props.title}</h3>
 	              <p>{this.props.description}</p>
 	              <a href={languageLink} className={classNames('btn', 'btn-primary')}>Explore Language</a>

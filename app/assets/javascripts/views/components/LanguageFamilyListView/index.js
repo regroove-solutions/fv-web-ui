@@ -9,9 +9,9 @@ class LanguageFamilyListItem extends React.Component {
 
 	render() {
 		var languageFamilyLink = "#explore/" + this.props.title;
-		var inlineStyles = {
+		/*var inlineStyles = {
 				height: '200px'
-		};
+		};*/
 		
 		var countries;
 		if(this.props.countries && this.props.countries != "") {
@@ -21,7 +21,7 @@ class LanguageFamilyListItem extends React.Component {
 		return (	
 				
             <div className="col-xs-12 col-md-4">
-	            <div className="well" style={inlineStyles}>
+	            <div className="well">
 	              <h3>{this.props.title}</h3>
 	              <p>{this.props.description}</p>
 	              {countries}	              

@@ -16,17 +16,19 @@ var WordOperations = {
       // reject the promise
       function(resolve, reject) {
 
+        var related_media = word.get("fv:related_audio").concat(word.get("fv:related_pictures"), word.get("fv:related_video"));
+
+        related_media = _.map(_.compact(related_media), function(value){ return "'" + value + "'"; }).join();
+
         var addQuery = "";
 
         if (query != null) {
           addQuery = " AND " + query;
         }
 
-        word = StringHelpers.clean(word);
-
         client.operation('Document.Query')
           .params({
-            query: "SELECT * FROM Document WHERE (ecm:parentId = '" + word + "' AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'FVAudio' OR ecm:primaryType = 'FVVideo' OR ecm:primaryType = 'FVPicture'))" + addQuery
+            query: "SELECT * FROM Document WHERE (ecm:uuid IN (" + related_media + ") AND ecm:currentLifeCycleState <> 'deleted' AND (ecm:primaryType = 'FVAudio' OR ecm:primaryType = 'FVVideo' OR ecm:primaryType = 'FVPicture'))" + addQuery
           })
         .execute(function(error, response) {
 
@@ -215,7 +217,7 @@ var WordOperations = {
 
   			request.open("POST", client._baseURL + "/site/automation/Blob.Get", true);
   			request.responseType = "arraybuffer";
-  			request.setRequestHeader("authorization", "Basic d2ViYXBwOjB2dldYMDlwNngwYTgzUw==");
+  			request.setRequestHeader("authorization", "Basic " + window.btoa(unescape(encodeURIComponent(client._auth.username + ":" + client._auth.password))));
   			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
   			request.setRequestHeader("Content-Type", "application/json");
   			request.send(JSON.stringify({input: media, params: {xpath: xpath}}));

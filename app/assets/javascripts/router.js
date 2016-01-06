@@ -70,7 +70,7 @@ var AppRouter = Backbone.Router.extend({
     });
   },
   getStarted: function() {
-    this.app.appWrapper.changePage('introduction');
+    this.app.appWrapper.changePage('get-started');
   },
   contribute: function() {
     this.app.appWrapper.changePage('contribute');

@@ -37,13 +37,13 @@ class WordDetailsView extends React.Component {
       this.setState({
         word: word
       });
-   }).bind(this));
 
-   WordOperations.getMediaByWord(props.client, props.id).then((function(children){
-      this.setState({
-        children: children
-      });
-    }).bind(this));
+       WordOperations.getMediaByWord(props.client, word).then((function(children){
+          this.setState({
+            children: children
+          });
+        }).bind(this));
+   }).bind(this));
   }
 
   handleTabActive(tab) {
@@ -52,7 +52,7 @@ class WordDetailsView extends React.Component {
       switch(tab.props.id) {
         case 'pictures':
           if (this.state.picturesContent.length == 0) {
-            var pictures = _.filter(this.state.children, function(child){ if (child.type == 'Picture') return child; })
+            var pictures = _.filter(this.state.children, function(child){ if (child.type == 'FVPicture') return child; })
 
             if (pictures != undefined && pictures.length > 0) {
               var tmpArray = [];
@@ -77,7 +77,7 @@ class WordDetailsView extends React.Component {
 
         case 'audio':
           if (this.state.audioContent.length == 0) {
-            var audio = _.filter(this.state.children, function(child){ if (child.type == 'Audio') return child; })
+            var audio = _.filter(this.state.children, function(child){ if (child.type == 'FVAudio') return child; })
 
             if (audio != undefined && audio.length > 0) {
               var tmpArray = [];
@@ -99,7 +99,7 @@ class WordDetailsView extends React.Component {
         // TODO: http://stackoverflow.com/questions/16761927/aw-snap-when-data-uri-is-too-large
         case 'video':
           if (this.state.videoContent.length == 0) {
-            var video = _.filter(this.state.children, function(child){ if (child.type == 'Video') return child; })
+            var video = _.filter(this.state.children, function(child){ if (child.type == 'FVVideo') return child; })
 
             if (video != undefined && video.length > 0) {
               var tmpArray = [];
@@ -236,7 +236,18 @@ xhr.setRequestHeader("Content-Type", "application/json");
 
   render() {
 
-    var title, pronunciation, part_of_speech, description, categories = "";
+    var 
+      title,
+      pronunciation,
+      part_of_speech,
+      description,
+      cultural_note,
+      related_pictures,
+      related_audio,
+      related_videos,
+      related_phrases,
+      source,
+      categories = "";
 
     var tabItemStyles = {
       userSelect: 'none'
@@ -247,11 +258,19 @@ xhr.setRequestHeader("Content-Type", "application/json");
       title = this.state.word.get('dc:title');
       description = this.state.word.get('dc:description');
       pronunciation = this.state.word.get('fv-word:pronunciation');
+      cultural_note = this.state.word.get('fv:cultural_note');
+      related_pictures = this.state.word.get('fv:related_pictures');
+      related_audio = this.state.word.get('fv:related_audio');
+      related_videos = this.state.word.get('fv:related_videos');
+      related_phrases = this.state.word.get('fv-word:related_phrases');
+      source = this.state.word.get('fv:source');
+      pronunciation = this.state.word.get('fv-word:pronunciation');
       part_of_speech = this.state.word.get('fv-word:part_of_speech');
       categories = this.state.word.get('fv-word:categories');
 
       var defs = this.state.word.get('fv:definitions');
-      var definitionsBody, subjectsBody = "";
+      var literal_translations = this.state.word.get('fv:literal_translation');
+      var definitionsBody, literalTranslationBody, categoriesBody = "";
 
       if (defs != undefined && defs.length > 0){
 
@@ -264,17 +283,26 @@ xhr.setRequestHeader("Content-Type", "application/json");
           definitionsBody += "</ul>";
       }
 
-      var subjects = this.state.word.get('dc:subjects');
+      if (categories != undefined && categories.length > 0){
 
-      if (subjects != undefined && subjects.length > 0){
+          categoriesBody = "<p><strong>Subjects:</strong></p>" + "<ul>"
 
-          subjectsBody = "<p><strong>Subjects:</strong></p>" + "<ul>"
-
-              subjects.map(function(object, i){
-                subjectsBody += '<li style="text-transform:capitalize;">' + object + '</li>';
+              categories.map(function(object, i){
+                categoriesBody += '<li style="text-transform:capitalize;">' + object + '</li>';
             });
 
-          subjectsBody += "</ul>";
+          categoriesBody += "</ul>";
+      }
+
+      if (literal_translations != undefined && literal_translations.length > 0){
+
+          literalTranslationBody = "<p><strong>Literal Translations:</strong></p>" + "<ul>"
+
+              literal_translations.map(function(object, i){
+                literalTranslationBody += '<li><strong>' + object.language + '</strong>: ' + object.translation + '</li>';
+            });
+
+          literalTranslationBody += "</ul>";
       }
 
     }
@@ -314,17 +342,16 @@ xhr.setRequestHeader("Content-Type", "application/json");
 
                     {addMediaView}
 
-                    <h2>Definition</h2> 
+                    <h2>Word Entry</h2> 
 
                       <div>
                         <p>{description}</p>
                       </div>
 
-                      <p>{categories}</p>
-
-                      <div dangerouslySetInnerHTML={{__html: (part_of_speech != null) ? '<p><strong>Part of Speech</strong>: <span style="text-transform:capitalize;">' + part_of_speech + "</span></p>" : ''}} />
+                      <div dangerouslySetInnerHTML={{__html: (part_of_speech != null) ? '<p><strong>Part of Speech</strong>: <span>' + part_of_speech + "</span></p>" : ''}} />
                       <div dangerouslySetInnerHTML={{__html: definitionsBody}} />
-                      <div dangerouslySetInnerHTML={{__html: subjectsBody}} />
+                      <div dangerouslySetInnerHTML={{__html: literalTranslationBody}} />
+                      <div dangerouslySetInnerHTML={{__html: categoriesBody}} />
 
                     </CardText>
               </div> 
