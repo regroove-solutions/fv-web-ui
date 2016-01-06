@@ -8,18 +8,18 @@ var DirectoryOperations = require('../../../operations/DirectoryOperations');
 class LanguageListItem extends React.Component {
 
 	render() {		
-		var dialectsLink = "#explore/" + this.props.family + "/" + this.props.title;
+		var languageLink = "#explore/" + this.props.family + "/" + this.props.title;
 		var inlineStyles = {
 				height: '200px'
 		};
 		
 		return (
 				
-            <div className="col-xs-12 col-md-3">
+            <div className="col-xs-12 col-md-12">
 	            <div className="well" style={inlineStyles}>
 	              <h3>{this.props.title}</h3>
 	              <p>{this.props.description}</p>
-	              <a href={dialectsLink} className={classNames('btn', 'btn-primary')}>Explore the {this.props.title} dialects</a>
+	              <a href={languageLink} className={classNames('btn', 'btn-primary')}>Explore Language</a>
 	            </div>
             </div>				
 			

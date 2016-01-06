@@ -5,7 +5,7 @@ var {Colors, Spacing, Typography} = Mui.Styles;
 
 var menuItems = [
     { route: 'get-started', text: 'Get Started' },
-    { route: 'browse', text: 'Browse' },
+    { route: 'explore', text: 'Explore' },
     { route: 'contribute', text: 'Contribute' },
     { route: 'play/Lilwat', text: 'Play' },
     { type: MenuItem.Types.SUBHEADER, text: 'External Resources' },
