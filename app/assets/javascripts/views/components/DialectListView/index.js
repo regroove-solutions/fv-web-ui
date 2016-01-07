@@ -68,7 +68,7 @@ class DialectListView extends React.Component {
 			dialects: null
     	};
     
-		DirectoryOperations.getDialects(props.client, props.language).then((function(dialects){
+		DirectoryOperations.getDialects(props.client, props.language, props.family).then((function(dialects){
 	        this.setState({
 	        	dialects: dialects
 	        });

@@ -110,7 +110,7 @@ var DirectoryOperations = {
 
 	          client.operation('Document.Query')
 	            .params({
-	              query: "SELECT * FROM Document WHERE (ecm:primaryType = 'FVLanguageFamily' AND ecm:currentLifeCycleState <> 'deleted')"
+	              query: "SELECT * FROM Document WHERE (ecm:primaryType = 'FVLanguageFamily' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
 	           })
 	          .execute(function(error, response) {
 	            if (error) {
@@ -163,7 +163,7 @@ var DirectoryOperations = {
 	  });  
   },
   
-  getDialects : function (client, language) {
+  getDialects : function (client, language, family) {
 	  return new Promise(
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
@@ -174,7 +174,7 @@ var DirectoryOperations = {
 			  
 			  client.operation('Document.Query')
 			  .params({
-				  query: "SELECT * FROM FVLanguage WHERE (dc:title = '" + language + "' AND ecm:currentLifeCycleState <> 'deleted')"
+				  query: "SELECT * FROM FVLanguage WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "' AND ecm:currentLifeCycleState <> 'deleted')"
 			  })
 			  .execute(function(error, response) {
 				  if (error) {
