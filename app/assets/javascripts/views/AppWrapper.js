@@ -70,15 +70,42 @@ let AppWrapper = React.createClass({
   render() {
       var content;
 
-      var navigation = <div><AppBar
-        title={this.props.title}
-        onLeftIconButtonTouchTap={this.onMenuToggleTouchTap}
-        iconClassNameRight="muidocs-icon-navigation-expand-more" />
-      <AppLeftNav
-        ref="leftNav"
-        title={this.props.title}
-        docked={false}
-        router={this.props.router} /></div>;
+      var navigationLinks = <ul>
+        <li>Testing 123</li>
+        <li>Test 1233</li>
+        <select><option>Choose a Language:</option><option>Test</option></select>
+      </ul>;
+
+      var navigation = <div>
+        <AppBar
+          title={this.props.title}
+          onLeftIconButtonTouchTap={this.onMenuToggleTouchTap}
+          children={navigationLinks}
+          iconClassNameRight="muidocs-icon-navigation-expand-more"/>
+        <AppLeftNav
+          ref="leftNav"
+          title={this.props.title}
+          docked={false}
+          router={this.props.router} />
+      </div>;
+
+      var footer = <div className="container-fluid">
+          <div className="row">
+            <div className="col-xs-12">
+              <p className={classNames('text-center', 'text-muted')}>Disclaimer | Feedback | Conditions of Use</p>
+            </div>
+            <div className="col-xs-12">
+              <div className="row">
+                <div className="col-xs-6">
+                  <img src="http://www.firstvoices.com/img/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-13 FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca
+                </div>
+                <div className={classNames('text-right', 'col-xs-6')}>
+                  <img src="http://www.firstvoices.com/img/fv-logo-100x25.gif" alt="FirstVoices" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>;
 
 
       // Change body class
@@ -333,12 +360,26 @@ let AppWrapper = React.createClass({
 
         case 'get-started':
           content = <div className="row">
-            <div className="col-xs-12">
+            <div className="col-md-8 col-xs-12">
+              <h2>About Us</h2>
+              <p>Some text here</p>
+              <h3>Recommended fonts</h3>
+              <p>Due to FirstVoices' use of Unicode font technology, one or more of the following fonts are recommended to ensure correct character representation: Aboriginal Sans Serif, Aboriginal Serif, Lucida Grande (bundled with Mac OSX) , Lucida Sans Unicode (comes with Windows), Gentium, Code2001. FirstVoices also uses the Quicktime video player. Download the free plug-in here: QuickTime</p>
+              <p>FirstVoices Audio Recording Buyer's Guide - view our online audio equipment guide</p>
               <h2>Getting Started</h2>
               <p>Some getting started information could go here.</p>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
               <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+            </div>
+            <div className="col-md-4 col-xs-12">
+              <h2>News</h2>
+              <p>Some getting started information could go here.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <h2>Map Navigation</h2>
+              <p>Map here</p>
             </div>
           </div>
         break;
@@ -463,6 +504,8 @@ let AppWrapper = React.createClass({
           };
 
           navigation = "";
+          footer = "";
+
           content = <div className="container">
             <div className="row">
               <div className={classNames('col-xs-12', 'col-md-7')}>
@@ -518,6 +561,9 @@ let AppWrapper = React.createClass({
       <div className="main">
         {content}
       </div>
+      <footer className="footer">
+        {footer}
+      </footer>
     </div>;
   },
 
