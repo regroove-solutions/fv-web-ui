@@ -56,6 +56,36 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> { // You c
       CoreSession session = doc.getCoreSession();
  
       /* 
+       * Process fvancestry values
+       */
+      String languageFamilyId = (String) doc.getProperty("fvancestry", "family");
+      IdRef languageFamilyRef = new IdRef(languageFamilyId);
+      DocumentModel languageFamilyDoc = null;
+      languageFamilyDoc = session.getDocument(languageFamilyRef);       	  
+      ObjectNode languageFamilyObj = mapper.createObjectNode();
+      languageFamilyObj.put("uid", languageFamilyId);
+      languageFamilyObj.put("title", languageFamilyDoc.getTitle());
+      jsonObj.put("family", languageFamilyObj);      
+
+      String languageId = (String) doc.getProperty("fvancestry", "language");
+      IdRef languageRef = new IdRef(languageId);
+      DocumentModel languageDoc = null;
+      languageDoc = session.getDocument(languageRef);       	  
+      ObjectNode languageObj = mapper.createObjectNode();
+      languageObj.put("uid", languageId);
+      languageObj.put("title", languageDoc.getTitle());
+      jsonObj.put("language", languageObj);      
+      
+      String dialectId = (String) doc.getProperty("fvancestry", "dialect");
+      IdRef dialectRef = new IdRef(dialectId);
+      DocumentModel dialectDoc = null;
+      dialectDoc = session.getDocument(dialectRef);       	  
+      ObjectNode dialectObj = mapper.createObjectNode();
+      dialectObj.put("uid", dialectId);
+      dialectObj.put("title", dialectDoc.getTitle());
+      jsonObj.put("dialect", dialectObj);      
+      
+      /* 
        * Process fvcore SOURCES
        */
       String[] sourceIds = (String[]) doc.getProperty("fvcore", "source");
