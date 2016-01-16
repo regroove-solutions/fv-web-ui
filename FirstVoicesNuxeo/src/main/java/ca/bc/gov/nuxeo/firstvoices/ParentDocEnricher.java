@@ -46,7 +46,7 @@ public class ParentDocEnricher extends AbstractJsonEnricher<DocumentModel> { // 
       ObjectNode parentObject = o.createObjectNode();
       parentObject.put("id", parentDoc.getRef().toString());
       parentObject.put("title", parentDoc.getTitle());
-      parentObject.put("description", parentDoc.getPropertyValue("dc:description").toString());
+      parentObject.put("type", parentDoc.getType());
  
       return parentObject;
     }
