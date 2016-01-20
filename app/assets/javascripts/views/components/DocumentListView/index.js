@@ -1,8 +1,10 @@
-var React = require('react');
-var injectTapEventPlugin = require("react-tap-event-plugin");
-injectTapEventPlugin();
+import React from 'react';
+import classNames from 'classnames';
 
-var classNames = require('classnames');
+// is TapEvent needed here?!
+//var injectTapEventPlugin = require("react-tap-event-plugin");
+//injectTapEventPlugin();
+
 var DataGrid = require('react-datagrid');
 
 var Word = require('models/Word');
@@ -36,7 +38,9 @@ var columns = [
         }
 
         return  <div><table className="innerRowTable" border="1" cellspacing="5" cellpadding="5" id={data['dc:title']} key={data.id}>
+                  <tbody>
                     {rows}
+                  </tbody>
                 </table></div>
       }
     }},
@@ -50,7 +54,9 @@ var columns = [
         }
 
         return  <div><table className="innerRowTable" id={data['dc:title']} key={data.id}>
+                  <tbody>
                     {rows}
+                  </tbody>
                 </table></div>
       }
     }},
@@ -72,7 +78,13 @@ var SELECTED_ID = null;
 var PAGE = 1;
 var PAGE_SIZE = 50;
 
-class BrowseDataGrid extends React.Component {
+class DocumentListView extends React.Component {
+
+  static contextTypes = {
+      client: React.PropTypes.object.isRequired,
+      muiTheme: React.PropTypes.object.isRequired,
+      router: React.PropTypes.object.isRequired
+  };
 
   constructor(props) {
     super(props);
@@ -92,7 +104,7 @@ class BrowseDataGrid extends React.Component {
 
     WordOperations.getWordCountByDialect(
         props.client,
-        props.dialect,
+        props.dialect.get('dc:title'),
         null,
         // Use same schemas to make use of caching
         {'X-NXproperties': 'dublincore, fv-word, fvcore'}
@@ -110,7 +122,7 @@ class BrowseDataGrid extends React.Component {
   _getWordsByDialect(props, page, pageSize, query = null) {
     return WordOperations.getWordsByDialect(
         props.client,
-        props.dialect,
+        props.dialect.get('dc:title'),
         query,
         {'X-NXproperties': 'dublincore, fv-word, fvcore'},
         {'currentPageIndex': (page - 1), 'pageSize': pageSize}
@@ -119,7 +131,7 @@ class BrowseDataGrid extends React.Component {
 
   _onSelectionChange(newSelectedId, data){
     SELECTED_ID = newSelectedId;
-    this.props.router.navigate("browse/word/" + newSelectedId , {trigger: true});
+    this.context.router.push('/explore/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + newSelectedId);
   }
 
   _onPageChange(page) {
@@ -156,7 +168,6 @@ class BrowseDataGrid extends React.Component {
     } else {
       HTML = <div>
         <div>
-        <h2>{this.props.dialect}</h2>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
@@ -182,8 +193,4 @@ class BrowseDataGrid extends React.Component {
   }
 }
 
-BrowseDataGrid.contextTypes = {
-  router: React.PropTypes.func
-};
-
-module.exports = BrowseDataGrid;
+module.exports = DocumentListView;

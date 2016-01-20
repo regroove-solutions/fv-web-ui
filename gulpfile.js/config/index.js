@@ -2,7 +2,12 @@ var config = {}
 
 config.publicDirectory = "./public";
 config.sourceDirectory = "./app";
-config.publicAssets    = config.publicDirectory + "/assets";
-config.sourceAssets    = config.sourceDirectory + "/assets";
+
+config.assetsDirectory = "/assets";
+config.javascriptDirectory = "/javascripts";
+config.stylesheetsDirectory = "/stylesheets";
+
+config.publicAssets    = config.publicDirectory + config.assetsDirectory;
+config.sourceAssets    = config.sourceDirectory + config.assetsDirectory;
 
 module.exports = config;

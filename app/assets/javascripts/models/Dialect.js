@@ -37,7 +37,19 @@ var Dialect = Backbone.Model.extend({
           'type': t.Str,
           'editable': true,
           'label': 'Dominant Language'
-      }       
+      },
+      'language': {
+          'prefix' : 'fva',
+          'type': t.Str,
+          'editable': false,
+          'label': 'Parent Language'
+      },
+      'family': {
+          'prefix' : 'fva',
+          'type': t.Str,
+          'editable': false,
+          'label': 'Parent Family'
+      }
     },
     idAttribute: 'uid',
     initialized: false,

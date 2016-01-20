@@ -1,81 +1,69 @@
-'use strict';
+import React from 'react';
+import { render } from 'react-dom'
+import { browserHistory, Router, Route, IndexRoute } from 'react-router'
 
-var Backbone = require('backbone');
-var React = require('react');
-var Router = require('./router');
-var Nuxeo = require('nuxeo');
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
-var AppWrapper = require('./views/AppWrapper');
-var ConfGlobal = require('./configuration/local.json');
+import AppWrapper from 'views/AppWrapper';
 
-var injectTapEventPlugin = require("react-tap-event-plugin");
+// Pages
+import Index from 'views/pages/index';
+import GetStarted from 'views/pages/get-started';
+
+// Pages: Explore
+import ExploreArchive from 'views/pages/explore/archive';
+import ExploreFamily from 'views/pages/explore/family';
+import ExploreLanguage from 'views/pages/explore/language';
+
+// Pages: Dialect Portal
+import ExploreDialect from 'views/pages/explore/dialect';
+import DialectLearn from 'views/pages/explore/dialect/learn';
+import DialectLearnWords from 'views/pages/explore/dialect/learn/words';
+import DialectLearnPhrases from 'views/pages/explore/dialect/learn/phrases';
+import DialectLearnSongs from 'views/pages/explore/dialect/learn/songs';
+import DialectLearnStories from 'views/pages/explore/dialect/learn/stories';
+import DialectPlay from 'views/pages/explore/dialect/play';
+import DialectCommunitySlideshow from 'views/pages/explore/dialect/community-slideshow';
+import DialectArtGallery from 'views/pages/explore/dialect/art-gallery';
+
+// Pages: Dialect -> Word
+import ViewWord from 'views/pages/explore/dialect/learn/words/view';
+
+import Contribute from 'views/pages/contribute';
+import Play from 'views/pages/play';
+import NotFound from 'views/pages/not-found';
 
 require('!style!css!normalize.css');
 
 require('bootstrap/less/bootstrap');
 require("styles/main");
 
-var app = {
+injectTapEventPlugin();
 
-    nuxeoArgs: {
-        baseURL: ConfGlobal.baseURL,
-        restPath: 'site/api/v1',
-        automationPath: 'site/automation',
-        auth: {
-          method: 'basic',
-          username: ConfGlobal.auth.username,
-          password: ConfGlobal.auth.password
-        },
-        timeout: 30000
-    },
-
-    init: function () {
-
-		  //Needed for onTouchTap
-	   	//Can go away when react 1.0 release
-	 	  //Check this repo:
-  		//https://github.com/zilverline/react-tap-event-plugin
-      injectTapEventPlugin();
-
-	    this.router = new Router(this);
-
-      this.storeClient = new Nuxeo.Client(this.nuxeoArgs);
-      this.storeClient.header('X-NXproperties', '*');
-
-      var _this = this;
-
-      /**
-      * Workaround for logged in session. Logout before creating a client.
-      * Will only work if app and nuxeo on same domain (unless Access-Control-Allow-Origin is set)
-      */
-      var request = new XMLHttpRequest();
-
-      request.onreadystatechange = (function() {
-        if (request.readyState == 4) {
-          this.storeClient.connect(function(error, client) {
-            if (error) {
-              console.log(error);
-              throw error;
-            }
-
-            _this.appWrapper = React.render(
-              <AppWrapper
-                client={_this.storeClient}
-                router={_this.router}
-                title={ConfGlobal.title} />,
-            document.getElementById('app-wrapper'));
-
-            Backbone.history.start({pushState: false});
-
-            return _this;
-          });
-        }
-      }).bind(this);
-
-      request.open("GET", ConfGlobal.baseURL + "/logout");
-      request.send();
-    }
-};
-
-module.exports = app;
-app.init();
+render((
+  <Router history={browserHistory}>
+    <Route path="/" component={AppWrapper}>
+      <IndexRoute component={Index} />
+      <Route path="/get-started" label="Get Started" menus={[{'main': true}]} component={GetStarted}/>
+      <Route path="/explore" label="Explore" menus={[{'main': true}]} component={ExploreArchive}/>
+      <Route path="/explore/:family" component={ExploreFamily}/>
+      <Route path="/explore/:family/:language" component={ExploreLanguage}/>
+      <Route path="/explore/:family/:language/:dialect" component={ExploreDialect}>
+        <Route path="learn" component={DialectLearn}>
+          <Route path="words" component={DialectLearnWords}>
+            <Route path=":word" component={ViewWord}/>
+          </Route>
+          <Route path="phrases" component={DialectLearnPhrases}/>
+          <Route path="songs" component={DialectLearnSongs}/>
+          <Route path="stories" component={DialectLearnStories}/>
+        </Route>
+        <Route path="play" component={DialectPlay}/>
+        <Route path="community-slideshow" component={DialectCommunitySlideshow}/>
+        <Route path="art-gallery" component={DialectArtGallery}/>
+      </Route>
+      <Route path="/contribute" label="Contribute" menus={[{'main': true}]} component={Contribute}/>
+      <Route path="/play" label="Play" menus={[{'main': true}]} component={Play}/>
+      <Route path="*" component={NotFound}/>
+    </Route>
+  </Router>
+), document.getElementById('app-wrapper'))

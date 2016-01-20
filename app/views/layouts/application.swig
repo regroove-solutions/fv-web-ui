@@ -23,8 +23,8 @@
     </div>
     <!-- /#wrapper -->
 
-    <script src="assets/javascripts/shared.js"></script>
-    <script src="assets/javascripts/app.js"></script>
+    <script src="/assets/javascripts/shared.js"></script>
+    <script src="/assets/javascripts/app.js"></script>
     {% block javascript %}{% endblock %}
 
   </body>

@@ -1,6 +1,4 @@
-var _ = require('underscore');
-
-var StringHelpers = {
+export default {
   clean: function (str, mode = 'NXQL') {
     if (mode == 'NXQL') {
       // Escape single quotes
@@ -10,5 +8,3 @@ var StringHelpers = {
     return str;
   }
 }
-
-module.exports = StringHelpers;

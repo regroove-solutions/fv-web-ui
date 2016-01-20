@@ -2,16 +2,16 @@ var Backbone = require('backbone');
 var t = require('tcomb-form');
 var _ = require('underscore');
 
-var Word = require('models/Word');
+import StringHelpers from 'common/StringHelpers';
+
 var Words = require('models/Words');
 
 var LanguageFamily = require('models/LanguageFamily');
 var LanguageFamilies = require('models/LanguageFamilies');
 var Languages = require('models/Languages');
 var Language = require('models/Language');
+var Dialect = require('models/Dialect');
 var Dialects = require('models/Dialects');
-
-var StringHelpers = require('common/StringHelpers');
 
 var DirectoryOperations = {
   getSubjects: function (client) {
@@ -149,7 +149,7 @@ var DirectoryOperations = {
 				      
 		              client.operation('Document.Query')
 		                .params({
-		                  query: "SELECT * FROM FVLanguage WHERE (fva:family = '" + familyID + "' AND ecm:currentLifeCycleState <> 'deleted')"
+		                  query: "SELECT * FROM FVLanguage WHERE (fva:family = '" + familyID + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
 		                })
 		              .execute(function(error, response) {
 		                if (error) {
@@ -163,7 +163,28 @@ var DirectoryOperations = {
 	  });  
   },
   
-  getDialects : function (client, language, family) {
+  getDialects: function (client) {
+	  return new Promise(
+		  // The resolver function is called with the ability to resolve or
+		  // reject the promise
+		  function(resolve, reject) {
+        client
+          .operation('Document.Query')
+          .params({
+              query: "SELECT * FROM FVDialect WHERE ecm:currentLifeCycleState <> 'deleted' ORDER BY dc:title"
+          })
+          .execute({headers: { 'X-NXenrichers.document': 'parentDoc' }}, function(error, response) {
+            if (error) {
+              throw error;
+            }
+            
+            resolve(new Dialects(response.entries));
+          });
+
+      });  
+  },
+
+  getDialectsByLanguage: function (client, family, language) {
 	  return new Promise(
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
@@ -171,37 +192,44 @@ var DirectoryOperations = {
 
 			  // Escape single quotes
 			  language = StringHelpers.clean(language);
-			  
-			  client.operation('Document.Query')
-			  .params({
-				  query: "SELECT * FROM FVLanguage WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "' AND ecm:currentLifeCycleState <> 'deleted')"
-			  })
-			  .execute(function(error, response) {
-				  if (error) {
-					  throw error;
-				  }
-				  if (response != null && response.entries.length > 0) {
-				      var languageID = response.entries[0].uid;
+        family = StringHelpers.clean(family);
+        
+        client.operation('Document.Query').params({
+            query: "SELECT * FROM FVDialect WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "/" + language + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
+        })
+        .execute(function(error, response) {
+          if (error) {
+            throw error;
+          }
 
-				      languageID = StringHelpers.clean(languageID);
-				      
-		              client.operation('Document.Query')
-		                .params({
-		                  query: "SELECT * FROM FVDialect WHERE (fva:language = '" + languageID + "' AND ecm:currentLifeCycleState <> 'deleted')"
-		                })
-		              .execute(function(error, response) {
-		                if (error) {
-		                  throw error;
-		                }
-			            var nuxeoListDocs = new Dialects(response.entries);
-			            resolve(nuxeoListDocs);
-		              });      
-				  }				  
-			  });
+          resolve(new Dialects(response.entries));
+        });
 	  });  
-  }  
-  
-  
+  },
+
+  getDialectByPath: function (client, family, language, dialect) {
+    return new Promise(
+      // The resolver function is called with the ability to resolve or
+      // reject the promise
+      function(resolve, reject) {
+
+        // Escape single quotes
+        language = StringHelpers.clean(language);
+        family = StringHelpers.clean(family);
+        dialect = StringHelpers.clean(dialect);
+        
+        client.operation('Document.Query')
+          .params({
+            query: "SELECT * FROM FVDialect WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "/" + language + "' AND dc:title LIKE '" + dialect + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
+          })
+        .execute(function(error, response) {
+          if (error) {
+            throw error;
+          }
+          resolve(new Dialect(response.entries[0]));
+        });
+    });  
+  }
 }
 
 module.exports = DirectoryOperations;

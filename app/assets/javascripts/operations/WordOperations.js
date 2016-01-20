@@ -2,10 +2,10 @@ var Backbone = require('backbone');
 var t = require('tcomb-form');
 var _ = require('underscore');
 
+import StringHelpers from 'common/StringHelpers';
+
 var Word = require('models/Word');
 var Words = require('models/Words');
-
-var StringHelpers = require('common/StringHelpers');
 
 var WordOperations = {
 
@@ -67,7 +67,6 @@ var WordOperations = {
 
           if (response.entries.length > 0) {
             response.entries[0].client = client;
-              var currentWord = new Word(response.entries[0]);
               resolve(new Word(response.entries[0]));
           } else {
             reject('Workspace not found');
@@ -187,8 +186,11 @@ var WordOperations = {
           });
     });
   },
+
   /**
-  * TODO: Fix so this does not expose the hash via the request
+  * TODO: Change to more official method if exists?
+  * Get Blob, Or https://github.com/dcodeIO/protobuf.js/wiki/How-to-read-binary-data-in-the-browser-or-under-node.js%3F
+  * https://github.com/request/request/issues/1796
   */
   getMediaBlobById: function (client, media, mimeType, xpath = 'file:content') {
 
@@ -199,6 +201,7 @@ var WordOperations = {
 
   			request.onload = function(e) {
   				if (request.readyState == 4) {
+            console.log(this.response);
   				    var uInt8Array = new Uint8Array(this.response);
   				    var i = uInt8Array.length;
   				    var biStr = new Array(i);
@@ -209,6 +212,7 @@ var WordOperations = {
   				    var base64 = window.btoa(data);
 
   					var dataUri = 'data:' + mimeType + ';base64,' + base64;
+            console.log({dataUri: dataUri, mediaId: media});
   					resolve({dataUri: dataUri, mediaId: media});
   				} else {
   					reject("Media not found");
@@ -219,7 +223,7 @@ var WordOperations = {
   			request.responseType = "arraybuffer";
   			request.setRequestHeader("authorization", "Basic " + window.btoa(unescape(encodeURIComponent(client._auth.username + ":" + client._auth.password))));
   			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-  			request.setRequestHeader("Content-Type", "application/json");
+  			request.setRequestHeader("Content-Type", "application/json+nxrequest");
   			request.send(JSON.stringify({input: media, params: {xpath: xpath}}));
 
     });
