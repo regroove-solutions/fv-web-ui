@@ -1,8 +1,10 @@
-var Backbone = require('backbone');
-var Word = require('./Word');
+import { Collection } from 'backbone';
+import Word from 'models/Word';
 
-var Words = Backbone.Collection.extend({
-    model: Word
-});
+export default class Words extends Collection {
 
-module.exports = Words;
+	constructor (options) {
+		super(options);
+		this.model = Word;
+	}
+}

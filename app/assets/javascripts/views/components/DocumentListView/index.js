@@ -2,18 +2,12 @@ import React from 'react';
 import classNames from 'classnames';
 import DataGrid from 'react-datagrid';
 
+import ClearFix from 'material-ui/lib/clearfix';
+import Paper from 'material-ui/lib/paper';
+
 // is TapEvent needed here?!
 //var injectTapEventPlugin = require("react-tap-event-plugin");
 //injectTapEventPlugin();
-
-// Models
-import Word from 'models/Word';
-import Words from 'models/Words';
-
-// Operations
-import WordOperations from 'operations/WordOperations';
-
-
 
 // Stylesheet
 import '!style!css!react-datagrid/dist/index.min.css';
@@ -23,7 +17,7 @@ import '!style!css!react-datagrid/dist/index.min.css';
 */
 var SELECTED_ID = null;
 var PAGE = 1;
-var PAGE_SIZE = 50;
+var PAGE_SIZE = 20;
 
 class DocumentListView extends React.Component {
 
@@ -47,13 +41,8 @@ class DocumentListView extends React.Component {
       dataSourceCount: 0
     };
 
-    WordOperations.getWordCountByDialect(
-        context.client,
-        props.dialect.get('dc:title'),
-        null,
-        // Use same schemas to make use of caching
-        {'X-NXproperties': 'dublincore, fv-word, fvcore'}
-    ).then((function(count){
+    // Get and set data count
+    props.onDataCountRequest(props).then((function(count){
           this.setState({
             dataSourceCount: count
           });
@@ -85,20 +74,19 @@ class DocumentListView extends React.Component {
   }
 
   render() {
-
     var HTML = null;
 
     // Styles
     var DataGridStyles = {
-      height:"70vh",
+      minHeight:"70vh",
       zIndex: 0
     };
 
     if (this.state.dataSourceCount == 0) {
       HTML = <div>Loading...</div>;
     } else {
-      HTML = <div>
-        <div>
+      HTML = <Paper>
+        <ClearFix>
         <DataGrid
           idProperty="id"
           dataSource={this.state.dataSource}
@@ -115,9 +103,8 @@ class DocumentListView extends React.Component {
           onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}
           showCellBorders={true} />
-        </div>
-        <div className="pull-right"><small><a href={this.context.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[View in Nuxeo]</a></small></div>
-      </div>
+        </ClearFix>
+      </Paper>
     }
 
     return HTML;

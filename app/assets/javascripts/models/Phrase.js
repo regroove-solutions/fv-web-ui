@@ -2,7 +2,7 @@ import { Model } from 'backbone';
 import t from 'tcomb-form';
 import _ from 'underscore';
 
-export default class Word extends Model {
+export default class Phrase extends Model{
 
   constructor(options) {
     super(options);
@@ -104,10 +104,10 @@ export default class Word extends Model {
   }
 
   get entityTypeName() {
-    return 'FVWord';
+    return 'FVPhrase';
   }
 
-  setClient(client){
+  setClient(client) {
     this.client = client;
   }
 
@@ -119,7 +119,7 @@ export default class Word extends Model {
     return (data[this.getFieldPrefix(id)] != undefined || data[props.alias] != undefined) ? (data[this.getFieldPrefix(id)] || data[props.alias]) : data.properties[this.getFieldPrefix(id)];
   }
 
-  initialize(data){
+  initialize(data) {
     if (data != undefined ) {
 
       this.parts_speech = {};
@@ -170,7 +170,7 @@ export default class Word extends Model {
 
     return formFieldDefaults;
   }
-
+  
   getFormSchemaOptions() {
 
     var formSchemaOptions = {};
