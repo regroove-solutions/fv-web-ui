@@ -1,20 +1,17 @@
-var Backbone = require('backbone');
-var t = require('tcomb-form');
-var _ = require('underscore');
-
+import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 
-var Words = require('models/Words');
+// Models
+import Words from 'models/Words';
+import LanguageFamily from 'models/LanguageFamily';
+import LanguageFamilies from 'models/LanguageFamilies';
+import Languages from 'models/Languages';
+import Language from 'models/Language';
+import Dialect from 'models/Dialect';
+import Dialects from 'models/Dialects';
 
-var LanguageFamily = require('models/LanguageFamily');
-var LanguageFamilies = require('models/LanguageFamilies');
-var Languages = require('models/Languages');
-var Language = require('models/Language');
-var Dialect = require('models/Dialect');
-var Dialects = require('models/Dialects');
-
-var DirectoryOperations = {
-  getSubjects: function (client) {
+export default {
+  getSubjects(client) {
     return new Promise(
     function(resolve, reject) {
 
@@ -36,7 +33,7 @@ var DirectoryOperations = {
       });
     });
   },
-  getPartsOfSpeech: function (client) {
+  getPartsOfSpeech(client) {
     return new Promise(
       function(resolve, reject) {
 
@@ -59,7 +56,7 @@ var DirectoryOperations = {
 
       });
   },
-  getWordsByLangauge : function (client, language) {
+  getWordsByLangauge (client, language) {
     return new Promise(
         // The resolver function is called with the ability to resolve or
         // reject the promise
@@ -102,7 +99,7 @@ var DirectoryOperations = {
           });
     });
   },
-  getLanguageFamilies : function (client) {
+  getLanguageFamilies (client) {
 	    return new Promise(
 	        // The resolver function is called with the ability to resolve or
 	        // reject the promise
@@ -126,7 +123,7 @@ var DirectoryOperations = {
 	    });
 	  },
   
-  getLanguages : function (client, family) {
+  getLanguages (client, family) {
 	  return new Promise(
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
@@ -163,7 +160,7 @@ var DirectoryOperations = {
 	  });  
   },
   
-  getDialects: function (client) {
+  getDialects(client) {
 	  return new Promise(
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
@@ -184,7 +181,7 @@ var DirectoryOperations = {
       });  
   },
 
-  getDialectsByLanguage: function (client, family, language) {
+  getDialectsByLanguage(client, family, language) {
 	  return new Promise(
 		  // The resolver function is called with the ability to resolve or
 		  // reject the promise
@@ -207,7 +204,7 @@ var DirectoryOperations = {
 	  });  
   },
 
-  getDialectByPath: function (client, family, language, dialect) {
+  getDialectByPath(client, family, language, dialect) {
     return new Promise(
       // The resolver function is called with the ability to resolve or
       // reject the promise
@@ -231,5 +228,3 @@ var DirectoryOperations = {
     });  
   }
 }
-
-module.exports = DirectoryOperations;

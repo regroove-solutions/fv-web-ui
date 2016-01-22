@@ -1,15 +1,13 @@
-var Backbone = require('backbone');
-var t = require('tcomb-form');
-var _ = require('underscore');
-
+import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 
-var Word = require('models/Word');
-var Words = require('models/Words');
+// Models
+import Word from 'models/Word';
+import Words from 'models/Words';
 
-var WordOperations = {
+export default {
 
-  getMediaByWord: function (client, word, query = null) {
+  getMediaByWord(client, word, query = null) {
 
     return new Promise(
       // The resolver function is called with the ability to resolve or
@@ -46,7 +44,7 @@ var WordOperations = {
         });
     });
   },
-  getWordById: function (client, word) {
+  getWordById(client, word) {
     return new Promise(
       // The resolver function is called with the ability to resolve or
       // reject the promise
@@ -75,7 +73,7 @@ var WordOperations = {
         });
     });
   },
-  getWordsByDialect : function (client, dialect, query = null, headers = null, params = null) {
+  getWordsByDialect(client, dialect, query = null, headers = null, params = null) {
     return new Promise(
         function(resolve, reject) {
 
@@ -131,7 +129,7 @@ var WordOperations = {
           });
     });
   },
-  getWordCountByDialect : function (client, dialect, query = null, headers = null, params = null) {
+  getWordCountByDialect (client, dialect, query = null, headers = null, params = null) {
     return new Promise(
         function(resolve, reject) {
 
@@ -192,42 +190,38 @@ var WordOperations = {
   * Get Blob, Or https://github.com/dcodeIO/protobuf.js/wiki/How-to-read-binary-data-in-the-browser-or-under-node.js%3F
   * https://github.com/request/request/issues/1796
   */
-  getMediaBlobById: function (client, media, mimeType, xpath = 'file:content') {
+  getMediaBlobById(client, media, mimeType, xpath = 'file:content') {
 
     return new Promise(
       function(resolve, reject) {
 
-  			var request = new XMLHttpRequest();
+        var request = new XMLHttpRequest();
 
-  			request.onload = function(e) {
-  				if (request.readyState == 4) {
-            console.log(this.response);
-  				    var uInt8Array = new Uint8Array(this.response);
-  				    var i = uInt8Array.length;
-  				    var biStr = new Array(i);
-  				    while (i--) { 
-  				    	biStr[i] = String.fromCharCode(uInt8Array[i]);
-  				    }
-  				    var data = biStr.join('');
-  				    var base64 = window.btoa(data);
+        request.onload = function(e) {
+          if (request.readyState == 4) {
+              var uInt8Array = new Uint8Array(this.response);
+              var i = uInt8Array.length;
+              var biStr = new Array(i);
+              while (i--) { 
+                biStr[i] = String.fromCharCode(uInt8Array[i]);
+              }
+              var data = biStr.join('');
+              var base64 = window.btoa(data);
 
-  					var dataUri = 'data:' + mimeType + ';base64,' + base64;
-            console.log({dataUri: dataUri, mediaId: media});
-  					resolve({dataUri: dataUri, mediaId: media});
-  				} else {
-  					reject("Media not found");
-  				}
-  			}
+            var dataUri = 'data:' + mimeType + ';base64,' + base64;
+            resolve({dataUri: dataUri, mediaId: media});
+          } else {
+            reject("Media not found");
+          }
+        }
 
-  			request.open("POST", client._baseURL + "/site/automation/Blob.Get", true);
-  			request.responseType = "arraybuffer";
-  			request.setRequestHeader("authorization", "Basic " + window.btoa(unescape(encodeURIComponent(client._auth.username + ":" + client._auth.password))));
-  			request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-  			request.setRequestHeader("Content-Type", "application/json+nxrequest");
-  			request.send(JSON.stringify({input: media, params: {xpath: xpath}}));
+        request.open("POST", client._baseURL + "/site/automation/Blob.Get", true);
+        request.responseType = "arraybuffer";
+        request.setRequestHeader("authorization", "Basic " + window.btoa(unescape(encodeURIComponent(client._auth.username + ":" + client._auth.password))));
+        request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+        request.setRequestHeader("Content-Type", "application/json+nxrequest");
+        request.send(JSON.stringify({input: media, params: {xpath: xpath}}));
 
     });
   }
 }
-
-module.exports = WordOperations;

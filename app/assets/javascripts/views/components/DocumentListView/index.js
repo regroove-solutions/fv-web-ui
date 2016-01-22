@@ -1,75 +1,22 @@
 import React from 'react';
 import classNames from 'classnames';
+import DataGrid from 'react-datagrid';
 
 // is TapEvent needed here?!
 //var injectTapEventPlugin = require("react-tap-event-plugin");
 //injectTapEventPlugin();
 
-var DataGrid = require('react-datagrid');
+// Models
+import Word from 'models/Word';
+import Words from 'models/Words';
 
-var Word = require('models/Word');
-var Words = require('models/Words');
+// Operations
+import WordOperations from 'operations/WordOperations';
 
-var WordOperations = require('../../../operations/WordOperations');
 
-require('!style!css!react-datagrid/dist/index.min.css');
 
-var Link = React.createClass({
-  render: function() {
-    return <a onTouchTap={this._handleTouchTap}>{this.props.value}</a>
-  },
-
-  _handleTouchTap: function() {
-    window.router.navigate("browse/word/" + this.props.id , {trigger: true});
-  }
-});
-
-var columns = [
-    { name: 'title', title: 'Word', render: function(v, data, cellProps){
-      return <Link id={data.id} key={data.id} value={v} />
-    }},
-    {
-      name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps){
-      if (v != undefined && v.length > 0) {
-        var rows = [];
-
-        for (var i = 0; i < v.length ; ++i) {
-          rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
-        }
-
-        return  <div><table className="innerRowTable" border="1" cellspacing="5" cellpadding="5" id={data['dc:title']} key={data.id}>
-                  <tbody>
-                    {rows}
-                  </tbody>
-                </table></div>
-      }
-    }},
-    {
-      name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps){
-      if (v != undefined && v.length > 0) {
-        var rows = [];
-
-        for (var i = 0; i < v.length ; ++i) {
-          rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
-        }
-
-        return  <div><table className="innerRowTable" id={data['dc:title']} key={data.id}>
-                  <tbody>
-                    {rows}
-                  </tbody>
-                </table></div>
-      }
-    }},
-    {
-      name: 'fv-word:part_of_speech', title: 'Part of Speech'
-    },
-    {
-      name: 'fv-word:pronunciation', title: 'Pronunciation'
-    },
-    {
-      name: 'fv-word:categories', title: 'Categories'
-    },
-]
+// Stylesheet
+import '!style!css!react-datagrid/dist/index.min.css';
 
 /**
 * Set some initial values
@@ -86,8 +33,8 @@ class DocumentListView extends React.Component {
       router: React.PropTypes.object.isRequired
   };
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
 
     // Grant access to object inside methods
     this._onSelectionChange = this._onSelectionChange.bind(this);
@@ -95,15 +42,13 @@ class DocumentListView extends React.Component {
     this._onPageSizeChange = this._onPageSizeChange.bind(this);
 
     // Hide columns for responsive view!!
-    //console.log(window.innerWidth);
-
     this.state = {
-      dataSource: this._getWordsByDialect(props, PAGE, PAGE_SIZE),
+      dataSource: props.onDataRequest(props, PAGE, PAGE_SIZE),
       dataSourceCount: 0
     };
 
     WordOperations.getWordCountByDialect(
-        props.client,
+        context.client,
         props.dialect.get('dc:title'),
         null,
         // Use same schemas to make use of caching
@@ -115,29 +60,15 @@ class DocumentListView extends React.Component {
     }).bind(this));
   }
 
-  componentDidMount(){
-    window.router = this.props.router;
-  }
-
-  _getWordsByDialect(props, page, pageSize, query = null) {
-    return WordOperations.getWordsByDialect(
-        props.client,
-        props.dialect.get('dc:title'),
-        query,
-        {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-    );
-  }
-
   _onSelectionChange(newSelectedId, data){
     SELECTED_ID = newSelectedId;
-    this.context.router.push('/explore/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + newSelectedId);
+    this.props.onSelectionChange(newSelectedId);
   }
 
   _onPageChange(page) {
     PAGE = page;
     this.setState({
-      dataSource: this._getWordsByDialect(this.props, PAGE, PAGE_SIZE)
+      dataSource: this.props.onDataRequest(this.props, PAGE, PAGE_SIZE)
     });
   }
 
@@ -149,7 +80,7 @@ class DocumentListView extends React.Component {
     }
     PAGE_SIZE = pageSize;
     this.setState({
-      dataSource: this._getWordsByDialect(this.props, PAGE, PAGE_SIZE)
+      dataSource: this.props.onDataRequest(this.props, PAGE, PAGE_SIZE)
     });
   }
 
@@ -172,7 +103,7 @@ class DocumentListView extends React.Component {
           idProperty="id"
           dataSource={this.state.dataSource}
           dataSourceCount={this.state.dataSourceCount}
-          columns={columns}
+          columns={this.props.columns}
           rowHeight="55"
           style={DataGridStyles}
           selected={SELECTED_ID}
@@ -185,7 +116,7 @@ class DocumentListView extends React.Component {
           emptyText={'No records'}
           showCellBorders={true} />
         </div>
-        <div className="pull-right"><small><a href={this.props.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[View in Nuxeo]</a></small></div>
+        <div className="pull-right"><small><a href={this.context.client._baseURL + '/nxpath/default/default-domain/workspaces/FVData/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect + '/Dictionary@view_documents?tabIds=%3AFVWordTab'} target="_blank">[View in Nuxeo]</a></small></div>
       </div>
     }
 

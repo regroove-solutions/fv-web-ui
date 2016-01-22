@@ -94,7 +94,6 @@ export default class Navigation extends React.Component {
           onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
           onRequestChangeList={this.handleRequestChangeList}
           routes={this.props.routes}
-          router={this.props.router}
           docked={false} />
     </div>;
   }
