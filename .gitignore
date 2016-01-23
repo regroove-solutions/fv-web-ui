@@ -1,5 +1,6 @@
 .DS_Store
 .sass-cache
+.project
 public
 Desktop.ini
 node_modules
