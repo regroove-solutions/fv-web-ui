@@ -1,0 +1,5 @@
+<component name="ca.bc.gov.nuxeo.firstvoices.FirstVoicesEnricher">
+	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+		<register class="ca.bc.gov.nuxeo.firstvoices.FirstVoicesEnricher" enable="true" />
+	</extension>   
+</component>
