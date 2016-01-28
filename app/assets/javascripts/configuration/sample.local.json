@@ -1,0 +1,9 @@
+{
+	"title": "Your Project",
+	"domain": "DOMAIM",
+	"baseURL": "http://localhost/nuxeo",
+	"auth": {
+		"username": "username",
+		"password": "password"
+	}
+}
