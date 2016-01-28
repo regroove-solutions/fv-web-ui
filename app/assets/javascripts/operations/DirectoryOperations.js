@@ -21,6 +21,54 @@ export default class DirectoryOperations {
     this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
   }
 
+  /**
+  * Get all documents of a certain type based on a path
+  * These documents are expected to contain other entries
+  * E.g. FVFamily, FVLanguage, FVDialect
+  */
+  getDocumentsByPath(path = "", headers = null, params = null) {
+    // Expose fields to promise
+    let client = this.client;
+    let selectDefault = this.selectDefault;
+    let domain = this.properties.domain;
+
+    path = StringHelpers.clean(path);
+
+    // Initialize and empty document list from type
+    let documentList = new this.directoryTypePlural(null);
+
+    return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+          let defaultParams = {
+            query: 
+              "SELECT * FROM " + documentList.model.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND " + selectDefault + ") ORDER BY dc:title"
+          };
+
+          let defaultHeaders = {};
+
+          params = Object.assign(defaultParams, params);
+          headers = Object.assign(defaultHeaders, headers);
+
+          client.operation('Document.Query')
+            .params(params)
+            .execute(headers, function(error, response) {
+              if (error) {
+                throw error;
+              }             
+              if (response.entries.length > 0) {
+                documentList.add(response.entries);
+                resolve(documentList);
+              } else {
+                reject('No ' + documentList.model.prototype.entityTypeName +' found');
+              }
+          });
+    });
+  }
+
+  // Unused methods below (needs refactoring or removing soon)
   getSubjects(client) {
     return new Promise(
     function(resolve, reject) {
@@ -108,157 +156,5 @@ export default class DirectoryOperations {
 
           });
     });
-  }
-
-  /**
-  * Get all documents of a certain type based on a path
-  * These documents are expected to contain other entries
-  * E.g. FVFamily, FVLanguage, FVDialect
-  */
-  getDocumentsByPath(path = "", headers = null, params = null) {
-    // Expose fields to promise
-    let client = this.client;
-    let selectDefault = this.selectDefault;
-    let domain = this.properties.domain;
-
-    path = StringHelpers.clean(path);
-
-    // Initialize and empty document list from type
-    let documentList = new this.directoryTypePlural(null);
-
-    return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
-        function(resolve, reject) {
-
-          let defaultParams = {
-            query: 
-              "SELECT * FROM " + documentList.model.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND " + selectDefault + ") ORDER BY dc:title"
-          };
-
-          let defaultHeaders = {};
-
-          params = Object.assign(defaultParams, params);
-          headers = Object.assign(defaultHeaders, headers);
-
-          client.operation('Document.Query')
-            .params(params)
-            .execute(headers, function(error, response) {
-              if (error) {
-                throw error;
-              }             
-              if (response.entries.length > 0) {
-                documentList.add(response.entries);
-                resolve(documentList);
-              } else {
-                reject('No ' + documentList.model.prototype.entityTypeName +' found');
-              }
-          });
-    });
-  }
-  
-  getLanguages (client, family) {
-	  return new Promise(
-		  // The resolver function is called with the ability to resolve or
-		  // reject the promise
-		  function(resolve, reject) {
-			  
-			  // Escape single quotes
-			  family = StringHelpers.clean(family);
-			  
-			  client.operation('Document.Query')
-			  .params({
-				  query: "SELECT * FROM FVLanguageFamily WHERE (dc:title = '" + family + "' AND ecm:currentLifeCycleState <> 'deleted')"
-			  })
-			  .execute(function(error, response) {
-				  if (error) {
-					  throw error;
-				  }
-				  if (response != null && response.entries.length > 0) {
-				      var familyID = response.entries[0].uid;
-				      //console.log(familyID);
-				      
-		              client.operation('Document.Query')
-		                .params({
-		                  query: "SELECT * FROM FVLanguage WHERE (fva:family = '" + familyID + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
-		                })
-		              .execute(function(error, response) {
-		                if (error) {
-		                  throw error;
-		                }
-			            var nuxeoListDocs = new Languages(response.entries);
-			            resolve(nuxeoListDocs);
-		              });      
-				  }				  
-			  });
-	  });  
-  }
-  
-  getDialects(client) {
-	  return new Promise(
-		  // The resolver function is called with the ability to resolve or
-		  // reject the promise
-		  function(resolve, reject) {
-        client
-          .operation('Document.Query')
-          .params({
-              query: "SELECT * FROM FVDialect WHERE ecm:currentLifeCycleState <> 'deleted' ORDER BY dc:title"
-          })
-          .execute({headers: { 'X-NXenrichers.document': 'parentDoc' }}, function(error, response) {
-            if (error) {
-              throw error;
-            }
-            
-            resolve(new Dialects(response.entries));
-          });
-
-      });  
-  }
-
-  getDialectsByLanguage(client, family, language) {
-	  return new Promise(
-		  // The resolver function is called with the ability to resolve or
-		  // reject the promise
-		  function(resolve, reject) {
-
-			  // Escape single quotes
-			  language = StringHelpers.clean(language);
-        family = StringHelpers.clean(family);
-        
-        client.operation('Document.Query').params({
-            query: "SELECT * FROM FVDialect WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "/" + language + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
-        })
-        .execute(function(error, response) {
-          if (error) {
-            throw error;
-          }
-
-          resolve(new Dialects(response.entries));
-        });
-	  });  
-  }
-
-  getDialectByPath(client, family, language, dialect) {
-    return new Promise(
-      // The resolver function is called with the ability to resolve or
-      // reject the promise
-      function(resolve, reject) {
-
-        // Escape single quotes
-        language = StringHelpers.clean(language);
-        family = StringHelpers.clean(family);
-        dialect = StringHelpers.clean(dialect);
-        
-        client.operation('Document.Query')
-          .params({
-            query: "SELECT * FROM FVDialect WHERE (ecm:path STARTSWITH '/default-domain/workspaces/FVData/" + family + "/" + language + "' AND dc:title LIKE '" + dialect + "' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
-          })
-        .execute(function(error, response) {
-          if (error) {
-            throw error;
-          }
-          resolve(new Dialect(response.entries[0]));
-        });
-    });  
   }
 }
