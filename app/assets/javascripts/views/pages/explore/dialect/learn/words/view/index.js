@@ -27,7 +27,6 @@ import Words from 'models/Words';
 
 // Operations
 import DocumentOperations from 'operations/DocumentOperations';
-import WordOperations from 'operations/WordOperations';
 
 /**
 * View word entry
@@ -76,7 +75,7 @@ export default class View extends React.Component {
         word: word
       });
 
-       WordOperations.getMediaByWord(this.context.client, word).then((function(children){
+       this.wordOperations.getMediaByDocument(word).then((function(children){
           this.setState({
             children: children
           });
@@ -98,7 +97,7 @@ export default class View extends React.Component {
               this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
 
               for (var i=0; i < pictures.length; i++) {
-                WordOperations.getMediaBlobById(this.context.client, pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(response){
+                this.wordOperations.getMediaBlobById(pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(response){
                   tmpArray.push(<div key={response.mediaId} className="col-xs-12">
                     <img className="image" src={response.dataUri} alt=""/>
                    </div>);
@@ -123,7 +122,7 @@ export default class View extends React.Component {
 
               this.setState({audioContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
               for (var i =0; i < audio.length; i++) {
-                WordOperations.getMediaBlobById(this.context.client, audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(response){
+                this.wordOperations.getMediaBlobById(audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(response){
                   tmpArray.push(<audio key={response.mediaId} src={response.dataUri} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
                   this.setState({audioContent: tmpArray});
                 }).bind(this));

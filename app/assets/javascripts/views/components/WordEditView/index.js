@@ -4,8 +4,12 @@ var Form = t.form.Form;
 
 var classNames = require('classnames');
 
-var WordOperations = require('../../../operations/WordOperations');
-var DirectoryOperations = require('../../../operations/DirectoryOperations');
+// Models
+import Word from 'models/Word';
+import Words from 'models/Words';
+
+// Operations
+import DocumentOperations from 'operations/DocumentOperations';
 
 class EditForm extends React.Component {
 
@@ -107,11 +111,13 @@ class WordEditView extends React.Component {
   constructor(props) {
     super(props);
 
+    this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
+
    this.state = {
       word: null
    };
 
-   WordOperations.getWordById(props.client, props.id).then((function(word){
+   this.wordOperations.getDocumentByID(props.id).then((function(word){
       this.setState({
         word: word
       });
