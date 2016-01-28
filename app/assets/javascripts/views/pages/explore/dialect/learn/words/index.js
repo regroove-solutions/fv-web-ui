@@ -1,5 +1,5 @@
 import React from 'react';
-import DocumentListView from 'views/components/DocumentListView';
+import DocumentListView from 'views/components/Document/DocumentListView';
 
 // Models
 import Word from 'models/Word';

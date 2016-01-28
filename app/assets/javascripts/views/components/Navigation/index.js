@@ -12,10 +12,11 @@ import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import DialectDropDown from 'views/components/Common/DialectDropDown';
-import AppLeftNav from 'views/components/AppLeftNav';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+
+import DialectDropDown from 'views/components/Navigation/DialectDropDown';
+import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
 export default class Navigation extends React.Component {
   static contextTypes = {
