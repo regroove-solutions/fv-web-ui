@@ -1,4 +1,4 @@
-package ca.bc.gov.nuxeo.firstvoices;
+package ca.bc.gov.nuxeo.enrichers;
  
 import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
@@ -12,7 +12,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
- 
+
+// This example is from https://doc.nuxeo.com/display/NXDOC/Content+Enricher
+
 // The class will be instanciated as a singleton
 // Priority defines which marshaller will be used in case of conflict. Priority is an integer.
 // The higher the number, the more priority you get: 10 > 1 for instance.

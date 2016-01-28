@@ -1,0 +1,5 @@
+<component name="ca.bc.gov.nuxeo.enrichers.ParentDocEnricher">
+	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+		<register class="ca.bc.gov.nuxeo.enrichers.ParentDocEnricher" enable="true" />
+	</extension>   
+</component>
