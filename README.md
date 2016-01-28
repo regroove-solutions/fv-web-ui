@@ -3,7 +3,7 @@
 
 This is a responsive dictionary web-application for the FirstVoices language assets that uses [Nuxeo ECM](http://www.nuxeo.com/) as a back-end.
 
-## MEAN Stack##
+## Stack ##
 This web app is built using the following:
 
 -  [ReactJS](https://facebook.github.io/react/)
@@ -18,8 +18,15 @@ This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/g
 
 You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads). Clone this repo from GitHub, change directory to the repo root.
 
-
 1. Run `npm install`*.
-2. Run `gulp` to start a Node server.  Defaults to [localhost:3000](http://localhost:3000).
+2. Run `gulp` to start a Node server.  Defaults to [localhost:3001](http://localhost:3001).
 
 * On some Windows machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
+
+## Licensing ##
+
+The data and code in this repository is licensed under multiple licenses.
+
+- All code in the /app directory is licensed under the Apache License 2.0. See LICENSE.
+
+- All [gulp-starter](https://github.com/vigetlabs/gulp-starter) code in /gulpfile.js directory is licensed under MIT License (MIT). See gulpfile.js/LICENSE.
