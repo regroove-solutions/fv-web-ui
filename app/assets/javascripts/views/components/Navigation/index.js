@@ -57,7 +57,6 @@ export default class Navigation extends React.Component {
   }
 
   render() {
-
     return <div>
         <AppBar
           title={this.context.siteProps.title}

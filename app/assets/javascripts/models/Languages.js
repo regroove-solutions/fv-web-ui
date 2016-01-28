@@ -1,8 +1,10 @@
-var Backbone = require('backbone');
-var Language = require('./Language');
+import { Collection } from 'backbone';
+import Language from 'models/Language';
 
-var Languages = Backbone.Collection.extend({
-    model: Language
-});
+export default class Languages extends Collection {
 
-module.exports = Languages;
+	constructor (options) {
+		super(options);
+		this.model = Language;
+	}
+}

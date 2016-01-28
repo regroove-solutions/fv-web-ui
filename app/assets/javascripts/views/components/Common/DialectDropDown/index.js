@@ -1,13 +1,20 @@
 import React from 'react';
 import _ from 'underscore';
 
+// Models
+import Dialect from 'models/Dialect';
+import Dialects from 'models/Dialects';
+
+// Operations
+import DirectoryOperations from 'operations/DirectoryOperations';
+
+// Views / Components
+
 import Divider from 'material-ui/lib/divider';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import AutoComplete from 'material-ui/lib/auto-complete';
-
-import DirectoryOperations from 'operations/DirectoryOperations';
 
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
@@ -30,7 +37,8 @@ export default class DialectDropDown extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object,
       muiTheme: React.PropTypes.object,
-      router: React.PropTypes.object
+      router: React.PropTypes.object,
+      siteProps: React.PropTypes.object.isRequired
   };
 
 
@@ -44,27 +52,41 @@ export default class DialectDropDown extends React.Component {
       muiTheme: context.muiTheme ? context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
     };
 
-    DirectoryOperations.getDialects(context.client).then((function(dialects){
+    // Create new operations object
+    this.dialectOperations = new DirectoryOperations(Dialect, Dialects, context.client, { domain: context.siteProps.domain });
 
-        var dropdownData = dialects.map(function( dialect ) {
+    this.dialectOperations.getDocumentsByPath("", {headers: { 'X-NXenrichers.document': 'firstvoices' }}).then((function(dialects){
 
-          let parentLanguageTitle = dialect.attributes.contextParameters.parentDoc.title;
+        var dropdownData = null;
 
-          return (<ListItem
-                    value={'/explore/' + dialect.get('fva:family') + '/' + parentLanguageTitle + '/' + dialect.get('dc:title')}
-                    key={dialect.get('id')}
-                    language={parentLanguageTitle} 
-                    primaryText={dialect.get('dc:title')}/>
-          );
+        dropdownData = dialects.map(function( dialect ) {
+
+          var parentLanguageTitle, parentLanguageFamilyTitle;
+
+          if (dialect.get('parentLanguage')) {
+            parentLanguageTitle = dialect.get('parentLanguage').title;
+            parentLanguageFamilyTitle = dialect.get('parentLanguageFamily').title;
+
+            return (<ListItem
+                      value={'/explore/' + parentLanguageFamilyTitle + '/' + parentLanguageTitle + '/' + dialect.get('dc:title')}
+                      key={dialect.get('id')}
+                      language={parentLanguageTitle} 
+                      primaryText={dialect.get('dc:title')}/>
+            );
+          }
         });
 
-        dropdownData = _.pairs(_.groupBy(dropdownData, function(item){
-          return item.props.language;
-        }));
+        if (dropdownData) {
 
-        this.setState({
-          items: dropdownData
-        });
+          dropdownData = _.pairs(_.groupBy(dropdownData, function(item){
+            return item.props.language;
+          }));
+
+          this.setState({
+            items: dropdownData
+          });
+
+        }
 
     }).bind(this));
 
@@ -91,9 +113,11 @@ export default class DialectDropDown extends React.Component {
   }
 
   render() {
-    return (
-      <div>
 
+    let content = "";
+
+    if (this.state.items.length > 0) {
+      content = <div>
         <RaisedButton onTouchTap={this.handleTouchTap.bind(this)}  label="Browse Dialects...">
           <DropDownArrow />
         </RaisedButton>
@@ -114,6 +138,13 @@ export default class DialectDropDown extends React.Component {
               })}
           </SelectableList>
         </Popover>
+      </div>;
+    }
+
+
+    return (
+      <div>
+        {content}
       </div>
     );
   }

@@ -1,9 +1,16 @@
-var Backbone = require('backbone');
-var t = require('tcomb-form');
-var _ = require('underscore');
+import Document from 'models/Document';
+import t from 'tcomb-form';
+import _ from 'underscore';
 
-var Dialect = Backbone.Model.extend({
-    schema: {
+export default class Dialect extends Document {
+
+  constructor(data) {
+    super(data);
+
+    this.idAttribute = 'uid';
+    this.initialized = false;
+
+    this.schema = {
       'id': {
         'alias': 'uid',
         'type': t.Str
@@ -50,78 +57,38 @@ var Dialect = Backbone.Model.extend({
           'editable': false,
           'label': 'Parent Family'
       }
-    },
-    idAttribute: 'uid',
-    initialized: false,
-    setClient: function (client){
-      this.client = client;
-    },
-    getFieldPrefix: function(id){
-      return (this.schema[id].prefix != undefined) ? this.schema[id].prefix + ':' + id : id;
-    },
-    getFieldData: function(id, props, data){
-      return (data[this.getFieldPrefix(id)] != undefined || data[props.alias] != undefined) ? (data[this.getFieldPrefix(id)] || data[props.alias]) : data.properties[this.getFieldPrefix(id)];
-    },
-    initialize: function (data){
-      if (data != undefined ) {
+    };
 
-        _.each(this.schema, (function(fieldProps, fieldId){
-          this.set(this.getFieldPrefix(fieldId), this.getFieldData(fieldId, fieldProps, data));
-        }).bind(this));
+    if (data != undefined ) {
 
-        this.initialized = true;
+      _.each(this.schema, (function(fieldProps, fieldId){
+        this.set(this.getFieldPrefix(fieldId), this.getFieldData(fieldId, fieldProps, data));
+      }).bind(this));
+
+      // TODO: Convert language family and language to model objects
+
+      // If the enricher exists, set relevant objects
+      if (data.contextParameters && data.contextParameters.firstvoices) {
+
+        // Set language family context parameters
+        if (data.contextParameters.firstvoices.family)
+          this.set('parentLanguageFamily', data.contextParameters.firstvoices.family);
+
+        // Set language context parameters
+        if (data.contextParameters.firstvoices.language)
+          this.set('parentLanguage', data.contextParameters.firstvoices.language);
+
       }
-    },
-    getFormSchema: function(values) {
 
-      var formFields = {};
-
-      _.each(this.schema, (function(fieldProps, fieldId){
-        if (fieldProps.editable == true){
-         formFields[this.getFieldPrefix(fieldId)] = fieldProps.type; 
-        }
-      }).bind(this));
-
-      return t.struct(formFields);
-    },
-    getFormSchemaDefaults: function() {
-
-      var formFieldDefaults = {};
-
-      _.each(this.schema, (function(fieldProps, fieldId){
-        var id = this.getFieldPrefix(fieldId);
-        if (fieldProps.editable == true){
-         formFieldDefaults[id] = this.get(id);
-        }
-      }).bind(this));
-
-      return formFieldDefaults;
-    },
-    getFormSchemaOptions: function() {
-
-      var formSchemaOptions = {};
-
-      _.each(this.schema, (function(fieldProps, fieldId){
-        var id = this.getFieldPrefix(fieldId);
-
-        if (fieldProps.editable == true){
-
-          var fieldObj = {};
-
-          if (this.schema[fieldId].label != undefined) {
-            fieldObj['label'] = this.schema[fieldId].label;
-          }
-
-          if (this.schema[fieldId].displayType != undefined) {
-            fieldObj['type'] = this.schema[fieldId].displayType;
-          }
-
-          formSchemaOptions[id] = fieldObj;
-        }
-      }).bind(this));
-
-      return formSchemaOptions;
+      this.initialized = true;
     }
-});
+  }
 
-module.exports = Dialect;
+  getTest(){
+    return 'test';
+  }
+
+  get entityTypeName() {
+    return 'FVDialect';
+  }
+}

@@ -1,8 +1,10 @@
-var Backbone = require('backbone');
-var Dialect = require('./Dialect');
+import { Collection } from 'backbone';
+import Dialect from 'models/Dialect';
 
-var Dialects = Backbone.Collection.extend({
-    model: Dialect
-});
+export default class Dialects extends Collection {
 
-module.exports = Dialects;
+	constructor (options) {
+		super(options);
+		this.model = Dialect;
+	}
+}

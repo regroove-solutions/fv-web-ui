@@ -1,5 +1,10 @@
 import React from 'react';
 
+// Models
+import Language from 'models/Language';
+import Languages from 'models/Languages';
+
+// Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
@@ -13,7 +18,8 @@ export default class ExploreFamily extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired
+      router: React.PropTypes.object.isRequired,
+      siteProps: React.PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -23,8 +29,11 @@ export default class ExploreFamily extends React.Component {
       childData: []
     }
 
+    // Create new operations object
+    this.languageOperations = new DirectoryOperations(Language, Languages, context.client, { domain: context.siteProps.domain });
+
     // Get list of languages
-    DirectoryOperations.getLanguages(context.client, props.params.family).then((function(languages){
+    this.languageOperations.getDocumentsByPath('/Workspaces/Data/' + props.params.family + '/').then((function(languages){
 
       let fieldsToRender = [];
 

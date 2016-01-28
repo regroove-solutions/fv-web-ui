@@ -3,11 +3,103 @@ import StringHelpers from 'common/StringHelpers';
 
 export default class DocumentOperations {
 
-  constructor(documentType, documentTypePlural){
+  constructor(documentType, documentTypePlural, client, properties = []) {
     this.documentType = documentType;
     this.documentTypePlural = documentTypePlural;
+    this.client = client;
+    this.properties = properties;
 
-    this.getDocumentsByDialect = this.getDocumentsByDialect.bind(this);
+    this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
+  }
+
+
+  /**
+  * Get a single document of a certain type based on a path and title match
+  * This document may or may not contain children 
+  */
+  getDocumentByPathAndTitle(path = "", title, headers = null, params = null) {
+    // Expose fields to promise
+    let client = this.client;
+    let selectDefault = this.selectDefault;
+    let domain = this.properties.domain;
+
+    path = StringHelpers.clean(path);
+    title = StringHelpers.clean(title);
+
+    // Initialize an empty document from type
+    let documentType = this.documentType;
+
+    return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+          let defaultParams = {
+            query: 
+              "SELECT * FROM " + documentType.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND dc:title LIKE '" + title + "' AND  " + selectDefault + ")"
+          };
+
+          let defaultHeaders = {};
+
+          params = Object.assign(defaultParams, params);
+          headers = Object.assign(defaultHeaders, headers);
+
+          client.operation('Document.Query')
+            .params(params)
+            .execute(headers, function(error, response) {
+              if (error) {
+                throw error;
+              }             
+              if (response.entries.length > 0) {
+                resolve(new documentType(response.entries[0]));
+              } else {
+                reject('No ' + documentType.prototype.entityTypeName +' found');
+              }
+          });
+    });
+  }
+
+  /**
+  * Get a single document by ID
+  */
+  getDocumentByID(id, headers = null, params = null) {
+    // Expose fields to promise
+    let client = this.client;
+    let selectDefault = this.selectDefault;
+
+    id = StringHelpers.clean(id);
+
+    // Initialize an empty document from type
+    let documentType = this.documentType;
+
+    return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+          let defaultParams = {
+            query: 
+              "SELECT * FROM " + documentType.prototype.entityTypeName + " WHERE (ecm:uuid='" + id + "' AND  " + selectDefault + ")"
+          };
+
+          let defaultHeaders = {};
+
+          params = Object.assign(defaultParams, params);
+          headers = Object.assign(defaultHeaders, headers);
+
+          client.operation('Document.Query')
+            .params(params)
+            .execute(headers, function(error, response) {
+              if (error) {
+                throw error;
+              }             
+              if (response.entries.length > 0) {
+                resolve(new documentType(response.entries[0]));
+              } else {
+                reject('No ' + documentType.prototype.entityTypeName +' found');
+              }
+          });
+    });
   }
 
   getMediaByWord(client, word, query = null) {
@@ -110,7 +202,6 @@ export default class DocumentOperations {
               }
 
               documentList.add(response.entries);
-
               resolve(documentList.toJSON());
           });
     });

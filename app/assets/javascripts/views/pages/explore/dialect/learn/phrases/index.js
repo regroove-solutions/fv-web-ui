@@ -78,22 +78,11 @@ export default class LearnPhrases extends React.Component {
     }
 
     this._handleDataRequest = this._handleDataRequest.bind(this);
-    this._handleDataCountRequest = this._handleDataCountRequest.bind(this);
     this._handleNavigate = this._handleNavigate.bind(this);
   }
 
   _handleNavigate(id) {
-    this.context.router.push('/explore/' + this.props.params.family + '/' + this.props.params.language + '/' + this.props.params.dialect + '/learn/phrases/' + id);
-  }
-
-  _handleDataCountRequest(childProps) {
-    return this.phraseOperations.getDocumentCountByDialect(
-        this.context.client,
-        childProps.dialect,
-        null,
-        // Use same schemas to make use of caching
-        {'X-NXproperties': 'dublincore, fv-Phrase, fvcore'}
-    );
+    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').title + '/' + this.props.dialect.get('parentLanguage').title + '/' + this.props.dialect.get('dc:title') + '/learn/phrases/' + id);
   }
 
   _handleDataRequest(childProps, page, pageSize, query = null) {
@@ -115,13 +104,14 @@ export default class LearnPhrases extends React.Component {
 
       content = 'Loading...';
 
-      if (this.props.dialect) {
+      if (this.props.dialect && this.props.handlesPhraseDataCountRequest) {
         content = <div className="row">
                     <div className="col-xs-12">
                       <h1>{this.props.dialect.get('dc:title')} Phrases</h1>
                       <DocumentListView
+                        objectDescriptions="phrases" 
                         onDataRequest={this._handleDataRequest}
-                        onDataCountRequest={this._handleDataCountRequest}
+                        onDataCountRequest={this.props.handlesPhraseDataCountRequest}
                         onSelectionChange={this._handleNavigate}
                         columns={this.state.columns}
                         className="browseDataGrid"  

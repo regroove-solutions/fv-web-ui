@@ -25,25 +25,13 @@ export default class Document extends Model{
   }
 
   getFormSchema(values) {
-
     var formFields = {};
-
-    if (values.parts_speech != null) {
-      this.parts_speech = values.parts_speech;
-    }
-
-    if (values.subjects != null) {
-      this.subjects = values.subjects;
-    }
 
     _.each(this.schema, (function(fieldProps, fieldId){
       if (fieldProps.editable == true){
        formFields[this.getFieldPrefix(fieldId)] = fieldProps.type; 
       }
     }).bind(this));
-
-    formFields[this.getFieldPrefix('part_of_speech')] = t.enums(this.parts_speech);
-    formFields[this.getFieldPrefix('subjects')] = t.list(t.enums(this.subjects));
 
     return t.struct(formFields);
   }

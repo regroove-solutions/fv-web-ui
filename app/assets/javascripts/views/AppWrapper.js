@@ -35,7 +35,8 @@ export default class Index extends React.Component {
           timeout: 30000
       },
       siteProps: {
-        title: 'FirstVoices'
+        title: ConfGlobal.title,
+        domain: ConfGlobal.domain
       }
     };
 

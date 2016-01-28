@@ -38,7 +38,7 @@ class DocumentListView extends React.Component {
     // Hide columns for responsive view!!
     this.state = {
       dataSource: props.onDataRequest(props, PAGE, PAGE_SIZE),
-      dataSourceCount: 0
+      dataSourceCount: null
     };
 
     // Get and set data count
@@ -82,9 +82,13 @@ class DocumentListView extends React.Component {
       zIndex: 0
     };
 
-    if (this.state.dataSourceCount == 0) {
+    if (!this.state.dataSourceCount === null) {
       HTML = <div>Loading...</div>;
-    } else {
+    }
+    else if (this.state.dataSourceCount == 0) {
+      HTML = <div>No {(this.props.objectDescriptions) ? this.props.objectDescriptions : "items"} found.</div>;
+    }
+    else {
       HTML = <Paper>
         <ClearFix>
         <DataGrid

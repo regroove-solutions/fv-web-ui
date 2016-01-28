@@ -10,7 +10,17 @@ import Language from 'models/Language';
 import Dialect from 'models/Dialect';
 import Dialects from 'models/Dialects';
 
-export default {
+export default class DirectoryOperations {
+
+  constructor(directoryType, directoryTypePlural, client, properties = []){
+    this.directoryType = directoryType;
+    this.directoryTypePlural = directoryTypePlural;
+    this.client = client;
+    this.properties = properties;
+
+    this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
+  }
+
   getSubjects(client) {
     return new Promise(
     function(resolve, reject) {
@@ -32,7 +42,7 @@ export default {
 
       });
     });
-  },
+  }
   getPartsOfSpeech(client) {
     return new Promise(
       function(resolve, reject) {
@@ -55,7 +65,7 @@ export default {
         });
 
       });
-  },
+  }
   getWordsByLangauge (client, language) {
     return new Promise(
         // The resolver function is called with the ability to resolve or
@@ -66,7 +76,7 @@ export default {
 
           client.operation('Document.Query')
             .params({
-              query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace')"
+              query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace' AND ecm:currentLifeCycleState <> 'deleted'))"
             })
           .execute(function(error, response) {
             if (error) {
@@ -98,30 +108,54 @@ export default {
 
           });
     });
-  },
-  getLanguageFamilies (client) {
-	    return new Promise(
-	        // The resolver function is called with the ability to resolve or
-	        // reject the promise
-	        function(resolve, reject) {
+  }
 
-	          client.operation('Document.Query')
-	            .params({
-	              query: "SELECT * FROM Document WHERE (ecm:primaryType = 'FVLanguageFamily' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY dc:title"
-	           })
-	          .execute(function(error, response) {
-	            if (error) {
-	              throw error;
-	            }	            
-	            if (response.entries.length > 0) {
-	                var nuxeoListDocs = new LanguageFamilies(response.entries);
-	                resolve(nuxeoListDocs);
-	            } else {
-	              reject('No Language Families found');
-	            }
-	          });
-	    });
-	  },
+  /**
+  * Get all documents of a certain type based on a path
+  * These documents are expected to contain other entries
+  * E.g. FVFamily, FVLanguage, FVDialect
+  */
+  getDocumentsByPath(path = "", headers = null, params = null) {
+    // Expose fields to promise
+    let client = this.client;
+    let selectDefault = this.selectDefault;
+    let domain = this.properties.domain;
+
+    path = StringHelpers.clean(path);
+
+    // Initialize and empty document list from type
+    let documentList = new this.directoryTypePlural(null);
+
+    return new Promise(
+        // The resolver function is called with the ability to resolve or
+        // reject the promise
+        function(resolve, reject) {
+
+          let defaultParams = {
+            query: 
+              "SELECT * FROM " + documentList.model.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND " + selectDefault + ") ORDER BY dc:title"
+          };
+
+          let defaultHeaders = {};
+
+          params = Object.assign(defaultParams, params);
+          headers = Object.assign(defaultHeaders, headers);
+
+          client.operation('Document.Query')
+            .params(params)
+            .execute(headers, function(error, response) {
+              if (error) {
+                throw error;
+              }             
+              if (response.entries.length > 0) {
+                documentList.add(response.entries);
+                resolve(documentList);
+              } else {
+                reject('No ' + documentList.model.prototype.entityTypeName +' found');
+              }
+          });
+    });
+  }
   
   getLanguages (client, family) {
 	  return new Promise(
@@ -158,7 +192,7 @@ export default {
 				  }				  
 			  });
 	  });  
-  },
+  }
   
   getDialects(client) {
 	  return new Promise(
@@ -179,7 +213,7 @@ export default {
           });
 
       });  
-  },
+  }
 
   getDialectsByLanguage(client, family, language) {
 	  return new Promise(
@@ -202,7 +236,7 @@ export default {
           resolve(new Dialects(response.entries));
         });
 	  });  
-  },
+  }
 
   getDialectByPath(client, family, language, dialect) {
     return new Promise(

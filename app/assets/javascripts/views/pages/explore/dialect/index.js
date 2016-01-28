@@ -1,6 +1,14 @@
 import React from 'react';
 import classNames from 'classnames';
 
+// Models
+import Dialect from 'models/Dialect';
+import Dialects from 'models/Dialects';
+
+// Operations
+import DocumentOperations from 'operations/DocumentOperations';
+
+// Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -10,8 +18,6 @@ import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
-import DirectoryOperations from 'operations/DirectoryOperations';
-
 /**
 * Dialect portal page showing all the various components of this dialect.
 */
@@ -20,7 +26,8 @@ export default class ExploreDialect extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired
+      router: React.PropTypes.object.isRequired,
+      siteProps: React.PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -30,6 +37,9 @@ export default class ExploreDialect extends React.Component {
       dialect: null
     };
 
+    // Create new operations object
+    this.dialectOperations = new DocumentOperations(Dialect, Dialects, context.client, { domain: context.siteProps.domain });
+
     this._fetchDialect();
 
     this._navigate = this._navigate.bind(this);
@@ -38,24 +48,26 @@ export default class ExploreDialect extends React.Component {
   // Handle change of params when navigating within router
   // See https://github.com/rackt/react-router/blob/latest/docs/guides/advanced/ComponentLifecycle.md
   componentDidUpdate (prevProps) {
-    let oldDialect = prevProps.params.dialect
-    let newDialect = this.props.params.dialect
+    let oldDialect = prevProps.params.dialect;
+    let newDialect = this.props.params.dialect;
 
     if (newDialect !== oldDialect)
       this._fetchDialect();
   }
 
   _fetchDialect() {
-    DirectoryOperations.getDialectByPath(this.context.client, this.props.params.family, this.props.params.language, this.props.params.dialect).then((function(dialect){
+    this.dialectOperations.getDocumentByPathAndTitle(
+      '/Workspaces/Data/' + this.props.params.family + '/' + this.props.params.language + '/', this.props.params.dialect,
+      {headers: { 'X-NXenrichers.document': 'firstvoices' }}
+    ).then((function(dialect){
       this.setState({
         dialect: dialect
       });
-
     }).bind(this));
   }
 
   _navigate(page) {
-    this.context.router.push('/explore/' + this.props.params.family + '/' + this.props.params.language + '/' + this.props.params.dialect + '/' + page);
+    this.context.router.push('/explore/' + this.state.dialect.get("parentLanguageFamily").title + '/' + this.state.dialect.get("parentLanguage").title + '/' + this.state.dialect.get("dc:title") + '/' + page);
   }
 
   render() {
@@ -76,7 +88,7 @@ export default class ExploreDialect extends React.Component {
         </div>
 
         <div className={classNames('col-xs-12', 'col-md-6')}>
-          <h1>{(this.props.dialect) ? this.props.dialect.get('dc:title') : this.props.params.dialect} Portal</h1>
+          <h1>{(this.state.dialect) ? this.state.dialect.get('dc:title') : ""} Portal</h1>
           <p>&quot;Pelpala7w&iacute;t i ucwalm&iacute;cwa m&uacute;ta7 ti tm&iacute;cwa &quot;- The people and land are one We are the Lilwat Nation, an Interior Salish people We live in a stunning and dramatic landscape with a rich biodiversity-a mysterious place of towering mountains,ice fields,alpine meadows,white-water rivers and braided river valleys that run to a milky color due to the silt and clay deposited by glacial melt. While Lilwat is a separate and distinct Nation, its still remains part of the St'at'imc Nation Our Language is called Ucwalmicwts. It is taught at both X'itolacw Community School and Pemberton Secondary School. Lilwat Also has a Language Immersion school which goes from Nursey to grade three and each subject in the immersion school is taught in the Ucwalmicwts Language. L&iacute;&#318;wat Nation (L&iacute;&#318;wat means where the rivers meet). </p>
 
           <p>Originally the Lil'wat7&uacute;l managed a vast territory within the headwaters of the three rivers: Green River, Lillooet River and the Birkenhead River. </p>

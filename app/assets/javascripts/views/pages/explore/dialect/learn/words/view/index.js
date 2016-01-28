@@ -21,9 +21,13 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
-import WordOperations from 'operations/WordOperations';
-
+// Models
 import Word from 'models/Word';
+import Words from 'models/Words';
+
+// Operations
+import DocumentOperations from 'operations/DocumentOperations';
+import WordOperations from 'operations/WordOperations';
 
 /**
 * View word entry
@@ -33,11 +37,14 @@ export default class View extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired
+      router: React.PropTypes.object.isRequired,
+      siteProps: React.PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
+
+    this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
 
     this.state = {
       word: null,
@@ -64,7 +71,7 @@ export default class View extends React.Component {
   }
 
   _fetchWord() {
-    WordOperations.getWordById(this.context.client, this.props.params.word).then((function(word){
+    this.wordOperations.getDocumentByID(this.props.params.word).then((function(word){
       this.setState({
         word: word
       });
