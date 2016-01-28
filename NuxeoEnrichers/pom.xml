@@ -8,9 +8,9 @@
     <version>7.4</version>
   </parent>
   <groupId>org.nuxeo</groupId>
-  <artifactId>FirstVoicesNuxeo</artifactId>
+  <artifactId>NuxeoEnrichers</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>FirstVoicesNuxeo</name>
+  <name>NuxeoEnrichers</name>
   <description/>
   <dependencies>
     <dependency>
