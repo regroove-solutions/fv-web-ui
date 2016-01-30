@@ -29,6 +29,11 @@ You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads
 * On some machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
 
 ## Contributing ##
+
+### Adding New Dependencies
+1. Install dependency using `npm install package --save` or `npm install package --save-dev`
+2. When ready, run `npm shrinkwrap` to lock dependencies.
+
 ### Tips
 * Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
 * Get familiar with [ES2015](https://babeljs.io/docs/learn-es2015/) syntax
