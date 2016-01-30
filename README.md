@@ -28,6 +28,11 @@ You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads
 
 * On some machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
 
+## Contributing ##
+### Tips
+* Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
+* Get familiar with [ES2015](https://babeljs.io/docs/learn-es2015/) syntax
+
 ## Licensing ##
 
 The data and code in this repository is licensed under multiple licenses.
