@@ -99,10 +99,6 @@ export default class Dialect extends Document {
     }
   }
 
-  getTest(){
-    return 'test';
-  }
-
   get entityTypeName() {
     return 'FVDialect';
   }
