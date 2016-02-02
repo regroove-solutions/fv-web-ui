@@ -48,7 +48,7 @@ export default class ExploreArchive extends React.Component {
     this.languageFamilyOperations = new DirectoryOperations(LanguageFamily, LanguageFamilies, context.client, { domain: context.siteProps.domain });
 
     // Get list of language families
-    this.languageFamilyOperations.getDocumentsByPath().then((function(families){
+    this.languageFamilyOperations.getDocumentsByPath("/sections").then((function(families){
 
       let fieldsToRender = [];
 
@@ -77,6 +77,27 @@ export default class ExploreArchive extends React.Component {
 
   render() {
 
+    let content = "No Language Families found.";
+
+    if (this.state.childData && this.state.childData.length > 0) {
+      content = <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                  <GridList
+                    cols={2}
+                    cellHeight={200}
+                    style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
+                    >
+                      {this.state.childData.map((tile, i) => 
+                        <GridTile
+                          onTouchTap={this._exploreEntry.bind(this, tile.title)}
+                          key={tile.id}
+                          title={tile.title}
+                          subtitle={tile.description}
+                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                      )}
+                  </GridList>
+                </div>
+    }
+
     return <div className="row">
             <div className="col-md-4 col-xs-12">
               <h1>Explore Archive</h1>
@@ -86,23 +107,7 @@ export default class ExploreArchive extends React.Component {
               </div>
             </div>
             <div className="col-md-8 col-xs-12">
-
-              <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                <GridList
-                  cols={2}
-                  cellHeight={200}
-                  style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                  >
-                    {this.state.childData.map((tile, i) => 
-                      <GridTile
-                        onTouchTap={this._exploreEntry.bind(this, tile.title)}
-                        key={tile.id}
-                        title={tile.title}
-                        subtitle={tile.description}
-                        ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
-                    )}
-                </GridList>
-              </div>
+              {content}
             </div>
           </div>;
   }

@@ -42,11 +42,7 @@ export default class Index extends React.Component {
           baseURL: ConfGlobal.baseURL,
           restPath: 'site/api/v1',
           automationPath: 'site/automation',
-          auth: {
-            method: 'basic',
-            username: ConfGlobal.auth.username,
-            password: ConfGlobal.auth.password
-          },
+
           timeout: 30000
       },
       siteProps: {

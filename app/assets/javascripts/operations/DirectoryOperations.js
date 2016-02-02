@@ -73,7 +73,7 @@ export default class DirectoryOperations {
               if (error) {
                 throw error;
               }             
-              if (response.entries.length > 0) {
+              if (response.entries && response.entries.length > 0) {
                 documentList.add(response.entries);
                 resolve(documentList);
               } else {
