@@ -108,10 +108,10 @@ module.exports = function(env) {
       }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin(),
-      new StatsPlugin('stats.json', {
+      /*new StatsPlugin('stats.json', {
         chunkModules: true,
         exclude: [/node_modules[\\\/]react/]
-      }),
+      }),*/
       new webpack.NoErrorsPlugin()
     )
   }
