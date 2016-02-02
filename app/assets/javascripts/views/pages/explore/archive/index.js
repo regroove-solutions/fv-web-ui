@@ -77,7 +77,7 @@ export default class ExploreArchive extends React.Component {
 
   render() {
 
-    let content = "No Language Families found.";
+    let content = "No published Language Families found.";
 
     if (this.state.childData && this.state.childData.length > 0) {
       content = <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
