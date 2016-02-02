@@ -28,6 +28,14 @@ You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads
 
 * On some machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
 
+## Building for Production ##
+
+In order to build for production:
+1. Run `gulp build:production`.
+2. Copy generated files in /public folder to your webserver.
+
+Note: Remember to configure your web application to rewrite all requests to the root path, in order for Push State to work.
+
 ## Contributing ##
 
 ### Adding New Dependencies
