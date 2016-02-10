@@ -70,7 +70,7 @@ export default class DialectDropDown extends React.Component {
     // Create new operations object
     this.dialectOperations = new DirectoryOperations(Dialect, Dialects, context.client, { domain: context.siteProps.domain });
 
-    this.dialectOperations.getDocumentsByPath("", {headers: { 'X-NXenrichers.document': 'firstvoices' }}).then((function(dialects){
+    this.dialectOperations.getDocumentsByPath("/sections", {headers: { 'X-NXenrichers.document': 'ancestry' }}).then((function(dialects){
 
         var dropdownData = null;
 
@@ -79,8 +79,8 @@ export default class DialectDropDown extends React.Component {
           var parentLanguageTitle, parentLanguageFamilyTitle;
 
           if (dialect.get('parentLanguage')) {
-            parentLanguageTitle = dialect.get('parentLanguage').title;
-            parentLanguageFamilyTitle = dialect.get('parentLanguageFamily').title;
+            parentLanguageFamilyTitle = dialect.get('parentLanguageFamily').get('dc:title');
+            parentLanguageTitle = dialect.get('parentLanguage').get('dc:title');
 
             return (<ListItem
                       value={'/explore/' + parentLanguageFamilyTitle + '/' + parentLanguageTitle + '/' + dialect.get('dc:title')}

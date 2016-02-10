@@ -17,6 +17,9 @@ import Document from 'models/Document';
 import t from 'tcomb-form';
 import _ from 'underscore';
 
+import LanguageFamily from 'models/LanguageFamily';
+import Language from 'models/Language';
+
 export default class Dialect extends Document {
 
   constructor(data) {
@@ -80,18 +83,26 @@ export default class Dialect extends Document {
         this.set(this.getFieldPrefix(fieldId), this.getFieldData(fieldId, fieldProps, data));
       }).bind(this));
 
-      // TODO: Convert language family and language to model objects
-
       // If the enricher exists, set relevant objects
-      if (data.contextParameters && data.contextParameters.firstvoices) {
+      if (data.contextParameters && data.contextParameters.ancestry) {
 
         // Set language family context parameters
-        if (data.contextParameters.firstvoices.family)
-          this.set('parentLanguageFamily', data.contextParameters.firstvoices.family);
+        if (data.contextParameters.ancestry.family) {
+          this.set('parentLanguageFamily', new LanguageFamily({
+            'uid': data.contextParameters.ancestry.family.uid,
+            'title': data.contextParameters.ancestry.family['dc:title'],
+            'properties': {'dc:title': data.contextParameters.ancestry.family['dc:title']}
+          }));
+        }
 
         // Set language context parameters
-        if (data.contextParameters.firstvoices.language)
-          this.set('parentLanguage', data.contextParameters.firstvoices.language);
+        if (data.contextParameters.ancestry.language) {
+          this.set('parentLanguage', new LanguageFamily({
+            'uid': data.contextParameters.ancestry.language.uid,
+            'title': data.contextParameters.ancestry.language['dc:title'],
+            'properties': {'dc:title': data.contextParameters.ancestry.language['dc:title']}
+          }));
+        }
 
       }
 
