@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>7.4</version>
+    <version>7.10</version>
   </parent>
   <groupId>org.nuxeo</groupId>
   <artifactId>NuxeoEnrichers</artifactId>
@@ -78,10 +78,6 @@
       <artifactId>jackson-mapper-asl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.nuxeo.ecm.core</groupId>
-      <artifactId>nuxeo-core-io</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-test</artifactId>
       <scope>test</scope>
@@ -97,6 +93,10 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
   </dependencies>
   <repositories>
@@ -131,5 +131,27 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+ 	<!-- Hotfix Repositories For Nuxeo Customers Only -->
+	<repository>
+	    <id>hotfix-releases</id>
+	    <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-releases</url>
+	    <releases>
+	      <enabled>true</enabled>
+	    </releases>
+	    <snapshots>
+	      <enabled>false</enabled>
+	    </snapshots>
+	</repository>
+	<repository>
+	    <id>hotfix-snapshots</id>
+	    <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
+	    <releases>
+	      <enabled>false</enabled>
+	    </releases>
+	    <snapshots>
+	      <updatePolicy>always</updatePolicy>
+	      <enabled>true</enabled>
+	    </snapshots>
+	</repository>
   </repositories>
 </project>
