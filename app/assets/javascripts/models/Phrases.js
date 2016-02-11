@@ -21,5 +21,6 @@ export default class Phrases extends Collection {
 	constructor (options) {
 		super(options);
 		this.model = Phrase;
+		this.totalResultSize = 0;
 	}
 }

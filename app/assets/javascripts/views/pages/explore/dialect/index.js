@@ -75,7 +75,6 @@ export default class ExploreDialect extends React.Component {
       '/sections/Data/' + this.props.params.family + '/' + this.props.params.language + '/', this.props.params.dialect,
       {headers: { 'X-NXenrichers.document': 'ancestry' }}
     ).then((function(dialect){
-      console.log(dialect);
       this.setState({
         dialect: dialect
       });

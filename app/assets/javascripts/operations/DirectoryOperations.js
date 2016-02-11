@@ -74,7 +74,10 @@ export default class DirectoryOperations {
                 throw error;
               }             
               if (response.entries && response.entries.length > 0) {
+                
                 documentList.add(response.entries);
+                documentList.totalResultSize = response.totalSize;
+
                 resolve(documentList);
               } else {
                 reject('No ' + documentList.model.prototype.entityTypeName +' found');

@@ -237,41 +237,4 @@ export default class DocumentOperations {
           });
     });
   }
-
-  getDocumentCountByDialect(client, dialect, query = null, headers = null, params = null) {
-
-    // Initialize and empty document list from type
-    let documentType = new this.documentType(null);
-
-    return new Promise(
-        function(resolve, reject) {
-
-          let defaultParams = {
-            query: 
-              "  SELECT COUNT(ecm:uuid) FROM " + documentType.entityTypeName + 
-              "  WHERE (fva:dialect = '" + dialect.get('id') + 
-              "' AND ecm:currentLifeCycleState <> 'deleted')" + 
-                 ((query) ? (" AND " + query) : "" )
-          };
-
-          let defaultHeaders = {
-            'X-NXenrichers.document': 'parentDoc'
-          };
-
-          params = Object.assign(defaultParams, params);
-          headers = Object.assign(defaultHeaders, headers);
-
-          client.operation('Repository.ResultSetPageProvider')
-            .params(params)
-            .execute(headers, function(error, response) {
-
-              if (error) {
-                throw error;
-              }
-
-              // TODO: More predictable way to get this value
-              resolve(_.values(response.entries[0])[0]);
-          });
-    });
-  }
 }

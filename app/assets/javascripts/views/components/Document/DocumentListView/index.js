@@ -50,18 +50,21 @@ class DocumentListView extends React.Component {
     this._onPageChange = this._onPageChange.bind(this);
     this._onPageSizeChange = this._onPageSizeChange.bind(this);
 
+    let _this = this;
+
     // Hide columns for responsive view!!
     this.state = {
-      dataSource: props.onDataRequest(props, PAGE, PAGE_SIZE),
+      dataSource: props.onDataRequest(props, PAGE, PAGE_SIZE).then(function(results){
+
+        // Set total count
+        this.setState({
+          dataSourceCount: results.totalResultSize
+        });
+
+        return results;
+      }.bind(this)),
       dataSourceCount: null
     };
-
-    // Get and set data count
-    props.onDataCountRequest(props).then((function(count){
-          this.setState({
-            dataSourceCount: count
-          });
-    }).bind(this));
   }
 
   _onSelectionChange(newSelectedId, data){
@@ -108,7 +111,9 @@ class DocumentListView extends React.Component {
         <ClearFix>
         <DataGrid
           idProperty="id"
-          dataSource={this.state.dataSource}
+          dataSource={this.state.dataSource.then(function(value) {
+            return value.toJSON();
+          })}
           dataSourceCount={this.state.dataSourceCount}
           columns={this.props.columns}
           rowHeight="55"

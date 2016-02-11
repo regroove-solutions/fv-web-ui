@@ -20,9 +20,6 @@ import DocumentListView from 'views/components/Document/DocumentListView';
 import Word from 'models/Word';
 import Words from 'models/Words';
 
-// Operations
-import DocumentOperations from 'operations/DocumentOperations';
-
 /**
 * Learn words
 */
@@ -38,11 +35,10 @@ export default class LearnWords extends React.Component {
   constructor(props, context){
     super(props, context);
 
-    // Create new operations object
-    this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
-
     // Expose 'this' to columns functions below
     let _this = this;    
+
+    this.currentPath = props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + props.dialect.get('parentLanguage').get('dc:title') + '/' + props.dialect.get('dc:title');
 
     this.state = {
       columns : [
@@ -93,22 +89,11 @@ export default class LearnWords extends React.Component {
       ]
     }
 
-    this._handleDataRequest = this._handleDataRequest.bind(this);
     this._handleNavigate = this._handleNavigate.bind(this);
   }
 
   _handleNavigate(id) {
     this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + id);
-  }
-
-  _handleDataRequest(childProps, page, pageSize, query = null) {
-    return this.wordOperations.getDocumentsByDialect(
-        this.context.client,
-        childProps.dialect,
-        query,
-        {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-    );
   }
 
   render() {
@@ -120,14 +105,13 @@ export default class LearnWords extends React.Component {
 
       content = 'Loading...';
 
-      if (this.props.dialect && this.props.handleWordDataCountRequest) {
+      if (this.props.dialect) {
         content = <div className="row">
                     <div className="col-xs-12">
                       <h1>{this.props.dialect.get('dc:title')} Words</h1>
                       <DocumentListView
                         objectDescriptions="words" 
-                        onDataRequest={this._handleDataRequest}
-                        onDataCountRequest={this.props.handleWordDataCountRequest}
+                        onDataRequest={this.props.handleWordsDataRequest}
                         onSelectionChange={this._handleNavigate}
                         columns={this.state.columns}
                         className="browseDataGrid" 

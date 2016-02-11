@@ -20,9 +20,6 @@ import DocumentListView from 'views/components/Document/DocumentListView';
 import Phrase from 'models/Phrase';
 import Phrases from 'models/Phrases';
 
-// Operations
-import DocumentOperations from 'operations/DocumentOperations';
-
 /**
 * Learn phrases
 */
@@ -31,17 +28,17 @@ export default class LearnPhrases extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired
+      router: React.PropTypes.object.isRequired,
+      siteProps: React.PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
-    // Create new operations object
-    this.phraseOperations = new DocumentOperations(Phrase, Phrases);
-
     // Expose 'this' to columns functions below
     let _this = this;
+
+    this.currentPath = props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + props.dialect.get('parentLanguage').get('dc:title') + '/' + props.dialect.get('dc:title');
 
     this.state = {
       columns : [
@@ -92,22 +89,11 @@ export default class LearnPhrases extends React.Component {
       ]
     }
 
-    this._handleDataRequest = this._handleDataRequest.bind(this);
     this._handleNavigate = this._handleNavigate.bind(this);
   }
 
   _handleNavigate(id) {
     this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/phrases/' + id);
-  }
-
-  _handleDataRequest(childProps, page, pageSize, query = null) {
-    return this.phraseOperations.getDocumentsByDialect(
-        this.context.client,
-        childProps.dialect,
-        query,
-        {'X-NXproperties': 'dublincore, fv-Phrase, fvcore'},
-        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-    );
   }
 
   render() {
@@ -119,14 +105,13 @@ export default class LearnPhrases extends React.Component {
 
       content = 'Loading...';
 
-      if (this.props.dialect && this.props.handlesPhraseDataCountRequest) {
+      if (this.props.dialect) {
         content = <div className="row">
                     <div className="col-xs-12">
                       <h1>{this.props.dialect.get('dc:title')} Phrases</h1>
                       <DocumentListView
                         objectDescriptions="phrases" 
-                        onDataRequest={this._handleDataRequest}
-                        onDataCountRequest={this.props.handlesPhraseDataCountRequest}
+                        onDataRequest={this.props.handlePhrasesDataRequest}
                         onSelectionChange={this._handleNavigate}
                         columns={this.state.columns}
                         className="browseDataGrid"  

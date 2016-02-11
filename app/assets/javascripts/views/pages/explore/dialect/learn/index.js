@@ -26,6 +26,7 @@ import Phrases from 'models/Phrases';
 
 // Operations
 import DocumentOperations from 'operations/DocumentOperations';
+import DirectoryOperations from 'operations/DirectoryOperations';
 
 /**
 * Learn portion of the dialect portal
@@ -44,20 +45,22 @@ export default class Learn extends React.Component {
 
     this._navigate = this._navigate.bind(this);
 
-    this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
-    this.phraseOperations = new DocumentOperations(Phrase, Phrases, context.client, { domain: context.siteProps.domain });
+    this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: context.siteProps.domain });
+    this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: context.siteProps.domain });
+
+    this.currentPath = props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + props.dialect.get('parentLanguage').get('dc:title') + '/' + props.dialect.get('dc:title');
 
     this.state = {
       wordCount: 0,
       phraseCount: 0
     }
 
-    // TODO: REST end-point that will return count of objects within a dialect (dialect statistics)
-    this._getWordCount(props);
-    this._getPhraseCount(props);
+    // Pre-fetch words and phrases to speed up display and extract count
+    this._getPhrasesAndSetResultSize(props);
+    this._getWordsAndSetResultSize(props);
 
-    this._handleWordDataCountRequest = this._handleWordDataCountRequest.bind(this);
-    this._handlePhraseDataCountRequest = this._handlePhraseDataCountRequest.bind(this);
+    this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
+    this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
   }
 
   // Handle change of params when navigating within router
@@ -67,44 +70,40 @@ export default class Learn extends React.Component {
     let newDialect = this.props.dialect;
 
     if (newDialect !== oldDialect && newDialect != null) {
-      this._getWordCount(this.props);
-      this._getPhraseCount(this.props);
+      this._getWordsAndSetResultSize(this.props);
+      this._getPhrasesAndSetResultSize(this.props);
     }
   }
 
-  _getWordCount(props){
-    this._handleWordDataCountRequest(props).then((function(count){
+  _getPhrasesAndSetResultSize(props){
+    this._handlePhrasesDataRequest(props).then((function(phrases){
       this.setState({
-        wordCount: count
+        phraseCount: phrases.totalResultSize
       });
     }).bind(this));
   }
 
-  _getPhraseCount(props){
-    this._handlePhraseDataCountRequest(props).then((function(count){
+  _getWordsAndSetResultSize(props){
+    this._handleWordsDataRequest(props).then((function(words){
       this.setState({
-        phraseCount: count
+        wordCount: words.totalResultSize
       });
     }).bind(this));
   }
 
-  _handleWordDataCountRequest(childProps) {
-    return this.wordOperations.getDocumentCountByDialect(
-        this.context.client,
-        childProps.dialect,
-        null,
-        // Use same schemas to make use of caching
-        {'X-NXproperties': 'dublincore, fv-word, fvcore'}
+  _handlePhrasesDataRequest(childProps, page = 1, pageSize = 20) {
+    return this.phraseOperations.getDocumentsByPath(
+        '/sections/Data/' + this.currentPath,
+        {'X-NXproperties': 'dublincore, fv-phrase, fvcore'},
+        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
     );
   }
 
-  _handlePhraseDataCountRequest(childProps) {
-    return this.phraseOperations.getDocumentCountByDialect(
-        this.context.client,
-        childProps.dialect,
-        null,
-        // Use same schemas to make use of caching
-        {'X-NXproperties': 'dublincore, fv-phrase, fvcore'}
+  _handleWordsDataRequest(childProps, page = 1, pageSize = 20) {
+    return this.wordOperations.getDocumentsByPath(
+        '/sections/Data/' + this.currentPath,
+        {'X-NXproperties': 'dublincore, fv-word, fvcore'},
+        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
     );
   }
 
@@ -118,8 +117,8 @@ export default class Learn extends React.Component {
     let content = React.Children.map(this.props.children, function(child) {
         return React.cloneElement(child, {
           dialect: this.props.dialect,
-          handleWordDataCountRequest: this._handleWordDataCountRequest,
-          handlesPhraseDataCountRequest: this._handlePhraseDataCountRequest
+          handlePhrasesDataRequest: this._handlePhrasesDataRequest,
+          handleWordsDataRequest: this._handleWordsDataRequest
         });
     }, this);
 
