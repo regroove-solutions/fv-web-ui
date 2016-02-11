@@ -98,7 +98,7 @@ export default class LearnWords extends React.Component {
   }
 
   _handleNavigate(id) {
-    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').title + '/' + this.props.dialect.get('parentLanguage').title + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + id);
+    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + id);
   }
 
   _handleDataRequest(childProps, page, pageSize, query = null) {

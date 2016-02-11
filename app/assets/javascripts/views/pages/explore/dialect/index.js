@@ -72,9 +72,10 @@ export default class ExploreDialect extends React.Component {
 
   _fetchDialect() {
     this.dialectOperations.getDocumentByPathAndTitle(
-      '/Workspaces/Data/' + this.props.params.family + '/' + this.props.params.language + '/', this.props.params.dialect,
-      {headers: { 'X-NXenrichers.document': 'firstvoices' }}
+      '/sections/Data/' + this.props.params.family + '/' + this.props.params.language + '/', this.props.params.dialect,
+      {headers: { 'X-NXenrichers.document': 'ancestry' }}
     ).then((function(dialect){
+      console.log(dialect);
       this.setState({
         dialect: dialect
       });
@@ -82,7 +83,7 @@ export default class ExploreDialect extends React.Component {
   }
 
   _navigate(page) {
-    this.context.router.push('/explore/' + this.state.dialect.get("parentLanguageFamily").title + '/' + this.state.dialect.get("parentLanguage").title + '/' + this.state.dialect.get("dc:title") + '/' + page);
+    this.context.router.push('/explore/' + this.state.dialect.get("parentLanguageFamily").get('dc:title') + '/' + this.state.dialect.get("parentLanguage").get('dc:title') + '/' + this.state.dialect.get("dc:title") + '/' + page);
   }
 
   render() {

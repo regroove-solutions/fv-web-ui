@@ -97,7 +97,7 @@ export default class LearnPhrases extends React.Component {
   }
 
   _handleNavigate(id) {
-    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').title + '/' + this.props.dialect.get('parentLanguage').title + '/' + this.props.dialect.get('dc:title') + '/learn/phrases/' + id);
+    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/phrases/' + id);
   }
 
   _handleDataRequest(childProps, page, pageSize, query = null) {
