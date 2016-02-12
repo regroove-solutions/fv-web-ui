@@ -38,8 +38,6 @@ export default class LearnWords extends React.Component {
     // Expose 'this' to columns functions below
     let _this = this;    
 
-    this.currentPath = props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + props.dialect.get('parentLanguage').get('dc:title') + '/' + props.dialect.get('dc:title');
-
     this.state = {
       columns : [
         { name: 'title', title: 'Word', render: function(v, data, cellProps){

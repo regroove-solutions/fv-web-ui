@@ -48,11 +48,10 @@ export default class Learn extends React.Component {
     this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: context.siteProps.domain });
     this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: context.siteProps.domain });
 
-    this.currentPath = props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + props.dialect.get('parentLanguage').get('dc:title') + '/' + props.dialect.get('dc:title');
-
     this.state = {
-      wordCount: 0,
-      phraseCount: 0
+      wordCount: null,
+      phraseCount: null,
+      dialectPath: props.params.family + '/' + props.params.language + '/' + props.params.dialect
     }
 
     // Pre-fetch words and phrases to speed up display and extract count
@@ -70,8 +69,8 @@ export default class Learn extends React.Component {
     let newDialect = this.props.dialect;
 
     if (newDialect !== oldDialect && newDialect != null) {
-      this._getWordsAndSetResultSize(this.props);
-      this._getPhrasesAndSetResultSize(this.props);
+      if (this.state.wordCount == null) this._getWordsAndSetResultSize(this.props);
+      if (this.state.phraseCount == null) this._getPhrasesAndSetResultSize(this.props);
     }
   }
 
@@ -93,7 +92,7 @@ export default class Learn extends React.Component {
 
   _handlePhrasesDataRequest(childProps, page = 1, pageSize = 20) {
     return this.phraseOperations.getDocumentsByPath(
-        '/sections/Data/' + this.currentPath,
+        '/sections/Data/' + this.state.dialectPath,
         {'X-NXproperties': 'dublincore, fv-phrase, fvcore'},
         {'currentPageIndex': (page - 1), 'pageSize': pageSize}
     );
@@ -101,7 +100,7 @@ export default class Learn extends React.Component {
 
   _handleWordsDataRequest(childProps, page = 1, pageSize = 20) {
     return this.wordOperations.getDocumentsByPath(
-        '/sections/Data/' + this.currentPath,
+        '/sections/Data/' + this.state.dialectPath,
         {'X-NXproperties': 'dublincore, fv-word, fvcore'},
         {'currentPageIndex': (page - 1), 'pageSize': pageSize}
     );
@@ -158,8 +157,8 @@ export default class Learn extends React.Component {
             <div className="row">
               <div className="col-xs-12">
                 <div>
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'words')} label={"Words (" + this.state.wordCount + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'phrases')} label={"Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._navigate.bind(this, 'words')} label={(this.state.wordCount == null) ? "Words (0)" : "Phrases (" + this.state.wordCount + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._navigate.bind(this, 'phrases')} label={(this.state.phraseCount == null) ? "Phrases (0)" : "Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._navigate.bind(this, 'songs')} label="Songs" secondary={true} /> 
                   <RaisedButton onTouchTap={this._navigate.bind(this, 'stories')} label="Stories" secondary={true} /> 
                 </div>
