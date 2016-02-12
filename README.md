@@ -21,9 +21,10 @@ This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/g
 
 You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads). Clone this repo from GitHub, change directory to the repo root.
 
-1. Run `npm install` *.
-2. Run `gulp` to start a Node server.  Defaults to [localhost:3001](http://localhost:3001).
-3. Install [Nuxeo](http://www.nuxeo.com) and setup your server, including enabling [Cross-Origin Resource Sharing (CORS)](https://doc.nuxeo.com/pages/viewpage.action?pageId=14257084).
+1. Run `npm install -g gulp`.
+2. Run `npm install`.
+3. Run `gulp` to start a Node server.  Defaults to [localhost:3001](http://localhost:3001).
+4. Install [Nuxeo](http://www.nuxeo.com) and setup your server, including enabling [Cross-Origin Resource Sharing (CORS)](https://doc.nuxeo.com/pages/viewpage.action?pageId=14257084).
 4. Rename */app/assets/javascripts/configuration/sample.local.json* to *local.json* and update that file.
 
 * On some machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
@@ -31,8 +32,10 @@ You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads
 ## Building for Production ##
 
 In order to build for production:
-1. Run `gulp build:production`.
-2. Copy generated files in /public folder to your webserver.
+1. Run `npm install -g gulp`.
+2. Run `npm install`.
+3. Run `gulp build:production`.
+4. Copy generated files in /public folder to your webserver.
 
 Note: Remember to configure your web application to rewrite all requests to the root path, in order for Push State to work.
 
