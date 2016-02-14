@@ -38,9 +38,6 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
 		// JSON object to be returned
 		ObjectNode jsonObj = mapper.createObjectNode();
 
-		// First create the parent document's Json object content
-		CoreSession session = doc.getCoreSession();
-
 		/*
 		 * Process fvancestry values
 		 */
