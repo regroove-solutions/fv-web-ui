@@ -53,14 +53,18 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
 
             // Disallow editing Dialect itself
             if ("FVDialect".equals(docType) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
-                return Access.DENY;
+                //return Access.DENY;
             }
             
         	// Disallow editing on main dialect types and FVDialect
             if (( doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) ) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
-                return Access.DENY;
+                //return Access.DENY;
             }
-        	
+            
+            // Allow creating children in FVDictionary
+            if ("FVDictionary".equals(docType) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.ADD_CHILDREN)) {
+                return Access.GRANT;
+            }
         }
         
         return access;
