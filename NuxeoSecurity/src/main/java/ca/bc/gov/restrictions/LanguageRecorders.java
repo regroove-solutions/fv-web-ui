@@ -18,7 +18,6 @@ import ca.bc.gov.utils.SecurityConstants;
 public class LanguageRecorders extends AbstractSecurityPolicy {
 
 	private static ArrayList<String> restrictedDocumentTypes = new ArrayList<String>();	
-	private static Boolean isRecorder = false;
 	
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
@@ -37,20 +36,31 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         NuxeoPrincipal np = ((NuxeoPrincipal) principal);
 
         // Only apply if user is part of the Recorders group
-        if (isRecorder || np.getAllGroups().contains(SecurityConstants.RECORDERS_GROUP)){
+        if (np.getAllGroups().contains(SecurityConstants.RECORDERS_GROUP)){
 
-        	isRecorder = true;
-        	
 	        if (restrictedDocumentTypes.isEmpty()) {
 	        	restrictedDocumentTypes.add("FVAlphabet");
 	        	restrictedDocumentTypes.add("FVPortal");
 	        	restrictedDocumentTypes.add("FVLinks");
 	        }
 
+	        String docType = doc.getType().getName();
+	        
 	        // Disallow all actions on restricted types
-            if ( restrictedDocumentTypes.contains(doc.getType().getName()) ) {
+            if ( restrictedDocumentTypes.contains(docType) ) {
                 return Access.DENY;
             }
+
+            // Disallow editing Dialect itself
+            if ("FVDialect".equals(docType) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
+                return Access.DENY;
+            }
+            
+        	// Disallow editing on main dialect types and FVDialect
+            if (( doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) ) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
+                return Access.DENY;
+            }
+        	
         }
         
         return access;

@@ -37,7 +37,7 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
             return Access.DENY;
         }
 
-        if (Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
+        if (!Arrays.asList(resolvedPermissions).contains("ReadRemove") && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
         	
             if (restrictedDocumentTypes.isEmpty()) {
             	restrictedDocumentTypes.add("FVLanguageFamily");

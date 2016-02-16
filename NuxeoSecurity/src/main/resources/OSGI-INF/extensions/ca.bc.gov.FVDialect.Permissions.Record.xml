@@ -7,8 +7,11 @@
 
     <permission name="Record">
 
-      <include>Read</include>
-      <include>Browse</include>
+      <include>ReadWrite</include>
+      <include>ReadRemove</include>
+      <include>AddChildren</include>
+      <include>RemoveChildren</include>
+      <include>CanAskForPublishing</include>
 
       <remove>ReadSecurity</remove>
 
