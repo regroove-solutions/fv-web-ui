@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Nuxeo
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Version: 1.0.qualifier
+Bundle-Name: NuxeoSecurity
+Nuxeo-Component: OSGI-INF/extensions/ca.bc.gov.restrictions.NonAdminis
+ trators.xml,OSGI-INF/extensions/ca.bc.gov.restrictions.LanguageRecord
+ ers.xml,OSGI-INF/extensions/ca.bc.gov.listeners.security.BlockInherit
+ ance.xml, OSGI-INF/extensions/ca.bc.gov.FVDialect.Permissions.Record.
+ xml, OSGI-INF/extensions/ca.bc.gov.FVDialect.Actions.Record.xml, OSGI
+ -INF/extensions/ca.bc.gov.FVDialect.Permissions.Visibility.xml
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: NuxeoSecurity
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+

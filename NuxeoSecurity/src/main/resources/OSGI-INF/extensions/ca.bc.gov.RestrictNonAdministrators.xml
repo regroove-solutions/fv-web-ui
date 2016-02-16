@@ -1,0 +1,12 @@
+<component name="ca.bc.gov.securityPolicy.contrib.RestrictDeleteFromNonAdministrators">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+
+    <policy name="restrictdeletefromnonadministrators"
+      class="ca.bc.gov.RestrictNonAdministrators"
+      order="100" />
+
+  </extension>
+
+</component>

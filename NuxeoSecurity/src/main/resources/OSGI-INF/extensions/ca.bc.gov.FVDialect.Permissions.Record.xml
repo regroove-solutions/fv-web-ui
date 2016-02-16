@@ -1,0 +1,19 @@
+<component name="ca.bc.gov.permissions.record.contribution">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="permissions">
+
+    <permission name="Record">
+
+      <include>Read</include>
+      <include>Browse</include>
+
+      <remove>ReadSecurity</remove>
+
+    </permission>
+
+  </extension>
+
+</component>

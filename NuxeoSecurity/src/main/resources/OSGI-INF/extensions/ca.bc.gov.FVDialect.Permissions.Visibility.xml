@@ -1,0 +1,14 @@
+<component name="ca.bc.gov.fvdialect.permissions.visibility.contribution">
+
+  <require>org.nuxeo.ecm.core.security.defaultPermissions</require>
+
+	<extension target="org.nuxeo.ecm.core.security.SecurityService"
+	  point="permissionsVisibility">
+	
+	  <visibility type="FVDialect">
+	    <item show="true" order="60" denyPermission="Write">Record</item>
+	  </visibility>
+	
+	</extension>
+
+</component>
