@@ -2,7 +2,7 @@
 	
 	<extension point="filters" target="org.nuxeo.ecm.platform.actions.ActionService">
 
-	    <filter id="create">
+	    <filter id="create" append="true">
 	      <rule grant="true">
 	        <permission>Record</permission>
 	        <facet>Folderish</facet>

@@ -13,9 +13,9 @@ import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 import ca.bc.gov.utils.SecurityConstants;
 
 /**
- * Language recorders policies
+ * Language administrators policies
  */
-public class LanguageRecorders extends AbstractSecurityPolicy {
+public class LanguageAdministrators extends AbstractSecurityPolicy {
 
 	private static ArrayList<String> restrictedDocumentTypes = new ArrayList<String>();
 
@@ -31,13 +31,11 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             return access;
         }
 
-        // Permissions the application is trying to resolve
-        //List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);
-
         NuxeoPrincipal np = ((NuxeoPrincipal) principal);
 
+        /////// Test
+
         // Only apply if user is part of the Recorders group
-        // Check for other groups and return unknown accordingly
         if (np.getAllGroups().contains(SecurityConstants.RECORDERS_GROUP)){
 
 	        if (restrictedDocumentTypes.isEmpty()) {

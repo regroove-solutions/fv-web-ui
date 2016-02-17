@@ -1,16 +1,18 @@
 Manifest-Version: 1.0
-Bundle-Vendor: Nuxeo
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
+Bundle-SymbolicName: NuxeoSecurity
 Bundle-Version: 1.0.qualifier
 Bundle-Name: NuxeoSecurity
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/extensions/ca.bc.gov.restrictions.NonAdminis
  trators.xml,OSGI-INF/extensions/ca.bc.gov.restrictions.LanguageRecord
  ers.xml,OSGI-INF/extensions/ca.bc.gov.listeners.security.BlockInherit
- ance.xml, OSGI-INF/extensions/ca.bc.gov.FVDialect.Permissions.Record.
- xml, OSGI-INF/extensions/ca.bc.gov.FVDialect.Actions.Record.xml, OSGI
- -INF/extensions/ca.bc.gov.FVDialect.Permissions.Visibility.xml
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: NuxeoSecurity
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+ ance.xml,OSGI-INF/extensions/ca.bc.gov.FVDialect.Permissions.Record.x
+ ml,OSGI-INF/extensions/ca.bc.gov.FVDialect.Actions.Record.xml,OSGI-IN
+ F/extensions/ca.bc.gov.FVDialect.Permissions.Visibility.xml,OSGI-INF/
+ extensions/ca.bc.gov.factories.IgnoreSectionsDialectFactory.xml,OSGI-
+ INF/extensions/ca.bc.gov.restrictions.LanguageAdministrators.xml
 
