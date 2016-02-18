@@ -11,7 +11,6 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
-import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 import ca.bc.gov.utils.CustomSecurityConstants;
 
