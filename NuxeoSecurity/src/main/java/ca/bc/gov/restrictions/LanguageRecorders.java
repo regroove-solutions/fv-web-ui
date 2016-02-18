@@ -35,6 +35,8 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
 
+        String docType = doc.getType().getName();
+        String docTypeParent = doc.getParent().getType().getName();
 
         // Skip administrators
         if (additionalPrincipalsList.contains("administrators")) {
@@ -44,15 +46,15 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         Boolean isRecorder = false;
         Boolean isPublisher = false;
 
-        //NuxeoPrincipal np = ((NuxeoPrincipal) principal);
-
-        // Check if user has a RECORDER permission on specific document
         for (ACL acl : mergedAcp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
+
+                // Check if user has a RECORDER permission on current document
                 if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.RECORD) ) {
                     isRecorder = true;
                 }
 
+                // Check if user has publishing permissions on current document (publish space)
                 if (doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
                     if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH) ) {
                         isPublisher = true;
@@ -61,14 +63,8 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             }
         }
 
-
-        // All rules apply to recorders only
-        // TODO: Check for other groups and return unknown accordingly
+        // Restrictions apply to recorders
         if ( isRecorder ) {
-        //if ( np.getAllGroups().contains(CustomSecurityConstants.RECORDERS_GROUP) ) {
-
-            String docType = doc.getType().getName();
-            String docTypeParent = doc.getParent().getType().getName();
 
             // Setup restricted document types
             if (restrictedDocumentTypes.isEmpty()) {
@@ -102,7 +98,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
 
         if (isPublisher) {
             // Deny publishing on dialect from recorders (only children should be allowed)
-            if ("FVDialect".equals(doc.getType().getName()) && doc.hasFacet(FacetNames.PUBLISH_SPACE) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
+            if ("FVDialect".equals(docType) && doc.hasFacet(FacetNames.PUBLISH_SPACE) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
                 return Access.DENY;
             }
         }
