@@ -20,12 +20,29 @@ import ca.bc.gov.utils.CustomSecurityConstants;
  */
 public class LanguageRecorders extends AbstractSecurityPolicy {
 
-    // A list of absolutely restricted document types
-	private static ArrayList<String> restrictedDocumentTypes = new ArrayList<String>();
-
     // A list of document types with ReadWrite Permissions
     private static ArrayList<String> allowedDocumentTypes = new ArrayList<String>();
 
+    /**
+     * Check if user has permission on current document, to avoid using groups for filtering.
+     * @param mergedAcp
+     * @param additionalPrincipalsList
+     * @param permission
+     * @return
+     */
+    private Boolean hasPermissionInACP(ACP mergedAcp, List<String> additionalPrincipalsList, String permission) {
+    	
+        for (ACL acl : mergedAcp.getACLs()) {
+            for (ACE ace : acl.getACEs()) {
+                if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(permission) ) {
+                    return true;
+                }
+            }
+        }
+    	
+    	return false;
+    }
+    
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
@@ -47,35 +64,8 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             return access;
         }
 
-        Boolean isRecorder = false;
-        Boolean isPublisher = false;
-
-        for (ACL acl : mergedAcp.getACLs()) {
-            for (ACE ace : acl.getACEs()) {
-
-                // Check if user has a RECORDER permission on current document
-                if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.RECORD) ) {
-                    isRecorder = true;
-                }
-
-                // Check if user has publishing permissions on current document (publish space)
-                if (doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
-                    if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH) ) {
-                        isPublisher = true;
-                    }
-                }
-            }
-        }
-
-        // Restrictions apply to recorders
-        if ( isRecorder ) {
-
-            // Setup restricted document types
-            if (restrictedDocumentTypes.isEmpty()) {
-                restrictedDocumentTypes.add("FVAlphabet");
-                restrictedDocumentTypes.add("FVPortal");
-                restrictedDocumentTypes.add("FVLinks");
-            }
+        // Permissions apply to recorders only
+        if ( hasPermissionInACP(mergedAcp, additionalPrincipalsList, CustomSecurityConstants.RECORD) ) {
 
             if (allowedDocumentTypes.isEmpty()) {
                 allowedDocumentTypes.add("FVCategories");
@@ -84,25 +74,20 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
                 allowedDocumentTypes.add("FVResources");
             }
 
-            // Disallow all actions on restricted types
-            if ( restrictedDocumentTypes.contains(docType) ) {
-                return Access.DENY;
-            }
-
             // Allow adding children and removing children on allowed types
             if (allowedDocumentTypes.contains(docType) && (resolvedPermissionsList.contains(SecurityConstants.ADD_CHILDREN) || resolvedPermissionsList.contains(SecurityConstants.REMOVE_CHILDREN)) ) {
                 return Access.GRANT;
             }
 
             // Allow Publishing, Writing and Removing on allowed document type children
-            if (docTypeParent != null && allowedDocumentTypes.contains(docTypeParent) && (resolvedPermissionsList.contains(SecurityConstants.WRITE_PROPERTIES) || resolvedPermissionsList.contains(SecurityConstants.REMOVE)) ) {
+            if (docTypeParent != null && allowedDocumentTypes.contains(docTypeParent) && (resolvedPermissionsList.contains(SecurityConstants.WRITE_PROPERTIES) || resolvedPermissionsList.contains(SecurityConstants.REMOVE) || resolvedPermissionsList.contains(SecurityConstants.WRITE)) ) {
                 return Access.GRANT;
             }
         }
 
-        if (isPublisher) {
-            // Deny publishing on dialect from recorders (only children should be allowed)
-            if ("FVDialect".equals(docType) && doc.hasFacet(FacetNames.PUBLISH_SPACE) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
+        // Recorders can never publish within FVDialect, so OK to use groups
+        if (additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_GROUP)) {            
+            if ("FVDialect".equals(docType) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
                 return Access.DENY;
             }
         }
