@@ -36,7 +36,11 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
 
         String docType = doc.getType().getName();
-        String docTypeParent = doc.getParent().getType().getName();
+        String docTypeParent = null;
+        
+        if (doc.getParent() != null) {
+        	docTypeParent = doc.getParent().getType().getName();
+        }
 
         // Skip administrators
         if (additionalPrincipalsList.contains("administrators")) {
@@ -91,7 +95,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             }
 
             // Allow Publishing, Writing and Removing on allowed document type children
-            if (allowedDocumentTypes.contains(docTypeParent) && (resolvedPermissionsList.contains(SecurityConstants.WRITE_PROPERTIES) || resolvedPermissionsList.contains(SecurityConstants.REMOVE)) ) {
+            if (docTypeParent != null && allowedDocumentTypes.contains(docTypeParent) && (resolvedPermissionsList.contains(SecurityConstants.WRITE_PROPERTIES) || resolvedPermissionsList.contains(SecurityConstants.REMOVE)) ) {
                 return Access.GRANT;
             }
         }
