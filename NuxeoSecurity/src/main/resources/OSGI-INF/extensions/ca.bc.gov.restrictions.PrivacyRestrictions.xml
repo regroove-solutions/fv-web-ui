@@ -1,0 +1,12 @@
+<component name="ca.bc.gov.restrictions.securityPolicy.contrib.PrivacyRestrictions">
+
+  <extension target="org.nuxeo.ecm.core.security.SecurityService"
+    point="policies">
+
+    <policy name="nonadministrators"
+      class="ca.bc.gov.restrictions.PrivacyRestrictions"
+      order="100" />
+
+  </extension>
+
+</component>

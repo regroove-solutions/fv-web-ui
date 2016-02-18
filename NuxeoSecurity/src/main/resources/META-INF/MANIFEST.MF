@@ -10,7 +10,8 @@ Nuxeo-Component: OSGI-INF/extensions/ca.bc.gov.restrictions.NonAdminis
  ance.xml,OSGI-INF/extensions/ca.bc.gov.FVDialect.Permissions.Record.x
  ml,OSGI-INF/extensions/ca.bc.gov.FVDialect.Actions.Record.xml,OSGI-IN
  F/extensions/ca.bc.gov.FVDialect.Permissions.Visibility.xml,OSGI-INF/
- extensions/ca.bc.gov.factories.IgnoreSectionsDialectFactory.xml
+ extensions/ca.bc.gov.factories.IgnoreSectionsDialectFactory.xml,OSGI-
+ INF/extensions/ca.bc.gov.restrictions.PrivacyRestrictions.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: NuxeoSecurity
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
