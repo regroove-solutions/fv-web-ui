@@ -5,10 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
-
-import ca.bc.gov.utils.SecurityConstants;
 
 /**
  * Restrict non administrators from deleting essential data types.
@@ -32,11 +31,11 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
         String docType = doc.getType().getName();
 
         // Disallow all actions besides 'READ' on main area
-        if (!Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.READ) && ("WorkspaceRoot".equals(docType) || "SectionRoot".equals(docType) || "Domain".equals(docType))) {
+        if (!Arrays.asList(resolvedPermissions).contains(SecurityConstants.READ) && ("WorkspaceRoot".equals(docType) || "SectionRoot".equals(docType) || "Domain".equals(docType))) {
             return Access.DENY;
         }
 
-        if (Arrays.asList(resolvedPermissions).contains("ReadRemove") && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.REMOVE)) {
+        if (Arrays.asList(resolvedPermissions).contains("ReadRemove") && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
 
             if (restrictedDocumentTypes.isEmpty()) {
             	restrictedDocumentTypes.add("FVLanguageFamily");

@@ -6,11 +6,12 @@
     point="permissions">
 
     <permission name="Record">
+    	<include>CanAskForPublishing</include>
 
-      <include>ReadWrite</include>
-      <include>CanAskForPublishing</include>
+      <!-- <include>ReadWrite</include>
+      
 
-      <remove>ReadSecurity</remove>
+      <remove>ReadSecurity</remove>-->
 
     </permission>
 

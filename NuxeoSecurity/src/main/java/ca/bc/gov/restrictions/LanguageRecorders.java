@@ -3,21 +3,28 @@ package ca.bc.gov.restrictions;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
-
-import ca.bc.gov.utils.SecurityConstants;
+import ca.bc.gov.utils.CustomSecurityConstants;
 
 /**
  * Language recorders policies
  */
 public class LanguageRecorders extends AbstractSecurityPolicy {
 
+    // A list of absolutely restricted document types
 	private static ArrayList<String> restrictedDocumentTypes = new ArrayList<String>();
+
+    // A list of document types with ReadWrite Permissions
+    private static ArrayList<String> allowedDocumentTypes = new ArrayList<String>();
 
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
@@ -25,47 +32,78 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             String[] resolvedPermissions, String[] additionalPrincipals) throws SecurityException {
 
         Access access = Access.UNKNOWN;
+        List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);
+        List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
+
 
         // Skip administrators
-        if (Arrays.asList(additionalPrincipals).contains("administrators")) {
+        if (additionalPrincipalsList.contains("administrators")) {
             return access;
         }
 
-        // Permissions the application is trying to resolve
-        //List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);
+        Boolean isRecorder = false;
+        Boolean isPublisher = false;
 
-        NuxeoPrincipal np = ((NuxeoPrincipal) principal);
+        //NuxeoPrincipal np = ((NuxeoPrincipal) principal);
 
-        // Only apply if user is part of the Recorders group
-        // Check for other groups and return unknown accordingly
-        if (np.getAllGroups().contains(SecurityConstants.RECORDERS_GROUP)){
+        // Check if user has a RECORDER permission on specific document
+        for (ACL acl : mergedAcp.getACLs()) {
+            for (ACE ace : acl.getACEs()) {
+                if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.RECORD) ) {
+                    isRecorder = true;
+                }
 
-	        if (restrictedDocumentTypes.isEmpty()) {
-	        	restrictedDocumentTypes.add("FVAlphabet");
-	        	restrictedDocumentTypes.add("FVPortal");
-	        	restrictedDocumentTypes.add("FVLinks");
-	        }
+                if (doc.hasFacet(FacetNames.PUBLISH_SPACE)) {
+                    if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH) ) {
+                        isPublisher = true;
+                    }
+                }
+            }
+        }
 
-	        String docType = doc.getType().getName();
 
-	        // Disallow all actions on restricted types
+        // All rules apply to recorders only
+        // TODO: Check for other groups and return unknown accordingly
+        if ( isRecorder ) {
+        //if ( np.getAllGroups().contains(CustomSecurityConstants.RECORDERS_GROUP) ) {
+
+            String docType = doc.getType().getName();
+            String docTypeParent = doc.getParent().getType().getName();
+
+            // Setup restricted document types
+            if (restrictedDocumentTypes.isEmpty()) {
+                restrictedDocumentTypes.add("FVAlphabet");
+                restrictedDocumentTypes.add("FVPortal");
+                restrictedDocumentTypes.add("FVLinks");
+            }
+
+            if (allowedDocumentTypes.isEmpty()) {
+                allowedDocumentTypes.add("FVCategories");
+                allowedDocumentTypes.add("FVContributors");
+                allowedDocumentTypes.add("FVDictionary");
+                allowedDocumentTypes.add("FVResources");
+            }
+
+            // Disallow all actions on restricted types
             if ( restrictedDocumentTypes.contains(docType) ) {
                 return Access.DENY;
             }
 
-            // Disallow editing Dialect itself
-            if ("FVDialect".equals(docType) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE)) {
-                return Access.DENY;
-            }
-
-        	// Disallow editing on main dialect types and FVDialect
-            if (( doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) ) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE)) {
-                return Access.DENY;
-            }
-
-            // Allow creating children in FVDictionary
-            if ("FVDictionary".equals(docType) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN)) {
+            // Allow adding children and removing children on allowed types
+            if (allowedDocumentTypes.contains(docType) && (resolvedPermissionsList.contains(SecurityConstants.ADD_CHILDREN) || resolvedPermissionsList.contains(SecurityConstants.REMOVE_CHILDREN)) ) {
                 return Access.GRANT;
+            }
+
+            // Allow Publishing, Writing and Removing on allowed document type children
+            if (allowedDocumentTypes.contains(docTypeParent) && (resolvedPermissionsList.contains(SecurityConstants.WRITE_PROPERTIES) || resolvedPermissionsList.contains(SecurityConstants.REMOVE)) ) {
+                return Access.GRANT;
+            }
+        }
+
+        if (isPublisher) {
+            // Deny publishing on dialect from recorders (only children should be allowed)
+            if ("FVDialect".equals(doc.getType().getName()) && doc.hasFacet(FacetNames.PUBLISH_SPACE) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
+                return Access.DENY;
             }
         }
 

@@ -7,6 +7,15 @@
 	
 	  <visibility type="FVDialect">
 	    <item show="true" order="60" denyPermission="Write">Record</item>
+	    <item show="true" order="150">CanAskForPublishing</item>
+	  </visibility>
+
+	  <visibility type="FVLanguage">
+	    <item show="true" order="150">CanAskForPublishing</item>
+	  </visibility>
+	  
+	  <visibility type="FVLanguageFamily">
+	    <item show="true" order="150">CanAskForPublishing</item>
 	  </visibility>
 	
 	</extension>

@@ -10,8 +10,6 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 
-import ca.bc.gov.utils.SecurityConstants;
-
 /**
  * Language administrators policies
  */
@@ -34,9 +32,9 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         NuxeoPrincipal np = ((NuxeoPrincipal) principal);
 
         /////// Test
-
+/*
         // Only apply if user is part of the Recorders group
-        if (np.getAllGroups().contains(SecurityConstants.RECORDERS_GROUP)){
+        if (np.getAllGroups().contains(CustomSecurityConstants.RECORDERS_GROUP)){
 
 	        if (restrictedDocumentTypes.isEmpty()) {
 	        	restrictedDocumentTypes.add("FVAlphabet");
@@ -52,21 +50,21 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
             }
 
             // Disallow editing Dialect itself
-            if ("FVDialect".equals(docType) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE)) {
+            if ("FVDialect".equals(docType) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
                 return Access.DENY;
             }
 
         	// Disallow editing on main dialect types and FVDialect
-            if (( doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) ) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.WRITE)) {
+            if (( doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) ) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.WRITE)) {
                 return Access.DENY;
             }
 
             // Allow creating children in FVDictionary
-            if ("FVDictionary".equals(docType) && Arrays.asList(resolvedPermissions).contains(org.nuxeo.ecm.core.api.security.SecurityConstants.ADD_CHILDREN)) {
+            if ("FVDictionary".equals(docType) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.ADD_CHILDREN)) {
                 return Access.GRANT;
             }
         }
-
+*/
         return access;
     }
 
