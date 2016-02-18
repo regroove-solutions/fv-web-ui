@@ -6,4 +6,6 @@ public class CustomSecurityConstants {
 	
 	// Groups
 	public static final String RECORDERS_GROUP = "language_recorders";
+	public static final String RECORDERS_APPROVERS_GROUP = "language_recorders_approvers";
+	public static final String LANGUAGE_ADMINS = "language_administrators";
 }

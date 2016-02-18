@@ -7,12 +7,11 @@
 
     <permission name="Record">
     	<include>CanAskForPublishing</include>
-
-      <!-- <include>ReadWrite</include>
-      
-
-      <remove>ReadSecurity</remove>-->
-
+    </permission>
+    
+    <permission name="Approve">
+    	<include>CanAskForPublishing</include>
+    	<include>ReadWrite</include>
     </permission>
 
   </extension>

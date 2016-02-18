@@ -84,9 +84,9 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
             }
         }
 
-        // Recorders can never publish within FVDialect, so OK to use groups
-        if (additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_GROUP)) {            
-            if ("FVDialect".equals(docType) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
+        // Recorders can only publish to their allowed types (OK to use groups as this is globally applicable)
+        if (additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_GROUP) || additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP)) {            
+            if (!allowedDocumentTypes.contains(docType) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
                 return Access.DENY;
             }
         }
