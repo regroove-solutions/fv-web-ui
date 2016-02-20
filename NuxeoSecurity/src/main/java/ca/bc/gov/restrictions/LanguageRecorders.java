@@ -11,6 +11,9 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.*;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 import ca.bc.gov.utils.CustomSecurityConstants;
 
@@ -30,7 +33,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
      * @return
      */
     private Boolean hasPermissionInACP(ACP mergedAcp, List<String> additionalPrincipalsList, String permission) {
-    	
+
         for (ACL acl : mergedAcp.getACLs()) {
             for (ACE ace : acl.getACEs()) {
                 if (ace.isGranted() && additionalPrincipalsList.contains(ace.getUsername()) &&  ace.getPermission().equals(permission) ) {
@@ -38,10 +41,15 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
                 }
             }
         }
-    	
+
     	return false;
     }
-    
+
+    @Override
+    public boolean isRestrictingPermission(String permission) {
+        return true;
+    }
+
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp,
             Principal principal, String permission,
@@ -53,7 +61,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
 
         String docType = doc.getType().getName();
         String docTypeParent = null;
-        
+
         if (doc.getParent() != null) {
         	docTypeParent = doc.getParent().getType().getName();
         }
@@ -85,7 +93,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         }
 
         // Recorders can only publish to their allowed types (OK to use groups as this is globally applicable)
-        if (additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_GROUP) || additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP)) {            
+        if (additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_GROUP) || additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP)) {
             if (!allowedDocumentTypes.contains(docType) && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH)) ) {
                 return Access.DENY;
             }
@@ -95,7 +103,44 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
     }
 
     @Override
-    public boolean isExpressibleInQuery(String repositoryName) {
+    public boolean isExpressibleInQuery(String repositoryName, String queryLanguage) {
         return false;
+    }
+
+
+    @Override
+    public SQLQuery.Transformer getQueryTransformer() {
+        return NO_FILE_TRANSFORMER;
+    }
+
+    public static final Transformer NO_FILE_TRANSFORMER = new NoFileTransformer();
+
+    /**
+     * Sample Transformer that adds {@code AND ecm:primaryType <> 'File'} to the query.
+     */
+    public static class NoFileTransformer implements SQLQuery.Transformer {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
+        /** {@code ecm:primaryType <> 'File'} */
+        public static final Predicate NO_FILE = new Predicate(
+                new Reference(NXQL.ECM_PRIMARYTYPE), Operator.NOTEQ, new StringLiteral("File"));
+
+        @Override
+        public SQLQuery transform(Principal principal, SQLQuery query) {
+            WhereClause where = query.where;
+            Predicate predicate;
+            if (where == null || where.predicate == null) {
+                predicate = NO_FILE;
+            } else {
+                // adds an AND ecm:primaryType <> 'File' to the WHERE clause
+                predicate = new Predicate(NO_FILE, Operator.AND, where.predicate);
+            }
+            // return query with updated WHERE clause
+            return new SQLQuery(query.select, query.from, new WhereClause(predicate),
+                    query.groupBy, query.having, query.orderBy, query.limit, query.offset);
+        }
     }
 }
