@@ -1,4 +1,4 @@
-package ca.bc.gov.restrictions;
+package ca.firstvoices.securitypolicies.groups;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -21,21 +21,20 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
             Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) throws SecurityException {
 
-        Access access = Access.UNKNOWN;
-
         // Skip administrators
-        if (Arrays.asList(additionalPrincipals).contains("administrators")) {
-            return access;
+        if (Arrays.asList(additionalPrincipals).contains("administrators") || !Arrays.asList(additionalPrincipals).contains("language_administrators")) {
+            return Access.UNKNOWN;
         }
 
         String docType = doc.getType().getName();
 
-        // Disallow all actions besides 'READ' on main area
+        // Disallow all actions besides 'READ' on main areas
         if (!Arrays.asList(resolvedPermissions).contains(SecurityConstants.READ) && ("WorkspaceRoot".equals(docType) || "SectionRoot".equals(docType) || "Domain".equals(docType))) {
             return Access.DENY;
         }
 
-        if (Arrays.asList(resolvedPermissions).contains("ReadRemove") && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
+        // Only apply to remove, and if not published document.
+        if (!doc.isProxy() && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
 
             if (restrictedDocumentTypes.isEmpty()) {
             	restrictedDocumentTypes.add("FVLanguageFamily");
@@ -51,7 +50,7 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
 
             	String parentType = doc.getParent().getType().getName();
 
-            	// Restrict deletion of FVDialect children
+            	// Restrict deletion of FVDialect children (but not unpublishing)
                 if ("FVDialect".equals(parentType)) {
                     return Access.DENY;
                 }
@@ -62,14 +61,14 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
                     return Access.DENY;
                 }
 
-                // Restrict deletion of children of 'SharedData'
+                // Restrict deletion of children of 'SharedData' (but not unpublishing)
                 else if ("SharedData".equals(doc.getParent().getName()) && ("Workspace".equals(parentType) || "Section".equals(parentType))) {
                     return Access.DENY;
                 }
             }
         }
 
-        return access;
+        return Access.UNKNOWN;
     }
 
     @Override

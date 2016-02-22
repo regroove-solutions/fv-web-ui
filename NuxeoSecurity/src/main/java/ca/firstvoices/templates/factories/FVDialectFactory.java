@@ -1,4 +1,4 @@
-package ca.bc.gov.factories;
+package ca.firstvoices.templates.factories;
 
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -7,9 +7,10 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Script ignores creation of structured templates within sections
  * @author dyona
  */
-public class IgnoreSectionsDialectFactory extends SimpleTemplateBasedFactory {
+public class FVDialectFactory extends SimpleTemplateBasedFactory {
 
     @Override
     public void createContentStructure(DocumentModel eventDoc) {

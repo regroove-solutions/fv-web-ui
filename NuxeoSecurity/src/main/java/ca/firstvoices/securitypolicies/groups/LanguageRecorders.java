@@ -1,4 +1,4 @@
-package ca.bc.gov.restrictions;
+package ca.firstvoices.securitypolicies.groups;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -12,7 +12,8 @@ import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
-import ca.bc.gov.utils.CustomSecurityConstants;
+
+import ca.firstvoices.utils.CustomSecurityConstants;
 
 /**
  * Language recorders policies
@@ -81,6 +82,8 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         if (doc.getParent() != null) {
         	docTypeParent = doc.getParent().getType().getName();
         }
+
+        mergedAcp.getAccess(principal.getName(), CustomSecurityConstants.RECORD);
 
         // Permissions apply to recorders only
         if ( hasPermissionInACP(mergedAcp, additionalPrincipalsList, CustomSecurityConstants.RECORD) ) {
