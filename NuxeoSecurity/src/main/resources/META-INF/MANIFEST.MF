@@ -4,12 +4,13 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Version: 1.0.qualifier
 Bundle-Name: NuxeoSecurity
-Bundle-ManifestVersion: 2
 Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.templates.factorie
  s.xml,OSGI-INF/extensions/ca.firstvoices.securitypolicies.groups.xml,
  OSGI-INF/extensions/ca.firstvoices.permissions.xml,OSGI-INF/extension
  s/ca.firstvoices.filters.xml,OSGI-INF/extensions/ca.firstvoices.opera
- tions.xml
+ tions.xml,OSGI-INF/extensions/ca.firstvoices.operations.FVPublishDepe
+ ndencies.xml
+Bundle-ManifestVersion: 2
 Bundle-SymbolicName: NuxeoSecurity
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 
