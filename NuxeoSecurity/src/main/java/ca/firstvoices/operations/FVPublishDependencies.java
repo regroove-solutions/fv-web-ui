@@ -24,10 +24,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import com.google.inject.Inject;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -35,15 +36,14 @@ import com.google.inject.Inject;
 @Operation(id=FVPublishDependencies.ID, category=Constants.CAT_DOCUMENT, label="FVPublishDependencies", description="")
 public class FVPublishDependencies {
 
-    @Inject
-    protected PublisherService ps;
-
     public static final String ID = "FVPublishDependencies";
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
     	CoreSession session = input.getCoreSession();
+
+    	PublisherService ps = Framework.getService(PublisherService.class);
 
 		ArrayList<String> dependencies = new ArrayList<String>();
 
@@ -79,12 +79,20 @@ public class FVPublishDependencies {
 
             		  if (DependencyRef != null) {
             			  DocumentModel dependencyDocModel = session.getDocument(DependencyRef);
-            			  PublicationTree publishTarget = ps.getPublicationTreeFor(dependencyDocModel, session);
-            			  //session.publishDocument(dependencyDocModel, section, true);
+            			  PublicationTree tree = ps.getPublicationTree(ps.getAvailablePublicationTree().get(0), session, null);
+
+            			  // e.g. Resources
+            			  DocumentModel parentDependencyDocModel = session.getDocument(dependencyDocModel.getParentRef());
+
+            			  DocumentModelList sections = session.getProxies(parentDependencyDocModel.getRef(), null);
+
+            			  for (DocumentModel section : sections) {
+            				  // Ensure section is within the publication target
+            				  if (section.getPath().toString().indexOf(tree.getPath()) == 0) {
+            					  session.publishDocument(dependencyDocModel, section, true);
+            				  }
+            			  }
             		  }
-            		  //
-            		  //
-            		  //
     			  }
     		  }
 
