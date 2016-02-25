@@ -1,8 +1,0 @@
-<component name="ca.firstvoices.operations.FVPublishDependencies">
-
-  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
-    point="operations" >
-      <operation class="ca.firstvoices.operations.FVPublishDependencies" />
-   </extension>
-    
-</component>

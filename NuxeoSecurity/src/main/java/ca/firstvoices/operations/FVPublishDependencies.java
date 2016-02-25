@@ -44,6 +44,7 @@ public class FVPublishDependencies {
     	CoreSession session = input.getCoreSession();
 
     	PublisherService ps = Framework.getService(PublisherService.class);
+    	PublicationTree tree = ps.getPublicationTree(ps.getAvailablePublicationTree().get(0), session, null);
 
 		ArrayList<String> dependencies = new ArrayList<String>();
 
@@ -79,7 +80,6 @@ public class FVPublishDependencies {
 
             		  if (DependencyRef != null) {
             			  DocumentModel dependencyDocModel = session.getDocument(DependencyRef);
-            			  PublicationTree tree = ps.getPublicationTree(ps.getAvailablePublicationTree().get(0), session, null);
 
             			  // e.g. Resources
             			  DocumentModel parentDependencyDocModel = session.getDocument(dependencyDocModel.getParentRef());
@@ -88,6 +88,7 @@ public class FVPublishDependencies {
 
             			  for (DocumentModel section : sections) {
             				  // Ensure section is within the publication target
+            				  // TODO: Ensure document isn't already published
             				  if (section.getPath().toString().indexOf(tree.getPath()) == 0) {
             					  session.publishDocument(dependencyDocModel, section, true);
             				  }

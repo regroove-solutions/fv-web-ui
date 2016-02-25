@@ -3,6 +3,8 @@
 	<extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations" >
 		<operation class="ca.firstvoices.operations.FVDialectPublishedDocumentPermissions" replace="true" />
 		<operation class="ca.firstvoices.operations.FVDialectRegularDocumentPermissions" replace="true" />
+		<operation class="ca.firstvoices.operations.FVPublishDependencies" replace="true" />
+		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
 	</extension>
     
 </component>
