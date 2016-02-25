@@ -18,46 +18,43 @@
 package ca.firstvoices.operations;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublisherService;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
  */
 @Operation(id=FVPublishDependencies.ID, category=Constants.CAT_DOCUMENT, label="FVPublishDependencies", description="")
-public class FVPublishDependencies {
+public class FVPublishDependencies extends AbstractFVPublishOperation {
 
     public static final String ID = "FVPublishDependencies";
 
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
-    	CoreSession session = input.getCoreSession();
+    	session = input.getCoreSession();
 
-    	PublisherService ps = Framework.getService(PublisherService.class);
-    	PublicationTree tree = ps.getPublicationTree(ps.getAvailablePublicationTree().get(0), session, null);
+    	tree = ps.getPublicationTree(ps.getAvailablePublicationTree().get(0), session, null);
 
 		ArrayList<String> dependencies = new ArrayList<String>();
 
-		dependencies.add("fv-word:categories");
-		dependencies.add("fv-word:related_phrases");
 		dependencies.add("fvcore:related_audio");
 		dependencies.add("fvcore:related_pictures");
 		dependencies.add("fvcore:related_videos");
 		dependencies.add("fvcore:reference");
 		dependencies.add("fvcore:source");
-
-		//PublicationTree currentPublicationTree = ps.getPublicationTree(currentPublicationTreeNameForPublishing,
-        //        documentManager, null, navigationContext.getCurrentDocument());
+		dependencies.add("fv-word:categories");
+		dependencies.add("fv-word:related_phrases");
 
 
     	  for (String dependency : dependencies) {
@@ -81,27 +78,45 @@ public class FVPublishDependencies {
             		  if (DependencyRef != null) {
             			  DocumentModel dependencyDocModel = session.getDocument(DependencyRef);
 
-            			  // e.g. Resources
+            			  // If dependency published, no need to republish
+            			  if (hasPublication(dependencyDocModel)) {
+            				  continue;
+            			  }
+
+            			  // Get parent of dependency
             			  DocumentModel parentDependencyDocModel = session.getDocument(dependencyDocModel.getParentRef());
+            			  DocumentModel section = getSectionToPublishTo(parentDependencyDocModel);
 
-            			  DocumentModelList sections = session.getProxies(parentDependencyDocModel.getRef(), null);
+            			  // Publish categories recursively
+            			  if ("FVCategory".equals(dependencyDocModel.getType())) {
+            				  try {
+								// Run new operation (FVPublishParents) to publish recursively
+								OperationContext ctx = new OperationContext(session);
+								ctx.setInput(dependencyDocModel);
+								Map<String, Object> params = new HashMap<String, Object>();
+								params.put("stopDocumentType", "FVCategories");
+								service.run(ctx, "FVPublishParents", params);
 
-            			  for (DocumentModel section : sections) {
-            				  // Ensure section is within the publication target
-            				  // TODO: Ensure document isn't already published
-            				  if (section.getPath().toString().indexOf(tree.getPath()) == 0) {
-            					  session.publishDocument(dependencyDocModel, section, true);
-            				  }
+							} catch (OperationException e) {
+								e.printStackTrace();
+							}
+            			  }
+            			  // Publish other dependencies normally
+            			  else {
+            				  DocumentModel publishedDocument = session.publishDocument(dependencyDocModel, section, true);
+
+            				  // Update properties on proxy document to reflect new GUIDs
+            				  // This code is not working as a proxy is immutable
+            				  int i = Arrays.asList(dependencyPropertyValue).indexOf(relatedDocUUID);
+            				  dependencyPropertyValue[i] = publishedDocument.getId();
+            				  input.setPropertyValue(dependency, dependencyPropertyValue);
             			  }
             		  }
     			  }
     		  }
-
-    		  session.save();
     	  }
 
-
-
+    	  session.save();
 
 
       return input;
