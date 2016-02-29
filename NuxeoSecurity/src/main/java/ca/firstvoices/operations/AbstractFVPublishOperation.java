@@ -1,7 +1,6 @@
 package ca.firstvoices.operations;
 
 import java.util.List;
-import org.apache.commons.logging.Log;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -13,8 +12,6 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractFVPublishOperation {
-
-	private static Log log;
 
     protected PublicationTree tree;
 
