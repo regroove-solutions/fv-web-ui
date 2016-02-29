@@ -26,6 +26,11 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
             return Access.UNKNOWN;
         }
 
+        // Skip permissions that are READ, this policy will not limit them
+        if ("BROWSE".equals(permission)) {
+        	return Access.UNKNOWN;
+        }
+
         String docType = doc.getType().getName();
 
         // Disallow all actions besides 'READ' on main areas
