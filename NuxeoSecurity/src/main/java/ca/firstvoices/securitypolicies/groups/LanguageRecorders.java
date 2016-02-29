@@ -83,7 +83,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
         	docTypeParent = doc.getParent().getType().getName();
         }
 
-        mergedAcp.getAccess(principal.getName(), CustomSecurityConstants.RECORD);
+        //mergedAcp.getAccess(principal.getName(), CustomSecurityConstants.RECORD);
 
         // Permissions apply to recorders only
         if ( hasPermissionInACP(mergedAcp, additionalPrincipalsList, CustomSecurityConstants.RECORD) ) {
