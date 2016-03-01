@@ -1,0 +1,12 @@
+<component name="ca.firstvoices.listeners.contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+    <listener name="restrictfvdialectpublishing" async="true" postCommit="true"
+      class="ca.firstvoices.listeners.RestrictFVDialectPublishing" priority="50">
+      <event>documentWaitingPublication</event>
+    </listener>
+
+  </extension>
+
+</component>

@@ -12,7 +12,6 @@
 		
 		<visibility type="FVLanguage">
 		  <item show="true" order="150">CanAskForPublishing</item>
-		  <item show="true" order="160">Approve</item>
 		</visibility>
 		
 		<visibility type="FVLanguageFamily">
