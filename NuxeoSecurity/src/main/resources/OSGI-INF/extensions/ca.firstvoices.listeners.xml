@@ -2,9 +2,9 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener name="restrictfvdialectpublishing" async="true" postCommit="true"
+    <listener name="restrictfvdialectpublishing" async="false" postCommit="true"
       class="ca.firstvoices.listeners.RestrictFVDialectPublishing" priority="50">
-      <event>documentWaitingPublication</event>
+      <event>workflowTaskStart</event>
     </listener>
 
   </extension>
