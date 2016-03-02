@@ -55,7 +55,7 @@ public class FVDialectRegularDocumentPermissions extends AbstractFVDialectOperat
     	try {
            	groupsToCreate.put(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP, SecurityConstants.EVERYTHING);
         	groupsToCreate.put(CustomSecurityConstants.RECORDERS_GROUP, CustomSecurityConstants.RECORD);
-        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.RECORD);
+        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.APPROVE);
         	groupsToCreate.put(userManager.getGroupMembersField(), SecurityConstants.READ);
 
 	    	for (Map.Entry<String, String> group : groupsToCreate.entrySet()) {
