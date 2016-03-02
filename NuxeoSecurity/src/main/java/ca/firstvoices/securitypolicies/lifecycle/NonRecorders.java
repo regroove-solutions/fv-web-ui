@@ -24,9 +24,14 @@ public class NonRecorders extends AbstractSecurityPolicy {
     public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
         
+        // Skip administrators
+        if (Arrays.asList(additionalPrincipals).contains("administrators")) {
+            return Access.UNKNOWN;
+        }
+    	
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
         // Users who aren't at least recorders should be denied access documents with New or Disabled state
-        if (!additionalPrincipalsList.contains("recorders")) { 
+        if (!additionalPrincipalsList.contains("recorders") && !additionalPrincipalsList.contains("language_administrators")) { 
         	String docLifeCycle = doc.getLifeCycleState();
             if (docLifeCycle != null) {
             	if(docLifeCycle.equals("New") || docLifeCycle.equals("Disabled")) {
@@ -62,8 +67,13 @@ public class NonRecorders extends AbstractSecurityPolicy {
         	
         	NuxeoPrincipal nxPrincipal = (NuxeoPrincipal) principal;
         	
+        	// Skip Admins
+        	if (nxPrincipal.isAdministrator()) {
+        		return query;
+        	}
+        	
         	// Modify the query for anonymous and non-recorders only
-        	if(nxPrincipal.isAnonymous() || !nxPrincipal.isMemberOf("recorders")) {
+        	if(nxPrincipal.isAnonymous() || (!nxPrincipal.isMemberOf("recorders") && !nxPrincipal.isMemberOf("language_administrators")) ) {
                 WhereClause where = query.where;
                 Predicate predicate;
                 if (where == null || where.predicate == null) {
