@@ -27,7 +27,7 @@
 	    </permission>
 	    
 	    <permission name="Approve">
-	    	<include>CanAskForPublishing</include>
+	    	<include>Record</include>
 	    	<include>ReadWrite</include>
 	    </permission>
 
