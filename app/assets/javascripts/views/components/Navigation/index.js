@@ -31,6 +31,7 @@ import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
 import DialectDropDown from 'views/components/Navigation/DialectDropDown';
+import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
 export default class Navigation extends React.Component {
@@ -78,7 +79,8 @@ export default class Navigation extends React.Component {
           title={this.context.siteProps.title}
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}>
 
-          <ToolbarGroup float="right">
+          <ToolbarGroup>
+            <Login label="Sign in" />
             <TextField hintText="Search:" />
             <IconMenu
                 iconButtonElement={
