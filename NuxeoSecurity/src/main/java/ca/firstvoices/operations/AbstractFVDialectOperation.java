@@ -28,6 +28,12 @@ public abstract class AbstractFVDialectOperation {
 
 	abstract protected ArrayList<String> addParentsToGroup(ArrayList<String> currentParents, DocumentModel groupDocModel, Map.Entry<String, String> currentGroup, DocumentModel input);
 
+	/**
+	 * This method will create the relevant groups in the system when a new dialect is created.
+	 * It assigns the correct hierarchy to that group.
+	 * @param input FVDialect being processed
+	 * @param group Map of groups and relevant permission for that group
+	 */
 	protected void processGroup(DocumentModel input, Map.Entry<String, String> group) {
 
     	String dialectName = input.getName();
