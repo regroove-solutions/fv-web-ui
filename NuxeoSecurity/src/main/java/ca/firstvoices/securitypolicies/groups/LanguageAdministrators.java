@@ -8,6 +8,7 @@ import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.model.Document;
+import org.nuxeo.ecm.core.query.sql.model.SQLQuery.Transformer;
 import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 
 import ca.firstvoices.utils.CustomSecurityConstants;
@@ -50,6 +51,11 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
 
     @Override
     public boolean isExpressibleInQuery(String repositoryName) {
-        return false;
+        return true;
+    }
+
+    @Override
+    public Transformer getQueryTransformer(String repositoryName) {
+        return Transformer.IDENTITY;
     }
 }
