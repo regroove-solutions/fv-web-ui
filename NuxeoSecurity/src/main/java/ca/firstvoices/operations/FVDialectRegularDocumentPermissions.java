@@ -33,7 +33,7 @@ import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import ca.firstvoices.utils.CustomSecurityConstants;
 
 /**
- * TODO: Use Abstract class
+ * This method will assign the correct permissions when a new dialect is created.
  */
 @Operation(id=FVDialectRegularDocumentPermissions.ID, category=Constants.CAT_USERS_GROUPS, label="FVDialectRegularDocumentPermissions", description="")
 public class FVDialectRegularDocumentPermissions extends AbstractFVDialectOperation {
@@ -45,7 +45,7 @@ public class FVDialectRegularDocumentPermissions extends AbstractFVDialectOperat
     @OperationMethod(collector=DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
-    	// If published document return
+    	// Don't process published document
     	if (input.isProxy()) {
     		return input;
     	}
