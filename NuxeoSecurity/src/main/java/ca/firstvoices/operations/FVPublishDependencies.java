@@ -51,7 +51,6 @@ public class FVPublishDependencies extends AbstractFVPublishOperation {
 		dependencies.add("fvcore:related_audio");
 		dependencies.add("fvcore:related_pictures");
 		dependencies.add("fvcore:related_videos");
-		dependencies.add("fvcore:reference");
 		dependencies.add("fvcore:source");
 		dependencies.add("fv-word:categories");
 		dependencies.add("fv-word:related_phrases");
@@ -66,15 +65,7 @@ public class FVPublishDependencies extends AbstractFVPublishOperation {
     		  // Publish dependency
     		  //String documentPath = input.getPathAsString();
 
-    		  String[] dependencyPropertyValue;
-
-    		  try {
-    			  dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
-    		  }
-    		  // In case this isn't a String array, create one
-    		  catch (ClassCastException e) {
-    			  dependencyPropertyValue = new String[] {(String) input.getPropertyValue(dependency)};
-    		  }
+    		  String[] dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
 
     		  if (dependencyPropertyValue != null && dependencyPropertyValue.length > 0) {
 
