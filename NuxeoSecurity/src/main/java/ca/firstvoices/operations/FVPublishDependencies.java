@@ -66,7 +66,15 @@ public class FVPublishDependencies extends AbstractFVPublishOperation {
     		  // Publish dependency
     		  //String documentPath = input.getPathAsString();
 
-    		  String[] dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
+    		  String[] dependencyPropertyValue;
+
+    		  try {
+    			  dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
+    		  }
+    		  // In case this isn't a String array, create one
+    		  catch (ClassCastException e) {
+    			  dependencyPropertyValue = new String[] {(String) input.getPropertyValue(dependency)};
+    		  }
 
     		  if (dependencyPropertyValue != null && dependencyPropertyValue.length > 0) {
 
