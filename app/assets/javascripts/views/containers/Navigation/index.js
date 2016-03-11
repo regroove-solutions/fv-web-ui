@@ -32,6 +32,8 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 
+import Navigation1 from 'views/components/Navigation/';
+
 import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
@@ -51,6 +53,7 @@ export default class Navigation extends React.Component {
   };
 
   getChildContext() {
+    console.log(this.props.clientStore);
     return {
       client: this.props.clientStore.client,
       muiTheme: this.context.muiTheme,
@@ -89,52 +92,18 @@ export default class Navigation extends React.Component {
     });
   }
 
-  render() {
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
+  }
 
+  render() {
+console.log('render');
     let LoginCont = <Login label="Sign in"/>;
 
-    /*if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
+    if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
       LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";
-    }*/
+    }
 
-    return <div>
-        <AppBar
-          title={this.props.title}
-          onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}>
-
-          <ToolbarGroup>
-            {LoginCont}
-            <TextField hintText="Search:" />
-            <IconMenu
-                iconButtonElement={
-                  <IconButton><MoreVertIcon /></IconButton>
-                }
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-              >
-                <MenuItem primaryText="Refresh" />
-                <MenuItem primaryText="Help" />
-                <MenuItem primaryText="Sign out" />
-            </IconMenu>
-          </ToolbarGroup>
-
-        </AppBar>
-
-        <Toolbar>
-
-          <ToolbarGroup float="right">
-            <DialectDropDown />
-          </ToolbarGroup>
-
-        </Toolbar>
-
-        <AppLeftNav
-          menu={{main: true}}
-          open={this.props.open}
-          onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
-          onRequestChangeList={this.handleRequestChangeList}
-          routes={this.props.routes}
-          docked={false} />
-    </div>;
+    return <Navigation1 />;
   }
 }
