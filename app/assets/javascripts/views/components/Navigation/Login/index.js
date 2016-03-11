@@ -15,17 +15,25 @@ limitations under the License.
 */
 import React from 'react';
 import _ from 'underscore';
-import Request from 'request';
+import connectToStores from 'alt-utils/lib/connectToStores';
 
+// Configuration
 import ConfGlobal from 'conf/local.json';
 
-// Views / Components
+// Stores
+import UserStore from 'stores/UserStore';
+import ClientStore from 'stores/ClientStore';
 
+// Actions
+import UserActions from 'actions/UserActions';
+
+// Components
 import Popover from 'material-ui/lib/popover/popover';
 import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
+@connectToStores
 export default class Login extends React.Component {
 
   static contextTypes = {
@@ -34,6 +42,23 @@ export default class Login extends React.Component {
       router: React.PropTypes.object,
       siteProps: React.PropTypes.object.isRequired
   };
+
+  static getStores() {
+    return [UserStore, ClientStore];
+  }
+
+  static getPropsFromStores() {
+    return {
+      userStore: UserStore.getState(),
+      clientStore: ClientStore.getState()
+    };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.userStore.currentUser !== this.props.userStore.currentUser) {
+      this._handleClose();
+    }
+  }
 
   constructor(props, context) {
     super(props, context);
@@ -68,9 +93,11 @@ export default class Login extends React.Component {
   _handleLogin() {
     var username = this.refs.username.getValue();
     var password = this.refs.password.getValue();
-
+    
     if ( username !== null && password !== null) {
 
+      UserActions.login(this.props.clientStore.client, username, password);
+/*
       var _this = this;
 
       // TODO: Better way of handling this
@@ -87,7 +114,7 @@ export default class Login extends React.Component {
           _this._handleClose();
 
         }).catch((error) => { throw error });
-      });
+      });*/
     }
   }
 

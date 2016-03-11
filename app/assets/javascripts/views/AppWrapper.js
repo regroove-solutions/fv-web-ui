@@ -15,10 +15,21 @@ limitations under the License.
 */
 import React from 'react';
 import Nuxeo from 'nuxeo';
+
+import AltContainer from 'alt-container';
+
 import classNames from 'classnames';
 
 import ConfGlobal from 'conf/local.json';
 
+// Stores
+import ClientStore from 'stores/ClientStore';
+import UserStore from 'stores/UserStore';
+
+// Actions
+import ClientActions from 'actions/ClientActions';
+
+// Components & Themes
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
@@ -38,30 +49,18 @@ export default class Index extends React.Component {
     super(props);
 
     this.state = {
-      nuxeoArgs: {
-          baseURL: ConfGlobal.baseURL,
-          restPath: 'site/api/v1',
-          automationPath: 'site/automation',
-          auth: {
-            method: 'basic',
-            username: null,
-            password: null
-          },
-          timeout: 30000
-      },
       siteProps: {
         title: ConfGlobal.title,
         domain: ConfGlobal.domain
       }
     };
 
-    this._storeClient = new Nuxeo(this.state.nuxeoArgs);
-    this._storeClient.header('X-NXproperties', '*');
+    ClientActions.connect();
   }
 
   getChildContext() {
     return {
-      client: this._storeClient,
+      client: ClientStore.getState().client,
       muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme),
       siteProps: this.state.siteProps
     };
@@ -87,7 +86,7 @@ export default class Index extends React.Component {
           </div>
         </div>;
 
-    return <div>
+    return <AltContainer stores={{clientStore: ClientStore, userStore: UserStore}}>
       <Navigation
         routes={this.props.routes}
         history={this.props.history} />
@@ -97,6 +96,6 @@ export default class Index extends React.Component {
       <footer className="footer">
         {footer}
       </footer>
-    </div>;
+    </AltContainer>;
   }
 }

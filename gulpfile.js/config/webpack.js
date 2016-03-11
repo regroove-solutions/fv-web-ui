@@ -40,7 +40,9 @@ module.exports = function(env) {
         views: path.resolve(jsSourceDirectory + 'views/'),
         conf: path.resolve(jsSourceDirectory + 'configuration/'),
         operations: path.resolve(jsSourceDirectory + 'operations/'),
-        common: path.resolve(jsSourceDirectory + 'common/')
+        common: path.resolve(jsSourceDirectory + 'common/'),
+        stores: path.resolve(jsSourceDirectory + 'stores/'),
+        actions: path.resolve(jsSourceDirectory + 'actions/')
       },
       extensions: ['', '.js', '.less']
     },

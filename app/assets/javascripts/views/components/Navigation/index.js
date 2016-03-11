@@ -13,9 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React from 'react';
 import classNames from 'classnames';
 
+// Components
 import AppBar from 'material-ui/lib/app-bar';
 
 import TextField from 'material-ui/lib/text-field';
@@ -35,12 +37,26 @@ import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
 export default class Navigation extends React.Component {
+
+  static childContextTypes = {
+    client: React.PropTypes.object,
+    muiTheme: React.PropTypes.object,
+    siteProps: React.PropTypes.object
+  };
+
   static contextTypes = {
-      client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
       router: React.PropTypes.object.isRequired,
       siteProps: React.PropTypes.object.isRequired
   };
+
+  getChildContext() {
+    return {
+      client: this.props.clientStore.client,
+      muiTheme: this.context.muiTheme,
+      siteProps: this.context.siteProps
+    };
+  }
 
   constructor(props, context){
     super(props, context);
@@ -74,13 +90,20 @@ export default class Navigation extends React.Component {
   }
 
   render() {
+
+    let LoginCont = <Login label="Sign in"/>;
+
+    if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
+      LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";
+    }
+
     return <div>
         <AppBar
           title={this.context.siteProps.title}
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}>
 
           <ToolbarGroup>
-            <Login label="Sign in" />
+            {LoginCont}
             <TextField hintText="Search:" />
             <IconMenu
                 iconButtonElement={

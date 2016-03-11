@@ -23,8 +23,7 @@ import Dialects from 'models/Dialects';
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
 
-// Views / Components
-
+// Components
 import Divider from 'material-ui/lib/divider';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -48,14 +47,12 @@ let SelectableList = SelectableContainerEnhance(List);
 
 export default class DialectDropDown extends React.Component {
 
-
   static contextTypes = {
       client: React.PropTypes.object,
       muiTheme: React.PropTypes.object,
       router: React.PropTypes.object,
       siteProps: React.PropTypes.object.isRequired
   };
-
 
   constructor(props, context) {
     super(props, context);

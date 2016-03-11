@@ -12,6 +12,9 @@
     "test": "gulp build:production"
   },
   "dependencies": {
+    "alt": "^0.18.2",
+    "alt-container": "^1.0.2",
+    "alt-utils": "^1.0.0",
     "backbone": "~1.2.1",
     "bootstrap": "~3.3.4",
     "browser-sync": "~2.9.6",

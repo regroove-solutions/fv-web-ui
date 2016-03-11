@@ -60,7 +60,7 @@ require("styles/main");
 injectTapEventPlugin();
 
 // Temp: Wrap application in request to generate proper guest user session
-Request({url: ConfGlobal.baseURL + "/", method: "HEAD"}, function (error, response, body) {
+Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"}, function (error, response, body) {
 
   if (!error && response.statusCode == 200) {
     render((
