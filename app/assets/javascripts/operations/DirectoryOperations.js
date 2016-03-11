@@ -69,10 +69,8 @@ export default class DirectoryOperations {
 
           client.operation('Document.Query')
             .params(params)
-            .execute(headers, function(error, response) {
-              if (error) {
-                throw error;
-              }             
+            .execute(headers).then((response) => {
+
               if (response.entries && response.entries.length > 0) {
                 
                 documentList.add(response.entries);
@@ -82,7 +80,7 @@ export default class DirectoryOperations {
               } else {
                 reject('No ' + documentList.model.prototype.entityTypeName +' found');
               }
-          });
+          }).catch((error) => { throw error });
     });
   }
 

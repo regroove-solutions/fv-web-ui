@@ -15,6 +15,9 @@ limitations under the License.
 */
 import React from 'react';
 import _ from 'underscore';
+import Request from 'request';
+
+import ConfGlobal from 'conf/local.json';
 
 // Views / Components
 
@@ -37,10 +40,13 @@ export default class Login extends React.Component {
 
     this.state = {
       open: false,
+      username: null,
+      password: null
     };
 
     this._handleOpen = this._handleOpen.bind(this);
     this._handleClose = this._handleClose.bind(this);
+    this._handleLogin = this._handleLogin.bind(this);
   }
 
   _handleOpen(event){
@@ -59,39 +65,56 @@ export default class Login extends React.Component {
     });
   }
 
+  _handleLogin() {
+    var username = this.refs.username.getValue();
+    var password = this.refs.password.getValue();
+
+    if ( username !== null && password !== null) {
+
+      var _this = this;
+
+      // TODO: Better way of handling this
+      Request({url: ConfGlobal.baseURL + "/logout", method: "GET"}, function (error, response, body) {
+        _this.context.client.login({auth: {method: 'basic', username: username, password: password}}).then((user) => {
+          if ( user.isAnonymous ) {
+            console.log("You're a guest!");
+            //Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"});
+          } else {
+            console.log(user.properties.username);
+          }
+
+          // Close box
+          _this._handleClose();
+
+        }).catch((error) => { throw error });
+      });
+    }
+  }
+
   render() {
-
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        secondary={true}
-        onTouchTap={this._handleClose} />,
-      <FlatButton
-        label="Sign in"
-        primary={true}
-        onTouchTap={this._handleClose} />,
-    ];
-
     return (
       <div style={{display: "inline-block", paddingRight: "10px"}}>
         <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />
 
-<Popover open={this.state.open}
-  anchorEl={this.state.anchorEl}
-  anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-  targetOrigin={{horizontal: 'left', vertical: 'top'}}
-  onRequestClose={this._handleClose} >
-  <div style={{padding:20}}>
-    <h2>Sign in</h2>
-    <p>
-      <div><TextField hintText="Username:" /></div>
-      <div><TextField hintText="Password:" /></div>
-    </p>
-    <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
-    <RaisedButton primary={true} label="Sign in"/>
-  </div>
-</Popover>
+        <Popover open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={this._handleClose}>
 
+          <div style={{padding:20}}>
+
+            <h2>Sign in</h2>
+
+            <div><TextField ref="username" hintText="Username:" /></div>
+            <div><TextField ref="password" type="password" hintText="Password:" /></div>
+
+            <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
+            <RaisedButton primary={true} onTouchTap={this._handleLogin} label="Sign in"/>
+
+          </div>
+
+        </Popover>
 
       </div>
     );

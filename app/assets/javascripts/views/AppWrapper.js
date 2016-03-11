@@ -44,8 +44,8 @@ export default class Index extends React.Component {
           automationPath: 'site/automation',
           auth: {
             method: 'basic',
-            username: ConfGlobal.auth.username,
-            password: ConfGlobal.auth.password
+            username: null,
+            password: null
           },
           timeout: 30000
       },
@@ -55,7 +55,7 @@ export default class Index extends React.Component {
       }
     };
 
-    this._storeClient = new Nuxeo.Client(this.state.nuxeoArgs);
+    this._storeClient = new Nuxeo(this.state.nuxeoArgs);
     this._storeClient.header('X-NXproperties', '*');
   }
 
@@ -69,7 +69,7 @@ export default class Index extends React.Component {
 
   render() {
 
-  let footer = <div className="container-fluid">
+    let footer = <div className="container-fluid">
           <div className="row">
             <div className="col-xs-12">
               <p className={classNames('text-center', 'text-muted')}>Disclaimer | Feedback | Conditions of Use</p>

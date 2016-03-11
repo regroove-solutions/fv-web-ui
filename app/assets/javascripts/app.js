@@ -17,6 +17,10 @@ import React from 'react';
 import { render } from 'react-dom'
 import { browserHistory, Router, Route, IndexRoute } from 'react-router'
 
+import Request from 'request';
+
+import ConfGlobal from 'conf/local.json';
+
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import AppWrapper from 'views/AppWrapper';
@@ -55,30 +59,38 @@ require("styles/main");
 
 injectTapEventPlugin();
 
-render((
-  <Router history={browserHistory}>
-    <Route path="/" component={AppWrapper}>
-      <IndexRoute component={Index} />
-      <Route path="/get-started" label="Get Started" menus={[{'main': true}]} component={GetStarted}/>
-      <Route path="/explore" label="Explore" menus={[{'main': true}]} component={ExploreArchive}/>
-      <Route path="/explore/:family" component={ExploreFamily}/>
-      <Route path="/explore/:family/:language" component={ExploreLanguage}/>
-      <Route path="/explore/:family/:language/:dialect" component={ExploreDialect}>
-        <Route path="learn" component={DialectLearn}>
-          <Route path="words" component={DialectLearnWords}>
-            <Route path=":word" component={ViewWord}/>
+// Temp: Wrap application in request to generate proper guest user session
+Request({url: ConfGlobal.baseURL + "/", method: "HEAD"}, function (error, response, body) {
+
+  if (!error && response.statusCode == 200) {
+    render((
+      <Router history={browserHistory}>
+        <Route path="/" component={AppWrapper}>
+          <IndexRoute component={Index} />
+          <Route path="/get-started" label="Get Started" menus={[{'main': true}]} component={GetStarted}/>
+          <Route path="/explore" label="Explore" menus={[{'main': true}]} component={ExploreArchive}/>
+          <Route path="/explore/:family" component={ExploreFamily}/>
+          <Route path="/explore/:family/:language" component={ExploreLanguage}/>
+          <Route path="/explore/:family/:language/:dialect" component={ExploreDialect}>
+            <Route path="learn" component={DialectLearn}>
+              <Route path="words" component={DialectLearnWords}>
+                <Route path=":word" component={ViewWord}/>
+              </Route>
+              <Route path="phrases" component={DialectLearnPhrases}/>
+              <Route path="songs" component={DialectLearnSongs}/>
+              <Route path="stories" component={DialectLearnStories}/>
+            </Route>
+            <Route path="play" component={DialectPlay}/>
+            <Route path="community-slideshow" component={DialectCommunitySlideshow}/>
+            <Route path="art-gallery" component={DialectArtGallery}/>
           </Route>
-          <Route path="phrases" component={DialectLearnPhrases}/>
-          <Route path="songs" component={DialectLearnSongs}/>
-          <Route path="stories" component={DialectLearnStories}/>
+          <Route path="/contribute" label="Contribute" menus={[{'main': true}]} component={Contribute}/>
+          <Route path="/play" label="Play" menus={[{'main': true}]} component={Play}/>
+          <Route path="*" component={NotFound}/>
         </Route>
-        <Route path="play" component={DialectPlay}/>
-        <Route path="community-slideshow" component={DialectCommunitySlideshow}/>
-        <Route path="art-gallery" component={DialectArtGallery}/>
-      </Route>
-      <Route path="/contribute" label="Contribute" menus={[{'main': true}]} component={Contribute}/>
-      <Route path="/play" label="Play" menus={[{'main': true}]} component={Play}/>
-      <Route path="*" component={NotFound}/>
-    </Route>
-  </Router>
-), document.getElementById('app-wrapper'))
+      </Router>
+    ), document.getElementById('app-wrapper'))
+  } else {
+    // Server is down, serve static alternative?
+  }
+});

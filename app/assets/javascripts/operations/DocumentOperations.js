@@ -61,16 +61,13 @@ export default class DocumentOperations {
 
           client.operation('Document.Query')
             .params(params)
-            .execute(headers, function(error, response) {
-              if (error) {
-                throw error;
-              }             
+            .execute(headers).then((response) => {         
               if (response.entries.length > 0) {
                 resolve(new documentType(response.entries[0]));
               } else {
                 reject('No ' + documentType.prototype.entityTypeName +' found');
               }
-          });
+          }).catch((error) => { throw error });
     });
   }
 
@@ -104,16 +101,13 @@ export default class DocumentOperations {
 
           client.operation('Document.Query')
             .params(params)
-            .execute(headers, function(error, response) {
-              if (error) {
-                throw error;
-              }             
+            .execute(headers).then((response) => {      
               if (response.entries.length > 0) {
                 resolve(new documentType(response.entries[0]));
               } else {
                 reject('No ' + documentType.prototype.entityTypeName +' found');
               }
-          });
+          }).catch((error) => { throw error });
     });
   }
 
@@ -145,16 +139,13 @@ export default class DocumentOperations {
 
           client.operation('Document.Query')
             .params(params)
-            .execute(headers, function(error, response) {
-              if (error) {
-                throw error;
-              }             
+            .execute(headers).then((response) => {           
               if (response.entries.length > 0) {
                 resolve(response.entries);
               } else {
                 reject('No media found');
               }
-          });
+          }).catch((error) => { throw error });
     });
   }
 
@@ -226,15 +217,10 @@ export default class DocumentOperations {
 
           client.operation('Document.Query')
             .params(params)
-            .execute(headers, function(error, response) {
-
-              if (error) {
-                throw error;
-              }
-
+            .execute(headers).then((response) => {
               documentList.add(response.entries);
               resolve(documentList.toJSON());
-          });
+          }).catch((error) => { throw error });
     });
   }
 }
