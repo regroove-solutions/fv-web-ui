@@ -1,22 +1,12 @@
-import alt from '../alt';
-import ClientActions from 'actions/ClientActions';
+import { createStore, applyMiddleware } from 'redux'
+//import thunk from 'redux-thunk'
+//import api from '../middleware/api'
+import rootReducer from '../reducers'
 
-class ClientStore {
-  constructor() {
-
-    this.bindListeners({
-      onConnect: ClientActions.connect
-    });
-
-    this.state = {
-      client: ClientActions.connect
-    }
-  }
-
-  onConnect(client) {
-    console.log(client);
-    this.setState({ client: client });
-  }
+export default function initStore(initialState) {
+  return createStore(
+    rootReducer,
+    initialState/*,
+    applyMiddleware(api)*/
+  )
 }
-
-export default alt.createStore(ClientStore, 'ClientStore');

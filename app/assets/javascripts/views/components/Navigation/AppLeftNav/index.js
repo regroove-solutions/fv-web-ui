@@ -36,12 +36,18 @@ export default class AppLeftNav extends React.Component {
     super(props, context);
 
     // Get routes that match this menu
-    let routesWithMenus = _.filter(props.routes[0].childRoutes, function(route){
-      return _.findWhere(route.menus, props.menu) != undefined; });
+    //let routesWithMenus = _.filter(props.routes[0].childRoutes, function(route){
+    //  return _.findWhere(route.menus, props.menu) != undefined; });
 
     this.state = {
       open: props.open,
-      routes: routesWithMenus
+      routes: [
+        {
+          label: "Explore",
+          menu: ['explore'],
+          path: "/hello-world/"
+        }
+      ]
     };
   }
 

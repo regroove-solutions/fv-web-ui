@@ -13,9 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
 import { browserHistory, Router, Route, IndexRoute } from 'react-router'
+import { syncHistoryWithStore } from 'react-router-redux'
+
+//import initStore from 'stores/AppStore'
 
 import Request from 'request';
 
@@ -24,6 +27,8 @@ import ConfGlobal from 'conf/local.json';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import AppWrapper from 'views/AppWrapper';
+
+import providers from './providers/index';
 
 // Pages
 import Index from 'views/pages/index';
@@ -59,38 +64,33 @@ require("styles/main");
 
 injectTapEventPlugin();
 
-// Temp: Wrap application in request to generate proper guest user session
-Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"}, function (error, response, body) {
+//const store = initStore();
+//const history = syncHistoryWithStore(browserHistory, store)
 
-  if (!error && response.statusCode == 200) {
-    render((
-      <Router history={browserHistory}>
-        <Route path="/" component={AppWrapper}>
-          <IndexRoute component={Index} />
-          <Route path="/get-started" label="Get Started" menus={[{'main': true}]} component={GetStarted}/>
-          <Route path="/explore" label="Explore" menus={[{'main': true}]} component={ExploreArchive}/>
-          <Route path="/explore/:family" component={ExploreFamily}/>
-          <Route path="/explore/:family/:language" component={ExploreLanguage}/>
-          <Route path="/explore/:family/:language/:dialect" component={ExploreDialect}>
-            <Route path="learn" component={DialectLearn}>
-              <Route path="words" component={DialectLearnWords}>
-                <Route path=":word" component={ViewWord}/>
-              </Route>
-              <Route path="phrases" component={DialectLearnPhrases}/>
-              <Route path="songs" component={DialectLearnSongs}/>
-              <Route path="stories" component={DialectLearnStories}/>
-            </Route>
-            <Route path="play" component={DialectPlay}/>
-            <Route path="community-slideshow" component={DialectCommunitySlideshow}/>
-            <Route path="art-gallery" component={DialectArtGallery}/>
-          </Route>
-          <Route path="/contribute" label="Contribute" menus={[{'main': true}]} component={Contribute}/>
-          <Route path="/play" label="Play" menus={[{'main': true}]} component={Play}/>
-          <Route path="*" component={NotFound}/>
-        </Route>
-      </Router>
-    ), document.getElementById('app-wrapper'))
-  } else {
-    // Server is down, serve static alternative?
+const context = {
+  providers,
+  providedState: {
+    list: [
+      {daniel: 'easy!'},
+      {maniel: 'right?'}
+    ]
   }
-});
+};
+
+export default class App extends Component {
+  render() {
+    return (
+        <div>HelloWordl</div>
+    )
+  }
+}
+
+// Temp: Wrap application in request to generate proper guest user session
+//Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"}, function (error, response, body) {
+  //if (!error && response.statusCode == 200) {
+    console.log(context);
+    render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'))
+  //} else {
+    // Server is down, serve static alternative?
+  //}
+//});

@@ -36,7 +36,12 @@ import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
+@provide
 export default class Navigation extends React.Component {
+
+  static PropTypes = {
+    
+  }
 
   static childContextTypes = {
     client: React.PropTypes.object,
@@ -46,13 +51,12 @@ export default class Navigation extends React.Component {
 
   static contextTypes = {
       muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
       siteProps: React.PropTypes.object.isRequired
   };
 
   getChildContext() {
     return {
-      client: this.props.clientStore.client,
+      //client: this.props.clientStore.client,
       muiTheme: this.context.muiTheme,
       siteProps: this.context.siteProps
     };
@@ -83,7 +87,10 @@ export default class Navigation extends React.Component {
   }
 
   handleRequestChangeList(event, value) {
-    this.context.router.push(value);
+
+    console.log('test');
+
+    //this.context.router.push(value);
     this.setState({
       leftNavOpen: false,
     });
@@ -99,7 +106,7 @@ export default class Navigation extends React.Component {
 
     return <div>
         <AppBar
-          title={this.props.title}
+          title={this.context.siteProps.title}
           onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}>
 
           <ToolbarGroup>
@@ -130,10 +137,9 @@ export default class Navigation extends React.Component {
 
         <AppLeftNav
           menu={{main: true}}
-          open={this.props.open}
+          open={this.state.leftNavOpen}
           onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
           onRequestChangeList={this.handleRequestChangeList}
-          routes={this.props.routes}
           docked={false} />
     </div>;
   }

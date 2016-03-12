@@ -35,12 +35,31 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
-import Navigation from 'views/components/Navigation';
+import NavigationCont from './Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
+const mapStateToProps = (state) => {
+  return { todos: state.todos };
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onTodoClick: (id) => {
+      dispatch(toggleTodo(id))
+    }
+  }
+}
+
+
+//@connect(mapStateToProps, mapDispatchToProps)
 @ThemeDecorator(ThemeManager.getMuiTheme(FirstVoicesTheme))
 @provide
-export default class AppWrapper extends React.Component {
+export default class AppWrapper extends Component {
+
+  static propTypes = {
+    list: PropTypes.arrayOf(PropTypes.object).isRequired,
+    pushItem: PropTypes.func.isRequired
+  };
 
   static childContextTypes = {
     client: React.PropTypes.object,
@@ -76,13 +95,12 @@ export default class AppWrapper extends React.Component {
   * Wrap render in AltContainer to have seamless access to stores
   */
   render() {
-    return <div stores={{clientStore: ClientStore, userStore: UserStore}}>
-      <Navigation
-        history={this.props.history} />
-      <div className="main">
-        {this.props.children}
-      </div>
-      <Footer />
-    </div>;
+    return this.props.list.map(
+      item => (
+        <li key={item.time}>
+          {new Date(item.time).toString()}
+        </li>
+      )
+    );
   }
 }
