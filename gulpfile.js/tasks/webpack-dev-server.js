@@ -17,13 +17,13 @@ gulp.task("webpack-dev-server", function(callback) {
     	hot: true,
     	open: true,
     	contentBase: config.output.contentBase,
-    	publicPath: 'http://localhost:' + config.devServer.port + config.output.publicPath,
+    	publicPath: 'http://' + config.devServer.host + ':' + config.devServer.port + config.output.publicPath,
     	historyApiFallback: true,
         stats: { colors: true }
-    }).listen(config.devServer.port, "localhost", function(err) {
+    }).listen(config.devServer.port, config.devServer.host, function(err) {
         if(err) throw new gutil.PluginError("webpack-dev-server", err);
 
-        gutil.log("[webpack-dev-server]", "http://localhost:" + config.devServer.port + "/");
+        gutil.log("[webpack-dev-server]", "http://" + config.devServer.host + ":" + config.devServer.port + "/");
 
         // keep the server alive or continue?
         // callback();

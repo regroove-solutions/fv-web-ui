@@ -16,8 +16,8 @@ limitations under the License.
 export default {
   clean: function (str, mode = 'NXQL') {
     if (mode == 'NXQL') {
-      // Escape single quotes
-      str = str.replace(/'/g, "\\'");
+      // Escape single quotes and URL decode
+      str = decodeURIComponent(str.replace(/'/g, "\\'"));
     }
 
     return str;

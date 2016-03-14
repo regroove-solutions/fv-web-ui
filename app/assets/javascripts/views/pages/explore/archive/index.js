@@ -30,12 +30,12 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile';
 */
 export default class ExploreArchive extends React.Component {
 
-  static contextTypes = {
+  /*static contextTypes = {
       client: React.PropTypes.object.isRequired,
       muiTheme: React.PropTypes.object.isRequired,
       router: React.PropTypes.object.isRequired,
       siteProps: React.PropTypes.object.isRequired
-  };
+  };*/
 
   constructor(props, context){
     super(props, context);
@@ -45,10 +45,10 @@ export default class ExploreArchive extends React.Component {
     }
 
     // Create new operations object
-    this.languageFamilyOperations = new DirectoryOperations(LanguageFamily, LanguageFamilies, context.client, { domain: context.siteProps.domain });
+    //this.languageFamilyOperations = new DirectoryOperations(LanguageFamily, LanguageFamilies, context.client, { domain: context.siteProps.domain });
 
     // Get list of language families
-    this.languageFamilyOperations.getDocumentsByPath("/sections").then((function(families){
+    /*this.languageFamilyOperations.getDocumentsByPath("/sections").then((function(families){
 
       let fieldsToRender = [];
 
@@ -66,7 +66,7 @@ export default class ExploreArchive extends React.Component {
         childData: fieldsToRender
       });
 
-    }).bind(this));
+    }).bind(this));*/
 
     this._exploreEntry = this._exploreEntry.bind(this);
   }

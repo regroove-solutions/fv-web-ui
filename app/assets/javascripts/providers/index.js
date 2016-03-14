@@ -1,8 +1,9 @@
-import theme from 'provide-theme';
-import page from 'provide-page';
-import list from './list';
+//import theme from 'provide-theme';
+import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
+import settings from './settings';
 
 export default {
   page,
-  list
+  //theme,
+  settings
 };

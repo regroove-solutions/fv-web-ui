@@ -13,15 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
-
-// Models
-import Dialect from 'models/Dialect';
-import Dialects from 'models/Dialects';
-
-// Operations
-import DocumentOperations from 'operations/DocumentOperations';
+import selectn from 'selectn';
+import provide from 'react-redux-provide';
 
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -29,110 +24,130 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import Paper from 'material-ui/lib/paper';
+import List from 'material-ui/lib/lists/list';
+import Divider from 'material-ui/lib/divider';
+import ListItem from 'material-ui/lib/lists/list-item';
+import CircularProgress from 'material-ui/lib/circular-progress';
+
+// Edit
+import TCombForm from 'tcomb-form';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
 */
-export default class ExploreDialect extends React.Component {
+@provide
+export default class ExploreDialect extends Component {
+
+  static elements = {
+    spin: <CircularProgress mode="indeterminate" size={0.5} />
+  };
+
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    navigateTo: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    family: PropTypes.string.isRequired,
+    language: PropTypes.string.isRequired,
+    dialect: PropTypes.string.isRequired,
+    fetchDialectAndPortal: PropTypes.func.isRequired,
+    computeDialectAndPortal: PropTypes.object.isRequired,
+    computeDialect: PropTypes.object.isRequired,
+    computePortal: PropTypes.object.isRequired,
+    requestEdit: PropTypes.func.isRequired,
+    editMode: PropTypes.bool
+  };
+
+  static defaultProps = {
+    editMode: false
+  };
 
   static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
+    muiTheme: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
+    props.fetchDialectAndPortal(props.properties.domain + '/Workspaces/Data/' + props.family + '/' + props.language + '/', props.dialect);
 
-    this.state = {
-      dialect: null
-    };
-
-    // Create new operations object
-    this.dialectOperations = new DocumentOperations(Dialect, Dialects, context.client, { domain: context.siteProps.domain });
-
-    this._fetchDialect();
-
-    this._navigate = this._navigate.bind(this);
+    // Bind methods to 'this'
+    ['_onNavigateRequest', '_onEditRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  // Handle change of params when navigating within router
-  // See https://github.com/rackt/react-router/blob/latest/docs/guides/advanced/ComponentLifecycle.md
-  componentDidUpdate (prevProps) {
-    let oldDialect = prevProps.params.dialect;
-    let newDialect = this.props.params.dialect;
+  _onNavigateRequest(path) {
+    const destination = this.props.navigateTo(path);
+    const newPathArray = this.props.splitWindowPath.slice();
 
-    if (newDialect !== oldDialect)
-      this._fetchDialect();
+    newPathArray.push(destination.path);
+
+    this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
 
-  _fetchDialect() {
-    this.dialectOperations.getDocumentByPathAndTitle(
-      '/sections/Data/' + this.props.params.family + '/' + this.props.params.language + '/', this.props.params.dialect,
-      {headers: { 'X-NXenrichers.document': 'ancestry' }}
-    ).then((function(dialect){
-      this.setState({
-        dialect: dialect
-      });
-    }).bind(this));
+  _onEditRequest(itemToEdit) {
+    this.props.requestEdit();
   }
 
-  _navigate(page) {
-    this.context.router.push('/explore/' + this.state.dialect.get("parentLanguageFamily").get('dc:title') + '/' + this.state.dialect.get("parentLanguage").get('dc:title') + '/' + this.state.dialect.get("dc:title") + '/' + page);
+  _editableElement(str) {
+
+    if (this.props.computeDialectAndPortal.isFetching)
+      return this.spin;
+
+    if (this.props.editMode)
+      return <textarea defaultValue={str}></textarea>;
+
+    return str;
   }
 
   render() {
 
-    // Assign dialect prop to all children
-    let content = React.Children.map(this.props.children, function(child) {
-        return React.cloneElement(child, { dialect: this.state.dialect });
-    }, this);
+    let debug = "";
 
-    // If no children, render main content.
-    if (!this.props.children) {
+    const { computeDialectAndPortal, computeDialect, computePortal } = this.props;
 
-      content = <div className="row">
+    let dialect = selectn('response.entities.dialects' + '.' + computeDialect.response.result, computeDialect);
+    let portal = selectn('response.entities.portals' + '.' + computePortal.response.result, computePortal);
 
-        <div className={classNames('col-xs-12', 'col-md-2')}>
-          <h1>First Words</h1>
-          <p>First words here</p>
-        </div>
+    // debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
-        <div className={classNames('col-xs-12', 'col-md-6')}>
-          <h1>{(this.state.dialect) ? this.state.dialect.get('dc:title') : ""} Portal</h1>
-          <p>&quot;Pelpala7w&iacute;t i ucwalm&iacute;cwa m&uacute;ta7 ti tm&iacute;cwa &quot;- The people and land are one We are the Lilwat Nation, an Interior Salish people We live in a stunning and dramatic landscape with a rich biodiversity-a mysterious place of towering mountains,ice fields,alpine meadows,white-water rivers and braided river valleys that run to a milky color due to the silt and clay deposited by glacial melt. While Lilwat is a separate and distinct Nation, its still remains part of the St'at'imc Nation Our Language is called Ucwalmicwts. It is taught at both X'itolacw Community School and Pemberton Secondary School. Lilwat Also has a Language Immersion school which goes from Nursey to grade three and each subject in the immersion school is taught in the Ucwalmicwts Language. L&iacute;&#318;wat Nation (L&iacute;&#318;wat means where the rivers meet). </p>
+    //if (computeDialectAndPortal.isFetching) {
+    //  spin = <CircularProgress mode="indeterminate" size={0.5} />;
+    //}
 
-          <p>Originally the Lil'wat7&uacute;l managed a vast territory within the headwaters of the three rivers: Green River, Lillooet River and the Birkenhead River. </p>
-
-          <p>We are building a language retention strategy in the manner of nt'&aacute;kmen &amp; nx&eacute;kmen, and in 1974 was the inception of the written language in our community.</p>
-
-          <p>Cedar is inherent in our lives from birth until death. It provides a basket for our children and is used to cradle our loved ones when they pass into the spirit world. We use it for clothing, transportation, art, regalia, shelter, gathering food, cooking and as medicine. </p>
-
-          <p>Listen to our words, and explore the Lil'wat Language! CUYSTW&Iacute; MALH UCWALM&Iacute;CWTS- lets all go speak our Language!</p>
-        </div>
-
-        <div className={classNames('col-xs-12', 'col-md-4')}>
-          <h1>Status of Our Language</h1>
-          <p>Status of our language here.</p>
-        </div>
-
-      </div>
+    let portalBackgroundStyles = {
+      position: 'relative',
+      minHeight: 155,
+      backgroundColor: 'transparent',
+      backgroundImage: 'url(' + (selectn('properties.fv-portal:background_top_image', portal) || 'http://lorempixel.com/1340/155/abstract/1/') + ')',
+      backgroundPosition: '0 0',
     }
 
+    let featuredWord = selectn('properties.fv-portal:featured_words', portal) || [];
+    let relatedLinks = selectn('properties.fvdialect:related_links', dialect) || [];
+
     return <div>
+
+            <h1>{selectn('properties.dc:title', dialect)} Community Portal</h1>
+
+            <div style={portalBackgroundStyles}>
+
+              <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+                {selectn('properties.fv-portal:greeting', portal)}<br/>
+                {selectn('properties.fv-portal:featured_audio', portal)}
+              </h2>
+
+            </div>
 
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._navigate.bind(this, '')} label="Home" /> 
-                <RaisedButton onTouchTap={this._navigate.bind(this, 'learn')} label="Learn" /> 
-                <RaisedButton onTouchTap={this._navigate.bind(this, 'play')} label="Play" /> 
-                <RaisedButton onTouchTap={this._navigate.bind(this, 'community-slideshow')} label="Community Slideshow" /> 
-                <RaisedButton onTouchTap={this._navigate.bind(this, 'art-gallery')} label="Art Gallery" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'learn')} label="Learn" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'play')} label="Play" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'community-slideshow')} label="Community Slideshow" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'art-gallery')} label="Art Gallery" /> 
               </ToolbarGroup>
 
               <ToolbarGroup firstChild={true} float="right">
@@ -141,14 +156,70 @@ export default class ExploreDialect extends React.Component {
                     <NavigationExpandMoreIcon />
                   </IconButton>
                 }>
-                  <MenuItem primaryText="Edit Portal" />
+                  <MenuItem onTouchTap={this._onEditRequest.bind(this, 'portal')} primaryText="Edit Portal" />
                   <MenuItem primaryText="Contact" />
                 </IconMenu>
               </ToolbarGroup>
 
             </Toolbar>
 
-            {content}
+            <div className="row" style={{marginTop: '15px'}}>
+
+              <div className={classNames('col-xs-3', 'col-md-2')}>
+                <Paper style={{padding: '25px'}} zDepth={2}>
+
+                  <div className="subheader">First Words</div>
+
+                  <List>
+
+                    {featuredWord.map(function(word, i) {
+                      return (<ListItem key={i} primaryText={word} />);
+                    })}
+
+                  </List>
+
+                </Paper>
+
+              </div>
+
+              {debug}
+
+              <div className={classNames('col-xs-6', 'col-md-8')}>
+                <div>
+                  <h1>Portal</h1>
+                  <p>{this._editableElement(selectn('properties.fv-portal:about', portal))}</p>
+                  
+                </div>
+              </div>
+
+              <div className={classNames('col-xs-3', 'col-md-2')}>
+
+                <Paper style={{padding: '15px'}} zDepth={2}>
+
+                  <div className="subheader">Status of our Langauge</div>
+
+                  <p><strong>Name of Archive</strong><br/>{selectn('properties.dc:title', dialect)}</p>
+                  <hr/>
+                  <p><strong>Country</strong><br/>{selectn('properties.fvdialect:country', dialect)}</p>
+                  <hr/>
+                  <p><strong>Region</strong><br/>{selectn('properties.fvdialect:region', dialect)}</p>
+                  <hr/>
+                  <p><strong># of Words Archived</strong><br/>{selectn('properties.fvdialect:aaa', dialect)}</p>
+                  <hr/>
+                  <p><strong># of Phrases Archived</strong><br/>{selectn('properties.fvdialect:aaaa', dialect)}</p>
+
+                  <List>
+
+                    {relatedLinks.map(function(word, i) {
+                      return (<ListItem key={i} primaryText={word} />);
+                    })}
+
+                  </List>
+                </Paper>
+
+              </div>
+
+          </div>
 
         </div>;
   }

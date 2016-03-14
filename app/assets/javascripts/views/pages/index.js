@@ -13,28 +13,22 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
-import classNames from 'classnames';
 
-export default class Index extends React.Component {
+import {default as PageExploreArchive} from './explore/archive'
+import {default as PageExploreFamily} from './explore/family'
+import {default as PageExploreLanguage} from './explore/language'
+import {default as PageExploreDialect} from './explore/dialect'
 
-  static inlineStyles = {
-    marginRight: '25px'
-  };
+import {default as PageGetStarted} from './get-started'
+import {default as PageContribute} from './contribute'
+import {default as PagePlay} from './play'
 
-  static tableStyles = {
-    marginRight: 'auto',
-    marginLeft: 'auto'
-  };
-
-  render() {
-
-    return <div>
-            <div className="row">
-              <div className={classNames('col-xs-12')}>
-                Home Page coming soon (use the menu icon, top left, to navigate)
-              </div> 
-            </div> 
-          </div>;
-  }
+module.exports = {
+  PageExploreArchive,
+  PageExploreFamily,
+  PageExploreLanguage,
+  PageExploreDialect,
+  PageGetStarted,
+  PageContribute,
+  PagePlay
 }

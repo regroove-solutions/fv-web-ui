@@ -13,60 +13,83 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
-import _ from 'underscore';
+import React, { Component, PropTypes } from 'react';
 
-import Divider from 'material-ui/lib/divider';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import LeftNav from 'material-ui/lib/left-nav';
-import AppBar from 'material-ui/lib/app-bar';
+import provide from 'react-redux-provide';
 
+import {Divider, List, ListItem, LeftNav, AppBar} from 'material-ui/lib';
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
 
 let SelectableList = SelectableContainerEnhance(List);
 
-export default class AppLeftNav extends React.Component {
+@provide
+export default class AppLeftNav extends Component {
 
-  static contextTypes = {
-      siteProps: React.PropTypes.object.isRequired
+  static propTypes = {
+    ui: PropTypes.object.isRequired,
+    navigateTo: PropTypes.func.isRequired,
+    toggleMenuAction: PropTypes.func.isRequired,
+    properties: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired
   };
 
   constructor(props, context) {
     super(props, context);
 
-    // Get routes that match this menu
-    //let routesWithMenus = _.filter(props.routes[0].childRoutes, function(route){
-    //  return _.findWhere(route.menus, props.menu) != undefined; });
+    // Bind methods to 'this'
+    ['_onNavigateRequest', '_onRequestChange'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
 
-    this.state = {
-      open: props.open,
-      routes: [
-        {
-          label: "Explore",
-          menu: ['explore'],
-          path: "/hello-world/"
-        }
-      ]
-    };
+  _onNavigateRequest(event, path) {
+    const destination = this.props.navigateTo(path);
+    this.props.pushWindowPath(destination.path);
+
+    // Close side-menu
+    this.props.toggleMenuAction();
+  }
+
+  _onRequestChange() {
+    // Close side-menu
+    this.props.toggleMenuAction();
   }
 
   render() {
+
+    // TODO: Externalize these
+    const routes = [
+      {
+        label: "Get Started",
+        path: "/get-started/"
+      },
+      {
+        label: "Explore",
+        path: "/explore/"
+      },
+      {
+        label: "Contribute",
+        path: "/contribute/"
+      },
+      {
+        label: "Play",
+        path: "/play/"
+      }
+    ];
+
     return (
       <LeftNav 
         docked={false}
-        open={this.props.open}
-        onRequestChange={this.props.onRequestChangeLeftNav}
+        open={this.props.ui.menuVisible}
+        onRequestChange={this._onRequestChange}
         >
-          <AppBar title={this.context.siteProps.title}/>
+          <AppBar title={this.props.properties.title} />
 
           <SelectableList
             valueLink={{
               value: location.pathname,
-              requestChange: this.props.onRequestChangeList
+              requestChange: this._onNavigateRequest
           }}>
 
-            {this.state.routes.map((d, i) => 
+            {routes.map((d, i) => 
                 <ListItem
                   key={d.path}
                   value={d.path}

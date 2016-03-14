@@ -14,21 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux'
 import provide from 'react-redux-provide';
 
 import Nuxeo from 'nuxeo';
 
 import classNames from 'classnames';
 
+import AppFrontController from './AppFrontController';
+
 import ConfGlobal from 'conf/local.json';
 
 // Stores
-import ClientStore from 'stores/ClientStore';
-import UserStore from 'stores/UserStore';
+//import ClientStore from 'stores/ClientStore';
+//import UserStore from 'stores/UserStore';
 
 // Actions
-import ClientActions from 'actions/ClientActions';
+//import ClientActions from 'actions/ClientActions';
 
 // Components & Themes
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -40,10 +41,15 @@ import Footer from 'views/components/Navigation/Footer';
 
 @ThemeDecorator(ThemeManager.getMuiTheme(FirstVoicesTheme))
 @provide
-export default class AppWrapper extends React.Component {
+export default class AppWrapper extends Component {
+
+  static propTypes = {
+    connect: PropTypes.object.isRequired,
+    connect: PropTypes.func.isRequired
+  };
 
   static childContextTypes = {
-    client: React.PropTypes.object,
+    //client: React.PropTypes.object,
     muiTheme: React.PropTypes.object,
     siteProps: React.PropTypes.object
   };
@@ -53,34 +59,25 @@ export default class AppWrapper extends React.Component {
   */
   getChildContext() {
     return {
-      client: ClientStore.getState().client,
-      muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme),
-      siteProps: this.state.siteProps
+      //client: ClientStore.getState().client,
+      muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme)
     };
   }
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
 
-    this.state = {
-      siteProps: {
-        title: ConfGlobal.title,
-        domain: ConfGlobal.domain
-      }
-    };
-
-    ClientActions.connect();
+    this.props.connect();
   }
 
   /**
   * Wrap render in AltContainer to have seamless access to stores
   */
   render() {
-    return <div stores={{clientStore: ClientStore, userStore: UserStore}}>
-      <Navigation
-        history={this.props.history} />
+    return <div>
+      <Navigation />
       <div className="main">
-        {this.props.children}
+        <AppFrontController />
       </div>
       <Footer />
     </div>;

@@ -15,59 +15,109 @@ limitations under the License.
 */
 import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
+import { Schema, arrayOf, normalize } from 'normalizr';
+
+const documentSchema = new Schema('documents', {
+  idAttribute: 'uid'
+});
+
+const dialectSchema = new Schema('dialects', {
+  idAttribute: 'uid'
+});
+
+const languageSchema = new Schema('languages', {
+  idAttribute: 'uid'
+});
+
+const familySchema = new Schema('families', {
+  idAttribute: 'uid'
+});
+
+const portalSchema = new Schema('portals', {
+  idAttribute: 'uid'
+});
+
+const wordSchema = new Schema('words', {
+  idAttribute: 'uid'
+});
+
+const getSchemaForType = (type) => {
+  if (Schemas.hasOwnProperty(type)) {
+    return Schemas[type];
+  }
+
+  return Schemas.Document;
+}
+
+const Schemas = {
+  Document: documentSchema,
+  Documents: arrayOf(documentSchema),
+  FVDialect: dialectSchema,
+  FVDialects: arrayOf(dialectSchema),
+  FVPortal: portalSchema,
+  FVPortals: arrayOf(portalSchema)
+}
+
+portalSchema.define({
+  properties: {
+    'fv-portal:featured_words': arrayOf(wordSchema)
+  },
+  contextParameters: {
+    ancestry: {
+      dialect: dialectSchema,
+      language: languageSchema,
+      family: familySchema
+    }
+  }
+});
+
+
+
 
 export default class DocumentOperations {
 
-  constructor(documentType, documentTypePlural, client, properties = []) {
-    this.documentType = documentType;
-    this.documentTypePlural = documentTypePlural;
-    this.client = client;
-    this.properties = properties;
+  static properties = {
+    condition: "ecm:currentLifeCycleState <> 'deleted'",
+    client: null
+  };
 
-    this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
+  static setClient(client) {
+    this.properties.client = client;
   }
-
 
   /**
   * Get a single document of a certain type based on a path and title match
   * This document may or may not contain children 
   */
-  getDocumentByPathAndTitle(path = "", title, headers = null, params = null) {
-    // Expose fields to promise
-    let client = this.client;
-    let selectDefault = this.selectDefault;
-    let domain = this.properties.domain;
+  static getDocumentByPathAndTitle(path = "", title, type, headers = null, params = null) {
+
+    let properties = this.properties;
 
     path = StringHelpers.clean(path);
     title = StringHelpers.clean(title);
-
-    // Initialize an empty document from type
-    let documentType = this.documentType;
+    type = StringHelpers.clean(type);
 
     return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
-        function(resolve, reject) {
+      function(resolve, reject) {
+        let defaultParams = {
+          query: 
+            "SELECT * FROM " + type + " WHERE (ecm:path STARTSWITH '/" + path + "' AND dc:title LIKE '" + title + "' AND  " + properties.condition + ")"
+        };
 
-          let defaultParams = {
-            query: 
-              "SELECT * FROM " + documentType.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND dc:title LIKE '" + title + "' AND  " + selectDefault + ")"
-          };
+        let defaultHeaders = {};
 
-          let defaultHeaders = {};
+        params = Object.assign(defaultParams, params);
+        headers = Object.assign(defaultHeaders, headers);
 
-          params = Object.assign(defaultParams, params);
-          headers = Object.assign(defaultHeaders, headers);
-
-          client.operation('Document.Query')
-            .params(params)
-            .execute(headers).then((response) => {         
-              if (response.entries.length > 0) {
-                resolve(new documentType(response.entries[0]));
-              } else {
-                reject('No ' + documentType.prototype.entityTypeName +' found');
-              }
-          }).catch((error) => { throw error });
+        properties.client.operation('Document.Query')
+          .params(params)
+          .execute(headers).then((response) => {         
+            if (response.entries.length > 0) {
+              resolve(normalize(response.entries[0], getSchemaForType(type)));
+            } else {
+              reject('No ' + type +' found');
+            }
+        }).catch((error) => { throw error });
     });
   }
 

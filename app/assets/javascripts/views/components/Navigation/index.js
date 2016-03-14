@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
+
+import provide from 'react-redux-provide';
 
 // Components
 import AppBar from 'material-ui/lib/app-bar';
@@ -37,13 +39,14 @@ import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
 @provide
-export default class Navigation extends React.Component {
+export default class Navigation extends Component {
 
-  static PropTypes = {
-    
-  }
+  static propTypes = {
+    toggleMenuAction: PropTypes.func.isRequired,
+    properties: PropTypes.object.isRequired
+  };
 
-  static childContextTypes = {
+  /*static childContextTypes = {
     client: React.PropTypes.object,
     muiTheme: React.PropTypes.object,
     siteProps: React.PropTypes.object
@@ -60,36 +63,36 @@ export default class Navigation extends React.Component {
       muiTheme: this.context.muiTheme,
       siteProps: this.context.siteProps
     };
-  }
+  }*/
 
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      leftNavOpen: false
-    };
-
-    this.handleTouchTapLeftIconButton = this.handleTouchTapLeftIconButton.bind(this);
+    this._handleMenuToggle = this._handleMenuToggle.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
   }
 
-  handleTouchTapLeftIconButton () {
-    this.setState({
+  _handleMenuToggle (event) {
+    //console.log(event);
+
+    //const test = this.props.toggle("helloworld");
+    //console.log(test);
+
+    /*this.setState({
       leftNavOpen: !this.state.leftNavOpen,
-    });
+    });*/
   }
 
   handleChangeRequestLeftNav(open) {
+    console.log('ok2!');
     this.setState({
       leftNavOpen: open,
     });
   }
 
   handleRequestChangeList(event, value) {
-
-    console.log('test');
-
+    console.log('ok!');
     //this.context.router.push(value);
     this.setState({
       leftNavOpen: false,
@@ -97,17 +100,17 @@ export default class Navigation extends React.Component {
   }
 
   render() {
-
-    let LoginCont = <Login label="Sign in"/>;
+    let LoginCont = "";
+    //let LoginCont = <Login label="Sign in"/>;
 
     /*if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
-      LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";
+      LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";<DialectDropDown />
     }*/
 
     return <div>
         <AppBar
-          title={this.context.siteProps.title}
-          onLeftIconButtonTouchTap={this.handleTouchTapLeftIconButton}>
+          title={this.props.properties.title}
+          onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup>
             {LoginCont}
@@ -130,16 +133,17 @@ export default class Navigation extends React.Component {
         <Toolbar>
 
           <ToolbarGroup float="right">
-            <DialectDropDown />
+            
           </ToolbarGroup>
 
         </Toolbar>
 
         <AppLeftNav
+          test="me!"
           menu={{main: true}}
-          open={this.state.leftNavOpen}
-          onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
-          onRequestChangeList={this.handleRequestChangeList}
+          open={false}
+          //onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
+          //onRequestChangeList={this.handleRequestChangeList}
           docked={false} />
     </div>;
   }

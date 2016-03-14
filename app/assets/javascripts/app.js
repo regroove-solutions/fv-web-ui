@@ -64,31 +64,20 @@ require("styles/main");
 
 injectTapEventPlugin();
 
-//const store = initStore();
-//const history = syncHistoryWithStore(browserHistory, store)
-
 const context = {
   providers,
   providedState: {
-    list: [
-      {daniel: 'easy!'},
-      {maniel: 'right?'}
-    ]
+    ui: {menuVisible: false},
+    properties: {
+      title: ConfGlobal.title,
+      domain: ConfGlobal.domain
+    }
   }
 };
-
-export default class App extends Component {
-  render() {
-    return (
-        <div>HelloWordl</div>
-    )
-  }
-}
 
 // Temp: Wrap application in request to generate proper guest user session
 //Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"}, function (error, response, body) {
   //if (!error && response.statusCode == 200) {
-    console.log(context);
     render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'))
   //} else {
     // Server is down, serve static alternative?

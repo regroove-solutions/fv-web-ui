@@ -96,6 +96,7 @@ module.exports = function(env) {
 
     webpackConfig.devServer = {
       inline:true,
+      host: '0.0.0.0',
       port: port
     };
   }

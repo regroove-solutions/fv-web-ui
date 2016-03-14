@@ -24,8 +24,8 @@ import classNames from 'classnames';
 import ConfGlobal from 'conf/local.json';
 
 // Stores
-import ClientStore from 'stores/ClientStore';
-import UserStore from 'stores/UserStore';
+//import ClientStore from 'stores/ClientStore';
+//import UserStore from 'stores/UserStore';
 
 // Actions
 import ClientActions from 'actions/ClientActions';
