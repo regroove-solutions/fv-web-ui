@@ -7,5 +7,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.ParentDocEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.AncestryEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.WordEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.PhraseEnricher.xml
+Nuxeo-Component: OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.ParentDocEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.AncestryEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.WordEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.PhraseEnricher.xml,OSGI-INF/extensions/ca.bc.gov.nuxeo.enrichers.PortalEnricher.xml
 
