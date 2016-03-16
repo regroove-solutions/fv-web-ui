@@ -29,7 +29,8 @@ import javax.inject.Inject;
 @Deploy({"studio.extensions.First-Voices", "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml"})
 @LocalDeploy({"FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml"})
+    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
+    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublishedListener.xml"})
 public class ProxyPublishedListenerTest {
     @Inject
     protected CoreSession session;
@@ -39,15 +40,22 @@ public class ProxyPublishedListenerTest {
 
     private DocumentModel sectionRoot;
 
+    private DocumentModel languageDoc;
+
+    private DocumentModel dialectDoc;
+
+    private DocumentModel familyDoc;
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         DocumentModel domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
         sectionRoot = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true).get(0);
+        createDialectTree();
     }
 
     @Test
     public void testDialectFactory() throws Exception {
-        DocumentModel dialect = session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect"));
+        DocumentModel dialect = dialectDoc;
         // Check the factory is doing its job - check template
         DocumentModel child = session.getChild(dialect.getRef(), "Contributors");
         assertNotNull(child);
@@ -79,23 +87,40 @@ public class ProxyPublishedListenerTest {
         child = session.getChild(dialect.getRef(), "Phrase Books");
         assertNotNull(child);
         assertEquals(child.getDocumentType().getName(), "FVCategories");
+        
         // Check if Dialect is created in a section then it has no template applied
         dialect = session.createDocument(session.createDocumentModel(sectionRoot.getPathAsString(), "Dialect", "FVDialect"));
         assertEquals("Should have no child", session.getChildren(dialect.getRef()).size(), 0);
     }
 
+    protected void createDialectTree() throws Exception {
+        familyDoc = session.createDocument(session.createDocumentModel("/", "Family", "FVLanguageFamily"));
+        languageDoc = session.createDocument(session.createDocumentModel("/Family", "Language", "FVLanguage"));
+        dialectDoc = session.createDocument(session.createDocumentModel("/Family/Language", "Dialect", "FVDialect"));
+    }
+
+    @Test
+    public void testDialectPublishing() throws Exception {
+        
+    }
+
     @Test
     public void testDocumentPublishing() throws Exception {
-       DocumentModel dialect = session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect"));
-       DocumentModel contributor = session.createDocument(session.createDocumentModel("/Dialect/Contributors", "myContributor", "FVContributor"));
-       DocumentModel picture = session.createDocument(session.createDocumentModel("/Dialect/Resources", "myPicture", "FVAudio"));
-       DocumentModel audio = session.createDocument(session.createDocumentModel("/Dialect/Resources", "myPicture", "FVPicture"));
-       DocumentModel video = session.createDocument(session.createDocumentModel("/Dialect/Resources", "myVideo", "FVVideo"));
-       DocumentModel doc = session.createDocumentModel("/Dialect/Dictionary", "myWord", "FVWord");
-       doc.setProperty("fv", "related_pictures", picture.getId());
-       doc.setProperty("fv", "related_audio", audio.getId());
-       doc.setProperty("fv", "related_videos", video.getId());
-       doc.setProperty("fv", "source", contributor.getId());
+       createDialectTree();
+       DocumentModel contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
+       DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVAudio"));
+       DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
+       DocumentModel video = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
+       DocumentModel doc = session.createDocumentModel("/Family/Language/Dialect/Dictionary", "myWord", "FVWord");
+       String[] values = new String[1];
+       values[0]=audio.getId();
+       doc.setPropertyValue("fvcore:related_audio", values);
+       values[0]=picture.getId();
+       doc.setPropertyValue("fvcore:related_pictures", values);
+       values[0]=video.getId();
+       doc.setPropertyValue("fvcore:related_videos", values);
+       values[0]=contributor.getId();
+       doc.setPropertyValue("fvcore:source", values);
        doc = session.createDocument(doc);
        
        DocumentModel proxy = session.publishDocument(doc, sectionRoot);

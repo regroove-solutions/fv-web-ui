@@ -1,0 +1,13 @@
+<component name="ca.bc.gov.nuxeo.listeners.listener.contrib.ProxyPublishedListener">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+    point="listener">
+
+    <listener name="proxypublishedlistener" async="false" postCommit="false"
+      class="ca.firstvoices.publisher.listeners.ProxyPublishedListener" priority="100">
+      <event>documentProxyPublished</event>
+      <event>documentProxyUpdated</event>
+    </listener>
+  </extension>
+
+</component>
