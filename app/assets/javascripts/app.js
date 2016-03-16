@@ -37,7 +37,6 @@ injectTapEventPlugin();
 const context = {
   providers,
   providedState: {
-    ui: {menuVisible: false},
     properties: {
       title: ConfGlobal.title,
       domain: ConfGlobal.domain

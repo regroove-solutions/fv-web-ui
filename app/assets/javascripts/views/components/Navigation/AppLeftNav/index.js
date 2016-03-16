@@ -26,9 +26,10 @@ let SelectableList = SelectableContainerEnhance(List);
 export default class AppLeftNav extends Component {
 
   static propTypes = {
-    ui: PropTypes.object.isRequired,
     navigateTo: PropTypes.func.isRequired,
+    computeNavigateTo: PropTypes.object.isRequired,
     toggleMenuAction: PropTypes.func.isRequired,
+    computeToggleMenuAction: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired
   };
@@ -41,8 +42,9 @@ export default class AppLeftNav extends Component {
   }
 
   _onNavigateRequest(event, path) {
-    const destination = this.props.navigateTo(path);
-    this.props.pushWindowPath(destination.path);
+
+    // Request to navigate to
+    this.props.navigateTo(path);
 
     // Close side-menu
     this.props.toggleMenuAction();
@@ -51,6 +53,13 @@ export default class AppLeftNav extends Component {
   _onRequestChange() {
     // Close side-menu
     this.props.toggleMenuAction();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Push new url if not null
+    if (nextProps.computeNavigateTo.path != null) {
+      nextProps.pushWindowPath(nextProps.computeNavigateTo.path);
+    }
   }
 
   render() {
@@ -78,7 +87,7 @@ export default class AppLeftNav extends Component {
     return (
       <LeftNav 
         docked={false}
-        open={this.props.ui.menuVisible}
+        open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
         >
           <AppBar title={this.props.properties.title} />

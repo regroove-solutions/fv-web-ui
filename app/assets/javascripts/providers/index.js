@@ -1,5 +1,6 @@
 import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
 import settings from './settings';
+import navigation from './navigation';
 
 /**
 * These providers will be exposed to each componenet that has the @provide decorator,
@@ -7,5 +8,6 @@ import settings from './settings';
 */
 export default {
   page,
-  settings
+  settings,
+  navigation
 };

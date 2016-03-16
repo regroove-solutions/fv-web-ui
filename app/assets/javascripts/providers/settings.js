@@ -1,31 +1,14 @@
-// Configuration
-import ConfGlobal from 'conf/local.json';
-
-// API
-import Nuxeo from 'nuxeo';
-
 // Middleware
 import createLoggerMiddleware from 'redux-logger';
+const loggerMiddleware = createLoggerMiddleware();
 import thunk from 'redux-thunk';
-// Models
-import Dialect from 'models/Dialect';
-import Dialects from 'models/Dialects';
 
 // Operations
 import DocumentOperations from 'operations/DocumentOperations';
 
-const loggerMiddleware = createLoggerMiddleware();
-
-import { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
-
-// UX
-const TOGGLE_MENU = 'TOGGLE_MENU';
+// Action Constants
 const REQUEST_EDIT = 'REQUEST_EDIT';
 
-// PAGES
-const NAVIGATE_PAGE = 'NAVIGATE_PAGE';
-
-// DATA
 const CLIENT_CREATED = 'CLIENT_CREATED';
 
 const FETCH_DIALECT = 'FETCH_DIALECT';
@@ -35,23 +18,10 @@ const FETCH_DIALECT_AND_PORTAL = 'FETCH_DIALECT_AND_PORTAL';
 // EDITING
 const REQUEST_SAVE_FIELD = 'REQUEST_SAVE_FIELD';
 
-//import RunActions from '../actions/RunActions';
-//import UserApiUtils from '../utils/UserApiUtils';
-//import RunApiUtils from '../utils/RunApiUtils';
-//import logError from '../utils/logError'
 
-
-const client = new Nuxeo({
-  baseURL: ConfGlobal.baseURL,
-  restPath: 'site/api/v1',
-  automationPath: 'site/automation',
-  timeout: 30000
-});
-
-client.header('X-NXproperties', '*');
-
-DocumentOperations.setClient(client);
-
+/**
+* Action
+*/
 const fetchDialect = function fetchDialect(path) {
   return function (dispatch) {
 
@@ -83,7 +53,6 @@ const fetchPortal = function fetchPortal(path) {
 const requestSaveField = function updateDocument(newDoc) {
   return function (dispatch) {
 
-console.log(newDoc);
    // dispatch( { type: FETCH_PORTAL } );
 
   return DocumentOperations.updateDocument(newDoc)
@@ -107,15 +76,6 @@ const actions = {
   requestSaveField1() {
     return { type: REQUEST_SAVE_FIELD };
   },
-
-  navigateTo(path) {
-    return { type: NAVIGATE_PAGE, path };
-  },
-
-  toggleMenuAction() {
-    return { type: TOGGLE_MENU };
-  },
-
   fetchDialect,
 
   requestSaveField,
@@ -124,9 +84,11 @@ const actions = {
 
   // Second provider?
   connect() {
+  	  DocumentOperations.initClient();
       return { type: CLIENT_CREATED };
   },
 
+  // Change to 
   fetchDialectAndPortal(dialectPath, title) {
     return function (dispatch, getState) {
 
@@ -155,28 +117,6 @@ const reducers = {
     }
 
     return state;
-  },
-
-  navigateTo(state = null, action) {
-    switch (action.type) {
-      case NAVIGATE_PAGE:
-        return state;
-    }
-
-    return state;
-  },
-
-  ui(state = {}, action) {
-    switch (action.type) {
-      case TOGGLE_MENU:
-      	return {
-      		...state,
-      		menuVisible: !state.menuVisible
-      	};
-
-      default:
-        return state;
-    }
   },
 
   properties(state = null) {
@@ -269,7 +209,7 @@ const reducers = {
 };
 
 function merge (stateProps, dispatchProps, parentProps) {
-  return Object.assign(stateProps, dispatchProps, parentProps, { ui: stateProps.ui });
+  return Object.assign(stateProps, dispatchProps, parentProps);
 }
 
 const middleware = [/*loggerMiddleware,*/ thunk];
