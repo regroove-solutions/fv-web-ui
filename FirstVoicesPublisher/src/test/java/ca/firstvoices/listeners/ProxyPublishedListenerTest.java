@@ -19,6 +19,9 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
+
+import ca.firstvoices.publisher.services.DialectPublisherService;
+
 import javax.inject.Inject;
 
 /**
@@ -30,6 +33,7 @@ import javax.inject.Inject;
 @LocalDeploy({"FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
+    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublishedListener.xml"})
 public class ProxyPublishedListenerTest {
     @Inject
@@ -37,6 +41,9 @@ public class ProxyPublishedListenerTest {
 
     @Inject
     protected PublisherService publisherService;
+    
+    @Inject
+    protected DialectPublisherService dialectPublisherService;
 
     private DocumentModel sectionRoot;
 
