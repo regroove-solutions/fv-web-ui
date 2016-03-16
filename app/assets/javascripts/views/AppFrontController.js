@@ -5,6 +5,38 @@ import {Link} from 'provide-page';
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
 
+
+// To be used later views below:
+
+// Pages
+/*import Index from 'views/pages/index';
+import GetStarted from 'views/pages/get-started';
+
+// Pages: Explore
+import ExploreArchive from 'views/pages/explore/archive';
+import ExploreFamily from 'views/pages/explore/family';
+import ExploreLanguage from 'views/pages/explore/language';
+
+// Pages: Dialect Portal
+import ExploreDialect from 'views/pages/explore/dialect';
+import DialectLearn from 'views/pages/explore/dialect/learn';
+import DialectLearnWords from 'views/pages/explore/dialect/learn/words';
+import DialectLearnPhrases from 'views/pages/explore/dialect/learn/phrases';
+import DialectLearnSongs from 'views/pages/explore/dialect/learn/songs';
+import DialectLearnStories from 'views/pages/explore/dialect/learn/stories';
+import DialectPlay from 'views/pages/explore/dialect/play';
+import DialectCommunitySlideshow from 'views/pages/explore/dialect/community-slideshow';
+import DialectArtGallery from 'views/pages/explore/dialect/art-gallery';
+
+// Pages: Dialect -> Word
+import ViewWord from 'views/pages/explore/dialect/learn/words/view';
+
+import Contribute from 'views/pages/contribute';
+import Play from 'views/pages/play';
+import NotFound from 'views/pages/not-found';*/
+
+
+
 @provide
 export default class AppFrontController extends Component {
   static propTypes = {

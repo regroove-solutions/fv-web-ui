@@ -32,6 +32,9 @@ const FETCH_DIALECT = 'FETCH_DIALECT';
 const FETCH_PORTAL = 'FETCH_PORTAL';
 const FETCH_DIALECT_AND_PORTAL = 'FETCH_DIALECT_AND_PORTAL';
 
+// EDITING
+const REQUEST_SAVE_FIELD = 'REQUEST_SAVE_FIELD';
+
 //import RunActions from '../actions/RunActions';
 //import UserApiUtils from '../utils/UserApiUtils';
 //import RunApiUtils from '../utils/RunApiUtils';
@@ -49,12 +52,12 @@ client.header('X-NXproperties', '*');
 
 DocumentOperations.setClient(client);
 
-const fetchDialect = function fetchDialect(path, title) {
+const fetchDialect = function fetchDialect(path) {
   return function (dispatch) {
 
   	dispatch( { type: FETCH_DIALECT } );
 
-	return DocumentOperations.getDocumentByPathAndTitle(path, title, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+	return DocumentOperations.getDocumentByPath(path, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
 		.then((response) => {
 			dispatch( { type: FETCH_DIALECT, status: 'success', response: response } )
 		}).catch((error) => {
@@ -68,12 +71,27 @@ const fetchPortal = function fetchPortal(path) {
 
   	dispatch( { type: FETCH_PORTAL } );
 
-	return DocumentOperations.getDocumentByPathAndTitle(path, 'Portal', 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+	return DocumentOperations.getDocumentByPath(path, 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry' } })
 		.then((response) => {
 			dispatch( { type: FETCH_PORTAL, status: 'success', response: response } )
 		}).catch((error) => {
   			dispatch( { type: FETCH_PORTAL, status: 'failed', error: error } )
   		});
+  }
+};
+
+const requestSaveField = function updateDocument(newDoc) {
+  return function (dispatch) {
+
+console.log(newDoc);
+   // dispatch( { type: FETCH_PORTAL } );
+
+  return DocumentOperations.updateDocument(newDoc)
+    .then((response) => {
+      dispatch( { type: FETCH_PORTAL, status: 'success', response: response } )
+    }).catch((error) => {
+        dispatch( { type: FETCH_PORTAL, status: 'failed', error: error } )
+      });
   }
 };
 
@@ -83,7 +101,11 @@ const fetchPortal = function fetchPortal(path) {
 const actions = {
 
   requestEdit() {
-	return { type: REQUEST_EDIT };
+	 return { type: REQUEST_EDIT };
+  },
+
+  requestSaveField1() {
+    return { type: REQUEST_SAVE_FIELD };
   },
 
   navigateTo(path) {
@@ -96,6 +118,8 @@ const actions = {
 
   fetchDialect,
 
+  requestSaveField,
+
   fetchPortal,
 
   // Second provider?
@@ -103,14 +127,14 @@ const actions = {
       return { type: CLIENT_CREATED };
   },
 
-  fetchDialectAndPortal(path, title) {
+  fetchDialectAndPortal(dialectPath, title) {
     return function (dispatch, getState) {
 
   	  dispatch( { type: FETCH_DIALECT_AND_PORTAL } );
 
       return Promise.all([
-      	dispatch(fetchDialect(path, title)),
-        dispatch(fetchPortal(path + title))
+      	dispatch(fetchDialect(dialectPath)),
+        dispatch(fetchPortal(dialectPath + '/Portal'))
       ]).then(() =>
       	dispatch( { type: FETCH_DIALECT_AND_PORTAL, status: 'success', dialect: getState().computeDialect.response, portal: getState().computePortal.response } )
       );
@@ -171,7 +195,7 @@ const reducers = {
   	return {state};
   },
 
-  computeDialect(state = { isFetching: true, response: {}, success: false }, action) {
+  computeDialect(state = { isFetching: true, response: {get: function() { return ''; }}, success: false }, action) {
 
   	if (action.type === FETCH_DIALECT) {
 	  	if (!action.status) {
@@ -191,7 +215,7 @@ const reducers = {
   	return Object.assign({}, state, { isFetching: false });
   },
 //////////////////////////////// DRY!!!!!!!!!!!!
-  computePortal(state = { isFetching: true, response: {}, success: false }, action) {
+  computePortal(state = { isFetching: true, response: {get: function() { return ''; }}, success: false }, action) {
 
   	if (action.type === FETCH_PORTAL) {
 	  	if (!action.status) {
@@ -221,7 +245,7 @@ const reducers = {
 
 	  	switch (action.status) {
 			case 'success':
-				let combinedEntities = Object.assign({}, action.dialect.entities, action.portal.entities);
+				let combinedEntities = Object.assign({}, action.dialect, action.portal);
 				return Object.assign({}, state, { isFetching: false, success: true, response: combinedEntities });
 
 			case 'failed':
@@ -231,6 +255,15 @@ const reducers = {
   	}
 
   	return Object.assign({}, state, { isFetching: false });
+  },
+
+  saveField(state = false, action) {
+    switch (action.type) {
+      case REQUEST_SAVE_FIELD:
+        return !state;
+    }
+
+    return state;
   }
 
 };
@@ -239,6 +272,6 @@ function merge (stateProps, dispatchProps, parentProps) {
   return Object.assign(stateProps, dispatchProps, parentProps, { ui: stateProps.ui });
 }
 
-const middleware = [loggerMiddleware, thunk];
+const middleware = [/*loggerMiddleware,*/ thunk];
 
 export default { actions, reducers, middleware, merge };

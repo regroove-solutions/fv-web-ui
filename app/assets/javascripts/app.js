@@ -15,47 +15,17 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
-import { browserHistory, Router, Route, IndexRoute } from 'react-router'
-import { syncHistoryWithStore } from 'react-router-redux'
+import injectTapEventPlugin from 'react-tap-event-plugin';
 
-//import initStore from 'stores/AppStore'
-
-import Request from 'request';
+//import Request from 'request';
 
 import ConfGlobal from 'conf/local.json';
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-
-import AppWrapper from 'views/AppWrapper';
-
+// Providers provide reducers and actions
 import providers from './providers/index';
 
-// Pages
-import Index from 'views/pages/index';
-import GetStarted from 'views/pages/get-started';
-
-// Pages: Explore
-import ExploreArchive from 'views/pages/explore/archive';
-import ExploreFamily from 'views/pages/explore/family';
-import ExploreLanguage from 'views/pages/explore/language';
-
-// Pages: Dialect Portal
-import ExploreDialect from 'views/pages/explore/dialect';
-import DialectLearn from 'views/pages/explore/dialect/learn';
-import DialectLearnWords from 'views/pages/explore/dialect/learn/words';
-import DialectLearnPhrases from 'views/pages/explore/dialect/learn/phrases';
-import DialectLearnSongs from 'views/pages/explore/dialect/learn/songs';
-import DialectLearnStories from 'views/pages/explore/dialect/learn/stories';
-import DialectPlay from 'views/pages/explore/dialect/play';
-import DialectCommunitySlideshow from 'views/pages/explore/dialect/community-slideshow';
-import DialectArtGallery from 'views/pages/explore/dialect/art-gallery';
-
-// Pages: Dialect -> Word
-import ViewWord from 'views/pages/explore/dialect/learn/words/view';
-
-import Contribute from 'views/pages/contribute';
-import Play from 'views/pages/play';
-import NotFound from 'views/pages/not-found';
+// Views
+import AppWrapper from 'views/AppWrapper';
 
 require('!style!css!normalize.css');
 

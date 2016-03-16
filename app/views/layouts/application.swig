@@ -9,6 +9,12 @@
     <meta name="author" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
+    <link href="/assets/vendor/alloyeditor/assets/alloy-editor-ocean-min.css" rel="stylesheet">
+
+   <script>
+      window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
+    </script>
+
     {% block head %}{% endblock %}
   </head>
   <body id="body">

@@ -16,20 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 
-import Nuxeo from 'nuxeo';
-
-import classNames from 'classnames';
-
 import AppFrontController from './AppFrontController';
-
-import ConfGlobal from 'conf/local.json';
-
-// Stores
-//import ClientStore from 'stores/ClientStore';
-//import UserStore from 'stores/UserStore';
-
-// Actions
-//import ClientActions from 'actions/ClientActions';
 
 // Components & Themes
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -44,14 +31,11 @@ import Footer from 'views/components/Navigation/Footer';
 export default class AppWrapper extends Component {
 
   static propTypes = {
-    connect: PropTypes.object.isRequired,
     connect: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
-    //client: React.PropTypes.object,
-    muiTheme: React.PropTypes.object,
-    siteProps: React.PropTypes.object
+    muiTheme: React.PropTypes.object
   };
 
   /**
@@ -59,7 +43,6 @@ export default class AppWrapper extends Component {
   */
   getChildContext() {
     return {
-      //client: ClientStore.getState().client,
       muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme)
     };
   }
@@ -67,12 +50,10 @@ export default class AppWrapper extends Component {
   constructor(props, context) {
     super(props, context);
 
+    // Connect to Nuxeo
     this.props.connect();
   }
 
-  /**
-  * Wrap render in AltContainer to have seamless access to stores
-  */
   render() {
     return <div>
       <Navigation />

@@ -17,6 +17,8 @@ import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 import { Schema, arrayOf, normalize } from 'normalizr';
 
+import Nuxeo from 'nuxeo';
+
 const documentSchema = new Schema('documents', {
   idAttribute: 'uid'
 });
@@ -71,9 +73,6 @@ portalSchema.define({
   }
 });
 
-
-
-
 export default class DocumentOperations {
 
   static properties = {
@@ -89,29 +88,49 @@ export default class DocumentOperations {
   * Get a single document of a certain type based on a path and title match
   * This document may or may not contain children 
   */
-  static getDocumentByPathAndTitle(path = "", title, type, headers = null, params = null) {
+  static getDocumentByPath(path = "", type, headers = null, params = null) {
 
     let properties = this.properties;
 
-    path = StringHelpers.clean(path);
-    title = StringHelpers.clean(title);
-    type = StringHelpers.clean(type);
+    // Add '/' to beginning of path
+    if (path.indexOf('/') !== 0){
+      path = '/' + path;
+    }
 
     return new Promise(
       function(resolve, reject) {
-        let defaultParams = {
-          query: 
-            "SELECT * FROM " + type + " WHERE (ecm:path STARTSWITH '/" + path + "' AND dc:title LIKE '" + title + "' AND  " + properties.condition + ")"
-        };
+        properties.client.repository().fetch(path)
+        .then((doc) => {
+          //resolve(normalize(response.entries[0], getSchemaForType(type))); // Normalize not nessary since return value is a Nuxeo.Document object.
+          resolve(doc);
+        }).catch((error) => { throw error });
 
-        let defaultHeaders = {};
-
-        params = Object.assign(defaultParams, params);
-        headers = Object.assign(defaultHeaders, headers);
-
-        properties.client.operation('Document.Query')
+        /*properties.client.operation('Document.Query')
           .params(params)
-          .execute(headers).then((response) => {         
+          .execute(headers).then((response) => { 
+            if (response.entries.length > 0) {
+              console.log(response.entries[0] instanceof Nuxeo.Document);
+              
+            } else {
+              reject('No ' + type +' found');
+            }
+        })*/
+    });
+  }
+
+
+  /**
+  * Update a document 
+  */
+  static updateDocument(doc) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+console.log(doc);
+        doc.save()
+          .then((response) => {
             if (response.entries.length > 0) {
               resolve(normalize(response.entries[0], getSchemaForType(type)));
             } else {
