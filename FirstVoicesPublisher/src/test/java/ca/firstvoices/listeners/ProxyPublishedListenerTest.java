@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -225,24 +226,67 @@ public class ProxyPublishedListenerTest {
     @Test
     public void testDocumentPublishing() throws Exception {
        DocumentModel contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
-       DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVAudio"));
-       DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
+       DocumentModel contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor2", "FVContributor"));
+       DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
+       DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio", "FVAudio"));
        DocumentModel video = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
        DocumentModel doc = session.createDocumentModel("/Family/Language/Dialect/Dictionary", "myWord", "FVWord");
        String[] values = new String[1];
        values[0]=audio.getId();
        doc.setPropertyValue("fvcore:related_audio", values);
+       values = new String[1];
        values[0]=picture.getId();
        doc.setPropertyValue("fvcore:related_pictures", values);
+       values = new String[1];
        values[0]=video.getId();
        doc.setPropertyValue("fvcore:related_videos", values);
+       values = new String[2];
        values[0]=contributor.getId();
+       values[1]=contributor2.getId();
        doc.setPropertyValue("fvcore:source", values);
        doc = session.createDocument(doc);
        dialectPublisherService.publish(dialectDoc);
        DocumentModel dialectSection = session.getProxies(dialectDoc.getRef(), null).get(0);
        DocumentModel proxy = session.publishDocument(doc, session.getChild(dialectSection.getRef(), "Dictionary"));
+       // Check the schema is added
        assertTrue(proxy.hasSchema("fvproxy"));
        assertFalse(doc.hasSchema("fvproxy"));
+       // Check that the property has been set correctly
+       verifyProxiedResource(proxy, audio, "fvproxy:proxied_audio");
+       verifyProxiedResource(proxy, video, "fvproxy:proxied_videos");
+       verifyProxiedResource(proxy, picture, "fvproxy:proxied_pictures");
+       // Specific source as there is 2 items
+       String[] property = (String[]) proxy.getPropertyValue("fvproxy:proxied_source");
+       assertEquals(2, property.length);
+       assertNotEquals(contributor.getRef(), new IdRef(property[0]));
+       doc = session.getDocument(new IdRef(property[0]));
+       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor"));
+       doc = session.getSourceDocument(new IdRef(property[0]));
+       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor"));
+       assertEquals(contributor.getRef().toString(), doc.getSourceId());
+       assertNotEquals(contributor2.getRef(), new IdRef(property[1]));
+       doc = session.getDocument(new IdRef(property[1]));
+       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor2"));
+       doc = session.getSourceDocument(new IdRef(property[1]));
+       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor2"));
+       assertEquals(contributor2.getRef().toString(), doc.getSourceId());
+       /* phrase
+       property = (String[]) proxy.getPropertyValue("fvproxy:proxied_categories");
+       assertEquals(1, property.length);
+       assertNotEquals(audio.getRef(), new IdRef(property[0]));
+       assertEquals(audio.getRef().toString(), session.getSourceDocument(new IdRef(property[0])).getSourceId());
+       */
+    }
+    
+    private void verifyProxiedResource(DocumentModel proxy, DocumentModel original, String propertyName) {
+        String[] property = (String[]) proxy.getPropertyValue(propertyName);
+        assertEquals(1, property.length);
+        IdRef ref = new IdRef(property[0]);
+        assertNotEquals(original.getRef(), ref);
+        DocumentModel doc = session.getDocument(ref);
+        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Resources/" + original.getName()));
+        doc = session.getSourceDocument(ref);
+        assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Resources/" + original.getName()));
+        assertEquals(original.getRef().toString(), doc.getSourceId());
     }
 }
