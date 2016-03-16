@@ -6,12 +6,13 @@ package ca.firstvoices.listeners;
 
 import static org.junit.Assert.*;
 
+import java.security.InvalidParameterException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -66,38 +67,38 @@ public class ProxyPublishedListenerTest {
         // Check the factory is doing its job - check template
         DocumentModel child = session.getChild(dialect.getRef(), "Contributors");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVContributors");
+        assertEquals("FVContributors", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Dictionary");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVDictionary");
+        assertEquals("FVDictionary", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Forum");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "Forum");
+        assertEquals("Forum", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Portal");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVPortal");
+        assertEquals("FVPortal", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Alphabet");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVAlphabet");
+        assertEquals("FVAlphabet", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Resources");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVResources");
+        assertEquals("FVResources", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Categories");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVCategories");
+        assertEquals("FVCategories", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Links");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVLinks");
+        assertEquals("FVLinks", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Stories & Songs");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVBooks");
+        assertEquals("FVBooks", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Phrase Books");
         assertNotNull(child);
-        assertEquals(child.getDocumentType().getName(), "FVCategories");
+        assertEquals("FVCategories", child.getDocumentType().getName());
         
         // Check if Dialect is created in a section then it has no template applied
         dialect = session.createDocument(session.createDocumentModel(sectionRoot.getPathAsString(), "Dialect", "FVDialect"));
-        assertEquals("Should have no child", session.getChildren(dialect.getRef()).size(), 0);
+        assertEquals("Should have no child", 0, session.getChildren(dialect.getRef()).size());
     }
 
     protected void createDialectTree() throws Exception {
@@ -108,7 +109,45 @@ public class ProxyPublishedListenerTest {
 
     @Test
     public void testDialectPublishing() throws Exception {
-        
+        dialectPublisherService.publish(dialectDoc);
+        DocumentModel section = sectionRoot;
+        // Data and SharedData are by default inside section
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertNotNull(section);
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), languageDoc.getName());
+        assertNotNull(section);
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), dialectDoc.getName());
+        assertNotNull(section);
+        assertEquals(session.getChildren(section.getRef()).size(), 9);
+
+        // Check that none is duplicated if we publish again
+        dialectPublisherService.publish(dialectDoc);
+        section = sectionRoot;
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), languageDoc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), dialectDoc.getName());
+        assertEquals(session.getChildren(section.getRef()).size(), 9);
+    }
+    
+    @Test(expected = InvalidParameterException.class)
+    public void testDialectPublishingWrongDocumentType() throws Exception {
+        dialectPublisherService.publish(familyDoc);
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testDialectPublishingNullDocument() throws Exception {
+        dialectPublisherService.publish(null);
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testDialectPublishingWrongPlace() throws Exception {
+        dialectPublisherService.publish(session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
     }
 
     @Test
