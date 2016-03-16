@@ -9,7 +9,7 @@ Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.templates.factorie
  OSGI-INF/extensions/ca.firstvoices.securitypolicies.lifecycle.xml,OSG
  I-INF/extensions/ca.firstvoices.permissions.xml,OSGI-INF/extensions/c
  a.firstvoices.filters.xml,OSGI-INF/extensions/ca.firstvoices.operatio
- ns.xml,OSGI-INF/extensions/ca.firstvoices.listeners.xml
+ ns.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: NuxeoSecurity
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

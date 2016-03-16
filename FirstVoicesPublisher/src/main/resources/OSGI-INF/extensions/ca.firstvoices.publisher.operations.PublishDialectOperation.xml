@@ -1,0 +1,9 @@
+<component name="ca.firstvoices.publisher.operations.PublishDialectOperation">
+
+  <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
+    point="operations" >
+      <operation class="ca.firstvoices.publisher.operations.PublishDialectOperation" />
+      <operation class="ca.firstvoices.publisher.operations.UnpublishDialectOperation" />
+   </extension>
+    
+</component>
