@@ -87,6 +87,11 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
     private Boolean isPublished(DocumentModel doc, DocumentModel section) {
         return doc.getCoreSession().getProxies(doc.getRef(), section.getRef()).size() != 0;
     }
+
+    public void reset() {
+        rootSection = null;
+    }
+
     private DocumentModel getRootSection(CoreSession session) {
         // Don't need to recompute everytime
         if (rootSection == null) {

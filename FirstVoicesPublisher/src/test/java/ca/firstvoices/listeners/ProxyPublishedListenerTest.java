@@ -23,6 +23,7 @@ import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ca.firstvoices.publisher.services.DialectPublisherService;
+import ca.firstvoices.publisher.services.DialectPublisherServiceImpl;
 
 import javax.inject.Inject;
 
@@ -63,6 +64,8 @@ public class ProxyPublishedListenerTest {
 
     @Before
     public void setUp() throws Exception {
+        // Need to reset the publisher
+        ((DialectPublisherServiceImpl) dialectPublisherService).reset();
         DocumentModel domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
         sectionRoot = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true).get(0);
         createDialectTree();
@@ -221,7 +224,6 @@ public class ProxyPublishedListenerTest {
 
     @Test
     public void testDocumentPublishing() throws Exception {
-       createDialectTree();
        DocumentModel contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
        DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVAudio"));
        DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
@@ -237,8 +239,9 @@ public class ProxyPublishedListenerTest {
        values[0]=contributor.getId();
        doc.setPropertyValue("fvcore:source", values);
        doc = session.createDocument(doc);
-       
-       DocumentModel proxy = session.publishDocument(doc, sectionRoot);
+       dialectPublisherService.publish(dialectDoc);
+       DocumentModel dialectSection = session.getProxies(dialectDoc.getRef(), null).get(0);
+       DocumentModel proxy = session.publishDocument(doc, session.getChild(dialectSection.getRef(), "Dictionary"));
        assertTrue(proxy.hasSchema("fvproxy"));
        assertFalse(doc.hasSchema("fvproxy"));
     }
