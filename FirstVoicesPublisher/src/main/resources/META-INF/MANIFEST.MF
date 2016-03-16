@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: FirstVoicesNuxeoPublisher
+Bundle-Name: FirstVoicesNuxeoPublisher
+Bundle-Version: 1.0.qualifier
+Bundle-ClassPath: .
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Nuxeo
+Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.publisher.listener
+ s.ProxyPublishedListener.xml,OSGI-INF/extensions/ca.firstvoices.templ
+ ates.factories.xml,OSGI-INF/extensions/ca.firstvoices.schemas.ProxySc
+ hema.xml
+
