@@ -15,4 +15,10 @@ public interface DialectPublisherService {
      * @param dialect
      */
     public void publish(DocumentModel dialect);
+    
+    /**
+     * Unpublish a dialect, cleaning its parent if they have no more child
+     * @param dialect
+     */
+    public void unpublish(DocumentModel dialect);
 }

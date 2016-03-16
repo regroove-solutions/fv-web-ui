@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -53,6 +54,12 @@ public class ProxyPublishedListenerTest {
     private DocumentModel dialectDoc;
 
     private DocumentModel familyDoc;
+
+    private DocumentModel dialect2Doc;
+
+    private DocumentModel language2Doc;
+
+    private DocumentModel dialect3Doc;
 
     @Before
     public void setUp() throws Exception {
@@ -104,7 +111,10 @@ public class ProxyPublishedListenerTest {
     protected void createDialectTree() throws Exception {
         familyDoc = session.createDocument(session.createDocumentModel("/", "Family", "FVLanguageFamily"));
         languageDoc = session.createDocument(session.createDocumentModel("/Family", "Language", "FVLanguage"));
+        language2Doc = session.createDocument(session.createDocumentModel("/Family", "Language2", "FVLanguage"));
         dialectDoc = session.createDocument(session.createDocumentModel("/Family/Language", "Dialect", "FVDialect"));
+        dialect2Doc = session.createDocument(session.createDocumentModel("/Family/Language", "Dialect2", "FVDialect"));
+        dialect3Doc = session.createDocument(session.createDocumentModel("/Family/Language2", "Dialect", "FVDialect"));
     }
 
     @Test
@@ -133,6 +143,65 @@ public class ProxyPublishedListenerTest {
         assertEquals(1, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), dialectDoc.getName());
         assertEquals(session.getChildren(section.getRef()).size(), 9);
+        
+        // Check that none is duplicated if we publish again
+        dialectPublisherService.publish(dialect2Doc);
+        section = sectionRoot;
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), languageDoc.getName());
+        assertEquals(2, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), dialect2Doc.getName());
+        assertEquals(session.getChildren(section.getRef()).size(), 9);
+        
+        // Check that none is duplicated if we publish again
+        dialectPublisherService.publish(dialect3Doc);
+        section = sectionRoot;
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertEquals(2, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), language2Doc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), dialect3Doc.getName());
+        assertEquals(session.getChildren(section.getRef()).size(), 9);
+        
+        // Test unpublish
+        dialectPublisherService.unpublish(dialect2Doc);
+        section = sectionRoot;
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertEquals(2, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), languageDoc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), dialectDoc.getName());
+        assertEquals(session.getChildren(section.getRef()).size(), 9);
+        
+        // Test unpublish
+        dialectPublisherService.unpublish(dialectDoc);
+        section = sectionRoot;
+        assertEquals(3, session.getChildren(section.getRef()).size());
+        section = session.getChild(section.getRef(), familyDoc.getName());
+        assertEquals(1, session.getChildren(section.getRef()).size());
+        Boolean notFound = false;
+        try {
+            section = session.getChild(section.getRef(), languageDoc.getName());
+        } catch (DocumentNotFoundException e) {
+            notFound = true;
+        }
+        assertTrue(notFound);
+        
+        // Test unpublish
+        dialectPublisherService.unpublish(dialect3Doc);
+        section = sectionRoot;
+        assertEquals(2, session.getChildren(section.getRef()).size());
+        notFound = false;
+        try {
+            section = session.getChild(section.getRef(), familyDoc.getName());
+        } catch (DocumentNotFoundException e) {
+            notFound = true;
+        }
+        assertTrue(notFound);
     }
     
     @Test(expected = InvalidParameterException.class)
