@@ -2,22 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>ca.firstvoices</groupId>
   <artifactId>FirstVoicesPublisher</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <parent>
+    <groupId>ca.firstvoices</groupId>
+    <artifactId>nuxeo.modules.parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
   <name>FirstVoicesPublisher</name>
   <description/>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.nuxeo.ecm.distribution</groupId>
-        <artifactId>nuxeo-distribution</artifactId>
-        <scope>import</scope>
-        <type>pom</type>
-        <version>7.10</version>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.common</groupId>
@@ -26,6 +19,10 @@
     <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-ui-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.core</groupId>
@@ -86,11 +83,14 @@
     <dependency>
       <groupId>nuxeo-studio</groupId>
       <artifactId>First-Voices</artifactId>
-      <version>0.0.1</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.automation</groupId>
+      <artifactId>nuxeo-automation-core</artifactId>
     </dependency>
   </dependencies>
   <build>
@@ -132,6 +132,20 @@
               <sources>
                 <source>src/main/java</source>
               </sources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>add-resource</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>add-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                </resource>
+              </resources>
             </configuration>
           </execution>
         </executions>
