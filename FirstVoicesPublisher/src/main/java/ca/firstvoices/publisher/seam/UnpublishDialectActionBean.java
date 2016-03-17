@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 
-import ca.firstvoices.publisher.services.DialectPublisherService;
+import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
 @Name("unpublishDialectAction")
 @Scope(ScopeType.EVENT)
@@ -36,12 +36,12 @@ public class UnpublishDialectActionBean implements Serializable {
     // This the method that will be called when the action button/link is
     // clicked
     public String doGet() {
-        DialectPublisherService service = Framework.getService(DialectPublisherService.class);
+        FirstVoicesPublisherService service = Framework.getService(FirstVoicesPublisherService.class);
         if (service == null) {
             facesMessages.add(StatusMessage.Severity.FATAL, "Can't unpublish the dialect");
             return null;
         }
-        service.unpublish(navigationContext.getCurrentDocument());
+        service.unpublishDialect(navigationContext.getCurrentDocument());
         facesMessages.add(StatusMessage.Severity.INFO, "Dialect has been unpublished");
 
         // stay on the same view

@@ -1,17 +1,14 @@
 <component name="ca.firstvoices.auth.contrib">
 	<!-- Open the login URL for unauthenticated requests -->
-	
+	<!-- 
 	<extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
 	    <openUrl name="GuestInit">
 	        <grantPattern>(.*)/automation.*</grantPattern>
 	    </openUrl>
   	</extension>
-	
+	-->
 	<require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
 	
-
-  	
-  	
 	<extension
 	    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
 	    point="authenticators">

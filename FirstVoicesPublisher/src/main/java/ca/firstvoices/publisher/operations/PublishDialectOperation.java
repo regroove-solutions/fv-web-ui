@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.runtime.api.Framework;
 
-import ca.firstvoices.publisher.services.DialectPublisherService;
+import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
 /**
  * @author loopingz
@@ -26,11 +26,11 @@ public class PublishDialectOperation {
 
     public static final String ID = "PublishDialect";
 
-    public static final DialectPublisherService service = Framework.getLocalService(DialectPublisherService.class);
+    public static final FirstVoicesPublisherService service = Framework.getLocalService(FirstVoicesPublisherService.class);
 
     @OperationMethod
     public void run(DocumentModel input) {
-       service.publish(input);
+       service.publishDialect(input);
     }    
 
 }

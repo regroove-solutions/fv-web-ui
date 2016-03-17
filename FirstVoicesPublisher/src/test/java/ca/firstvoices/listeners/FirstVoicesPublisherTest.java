@@ -23,8 +23,8 @@ import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import ca.firstvoices.publisher.services.DialectPublisherService;
-import ca.firstvoices.publisher.services.DialectPublisherServiceImpl;
+import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
+import ca.firstvoices.publisher.services.FirstVoicesPublisherServiceImpl;
 
 import javax.inject.Inject;
 
@@ -38,16 +38,13 @@ import javax.inject.Inject;
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
     "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublishedListener.xml"})
-public class ProxyPublishedListenerTest {
+    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml"})
+public class FirstVoicesPublisherTest {
     @Inject
     protected CoreSession session;
 
     @Inject
     protected PublisherService publisherService;
-    
-    @Inject
-    protected DialectPublisherService dialectPublisherService;
 
     private DocumentModel sectionRoot;
 
@@ -62,6 +59,9 @@ public class ProxyPublishedListenerTest {
     private DocumentModel language2Doc;
 
     private DocumentModel dialect3Doc;
+
+    @Inject
+    protected FirstVoicesPublisherService dialectPublisherService;
 
     @Before
     public void setUp() throws Exception {
@@ -124,7 +124,8 @@ public class ProxyPublishedListenerTest {
 
     @Test
     public void testDialectPublishing() throws Exception {
-        dialectPublisherService.publish(dialectDoc);
+        // Publishing dialect
+        session.followTransition(dialectDoc, "Publish");
         DocumentModel section = sectionRoot;
         // Data and SharedData are by default inside section
         assertEquals(3, session.getChildren(section.getRef()).size());
@@ -139,7 +140,7 @@ public class ProxyPublishedListenerTest {
         assertEquals(session.getChildren(section.getRef()).size(), 9);
 
         // Check that none is duplicated if we publish again
-        dialectPublisherService.publish(dialectDoc);
+        dialectPublisherService.publishDialect(dialectDoc);
         section = sectionRoot;
         assertEquals(3, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), familyDoc.getName());
@@ -150,7 +151,7 @@ public class ProxyPublishedListenerTest {
         assertEquals(session.getChildren(section.getRef()).size(), 9);
         
         // Check that none is duplicated if we publish again
-        dialectPublisherService.publish(dialect2Doc);
+        session.followTransition(dialect2Doc, "Publish");
         section = sectionRoot;
         assertEquals(3, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), familyDoc.getName());
@@ -161,7 +162,7 @@ public class ProxyPublishedListenerTest {
         assertEquals(session.getChildren(section.getRef()).size(), 9);
         
         // Check that none is duplicated if we publish again
-        dialectPublisherService.publish(dialect3Doc);
+        session.followTransition(dialect3Doc, "Publish");
         section = sectionRoot;
         assertEquals(3, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), familyDoc.getName());
@@ -172,7 +173,7 @@ public class ProxyPublishedListenerTest {
         assertEquals(session.getChildren(section.getRef()).size(), 9);
         
         // Test unpublish
-        dialectPublisherService.unpublish(dialect2Doc);
+        session.followTransition(dialect2Doc, "Unpublish");
         section = sectionRoot;
         assertEquals(3, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), familyDoc.getName());
@@ -183,7 +184,7 @@ public class ProxyPublishedListenerTest {
         assertEquals(session.getChildren(section.getRef()).size(), 9);
         
         // Test unpublish
-        dialectPublisherService.unpublish(dialectDoc);
+        session.followTransition(dialectDoc, "Unpublish");
         section = sectionRoot;
         assertEquals(3, session.getChildren(section.getRef()).size());
         section = session.getChild(section.getRef(), familyDoc.getName());
@@ -197,7 +198,7 @@ public class ProxyPublishedListenerTest {
         assertTrue(notFound);
         
         // Test unpublish
-        dialectPublisherService.unpublish(dialect3Doc);
+        session.followTransition(dialect3Doc, "Unpublish");
         section = sectionRoot;
         assertEquals(2, session.getChildren(section.getRef()).size());
         notFound = false;
@@ -211,23 +212,17 @@ public class ProxyPublishedListenerTest {
     
     @Test(expected = InvalidParameterException.class)
     public void testDialectPublishingWrongDocumentType() throws Exception {
-        dialectPublisherService.publish(familyDoc);
-    }
-
-    @Test(expected = InvalidParameterException.class)
-    public void testDialectPublishingNotEnabled() throws Exception {
-        dialectDoc.followTransition("Disable");
-        dialectPublisherService.publish(dialectDoc);
+        dialectPublisherService.publishDialect(familyDoc);
     }
 
     @Test(expected = InvalidParameterException.class)
     public void testDialectPublishingNullDocument() throws Exception {
-        dialectPublisherService.publish(null);
+        dialectPublisherService.publishDialect(null);
     }
 
     @Test(expected = InvalidParameterException.class)
     public void testDialectPublishingWrongPlace() throws Exception {
-        dialectPublisherService.publish(session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
+        dialectPublisherService.publishDialect(session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
     }
 
     @Test
@@ -257,9 +252,10 @@ public class ProxyPublishedListenerTest {
        values[1]=contributor2.getId();
        doc.setPropertyValue("fvcore:source", values);
        doc = session.createDocument(doc);
-       dialectPublisherService.publish(dialectDoc);
-       DocumentModel dialectSection = session.getProxies(dialectDoc.getRef(), null).get(0);
-       DocumentModel proxy = session.publishDocument(doc, session.getChild(dialectSection.getRef(), "Dictionary"));
+       session.followTransition(dialectDoc, "Publish");
+       session.followTransition(doc, "Publish");
+       //DocumentModel proxy = dialectPublisherService.publish(doc);
+       DocumentModel proxy = session.getProxies(doc.getRef(), null).get(0);
        // Check the schema is added
        assertTrue(proxy.hasSchema("fvproxy"));
        assertFalse(doc.hasSchema("fvproxy"));
