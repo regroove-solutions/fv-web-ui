@@ -16,6 +16,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -121,10 +122,30 @@ public class ProxyPublishedListener implements EventListener {
                 // If dependency published, no need to republish
                 if (publishedDep == null) {
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
-                    DocumentModel parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
+                    DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
                         // Specific behavior
+                        // Get all parents
+                        DocumentModelList parents = new DocumentModelListImpl();
+                        parents.add(dependencyDocModel);
+                        DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
+                        while (parent != null && "FVCategory".equals(parent.getType())) {
+                            parents.add(parent);
+                            parent = session.getDocument(parent.getParentRef());
+                        }
+                        Object[] docs = parents.toArray();
+                        for (int i = docs.length - 1; i >= 0; i--) {
+                            parentDependencySection = getPublication(session, ((DocumentModel) docs[i]).getRef());
+                            if (parentDependencySection == null) {
+                                parentDependencySection = getPublication(session, ((DocumentModel) docs[i]).getParentRef());
+                                parentDependencySection = session.publishDocument(((DocumentModel) docs[i]), parentDependencySection, true);
+                            }
+                            if (i == 0) {
+                                publishedDep = parentDependencySection;
+                            }
+                        }
                     } else {
+                        parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
                         publishedDep = session.publishDocument(dependencyDocModel, parentDependencySection, true);
                     }
                 }

@@ -223,6 +223,8 @@ public class ProxyPublishedListenerTest {
 
     @Test
     public void testDocumentPublishing() throws Exception {
+       DocumentModel category = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories", "Category", "FVCategory"));
+       DocumentModel subcategory = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories/Category", "SubCategory", "FVCategory"));
        DocumentModel contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
        DocumentModel contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor2", "FVContributor"));
        DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
@@ -238,6 +240,9 @@ public class ProxyPublishedListenerTest {
        values = new String[1];
        values[0]=video.getId();
        doc.setPropertyValue("fvcore:related_videos", values);
+       values = new String[1];
+       values[0]=subcategory.getId();
+       doc.setPropertyValue("fv-word:categories", values);
        values = new String[2];
        values[0]=contributor.getId();
        values[1]=contributor2.getId();
@@ -268,12 +273,13 @@ public class ProxyPublishedListenerTest {
        doc = session.getSourceDocument(new IdRef(property[1]));
        assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor2"));
        assertEquals(contributor2.getRef().toString(), doc.getSourceId());
-       /* phrase
        property = (String[]) proxy.getPropertyValue("fvproxy:proxied_categories");
        assertEquals(1, property.length);
-       assertNotEquals(audio.getRef(), new IdRef(property[0]));
-       assertEquals(audio.getRef().toString(), session.getSourceDocument(new IdRef(property[0])).getSourceId());
-       */
+       assertNotEquals(subcategory.getRef(), new IdRef(property[0]));
+       doc = session.getDocument(new IdRef(property[0]));
+       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Categories/Category/SubCategory"));
+       doc = session.getSourceDocument(new IdRef(property[0]));
+       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Categories/Category/SubCategory"));
     }
     
     private void verifyProxiedResource(DocumentModel proxy, DocumentModel original, String propertyName) {
