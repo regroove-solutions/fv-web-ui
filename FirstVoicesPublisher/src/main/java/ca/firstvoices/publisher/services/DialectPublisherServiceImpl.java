@@ -84,9 +84,17 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
     }
 
     private DocumentModel getRootSection(DocumentModel doc) {
-       DocumentModelList roots = publisherService.getRootSectionFinder(doc.getCoreSession()).getSectionRootsForWorkspace(doc);
-       if (roots.size() == 0) {
-           roots = publisherService.getRootSectionFinder(doc.getCoreSession()).getDefaultSectionRoots(true, true);
+       DocumentModel workspace = doc;
+       CoreSession session = doc.getCoreSession();
+       while (workspace != null && !"Workspace".equals(workspace.getType())) {
+           workspace = session.getParentDocument(workspace.getRef());
+       }
+       DocumentModelList roots = null;
+       if (workspace != null) {
+           roots = publisherService.getRootSectionFinder(session).getSectionRootsForWorkspace(workspace);
+       }
+       if (roots == null || roots.size() == 0) {
+           roots = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true);
        }
        if (roots.size() == 0) {
             throw new RuntimeException("Can't publish, no section available");
