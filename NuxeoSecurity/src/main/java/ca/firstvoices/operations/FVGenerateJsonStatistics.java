@@ -4,6 +4,7 @@
 
 package ca.firstvoices.operations;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,17 +42,33 @@ public class FVGenerateJsonStatistics {
     
     protected String sectionDialectId;
     
+    protected String principalName;
+    
     protected int mostRecentMaxResults = 10;
     
-    private ObjectMapper mapper = new ObjectMapper();
+    protected ObjectMapper mapper = new ObjectMapper();
+    
+    protected final String WORKSPACE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:path STARTSWITH '/FV/Workspaces/Data/'"
+										    		+ " AND ecm:currentLifeCycleState <> 'deleted'"
+										    		+ " AND ecm:isProxy = 0"
+										    		+ " AND ecm:isCheckedInVersion = 0";
+    
+    protected final String SECTION_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:path STARTSWITH '/FV/sections/Data/'"
+													+ " AND ecm:currentLifeCycleState <> 'deleted'";
     
     @OperationMethod
     public Blob run() {
-    	   	
+    	
 		// JSON object to be returned        
     	ObjectNode rootJsonObj = mapper.createObjectNode();
+    	    	
 		rootJsonObj.put("dialectId", dialectId);	
-    	
+		
+		// Get current user
+    	Principal principal = session.getPrincipal();
+    	principalName = principal.getName();		
+		rootJsonObj.put("user", principalName);		
+		
     	// Words
     	ObjectNode wordJsonObj = generateDocumentStatsJson("FVWord");
 		rootJsonObj.put("words", wordJsonObj);		
@@ -86,7 +103,7 @@ public class FVGenerateJsonStatistics {
 		
 		// Video
     	ObjectNode videoJsonObj = generateDocumentStatsJson("FVVideo");				
-		rootJsonObj.put("videos", videoJsonObj);			
+		rootJsonObj.put("videos", videoJsonObj);		
 		
         return new StringBlob(rootJsonObj.toString(), "application/json");    
     } 
@@ -95,16 +112,10 @@ public class FVGenerateJsonStatistics {
     	ObjectNode documentJsonObj = mapper.createObjectNode();
     	
     	// Query to get documents from the workspace
-    	String workspaceDocumentsQuery = "SELECT * FROM %s WHERE ecm:path STARTSWITH '/FV/Workspaces/Data/'"
-							    		+ " AND ecm:currentLifeCycleState <> 'deleted'"
-							    		+ " AND ecm:isProxy = 0"
-							    		+ " AND ecm:isCheckedInVersion = 0";
-    	workspaceDocumentsQuery = String.format(workspaceDocumentsQuery, documentType);    	
+    	String workspaceDocumentsQuery = String.format(WORKSPACE_DOCS_QUERY, documentType);    	
     	
-    	// Query to get documents from the section (published)
-    	String publishedDocumentsQuery = "SELECT * FROM %s WHERE ecm:path STARTSWITH '/FV/sections/Data/'"
-	    								+ " AND ecm:currentLifeCycleState <> 'deleted'";    	    	
-    	publishedDocumentsQuery = String.format(publishedDocumentsQuery, documentType);
+    	// Query to get documents from the section (published)   	    	
+    	String publishedDocumentsQuery = String.format(SECTION_DOCS_QUERY, documentType);
     	
     	// If dialectId was passed as a parameter to the operation, restrict the query to that dialect. Otherwise leave it empty
         String queryDialectRestriction = "";
@@ -120,17 +131,20 @@ public class FVGenerateJsonStatistics {
 		// If the document uses the fv-lifecycle, get counts for documents in each lifecycle state
 		if(hasFVLifecycle(documentType)) {
 			// New
-	        DocumentModelList totalNewDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction + " AND ecm:currentLifeCycleState='New'", NXQL.NXQL, null, 1, 0, true);
+	        DocumentModelList totalNewDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	        											+ " AND ecm:currentLifeCycleState='New'", NXQL.NXQL, null, 1, 0, true);
 	        int totalNewDocumentsCount = (int) totalNewDocuments.totalSize();
 			documentJsonObj.put("new", totalNewDocumentsCount);		
 
 			// Enabled
-	        DocumentModelList totalEnabledDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction + " AND ecm:currentLifeCycleState='Enabled'", NXQL.NXQL, null, 1, 0, true);
+	        DocumentModelList totalEnabledDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	        											+ " AND ecm:currentLifeCycleState='Enabled'", NXQL.NXQL, null, 1, 0, true);
 	        int totalEnabledDocumentsCount = (int) totalEnabledDocuments.totalSize();
 			documentJsonObj.put("enabled", totalEnabledDocumentsCount);
 
 			// Disabled
-	        DocumentModelList totalDisabledDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction + " AND ecm:currentLifeCycleState='Disabled'", NXQL.NXQL, null, 1, 0, true);
+	        DocumentModelList totalDisabledDocuments = session.query(workspaceDocumentsQuery + queryDialectRestriction
+	        											+ " AND ecm:currentLifeCycleState='Disabled'", NXQL.NXQL, null, 1, 0, true);
 	        int totalDisabledDocumentsCount = (int) totalDisabledDocuments.totalSize();
 			documentJsonObj.put("disabled", totalDisabledDocumentsCount);				
 		}	
@@ -161,16 +175,19 @@ public class FVGenerateJsonStatistics {
 	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	    String dateStringToday = sdf.format(date);
 	    // Created today
-	    DocumentModelList createdTodayDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction + " AND dc:created >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
+	    DocumentModelList createdTodayDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	    										+ " AND dc:created >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
         int createdTodayDocumentsCount = (int) createdTodayDocs.totalSize();
 		documentJsonObj.put("created_today", createdTodayDocumentsCount);
 		// Modified today
-	    DocumentModelList modifiedTodayDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction + " AND dc:modified >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
+	    DocumentModelList modifiedTodayDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	    										+ " AND dc:modified >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
         int modifiedTodayDocumentsCount = (int) modifiedTodayDocs.totalSize();
 		documentJsonObj.put("modified_today", modifiedTodayDocumentsCount);			    
 	    
 	    // Get data about the most recently created docs
-	    DocumentModelList mostRecentlyCreatedDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction + " ORDER BY dc:created DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
+	    DocumentModelList mostRecentlyCreatedDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction
+	    											+ " ORDER BY dc:created DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
 	    ArrayNode recentlyCreatedJsonArray = mapper.createArrayNode();
 	    for(DocumentModel doc : mostRecentlyCreatedDocs) {
 	    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
@@ -185,7 +202,8 @@ public class FVGenerateJsonStatistics {
 	    documentJsonObj.put("most_recently_created", recentlyCreatedJsonArray);		    
 	    
 	    // Get data about the most recently modified docs
-	    DocumentModelList mostRecentlyModifiedDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction + " ORDER BY dc:modified DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
+	    DocumentModelList mostRecentlyModifiedDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	    											+ " ORDER BY dc:modified DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
 	    ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();
 	    for(DocumentModel doc : mostRecentlyModifiedDocs) {
 	    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
@@ -197,10 +215,27 @@ public class FVGenerateJsonStatistics {
 	    	
 	    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
 	    }
-	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);		    	    
+	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);	
+	    
+    	// Get data about the current user's most recently modified docs
+        DocumentModelList userMostRecentlyModifiedDocs = session.query(workspaceDocumentsQuery + queryDialectRestriction 
+	        											+ " AND dc:lastContributor = '" + principalName + "'"
+	        											+ " ORDER BY dc:modified DESC", NXQL.NXQL, null, 10, 0, true);
+	    ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();
+	    for(DocumentModel doc : userMostRecentlyModifiedDocs) {
+	    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+	    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+	    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+	    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));
+		
+	    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
+	    }
+	    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
 		
     	return documentJsonObj;
-    }
+    }   
     
     // Only some of the FV document types use the fv-lifecycle (New/Enabled/Disabled)
     private boolean hasFVLifecycle(String documentType) {
