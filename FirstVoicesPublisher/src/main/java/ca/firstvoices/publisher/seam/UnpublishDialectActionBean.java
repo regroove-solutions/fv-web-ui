@@ -50,7 +50,8 @@ public class UnpublishDialectActionBean implements Serializable {
 
     public boolean accept() {
         return navigationContext.getCurrentDocument() != null && 
-                "FVDialect".equals(navigationContext.getCurrentDocument().getDocumentType().getName());
+                "FVDialect".equals(navigationContext.getCurrentDocument().getDocumentType().getName())
+                && navigationContext.getCurrentDocument().getCoreSession().getProxies(navigationContext.getCurrentDocument().getRef(), null).size() != 0;
     }
 
 }

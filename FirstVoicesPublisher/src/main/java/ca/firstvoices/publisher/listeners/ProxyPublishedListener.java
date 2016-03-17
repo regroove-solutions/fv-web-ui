@@ -4,38 +4,37 @@
 
 package ca.firstvoices.publisher.listeners;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentLocationImpl;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.publisher.api.PublicationTree;
-import org.nuxeo.ecm.platform.publisher.api.PublishedDocument;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
+
 
 /**
  * @author loopingz
  */
 public class ProxyPublishedListener implements EventListener {
 
+    private static final Log log = LogFactory.getLog(ProxyPublishedListener.class);
+
     protected PublisherService ps = Framework.getService(PublisherService.class);
 
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
@@ -87,7 +86,6 @@ public class ProxyPublishedListener implements EventListener {
     }
 
     public DocumentModel process(DocumentModel input) {
-
         CoreSession session = input.getCoreSession();
 
         Map<String, String> dependencies = new HashMap<String, String>();
@@ -100,6 +98,7 @@ public class ProxyPublishedListener implements EventListener {
         dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
 
         for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
+            
             String dependency = dependencyEntry.getKey();
             // Check if input has schema
             if (!input.hasSchema(dependency.split(":")[0])) {
@@ -138,6 +137,7 @@ public class ProxyPublishedListener implements EventListener {
                 input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
             }
         }
+        session.saveDocument(input);
         session.save();
         return input;
     }

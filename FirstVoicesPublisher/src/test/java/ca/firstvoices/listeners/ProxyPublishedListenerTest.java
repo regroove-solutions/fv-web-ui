@@ -65,8 +65,6 @@ public class ProxyPublishedListenerTest {
 
     @Before
     public void setUp() throws Exception {
-        // Need to reset the publisher
-        ((DialectPublisherServiceImpl) dialectPublisherService).reset();
         DocumentModel domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
         sectionRoot = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true).get(0);
         createDialectTree();

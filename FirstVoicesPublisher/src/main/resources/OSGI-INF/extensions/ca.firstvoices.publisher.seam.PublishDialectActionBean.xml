@@ -10,6 +10,12 @@
       <category>SUBVIEW_UPPER_LIST</category>
       <filter-id>ca.firstvoices.publisher.seam.PublishDialectActionBean</filter-id>
     </action>
+    <action id="ca.firstvoices.publisher.seam.UnpublishDialectActionBean" link="#{unpublishDialectAction.doGet}"
+      order="201" label="label.ca.firstvoices.publisher.seam.UnpublishDialectActionBean"
+      icon="/icons/ca.firstvoices.publisher.seam.UnpublishDialectActionBean-action.png">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter-id>ca.firstvoices.publisher.seam.UnpublishDialectActionBean</filter-id>
+    </action>
   </extension>
 
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
@@ -20,7 +26,11 @@
         <condition>#{publishDialectAction.accept()}</condition>
       </rule>
     </filter>
-
+	<filter id="ca.firstvoices.publisher.seam.UnpublishDialectActionBean">
+      <rule grant="true">
+        <condition>#{unpublishDialectAction.accept()}</condition>
+      </rule>
+    </filter>
   </extension>
 
 </component>

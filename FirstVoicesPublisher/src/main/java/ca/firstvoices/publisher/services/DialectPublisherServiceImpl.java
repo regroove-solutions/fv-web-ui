@@ -7,12 +7,9 @@ import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.mail.Session;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
@@ -26,8 +23,6 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class DialectPublisherServiceImpl extends DefaultComponent implements DialectPublisherService {
 
     private PublisherService publisherService = Framework.getLocalService(PublisherService.class);
-    
-    private DocumentModel rootSection = null;
 
     protected Map<String, DocumentModel> getAncestors(DocumentModel model) {
         if (model == null || !model.getDocumentType().getName().equals("FVDialect")) {
@@ -56,7 +51,7 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
         DocumentModel language = ancestors.get("Language");
         CoreSession session = dialect.getCoreSession();
 
-        DocumentModel section = getRootSection(session);
+        DocumentModel section = getRootSection(dialect);
         // Publish grand parent
         if (!isPublished(languageFamily, section)) {
             session.publishDocument(languageFamily, section);
@@ -88,20 +83,15 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
         return doc.getCoreSession().getProxies(doc.getRef(), section.getRef()).size() != 0;
     }
 
-    public void reset() {
-        rootSection = null;
-    }
-
-    private DocumentModel getRootSection(CoreSession session) {
-        // Don't need to recompute everytime
-        if (rootSection == null) {
-            DocumentModelList roots = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true);
-            if (roots.size() == 0) {
-                throw new RuntimeException("Can't publish, no section available");
-            }
-            rootSection = roots.get(0);
-        }
-        return rootSection;
+    private DocumentModel getRootSection(DocumentModel doc) {
+       DocumentModelList roots = publisherService.getRootSectionFinder(doc.getCoreSession()).getSectionRootsForWorkspace(doc);
+       if (roots.size() == 0) {
+           roots = publisherService.getRootSectionFinder(doc.getCoreSession()).getDefaultSectionRoots(true, true);
+       }
+       if (roots.size() == 0) {
+            throw new RuntimeException("Can't publish, no section available");
+       }
+       return roots.get(0);
     }
 
     @Override
@@ -113,7 +103,7 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
         DocumentModel languageSection;
         DocumentModel languageFamilySection;
         CoreSession session = dialect.getCoreSession();
-        DocumentModel section = getRootSection(session);
+        DocumentModel section = getRootSection(dialect);
         section = session.getChild(section.getRef(), languageFamily.getName());
         if (section == null) {
             throw new InvalidParameterException("Dialect is not published");

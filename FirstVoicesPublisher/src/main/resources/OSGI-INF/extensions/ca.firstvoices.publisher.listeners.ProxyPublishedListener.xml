@@ -3,7 +3,7 @@
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
 
-    <listener name="proxypublishedlistener" async="false" postCommit="false"
+    <listener name="ProxyPublishedListener" async="false" postCommit="false"
       class="ca.firstvoices.publisher.listeners.ProxyPublishedListener" priority="100">
       <event>documentProxyPublished</event>
       <event>documentProxyUpdated</event>
