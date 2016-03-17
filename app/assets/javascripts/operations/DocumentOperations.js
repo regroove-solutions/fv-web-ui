@@ -14,52 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import _ from 'underscore';
-import Nuxeo from 'nuxeo';
-import StringHelpers from 'common/StringHelpers';
 
-import ConfGlobal from 'conf/local.json';
+import StringHelpers from 'common/StringHelpers';
+import BaseOperations from 'operations/BaseOperations';
 
 /**
 * Initialize Nuxeo client
 */
-export default class DocumentOperations {
-
-  static properties = {
-    condition: "ecm:currentLifeCycleState <> 'deleted'",
-    client: null
-  };
-
-  static initClient() {
-    this.properties.client = new Nuxeo({
-      baseURL: ConfGlobal.baseURL,
-      restPath: 'site/api/v1',
-      automationPath: 'site/automation',
-      timeout: 30000
-    });
-
-    this.properties.client.header('X-NXproperties', '*');
-  }
-
-  static setClient(client) {
-    this.properties.client = client;
-  }
+export default class DocumentOperations extends BaseOperations {
 
   /**
   * Get a single document of a certain type based on a path and title match
   * This document may or may not contain children 
   */
-  static getDocumentByPath(path = "", type, headers = null, params = null) {
+  static getDocument(pathOrUid = "", type, headers = null, params = null) {
 
     let properties = this.properties;
 
-    // Add '/' to beginning of path
-    if (path.indexOf('/') !== 0){
-      path = '/' + path;
-    }
-
     return new Promise(
       function(resolve, reject) {
-        properties.client.repository().fetch(path)
+        properties.client
+        .repository()
+        .fetch(pathOrUid, headers)
         .then((doc) => {
           //resolve(normalize(response.entries[0], getSchemaForType(type))); // Normalize not nessary since return value is a Nuxeo.Document object.
           resolve(doc);

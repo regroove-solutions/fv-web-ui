@@ -38,14 +38,13 @@ export default class Login extends React.Component {
   static contextTypes = {
       client: React.PropTypes.object,
       muiTheme: React.PropTypes.object,
-      router: React.PropTypes.object,
-      siteProps: React.PropTypes.object.isRequired
+      router: React.PropTypes.object
   };
 
   componentDidUpdate(prevProps) {
-    if (prevProps.userStore.currentUser !== this.props.userStore.currentUser) {
-      this._handleClose();
-    }
+    //if (prevProps.userStore.currentUser !== this.props.userStore.currentUser) {
+    //  this._handleClose();
+    //}
   }
 
   constructor(props, context) {
@@ -84,7 +83,7 @@ export default class Login extends React.Component {
     
     if ( username !== null && password !== null) {
 
-      UserActions.login(this.props.clientStore.client, username, password);
+      //UserActions.login(this.props.clientStore.client, username, password);
 /*
       var _this = this;
 

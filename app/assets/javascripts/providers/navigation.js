@@ -31,7 +31,7 @@ const reducers = {
   computeNavigateTo(state = {path: null}, action) {
     switch (action.type) {
       case NAVIGATE_PAGE:
-        return {path: action.path}
+        return Object.assign({}, {path: action.path});
     }
 
     return state;

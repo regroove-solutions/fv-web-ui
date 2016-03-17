@@ -76,12 +76,13 @@ export default class EditableComponent extends Component {
 
           // Set default value to current value
           fieldFormValues[property] = currentValue;
-            return <form onSubmit={e => this._onRequestSaveField(e, property)}>
+
+          return <form onSubmit={e => this._onRequestSaveField(e, property)}>
                     <t.form.Form ref={"form_" + property} value={fieldFormValues} type={fieldFormStruct} options={fieldFormOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
-                   </form>;
+                 </form>;
         }
       }
     }
@@ -116,8 +117,13 @@ export default class EditableComponent extends Component {
 
   shouldComponentUpdate(newProps) {
 
-    // Don't re-render if fetching
-    if (newProps.computePortal.isFetching) {
+    // Don't re-render if in the process of fetching
+    if (newProps.computePortal.isFetching ) {
+      return false;
+    }
+
+    // Don't re-render if this specific editable control hasn't changed
+    if (newProps.computeEditMode.initiatingField && newProps.computeEditMode.initiatingField != this.props.property) {
       return false;
     }
 
@@ -139,7 +145,3 @@ export default class EditableComponent extends Component {
         return (<div>{this._editableElement()}</div>);
     };
 }
-
-////////////// Scenario when I Edit, make a change, then go to edit something else.....
-////////////// Should I save state on key refresh?!
-////////////// Jumping characters

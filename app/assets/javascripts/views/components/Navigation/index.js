@@ -100,12 +100,12 @@ export default class Navigation extends Component {
   }
 
   render() {
-    let LoginCont = "";
-    //let LoginCont = <Login label="Sign in"/>;
 
-    /*if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
-      LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";<DialectDropDown />
-    }*/
+    let LoginCont = <Login label="Sign in"/>;
+
+    //if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
+    //  LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";
+    //}
 
     return <div>
         <AppBar
@@ -133,7 +133,7 @@ export default class Navigation extends Component {
         <Toolbar>
 
           <ToolbarGroup float="right">
-            
+            <DialectDropDown />
           </ToolbarGroup>
 
         </Toolbar>

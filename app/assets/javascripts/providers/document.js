@@ -20,6 +20,16 @@ const FETCH_DIALECT = 'FETCH_DIALECT';
 const FETCH_DIALECT_AND_PORTAL = 'FETCH_DIALECT_AND_PORTAL';
 
 // FETCH
+const FETCH_DIALECT_START = 'FETCH_DIALECT_START';
+const FETCH_DIALECT_SUCCESS = 'FETCH_DIALECT_SUCCESS';
+const FETCH_DIALECT_ERROR = 'FETCH_DIALECT_ERROR';
+
+// FETCH
+const FETCH_DOCUMENT_START = 'FETCH_DOCUMENT_START';
+const FETCH_DOCUMENT_SUCCESS = 'FETCH_DOCUMENT_SUCCESS';
+const FETCH_DOCUMENT_ERROR = 'FETCH_DOCUMENT_ERROR';
+
+// FETCH
 const FETCH_PORTAL_START = 'FETCH_PORTAL_START';
 const FETCH_PORTAL_SUCCESS = 'FETCH_PORTAL_SUCCESS';
 const FETCH_PORTAL_ERROR = 'FETCH_PORTAL_ERROR';
@@ -38,14 +48,28 @@ const REQUEST_SAVE_FIELD = 'REQUEST_SAVE_FIELD';
 const fetchDialect = function fetchDialect(path) {
   return function (dispatch) {
 
-  	dispatch( { type: FETCH_DIALECT } );
+  	dispatch( { type: FETCH_DIALECT_START } );
 
-  	return DocumentOperations.getDocumentByPath(path, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+  	return DocumentOperations.getDocument(path, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
   		.then((response) => {
-  			dispatch( { type: FETCH_DIALECT, status: 'success', response: response } )
+  			dispatch( { type: FETCH_DIALECT_SUCCESS, document: response } )
   		}).catch((error) => {
-    			dispatch( { type: FETCH_DIALECT, status: 'failed', error: error } )
+    			dispatch( { type: FETCH_DIALECT_ERROR, error: error } )
     	});
+  }
+};
+
+const fetchDocument = function fetchDocument(id) {
+  return function (dispatch) {
+
+    dispatch( { type: FETCH_DOCUMENT_START } );
+
+    return DocumentOperations.getDocument(id, 'Document', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    .then((response) => {
+      dispatch( { type: FETCH_DOCUMENT_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: FETCH_DOCUMENT_ERROR, error: error } )
+    });
   }
 };
 
@@ -54,7 +78,7 @@ const fetchPortal = function fetchPortal(path) {
 
   	dispatch( { type: FETCH_PORTAL_START } );
 
-	  return DocumentOperations.getDocumentByPath(path, 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+	  return DocumentOperations.getDocument(path, 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry' } })
 		.then((response) => {
 			dispatch( { type: FETCH_PORTAL_SUCCESS, document: response } )
 		}).catch((error) => {
@@ -98,12 +122,11 @@ const actions = {
     return { type: REQUEST_SAVE_FIELD };
   },
   fetchDialect,
-
+  fetchDocument,
   updatePortal,
 
   fetchPortal,
 
-  // Change to 
   fetchDialectAndPortal(dialectPath, title) {
     return function (dispatch, getState) {
 
@@ -126,18 +149,18 @@ const actions = {
 */
 const reducers = {
 
-  computeEditMode(state = {}, action) {
+  computeEditMode(state = { initiatingField: null }, action) {
 
     let enabledField = {};
     enabledField[action.field] = true;
 
     switch (action.type) {
       case ENABLE_EDIT_MODE:
-        return Object.assign({}, state, enabledField);
+        return Object.assign({}, state, enabledField, {initiatingField: action.field});
       case DISABLE_EDIT_MODE:
-        return state;
+        return Object.assign({}, state, {initiatingField: action.field});
       case UPDATE_PORTAL_SUCCESS:
-        let { [action.field]: deletedItem, ...rest } = state // See http://stackoverflow.com/questions/35342355/remove-data-from-nested-objects-without-mutating/35367927
+        let { [action.field]: deletedItem, ...rest } = Object.assign({}, state, {initiatingField: action.field}) // See http://stackoverflow.com/questions/35342355/remove-data-from-nested-objects-without-mutating/35367927
         return rest;
     }
 
@@ -148,26 +171,54 @@ const reducers = {
     return state;
   },
 
-  computeDialect(state = { isFetching: true, response: {get: function() { return ''; }}, success: false }, action) {
+  computeDialect(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
 
-  	if (action.type === FETCH_DIALECT) {
-	  	if (!action.status) {
-	  		return Object.assign({}, state, { isFetching: true });
-	  	}
+    switch (action.type) {
+      case FETCH_DIALECT_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
 
-	  	switch (action.status) {
-			case 'success':
-				return Object.assign({}, state, { isFetching: false, success: true, response: action.response });
+      // Send modified document to UI without access REST end-point
+      case FETCH_DIALECT_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
 
-			case 'failed':
-				return Object.assign({}, state, { isFetching: false, success: false, error: action.error });
-	  	}
+      // Send modified document to UI without access REST end-point
+      case FETCH_DIALECT_ERROR:
+      case DISMISS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
 
-  	}
-
-  	return Object.assign({}, state, { isFetching: false });
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
   },
-//////////////////////////////// DRY!!!!!!!!!!!!
+
+  computeDocument(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+
+    switch (action.type) {
+      case FETCH_DOCUMENT_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FETCH_DOCUMENT_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FETCH_DOCUMENT_ERROR:
+      case DISMISS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+
   computePortal(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
 
     switch (action.type) {
@@ -189,27 +240,12 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;
 
-      /*case FETCH_PORTAL: 
-        if (!action.status) {
-          return Object.assign({}, state, { isFetching: true });
-        }
-
-        switch (action.status) {
-        case 'success':
-          return Object.assign({}, state, { isFetching: false, success: true, response: action.response });
-
-        case 'failed':
-          return Object.assign({}, state, { isFetching: false, success: false, error: action.error });
-        }
-      break;*/
-
       default: 
         return Object.assign({}, state, { isFetching: false });
       break;
     }
   },
 
-///////////////////Normalize me!
   computeDialectAndPortal(state = { isFetching: true, response: {}, success: false }, action) {
 
   	if (action.type === FETCH_DIALECT_AND_PORTAL) {
@@ -248,3 +284,4 @@ function merge (stateProps, dispatchProps, parentProps) {
 const middleware = [/*loggerMiddleware,*/ thunk];
 
 export default { actions, reducers, middleware, merge };
+

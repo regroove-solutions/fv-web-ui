@@ -44,6 +44,10 @@ export default class AppFrontController extends Component {
     splitWindowPath: PropTypes.array.isRequired
   };
 
+  constructor(props, context) {
+    super(props, context);
+  }
+
   renderBreadcrumb() {
     let splitPath = this.props.splitWindowPath;
     let breadcrumb = splitPath.map(function(path, index) {
@@ -76,10 +80,12 @@ export default class AppFrontController extends Component {
     }
 
     // Process sections, then anything under them
+    // TODO: Use Regex for cleaner syntax
     switch (pathPartsArray[0]) {
 
       case 'get-started':
-        return this.renderWithBreadcrumb(<PageGetStarted />);
+        if (pathPartsArray.length === 1)
+          return this.renderWithBreadcrumb(<PageGetStarted />);
 
       break;
 
@@ -121,6 +127,9 @@ export default class AppFrontController extends Component {
           return this.renderWithBreadcrumb(<PageExploreArchive />);
 
       break;
+
+      //case 'id':
+      //break;
     }
 
     return (<div>404</div>);

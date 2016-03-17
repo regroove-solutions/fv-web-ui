@@ -16,6 +16,8 @@ limitations under the License.
 import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 
+import BaseOperations from 'operations/BaseOperations';
+
 // Models
 import Words from 'models/Words';
 import LanguageFamily from 'models/LanguageFamily';
@@ -25,15 +27,40 @@ import Language from 'models/Language';
 import Dialect from 'models/Dialect';
 import Dialects from 'models/Dialects';
 
-export default class DirectoryOperations {
+export default class DirectoryOperations extends BaseOperations {
 
   constructor(directoryType, directoryTypePlural, client, properties = []){
+    super();
+
     this.directoryType = directoryType;
     this.directoryTypePlural = directoryTypePlural;
     this.client = client;
     this.properties = properties;
 
     this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
+  }
+
+  /**
+  * Get a single document of a certain type based on a path and title match
+  * This document may or may not contain children 
+  */
+  static getDocumentByPath2(path = "", type, headers = null, params = null) {
+
+    let properties = this.properties;
+
+    // Add '/' to beginning of path
+    if (path.indexOf('/') !== 0){
+      path = '/' + path;
+    }
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client.request('/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' ORDER BY dc:title')
+        .get(headers)
+        .then((docs) => {
+          resolve(docs);
+        }).catch((error) => { reject('Could not access server.'); });
+    });
   }
 
   /**

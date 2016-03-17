@@ -31,7 +31,7 @@ import {List, ListItem} from 'material-ui/lib/lists';
 
 import Snackbar from 'material-ui/lib/snackbar';
 
-import EditableComponent from 'views/components/Editor/Components/EditableComponent';
+import EditableComponent from 'views/components/Editor/EditableComponent';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -59,12 +59,17 @@ export default class ExploreDialect extends Component {
     muiTheme: PropTypes.object.isRequired
   };
 
+  _initData() {
+    this.props.fetchDialectAndPortal('/' + this.props.properties.domain + '/Workspaces/Data/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect);
+  }
+
   constructor(props, context){
     super(props, context);
-    props.fetchDialectAndPortal(props.properties.domain + '/Workspaces/Data/' + props.family + '/' + props.language + '/' + props.dialect);
+
+    this._initData();
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestClose'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onRequestClose', '_initData'].forEach( (method => this[method] = this[method].bind(this)) );
 
     this.state = { UISnackBarOpen: false };
   }
@@ -91,13 +96,14 @@ export default class ExploreDialect extends Component {
     let dialect = computeDialect.response;
     let portal = computePortal.response;
 
-    // debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
+
+    //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
     let portalBackgroundStyles = {
       position: 'relative',
       minHeight: 155,
       backgroundColor: 'transparent',
-      backgroundImage: 'url(' + (portal.get('fv-portal:background_top_image') || 'http://lorempixel.com/1340/155/abstract/1/') + ')',
+      backgroundImage: 'url(' + (portal.get('fv-portal:background_top_image') || '') + ')',
       backgroundPosition: '0 0',
     }
 

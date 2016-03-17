@@ -1,5 +1,6 @@
 import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
 import document from './document';
+import directory from './directory';
 import connect from './connect';
 import navigation from './navigation';
 
@@ -10,6 +11,7 @@ import navigation from './navigation';
 export default {
   page,
   document,
+  directory,
   connect,
   navigation
 };

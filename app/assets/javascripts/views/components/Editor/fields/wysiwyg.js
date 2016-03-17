@@ -7,10 +7,6 @@ import AlloyEditorComponent from 'views/components/Editor/editor';
 * Override render of textarea
 */
 function renderTextarea(locals) {
-  const attrs = {
-    ...locals.attrs,
-    className: classNames(locals.attrs.className)
-  }
 
   const onContentChange = function (value) {
     locals.onChange(value);
