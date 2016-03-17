@@ -162,32 +162,4 @@ public class ProxyPublishedListener implements EventListener {
         session.save();
         return input;
     }
-    
-    /**
-     * 
-                // Get parent of dependency
-                DocumentModel parentDependencyDocModel = session.getDocument(dependencyDocModel.getParentRef());
-                DocumentModel section = getSectionToPublishTo(parentDependencyDocModel, null);
-
-                // Publish categories recursively
-                if ("FVCategory".equals(dependencyDocModel.getType())) {
-                    // Run new operation (FVPublishParents) to publish recursively
-                    
-                      OperationContext ctx = new OperationContext(session); ctx.setInput(dependencyDocModel);
-                      Map<String, Object> params = new HashMap<String, Object>(); params.put("stopDocumentType",
-                      "FVCategories");
-                     
-
-                }
-                // Publish other dependencies normally
-                else {
-                    DocumentModel publishedDocument = session.publishDocument(dependencyDocModel, section, true);
-
-                    // Update properties on proxy document to reflect new GUIDs
-                    // This code is not working as a proxy is immutable
-                    int i = Arrays.asList(dependencyPropertyValue).indexOf(relatedDocUUID);
-                    dependencyPropertyValue[i] = publishedDocument.getId();
-                    input.setPropertyValue(dependency, dependencyPropertyValue);
-                }
-     */
 }

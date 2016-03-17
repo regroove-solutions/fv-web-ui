@@ -117,6 +117,9 @@ public class ProxyPublishedListenerTest {
         dialectDoc = session.createDocument(session.createDocumentModel("/Family/Language", "Dialect", "FVDialect"));
         dialect2Doc = session.createDocument(session.createDocumentModel("/Family/Language", "Dialect2", "FVDialect"));
         dialect3Doc = session.createDocument(session.createDocumentModel("/Family/Language2", "Dialect", "FVDialect"));
+        dialectDoc.followTransition("Enable");
+        dialect2Doc.followTransition("Enable");
+        dialect3Doc.followTransition("Enable");
     }
 
     @Test
@@ -209,6 +212,12 @@ public class ProxyPublishedListenerTest {
     @Test(expected = InvalidParameterException.class)
     public void testDialectPublishingWrongDocumentType() throws Exception {
         dialectPublisherService.publish(familyDoc);
+    }
+
+    @Test(expected = InvalidParameterException.class)
+    public void testDialectPublishingNotEnabled() throws Exception {
+        dialectDoc.followTransition("Disable");
+        dialectPublisherService.publish(dialectDoc);
     }
 
     @Test(expected = InvalidParameterException.class)

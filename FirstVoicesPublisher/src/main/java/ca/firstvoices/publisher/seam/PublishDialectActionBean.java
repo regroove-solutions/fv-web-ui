@@ -51,6 +51,7 @@ public class PublishDialectActionBean implements Serializable {
     public boolean accept() {
         return navigationContext.getCurrentDocument() != null && 
                 "FVDialect".equals(navigationContext.getCurrentDocument().getDocumentType().getName())
+                && "Enabled".equals(navigationContext.getCurrentDocument().getCurrentLifeCycleState())
                 && navigationContext.getCurrentDocument().getCoreSession().getProxies(navigationContext.getCurrentDocument().getRef(), null).size() == 0;
     }
 

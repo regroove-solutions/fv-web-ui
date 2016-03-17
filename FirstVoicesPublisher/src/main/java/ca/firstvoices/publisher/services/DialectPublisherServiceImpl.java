@@ -46,6 +46,9 @@ public class DialectPublisherServiceImpl extends DefaultComponent implements Dia
     public void publish(DocumentModel dialect) {
         // Arguments checks : need to be a FVDialect in a normal tree (LanguageFamily/Language/Dialect)
         Map<String, DocumentModel> ancestors = getAncestors(dialect);
+        if (!"Enabled".equals(dialect.getCurrentLifeCycleState())) {
+            throw new InvalidParameterException("Dialect must be enable to be published");
+        }
 
         DocumentModel languageFamily = ancestors.get("LanguageFamily");
         DocumentModel language = ancestors.get("Language");
