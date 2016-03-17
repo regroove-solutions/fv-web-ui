@@ -5,6 +5,7 @@
 		<operation class="ca.firstvoices.operations.FVDialectRegularDocumentPermissions" replace="true" />
 		<operation class="ca.firstvoices.operations.FVPublishDependencies" replace="true" />
 		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
+		<operation class="ca.firstvoices.operations.FVGenerateJsonStatistics" replace="true" />
 	</extension>
     
 </component>
