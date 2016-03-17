@@ -15,11 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
-import selectn from 'selectn';
 import provide from 'react-redux-provide';
-
-// Models
-import {Document} from 'nuxeo';
 
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -32,100 +28,16 @@ import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Paper from 'material-ui/lib/paper';
 import {List, ListItem} from 'material-ui/lib/lists';
-import CircularProgress from 'material-ui/lib/circular-progress';
 
-// Edit
-import t from 'tcomb-form';
-import AlloyEditorComponent from 'views/components/editor';
+import Snackbar from 'material-ui/lib/snackbar';
 
-function test(value) {
-  console.log(value);
-}
-
-// override just the renderTextarea partial of the default template
-function renderTextarea(locals) {
-  const attrs = {
-    ...locals.attrs,
-    className: classNames(locals.attrs.className)
-  }
-
-  const onContentChange = function (value) {
-    console.log(value);
-    locals.onChange(value);
-  }
-
-  return <AlloyEditorComponent content={locals.value} onContentChange={onContentChange} container="editable" />
-}
-
-const textboxTemplate = t.form.Form.templates.textbox.clone({ renderTextarea })
-
-// here we are: the factory
-class ReactQuillFactory extends t.form.Textbox {
-
-  getTemplate() {
-    return textboxTemplate
-  }
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const fields = {
-  portal : {
-    'fv-portal:about': t.String,
-    'fv-portal:greeting': t.String
-  }
-}
-
-const Portal = t.struct(selectn('portal', fields));
-
-Portal.prototype.toDoc = function () {
-  console.log(this);
-}
-
-const options = {
-  fields: {
-    'fv-portal:about': {
-      label: <i>Portal Introduction</i>,
-      type: 'textarea',
-      factory: ReactQuillFactory,
-      attrs: {
-        placeholder: 'Enter portal description here'
-      }
-    }
-  }
-};
-
-const values = {
-    'fv-portal:aaa': 'test'
-};
-
+import EditableComponent from 'views/components/Editor/Components/EditableComponent';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
 */
 @provide
 export default class ExploreDialect extends Component {
-
-  static elements = {
-    spin: <CircularProgress mode="indeterminate" size={0.5} />
-  };
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -139,33 +51,22 @@ export default class ExploreDialect extends Component {
     computeDialectAndPortal: PropTypes.object.isRequired,
     computeDialect: PropTypes.object.isRequired,
     computePortal: PropTypes.object.isRequired,
-    requestEdit: PropTypes.func.isRequired,
-    editMode: PropTypes.bool,
-    requestSaveField: PropTypes.func.isRequired,
-    saveField: PropTypes.bool.isRequired
-  };
-
-  static defaultProps = {
-    editMode: false
+    saveField: PropTypes.bool.isRequired,
+    dismissError: PropTypes.func.isRequired
   };
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired
   };
 
-  /**
-  * 
-  */
-  responseToObject(dialectResponse) {
-    return selectn('response', dialectResponse);
-  }
-
   constructor(props, context){
     super(props, context);
     props.fetchDialectAndPortal(props.properties.domain + '/Workspaces/Data/' + props.family + '/' + props.language + '/' + props.dialect);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEditRequest', '_onRequestSaveField'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onRequestClose'].forEach( (method => this[method] = this[method].bind(this)) );
+
+    this.state = { UISnackBarOpen: false };
   }
 
   _onNavigateRequest(path) {
@@ -177,91 +78,20 @@ export default class ExploreDialect extends Component {
     this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
 
-  _onEditRequest(itemToEdit) {
-    this.props.requestEdit();
-  }
-
-  _onRequestSaveField(e, property) {
-
-    // Prevent default behaviour
-    e.preventDefault();
-
-    // FIX ME BELOW!!!!
-    //let originPortalDoc = this.responseToObject(this.props.computePortal, 'portals');
-    // FIX ME ^^
-    
-    // Create new document rather than modifying the original document
-    // TODO: Find better way to construct object then accessing internal function
-    let newDocument = new Document(this.props.computePortal.response, { 
-      'repository': this.props.computePortal.response._repository,
-      'nuxeo': this.props.computePortal.response._nuxeo
-    });
-
-    //let newDocument = Object.assign({}, );
-
-    // Set property
-    newDocument.set(this.refs["form_" + property].getValue());
-
-    // Modified document
-    const newDoc = this.props.requestSaveField(newDocument);
-
-    console.log(newDoc);
-  }
-
-  /**
-  * Allows an element to be rendered as regular text or as an editable form
-  * Note: This will only work with 'properties' from the document as they are the only mutable fields.
-  * @param {property} string - The property field id (used for Structs)
-  * @param {entity} doc - The entitiy to derive current values from
-  * @returns - Element to be rendered
-  */
-  _editableElement(property, entity) {
-
-    let fieldForm, fieldSchema, newFormStruct, newValues = null;
-
-    // Get current value from properties.
-    const value = selectn("properties." + property, entity);
-
-    // Create a form from a single field
-    if (Portal.meta.props.hasOwnProperty(property)) {
-
-      let fieldValue = selectn('portal', fields);
-
-      // Create a sub-structure for this field
-      let newSchema = {};
-      newSchema[property] = fieldValue[property];
-      newFormStruct = t.struct(newSchema);
-
-      newValues = {};
-      newValues[property] = value;
-    }
-
-    // Dynamic rendering
-    if (this.props.computeDialectAndPortal.isFetching)
-      return this.spin;
-
-    if (this.props.editMode) {
-      return <form onSubmit={e => this._onRequestSaveField(e, property)}>
-              <t.form.Form ref={"form_" + property} value={newValues} type={newFormStruct} options={options} />
-              <div className="form-group">
-                <button type="submit" className="btn btn-primary">Save</button> 
-              </div>
-             </form>;
-    }
-
-    return <div dangerouslySetInnerHTML={{__html: value}}></div>;
+  _onRequestClose() {
+    this.props.dismissError();
   }
 
   render() {
 
     let debug = "";
 
-    const { computeDialectAndPortal, computeDialect, computePortal } = this.props;
-
-    // debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
+    const { computeDialectAndPortal, computeDialect, computePortal, computeDocument } = this.props;
 
     let dialect = computeDialect.response;
     let portal = computePortal.response;
+
+    // debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
     let portalBackgroundStyles = {
       position: 'relative',
@@ -281,7 +111,7 @@ export default class ExploreDialect extends Component {
             <div style={portalBackgroundStyles}>
 
               <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
-                {portal.get('fv-portal:greeting')}<br/>
+                <EditableComponent property="fv-portal:greeting" /><br/>
                 {portal.get('fv-portal:featured_audio')}
               </h2>
 
@@ -302,7 +132,7 @@ export default class ExploreDialect extends Component {
                     <NavigationExpandMoreIcon />
                   </IconButton>
                 }>
-                  <MenuItem onTouchTap={this._onEditRequest.bind(this, 'portal')} primaryText="Edit Portal" />
+                  <MenuItem primaryText="Edit Portal" />
                   <MenuItem primaryText="Contact" />
                 </IconMenu>
               </ToolbarGroup>
@@ -333,7 +163,7 @@ export default class ExploreDialect extends Component {
               <div className={classNames('col-xs-6', 'col-md-8')}>
                 <div>
                   <h1>Portal</h1>
-                  {this._editableElement('fv-portal:about', portal)}
+                  <EditableComponent property="fv-portal:about" />
                 </div>
               </div>
 
@@ -365,6 +195,15 @@ export default class ExploreDialect extends Component {
               </div>
 
           </div>
+
+          <Snackbar
+            open={(computePortal.isError && !computePortal.errorDismissed) || false}
+            message={computePortal.error || ""}
+            action="Close"
+            onActionTouchTap={this._onRequestClose}
+            onRequestClose={this._onRequestClose}
+            autoHideDuration={3000}
+          />
 
         </div>;
   }

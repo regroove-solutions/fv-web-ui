@@ -14,68 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import _ from 'underscore';
-import StringHelpers from 'common/StringHelpers';
-import { Schema, arrayOf, normalize } from 'normalizr';
-
-// Configuration
-import ConfGlobal from 'conf/local.json';
-
 import Nuxeo from 'nuxeo';
+import StringHelpers from 'common/StringHelpers';
 
-const documentSchema = new Schema('documents', {
-  idAttribute: 'uid'
-});
-
-const dialectSchema = new Schema('dialects', {
-  idAttribute: 'uid'
-});
-
-const languageSchema = new Schema('languages', {
-  idAttribute: 'uid'
-});
-
-const familySchema = new Schema('families', {
-  idAttribute: 'uid'
-});
-
-const portalSchema = new Schema('portals', {
-  idAttribute: 'uid'
-});
-
-const wordSchema = new Schema('words', {
-  idAttribute: 'uid'
-});
-
-const getSchemaForType = (type) => {
-  if (Schemas.hasOwnProperty(type)) {
-    return Schemas[type];
-  }
-
-  return Schemas.Document;
-}
-
-const Schemas = {
-  Document: documentSchema,
-  Documents: arrayOf(documentSchema),
-  FVDialect: dialectSchema,
-  FVDialects: arrayOf(dialectSchema),
-  FVPortal: portalSchema,
-  FVPortals: arrayOf(portalSchema)
-}
-
-portalSchema.define({
-  properties: {
-    'fv-portal:featured_words': arrayOf(wordSchema)
-  },
-  contextParameters: {
-    ancestry: {
-      dialect: dialectSchema,
-      language: languageSchema,
-      family: familySchema
-    }
-  }
-});
-
+import ConfGlobal from 'conf/local.json';
 
 /**
 * Initialize Nuxeo client
@@ -121,18 +63,7 @@ export default class DocumentOperations {
         .then((doc) => {
           //resolve(normalize(response.entries[0], getSchemaForType(type))); // Normalize not nessary since return value is a Nuxeo.Document object.
           resolve(doc);
-        }).catch((error) => { throw error });
-
-        /*properties.client.operation('Document.Query')
-          .params(params)
-          .execute(headers).then((response) => { 
-            if (response.entries.length > 0) {
-              console.log(response.entries[0] instanceof Nuxeo.Document);
-              
-            } else {
-              reject('No ' + type +' found');
-            }
-        })*/
+        }).catch((error) => { reject('Could not access server.'); });
     });
   }
 
@@ -146,15 +77,15 @@ export default class DocumentOperations {
 
     return new Promise(
       function(resolve, reject) {
-console.log(doc);
         doc.save()
-          .then((response) => {
-            if (response.entries.length > 0) {
-              resolve(normalize(response.entries[0], getSchemaForType(type)));
+          .then((newDoc) => {
+            if (newDoc) {
+              // resolve(normalize(response.entries[0], getSchemaForType(type)));
+              resolve(newDoc);
             } else {
               reject('No ' + type +' found');
             }
-        }).catch((error) => { throw error });
+        }).catch((error) => { reject('Could not update document.'); } );
     });
   }
 
