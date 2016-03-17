@@ -43,7 +43,8 @@ export default class Navigation extends Component {
 
   static propTypes = {
     toggleMenuAction: PropTypes.func.isRequired,
-    properties: PropTypes.object.isRequired
+    properties: PropTypes.object.isRequired,
+    computeRequestLogin: PropTypes.object.isRequired
   };
 
   /*static childContextTypes = {
@@ -103,9 +104,9 @@ export default class Navigation extends Component {
 
     let LoginCont = <Login label="Sign in"/>;
 
-    //if (this.props.userStore.currentUser.isAnonymous != null && !this.props.userStore.currentUser.isAnonymous) {
-    //  LoginCont = "Welcome " + this.props.userStore.currentUser.properties.username + "! ";
-    //}
+    if (this.props.computeRequestLogin.newState === 'test') {
+      LoginCont = "Welcome " + this.props.computeRequestLogin + "! ";
+    }
 
     return <div>
         <AppBar

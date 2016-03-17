@@ -13,7 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
+import provide from 'react-redux-provide';
 import _ from 'underscore';
 //import connectToStores from 'alt-utils/lib/connectToStores';
 
@@ -33,7 +34,14 @@ import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
-export default class Login extends React.Component {
+@provide
+export default class Login extends Component {
+
+  static propTypes = {
+    requestLogin: PropTypes.func.isRequired,
+    computeRequestLogin: PropTypes.object.isRequired,
+    label: PropTypes.string.isRequired
+  };
 
   static contextTypes = {
       client: React.PropTypes.object,
@@ -52,8 +60,7 @@ export default class Login extends React.Component {
 
     this.state = {
       open: false,
-      username: null,
-      password: null
+      anchorEl: null
     };
 
     this._handleOpen = this._handleOpen.bind(this);
@@ -78,10 +85,13 @@ export default class Login extends React.Component {
   }
 
   _handleLogin() {
-    var username = this.refs.username.getValue();
-    var password = this.refs.password.getValue();
+
+    this.props.requestLogin();
+
+    //var username = this.refs.username.getValue();
+    //var password = this.refs.password.getValue();
     
-    if ( username !== null && password !== null) {
+    //if ( username !== null && password !== null) {
 
       //UserActions.login(this.props.clientStore.client, username, password);
 /*
@@ -101,11 +111,14 @@ export default class Login extends React.Component {
           _this._handleClose();
 
         }).catch((error) => { throw error });
-      });*/
-    }
+      });
+    }*/
   }
 
   render() {
+
+    console.log(this.props.computeRequestLogin);
+
     return (
       <div style={{display: "inline-block", paddingRight: "10px"}}>
         <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />
