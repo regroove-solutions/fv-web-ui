@@ -22,6 +22,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import CircularProgress from 'material-ui/lib/circular-progress';
 
 /**
 * Explore Archive page shows all the families in the archive
@@ -30,73 +31,50 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile';
 export default class ExploreArchive extends Component {
 
   static propTypes = {
-    navigateTo: PropTypes.func.isRequired,
-    fetchFamilies: PropTypes.func.isRequired,
-    computeFamilies: PropTypes.object.isRequired
+    properties: PropTypes.object.isRequired,
+    fetchFamiliesInPath: PropTypes.func.isRequired,
+    computeFamiliesInPath: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired
   };
 
   /*static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
+      muiTheme: React.PropTypes.object.isRequired
   };*/
 
   constructor(props, context){
     super(props, context);
-//console.log(this.props.computeDocuments);
-    this.state = {
-      childData: []
-    }
 
-    this.props.fetchFamilies('/FV/sections/', 'FVLanguageFamily');
+    this.props.fetchFamiliesInPath('/' + props.properties.domain + '/sections/');
 
-    // Create new operations object
-    //this.languageFamilyOperations = new DirectoryOperations(LanguageFamily, LanguageFamilies, context.client, { domain: context.siteProps.domain });
-
-    // Get list of language families
-    /*this.languageFamilyOperations.getDocumentsByPath("/sections").then((function(families){
-
-      let fieldsToRender = [];
-
-      families.each(function(family) {
-        fieldsToRender.push({
-          id: family.get("id"),
-          title: family.get("dc:title"),
-          description: family.get("dc:description"),
-          countries: family.get("fvlanguagefamily:countries")
-        });
-
-      });
-
-      this.setState({
-        childData: fieldsToRender
-      });
-
-    }).bind(this));*/
-
-    this._exploreEntry = this._exploreEntry.bind(this);
+    // Bind methods to 'this'
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  _exploreEntry(language) {
-    this.context.router.push('/explore/' + language);
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath('/explore' + path);
   }
 
   render() {
 
-    const { computeFamilies } = this.props;
-    let families = selectn('response.entries', computeFamilies) || [];
+    const { computeFamiliesInPath } = this.props;
+
+    if (computeFamiliesInPath.isFetching) {
+      return <CircularProgress mode="indeterminate" size={5} />;
+    }
+
+    let families = selectn('response.entries', computeFamiliesInPath) || [];
 
     return <div className="row">
             <div className="col-md-4 col-xs-12">
-              <h1>Explore Archive</h1>
+              <h1>{this.props.properties.title} Archive</h1>
               <div>
                 <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>;
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
               </div>
             </div>
             <div className="col-md-8 col-xs-12">
-<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                <h2>Browse the following Language Families:</h2>
+                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                   <GridList
                     cols={2}
                     cellHeight={200}
@@ -104,8 +82,8 @@ export default class ExploreArchive extends Component {
                     >
                       {families.map((tile, i) => 
                         <GridTile
-                          onTouchTap={this._exploreEntry.bind(this, tile.title)}
-                          key={tile.id}
+                          onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                          key={tile.uid}
                           title={tile.title}
                           subtitle={tile.description}
                           ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>

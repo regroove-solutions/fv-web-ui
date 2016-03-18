@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import AlloyEditor from 'alloyeditor';
 
-export default class AlloyEditorComponent {
+export default class AlloyEditorComponent extends Component {
     componentDidMount() {
         this._editor = AlloyEditor.editable(this.props.container, this.props.alloyEditorConfig);
         this._nativeEditor = this._editor.get('nativeEditor'); 

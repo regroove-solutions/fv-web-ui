@@ -48,10 +48,8 @@ export default class DirectoryOperations extends BaseOperations {
 
     let properties = this.properties;
 
-    // Add '/' to beginning of path
-    if (path.indexOf('/') !== 0){
-      path = '/' + path;
-    }
+    // Escape single quotes
+    path = StringHelpers.clean(path);
 
     return new Promise(
       function(resolve, reject) {

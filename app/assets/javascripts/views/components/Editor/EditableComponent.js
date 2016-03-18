@@ -17,16 +17,22 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 export default class EditableComponent extends Component {
 
   static propTypes = {
-    computeEditMode: PropTypes.object.isRequired,
-    enableEditMode: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired,
+    computeEntity: PropTypes.object.isRequired,
+    updateEntity: PropTypes.func.isRequired,
     property: PropTypes.string.isRequired
   };
 
-  static defaultProps = {
-    computeEditMode: {}
-  };
+  constructor(props, context) {
+      super(props, context);
+
+      this.state = {
+        editModeEnabled: false,
+        savedValue: null
+      };
+
+      // Bind methods to 'this'
+      ['_onEditRequest', '_onRequestSaveField'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
 
   /**
   * Allows an element to be rendered as regular text or as an editable form, derived from a larger type (e.g. fv-portal:about from FVPortal type)
@@ -39,20 +45,20 @@ export default class EditableComponent extends Component {
 
     const { property } = this.props;
 
-    let entity = this.props.computePortal.response;
+    let entity = this.props.computeEntity.response;
 
     // If still computing, return spinner
     if (entity.isFetching)
-      return <CircularProgress mode="indeterminate" size={0.5} />;
+      return <CircularProgress mode="indeterminate" size={2} />;
 
     // Get current value for field from properties
-    let currentValue = selectn("properties." + property, entity);
+    let currentValue = selectn(property, this.state.savedValue) || selectn("properties." + property, entity);
 
     // Get all options for type from entity field definition
     let fieldFormOptions = selectn(entity.type, options);
 
     // Handle edit mode
-    if (this.props.computeEditMode[property]) {
+    if (this.state.editModeEnabled) {
 
       let fieldFormValues = {};
       let fieldFormStruct, fieldFormFields = null;
@@ -94,6 +100,13 @@ export default class EditableComponent extends Component {
            </div>;
   }
 
+  shouldComponentUpdate(newProps, newState) {
+
+    if (newState != this.state || newProps.computeEntity.response != this.props.computeEntity.response)
+      return true;
+
+    return false;
+  }
 
   _onRequestSaveField(e, property) {
 
@@ -102,46 +115,32 @@ export default class EditableComponent extends Component {
 
     // TODO: Find better way to construct object then accessing internal function
     // Create new document rather than modifying the original document
-    let newDocument = new Document(this.props.computePortal.response, { 
-      'repository': this.props.computePortal.response._repository,
-      'nuxeo': this.props.computePortal.response._nuxeo
+    let newDocument = new Document(this.props.computeEntity.response, { 
+      'repository': this.props.computeEntity.response._repository,
+      'nuxeo': this.props.computeEntity.response._nuxeo
     });
 
+    let formValue = this.refs["form_" + property].getValue();
+
     // Set new value property on document
-    newDocument.set(this.refs["form_" + property].getValue());
+    newDocument.set(formValue);
 
     // Save document
-    this.props.updatePortal(newDocument, property);
-  }
+    this.props.updateEntity(newDocument, property);
 
-
-  shouldComponentUpdate(newProps) {
-
-    // Don't re-render if in the process of fetching
-    if (newProps.computePortal.isFetching ) {
-      return false;
-    }
-
-    // Don't re-render if this specific editable control hasn't changed
-    if (newProps.computeEditMode.initiatingField && newProps.computeEditMode.initiatingField != this.props.property) {
-      return false;
-    }
-
-    return true;
+    this.setState({
+      editModeEnabled: false,
+      savedValue: formValue
+    });
   }
 
   _onEditRequest(fieldToEdit) {
-    this.props.enableEditMode(fieldToEdit);
+    this.setState({
+      editModeEnabled: true
+    });
   }
 
-    constructor(props, context) {
-        super(props, context);
-
-        // Bind methods to 'this'
-        ['_onEditRequest', '_onRequestSaveField'].forEach( (method => this[method] = this[method].bind(this)) );
-    }
-
-    render() {
-        return (<div>{this._editableElement()}</div>);
-    };
+  render() {
+      return (<div>{this._editableElement()}</div>);
+  };
 }

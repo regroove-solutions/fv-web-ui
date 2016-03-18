@@ -1,8 +1,21 @@
+import {provide, unshiftMiddleware, createCombinedStore} from 'react-redux-provide';
 import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
-import document from './document';
-import directory from './directory';
+import createLoggerMiddleware from 'redux-logger';
+
+import FVLanguageFamily from './FVLanguageFamily';
+import FVLanguage from './FVLanguage';
+import FVDialect from './FVDialect';
+import FVPortal from './FVPortal';
+
 import connect from './connect';
 import navigation from './navigation';
+
+const loggerMiddleware = createLoggerMiddleware();
+
+// Enable log for specific provider
+//unshiftMiddleware([FVDialect], loggerMiddleware);
+
+//console.log(createCombinedStore({Editor, FVPortal}));
 
 /**
 * These providers will be exposed to each componenet that has the @provide decorator,
@@ -10,8 +23,10 @@ import navigation from './navigation';
 */
 export default {
   page,
-  document,
-  directory,
   connect,
-  navigation
+  navigation,
+  FVLanguageFamily,
+  FVLanguage,
+  FVDialect,
+  FVPortal
 };

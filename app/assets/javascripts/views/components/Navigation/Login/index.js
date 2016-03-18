@@ -117,8 +117,6 @@ export default class Login extends Component {
 
   render() {
 
-    console.log(this.props.computeRequestLogin);
-
     return (
       <div style={{display: "inline-block", paddingRight: "10px"}}>
         <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />

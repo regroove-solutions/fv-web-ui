@@ -19,6 +19,9 @@ import {default as PageExploreFamily} from './explore/family'
 import {default as PageExploreLanguage} from './explore/language'
 import {default as PageExploreDialect} from './explore/dialect'
 
+import {default as PageDialectLearn} from './explore/dialect/learn'
+
+
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
 import {default as PagePlay} from './play'
@@ -30,5 +33,6 @@ module.exports = {
   PageExploreDialect,
   PageGetStarted,
   PageContribute,
+  PageDialectLearn,
   PagePlay
 }

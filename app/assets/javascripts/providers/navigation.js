@@ -37,6 +37,10 @@ const reducers = {
     return state;
   },
 
+  properties(state = null) {
+    return state;
+  },
+
   computeToggleMenuAction(state = {menuVisible: false}, action) {
     switch (action.type) {
       case TOGGLE_MENU:

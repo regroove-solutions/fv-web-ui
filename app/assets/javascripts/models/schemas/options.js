@@ -23,6 +23,14 @@ const options = {
         attrs: {
           placeholder: 'Enter portal description here'
         }
+      },
+      'dc:description': {
+        label: <i>Portal Introduction</i>,
+        type: 'textarea',
+        factory: WysiwygFactory,
+        attrs: {
+          placeholder: 'Enter portal description here'
+        }
       }
     }
   }

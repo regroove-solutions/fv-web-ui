@@ -17,8 +17,6 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-//import Request from 'request';
-
 import ConfGlobal from 'conf/local.json';
 
 // Providers provide reducers and actions
@@ -36,6 +34,9 @@ injectTapEventPlugin();
 
 const context = {
   providers,
+  combinedProviders: [
+    providers // OK for all providers to share the same store for now
+  ],
   providedState: {
     properties: {
       title: ConfGlobal.title,
@@ -44,11 +45,4 @@ const context = {
   }
 };
 
-// Temp: Wrap application in request to generate proper guest user session
-//Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"}, function (error, response, body) {
-  //if (!error && response.statusCode == 200) {
-    render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'))
-  //} else {
-    // Server is down, serve static alternative?
-  //}
-//});
+render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'));

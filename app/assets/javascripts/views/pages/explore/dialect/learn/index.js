@@ -13,8 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
+import provide from 'react-redux-provide';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 
@@ -28,16 +29,25 @@ import Phrases from 'models/Phrases';
 import DocumentOperations from 'operations/DocumentOperations';
 import DirectoryOperations from 'operations/DirectoryOperations';
 
+import EditableComponent from 'views/components/Editor/EditableComponent';
+
 /**
 * Learn portion of the dialect portal
 */
-export default class Learn extends React.Component {
+@provide
+export default class DialectLearn extends Component {
 
-  static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    navigateTo: PropTypes.func.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    fetchDialect: PropTypes.func.isRequired,
+    updateDialect: PropTypes.func.isRequired,
+    computeDialect: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -45,21 +55,39 @@ export default class Learn extends React.Component {
 
     this._navigate = this._navigate.bind(this);
 
-    this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: context.siteProps.domain });
-    this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: context.siteProps.domain });
+    this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: 'FV' });
+    this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: 'FV' });
 
     this.state = {
       wordCount: null,
-      phraseCount: null,
-      dialectPath: props.params.family + '/' + props.params.language + '/' + props.params.dialect
+      phraseCount: null
     }
 
     // Pre-fetch words and phrases to speed up display and extract count
-    this._getPhrasesAndSetResultSize(props);
-    this._getWordsAndSetResultSize(props);
+    //this._getPhrasesAndSetResultSize(props);
+    //this._getWordsAndSetResultSize(props);
 
-    this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
-    this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
+    //this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
+    //this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
+  }
+
+  fetchData(newProps) {
+    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
+
+    newProps.fetchDialect('/' + path);
+    newProps.fetchPortal('/' + path + '/Portal');
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
   }
 
   // Handle change of params when navigating within router
@@ -112,6 +140,11 @@ export default class Learn extends React.Component {
 
   render() {
 
+    const { computeDialect, computePortal, computeDocument } = this.props;
+
+    let dialect = computeDialect.response;
+    let portal = computePortal.response;
+
     // Assign dialect prop, from parent, to all children
     let content = React.Children.map(this.props.children, function(child) {
         return React.cloneElement(child, {
@@ -127,15 +160,7 @@ export default class Learn extends React.Component {
 
         <div className={classNames('col-xs-12', 'col-md-6')}>
           <h1>About our Language</h1>
-          <p>&quot;Pelpala7w&iacute;t i ucwalm&iacute;cwa m&uacute;ta7 ti tm&iacute;cwa &quot;- The people and land are one We are the Lilwat Nation, an Interior Salish people We live in a stunning and dramatic landscape with a rich biodiversity-a mysterious place of towering mountains,ice fields,alpine meadows,white-water rivers and braided river valleys that run to a milky color due to the silt and clay deposited by glacial melt. While Lilwat is a separate and distinct Nation, its still remains part of the St'at'imc Nation Our Language is called Ucwalmicwts. It is taught at both X'itolacw Community School and Pemberton Secondary School. Lilwat Also has a Language Immersion school which goes from Nursey to grade three and each subject in the immersion school is taught in the Ucwalmicwts Language. L&iacute;&#318;wat Nation (L&iacute;&#318;wat means where the rivers meet). </p>
-
-          <p>Originally the Lil'wat7&uacute;l managed a vast territory within the headwaters of the three rivers: Green River, Lillooet River and the Birkenhead River. </p>
-
-          <p>We are building a language retention strategy in the manner of nt'&aacute;kmen &amp; nx&eacute;kmen, and in 1974 was the inception of the written language in our community.</p>
-
-          <p>Cedar is inherent in our lives from birth until death. It provides a basket for our children and is used to cradle our loved ones when they pass into the spirit world. We use it for clothing, transportation, art, regalia, shelter, gathering food, cooking and as medicine. </p>
-
-          <p>Listen to our words, and explore the Lil'wat Language! CUYSTW&Iacute; MALH UCWALM&Iacute;CWTS- lets all go speak our Language!</p>
+          <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
         </div>
 
         <div className={classNames('col-xs-12', 'col-md-2')}>

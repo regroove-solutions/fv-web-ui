@@ -28,7 +28,7 @@ import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Paper from 'material-ui/lib/paper';
 import {List, ListItem} from 'material-ui/lib/lists';
-
+import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
@@ -42,36 +42,46 @@ export default class ExploreDialect extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
     navigateTo: PropTypes.func.isRequired,
+    windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    family: PropTypes.string.isRequired,
-    language: PropTypes.string.isRequired,
-    dialect: PropTypes.string.isRequired,
-    fetchDialectAndPortal: PropTypes.func.isRequired,
-    computeDialectAndPortal: PropTypes.object.isRequired,
+    fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
-    saveField: PropTypes.bool.isRequired,
-    dismissError: PropTypes.func.isRequired
+    updatePortal: PropTypes.func.isRequired
   };
 
   static contextTypes = {
     muiTheme: PropTypes.object.isRequired
   };
 
-  _initData() {
-    this.props.fetchDialectAndPortal('/' + this.props.properties.domain + '/Workspaces/Data/' + this.props.family + '/' + this.props.language + '/' + this.props.dialect);
-  }
-
   constructor(props, context){
     super(props, context);
 
-    this._initData();
-
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestClose', '_initData'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
 
     this.state = { UISnackBarOpen: false };
+  }
+
+  fetchData(newProps) {
+    let path = newProps.splitWindowPath.slice(1).join('/');
+
+    newProps.fetchDialect('/' + path);
+    newProps.fetchPortal('/' + path + '/Portal');
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(path) {
@@ -83,19 +93,18 @@ export default class ExploreDialect extends Component {
     this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
 
-  _onRequestClose() {
-    this.props.dismissError();
-  }
+  //_onRequestClose() {
+  //  this.props.dismissError();
+  //}
 
   render() {
 
-    let debug = "";
+    const { computeDialect, computePortal, computeDocument } = this.props;
 
-    const { computeDialectAndPortal, computeDialect, computePortal, computeDocument } = this.props;
+    let loading = "";
 
     let dialect = computeDialect.response;
     let portal = computePortal.response;
-
 
     //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
@@ -110,14 +119,20 @@ export default class ExploreDialect extends Component {
     let featuredWord = portal.get('fv-portal:featured_words') || [];
     let relatedLinks = dialect.get('fvdialect:related_links') || [];
 
+    if (computeDialect.isFetching || computePortal.isFetching) {
+      return <CircularProgress mode="indeterminate" size={5} />;
+    }
+
     return <div>
+
+            {loading}
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
 
             <div style={portalBackgroundStyles}>
 
               <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
-                <EditableComponent property="fv-portal:greeting" /><br/>
+                <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" /><br/>
                 {portal.get('fv-portal:featured_audio')}
               </h2>
 
@@ -164,12 +179,10 @@ export default class ExploreDialect extends Component {
 
               </div>
 
-              {debug}
-
               <div className={classNames('col-xs-6', 'col-md-8')}>
                 <div>
                   <h1>Portal</h1>
-                  <EditableComponent property="fv-portal:about" />
+                  <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" />
                 </div>
               </div>
 
@@ -199,18 +212,17 @@ export default class ExploreDialect extends Component {
                 </Paper>
 
               </div>
-
           </div>
+        </div>;
+  }
+}
 
+/*
           <Snackbar
-            open={(computePortal.isError && !computePortal.errorDismissed) || false}
-            message={computePortal.error || ""}
+            open={(computeDialect.isError && !computeDialect.errorDismissed) || false}
+            message={computeDialect.error || ""}
             action="Close"
             onActionTouchTap={this._onRequestClose}
             onRequestClose={this._onRequestClose}
             autoHideDuration={3000}
-          />
-
-        </div>;
-  }
-}
+          />*/

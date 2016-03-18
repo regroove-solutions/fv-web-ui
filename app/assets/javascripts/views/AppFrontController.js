@@ -3,8 +3,8 @@ import provide from 'react-redux-provide';
 import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageDialectLearn } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
-
 
 // To be used later views below:
 
@@ -19,7 +19,7 @@ import ExploreLanguage from 'views/pages/explore/language';
 
 // Pages: Dialect Portal
 import ExploreDialect from 'views/pages/explore/dialect';
-import DialectLearn from 'views/pages/explore/dialect/learn';
+
 import DialectLearnWords from 'views/pages/explore/dialect/learn/words';
 import DialectLearnPhrases from 'views/pages/explore/dialect/learn/phrases';
 import DialectLearnSongs from 'views/pages/explore/dialect/learn/songs';
@@ -35,24 +35,30 @@ import Contribute from 'views/pages/contribute';
 import Play from 'views/pages/play';
 import NotFound from 'views/pages/not-found';*/
 
+const REGEX_MATCH_ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
 
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces'];
 
 @provide
 export default class AppFrontController extends Component {
   static propTypes = {
+    properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired
   };
 
   constructor(props, context) {
     super(props, context);
+
+    this.matchPath = this.matchPath.bind(this);
   }
 
   renderBreadcrumb() {
     let splitPath = this.props.splitWindowPath;
     let breadcrumb = splitPath.map(function(path, index) {
-      if (path && path != "")
+      if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
         return <span key={index}> &raquo; <Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path)}</Link></span>;
+      }
     });
     
     return breadcrumb;
@@ -62,6 +68,28 @@ export default class AppFrontController extends Component {
     return (<div><Link href="/">Home</Link> {this.renderBreadcrumb()} {reactElement}</div>)
   }
 
+  matchPath(pathMatchArray) {
+
+    // Remove empties from path array
+    const currentPathArray = this.props.splitWindowPath.filter(function(e){ return e; });
+
+ //console.log(pathMatchArray);
+    if (pathMatchArray.length != currentPathArray.length) {
+      return false;
+    }
+
+    let matches = pathMatchArray.every(function(element, index) {
+      if (element instanceof RegExp) {
+        return element.test(currentPathArray[index]);
+      }
+      else {
+        return element === currentPathArray[index]; 
+      }
+    });
+  
+    return matches;
+  }
+
   render() {
 
     const { splitWindowPath, windowPath } = this.props; 
@@ -69,67 +97,36 @@ export default class AppFrontController extends Component {
     // Remove empties from path array
     const pathPartsArray = splitWindowPath.filter(function(e){return e});
 
-    // Get Path after section
-    const pathWithoutSection = pathPartsArray.slice(1);
-
     // Routing
+    // TODO: Replace FV with dynamic domain
+    switch (true) {
 
-    // Root
-    if (windowPath === '/') {
-      return this.renderWithBreadcrumb(<div>Welcome home!!!</div>);
-    }
+      case this.matchPath([]):
+        return this.renderWithBreadcrumb(<div>Welcome home!!!</div>);
 
-    // Process sections, then anything under them
-    // TODO: Use Regex for cleaner syntax
-    switch (pathPartsArray[0]) {
+      case this.matchPath(['get-started']):
+        return this.renderWithBreadcrumb(<PageGetStarted />);
 
-      case 'get-started':
-        if (pathPartsArray.length === 1)
-          return this.renderWithBreadcrumb(<PageGetStarted />);
+      case this.matchPath(['contribute']):
+        return this.renderWithBreadcrumb(<PageContribute />);
 
-      break;
+      case this.matchPath(['play']):
+        return this.renderWithBreadcrumb(<PagePlay />);
 
-      case 'contribute':
+      case this.matchPath(['explore']):
+        return this.renderWithBreadcrumb(<PageExploreArchive />);
 
-        if (pathPartsArray.length === 1)
-          return this.renderWithBreadcrumb(<PageContribute />);
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH]):
+        return this.renderWithBreadcrumb(<PageExploreFamily />);
 
-      break;
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
+        return this.renderWithBreadcrumb(<PageExploreLanguage />);
 
-      case 'play':
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
+        return this.renderWithBreadcrumb(<PageExploreDialect />);
 
-        if (pathPartsArray.length === 1)
-          return this.renderWithBreadcrumb(<PagePlay />);
-
-      break;
-
-      case 'explore':
-
-        // Process areas under a section
-        if (pathWithoutSection != null) {
-          switch (pathWithoutSection.length) {
-            case 1: 
-              return this.renderWithBreadcrumb(<div>TEST/...</div>);
-            break;
-
-            case 2:
-              return this.renderWithBreadcrumb(<div>TEST/TEST/...</div>);
-            break;
-
-            case 3:
-              return this.renderWithBreadcrumb(<PageExploreDialect family={splitWindowPath[1]} language={splitWindowPath[2]} dialect={splitWindowPath[3]} />);
-            break;
-          }
-        }
-
-        // Matches a section root
-        if (pathPartsArray.length === 1)
-          return this.renderWithBreadcrumb(<PageExploreArchive />);
-
-      break;
-
-      //case 'id':
-      //break;
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn' ]):
+        return this.renderWithBreadcrumb(<PageDialectLearn />);
     }
 
     return (<div>404</div>);

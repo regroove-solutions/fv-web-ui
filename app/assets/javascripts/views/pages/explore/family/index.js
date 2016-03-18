@@ -13,101 +13,94 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
-
-// Models
-import Language from 'models/Language';
-import Languages from 'models/Languages';
+import React, { Component, PropTypes } from 'react';
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import CircularProgress from 'material-ui/lib/circular-progress';
 
 /**
-* Explore Family page shows all the languages in this family
+* Explore Archive page shows all the families in the archive
 */
-export default class ExploreFamily extends React.Component {
+@provide
+export default class ExploreFamily extends Component {
 
-  static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    fetchLanguagesInPath: PropTypes.func.isRequired,
+    computeLanguagesInPath: PropTypes.object.isRequired,
+    fetchFamily: PropTypes.func.isRequired,
+    computeFamily: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired
   };
+
+  /*static contextTypes = {
+      muiTheme: React.PropTypes.object.isRequired
+  };*/
 
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      childData: []
-    }
-
-    // Create new operations object
-    this.languageOperations = new DirectoryOperations(Language, Languages, context.client, { domain: context.siteProps.domain });
-
-    // Get list of languages
-    this.languageOperations.getDocumentsByPath('/sections/Data/' + props.params.family + '/').then((function(languages){
-
-      let fieldsToRender = [];
-
-      languages.each(function(language) {
-
-        fieldsToRender.push({
-          id: language.get("id"),
-          title: language.get("dc:title"),
-          description: language.get("dc:description")
-        });
-
-      });
-
-      this.setState({
-        childData: fieldsToRender
-      });
-
-    }).bind(this));
-
-    this._exploreEntry = this._exploreEntry.bind(this);
+    // Bind methods to 'this'
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  _exploreEntry(language) {
-    this.context.router.push('/explore/' + this.props.params.family + '/' + language);
+  componentDidMount() {
+    let path = this.props.splitWindowPath.slice(1).join('/');
+
+    this.props.fetchFamily('/' + path);
+    this.props.fetchLanguagesInPath('/' + path);
+  }
+
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath('/explore' + path);
   }
 
   render() {
 
-    let content = "No published Languages found.";
+    const { computeLanguagesInPath, computeFamily } = this.props;
 
-    if (this.state.childData && this.state.childData.length > 0) {
-      content = <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+    if (computeLanguagesInPath.isFetching || computeFamily.isFetching) {
+      return <CircularProgress mode="indeterminate" size={5} />;
+    }
+
+    let family = computeFamily.response;
+
+    let languages = selectn('response.entries', computeLanguagesInPath) || [];
+
+    return <div className="row">
+            <div className="col-md-4 col-xs-12">
+              <h1>{family.get('dc:title')}</h1>
+              <div>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+              </div>
+            </div>
+            <div className="col-md-8 col-xs-12">
+                <h2>Browse the following Languages:</h2>
+                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                   <GridList
                     cols={2}
                     cellHeight={200}
                     style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
                     >
-                      {this.state.childData.map((tile, i) => 
+                      {languages.map((tile, i) => 
                         <GridTile
-                          onTouchTap={this._exploreEntry.bind(this, tile.title)}
-                          key={tile.id}
+                          onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                          key={tile.uid}
                           title={tile.title}
                           subtitle={tile.description}
                           ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
                       )}
                   </GridList>
                 </div>
-    }
-
-    return <div className="row">
-            <div className="col-md-4 col-xs-12">
-              <h1>{this.props.params.family}</h1>
-              <div>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>;
-              </div>
-            </div>
-            <div className="col-md-8 col-xs-12">
-              {content}
             </div>
           </div>;
   }

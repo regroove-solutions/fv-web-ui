@@ -18,13 +18,6 @@ import _ from 'underscore';
 import selectn from 'selectn';
 import provide from 'react-redux-provide';
 
-// Models
-import Dialect from 'models/Dialect';
-import Dialects from 'models/Dialects';
-
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
-
 // Components
 import Divider from 'material-ui/lib/divider';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
@@ -44,18 +37,16 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 
 import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance';
 
-
 let SelectableList = SelectableContainerEnhance(List);
-
-const fetchArgs = ['/FV/sections/', 'FVDialect'];
 
 @provide
 export default class DialectDropDown extends Component {
 
   static propTypes = {
     navigateTo: PropTypes.func.isRequired,
-    fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired
+    fetchDialectsAll: PropTypes.func.isRequired,
+    computeDialectsAll: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired
   };
 
   static contextTypes = {
@@ -72,19 +63,17 @@ export default class DialectDropDown extends Component {
       open: false,
     };
 
-   // let args = ;
-
-    this.props.fetchDialects.apply( this, fetchArgs );
-
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  componentDidMount() {
+    this.props.fetchDialectsAll('/FV/sections/');
   }
 
   _onNavigateRequest(event, path) {
     this.setState({open: false});
-    //this.props.navigateTo(path);
-    location.assign(path);
+    this.props.pushWindowPath('/explore' + path);
   }
-
 
   handleTouchTap(event){
     this.setState({
@@ -100,7 +89,7 @@ export default class DialectDropDown extends Component {
   }
 
   shouldComponentUpdate(newProps) {
-    return newProps.computeDialects.success; 
+    return newProps.computeDialectsAll.success; 
   }
 
   render() {
@@ -108,8 +97,8 @@ export default class DialectDropDown extends Component {
     let dropdownData;
 
     // Create new operations object
-    const { computeDialects } = this.props;
-    let dialects = selectn('response.entries', computeDialects);
+    const { computeDialectsAll } = this.props;
+    let dialects = selectn('response.entries', computeDialectsAll);
 
     if (dialects) {
 
@@ -119,10 +108,8 @@ export default class DialectDropDown extends Component {
         let dialectUid = dialect.uid;
         let parentLanguage = selectn('contextParameters.ancestry.language.dc:title', dialect);
 
-        let splitPath = dialect.path.split('/');
-
         if (parentLanguage) {
-          return (<ListItem value={'/explore/' + splitPath[splitPath.length - 3] + "/" + splitPath[splitPath.length-2] + "/" + splitPath[splitPath.length - 1]} key={dialectUid} language={parentLanguage} primaryText={dialectTitle} />);
+          return (<ListItem value={dialect.path} key={dialectUid} language={parentLanguage} primaryText={dialectTitle} />);
         }
       });
 
@@ -136,7 +123,7 @@ export default class DialectDropDown extends Component {
 
     let content = "";
 
-    if (selectn('response.entries', this.props.computeDialects)) {
+    if (selectn('response.entries', this.props.computeDialectsAll)) {
 
       content = <div>
         <RaisedButton onTouchTap={this.handleTouchTap.bind(this)}  label="Browse Dialects...">
@@ -150,12 +137,13 @@ export default class DialectDropDown extends Component {
           anchorOrigin={{'horizontal':'left','vertical':'bottom'}}
           targetOrigin={{'horizontal':'middle','vertical':'bottom'}}>
           <SelectableList
+            style={{maxHeight: '550px'}}
             valueLink={{
               value: location.pathname,
               requestChange: this._onNavigateRequest
           }}>
               {dropdownData.map(function(menuGroup, index) {
-                return <ListItem initiallyOpen={true} key={index} value={index} primaryText={menuGroup[0]} nestedItems={menuGroup[1]} />;
+                return <ListItem initiallyOpen={true} key={index} value={false} primaryText={menuGroup[0]} nestedItems={menuGroup[1]} />;
               })}
           </SelectableList>
         </Popover>

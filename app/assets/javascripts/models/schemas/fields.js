@@ -6,7 +6,8 @@ const fields = {
     'fv-portal:greeting': t.String
   },
   FVDialect : {
-    'dc:title': t.String
+    'dc:title': t.String,
+    'dc:description': t.String
   }
 }
 
