@@ -120,10 +120,6 @@ public class FirstVoicesPublisherTest {
         child = session.getChild(dialect.getRef(), "Phrase Books");
         assertNotNull(child);
         assertEquals("FVCategories", child.getDocumentType().getName());
-        
-        // Check if Dialect is created in a section then it has no template applied
-        dialect = session.createDocument(session.createDocumentModel(sectionRoot.getPathAsString(), "Dialect", "FVDialect"));
-        assertEquals("Should have no child", 0, session.getChildren(dialect.getRef()).size());
     }
 
     protected void createDialectTree() throws Exception {
