@@ -13,14 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import DataGrid from 'react-datagrid';
 
 import ClearFix from 'material-ui/lib/clearfix';
 import Paper from 'material-ui/lib/paper';
 
-// is TapEvent needed here?!
+// is TapEvent needed here?! Test on mobile
 //var injectTapEventPlugin = require("react-tap-event-plugin");
 //injectTapEventPlugin();
 
@@ -32,61 +32,40 @@ import '!style!css!react-datagrid/dist/index.min.css';
 */
 var SELECTED_ID = null;
 var PAGE = 1;
-var PAGE_SIZE = 20;
+var PAGE_SIZE = 10;
 
-class DocumentListView extends React.Component {
+export default class DocumentListView extends Component {
 
   constructor(props, context) {
     super(props, context);
 
-    // Grant access to object inside methods
-    this._onSelectionChange = this._onSelectionChange.bind(this);
-    this._onPageChange = this._onPageChange.bind(this);
-    this._onPageSizeChange = this._onPageSizeChange.bind(this);
-
-    let _this = this;
-
-    // Hide columns for responsive view!!
-    this.state = {
-      dataSource: props.onDataRequest(props, PAGE, PAGE_SIZE).then(function(results){
-
-        // Set total count
-        this.setState({
-          dataSourceCount: results.totalResultSize
-        });
-
-        return results;
-      }.bind(this)),
-      dataSourceCount: null
-    };
+    // Bind methods to 'this'
+    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  _onSelectionChange(newSelectedId, data){
+  _handleSelectionChange(newSelectedId, data){
     SELECTED_ID = newSelectedId;
-    this.props.onSelectionChange(newSelectedId);
+    this.props.onSelectionChange(data.path);
   }
 
   _onPageChange(page) {
     PAGE = page;
-    this.setState({
-      dataSource: this.props.onDataRequest(this.props, PAGE, PAGE_SIZE)
-    });
+    this.props.refetcher(this.props, PAGE, PAGE_SIZE);
   }
 
   _onPageSizeChange(pageSize, props) {
+
     if (pageSize > PAGE_SIZE){
-        //when page size gets bigger, the page may not exist
-        //so make sure you update that as well
-        PAGE = Math.min(PAGE, Math.ceil(this.state.dataSourceCount / pageSize));
+        PAGE = Math.min(PAGE, Math.ceil(this.props.data.response.totalSize / pageSize));
     }
+
     PAGE_SIZE = pageSize;
-    this.setState({
-      dataSource: this.props.onDataRequest(this.props, PAGE, PAGE_SIZE)
-    });
+
+    // Refresh data
+    this.props.refetcher(this.props, PAGE, PAGE_SIZE);
   }
 
   render() {
-    var HTML = null;
 
     // Styles
     var DataGridStyles = {
@@ -94,26 +73,17 @@ class DocumentListView extends React.Component {
       zIndex: 0
     };
 
-    if (!this.state.dataSourceCount === null) {
-      HTML = <div>Loading...</div>;
-    }
-    else if (this.state.dataSourceCount == 0) {
-      HTML = <div>No {(this.props.objectDescriptions) ? this.props.objectDescriptions : "items"} found.</div>;
-    }
-    else {
-      HTML = <Paper>
+    return <Paper>
         <ClearFix>
         <DataGrid
-          idProperty="id"
-          dataSource={this.state.dataSource.then(function(value) {
-            return value.toJSON();
-          })}
-          dataSourceCount={this.state.dataSourceCount}
+          idProperty="uid"
+          dataSource={this.props.data.response.entries}
+          dataSourceCount={this.props.data.response.totalSize}
           columns={this.props.columns}
           rowHeight="55"
           style={DataGridStyles}
           selected={SELECTED_ID}
-          onSelectionChange={this._onSelectionChange}
+          onSelectionChange={this._handleSelectionChange}
           pagination={true}
           page={PAGE}
           pageSize={PAGE_SIZE}
@@ -122,11 +92,6 @@ class DocumentListView extends React.Component {
           emptyText={'No records'}
           showCellBorders={true} />
         </ClearFix>
-      </Paper>
-    }
-
-    return HTML;
+    </Paper>;
   }
 }
-
-module.exports = DocumentListView;

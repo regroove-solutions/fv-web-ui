@@ -24,7 +24,7 @@ import Word from 'models/Word';
 import Words from 'models/Words';
 
 const DEFAULT_PAGE = 0;
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
 
 /**
 * Learn words
@@ -34,7 +34,6 @@ export default class PageDialectLearnWords extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -53,10 +52,12 @@ export default class PageDialectLearnWords extends Component {
     this.state = {
       columns : [
         { name: 'title', title: 'Word', render: function(v, data, cellProps){
-          return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
+          //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
+          return v;
         }},
         {
           name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps){
+
           if (v != undefined && v.length > 0) {
             var rows = [];
 
@@ -97,10 +98,10 @@ export default class PageDialectLearnWords extends Component {
           name: 'fv-word:categories', title: 'Categories'
         }
       ]
-    }
+    };
 
-    this._handleNavigate = this._handleNavigate.bind(this);
-    this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
+    // Bind methods to 'this'
+    ['_handleNavigate', '_handleWordsDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -122,13 +123,19 @@ export default class PageDialectLearnWords extends Component {
     }
   }
 
-  _handleWordsDataRequest(childProps, page = 1, pageSize = 20) {
+  _handleWordsDataRequest(dataGridProps, dataGridObj) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    return this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + dataGridProps.page + '&pageSize=' + dataGridProps.pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
-  _handleNavigate(id) {
-    //this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/words/' + id);
+  _handleRefetch(dataGridProps, page, pageSize) {
+    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
+    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+  }
+
+  _handleNavigate(path) {
+    this.props.pushWindowPath('/explore' + path);
+    // Handle selection vs navigation differently?
   }
 
   render() {
@@ -143,7 +150,8 @@ export default class PageDialectLearnWords extends Component {
                   <h1>{dialect.get('dc:title')} Words</h1>
                   <DocumentListView
                     objectDescriptions="words" 
-                    onDataRequest={this._handleWordsDataRequest}
+                    data={this.props.computeWordsInPath}
+                    refetcher={this._handleRefetch}
                     onSelectionChange={this._handleNavigate}
                     columns={this.state.columns}
                     className="browseDataGrid" 

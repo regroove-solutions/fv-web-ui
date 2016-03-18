@@ -141,7 +141,7 @@ export default class ExploreDialect extends Component {
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'learn')} label="Learn" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'Dictionary')} label="Learn" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'play')} label="Play" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'community-slideshow')} label="Community Slideshow" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'art-gallery')} label="Art Gallery" /> 
