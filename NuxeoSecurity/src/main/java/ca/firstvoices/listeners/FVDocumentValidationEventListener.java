@@ -40,29 +40,32 @@ public class FVDocumentValidationEventListener implements EventListener {
         }
         if (doc.isProxy() || doc.isVersion()) {
             return;
-        }
-        
-        // Return an error if dc:title is empty
-        String title = (String) doc.getPropertyValue("dc:title");        
-    	if(title == null || title.isEmpty()) {
-    		generateValidationError(event, "Title cannot be empty.");
-     	}        
+        }    
         
         // Word-specific validation
         if(doc.getType().equals("FVWord")) {
+            // Return an error if dc:title is empty
+            String title = (String) doc.getPropertyValue("dc:title");        
+        	if(title == null || title.isEmpty()) {
+        		generateValidationError(event, "Title cannot be empty.");
+         	}            	
         	// Return an error if part of speech is empty
         	String partOfSpeech = (String) doc.getPropertyValue("fv-word:part_of_speech");
         	if(partOfSpeech == null || partOfSpeech.isEmpty()) {
         		generateValidationError(event, "Part of speech cannot be empty.");
-        	}
-        	       	
+        	}       	       	
         	// Check title and part of speech combination
         	if(!wordTitleValidates(ctx, title)) {
         		generateValidationError(event, "A word with the same title and part of speech already exists in the current dictionary.");
         	}
         }
         // Validation for other specified document types
-        else if(doc.getType().matches("FVPhrase|FVCategory|FVContributor|FVPhraseBook|FVBook")) {      
+        else if(doc.getType().matches("FVPhrase|FVCategory|FVContributor|FVPhraseBook|FVBook")) {
+            // Return an error if dc:title is empty
+            String title = (String) doc.getPropertyValue("dc:title");        
+        	if(title == null || title.isEmpty()) {
+        		generateValidationError(event, "Title cannot be empty.");
+         	}    
 	        if (!documentTitleValidates(ctx, title)) {
 	            generateValidationError(event, "A document with the same title already exists under the current parent.");
 	        }
