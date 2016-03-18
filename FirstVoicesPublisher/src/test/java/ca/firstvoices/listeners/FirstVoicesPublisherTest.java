@@ -63,6 +63,22 @@ public class FirstVoicesPublisherTest {
     @Inject
     protected FirstVoicesPublisherService dialectPublisherService;
 
+    private DocumentModel category;
+
+    private DocumentModel subcategory;
+
+    private DocumentModel contributor2;
+
+    private DocumentModel contributor;
+
+    private DocumentModel picture;
+
+    private DocumentModel audio;
+
+    private DocumentModel video;
+
+    private DocumentModel word;
+
     @Before
     public void setUp() throws Exception {
         DocumentModel domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
@@ -225,68 +241,98 @@ public class FirstVoicesPublisherTest {
         dialectPublisherService.publishDialect(session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
     }
 
+    private void createWord() {
+        category = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories", "Category", "FVCategory"));
+        subcategory = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories/Category", "SubCategory", "FVCategory"));
+        contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
+        contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor2", "FVContributor"));
+        picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
+        audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio", "FVAudio"));
+        video = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
+        word = session.createDocumentModel("/Family/Language/Dialect/Dictionary", "myWord", "FVWord");
+        String[] values = new String[1];
+        values[0]=audio.getId();
+        word.setPropertyValue("fvcore:related_audio", values);
+        values = new String[1];
+        values[0]=picture.getId();
+        word.setPropertyValue("fvcore:related_pictures", values);
+        values = new String[1];
+        values[0]=video.getId();
+        word.setPropertyValue("fvcore:related_videos", values);
+        values = new String[1];
+        values[0]=subcategory.getId();
+        word.setPropertyValue("fv-word:categories", values);
+        values = new String[2];
+        values[0]=contributor.getId();
+        values[1]=contributor2.getId();
+        word.setPropertyValue("fvcore:source", values);
+        word = session.createDocument(word);
+    }
+
+    private DocumentModel getProxy(DocumentModel model) {
+        return session.getProxies(model.getRef(), null).get(0);
+    }
+
     @Test
     public void testDocumentPublishing() throws Exception {
-       DocumentModel category = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories", "Category", "FVCategory"));
-       DocumentModel subcategory = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories/Category", "SubCategory", "FVCategory"));
-       DocumentModel contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
-       DocumentModel contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor2", "FVContributor"));
-       DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
-       DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio", "FVAudio"));
-       DocumentModel video = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
-       DocumentModel doc = session.createDocumentModel("/Family/Language/Dialect/Dictionary", "myWord", "FVWord");
-       String[] values = new String[1];
-       values[0]=audio.getId();
-       doc.setPropertyValue("fvcore:related_audio", values);
-       values = new String[1];
-       values[0]=picture.getId();
-       doc.setPropertyValue("fvcore:related_pictures", values);
-       values = new String[1];
-       values[0]=video.getId();
-       doc.setPropertyValue("fvcore:related_videos", values);
-       values = new String[1];
-       values[0]=subcategory.getId();
-       doc.setPropertyValue("fv-word:categories", values);
-       values = new String[2];
-       values[0]=contributor.getId();
-       values[1]=contributor2.getId();
-       doc.setPropertyValue("fvcore:source", values);
-       doc = session.createDocument(doc);
+       // Create a word 
+       createWord();
        session.followTransition(dialectDoc, "Publish");
-       session.followTransition(doc, "Publish");
-       //DocumentModel proxy = dialectPublisherService.publish(doc);
-       DocumentModel proxy = session.getProxies(doc.getRef(), null).get(0);
-       // Check the schema is added
-       assertTrue(proxy.hasSchema("fvproxy"));
-       assertFalse(doc.hasSchema("fvproxy"));
-       // Check that the property has been set correctly
-       verifyProxiedResource(proxy, audio, "fvproxy:proxied_audio");
-       verifyProxiedResource(proxy, video, "fvproxy:proxied_videos");
-       verifyProxiedResource(proxy, picture, "fvproxy:proxied_pictures");
-       // Specific source as there is 2 items
-       String[] property = (String[]) proxy.getPropertyValue("fvproxy:proxied_source");
-       assertEquals(2, property.length);
-       assertNotEquals(contributor.getRef(), new IdRef(property[0]));
-       doc = session.getDocument(new IdRef(property[0]));
-       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor"));
-       doc = session.getSourceDocument(new IdRef(property[0]));
-       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor"));
-       assertEquals(contributor.getRef().toString(), doc.getSourceId());
-       assertNotEquals(contributor2.getRef(), new IdRef(property[1]));
-       doc = session.getDocument(new IdRef(property[1]));
-       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor2"));
-       doc = session.getSourceDocument(new IdRef(property[1]));
-       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor2"));
-       assertEquals(contributor2.getRef().toString(), doc.getSourceId());
-       property = (String[]) proxy.getPropertyValue("fvproxy:proxied_categories");
-       assertEquals(1, property.length);
-       assertNotEquals(subcategory.getRef(), new IdRef(property[0]));
-       doc = session.getDocument(new IdRef(property[0]));
-       assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Categories/Category/SubCategory"));
-       doc = session.getSourceDocument(new IdRef(property[0]));
-       assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Categories/Category/SubCategory"));
+       session.followTransition(word, "Publish");
+       // Not nice to have all parameters
+       verifyProxy(getProxy(word));
     }
     
+    @Test
+    public void testDocumentRepublishing() throws Exception {
+        createWord();
+        session.followTransition(dialectDoc, "Publish");
+        session.followTransition(word, "Publish");
+        verifyProxy(getProxy(word));
+        session.followTransition(dialectDoc, "Unpublish");
+        assertEquals(0, session.getProxies(word.getRef(), null).size());
+        session.followTransition(dialectDoc, "Publish");
+        verifyProxy(getProxy(word));
+    }
+    
+    @Test(expected = InvalidParameterException.class)
+    public void testDocumentPublishingOnUnpublishedDialect() {
+        createWord();
+        dialectPublisherService.publish(word);
+    }
+
+    private void verifyProxy(DocumentModel proxy) {
+     // Check the schema is added
+        DocumentModel doc;
+        assertTrue(proxy.hasSchema("fvproxy"));
+        assertFalse(word.hasSchema("fvproxy"));
+        // Check that the property has been set correctly
+        verifyProxiedResource(proxy, audio, "fvproxy:proxied_audio");
+        verifyProxiedResource(proxy, video, "fvproxy:proxied_videos");
+        verifyProxiedResource(proxy, picture, "fvproxy:proxied_pictures");
+        // Specific source as there is 2 items
+        String[] property = (String[]) proxy.getPropertyValue("fvproxy:proxied_source");
+        assertEquals(2, property.length);
+        assertNotEquals(contributor.getRef(), new IdRef(property[0]));
+        doc = session.getDocument(new IdRef(property[0]));
+        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor"));
+        doc = session.getSourceDocument(new IdRef(property[0]));
+        assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor"));
+        assertEquals(contributor.getRef().toString(), doc.getSourceId());
+        assertNotEquals(contributor2.getRef(), new IdRef(property[1]));
+        doc = session.getDocument(new IdRef(property[1]));
+        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Contributors/myContributor2"));
+        doc = session.getSourceDocument(new IdRef(property[1]));
+        assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Contributors/myContributor2"));
+        assertEquals(contributor2.getRef().toString(), doc.getSourceId());
+        property = (String[]) proxy.getPropertyValue("fvproxy:proxied_categories");
+        assertEquals(1, property.length);
+        assertNotEquals(subcategory.getRef(), new IdRef(property[0]));
+        doc = session.getDocument(new IdRef(property[0]));
+        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Categories/Category/SubCategory"));
+        doc = session.getSourceDocument(new IdRef(property[0]));
+        assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Categories/Category/SubCategory"));
+    }
     private void verifyProxiedResource(DocumentModel proxy, DocumentModel original, String propertyName) {
         String[] property = (String[]) proxy.getPropertyValue(propertyName);
         assertEquals(1, property.length);

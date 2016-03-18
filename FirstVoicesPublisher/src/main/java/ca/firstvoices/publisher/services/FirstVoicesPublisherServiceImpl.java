@@ -81,6 +81,10 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
                 session.publishDocument(child, section);
             }
         }
+        // Need to republish all assets that were published
+        for (DocumentModel child : session.query("SELECT * FROM Document WHERE ecm:ancestorId = '" + dialect.getId() + "' AND ecm:currentLifeCycleState='Published'")) {
+            publishAsset(child);
+        }
         return section;
     }
 
@@ -147,6 +151,14 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
         }
         return parent;
     }
+    
+    private DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section) {
+        DocumentModel proxy = session.publishDocument(doc, section, true);
+        if ("fv-lifecycle".equals(doc.getLifeCyclePolicy()) && !"Published".equals(doc.getCurrentLifeCycleState())) {
+            doc.followTransition("Publish");
+        }
+        return proxy;
+    }
 
     @Override
     public DocumentModel publishAsset(DocumentModel asset) {
@@ -161,7 +173,12 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
             throw new InvalidParameterException("Dialect should be published");
         }
         DocumentModel dialectSection = proxies.get(0);
-        DocumentModel input = session.publishDocument(asset, session.getChild(dialectSection.getRef(), "Dictionary"));
+        DocumentModel input = getPublication(session, asset.getRef());
+        if (input != null) {
+            // Already published
+            return input;
+        }
+        input = publishDocument(session, asset, session.getChild(dialectSection.getRef(), "Dictionary"));
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
@@ -213,8 +230,7 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
                             if (parentDependencySection == null) {
                                 parentDependencySection = getPublication(session,
                                         ((DocumentModel) docs[i]).getParentRef());
-                                parentDependencySection = session.publishDocument(((DocumentModel) docs[i]),
-                                        parentDependencySection, true);
+                                parentDependencySection = publishDocument(session, ((DocumentModel) docs[i]), parentDependencySection);
                             }
                             if (i == 0) {
                                 publishedDep = parentDependencySection;
@@ -222,7 +238,7 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
                         }
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
-                        publishedDep = session.publishDocument(dependencyDocModel, parentDependencySection, true);
+                        publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
                     }
                 }
                 if (publishedDep == null) {
@@ -241,6 +257,9 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
     @Override
     public void unpublishAsset(DocumentModel asset) {
         DocumentModel proxy = getPublication(asset.getCoreSession(), asset.getRef());
+        if (proxy == null) {
+            return;
+        }
         asset.getCoreSession().removeDocument(proxy.getRef());
     }
 
