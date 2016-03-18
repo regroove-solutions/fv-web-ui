@@ -1,4 +1,4 @@
-<component name="ca.bc.gov.nuxeo.listeners.listener.contrib.ProxyPublishedListener">
+<component name="ca.bc.gov.nuxeo.listeners.listener.contrib.ProxyPublisherListener">
   <require>ca.firstvoices.publisher.services.FirstVoicesPublisherServiceImpl</require>
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
     point="listener">
