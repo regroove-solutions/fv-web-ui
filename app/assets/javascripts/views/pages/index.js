@@ -20,6 +20,11 @@ import {default as PageExploreLanguage} from './explore/language'
 import {default as PageExploreDialect} from './explore/dialect'
 
 import {default as PageDialectLearn} from './explore/dialect/learn'
+import {default as PageDialectPlay} from './explore/dialect/play'
+import {default as PageDialectArtGallery} from './explore/dialect/art-gallery'
+import {default as PageDialectCommunitySlideshow} from './explore/dialect/community-slideshow'
+
+import {default as PageDialectLearnWords} from './explore/dialect/learn/words'
 
 
 import {default as PageGetStarted} from './get-started'
@@ -34,5 +39,10 @@ module.exports = {
   PageGetStarted,
   PageContribute,
   PageDialectLearn,
+  PageDialectLearnWords,
+  PageDialectPlay,
+  PageDialectArtGallery,
+  PageDialectCommunitySlideshow,
   PagePlay
 }
+

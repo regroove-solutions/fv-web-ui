@@ -53,15 +53,13 @@ export default class DialectLearn extends Component {
   constructor(props, context){
     super(props, context);
 
-    this._navigate = this._navigate.bind(this);
-
-    this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: 'FV' });
+    /*this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: 'FV' });
     this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: 'FV' });
-
+*/
     this.state = {
       wordCount: null,
       phraseCount: null
-    }
+    };
 
     // Pre-fetch words and phrases to speed up display and extract count
     //this._getPhrasesAndSetResultSize(props);
@@ -69,6 +67,18 @@ export default class DialectLearn extends Component {
 
     //this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
     //this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
+
+    // Bind methods to 'this'
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  _onNavigateRequest(path) {
+    const destination = this.props.navigateTo(path);
+    const newPathArray = this.props.splitWindowPath.slice();
+
+    newPathArray.push(destination.path);
+
+    this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
 
   fetchData(newProps) {
@@ -182,10 +192,10 @@ export default class DialectLearn extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <div>
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'words')} label={(this.state.wordCount == null) ? "Words (0)" : "Phrases (" + this.state.wordCount + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'phrases')} label={(this.state.phraseCount == null) ? "Phrases (0)" : "Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'songs')} label="Songs" secondary={true} /> 
-                  <RaisedButton onTouchTap={this._navigate.bind(this, 'stories')} label="Stories" secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(this.state.wordCount == null) ? "Words (0)" : "Phrases (" + this.state.wordCount + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(this.state.phraseCount == null) ? "Phrases (0)" : "Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label="Songs" secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label="Stories" secondary={true} /> 
                 </div>
               </div>
             </div>

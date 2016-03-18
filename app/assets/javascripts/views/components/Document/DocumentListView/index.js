@@ -36,12 +36,6 @@ var PAGE_SIZE = 20;
 
 class DocumentListView extends React.Component {
 
-  static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired
-  };
-
   constructor(props, context) {
     super(props, context);
 

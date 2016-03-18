@@ -68,7 +68,7 @@ const fetchDialectsAll = function fetchDialectsAll(path, type) {
 
     dispatch( { type: FV_DIALECT_FETCH_ALL_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVDialect', '', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
       dispatch( { type: FV_DIALECT_FETCH_ALL_SUCCESS, documents: response } )
     }).catch((error) => {
@@ -82,7 +82,7 @@ const fetchDialectsInPath = function fetchDialectsInPath(path, type) {
 
     dispatch( { type: FV_DIALECTS_FETCH_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVDialect')
     .then((response) => {
       dispatch( { type: FV_DIALECTS_FETCH_SUCCESS, documents: response } )
     }).catch((error) => {

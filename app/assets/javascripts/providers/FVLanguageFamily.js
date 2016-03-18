@@ -50,7 +50,7 @@ const fetchFamiliesInPath = function fetchFamiliesInPath(path) {
 
     dispatch( { type: FV_LANGUAGE_FAMILIES_FETCH_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVLanguageFamily', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVLanguageFamily')
     .then((response) => {
       dispatch( { type: FV_LANGUAGE_FAMILIES_FETCH_SUCCESS, documents: response } )
     }).catch((error) => {

@@ -35,7 +35,7 @@ injectTapEventPlugin();
 const context = {
   providers,
   combinedProviders: [
-    providers // OK for all providers to share the same store for now
+    providers // OK for all providers to share the same store for now, make sure actions are unique
   ],
   providedState: {
     properties: {

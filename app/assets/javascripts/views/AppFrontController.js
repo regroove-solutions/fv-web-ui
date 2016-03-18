@@ -3,7 +3,8 @@ import provide from 'react-redux-provide';
 import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
-import { PageDialectLearn } from 'views/pages';
+import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCommunitySlideshow } from 'views/pages';
+import { PageDialectLearnWords } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
 
 // To be used later views below:
@@ -127,6 +128,18 @@ export default class AppFrontController extends Component {
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn' ]):
         return this.renderWithBreadcrumb(<PageDialectLearn />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'play' ]):
+        return this.renderWithBreadcrumb(<PageDialectPlay />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'community-slideshow' ]):
+        return this.renderWithBreadcrumb(<PageDialectCommunitySlideshow />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'art-gallery' ]):
+        return this.renderWithBreadcrumb(<PageDialectArtGallery />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words' ]):
+        return this.renderWithBreadcrumb(<PageDialectLearnWords />);
     }
 
     return (<div>404</div>);
