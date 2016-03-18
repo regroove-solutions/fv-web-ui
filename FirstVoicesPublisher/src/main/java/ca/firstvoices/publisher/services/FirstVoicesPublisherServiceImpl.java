@@ -18,12 +18,13 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.model.DefaultComponent;
+
+import ca.firstvoices.services.AbstractService;
 
 /**
  * @author loopingz
  */
-public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements FirstVoicesPublisherService {
+public class FirstVoicesPublisherServiceImpl extends AbstractService implements FirstVoicesPublisherService {
 
     private PublisherService publisherService = Framework.getLocalService(PublisherService.class);
 
@@ -142,14 +143,6 @@ public class FirstVoicesPublisherServiceImpl extends DefaultComponent implements
         if (session.getChildren(languageFamilySection.getRef()).size() == 0) {
             session.removeDocument(languageFamilySection.getRef());
         }
-    }
-
-    public DocumentModel getDialect(DocumentModel doc) {
-        DocumentModel parent = doc;
-        while (parent != null && !"FVDialect".equals(parent.getType())) {
-            parent = doc.getCoreSession().getDocument(parent.getParentRef());
-        }
-        return parent;
     }
     
     private DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section) {
