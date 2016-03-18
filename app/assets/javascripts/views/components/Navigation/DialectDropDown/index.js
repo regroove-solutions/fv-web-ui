@@ -47,18 +47,23 @@ import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance
 
 let SelectableList = SelectableContainerEnhance(List);
 
+const fetchArgs = ['/FV/sections/', 'FVDialect'];
+
 @provide
-export default class DialectDropDown extends React.Component {
+export default class DialectDropDown extends Component {
 
   static propTypes = {
     navigateTo: PropTypes.func.isRequired,
-    fetchDocuments: PropTypes.func.isRequired,
-    computeDocuments: PropTypes.object.isRequired
+    fetchDialects: PropTypes.func.isRequired,
+    computeDialects: PropTypes.object.isRequired
   };
 
   static contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
   };
+
+
+  function () {}
 
   constructor(props, context) {
     super(props, context);
@@ -67,7 +72,9 @@ export default class DialectDropDown extends React.Component {
       open: false,
     };
 
-    this.props.fetchDocuments('/FV/sections/', 'FVDialect');
+   // let args = ;
+
+    this.props.fetchDialects.apply( this, fetchArgs );
 
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
@@ -93,8 +100,7 @@ export default class DialectDropDown extends React.Component {
   }
 
   shouldComponentUpdate(newProps) {
-    // Only render (expensive) method when results are ready.
-    return newProps.computeDocuments.success; 
+    return newProps.computeDialects.success; 
   }
 
   render() {
@@ -102,8 +108,8 @@ export default class DialectDropDown extends React.Component {
     let dropdownData;
 
     // Create new operations object
-    const { computeDocuments } = this.props;
-    let dialects = selectn('response.entries', computeDocuments);
+    const { computeDialects } = this.props;
+    let dialects = selectn('response.entries', computeDialects);
 
     if (dialects) {
 
@@ -130,7 +136,7 @@ export default class DialectDropDown extends React.Component {
 
     let content = "";
 
-    if (selectn('response.entries', this.props.computeDocuments)) {
+    if (selectn('response.entries', this.props.computeDialects)) {
 
       content = <div>
         <RaisedButton onTouchTap={this.handleTouchTap.bind(this)}  label="Browse Dialects...">

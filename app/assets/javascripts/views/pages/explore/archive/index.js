@@ -13,11 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
-
-// Models
-import LanguageFamily from 'models/LanguageFamily';
-import LanguageFamilies from 'models/LanguageFamilies';
+import React, { Component, PropTypes } from 'react';
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
@@ -28,7 +26,14 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile';
 /**
 * Explore Archive page shows all the families in the archive
 */
-export default class ExploreArchive extends React.Component {
+@provide
+export default class ExploreArchive extends Component {
+
+  static propTypes = {
+    navigateTo: PropTypes.func.isRequired,
+    fetchFamilies: PropTypes.func.isRequired,
+    computeFamilies: PropTypes.object.isRequired
+  };
 
   /*static contextTypes = {
       client: React.PropTypes.object.isRequired,
@@ -39,10 +44,12 @@ export default class ExploreArchive extends React.Component {
 
   constructor(props, context){
     super(props, context);
-
+//console.log(this.props.computeDocuments);
     this.state = {
       childData: []
     }
+
+    this.props.fetchFamilies('/FV/sections/', 'FVLanguageFamily');
 
     // Create new operations object
     //this.languageFamilyOperations = new DirectoryOperations(LanguageFamily, LanguageFamilies, context.client, { domain: context.siteProps.domain });
@@ -77,26 +84,8 @@ export default class ExploreArchive extends React.Component {
 
   render() {
 
-    let content = "No published Language Families found.";
-
-    if (this.state.childData && this.state.childData.length > 0) {
-      content = <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                  <GridList
-                    cols={2}
-                    cellHeight={200}
-                    style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                    >
-                      {this.state.childData.map((tile, i) => 
-                        <GridTile
-                          onTouchTap={this._exploreEntry.bind(this, tile.title)}
-                          key={tile.id}
-                          title={tile.title}
-                          subtitle={tile.description}
-                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
-                      )}
-                  </GridList>
-                </div>
-    }
+    const { computeFamilies } = this.props;
+    let families = selectn('response.entries', computeFamilies) || [];
 
     return <div className="row">
             <div className="col-md-4 col-xs-12">
@@ -107,7 +96,22 @@ export default class ExploreArchive extends React.Component {
               </div>
             </div>
             <div className="col-md-8 col-xs-12">
-              {content}
+<div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                  <GridList
+                    cols={2}
+                    cellHeight={200}
+                    style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
+                    >
+                      {families.map((tile, i) => 
+                        <GridTile
+                          onTouchTap={this._exploreEntry.bind(this, tile.title)}
+                          key={tile.id}
+                          title={tile.title}
+                          subtitle={tile.description}
+                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                      )}
+                  </GridList>
+                </div>
             </div>
           </div>;
   }

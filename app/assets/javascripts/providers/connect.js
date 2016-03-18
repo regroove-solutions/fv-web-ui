@@ -56,6 +56,6 @@ function merge (stateProps, dispatchProps, parentProps) {
   return Object.assign(stateProps, dispatchProps, parentProps);
 }
 
-const middleware = [loggerMiddleware];
+const middleware = [/*loggerMiddleware*/];
 
 export default { actions, reducers, middleware, merge };
