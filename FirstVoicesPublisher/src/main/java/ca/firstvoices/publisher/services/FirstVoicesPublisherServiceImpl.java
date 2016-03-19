@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ca.firstvoices.publisher.services;
 
@@ -144,7 +144,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             session.removeDocument(languageFamilySection.getRef());
         }
     }
-    
+
     private DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section) {
         DocumentModel proxy = session.publishDocument(doc, section, true);
         if ("fv-lifecycle".equals(doc.getLifeCyclePolicy()) && !"Published".equals(doc.getCurrentLifeCycleState())) {
@@ -171,7 +171,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             // Already published
             return input;
         }
-        input = publishDocument(session, asset, session.getChild(dialectSection.getRef(), "Dictionary"));
+
+        input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
