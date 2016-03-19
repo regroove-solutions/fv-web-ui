@@ -18,8 +18,7 @@ const options = {
     fields: {
       'dc:title': {
         label: <i>Portal Introduction</i>,
-        type: 'textarea',
-        factory: WysiwygFactory,
+        type: 'text',
         attrs: {
           placeholder: 'Enter portal description here'
         }

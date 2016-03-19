@@ -31,6 +31,19 @@ import {List, ListItem} from 'material-ui/lib/lists';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
+
+
+
+import selectn from 'selectn';
+import t from 'tcomb-form';
+import fields from 'models/schemas/fields';
+import options from 'models/schemas/options';
+
+
+
+
+
+
 import EditableComponent from 'views/components/Editor/EditableComponent';
 
 /**
@@ -47,6 +60,7 @@ export default class ExploreDialect extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
+    updateDialect: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired
@@ -126,6 +140,13 @@ export default class ExploreDialect extends Component {
     return <div>
 
             {loading}
+            
+            <form>
+	            <t.form.Form ref="form_test" type={t.struct(selectn("FVPortal", fields))} options={selectn("FVPortal", options)} />
+	            <div className="form-group">
+	              <button type="submit" className="btn btn-primary">Save</button> 
+	            </div>
+            </form>;
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
 
@@ -192,7 +213,7 @@ export default class ExploreDialect extends Component {
 
                   <div className="subheader">Status of our Langauge</div>
 
-                  <p><strong>Name of Archive</strong><br/>{dialect.get('dc:title')}</p>
+                  <div><strong>Name of Archive</strong><br/><EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" /></div>
                   <hr/>
                   <p><strong>Country</strong><br/>{dialect.get('fvdialect:country')}</p>
                   <hr/>
