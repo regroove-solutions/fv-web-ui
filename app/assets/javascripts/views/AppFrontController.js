@@ -7,6 +7,8 @@ import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCo
 import { PageDialectLearnWords } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
 
+import { PageExploreDialectEdit } from 'views/pages/edit';
+
 // To be used later views below:
 
 // Pages
@@ -125,6 +127,9 @@ export default class AppFrontController extends Component {
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
         return this.renderWithBreadcrumb(<PageExploreDialect />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'edit' ]):
+        return this.renderWithBreadcrumb(<PageExploreDialectEdit />);
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary' ]):
         return this.renderWithBreadcrumb(<PageDialectLearn />);

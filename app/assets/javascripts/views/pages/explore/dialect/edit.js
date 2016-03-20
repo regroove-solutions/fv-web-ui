@@ -50,7 +50,7 @@ import EditableComponent from 'views/components/Editor/EditableComponent';
 * Dialect portal page showing all the various components of this dialect.
 */
 @provide
-export default class ExploreDialect extends Component {
+export default class ExploreDialectEdit extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -80,7 +80,7 @@ export default class ExploreDialect extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1).join('/');
+    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
@@ -139,15 +139,6 @@ export default class ExploreDialect extends Component {
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
 
-            <div style={portalBackgroundStyles}>
-
-              <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
-                <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" /><br/>
-                {portal.get('fv-portal:featured_audio')}
-              </h2>
-
-            </div>
-
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
@@ -172,53 +163,21 @@ export default class ExploreDialect extends Component {
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-3', 'col-md-2')}>
-                <Paper style={{padding: '25px'}} zDepth={2}>
-
-                  <div className="subheader">First Words</div>
-
-                  <List>
-
-                    {featuredWord.map(function(word, i) {
-                      return (<ListItem key={i} primaryText={word} />);
-                    })}
-
-                  </List>
-
-                </Paper>
-
-              </div>
-
               <div className={classNames('col-xs-6', 'col-md-8')}>
-                <div>
-                  <h1>Portal</h1>
-                  <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" />
-                </div>
+                <form>
+                  <t.form.Form ref="form_test" type={t.struct(selectn("FVPortal", fields))} options={selectn("FVPortal", options)} />
+                  <div className="form-group">
+                    <button type="submit" className="btn btn-primary">Save</button> 
+                  </div>
+                </form>
               </div>
 
               <div className={classNames('col-xs-3', 'col-md-2')}>
 
                 <Paper style={{padding: '15px'}} zDepth={2}>
 
-                  <div className="subheader">Status of our Langauge</div>
+                  <div className="subheader">Metadata</div>
 
-                  <div><strong>Name of Archive</strong><br/><EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" /></div>
-                  <hr/>
-                  <p><strong>Country</strong><br/>{dialect.get('fvdialect:country')}</p>
-                  <hr/>
-                  <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
-                  <hr/>
-                  <p><strong># of Words Archived</strong><br/>{dialect.get('fvdialect:aaa')}</p>
-                  <hr/>
-                  <p><strong># of Phrases Archived</strong><br/>{dialect.get('fvdialect:aaaa')}</p>
-
-                  <List>
-
-                    {relatedLinks.map(function(word, i) {
-                      return (<ListItem key={i} primaryText={word} />);
-                    })}
-
-                  </List>
                 </Paper>
 
               </div>
@@ -226,13 +185,3 @@ export default class ExploreDialect extends Component {
         </div>;
   }
 }
-
-/*
-          <Snackbar
-            open={(computeDialect.isError && !computeDialect.errorDismissed) || false}
-            message={computeDialect.error || ""}
-            action="Close"
-            onActionTouchTap={this._onRequestClose}
-            onRequestClose={this._onRequestClose}
-            autoHideDuration={3000}
-          />*/
