@@ -33,6 +33,10 @@ const FV_DIALECT_FETCH_START = "FV_DIALECT_FETCH_START";
 const FV_DIALECT_FETCH_SUCCESS = "FV_DIALECT_FETCH_SUCCESS";
 const FV_DIALECT_FETCH_ERROR = "FV_DIALECT_FETCH_ERROR";
 
+const FV_DIALECT_FETCH_STATS_START = "FV_DIALECT_FETCH_STATS_START";
+const FV_DIALECT_FETCH_STATS_SUCCESS = "FV_DIALECT_FETCH_STATS_SUCCESS";
+const FV_DIALECT_FETCH_STATS_ERROR = "FV_DIALECT_FETCH_STATS_ERROR";
+
 const FV_DIALECT_FETCH_ALL_START = "FV_DIALECT_FETCH_ALL_START";
 const FV_DIALECT_FETCH_ALL_SUCCESS = "FV_DIALECT_FETCH_ALL_SUCCESS";
 const FV_DIALECT_FETCH_ALL_ERROR = "FV_DIALECT_FETCH_ALL_ERROR";
@@ -91,6 +95,13 @@ const fetchDialectsInPath = function fetchDialectsInPath(path, type) {
   }
 };
 
+/*cosnt fetchDialectAndStats = function fetchDialectWithStats(path) {
+	  return dispatch => Promise.all([
+	    dispatch(fetchDialect(path)),
+        dispatch(fetchDialectStats())
+      ]);
+}*/
+
 const fetchDialect = function fetchDialect(pathOrId) {
   return function (dispatch) {
 
@@ -102,10 +113,26 @@ const fetchDialect = function fetchDialect(pathOrId) {
     }).catch((error) => {
         dispatch( { type: FV_DIALECT_FETCH_ERROR, error: error } )
     });
+    
+    
   }
 };
 
-const actions = { fetchDialectsInPath, fetchDialect, fetchDialectsAll, updateDialect };
+const fetchDialectStats = function fetchDialectStats(dialectId) {
+  return function (dispatch) {
+
+  dispatch( { type: FV_DIALECT_FETCH_STATS_START } );
+
+  return DocumentOperations.getDialectStats(dialectId)
+	.then((response) => {
+	  dispatch( { type: FV_DIALECT_FETCH_STATS_SUCCESS, document: response } )
+	  }).catch((error) => {
+	        dispatch( { type: FV_DIALECT_FETCH_STATS_ERROR, error: error } )
+	  });
+	}
+};
+
+const actions = { fetchDialectsInPath, fetchDialect, fetchDialectsAll, updateDialect, fetchDialectStats };
 
 const reducers = {
   computeDialectsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -174,7 +201,26 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }
+  },
+  computeDialectStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+    switch (action.type) {
+      case FV_DIALECT_FETCH_STATS_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      case FV_DIALECT_FETCH_STATS_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      case FV_DIALECT_FETCH_STATS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error});
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  }  
 };
 
 const middleware = [thunk];

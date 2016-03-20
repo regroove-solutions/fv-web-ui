@@ -47,15 +47,14 @@ export default class DialectLearn extends Component {
     updateDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired
+    computePortal: PropTypes.object.isRequired,
+    fetchDialectStats: PropTypes.func.isRequired,
+    computeDialectStats: PropTypes.object.isRequired    
   };
 
   constructor(props, context){
     super(props, context);
 
-    /*this.wordOperations = new DirectoryOperations(Word, Words, context.client, { domain: 'FV' });
-    this.phraseOperations = new DirectoryOperations(Phrase, Phrases, context.client, { domain: 'FV' });
-*/
     this.state = {
       wordCount: null,
       phraseCount: null
@@ -67,7 +66,7 @@ export default class DialectLearn extends Component {
 
     //this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
     //this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
-
+    
     // Bind methods to 'this'
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
@@ -84,8 +83,13 @@ export default class DialectLearn extends Component {
   fetchData(newProps) {
     let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchPortal('/' + path + '/Portal');
+    Promise.all([
+     newProps.fetchDialect('/' + path),
+     newProps.fetchPortal('/' + path + '/Portal')
+    ]).then((values) => {
+    	console.log(values);
+    	newProps.fetchDialectStats('')
+    });
   }
 
   // Fetch data on initial render
@@ -149,9 +153,12 @@ export default class DialectLearn extends Component {
   }
 
   render() {
+    const { computeDialect, computePortal, computeDocument, computeDialectStats } = this.props;
 
-    const { computeDialect, computePortal, computeDocument } = this.props;
-
+    if(computeDialectStats.success) {
+    	return <pre>{JSON.stringify(computeDialectStats, null, 4)}</pre>;
+    }
+    
     let dialect = computeDialect.response;
     let portal = computePortal.response;
 
@@ -168,21 +175,37 @@ export default class DialectLearn extends Component {
     if (!this.props.children) {
       content = <div className="row">
 
-        <div className={classNames('col-xs-12', 'col-md-6')}>
+        <div className={classNames('col-xs-12', 'col-md-8')}>
           <h1>About our Language</h1>
           <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
-        </div>
 
-        <div className={classNames('col-xs-12', 'col-md-2')}>
-          <h1>{(this.props.dialect) ? this.props.dialect.get('dc:title') : ''} Alphabet</h1>
-          <p>First words here</p>
+          <div className="row">
+	          <div className={classNames('col-xs-12', 'col-md-6')}>
+	            <h1>{(this.props.dialect) ? this.props.dialect.get('dc:title') : ''} Alphabet</h1>
+	          	<p>First words here</p>
+		      </div>	
+		      <div className={classNames('col-xs-12', 'col-md-6')}>
+		        <h1>Keyboards</h1>
+		        <p>Keyboards go here</p>
+		      </div> 
+	      </div>
+	      <div className="row">
+		      <div className={classNames('col-xs-12', 'col-md-12')}>
+		        <h1>Contact Info</h1>
+		        <p>Status of our language here.</p>
+		      </div>
+	      </div>
         </div>
 
         <div className={classNames('col-xs-12', 'col-md-4')}>
-          <h1>Contact Info</h1>
-          <p>Status of our language here.</p>
-          <h1>Keyboards</h1>
-          <p>Keyboards</p>
+          <div className="row">
+	        <div className={classNames('col-xs-12', 'col-md-6')}>
+	          <h1>Words</h1>
+		    </div>	
+		    <div className={classNames('col-xs-12', 'col-md-6')}>
+		      <h1>Phrases</h1>
+		    </div> 
+	      </div>
         </div>
 
       </div>
