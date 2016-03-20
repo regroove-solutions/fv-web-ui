@@ -27,7 +27,7 @@ export default class DocumentOperations extends BaseOperations {
   * Get a single document of a certain type based on a path and title match
   * This document may or may not contain children 
   */
-  static getDocument(pathOrUid = "", type, headers = null, params = null) {
+  static getDocument(pathOrUid = "", type, headers = {}, params = {}) {
 
     let properties = this.properties;
 
@@ -217,4 +217,27 @@ export default class DocumentOperations extends BaseOperations {
           }).catch((error) => { throw error });
     });
   }
+  
+  /**
+   * 
+   * 
+   */
+   static getDialectStats(dialect, headers = {}, params = {}) {
+
+     let properties = this.properties;
+
+     return new Promise(
+       function(resolve, reject) {
+    	   properties.client
+    	   .operation('FVGenerateJsonStatistics')
+    	   .params({
+    	     dialectId: '',
+    	   })
+    	   .execute(headers)
+    	   .then(function(stats) {
+    		   resolve(stats);
+    	   })
+    	   .catch((error) => { reject(error); });
+     });
+   } 
 }
