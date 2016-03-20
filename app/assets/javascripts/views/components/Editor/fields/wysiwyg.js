@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import AlloyEditorComponent from 'views/components/Editor/editor';
 
 /**
-* Override render of textarea
+* Custom textarea field for tcomb-form that uses alloy-editor
 */
 function renderTextarea(locals) {
 

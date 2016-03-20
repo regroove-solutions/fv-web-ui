@@ -163,7 +163,7 @@ export default class ExploreDialect extends Component {
                     <NavigationExpandMoreIcon />
                   </IconButton>
                 }>
-                  <MenuItem primaryText="Edit Portal" />
+                  <MenuItem onTouchTap={this._onNavigateRequest.bind(this, 'edit')} primaryText="Edit Portal" />
                   <MenuItem primaryText="Contact" />
                 </IconMenu>
               </ToolbarGroup>

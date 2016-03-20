@@ -26,6 +26,7 @@ import providers from './providers/index';
 import AppWrapper from 'views/AppWrapper';
 
 require('!style!css!normalize.css');
+require('!style!css!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css');
 
 require('bootstrap/less/bootstrap');
 require("styles/main");

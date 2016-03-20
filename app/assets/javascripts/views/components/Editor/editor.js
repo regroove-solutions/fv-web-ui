@@ -24,10 +24,10 @@ export default class AlloyEditorComponent extends Component {
 
         return true;
     }
-// className="form-control" style={{minHeight: '100px'}}
+
     render() {
         return (
-            <div id={this.props.container} dangerouslySetInnerHTML={{__html: this.props.content}}></div>
+            <div id={this.props.container} dangerouslySetInnerHTML={{__html: this.props.content}} className="form-control" style={{minHeight: '100px', height: 'auto'}}></div>
         );
     }
 }

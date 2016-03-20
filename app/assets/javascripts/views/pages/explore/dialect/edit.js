@@ -31,20 +31,22 @@ import {List, ListItem} from 'material-ui/lib/lists';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
-
-
-
 import selectn from 'selectn';
 import t from 'tcomb-form';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
-
-
-
-
-
 import EditableComponent from 'views/components/Editor/EditableComponent';
+
+require('!style!css!react-select/dist/react-select.min.css');
+
+
+
+
+
+import Select from 'react-select';
+
+
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -63,7 +65,9 @@ export default class ExploreDialectEdit extends Component {
     updateDialect: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired
+    updatePortal: PropTypes.func.isRequired,
+    fetchAudiosAll: PropTypes.func.isRequired,
+    computeAudiosAll: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -76,7 +80,10 @@ export default class ExploreDialectEdit extends Component {
     // Bind methods to 'this'
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
 
-    this.state = { UISnackBarOpen: false };
+    this.state = {
+      UISnackBarOpen: false,
+      //selectValue: {}
+    };
   }
 
   fetchData(newProps) {
@@ -84,6 +91,7 @@ export default class ExploreDialectEdit extends Component {
 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchAudiosAll('/' + path);
   }
 
   // Fetch data on initial render
@@ -106,10 +114,6 @@ export default class ExploreDialectEdit extends Component {
 
     this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
-
-  //_onRequestClose() {
-  //  this.props.dismissError();
-  //}
 
   render() {
 
@@ -137,33 +141,11 @@ export default class ExploreDialectEdit extends Component {
 
     return <div>
 
-            <h1>{dialect.get('dc:title')} Community Portal</h1>
-
-            <Toolbar>
-
-              <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'Dictionary')} label="Learn" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'play')} label="Play" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'community-slideshow')} label="Community Slideshow" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'art-gallery')} label="Art Gallery" /> 
-              </ToolbarGroup>
-
-              <ToolbarGroup firstChild={true} float="right">
-                <IconMenu iconButtonElement={
-                  <IconButton tooltip="More Options" touch={true}>
-                    <NavigationExpandMoreIcon />
-                  </IconButton>
-                }>
-                  <MenuItem primaryText="Edit Portal" />
-                  <MenuItem primaryText="Contact" />
-                </IconMenu>
-              </ToolbarGroup>
-
-            </Toolbar>
+            <h1>Edit {dialect.get('dc:title')} Community Portal</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-6', 'col-md-8')}>
+              <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form>
                   <t.form.Form ref="form_test" type={t.struct(selectn("FVPortal", fields))} options={selectn("FVPortal", options)} />
                   <div className="form-group">
@@ -172,7 +154,7 @@ export default class ExploreDialectEdit extends Component {
                 </form>
               </div>
 
-              <div className={classNames('col-xs-3', 'col-md-2')}>
+              <div className={classNames('col-xs-4', 'col-md-2')}>
 
                 <Paper style={{padding: '15px'}} zDepth={2}>
 
