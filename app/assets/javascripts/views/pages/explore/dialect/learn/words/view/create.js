@@ -19,9 +19,6 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
-// Models
-import {Document} from 'nuxeo';
-
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
@@ -30,8 +27,11 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
+/**
+* Create word entry
+*/
 @provide
-export default class ExploreDialectEdit extends Component {
+export default class PageDialectWordsCreate extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
@@ -39,14 +39,8 @@ export default class ExploreDialectEdit extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired,
-    computePortalUpdate: PropTypes.object.isRequired
-  };
-
-  static contextTypes = {
-    muiTheme: PropTypes.object.isRequired
+    createWord: PropTypes.func.isRequired,
+    computeWord: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -57,10 +51,9 @@ export default class ExploreDialectEdit extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
+    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 3).join('/');
 
     newProps.fetchDialect('/' + path);
-    newProps.fetchPortal('/' + path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -79,76 +72,59 @@ export default class ExploreDialectEdit extends Component {
     //this.props.pushWindowPath('/' + path);
   }
 
-  shouldComponentUpdate(newProps) {
-
-    switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
-        return true;
-      break;
-
-      case (newProps.computePortal.response != this.props.computePortal.response):
-        return true;
-      break;
-
-      case (newProps.computePortalUpdate.response != this.props.computePortalUpdate.response):
-        return false; // TODO: Change to true and handle submit
-      break;
-    }
-
-    return false;
-  }
-
   _onRequestSaveForm(e) {
 
     // Prevent default behaviour
     e.preventDefault();
 
-    let formValue = this.refs["form_portal"].getValue();
+    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 3).join('/');
+    let formValue = this.refs["form_word_create"].getValue();
 
     // Passed validation
     if (formValue) {
 
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
-      let newDocument = new Document(this.props.computePortal.response, { 
-        'repository': this.props.computePortal.response._repository,
-        'nuxeo': this.props.computePortal.response._nuxeo
-      });
+      let properties = '';
 
-      // Set new value property on document
-      newDocument.set(formValue);
+	  for (let key in formValue) {
+	    if (formValue.hasOwnProperty(key) && key) {
+	      if (formValue[key] && formValue[key] != '') {
+	        properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + ' \n';
+	  	  }
+	    }
+	  }
 
-      // Save document
-      this.props.updatePortal(newDocument);
+	  this.props.createWord('/' + path + '/Dictionary', {
+	    type: 'FVWord',
+	    name: formValue['dc:title'],
+	    properties: properties
+	  });
     }
 
   }
 
   render() {
 
-    const { computeDialect, computePortal, computePortalUpdate } = this.props;
+    const { computeDialect } = this.props;
 
     let dialect = computeDialect.response;
-    let portal = computePortal.response;
 
-    if (computeDialect.isFetching || computePortal.isFetching || !computePortal.success) {
+    if (computeDialect.isFetching) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
     return <div>
 
-            <h1>Edit {dialect.get('dc:title')} Community Portal</h1>
+            <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
  
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm}>
                   <t.form.Form
-                    ref="form_portal"
-                    type={t.struct(selectn("FVPortal", fields))}
+                    ref="form_word_create"
+                    type={t.struct(selectn("FVWord", fields))}
                     context={dialect}
-                    value={selectn("properties", portal)}
-                    options={selectn("FVPortal", options)} />
+                    options={selectn("FVWord", options)} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

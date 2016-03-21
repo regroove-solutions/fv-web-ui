@@ -2,6 +2,7 @@ import {provide, unshiftMiddleware, createCombinedStore} from 'react-redux-provi
 import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
 import createLoggerMiddleware from 'redux-logger';
 
+import Document from './Document';
 import FVLanguageFamily from './FVLanguageFamily';
 import FVLanguage from './FVLanguage';
 import FVDialect from './FVDialect';
@@ -27,6 +28,7 @@ export default {
   page,
   connect,
   navigation,
+  Document,
   FVLanguageFamily,
   FVLanguage,
   FVDialect,

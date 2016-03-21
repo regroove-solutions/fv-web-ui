@@ -64,6 +64,29 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   /**
+  * Create a document
+  */
+  static createDocument(parentDoc, docParams) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+
+        // Create document
+        properties.client
+        .operation('Document.Create')
+        .params(docParams)
+        .input(parentDoc)
+        .execute()
+        .then((newDoc) => {
+            resolve(newDoc);
+        })
+        .catch((error) => { reject('Could not create document.'); } );
+    });
+  }
+
+  /**
   * Create a document with a file attached
   */
   static createDocumentWithBlob(parentDoc, docParams, file) {
@@ -111,7 +134,7 @@ export default class DocumentOperations extends BaseOperations {
             } else {
                 reject('No ' + type +' found');
             }
-          }).catch((error) => { reject('Could not update document.'); } );
+          }).catch((error) => { reject('Could not upload file.'); } );
         }
     });
   }

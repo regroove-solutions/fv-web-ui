@@ -1,10 +1,39 @@
 import t from 'tcomb-form';
 
+const Dublincore = {
+    'dc:title': t.String,
+    'dc:description': t.maybe(t.String)
+};
+
+const FVCore = {
+    'fv:definitions' : t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    })),
+    'fv:literal_translation' : t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    })),
+    'fv:related_pictures' : t.list(t.String),
+    'fv:related_videos' : t.list(t.String),
+    'fv:related_audio' : t.list(t.String),
+    'fv:cultural_note' : t.list(t.String),
+    'fv:available_in_childrens_archive' : t.Boolean,
+    'fv:custom_order' : t.maybe(t.String),
+    'fv:reference' : t.String,
+    'fv:source' : t.list(t.String)
+};
 
 const fields = {
   FVAudio: {
   	'aud-duration' : t.Number
   },
+  FVWord: Object.assign({}, Dublincore, FVCore, {
+    'fv-word:categories' : t.list(t.String),
+    'fv-word:pronunciation' : t.String,
+    'fv-word:related_phrases' : t.list(t.String),
+    'fv-word:part_of_speech' : t.String
+  }),
   FVPortal : {
     'fv-portal:about': t.String,
     'fv-portal:greeting': t.String,
@@ -13,13 +42,11 @@ const fields = {
     'fv-portal:background_top_image' : t.String,
     'fv-portal:logo' : t.String
   },
-  FVDialect : {
-    'dc:title': t.String,
-    'dc:description': t.String,
+  FVDialect: Object.assign({}, Dublincore, {
     'country' : t.String,
     'dominant_language' : t.String,
     'region' : t.String
-  }
+  })
 }
 
 export default fields;

@@ -4,10 +4,11 @@ import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCommunitySlideshow } from 'views/pages';
-import { PageDialectLearnWords } from 'views/pages';
+import { PageDialectLearnWords, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
 
 import { PageExploreDialectEdit } from 'views/pages/edit';
+import { PageDialectWordsCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -76,7 +77,6 @@ export default class AppFrontController extends Component {
     // Remove empties from path array
     const currentPathArray = this.props.splitWindowPath.filter(function(e){ return e; });
 
- //console.log(pathMatchArray);
     if (pathMatchArray.length != currentPathArray.length) {
       return false;
     }
@@ -147,6 +147,12 @@ export default class AppFrontController extends Component {
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', 'words' ]):
         return this.renderWithBreadcrumb(<PageDialectLearnWords />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', 'words', 'create' ]):
+        return this.renderWithBreadcrumb(<PageDialectWordsCreate />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', new RegExp("^\\w+$") ]):
+        return this.renderWithBreadcrumb(<PageDialectViewDictionaryItem />);
     }
 
     return (<div>404</div>);

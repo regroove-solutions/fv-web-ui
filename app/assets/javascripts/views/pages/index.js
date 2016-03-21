@@ -25,7 +25,7 @@ import {default as PageDialectArtGallery} from './explore/dialect/art-gallery'
 import {default as PageDialectCommunitySlideshow} from './explore/dialect/community-slideshow'
 
 import {default as PageDialectLearnWords} from './explore/dialect/learn/words'
-
+import {default as PageDialectViewDictionaryItem} from './explore/dialect/learn/entity'
 
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
@@ -40,6 +40,7 @@ module.exports = {
   PageContribute,
   PageDialectLearn,
   PageDialectLearnWords,
+  PageDialectViewDictionaryItem,
   PageDialectPlay,
   PageDialectArtGallery,
   PageDialectCommunitySlideshow,

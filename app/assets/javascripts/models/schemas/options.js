@@ -21,7 +21,86 @@ const configExt = {
   }
 }
 
+const DefinitionsLayout = function (locals) {
+  return (
+    <div>
+      <p>DefinitionsLayout</p>
+      <div>{locals.inputs.translation}</div>
+      <div>{locals.inputs.language}</div>
+    </div>
+  );
+};
+
+
+
+
+
 const options = {
+  FVWord: {
+    order: ['dc:title', 'fv:definitions', 'fv:literal_translation', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
+    fields: {
+      'dc:title': {
+        label: 'Word'
+       },
+      'fv:definitions': {
+        label: 'Definitions',
+        item: {
+          //template: DefinitionsLayout
+        }
+      },
+      'fv:literal_translation': {
+        label: 'Literal Translation',
+        item: {
+          //template: DefinitionsLayout
+        }
+      },
+      'fv-word:part_of_speech' : {
+        label: 'Part of Speech'
+      },
+      'fv-word:pronunciation' : {
+        label: 'Pronunciation'
+      },
+      'fv-word:related_phrases' : {
+        label: 'Related Phrases'
+      },
+      'fv-word:categories' : {
+        label: 'Categories'
+      },
+      'fv:related_audio' : {
+        label: 'Related Audio',
+        item: {
+          factory: SelectFactory,
+          type: 'audio'
+        }
+      },
+      'fv:related_pictures' : {
+        label: 'Related Pictures',
+        item: {
+          factory: SelectFactory,
+          type: 'picture'
+        }
+      },
+      'fv:related_videos' : {
+        label: 'Related Videos',
+        item: {
+          factory: SelectFactory,
+          type: 'video'
+        }
+      },
+      'fv:cultural_note' : {
+        label: 'Cultural Notes'
+      },
+      'fv:reference': {
+        label: 'Reference'
+      },
+      'fv:source': {
+        label: 'Source'
+      },
+      'fv:available_in_childrens_archive': {
+        label: 'Available in Children\'s Archive'
+      }
+    }
+  },
   FVPortal: {
     fields: {
       'fv-portal:about': {

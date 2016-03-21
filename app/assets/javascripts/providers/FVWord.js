@@ -49,6 +49,20 @@ const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
 const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
+const createWord = function createWord(parentDoc, docParams) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_WORD_CREATE_START, document: docParams } );
+
+    return DocumentOperations.createDocument(parentDoc, docParams)
+      .then((response) => {
+        dispatch( { type: FV_WORD_CREATE_SUCCESS, document: response} );
+      }).catch((error) => {
+          dispatch( { type: FV_WORD_CREATE_ERROR, error: error } )
+    });
+  }
+};
+
 const updateWord = function updateWord(newDoc, field) {
   return function (dispatch) {
 
@@ -105,7 +119,7 @@ const fetchWord = function fetchWord(pathOrId) {
   }
 };
 
-const actions = { fetchWordsInPath, fetchWord, fetchWordsAll, updateWord };
+const actions = { fetchWordsInPath, fetchWord, createWord, fetchWordsAll, updateWord };
 
 const reducers = {
   computeWordsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -134,17 +148,20 @@ const reducers = {
     switch (action.type) {
       case FV_WORD_FETCH_START:
       case FV_WORD_UPDATE_START:
+      case FV_WORD_CREATE_START:
         return Object.assign({}, state, { isFetching: true, success: false });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_SUCCESS:
       case FV_WORD_UPDATE_SUCCESS:
+      case FV_WORD_CREATE_SUCCESS:
         return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_ERROR:
+      case FV_WORD_UPDATE_ERROR:
       case FV_WORD_UPDATE_ERROR:
       case DISMISS_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });

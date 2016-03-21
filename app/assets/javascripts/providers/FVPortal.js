@@ -45,7 +45,7 @@ const fetchPortal = function fetchPortal(pathOrId) {
 
     dispatch( { type: FV_PORTAL_FETCH_START } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVPortal', { headers: { 'X-NXenrichers.document': 'ancestry,portal' } })
     .then((response) => {
       dispatch( { type: FV_PORTAL_FETCH_SUCCESS, document: response } )
     }).catch((error) => {

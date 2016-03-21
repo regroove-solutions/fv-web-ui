@@ -41,7 +41,6 @@ export default class ExploreDialect extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -86,12 +85,7 @@ export default class ExploreDialect extends Component {
   }
 
   _onNavigateRequest(path) {
-    const destination = this.props.navigateTo(path);
-    const newPathArray = this.props.splitWindowPath.slice();
-
-    newPathArray.push(destination.path);
-
-    this.props.pushWindowPath('/' + newPathArray.join('/'));
+    this.props.pushWindowPath(this.props.windowPath + '/' + path);
   }
 
   //_onRequestClose() {
@@ -100,7 +94,7 @@ export default class ExploreDialect extends Component {
 
   render() {
 
-    const { computeDialect, computePortal, computeDocument } = this.props;
+    const { computeDialect, computePortal } = this.props;
 
     let dialect = computeDialect.response;
     let portal = computePortal.response;

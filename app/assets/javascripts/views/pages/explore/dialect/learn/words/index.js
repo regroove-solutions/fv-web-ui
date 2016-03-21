@@ -17,11 +17,9 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
-import DocumentListView from 'views/components/Document/DocumentListView';
+import RaisedButton from 'material-ui/lib/raised-button';
 
-// Models
-import Word from 'models/Word';
-import Words from 'models/Words';
+import DocumentListView from 'views/components/Document/DocumentListView';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_PAGE_SIZE = 10;
@@ -43,7 +41,7 @@ export default class PageDialectLearnWords extends Component {
     computeWordsInPath: PropTypes.object.isRequired
   };
 
-  constructor(props, context){
+  constructor(props, context) {
     super(props, context);
 
     // Expose 'this' to columns functions below
@@ -101,7 +99,7 @@ export default class PageDialectLearnWords extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleNavigate', '_handleWordsDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleWordsDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -133,9 +131,12 @@ export default class PageDialectLearnWords extends Component {
     this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
-  _handleNavigate(path) {
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(this.props.windowPath + '/' + path);
+  }
+
+  _onEntryNavigateRequest(path) {
     this.props.pushWindowPath('/explore' + path);
-    // Handle selection vs navigation differently?
   }
 
   render() {
@@ -146,13 +147,20 @@ export default class PageDialectLearnWords extends Component {
 
     return <div>
               <div className="row">
+                <div className="col-xs-8">
+                </div>
+                <div className={classNames('col-xs-4', 'text-right')}>
+                  <RaisedButton label="New Word" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />
+                </div>
+              </div>
+              <div className="row">
                 <div className="col-xs-12">
                   <h1>{dialect.get('dc:title')} Words</h1>
                   <DocumentListView
                     objectDescriptions="words" 
                     data={this.props.computeWordsInPath}
                     refetcher={this._handleRefetch}
-                    onSelectionChange={this._handleNavigate}
+                    onSelectionChange={this._onEntryNavigateRequest}
                     columns={this.state.columns}
                     className="browseDataGrid" 
                     dialect={dialect} />
