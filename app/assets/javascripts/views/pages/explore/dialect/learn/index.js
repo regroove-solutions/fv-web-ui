@@ -18,6 +18,10 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
 import RaisedButton from 'material-ui/lib/raised-button';
+import CircularProgress from 'material-ui/lib/circular-progress';
+//import PieChart from 'react-d3/piechart/PieChart';
+import Doughnut from 'react-chartjs/lib/doughnut';
+//import Chart from 'chart.js/Chart';
 
 // Models
 import Word from 'models/Word';
@@ -30,6 +34,7 @@ import DocumentOperations from 'operations/DocumentOperations';
 import DirectoryOperations from 'operations/DirectoryOperations';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
+
 
 /**
 * Learn portion of the dialect portal
@@ -155,13 +160,63 @@ export default class DialectLearn extends Component {
   render() {
     const { computeDialect, computePortal, computeDocument, computeDialectStats } = this.props;
 
-    if(computeDialectStats.success) {
-    	return <pre>{JSON.stringify(computeDialectStats, null, 4)}</pre>;
-    }
+//    if(computeDialectStats.success) {
+//    	return <pre>{JSON.stringify(computeDialectStats, null, 4)}</pre>;
+//    }
+
+    if (!computeDialectStats.success) {
+        return <CircularProgress mode="indeterminate" size={5} />;
+    }       
     
     let dialect = computeDialect.response;
     let portal = computePortal.response;
-
+    let dialectStats = computeDialectStats.response;
+    
+    //Chart.defaults.global.responsive = true;
+    
+    // TODO: hardcoded for now - handle in child component later
+    var wordDoughnutData = [
+            {
+                value: dialectStats.words.new,
+                color:"#F7464A",
+                highlight: "#FF5A5E",
+                label: "Disabled"
+            },
+            {
+                value: dialectStats.words.enabled,
+                color: "#46BFBD",
+                highlight: "#5AD3D1",
+                label: "Enabled"
+            },
+            {
+                value: dialectStats.words.disabled,
+                color: "#FDB45C",
+                highlight: "#FFC870",
+                label: "New"
+            }
+    ];
+    
+    var phraseDoughnutData = [
+            {
+                value: dialectStats.phrases.new,
+                color:"#F7464A",
+                highlight: "#FF5A5E",
+                label: "Disabled"
+            },
+            {
+                value: dialectStats.phrases.enabled,
+                color: "#46BFBD",
+                highlight: "#5AD3D1",
+                label: "Enabled"
+            },
+            {
+                value: dialectStats.phrases.disabled,
+                color: "#FDB45C",
+                highlight: "#FFC870",
+                label: "New"
+            }
+    ];    
+    
     // Assign dialect prop, from parent, to all children
     let content = React.Children.map(this.props.children, function(child) {
         return React.cloneElement(child, {
@@ -196,14 +251,69 @@ export default class DialectLearn extends Component {
 		      </div>
 	      </div>
         </div>
-
+        
+        {/* TODO: make this a child component for re-usability */}
         <div className={classNames('col-xs-12', 'col-md-4')}>
           <div className="row">
 	        <div className={classNames('col-xs-12', 'col-md-6')}>
 	          <h1>Words</h1>
-		    </div>	
+              <p><strong>Total:</strong> {dialectStats.words.total}</p>
+              <p><strong>New:</strong> {dialectStats.words.new}</p>
+              <p><strong>Enabled:</strong> {dialectStats.words.enabled}</p>
+              <p><strong>Disabled:</strong> {dialectStats.words.disabled}</p>                         
+              
+              <Doughnut data={wordDoughnutData}/>
+              
+              <p><strong>Created Today:</strong> {dialectStats.words.created_today}</p>
+              <p><strong>Modified Today:</strong> {dialectStats.words.modified_today}</p>
+              <p><strong>Most Recently Created:</strong></p>
+              <ul>
+              {dialectStats.words.most_recently_created.map((word, i) => 
+              	<li key={word['ecm:uuid']}>{word['dc:title']}</li>
+              )}
+              </ul>
+              <p><strong>Most Recently Modified:</strong></p>
+              <ul>
+              {dialectStats.words.most_recently_modified.map((word, i) => 
+              	<li key={word['ecm:uuid']}>{word['dc:title']}</li>
+              )}
+              </ul>
+              <p><strong>My Most Recently Modified:</strong></p>
+              <ul>
+              {dialectStats.words.user_most_recently_modified.map((word, i) => 
+              	<li key={word['ecm:uuid']}>{word['dc:title']}</li>
+              )}
+              </ul>               
+            </div>	
 		    <div className={classNames('col-xs-12', 'col-md-6')}>
 		      <h1>Phrases</h1>
+              <p><strong>Total:</strong> {dialectStats.phrases.total}</p>
+              <p><strong>New:</strong> {dialectStats.phrases.new}</p>
+              <p><strong>Enabled:</strong> {dialectStats.phrases.enabled}</p>
+              <p><strong>Disabled:</strong> {dialectStats.phrases.disabled}</p>                         
+              
+              <Doughnut data={phraseDoughnutData}/>
+              
+              <p><strong>Created Today:</strong> {dialectStats.phrases.created_today}</p>
+              <p><strong>Modified Today:</strong> {dialectStats.phrases.modified_today}</p>
+              <p><strong>Most Recently Created:</strong></p>
+              <ul>
+              {dialectStats.phrases.most_recently_created.map((phrase, i) => 
+              	<li key={phrase['ecm:uuid']}>{phrase['dc:title']}</li>
+              )}
+              </ul>
+              <p><strong>Most Recently Modified:</strong></p>
+              <ul>
+              {dialectStats.phrases.most_recently_modified.map((phrase, i) => 
+              	<li key={phrase['ecm:uuid']}>{phrase['dc:title']}</li>
+              )}
+              </ul>
+              <p><strong>My Most Recently Modified:</strong></p>
+              <ul>
+              {dialectStats.phrases.user_most_recently_modified.map((phrase, i) => 
+              	<li key={phrase['ecm:uuid']}>{phrase['dc:title']}</li>
+              )}
+              </ul>		      
 		    </div> 
 	      </div>
         </div>
