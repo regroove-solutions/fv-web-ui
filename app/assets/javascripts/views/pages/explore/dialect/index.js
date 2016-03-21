@@ -31,19 +31,6 @@ import {List, ListItem} from 'material-ui/lib/lists';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
-
-
-
-import selectn from 'selectn';
-import t from 'tcomb-form';
-import fields from 'models/schemas/fields';
-import options from 'models/schemas/options';
-
-
-
-
-
-
 import EditableComponent from 'views/components/Editor/EditableComponent';
 
 /**

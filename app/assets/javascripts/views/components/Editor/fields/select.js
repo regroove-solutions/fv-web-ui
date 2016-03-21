@@ -1,137 +1,39 @@
 import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
-import classNames from 'classnames';
-import Select from 'react-select';
-'use strict';
 
-
-import Autosuggest from 'react-autosuggest'
-
-const languages = [
-  {
-    name: 'C',
-    year: 1972
-  },
-  {
-    name: 'Elm',
-    year: 2012
-  },
-  {
-    name: 'Javascript',
-    year: 1995
-  },
-  {
-    name: 'Python',
-    year: 1991
-  }
-]
-
-function getSuggestions(value) {
-  return languages.filter(language => language.name.indexOf(value) === 0)
-}
-
-function getSuggestionValue(suggestion) {
-  return suggestion.name
-}
-
-function renderSuggestion(suggestion) {
-  return (
-    <span>{suggestion.name}</span>
-  )
-}
-
-// define the template only once
-function getTemplate(options) {
-  function renderInput(locals) {
-    const value = locals.value || '' // react-autosuggest doesn't like null or undefined as value
-    const inputProps = {
-      ...locals.attrs,
-      value: value,
-      onChange: (evt, { newValue }) => {
-        locals.onChange(newValue)
-      }
-    }
-    const suggestions = options.getSuggestions(value)
-    return (
-      <Autosuggest
-        suggestions={suggestions}
-        getSuggestionValue={options.getSuggestionValue}
-        renderSuggestion={options.renderSuggestion}
-        inputProps={inputProps}
-      />
-    )
-  }
-
-  return t.form.Form.templates.textbox.clone({ renderInput });
-}
-
-
-
+import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
+import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 
 /**
-* Custom select field for tcomb-form that uses alloy-editor
+* Define auto-suggest factory
 */
-/*
-export default class SelectFactory extends t.form.Select {
+function renderInput(locals) {
 
-	constructor() {
-		super();
-		this.state = {
-			selectedValue: null
-		}
-	}
+  const onChange = function (event, full) {
+    locals.onChange(full.uid)
+  };
 
-  _onChange(newValue) {
-    console.log(newValue);
-    this.setState({selectedValue: newValue});
-   }
+  const onUploadComplete = function (uid) {
+    locals.onChange(uid);
+  };
 
-  renderOption(option) {
-    return <span>{option.label} {option.data}</span>;
+  let content = <div>TODO: {locals.type} Preview Component<br/>{locals.value}</div>;;
+
+  if (!locals.value) {
+    content = <div>
+                <AutoSuggestComponent type={locals.type} value={locals.value || ''} dialect={locals.context} onChange={onChange} />
+                <AddMediaComponent label="Upload" onUploadComplete={onUploadComplete} dialect={locals.context} />
+              </div>;
   }
 
-  renderValue(option) {
-    return <strong>{option.label} <audio src={option.data}/></strong>;
-  }
+  return <div>{content}</div>;
+}
 
-  _getOptions(input, callback) {
-    if (this.props.computeAudiosAll.success) {
-      let fetchedOptions = selectn("response.entries", this.props.computeAudiosAll).map((audio) => {
-        return {value: audio.uid, label: audio.title, data: audio.properties['file:content'].data};
-      });
+const selectTemplate = t.form.Form.templates.textbox.clone({ renderInput })
 
-     // console.log(options)
-
-      callback(null, {
-          options: fetchedOptions,
-          // CAREFUL! Only set this to true when there are no more options,
-          // or more specific queries will not be sent to the server.
-          complete: false
-      });
-    }
-   }
+export default class SelectFactory extends t.form.Textbox {
 
   getTemplate() {
-    return (locals) => { // <- locals contains the "recipe" to build the UI
-
-      // handle error status
-      var className = 'form-group';
-      if (locals.hasError) {
-        className += ' has-error';
-      }
-
-      // translate the option model from tcomb to react-select
-      var options = locals.options.map(({value, text}) => ({value, label: text}));
-
-      return (
-        <div className={className}>
-          <label className="control-label">{locals.label}</label>
-	        <Select
-	          name="form-field-name"
-	          options={options1}
-	        />
-        </div>
-      );
-    };
+    return selectTemplate
   }
-}*/
+}

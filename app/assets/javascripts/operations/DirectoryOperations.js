@@ -70,6 +70,33 @@ export default class DirectoryOperations extends BaseOperations {
     });
   }
 
+  static getDocumentsViaPageProvider(page_provider = "", type = "Document", queryAppend = "", headers = null, params = null) {
+
+    let defaultParams = {};
+    let defaultHeaders = {};
+
+    params = Object.assign(defaultParams, params);
+    headers = Object.assign(defaultHeaders, headers);
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client.request(
+          '/query/' + page_provider + '?' + queryAppend,
+          params
+        )
+        .get(headers)
+        .then((docs) => {
+          resolve(docs);
+        }).catch((error) => { reject('Could not access server.'); });
+    });
+  }
+
+
+
+
+
   /**
   * Get all documents of a certain type based on a path
   * These documents are expected to contain other entries

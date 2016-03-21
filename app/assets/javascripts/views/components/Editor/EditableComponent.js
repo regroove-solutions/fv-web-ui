@@ -126,7 +126,7 @@ export default class EditableComponent extends Component {
     newDocument.set(formValue);
 
     // Save document
-    this.props.updateEntity(newDocument, property);
+    this.props.updateEntity(newDocument);
 
     this.setState({
       editModeEnabled: false,

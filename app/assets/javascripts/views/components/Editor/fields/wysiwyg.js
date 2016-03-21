@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
 import classNames from 'classnames';
-import AlloyEditorComponent from 'views/components/Editor/editor';
+import AlloyEditorComponent from 'views/components/Editor/AlloyEditorComponent';
 
 /**
 * Custom textarea field for tcomb-form that uses alloy-editor

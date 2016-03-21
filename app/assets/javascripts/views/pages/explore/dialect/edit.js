@@ -16,58 +16,34 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
-
-// Views
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import Paper from 'material-ui/lib/paper';
-import {List, ListItem} from 'material-ui/lib/lists';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Snackbar from 'material-ui/lib/snackbar';
-
 import selectn from 'selectn';
 import t from 'tcomb-form';
+
+// Models
+import {Document} from 'nuxeo';
+
+// Views
+import RaisedButton from 'material-ui/lib/raised-button';
+import Paper from 'material-ui/lib/paper';
+import CircularProgress from 'material-ui/lib/circular-progress';
+
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
-import EditableComponent from 'views/components/Editor/EditableComponent';
-
-require('!style!css!react-select/dist/react-select.min.css');
-
-
-
-
-
-import Select from 'react-select';
-
-
-
-/**
-* Dialect portal page showing all the various components of this dialect.
-*/
 @provide
 export default class ExploreDialectEdit extends Component {
 
   static propTypes = {
-    properties: PropTypes.object.isRequired,
     navigateTo: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    updateDialect: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
-    fetchAudiosAll: PropTypes.func.isRequired,
-    computeAudiosAll: PropTypes.object.isRequired
+    computePortalUpdate: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -78,12 +54,7 @@ export default class ExploreDialectEdit extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-
-    this.state = {
-      UISnackBarOpen: false,
-      //selectValue: {}
-    };
+    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -91,7 +62,6 @@ export default class ExploreDialectEdit extends Component {
 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
-    newProps.fetchAudiosAll('/' + path);
   }
 
   // Fetch data on initial render
@@ -107,56 +77,93 @@ export default class ExploreDialectEdit extends Component {
   }
 
   _onNavigateRequest(path) {
-    const destination = this.props.navigateTo(path);
-    const newPathArray = this.props.splitWindowPath.slice();
+    //const destination = this.props.navigateTo(path);
+    //const newPathArray = this.props.splitWindowPath.slice();
 
-    newPathArray.push(destination.path);
+    //newPathArray.push(destination.path);
 
-    this.props.pushWindowPath('/' + newPathArray.join('/'));
+    //this.props.pushWindowPath('/' + newPathArray.join('/'));
+  }
+
+  shouldComponentUpdate(newProps) {
+
+    switch (true) {
+      case (newProps.windowPath != this.props.windowPath):
+        return true;
+      break;
+
+      case (newProps.computePortal.response != this.props.computePortal.response):
+        return true;
+      break;
+
+      case (newProps.computePortalUpdate.response != this.props.computePortalUpdate.response):
+        return false; // TODO: Change to true and handle submit
+      break;
+    }
+
+    return false;
+  }
+
+  _onRequestSaveForm(e) {
+
+    // Prevent default behaviour
+    e.preventDefault();
+
+    let formValue = this.refs["form_portal"].getValue();
+
+    // Passed validation
+    if (formValue) {
+
+      // TODO: Find better way to construct object then accessing internal function
+      // Create new document rather than modifying the original document
+      let newDocument = new Document(this.props.computePortal.response, { 
+        'repository': this.props.computePortal.response._repository,
+        'nuxeo': this.props.computePortal.response._nuxeo
+      });
+
+      // Set new value property on document
+      newDocument.set(formValue);
+
+      // Save document
+      this.props.updatePortal(newDocument);
+    }
+
   }
 
   render() {
 
-    const { computeDialect, computePortal, computeDocument } = this.props;
+    const { computeDialect, computePortal, computePortalUpdate } = this.props;
 
     let dialect = computeDialect.response;
     let portal = computePortal.response;
 
-    //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
-
-    let portalBackgroundStyles = {
-      position: 'relative',
-      minHeight: 155,
-      backgroundColor: 'transparent',
-      backgroundImage: 'url(' + (portal.get('fv-portal:background_top_image') || '') + ')',
-      backgroundPosition: '0 0',
-    }
-
-    let featuredWord = portal.get('fv-portal:featured_words') || [];
-    let relatedLinks = dialect.get('fvdialect:related_links') || [];
-
-    if (computeDialect.isFetching || computePortal.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
+    if (computeDialect.isFetching || computePortal.isFetching || !computePortal.success) {
+      return <CircularProgress mode="indeterminate" size={2} />;
     }
 
     return <div>
 
             <h1>Edit {dialect.get('dc:title')} Community Portal</h1>
-
+ 
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
-                <form>
-                  <t.form.Form ref="form_test" type={t.struct(selectn("FVPortal", fields))} options={selectn("FVPortal", options)} />
-                  <div className="form-group">
-                    <button type="submit" className="btn btn-primary">Save</button> 
-                  </div>
+                <form onSubmit={this._onRequestSaveForm}>
+                  <t.form.Form
+                    ref="form_portal"
+                    type={t.struct(selectn("FVPortal", fields))}
+                    context={dialect}
+                    value={selectn("properties", portal)}
+                    options={selectn("FVPortal", options)} />
+                    <div className="form-group">
+                      <button type="submit" className="btn btn-primary">Save</button> 
+                    </div>
                 </form>
               </div>
 
               <div className={classNames('col-xs-4', 'col-md-2')}>
 
-                <Paper style={{padding: '15px'}} zDepth={2}>
+                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
 
                   <div className="subheader">Metadata</div>
 

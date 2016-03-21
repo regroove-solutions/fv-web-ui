@@ -1,15 +1,14 @@
 import React from 'react';
+import t from 'tcomb-form';
 import WysiwygFactory from 'views/components/Editor/fields/wysiwyg';
 import SelectFactory from 'views/components/Editor/fields/select';
 
 const i18nExt = {
-  i18n: {
-    add: 'New Item',
-    down: '▼',
-    remove: 'X',
-    up: '▲',
-    optional: '(optional)'
-  }
+  add: 'New Item',
+  down: '▼',
+  remove: 'X',
+  up: '▲',
+  optional: '(optional)'
 }
 
 const configExt = {
@@ -38,11 +37,10 @@ const options = {
       },
       'fv-portal:featured_audio' : {
         label: 'Featured Audio',
-        template: getTemplate({
-          getSuggestions,
-          getSuggestionValue,
-          renderSuggestion
-        })
+        item: {
+          factory: SelectFactory,
+          type: 'audio'
+        }
       },
       'fv-portal:featured_words' : {
         label: 'Featured Words'
@@ -53,7 +51,8 @@ const options = {
       'fv-portal:logo' : {
         label: 'Logo'
       }
-    }
+    },
+    i18n: i18nExt
   },
   FVDialect: {
     fields: {
@@ -72,7 +71,8 @@ const options = {
           placeholder: 'Enter portal description here'
         }
       }
-    }
+    },
+    i18n: i18nExt
   }
 };
 

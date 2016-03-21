@@ -15,12 +15,11 @@ limitations under the License.
 */
 import _ from 'underscore';
 
+import Nuxeo from 'nuxeo';
+
 import StringHelpers from 'common/StringHelpers';
 import BaseOperations from 'operations/BaseOperations';
 
-/**
-* Initialize Nuxeo client
-*/
 export default class DocumentOperations extends BaseOperations {
 
   /**
@@ -43,7 +42,6 @@ export default class DocumentOperations extends BaseOperations {
     });
   }
 
-
   /**
   * Update a document 
   */
@@ -62,6 +60,59 @@ export default class DocumentOperations extends BaseOperations {
               reject('No ' + type +' found');
             }
         }).catch((error) => { reject('Could not update document.'); } );
+    });
+  }
+
+  /**
+  * Create a document with a file attached
+  */
+  static createDocumentWithBlob(parentDoc, docParams, file) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+
+        let uploadedBlob = null;
+
+        // If file not empty, process blob and upload
+        if (file) {
+          let blob = new Nuxeo.Blob({
+            content: file,
+            name: file.name,
+            mimeType: file.type,
+            size: file.size
+          });
+
+          properties.client
+          .batchUpload()
+          .upload(blob)
+          .then((res) => {
+            if (res) {
+              // Create document
+              properties.client
+              .operation('Document.Create')
+              .params(docParams)
+              .input(parentDoc)
+              .execute()
+              .then((newDoc) => {
+                  // If blob uploaded, attach to created document
+                  if (res != null) {
+                    properties.client.operation('Blob.AttachOnDocument')
+                    .param('document', newDoc.uid)
+                    .input(res.blob)
+                    .execute({ schemas: ['dublincore', 'file']});
+
+                    // Finally, resolve create document
+                    resolve(newDoc);
+                  }
+              })
+              .catch((error) => { reject('Could not create document.'); } );
+            } else {
+                reject('No ' + type +' found');
+            }
+          }).catch((error) => { reject('Could not update document.'); } );
+        }
     });
   }
 

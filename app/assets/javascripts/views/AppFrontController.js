@@ -125,9 +125,11 @@ export default class AppFrontController extends Component {
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
         return this.renderWithBreadcrumb(<PageExploreLanguage />);
 
+      // Portal
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
         return this.renderWithBreadcrumb(<PageExploreDialect />);
 
+      // Portal Edit view
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'edit' ]):
         return this.renderWithBreadcrumb(<PageExploreDialectEdit />);
 
