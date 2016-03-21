@@ -42,11 +42,11 @@ export default class AddMediaComponent extends React.Component {
     label: "Upload Media"
   }
 
-  handleOpen = () => {
+  handleOpen() {
     this.setState({open: true});
   }
 
-  handleClose = () => {
+  handleClose() {
     this.setState({open: false});
   }
 
