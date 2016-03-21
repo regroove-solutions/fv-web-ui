@@ -273,16 +273,18 @@ export default class DocumentOperations extends BaseOperations {
    * 
    * 
    */
-   static getDialectStats(dialect, headers = {}, params = {}) {
+   static getDialectStats(path, headers = {}, params = {}) {
 
      let properties = this.properties;
 
+     let cleanedDialectPath = StringHelpers.clean(path);
+     
      return new Promise(
        function(resolve, reject) {
     	   properties.client
     	   .operation('FVGenerateJsonStatistics')
     	   .params({
-    	     dialectId: '',
+    	     dialectPath: cleanedDialectPath,
     	   })
     	   .execute(headers)
     	   .then(function(stats) {
