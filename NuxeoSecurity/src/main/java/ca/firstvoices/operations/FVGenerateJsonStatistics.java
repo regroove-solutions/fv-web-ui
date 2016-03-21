@@ -38,7 +38,7 @@ public class FVGenerateJsonStatistics {
     protected CoreSession session;     
 
     @Param(name = "dialectId")
-    protected String dialectId; 
+    protected String dialectId;     
     
     protected String sectionDialectId;
     
@@ -193,6 +193,7 @@ public class FVGenerateJsonStatistics {
 	    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
 	    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
 	    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
+	    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
 	    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
 	    	recentlyCreatedJsonObj.put("dc:created", dateCreated.getTime().toString());
 	    	recentlyCreatedJsonObj.put("dc:creator", (String)doc.getPropertyValue("dc:creator"));
@@ -209,6 +210,7 @@ public class FVGenerateJsonStatistics {
 	    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
 	    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
 	    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+	    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
 	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
 	    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
 	    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));
@@ -226,6 +228,7 @@ public class FVGenerateJsonStatistics {
 	    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
 	    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
 	    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+	    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
 	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
 	    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
 	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));
