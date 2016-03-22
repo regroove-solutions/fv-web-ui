@@ -23,6 +23,7 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
 
+
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 
@@ -50,13 +51,13 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 		// First create the parent document's Json object content
 		CoreSession session = doc.getCoreSession();
 
-		String documentType = (String) doc.getType();
+		String documentType = doc.getType();
 
 		/*
 		 * Properties for FVWord
 		 */
 		if (documentType.equalsIgnoreCase("FVWord")) {
-			
+
 			// Process "fv-word:categories" values
 			String[] categoryIds = (String[]) doc.getProperty("fv-word", "categories");
 			ArrayNode categoryArray = mapper.createArrayNode();
@@ -117,6 +118,54 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					sourceArray.add(sourceObj);
 				}
 				jsonObj.put("sources", sourceArray);
+			}
+
+			// Process "fv-word:related_phrases" values
+			String[] phraseIds = (String[]) doc.getProperty("fv-word", "related_phrases");
+			if (phraseIds != null) {
+				ArrayNode phraseArray = mapper.createArrayNode();
+				for (String phraseId : phraseIds) {
+					IdRef ref = new IdRef(phraseId);
+					DocumentModel phraseDoc = null;
+					// Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
+					try {
+						phraseDoc = session.getDocument(ref);
+					} catch (DocumentNotFoundException de) {
+						continue;
+					}
+
+					ObjectNode phraseObj = mapper.createObjectNode();
+					phraseObj.put("uid", phraseId);
+					phraseObj.put("path", phraseDoc.getPath().toString());
+					phraseObj.put("fv:definitions", phraseDoc.getPropertyValue("fv:definitions").toString());
+					phraseObj.put("fv:literal_translation", phraseDoc.getPropertyValue("fv:literal_translation").toString());
+					phraseObj.put("dc:title", phraseDoc.getTitle());
+					phraseArray.add(phraseObj);
+				}
+				jsonObj.put("related_phrases", phraseArray);
+			}
+
+			// Process "fv:related_audio" values
+			String[] audioIds = (String[]) doc.getProperty("fvcore", "related_audio");
+			if (audioIds != null) {
+				ArrayNode audioArray = mapper.createArrayNode();
+				for (String audioId : audioIds) {
+					IdRef ref = new IdRef(audioId);
+					DocumentModel audioDoc = null;
+					// Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
+					try {
+						audioDoc = session.getDocument(ref);
+					} catch (DocumentNotFoundException de) {
+						continue;
+					}
+
+					ObjectNode audioObj = mapper.createObjectNode();
+					audioObj.put("uid", audioId);
+					audioObj.put("path", audioDoc.getPath().toString());
+					audioObj.put("dc:title", audioDoc.getTitle());
+					audioArray.add(audioObj);
+				}
+				jsonObj.put("related_audio", audioArray);
 			}
 		}
 
