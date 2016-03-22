@@ -152,13 +152,15 @@ public class FVGenerateJsonStatistics {
 			documentJsonObj.put("enabled", enabledDocs);
 			documentJsonObj.put("disabled", disabledDocs);
 		}
+		// Close the IterableQueryResult - important
 		totalDocsResult.close();	        
 			
-	    // Get data about the most recently modified docs
-	    ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
+	    // Query for the most recently modified docs
 		IterableQueryResult mostRecentlyModifiedDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction 
 																+ " ORDER BY dc:modified DESC", NXQL.NXQL);
+		// Loop through results and get the most recently modified docs
 		int recentlyModifiedCount = 0;
+	    ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
 		for (Map<String, Serializable> docResult : mostRecentlyModifiedDocsResult) {
 	        String value = (String) docResult.get("ecm:uuid");
 	        DocumentRef docRef = new IdRef(value);
@@ -177,35 +179,66 @@ public class FVGenerateJsonStatistics {
 	        	break;
 	        }
 	    }
-		mostRecentlyModifiedDocsResult.close();	        
-	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);			
-		
-	    // Get data about the users most recently modified docs
-	    ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();		
-		IterableQueryResult userRecentlyModifiedDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction 
-																+ " AND dc:lastContributor = '" + principalName + "'"
-																+ " ORDER BY dc:modified DESC", NXQL.NXQL);
-		int userRecentlyModifiedCount = 0;
-		for (Map<String, Serializable> docResult : userRecentlyModifiedDocsResult) {
+	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+
+	    // Loop through results again and get the current user most recently modified docs
+		int userRecentlyModifiedCount = 0;	
+		ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();		
+		// Reset query results position to the beginning
+		mostRecentlyModifiedDocsResult.skipTo(0);		
+		for (Map<String, Serializable> docResult : mostRecentlyModifiedDocsResult) {
 	        String value = (String) docResult.get("ecm:uuid");
 	        DocumentRef docRef = new IdRef(value);
 	        DocumentModel doc = session.getDocument(docRef);
-	    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
-	    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-	    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-	    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-	    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
-	    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
-	    	
-	    	userRecentlyModifiedCount++;
-	    	if(userRecentlyModifiedCount >= maxQueryResults) {
-	        	break;
+	        // Match on the current users name
+	        if(doc.getPropertyValue("dc:lastContributor").equals(principalName)) {
+		    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+		    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+		    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+		    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+		    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+		    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
+		    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);	        	
+		    	
+		    	userRecentlyModifiedCount++;
+		    	if(userRecentlyModifiedCount >= maxQueryResults) {
+		        	break;
+		        }		    	
 	        }
-	    }
-		userRecentlyModifiedDocsResult.close();	        
-	    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
+	    }		
+	    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
+
+	    // Close the IterableQueryResult - important
+		mostRecentlyModifiedDocsResult.close();	        
+
+//	    
+//	    // Get data about the users most recently modified docs
+//	    ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();		
+//		IterableQueryResult userRecentlyModifiedDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction 
+//																+ " AND dc:lastContributor = '" + principalName + "'"
+//																+ " ORDER BY dc:modified DESC", NXQL.NXQL);
+//		int userRecentlyModifiedCount = 0;
+//		for (Map<String, Serializable> docResult : userRecentlyModifiedDocsResult) {
+//	        String value = (String) docResult.get("ecm:uuid");
+//	        DocumentRef docRef = new IdRef(value);
+//	        DocumentModel doc = session.getDocument(docRef);
+//	    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+//	    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+//	    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+//	    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+//	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+//	    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+//	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
+//	    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
+//	    	
+//	    	userRecentlyModifiedCount++;
+//	    	if(userRecentlyModifiedCount >= maxQueryResults) {
+//	        	break;
+//	        }
+//	    }
+//		userRecentlyModifiedDocsResult.close();	        
+//	    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
 
     	return documentJsonObj;
     }   
