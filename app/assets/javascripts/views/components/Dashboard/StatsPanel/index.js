@@ -11,9 +11,9 @@ export default class StatsPanel extends Component {
 
   _generateDoughnutData() {
     let doughnutData = [];
-    doughnutData.push({ value: this.props.data[this.props.childElementName].new, color:"#F7464A", highlight: "#FF5A5E", label: "Disabled" })
+    doughnutData.push({ value: this.props.data[this.props.childElementName].disabled, color:"#F7464A", highlight: "#FF5A5E", label: "Disabled" })
     doughnutData.push({ value: this.props.data[this.props.childElementName].enabled, color: "#46BFBD", highlight: "#5AD3D1", label: "Enabled" }),
-    doughnutData.push({ value: this.props.data[this.props.childElementName].disabled, color: "#FDB45C", highlight: "#FFC870", label: "New" });
+    doughnutData.push({ value: this.props.data[this.props.childElementName].new, color: "#FDB45C", highlight: "#FFC870", label: "New" });
     return doughnutData;
   }  
   
@@ -30,10 +30,11 @@ export default class StatsPanel extends Component {
     		<p><strong>Disabled:</strong> {this.props.data[this.props.childElementName].disabled}</p>                         
 
     		<Doughnut data={doughnutData} />
-
+{/*
     		<p><strong>Created Today:</strong> {this.props.data[this.props.childElementName].created_today}</p>
     		<p><strong>Modified Today:</strong> {this.props.data[this.props.childElementName].modified_today}</p>
-    		<p><strong>Most Recently Created:</strong></p>
+
+			<p><strong>Most Recently Created:</strong></p>
     		<ul>
     		{this.props.data[this.props.childElementName].most_recently_created.map((document, i) => 
     		  <li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
@@ -41,6 +42,7 @@ export default class StatsPanel extends Component {
     		  </li>
     		)}
     		</ul>
+*/}    		
     		<p><strong>Most Recently Modified:</strong></p>
     		<ul>
     		{this.props.data[this.props.childElementName].most_recently_modified.map((document, i) => 
@@ -56,7 +58,7 @@ export default class StatsPanel extends Component {
     		    <br />{document['dc:modified']} by {document['dc:lastContributor']}
     		  </li>
     		)}
-    		</ul>             
+    		</ul>        
 		</div>
     );
   }
