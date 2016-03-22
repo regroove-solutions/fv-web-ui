@@ -4,11 +4,10 @@
 
 package ca.firstvoices.operations;
 
+import java.io.Serializable;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -21,8 +20,9 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -44,12 +44,16 @@ public class FVGenerateJsonStatistics {
     
     protected String principalName;
     
-    protected int mostRecentMaxResults = 10;
+    protected int maxQueryResults = 10;
     
     protected ObjectMapper mapper = new ObjectMapper();
 
 	protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
-										    		
+	protected final String BASE_DOCS_QUERY2 = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
+	
+	protected final String BASE_DOCS_COUNT_QUERY = "SELECT COUNT(ecm:uuid) FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
+	protected final String BASE_DOCS_COUNT_QUERY2 = "SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
+	
     @OperationMethod
     public Blob run() {
     	
@@ -71,33 +75,33 @@ public class FVGenerateJsonStatistics {
     	ObjectNode phraseJsonObj = generateDocumentStatsJson("FVPhrase");				
 		rootJsonObj.put("phrases", phraseJsonObj);		
 
-		// Books (Stories & Songs)
-    	ObjectNode booksJsonObj = generateDocumentStatsJson("FVBook");				
-		rootJsonObj.put("books", booksJsonObj);		
-
-		// Stories & Songs
-    	ObjectNode charactersJsonObj = generateDocumentStatsJson("FVCharacter");				
-		rootJsonObj.put("characters", charactersJsonObj);			
-		
-		// Contributors
-    	ObjectNode contributorsJsonObj = generateDocumentStatsJson("FVContributor");				
-		rootJsonObj.put("contributors", contributorsJsonObj);
-
-		// Categories
-    	ObjectNode categoriesJsonObj = generateDocumentStatsJson("FVCategory");				
-		rootJsonObj.put("categories", categoriesJsonObj);		
-		
-		// Audio
-    	ObjectNode audioJsonObj = generateDocumentStatsJson("FVAudio");				
-		rootJsonObj.put("audio", audioJsonObj);		
-
-		// Picture
-    	ObjectNode pictureJsonObj = generateDocumentStatsJson("FVPicture");				
-		rootJsonObj.put("pictures", pictureJsonObj);		
-		
-		// Video
-    	ObjectNode videoJsonObj = generateDocumentStatsJson("FVVideo");				
-		rootJsonObj.put("videos", videoJsonObj);		
+//		// Books (Stories & Songs)
+//    	ObjectNode booksJsonObj = generateDocumentStatsJson("FVBook");				
+//		rootJsonObj.put("books", booksJsonObj);		
+//
+//		// Stories & Songs
+//    	ObjectNode charactersJsonObj = generateDocumentStatsJson("FVCharacter");				
+//		rootJsonObj.put("characters", charactersJsonObj);			
+//		
+//		// Contributors
+//    	ObjectNode contributorsJsonObj = generateDocumentStatsJson("FVContributor");				
+//		rootJsonObj.put("contributors", contributorsJsonObj);
+//
+//		// Categories
+//    	ObjectNode categoriesJsonObj = generateDocumentStatsJson("FVCategory");				
+//		rootJsonObj.put("categories", categoriesJsonObj);		
+//		
+//		// Audio
+//    	ObjectNode audioJsonObj = generateDocumentStatsJson("FVAudio");				
+//		rootJsonObj.put("audio", audioJsonObj);		
+//
+//		// Picture
+//    	ObjectNode pictureJsonObj = generateDocumentStatsJson("FVPicture");				
+//		rootJsonObj.put("pictures", pictureJsonObj);		
+//		
+//		// Video
+//    	ObjectNode videoJsonObj = generateDocumentStatsJson("FVVideo");				
+//		rootJsonObj.put("videos", videoJsonObj);		
 		
         return new StringBlob(rootJsonObj.toString(), "application/json");    
     } 
@@ -106,104 +110,103 @@ public class FVGenerateJsonStatistics {
     	ObjectNode documentJsonObj = mapper.createObjectNode();
     	
     	// Query to get documents from the workspace
-    	String baseDocumentsQuery = String.format(BASE_DOCS_QUERY, documentType);    	
+    	String baseDocumentsQuery = String.format(BASE_DOCS_QUERY, documentType);
+    	//String baseDocumentsCountQuery = String.format(BASE_DOCS_COUNT_QUERY, documentType); 
     	
+    	// Add additional query parameters depending on path
+    	if(dialectPath.contains("/Workspaces/")) {
+    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
+    	} 
+    	else if(dialectPath.contains("/sections/")) {
+    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 1";   		
+    	}
+   	    	
     	// Restrict the query to the specified dialect. Otherwise leave it empty
         String queryDialectRestriction = " AND ecm:path STARTSWITH '" + dialectPath + "'"; 		
     	
-    	// Get a count of all documents of the specified type
-        DocumentModelList totalDocuments = session.query(baseDocumentsQuery + queryDialectRestriction, NXQL.NXQL, null, 1, 0, true);
-        int totalDocumentsCount = (int) totalDocuments.totalSize();
-		documentJsonObj.put("total", totalDocumentsCount);
+		IterableQueryResult totalDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction, NXQL.NXQL);
+		documentJsonObj.put("total", totalDocsResult.size());	
 
 		// If the document uses the fv-lifecycle, get counts for documents in each lifecycle state
-		if(hasFVLifecycle(documentType)) {
-			// New
-	        DocumentModelList totalNewDocuments = session.query(baseDocumentsQuery + queryDialectRestriction 
-	        											+ " AND ecm:currentLifeCycleState='New'", NXQL.NXQL, null, 1, 0, true);
-	        int totalNewDocumentsCount = (int) totalNewDocuments.totalSize();
-			documentJsonObj.put("new", totalNewDocumentsCount);		
-
-			// Enabled
-	        DocumentModelList totalEnabledDocuments = session.query(baseDocumentsQuery + queryDialectRestriction 
-	        											+ " AND ecm:currentLifeCycleState='Enabled'", NXQL.NXQL, null, 1, 0, true);
-	        int totalEnabledDocumentsCount = (int) totalEnabledDocuments.totalSize();
-			documentJsonObj.put("enabled", totalEnabledDocumentsCount);
-
-			// Disabled
-	        DocumentModelList totalDisabledDocuments = session.query(baseDocumentsQuery + queryDialectRestriction
-	        											+ " AND ecm:currentLifeCycleState='Disabled'", NXQL.NXQL, null, 1, 0, true);
-	        int totalDisabledDocumentsCount = (int) totalDisabledDocuments.totalSize();
-			documentJsonObj.put("disabled", totalDisabledDocumentsCount);				
-		}	
-	    
-	    // Get counts for all docs created and modified today
-	    Date date = Calendar.getInstance().getTime();
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    String dateStringToday = sdf.format(date);
-	    // Created today
-	    DocumentModelList createdTodayDocs = session.query(baseDocumentsQuery + queryDialectRestriction 
-	    										+ " AND dc:created >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
-        int createdTodayDocumentsCount = (int) createdTodayDocs.totalSize();
-		documentJsonObj.put("created_today", createdTodayDocumentsCount);
-		// Modified today
-	    DocumentModelList modifiedTodayDocs = session.query(baseDocumentsQuery + queryDialectRestriction 
-	    										+ " AND dc:modified >= DATE '" + dateStringToday + "'", NXQL.NXQL, null, 1, 0, true);
-        int modifiedTodayDocumentsCount = (int) modifiedTodayDocs.totalSize();
-		documentJsonObj.put("modified_today", modifiedTodayDocumentsCount);			    
-	    
-	    // Get data about the most recently created docs
-	    DocumentModelList mostRecentlyCreatedDocs = session.query(baseDocumentsQuery + queryDialectRestriction
-	    											+ " ORDER BY dc:created DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
-	    ArrayNode recentlyCreatedJsonArray = mapper.createArrayNode();
-	    for(DocumentModel doc : mostRecentlyCreatedDocs) {
-	    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
-	    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
-	    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
-	    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
-	    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
-	    	recentlyCreatedJsonObj.put("dc:created", dateCreated.getTime().toString());
-	    	recentlyCreatedJsonObj.put("dc:creator", (String)doc.getPropertyValue("dc:creator"));
-	    	
-	    	recentlyCreatedJsonArray.add(recentlyCreatedJsonObj);
-	    }
-	    documentJsonObj.put("most_recently_created", recentlyCreatedJsonArray);		    
-	    
+		if(hasFVLifecycle(documentType)) {		
+		
+			int newDocs = 0;
+			int enabledDocs = 0;
+			int disabledDocs = 0;
+		    
+			for (Map<String, Serializable> docResult : totalDocsResult) {
+		        String value = (String) docResult.get("ecm:uuid");
+		        DocumentRef docRef = new IdRef(value);
+		        DocumentModel doc = session.getDocument(docRef);
+		        if(doc.getCurrentLifeCycleState().equals("New")) {
+		        	newDocs++;
+		        }
+		        else if(doc.getCurrentLifeCycleState().equals("Enabled")) {
+		        	enabledDocs++;
+		        }
+		        else if(doc.getCurrentLifeCycleState().equals("Disabled")) {
+		        	disabledDocs++;
+		        }
+		    }
+			documentJsonObj.put("new", newDocs);
+			documentJsonObj.put("enabled", enabledDocs);
+			documentJsonObj.put("disabled", disabledDocs);
+		}
+		totalDocsResult.close();	        
+			
 	    // Get data about the most recently modified docs
-	    DocumentModelList mostRecentlyModifiedDocs = session.query(baseDocumentsQuery + queryDialectRestriction 
-	    											+ " ORDER BY dc:modified DESC", NXQL.NXQL, null, mostRecentMaxResults, 0, true);
-	    ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();
-	    for(DocumentModel doc : mostRecentlyModifiedDocs) {
+	    ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
+		IterableQueryResult mostRecentlyModifiedDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction 
+																+ " ORDER BY dc:modified DESC", NXQL.NXQL);
+		int recentlyModifiedCount = 0;
+		for (Map<String, Serializable> docResult : mostRecentlyModifiedDocsResult) {
+	        String value = (String) docResult.get("ecm:uuid");
+	        DocumentRef docRef = new IdRef(value);
+	        DocumentModel doc = session.getDocument(docRef);
 	    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
 	    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
 	    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
 	    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
 	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
 	    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-	    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));
-	    	
+	    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
 	    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
+	    	
+	    	recentlyModifiedCount++;
+	    	if(recentlyModifiedCount >= maxQueryResults) {
+	        	break;
+	        }
 	    }
-	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);	
-	    
-    	// Get data about the current user's most recently modified docs
-        DocumentModelList userMostRecentlyModifiedDocs = session.query(baseDocumentsQuery + queryDialectRestriction 
-	        											+ " AND dc:lastContributor = '" + principalName + "'"
-	        											+ " ORDER BY dc:modified DESC", NXQL.NXQL, null, 10, 0, true);
-	    ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();
-	    for(DocumentModel doc : userMostRecentlyModifiedDocs) {
+		mostRecentlyModifiedDocsResult.close();	        
+	    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);			
+		
+	    // Get data about the users most recently modified docs
+	    ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();		
+		IterableQueryResult userRecentlyModifiedDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction 
+																+ " AND dc:lastContributor = '" + principalName + "'"
+																+ " ORDER BY dc:modified DESC", NXQL.NXQL);
+		int userRecentlyModifiedCount = 0;
+		for (Map<String, Serializable> docResult : userRecentlyModifiedDocsResult) {
+	        String value = (String) docResult.get("ecm:uuid");
+	        DocumentRef docRef = new IdRef(value);
+	        DocumentModel doc = session.getDocument(docRef);
 	    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
 	    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
 	    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
 	    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
 	    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
 	    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));
-		
+	    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
 	    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
+	    	
+	    	userRecentlyModifiedCount++;
+	    	if(userRecentlyModifiedCount >= maxQueryResults) {
+	        	break;
+	        }
 	    }
+		userRecentlyModifiedDocsResult.close();	        
 	    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
-		
+
     	return documentJsonObj;
     }   
     
