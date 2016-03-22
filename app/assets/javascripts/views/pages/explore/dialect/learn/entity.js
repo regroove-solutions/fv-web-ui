@@ -17,6 +17,8 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
+import WordView from 'views/pages/explore/dialect/learn/words/view';
+
 import CircularProgress from 'material-ui/lib/circular-progress';
 
 /**
@@ -40,7 +42,7 @@ export default class PageDialectViewDictionaryItem extends Component {
 
   fetchData(newProps) {
     let path = newProps.splitWindowPath.slice(1).join('/');
-    newProps.fetchDocument('/' + path);
+    newProps.fetchDocument('/' + path, { 'X-NXenrichers.document': 'ancestry, word' });
   }
 
   componentDidMount() {
@@ -55,10 +57,16 @@ export default class PageDialectViewDictionaryItem extends Component {
 
     let debug = <pre>{JSON.stringify(document, null, 4)}</pre>;
 
-    if (computeDocument.isFetching) {
+    if (computeDocument.isFetching || !computeDocument.success) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-    return <div>{debug}</div>;
+    switch (document.type) {
+    	case 'FVWord':
+    		return <div><WordView word={document} /></div>;
+    	break;
+    }
+
+    return <div>404</div>;
   }
 }

@@ -55,6 +55,8 @@ export default class AddMediaComponent extends React.Component {
 
     this._change = this._change.bind(this);
     this._save = this._save.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
 
     var schema = t.struct({
       'title': t.String,
@@ -128,8 +130,6 @@ export default class AddMediaComponent extends React.Component {
           properties: 'dc:title=' + value.title + ' \ndc:description=' + value.description
         }, file);
       }
-
-
    }
   }
 

@@ -13,10 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react';
-import _ from 'underscore';
-
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
+import provide from 'react-redux-provide';
+
+import selectn from 'selectn';
+
+import _ from 'underscore';
 
 import Avatar from 'material-ui/lib/avatar';
 import Card from 'material-ui/lib/card/card';
@@ -26,6 +29,10 @@ import CardMedia from 'material-ui/lib/card/card-media';
 import CardTitle from 'material-ui/lib/card/card-title';
 import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
+import Divider from 'material-ui/lib/divider';
+
+import List from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
@@ -46,19 +53,23 @@ import DocumentOperations from 'operations/DocumentOperations';
 /**
 * View word entry
 */
-export default class View extends React.Component {
+@provide
+export default class View extends Component {
 
-  static contextTypes = {
-      client: React.PropTypes.object.isRequired,
-      muiTheme: React.PropTypes.object.isRequired,
-      router: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    fetchDocument: PropTypes.func.isRequired,
+    computeDocument: PropTypes.object.isRequired,
+    word: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
-    this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
+    //this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
 
     this.state = {
       word: null,
@@ -68,7 +79,7 @@ export default class View extends React.Component {
       audioContent: []
     };
 
-    this._fetchWord();
+    //this._fetchWord();
 
     this.handleTabActive = this.handleTabActive.bind(this);
   }
@@ -77,15 +88,15 @@ export default class View extends React.Component {
   // Handle change of params when navigating within router
   // See https://github.com/rackt/react-router/blob/latest/docs/guides/advanced/ComponentLifecycle.md
   componentDidUpdate (prevProps) {
-    let oldWord = prevProps.params.word
-    let newWord = this.props.params.word
+    //let oldWord = prevProps.params.word
+    //let newWord = this.props.params.word
 
-    if (newWord !== oldWord)
-      this._fetchWord();
+    //if (newWord !== oldWord)
+      //this._fetchWord();
   }
 
   _fetchWord() {
-    this.wordOperations.getDocumentByID(this.props.params.word).then((function(word){
+    /*this.wordOperations.getDocumentByID(this.props.params.word).then((function(word){
       this.setState({
         word: word
       });
@@ -95,7 +106,7 @@ export default class View extends React.Component {
             children: children
           });
         }).bind(this));
-    }).bind(this));
+    }).bind(this));*/
   }
 
   handleTabActive(tab) {
@@ -181,75 +192,10 @@ export default class View extends React.Component {
 
   render() {
 
-    var 
-      title,
-      pronunciation,
-      part_of_speech,
-      description,
-      cultural_note,
-      related_pictures,
-      related_audio,
-      related_videos,
-      related_phrases,
-      source,
-      categories = "";
+    const { word } = this.props;
 
     var tabItemStyles = {
       userSelect: 'none'
-    }
-
-    if (this.state.word != null)
-    {
-      title = this.state.word.get('dc:title');
-      description = this.state.word.get('dc:description');
-      pronunciation = this.state.word.get('fv-word:pronunciation');
-      cultural_note = this.state.word.get('fv:cultural_note');
-      related_pictures = this.state.word.get('fv:related_pictures');
-      related_audio = this.state.word.get('fv:related_audio');
-      related_videos = this.state.word.get('fv:related_videos');
-      related_phrases = this.state.word.get('fv-word:related_phrases');
-      source = this.state.word.get('fv:source');
-      pronunciation = this.state.word.get('fv-word:pronunciation');
-      part_of_speech = this.state.word.get('fv-word:part_of_speech');
-      categories = this.state.word.get('fv-word:categories');
-
-      var defs = this.state.word.get('fv:definitions');
-      var literal_translations = this.state.word.get('fv:literal_translation');
-      var definitionsBody, literalTranslationBody, categoriesBody = "";
-
-      if (defs != undefined && defs.length > 0){
-
-          definitionsBody = "<p><strong>Definitions:</strong></p>" + "<ul>"
-
-              defs.map(function(object, i){
-                definitionsBody += '<li><strong>' + object.language + '</strong>: ' + object.translation + '</li>';
-            });
-
-          definitionsBody += "</ul>";
-      }
-
-      if (categories != undefined && categories.length > 0){
-
-          categoriesBody = "<p><strong>Subjects:</strong></p>" + "<ul>"
-
-              categories.map(function(object, i){
-                categoriesBody += '<li style="text-transform:capitalize;">' + object + '</li>';
-            });
-
-          categoriesBody += "</ul>";
-      }
-
-      if (literal_translations != undefined && literal_translations.length > 0){
-
-          literalTranslationBody = "<p><strong>Literal Translations:</strong></p>" + "<ul>"
-
-              literal_translations.map(function(object, i){
-                literalTranslationBody += '<li><strong>' + object.language + '</strong>: ' + object.translation + '</li>';
-            });
-
-          literalTranslationBody += "</ul>";
-      }
-
     }
 
     var addMediaView;
@@ -270,46 +216,103 @@ export default class View extends React.Component {
       </Dialog>*/
     }
 
+    /**
+    * Generate definitions body
+    */
+
     return <div>
             <div className="row">
               <div className="col-xs-12">
                 <div>
 
                   <Card>
-
                     <CardHeader
-                      title={title}
-                      subtitle={(pronunciation!=null) ? "Pronunciation: " + pronunciation : ""}
+                      title={word.get('dc:title')}
+                      subtitle={(selectn('contextParameters.word.part_of_speech', word) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', word) : ""}
                       avatar="http://lorempixel.com/100/100/"/>
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
                       <Tab label="Definition" > 
                         <div> 
-                              <CardText>
+                          <CardText>
 
-                              {addMediaView}
+                            <div className="col-xs-8">
 
-                              <h2>Word Entry</h2> 
+                              <h2>{word.get('dc:title')}</h2>
 
-                                <div>
-                                  <p>{description}</p>
-                                </div>
+                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', word)}</p>
 
-                                <div dangerouslySetInnerHTML={{__html: (part_of_speech != null) ? '<p><strong>Part of Speech</strong>: <span>' + part_of_speech + "</span></p>" : ''}} />
-                                <div dangerouslySetInnerHTML={{__html: definitionsBody}} />
-                                <div dangerouslySetInnerHTML={{__html: literalTranslationBody}} />
-                                <div dangerouslySetInnerHTML={{__html: categoriesBody}} />
+                              <p>Pronunciation: {word.get('fv-word:pronunciation')}</p>
 
-                              </CardText>
+                              <SubView group={word.get('fv:definitions')} groupByElement="language" groupValue="translation">
+                                <p>Definitions:</p>
+                              </SubView>
+
+                              <SubView group={word.get('fv:literal_translation')} groupByElement="language" groupValue="translation">
+                                <p>Literal Translations:</p>
+                              </SubView>
+
+
+                              <h3>Related Phrases:</h3>
+
+                              {selectn('contextParameters.word.related_phrases', word).map(function(phrase, key) {
+                                let translation = selectn('fv:literal_translation', phrase);
+
+                                // TODO: Fix hack... Use JSON marshalling on server
+                                var re = /{/gi;
+                                var re2 = /=/gi;
+                                var re3 = /,\s/gi;
+                                var re4 = /}/gi;
+
+                                var str = selectn('fv:literal_translation', phrase);
+                                var newstr = str.replace(re, '{\"');
+                                newstr = newstr.replace(re2, '\":\"');
+                                newstr = newstr.replace(re3, '\",\"');
+                                newstr = newstr.replace(re4, '\"}');
+
+                                var phraseItem = JSON.parse(newstr);
+
+                                return (
+                                <SubView key={key} group={phraseItem} groupByElement="language" groupValue="translation">
+                                  <p>{selectn('dc:title', phrase)}</p>
+                                </SubView>
+                                );
+                              })}
+
+                            </div>
+
+                            <div className="col-xs-4">
+                              <p>
+                                Categories: {selectn('contextParameters.word.categories', word).map(function(category, key) {
+                                  return (selectn('dc:title', category));
+                                })}
+                              </p>
+                              <Divider />
+                              <p>Cultural Note: {word.get('fv-word:cultural_note')}</p>
+                              <Divider />
+                              <p>Reference: {word.get('fv-word:reference')}</p>
+                              <Divider />
+                              <p>
+                                Sources: {selectn('contextParameters.word.sources', word).map(function(source, key) {
+                                  return (selectn('dc:title', source));
+                                })}
+                              </p>
+                            </div>
+
+                          </CardText>
                         </div> 
                       </Tab> 
                       <Tab onActive={this.handleTabActive} label="Photos" id="pictures"> 
                         <div> 
                           <CardText>
                             <h2>Photos</h2> 
-                            <div className="row">{this.state.picturesContent}</div>
+                            <div className="row">
+                              {word.get('fv:related_pictures').map(function(picture, key) {
+                                return (picture);
+                              })}
+                            </div>
                           </CardText>
-                        </div> 
+                        </div>
                       </Tab> 
                       <Tab label="Audio" onActive={this.handleTabActive} id="audio"> 
                         <div> 
@@ -343,5 +346,72 @@ export default class View extends React.Component {
               </div>
             </div>
         </div>;
+  }
+}
+
+class SubView extends Component {
+
+  static containerStyles = {
+    borderWidth: '1px',
+    borderStyle: 'dashed',
+    borderColor: '#efefef',
+    margin: '10px 0',
+    padding: '10px'
+  };
+
+  static tabsStyles = {
+    tabItemContainerStyle: {
+      backgroundColor: 'transparent'
+    }
+  };
+
+  static tabStyles = {
+    headline: {
+      fontSize: 12,
+      color: '#000',
+      paddingTop: 2,
+      paddingBottom: 2,
+      marginBottom: 5,
+      textAlign: 'left'
+    }
+  };
+
+  constructor(props, context){
+    super(props, context);
+  }
+
+  render() {
+
+    const _this = this;
+
+    const grouped = _.groupBy(this.props.group, function(obj) {
+      return obj[_this.props.groupByElement];
+    });
+
+    if ( !grouped || _.isEmpty(grouped) )
+      return <div></div>;
+
+    return <div style={SubView.containerStyles}>
+      
+      <h3>{this.props.children}</h3>
+
+      <Tabs tabItemContainerStyle={SubView.tabsStyles.tabItemContainerStyle}>
+      {_.map(grouped, function(group, key) {
+
+        return <Tab style={SubView.tabStyles.headline} label={key} key={key}>
+
+        <List>
+
+          {group.map(function(groupValue, key) {
+            return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
+          })}
+
+        </List>
+
+        </Tab>;
+
+      })}
+      </Tabs>
+    </div>;
   }
 }

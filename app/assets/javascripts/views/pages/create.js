@@ -17,7 +17,7 @@ limitations under the License.
 //import {default as PageExploreArchive} from './explore/archive'
 //import {default as PageExploreFamily} from './explore/family'
 //import {default as PageExploreLanguage} from './explore/language'
-import {default as PageDialectWordsCreate} from './explore/dialect/learn/words/view/create'
+import {default as PageDialectWordsCreate} from './explore/dialect/learn/words/create'
 
 module.exports = {
   PageDialectWordsCreate

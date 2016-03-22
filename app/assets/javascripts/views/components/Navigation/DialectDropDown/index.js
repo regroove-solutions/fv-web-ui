@@ -115,7 +115,8 @@ export default class DialectDropDown extends Component {
 
       if (dropdownData) {
         dropdownData = _.pairs(_.groupBy(dropdownData, function(item){
-          return item.props.language;
+          if (item)
+            return item.props.language;
         }));
       }
     }

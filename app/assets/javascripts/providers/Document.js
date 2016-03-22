@@ -14,12 +14,12 @@ const DOCUMENT_FETCH_START = "DOCUMENT_FETCH_START";
 const DOCUMENT_FETCH_SUCCESS = "DOCUMENT_FETCH_SUCCESS";
 const DOCUMENT_FETCH_ERROR = "DOCUMENT_FETCH_ERROR";
 
-const fetchDocument = function fetchDocument(pathOrId) {
+const fetchDocument = function fetchDocument(pathOrId, headers) {
   return function (dispatch) {
 
     dispatch( { type: DOCUMENT_FETCH_START } );
 
-    return DocumentOperations.getDocument(pathOrId, 'Document', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'Document', { headers: headers })
     .then((response) => {
       dispatch( { type: DOCUMENT_FETCH_SUCCESS, document: response } )
     }).catch((error) => {
