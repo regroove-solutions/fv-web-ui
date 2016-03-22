@@ -86,13 +86,9 @@ export default class DialectLearn extends Component {
     let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
 
     // TODO: 
-    Promise.all([
-     newProps.fetchDialect('/' + path),
-     newProps.fetchPortal('/' + path + '/Portal')
-    ]).then((values) => {
-    	console.log(values);
-    	newProps.fetchDialectStats('/' + path)
-    });
+     newProps.fetchDialect('/' + path);
+     newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchDialectStats('/' + path);
   }
 
   // Fetch data on initial render
@@ -156,15 +152,13 @@ export default class DialectLearn extends Component {
   }
   
   render() {
-    const { computeDialect, computePortal, computeDocument, computeDialectStats } = this.props;
-
-    if (!computeDialectStats.success) {
-        return <CircularProgress mode="indeterminate" size={5} />;
-    }       
+    const { computeDialect, computePortal, computeDocument, computeDialectStats } = this.props;      
     
     let dialect = computeDialect.response;
     let portal = computePortal.response;
-    let dialectStats = computeDialectStats.response;
+    let dialectStats = computeDialectStats;
+    
+    console.log(dialectStats);
     
     // Assign dialect prop, from parent, to all children
     let content = React.Children.map(this.props.children, function(child) {
