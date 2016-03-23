@@ -4,33 +4,33 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
-import org.nuxeo.ecm.directory.Session;
-import org.nuxeo.ecm.directory.api.DirectoryService;
-import org.nuxeo.runtime.api.Framework;
+
+import ca.bc.gov.nuxeo.utils.EnricherUtils;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 
 	public static final String NAME = "portal";
 
+    private static final Log log = LogFactory.getLog(PortalEnricher.class);
+	
 	public PortalEnricher() {
 		super(NAME);
 	}
@@ -98,50 +98,18 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					
 					// Process "fv-word:part_of_speech" value
 					String partOfSpeechId = (String) featuredWordDoc.getProperty("fv-word",	"part_of_speech");
-					DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
-					Session directorySession = directoryService.open("parts_of_speech");
-					String partOfSpeechLabel = "";
-					if (partOfSpeechId != null || !partOfSpeechId.isEmpty()) {
-						// Create a query filter
-						Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
-						queryFilter.put("id", partOfSpeechId);
-
-						// Execute the query, wrapped in a DocumentModel list
-						DocumentModelList queryResult = directorySession.query(queryFilter);
-						DocumentModel partOfSpeechDoc = queryResult.get(0);
-						if (partOfSpeechDoc != null) {
-							partOfSpeechLabel = partOfSpeechDoc.getProperty("xvocabulary:label").getValue(String.class);
-						}
-					}
-					directorySession.close();
+					String partOfSpeechLabel = EnricherUtils.getPartOfSpeechLabel(partOfSpeechId);
 					featuredWordJsonObj.put("fv-word:part_of_speech", partOfSpeechLabel);
 					
 					// Process "fv:related_audio" values
 					String[] relatedAudioIds = (String[]) featuredWordDoc.getPropertyValue("fv:related_audio");
 					ArrayNode relatedAudioJsonArray = mapper.createArrayNode();
 					
+					// Retrieve additional properties from the referenced binaries, and add them to the JSON
 					for(String relatedAudioId : relatedAudioIds) {
-						IdRef audioRef = new IdRef(relatedAudioId);
-						DocumentModel audioDoc = null;
-						ObjectNode relatedAudioJsonObj = null;
-						// Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
-						try {
-							relatedAudioJsonObj = mapper.createObjectNode();
-							audioDoc = session.getDocument(audioRef);
-							
-							BinaryBlob fileObj = (BinaryBlob)audioDoc.getProperty("file", "content");							
-							String filename = fileObj.getFilename();
-							String mimeType = fileObj.getMimeType();
-							
-							// Build JSON node
-							relatedAudioJsonObj.put("uid", audioDoc.getId());
-							relatedAudioJsonObj.put("name", filename);
-							relatedAudioJsonObj.put("mime-type", mimeType);
-							
-							relatedAudioJsonArray.add(relatedAudioJsonObj);
-
-						} catch (DocumentNotFoundException de) {
-							continue;
+						ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(relatedAudioId, session);
+						if(binaryJsonObj != null) {
+							relatedAudioJsonArray.add(binaryJsonObj);
 						}
 					}
 					featuredWordJsonObj.put("fv:related_audio", relatedAudioJsonArray);
@@ -151,36 +119,42 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 				jsonObj.put("fv-portal:featured_words", featuredWordJsonArray);
 			}
 			
-			// Process "fv-portal:audio" values
+			// Process "fv-portal:featured_audio" values
 			String[] featuredAudioIds = (String[]) doc.getProperty("fv-portal", "featured_audio");
 			if (featuredAudioIds != null) {
-				ArrayNode featuredAudioJsonArray = mapper.createArrayNode();
+				ArrayNode featuredAudioJsonArray = mapper.createArrayNode();		
 				
+				// Retrieve additional properties from the referenced binaries, and add them to the JSON
 				for (String featuredAudioId : featuredAudioIds) {
-					IdRef ref = new IdRef(featuredAudioId);
-					DocumentModel featuredAudioDoc = null;
-					// Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
-
-					try {
-						ObjectNode featuredAudioJsonObj = mapper.createObjectNode();
-						featuredAudioDoc = session.getDocument(ref);
-						
-						BinaryBlob fileObj = (BinaryBlob)featuredAudioDoc.getProperty("file", "content");							
-						String filename = fileObj.getFilename();
-						String mimeType = fileObj.getMimeType();
-						
-						// Build JSON node
-						featuredAudioJsonObj.put("uid", featuredAudioDoc.getId());
-						featuredAudioJsonObj.put("name", filename);
-						featuredAudioJsonObj.put("mime-type", mimeType);
-						
-						featuredAudioJsonArray.add(featuredAudioJsonObj);						
-					} catch (DocumentNotFoundException de) {
-						continue;
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(featuredAudioId, session);
+					if(binaryJsonObj != null) {
+						featuredAudioJsonArray.add(binaryJsonObj);
 					}
 				}
 				jsonObj.put("fv-portal:featured_audio", featuredAudioJsonArray);
 			}
+			
+			// Process "fv-portal:background_top_image" value
+			String backgroundTopImageId = (String) doc.getProperty("fv-portal", "background_top_image");
+			if (backgroundTopImageId != null) {				
+				// Retrieve additional properties from the referenced binaries, and add them to the JSON
+				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(backgroundTopImageId, session);
+				if(binaryJsonObj != null) {
+					jsonObj.put("fv-portal:background_top_image", binaryJsonObj);
+				}
+			}			
+
+			// Process "fv-portal:background_bottom_image" value
+			String backgroundBottomImageId = (String) doc.getProperty("fv-portal", "background_bottom_image");
+			if (backgroundBottomImageId != null) {				
+				// Retrieve additional properties from the referenced binaries, and add them to the JSON
+				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(backgroundBottomImageId, session);
+				if(binaryJsonObj != null) {
+					jsonObj.put("fv-portal:background_bottom_image", binaryJsonObj);
+				}
+			}				
+			
+			
 		}
 
 		return jsonObj;

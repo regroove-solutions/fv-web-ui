@@ -11,10 +11,10 @@ import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import ca.bc.gov.nuxeo.utils.EnricherUtils;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
@@ -54,20 +54,10 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			String[] phraseBookIds = (String[]) doc.getProperty("fv-phrase", "phrase_books");
 			ArrayNode phraseBookArray = mapper.createArrayNode();
 			for (String phraseBookId : phraseBookIds) {
-				IdRef ref = new IdRef(phraseBookId);
-				DocumentModel phraseBookDoc = null;
-				// Try to retrieve Nuxeo document. If it isn't found, continue
-				// to next iteration.
-				try {
-					phraseBookDoc = session.getDocument(ref);
-				} catch (DocumentNotFoundException de) {
-					continue;
+				ObjectNode phraseBookObj = EnricherUtils.getDocumentIdAndTitleJsonObject(phraseBookId, session);
+				if(phraseBookObj != null) {
+					phraseBookArray.add(phraseBookObj);
 				}
-
-				ObjectNode phraseBookObj = mapper.createObjectNode();
-				phraseBookObj.put("uid", phraseBookId);
-				phraseBookObj.put("dc:title", phraseBookDoc.getTitle());
-				phraseBookArray.add(phraseBookObj);
 			}
 			jsonObj.put("phrase_books", phraseBookArray);
 
@@ -76,20 +66,10 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			if (sourceIds != null) {
 				ArrayNode sourceArray = mapper.createArrayNode();
 				for (String sourceId : sourceIds) {
-					IdRef ref = new IdRef(sourceId);
-					DocumentModel sourceDoc = null;
-					// Try to retrieve Nuxeo document. If it isn't found,
-					// continue to next iteration.
-					try {
-						sourceDoc = session.getDocument(ref);
-					} catch (DocumentNotFoundException de) {
-						continue;
+					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleJsonObject(sourceId, session);
+					if(sourceObj != null) {
+						sourceArray.add(sourceObj);
 					}
-
-					ObjectNode sourceObj = mapper.createObjectNode();
-					sourceObj.put("uid", sourceId);
-					sourceObj.put("dc:title", sourceDoc.getTitle());
-					sourceArray.add(sourceObj);
 				}
 				jsonObj.put("sources", sourceArray);
 			}
