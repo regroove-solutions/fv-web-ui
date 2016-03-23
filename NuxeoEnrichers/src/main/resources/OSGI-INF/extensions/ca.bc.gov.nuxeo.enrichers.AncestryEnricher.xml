@@ -1,5 +1,0 @@
-<component name="ca.bc.gov.nuxeo.enrichers.AncestryEnricher">
-	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-		<register class="ca.bc.gov.nuxeo.enrichers.AncestryEnricher" enable="true" />
-	</extension>   
-</component>

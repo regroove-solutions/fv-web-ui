@@ -1,5 +1,0 @@
-<component name="ca.bc.gov.nuxeo.enrichers.PhraseEnricher">
-	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
-		<register class="ca.bc.gov.nuxeo.enrichers.PhraseEnricher" enable="true" />
-	</extension>   
-</component>

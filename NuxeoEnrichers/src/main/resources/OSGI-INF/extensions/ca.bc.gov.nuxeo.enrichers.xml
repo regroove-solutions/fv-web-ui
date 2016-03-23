@@ -1,0 +1,12 @@
+<component name="ca.bc.gov.nuxeo.enrichers.contrib">
+
+	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
+		<register class="ca.bc.gov.nuxeo.enrichers.AncestryEnricher" enable="true" />
+		<register class="ca.bc.gov.nuxeo.enrichers.CharacterEnricher" enable="true" />
+		<register class="ca.bc.gov.nuxeo.enrichers.ParentDocEnricher" enable="true" />
+		<register class="ca.bc.gov.nuxeo.enrichers.PhraseEnricher" enable="true" />
+		<register class="ca.bc.gov.nuxeo.enrichers.PortalEnricher" enable="true" />	
+		<register class="ca.bc.gov.nuxeo.enrichers.WordEnricher" enable="true" />
+	</extension>   
+	
+</component>
