@@ -315,5 +315,37 @@ export default class DocumentOperations extends BaseOperations {
     	   })
     	   .catch((error) => { reject(error); });
      });
-   } 
+   }
+   
+   
+   static getCharactersByDialect(path, headers = {}, params = {}) {
+
+	   let properties = this.properties;
+	   let cleanedDialectPath = StringHelpers.clean(path);
+
+	   return new Promise(
+	        function(resolve, reject) {
+
+	        let defaultParams = {
+	        	query: 
+	        		"SELECT * FROM FVCharacter" +
+	        		" WHERE (ecm:path STARTSWITH '" + cleanedDialectPath + "'" + 
+	        		" AND ecm:currentLifeCycleState <> 'deleted')" + 
+	        		" ORDER BY fvcharacter:alphabet_order ASC"
+	          	};
+
+	          	params = Object.assign(defaultParams, params);
+
+	          	properties.client.operation('Document.Query')
+	            .params(params)
+	            .execute(headers)
+	         	.then(function(results) {
+	         		resolve(results);
+	        	})
+	        	.catch((error) => { reject(error); });
+	        });
+	  }   
+   
+   
+   
 }

@@ -51,7 +51,9 @@ export default class DialectLearn extends Component {
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     fetchDialectStats: PropTypes.func.isRequired,
-    computeDialectStats: PropTypes.object.isRequired    
+    computeDialectStats: PropTypes.object.isRequired,
+    fetchCharacters: PropTypes.func.isRequired,
+    computeCharacters: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -86,9 +88,10 @@ export default class DialectLearn extends Component {
     let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
 
     // TODO: 
-     newProps.fetchDialect('/' + path);
-     newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchDialect('/' + path);
+    newProps.fetchPortal('/' + path + '/Portal');
     newProps.fetchDialectStats('/' + path);
+    newProps.fetchCharacters('/' + path + '/Alphabet');
   }
 
   // Fetch data on initial render
@@ -152,13 +155,14 @@ export default class DialectLearn extends Component {
   }
   
   render() {
-    const { computeDialect, computePortal, computeDocument, computeDialectStats } = this.props;      
+    const { computeDialect, computePortal, computeDocument, computeDialectStats, computeCharacters } = this.props;      
     
     let dialect = computeDialect.response;
     let portal = computePortal.response;
     let dialectStats = computeDialectStats;
+    let characters = computeCharacters.response;
     
-    console.log(dialectStats);
+    let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
     
     // Assign dialect prop, from parent, to all children
     let content = React.Children.map(this.props.children, function(child) {
@@ -179,8 +183,19 @@ export default class DialectLearn extends Component {
 
           <div className="row">
 	          <div className={classNames('col-xs-12', 'col-md-6')}>
-	            <h1>{(this.props.dialect) ? this.props.dialect.get('dc:title') : ''} Alphabet</h1>
-	          	<p>First words here</p>
+	            <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
+	            {/* Display alphabet characters - move to separate component later */}
+	            {(characters.entries) ? characters.entries.map((char, i) => 
+	    		  <div key={char.uid} className="col-xs-1">
+		    		  <a href={'/explore' + char.path}>{char.title}</a>
+		    		  
+		    		  {(char.contextParameters.character.related_audio[0]) ? 
+		    		    <a href={'/nuxeo' + char.contextParameters.character.related_audio[0].path}>
+	  			  	      <span className="glyphicon glyphicon-volume-up" />
+	  			        </a>
+		    		  : ''}	    		  
+	    		  </div>
+	    		) : circularProgress}
 		      </div>	
 		      <div className={classNames('col-xs-12', 'col-md-6')}>
 		        <h1>Keyboards</h1>

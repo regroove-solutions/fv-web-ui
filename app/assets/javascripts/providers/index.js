@@ -9,6 +9,7 @@ import FVDialect from './FVDialect';
 import FVPortal from './FVPortal';
 import FVWord from './FVWord';
 import FVAudio from './FVAudio';
+import FVCharacter from './FVCharacter';
 
 import connect from './connect';
 import navigation from './navigation';
@@ -34,5 +35,6 @@ export default {
   FVDialect,
   FVPortal,
   FVAudio,
-  FVWord
+  FVWord,
+  FVCharacter
 };
