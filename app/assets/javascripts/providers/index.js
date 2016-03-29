@@ -17,7 +17,7 @@ import navigation from './navigation';
 const loggerMiddleware = createLoggerMiddleware();
 
 // Enable log for specific provider
-//unshiftMiddleware([FVDialect], loggerMiddleware);
+//unshiftMiddleware([connect], loggerMiddleware);
 
 //console.log(createCombinedStore({Editor, FVPortal}));
 

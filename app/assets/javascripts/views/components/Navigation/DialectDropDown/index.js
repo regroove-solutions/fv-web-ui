@@ -46,6 +46,8 @@ export default class DialectDropDown extends Component {
     navigateTo: PropTypes.func.isRequired,
     fetchDialectsAll: PropTypes.func.isRequired,
     computeDialectsAll: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired
   };
 
@@ -66,8 +68,27 @@ export default class DialectDropDown extends Component {
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
+  fetchData(newProps) {
+
+    let fetchPath = 'sections/';
+
+    if (selectn("isConnected", newProps.computeLogin)) {
+      fetchPath = 'Workspaces/';
+    }
+
+    newProps.fetchDialectsAll('/' + newProps.properties.domain + '/' + fetchPath);
+  }
+
+  // Fetch data on initial render
   componentDidMount() {
-    this.props.fetchDialectsAll('/FV/sections/');
+    this.fetchData(this.props);
+  }
+
+  // Refetch if logged in
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && nextProps.computeLogin.isConnected != undefined) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(event, path) {
@@ -124,10 +145,10 @@ export default class DialectDropDown extends Component {
 
     let content = "";
 
-    if (selectn('response.entries', this.props.computeDialectsAll)) {
+    if (selectn('response.entries.length', this.props.computeDialectsAll) > 0) {
 
       content = <div>
-        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)}  label="Browse Dialects...">
+        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label="Browse Dialects...">
           <DropDownArrow />
         </RaisedButton>
 

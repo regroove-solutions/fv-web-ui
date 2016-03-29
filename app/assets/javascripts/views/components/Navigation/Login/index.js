@@ -16,6 +16,8 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import _ from 'underscore';
+import selectn from 'selectn';
+
 //import connectToStores from 'alt-utils/lib/connectToStores';
 
 // Configuration
@@ -38,15 +40,9 @@ import TextField from 'material-ui/lib/text-field';
 export default class Login extends Component {
 
   static propTypes = {
-    requestLogin: PropTypes.func.isRequired,
-    computeRequestLogin: PropTypes.object.isRequired,
+    login: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired
-  };
-
-  static contextTypes = {
-      client: React.PropTypes.object,
-      muiTheme: React.PropTypes.object,
-      router: React.PropTypes.object
   };
 
   componentDidUpdate(prevProps) {
@@ -60,7 +56,8 @@ export default class Login extends Component {
 
     this.state = {
       open: false,
-      anchorEl: null
+      anchorEl: null,
+      loginAttempted: false
     };
 
     this._handleOpen = this._handleOpen.bind(this);
@@ -86,36 +83,35 @@ export default class Login extends Component {
 
   _handleLogin() {
 
-    this.props.requestLogin();
-
-    //var username = this.refs.username.getValue();
-    //var password = this.refs.password.getValue();
+    let username = this.refs.username.getValue();
+    let password = this.refs.password.getValue();
     
-    //if ( username !== null && password !== null) {
-
-      //UserActions.login(this.props.clientStore.client, username, password);
-/*
-      var _this = this;
-
-      // TODO: Better way of handling this
-      Request({url: ConfGlobal.baseURL + "/logout", method: "GET"}, function (error, response, body) {
-        _this.context.client.login({auth: {method: 'basic', username: username, password: password}}).then((user) => {
-          if ( user.isAnonymous ) {
-            console.log("You're a guest!");
-            //Request({url: ConfGlobal.baseURL + "/view_home.faces", method: "HEAD"});
-          } else {
-            console.log(user.properties.username);
-          }
-
-          // Close box
-          _this._handleClose();
-
-        }).catch((error) => { throw error });
-      });
-    }*/
+    if ( username !== null && password !== null) {
+      this.setState({loginAttempted: true});
+      this.props.login(username, password);
+    }
   }
 
   render() {
+
+    let loginFeedbackMessage = "";
+
+    // Handle success (anonymous or actual)
+    if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
+        return (
+          <div style={{display: "inline-block", paddingRight: "10px"}}>
+            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>!
+          </div>
+        );
+    } else {
+      if (this.state.loginAttempted) {
+          loginFeedbackMessage = "Username or password incorrect.";
+
+        if (this.props.computeLogin.isError) {
+          loginFeedbackMessage = this.props.computeLogin.error;
+        }
+      }
+    }
 
     return (
       <div style={{display: "inline-block", paddingRight: "10px"}}>
@@ -133,6 +129,8 @@ export default class Login extends Component {
 
             <div><TextField ref="username" hintText="Username:" /></div>
             <div><TextField ref="password" type="password" hintText="Password:" /></div>
+
+            <p>{loginFeedbackMessage}</p>
 
             <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
             <RaisedButton primary={true} onTouchTap={this._handleLogin} label="Sign in"/>

@@ -21,4 +21,18 @@ export default class BaseOperations {
   static setClient(client) {
     this.properties.client = client;
   }
+
+  static login(username, password) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .login({auth: {method: 'basic', username: username, password: password}})
+        .then((user) => {
+          resolve(user);
+        }).catch((error) => { throw error });
+    });
+  }
 }

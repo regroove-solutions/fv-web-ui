@@ -31,7 +31,8 @@ import Footer from 'views/components/Navigation/Footer';
 export default class AppWrapper extends Component {
 
   static propTypes = {
-    connect: PropTypes.func.isRequired
+    connect: PropTypes.func.isRequired,
+    getUser: PropTypes.func.isRequired
   };
 
   static childContextTypes = {
@@ -52,6 +53,7 @@ export default class AppWrapper extends Component {
 
     // Connect to Nuxeo
     this.props.connect();
+    this.props.getUser();
   }
 
   render() {
