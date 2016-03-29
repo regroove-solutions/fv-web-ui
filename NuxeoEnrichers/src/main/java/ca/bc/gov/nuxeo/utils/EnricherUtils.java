@@ -41,7 +41,7 @@ public class EnricherUtils {
 			String filename = fileObj.getFilename();
 			String mimeType = fileObj.getMimeType();
 			// TODO: not sure how to retrieve this value from the object, so build it manually for now
-			String binaryPath = "/nxfile/default/" + binaryDoc.getId() + "/file:content/" + filename;
+			String binaryPath = "nxfile/default/" + binaryDoc.getId() + "/file:content/" + filename;
 			
 			// Build JSON node
 			binaryJsonObj.put("uid", binaryDoc.getId());
