@@ -56,6 +56,32 @@ public class EnricherUtils {
 		return binaryJsonObj;
 	}
 
+	/**
+	 *	Retrieve additional properties for a Link document with a given id, and return them in a JSON object.
+	 */
+	public static ObjectNode getLinkJsonObject(String binaryId, CoreSession session) {
+		
+		IdRef ref = new IdRef(binaryId);
+		DocumentModel linkDoc = null;
+		ObjectNode linkJsonObj = mapper.createObjectNode();
+		
+		try {
+			linkDoc = session.getDocument(ref);				
+			
+			// Build JSON node
+			linkJsonObj.put("uid", linkDoc.getId());
+			linkJsonObj.put("title", linkDoc.getTitle());
+			linkJsonObj.put("description", (String)linkDoc.getPropertyValue("dc:description"));	
+			linkJsonObj.put("url", (String)linkDoc.getPropertyValue("fvlink:url"));							
+			
+		} catch (DocumentNotFoundException de) {
+    		log.warn("Could not retrieve link document.", de);
+			return null;
+		}				
+		
+		return linkJsonObj;
+	}	
+	
 	
 	/**
 	 *	Retrieve the document title for a given id, and return a JSON object containing it.

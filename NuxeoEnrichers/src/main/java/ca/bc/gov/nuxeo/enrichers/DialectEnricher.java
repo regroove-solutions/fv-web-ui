@@ -1,0 +1,72 @@
+package ca.bc.gov.nuxeo.enrichers;
+
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
+
+import java.io.IOException;
+
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
+import org.codehaus.jackson.node.ObjectNode;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
+import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import ca.bc.gov.nuxeo.utils.EnricherUtils;
+
+
+@Setup(mode = SINGLETON, priority = REFERENCE)
+public class DialectEnricher extends AbstractJsonEnricher<DocumentModel> {
+
+	public static final String NAME = "dialect";
+
+	public DialectEnricher() {
+		super(NAME);
+	}
+
+	// Method that will be called when the enricher is asked for
+	@Override
+	public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
+		// We use the Jackson library to generate Json
+		ObjectNode dialectJsonObject = constructDialectJSON(doc);
+		jg.writeFieldName(NAME);
+		jg.writeObject(dialectJsonObject);
+	}
+
+	private ObjectNode constructDialectJSON(DocumentModel doc) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		// JSON object to be returned
+		ObjectNode jsonObj = mapper.createObjectNode();
+
+		// First create the parent document's Json object content
+		CoreSession session = doc.getCoreSession();
+
+		String documentType = doc.getType();
+
+		/*
+		 * Properties for FVDialect
+		 */
+		if (documentType.equalsIgnoreCase("FVDialect")) {
+
+			// Process "fvdialect:keyboards" values
+			String[] keyboardLinkIds = (String[]) doc.getProperty("fvdialect", "keyboards");
+			if (keyboardLinkIds != null) {
+				ArrayNode keyboardJsonArray = mapper.createArrayNode();
+				for (String keyboardId : keyboardLinkIds) {
+					ObjectNode keyboardJsonObj = EnricherUtils.getLinkJsonObject(keyboardId, session);
+					if(keyboardJsonObj != null) {
+						keyboardJsonArray.add(keyboardJsonObj);
+					}
+				}
+				jsonObj.put("keyboards", keyboardJsonArray);
+			}
+		}
+
+		return jsonObj;
+	}
+}

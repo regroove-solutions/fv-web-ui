@@ -154,7 +154,18 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 				}
 			}				
 			
-			
+			// Process "fv-portal:related_links" values
+			String[] relatedLinkIds = (String[]) doc.getProperty("fv-portal", "related_links");
+			if (relatedLinkIds != null) {
+				ArrayNode relatedLinkJsonArray = mapper.createArrayNode();
+				for (String relatedId : relatedLinkIds) {
+					ObjectNode relatedLinkJsonObj = EnricherUtils.getLinkJsonObject(relatedId, session);
+					if(relatedLinkJsonObj != null) {
+						relatedLinkJsonArray.add(relatedLinkJsonObj);
+					}
+				}
+				jsonObj.put("fv-portal:related_links", relatedLinkJsonArray);
+			}
 		}
 
 		return jsonObj;

@@ -3,6 +3,7 @@
 	<extension target="org.nuxeo.ecm.core.io.MarshallerRegistry" point="marshallers">
 		<register class="ca.bc.gov.nuxeo.enrichers.AncestryEnricher" enable="true" />
 		<register class="ca.bc.gov.nuxeo.enrichers.CharacterEnricher" enable="true" />
+		<register class="ca.bc.gov.nuxeo.enrichers.DialectEnricher" enable="true" />		
 		<register class="ca.bc.gov.nuxeo.enrichers.ParentDocEnricher" enable="true" />
 		<register class="ca.bc.gov.nuxeo.enrichers.PhraseEnricher" enable="true" />
 		<register class="ca.bc.gov.nuxeo.enrichers.PortalEnricher" enable="true" />	
