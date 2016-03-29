@@ -16,6 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import ConfGlobal from 'conf/local.json';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -195,7 +196,7 @@ export default class DialectLearn extends Component {
 		    		  <a href={'/explore' + char.path}>{char.title}</a>
 		    		  
 		    		  {(char.contextParameters.character.related_audio[0]) ? 
-		    		    <a href={'/nuxeo' + char.contextParameters.character.related_audio[0].path}>
+		    		    <a href={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path}>
 	  			  	      <span className="glyphicon glyphicon-volume-up" />
 	  			        </a>
 		    		  : ''}	    		  
