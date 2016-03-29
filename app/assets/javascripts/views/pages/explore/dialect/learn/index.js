@@ -161,6 +161,11 @@ export default class DialectLearn extends Component {
     let portal = computePortal.response;
     let dialectStats = computeDialectStats;
     let characters = computeCharacters.response;
+        
+    let keyboardLinks = [];
+    if(computeDialect.success) {
+    	keyboardLinks = dialect.contextParameters.dialect.keyboards;
+    }
     
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
     
@@ -185,7 +190,7 @@ export default class DialectLearn extends Component {
 	          <div className={classNames('col-xs-12', 'col-md-6')}>
 	            <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
 	            {/* Display alphabet characters - move to separate component later */}
-	            {(characters.entries) ? characters.entries.map((char, i) => 
+	            {(characters && characters.entries) ? characters.entries.map((char, i) => 
 	    		  <div key={char.uid} className="col-xs-1">
 		    		  <a href={'/explore' + char.path}>{char.title}</a>
 		    		  
@@ -196,10 +201,16 @@ export default class DialectLearn extends Component {
 		    		  : ''}	    		  
 	    		  </div>
 	    		) : circularProgress}
-		      </div>	
+		      </div>
+		      
 		      <div className={classNames('col-xs-12', 'col-md-6')}>
 		        <h1>Keyboards</h1>
-		        <p>Keyboards go here</p>
+		        {(keyboardLinks) ? keyboardLinks.map((link, i) =>
+		        	<div key={link.uid}>
+		        		<a href={link.url}>{link.title}</a>
+		        		<p>{link.description}</p>
+		        	</div>
+                ) : circularProgress}		        
 		      </div> 
 	      </div>
 	      <div className="row">

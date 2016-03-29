@@ -116,6 +116,11 @@ export default class ExploreDialect extends Component {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
+    let portalRelatedLinks = [];
+    if(computePortal.success) {
+    	portalRelatedLinks = portal.contextParameters.portal['fv-portal:related_links'];
+    }
+    
     return <div>
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
@@ -192,14 +197,16 @@ export default class ExploreDialect extends Component {
                   <p><strong># of Words Archived</strong><br/>{dialect.get('fvdialect:aaa')}</p>
                   <hr/>
                   <p><strong># of Phrases Archived</strong><br/>{dialect.get('fvdialect:aaaa')}</p>
-
-                  <List>
-
-                    {relatedLinks.map(function(word, i) {
-                      return (<ListItem key={i} primaryText={word} />);
-                    })}
-
-                  </List>
+                  
+                  {(portalRelatedLinks.length > 0) ?                   
+                	<div>
+                      <strong>Related Links</strong>
+                      	{portalRelatedLinks.map(function(link, i) {
+                      	  return (<div key={link.uid}><a href={link.url}>{link.title}</a></div>);
+                      	})}
+                    </div>
+                  : ''}
+                  
                 </Paper>
 
               </div>
