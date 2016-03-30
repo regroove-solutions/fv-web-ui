@@ -74,6 +74,20 @@ public class EnricherUtils {
 			linkJsonObj.put("description", (String)linkDoc.getPropertyValue("dc:description"));	
 			linkJsonObj.put("url", (String)linkDoc.getPropertyValue("fvlink:url"));							
 			
+			// If the link contains a file attachment, return the details
+			BinaryBlob fileObj = (BinaryBlob)linkDoc.getProperty("file", "content");							
+			if(fileObj != null) {
+				String filename = fileObj.getFilename();
+				String mimeType = fileObj.getMimeType();
+				// TODO: not sure how to retrieve this value from the object, so build it manually for now
+				String binaryPath = "nxfile/default/" + linkDoc.getId() + "/file:content/" + filename;
+				
+				// Build JSON node
+				linkJsonObj.put("uid", linkDoc.getId());
+				linkJsonObj.put("name", filename);
+				linkJsonObj.put("mime-type", mimeType);
+				linkJsonObj.put("path", binaryPath);
+			}
 		} catch (DocumentNotFoundException de) {
     		log.warn("Could not retrieve link document.", de);
 			return null;
