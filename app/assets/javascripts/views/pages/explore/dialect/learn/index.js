@@ -214,8 +214,8 @@ export default class DialectLearn extends Component {
 	      </div>
 	      <div className="row">
 		      <div className={classNames('col-xs-12', 'col-md-12')}>
-		        <h1>Contact Info</h1>
-		        <p>Status of our language here.</p>
+		        <h1>Contact Information</h1>
+		        <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
 		      </div>
 	      </div>
         </div>
