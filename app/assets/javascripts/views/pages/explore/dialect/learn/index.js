@@ -33,6 +33,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import StatsPanel from 'views/components/Dashboard/StatsPanel';
+import Link from 'views/components/Document/Link';
 
 /**
 * Learn portion of the dialect portal
@@ -206,12 +207,9 @@ export default class DialectLearn extends Component {
 		      
 		      <div className={classNames('col-xs-12', 'col-md-6')}>
 		        <h1>Keyboards</h1>
-		        {(keyboardLinks) ? keyboardLinks.map((link, i) =>
-		        	<div key={link.uid}>
-		        		<a href={link.url}>{link.title}</a>
-		        		<p>{link.description}</p>
-		        	</div>
-                ) : circularProgress}		        
+		        {(keyboardLinks) ? keyboardLinks.map((keyboardLink, i) =>
+		        	<Link key={i} data={keyboardLink} showDescription={true} />
+                ) : ''}		        
 		      </div> 
 	      </div>
 	      <div className="row">

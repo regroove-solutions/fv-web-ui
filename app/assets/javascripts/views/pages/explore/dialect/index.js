@@ -32,6 +32,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
+import Link from 'views/components/Document/Link';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -201,9 +202,9 @@ export default class ExploreDialect extends Component {
                   {(portalRelatedLinks.length > 0) ?                   
                 	<div>
                       <strong>Related Links</strong>
-                      	{portalRelatedLinks.map(function(link, i) {
-                      	  return (<div key={link.uid}><a href={link.url}>{link.title}</a></div>);
-                      	})}
+                      	{portalRelatedLinks.map((link, i) =>
+                      		<Link key={i} data={link} showDescription={false} />
+                      	)}                      	
                     </div>
                   : ''}
                   
