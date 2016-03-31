@@ -125,24 +125,30 @@ export default class ExploreDialect extends Component {
     return <div>
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
-
+                     
             <div style={portalBackgroundStyles}>
 
-              <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+            	{(portalContextParams['fv-portal:logo']) ? 
+                	<img style={{float: 'left'}} src={ConfGlobal.baseURL + portalContextParams['fv-portal:logo'].path} />
+      			: ''}            
+            
+              <h2 style={{float: 'left', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                 <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" /><br/>
-                <strong><span>Featured Audio: </span></strong>
-                
-          		{(portalContextParams['fv-portal:featured_audio'][0]) ? 
-          			<span>&nbsp;
-          				<a href={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path}>
-  		  			  	   	<span className="glyphicon glyphicon-volume-up" />
-  		  			    </a>
-	  			    </span>
-  			    : ''}
               </h2>
 
             </div>
-
+            
+            <div>
+            	{(portalContextParams['fv-portal:featured_audio'][0]) ? 
+          			<h2>Featured Audio:
+          				&nbsp;
+                		<a href={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path}>
+		  					<span className="glyphicon glyphicon-volume-up" />
+		  				</a>          				
+          			</h2>
+  			    : ''}
+            </div>
+            
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
