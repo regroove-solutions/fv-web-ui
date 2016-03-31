@@ -78,7 +78,8 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					ObjectNode featuredWordJsonObj = mapper.createObjectNode();
 					featuredWordJsonObj.put("uid", featuredWordId);
 					featuredWordJsonObj.put("dc:title", featuredWordDoc.getTitle());
-									
+					featuredWordJsonObj.put("path", featuredWordDoc.getPathAsString());
+					
 					// Process "fv:literal translation" values
 					Object literalTranslationObj = featuredWordDoc.getProperty("fvcore", "literal_translation");
 					List<Object> literalTranslationList = (ArrayList<Object>) literalTranslationObj;
@@ -113,7 +114,7 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 						}
 					}
 					featuredWordJsonObj.put("fv:related_audio", relatedAudioJsonArray);
-
+										
 					featuredWordJsonArray.add(featuredWordJsonObj);
 				}
 				jsonObj.put("fv-portal:featured_words", featuredWordJsonArray);
