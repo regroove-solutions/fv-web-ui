@@ -154,6 +154,16 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					jsonObj.put("fv-portal:background_bottom_image", binaryJsonObj);
 				}
 			}				
+
+			// Process "fv-portal:logo" value
+			String logoImageId = (String) doc.getProperty("fv-portal", "logo");
+			if (logoImageId != null) {				
+				// Retrieve additional properties from the referenced binaries, and add them to the JSON
+				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(logoImageId, session);
+				if(binaryJsonObj != null) {
+					jsonObj.put("fv-portal:logo", binaryJsonObj);
+				}
+			}
 			
 			// Process "fv-portal:related_links" values
 			String[] relatedLinkIds = (String[]) doc.getProperty("fv-portal", "related_links");
