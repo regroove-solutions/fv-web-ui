@@ -16,6 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import ConfGlobal from 'conf/local.json';
 
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -32,6 +33,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
+import Link from 'views/components/Document/Link';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -104,34 +106,52 @@ export default class ExploreDialect extends Component {
 
     //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
-    let portalBackgroundStyles = {
-      position: 'relative',
-      minHeight: 155,
-      backgroundColor: 'transparent',
-      backgroundImage: 'url(' + (portal.get('fv-portal:background_top_image') || '') + ')',
-      backgroundPosition: '0 0',
-    }
-
-    let featuredWord = portal.get('fv-portal:featured_words') || [];
-    let relatedLinks = dialect.get('fvdialect:related_links') || [];
-
-    if (computeDialect.isFetching || computePortal.isFetching) {
+    if (computeDialect.isFetching || computePortal.isFetching || portal.contextParameters == undefined) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
-
+    
+    let portalContextParams = portal.contextParameters.portal;
+    
+    let portalBackgroundImagePath = "";
+    if(portalContextParams['fv-portal:background_top_image']) {
+    	portalBackgroundImagePath = ConfGlobal.baseURL + portalContextParams['fv-portal:background_top_image'].path;
+    }
+    
+    let portalBackgroundStyles = {
+    	position: 'relative',
+    	minHeight: 155,
+    	backgroundColor: 'transparent',
+    	backgroundImage: 'url(' + portalBackgroundImagePath + ')',
+    	backgroundPosition: '0 0',
+    }    
+    
     return <div>
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
-
+                     
             <div style={portalBackgroundStyles}>
 
-              <h2 style={{position: 'absolute', bottom: 0, backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+            	{(portalContextParams['fv-portal:logo']) ? 
+                	<img style={{float: 'left'}} src={ConfGlobal.baseURL + portalContextParams['fv-portal:logo'].path} />
+      			: ''}            
+            
+              <h2 style={{float: 'left', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                 <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" /><br/>
-                {portal.get('fv-portal:featured_audio')}
               </h2>
 
             </div>
-
+            
+            <div>
+            	{(portalContextParams['fv-portal:featured_audio'][0]) ? 
+          			<h2>Featured Audio:
+          				&nbsp;
+                		<a href={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path}>
+		  					<span className="glyphicon glyphicon-volume-up" />
+		  				</a>          				
+          			</h2>
+  			    : ''}
+            </div>
+            
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
@@ -159,16 +179,30 @@ export default class ExploreDialect extends Component {
               <div className={classNames('col-xs-3', 'col-md-2')}>
                 <Paper style={{padding: '25px'}} zDepth={2}>
 
-                  <div className="subheader">First Words</div>
+                  <strong><span>First Words</span></strong><br />
 
-                  <List>
-
-                    {featuredWord.map(function(word, i) {
-                      return (<ListItem key={i} primaryText={word} />);
-                    })}
-
-                  </List>
-
+                  {portalContextParams['fv-portal:featured_words'].map((word, i) =>                     
+                  	<div key={i}>
+                  		<strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
+                  		{(word['fv:related_audio'][0]) ? 
+                  			<span>&nbsp;
+	                  			<a href={ConfGlobal.baseURL + word['fv:related_audio'][0].path}>
+	      		  			  	   	<span className="glyphicon glyphicon-volume-up" />
+	      		  			    </a>
+      		  			    </span>
+      			    	: ''}
+                  		<br />
+                  		<span>{word['fv-word:part_of_speech']}</span><br />
+                  		{word['fv:literal_translation'].map((wordTranslation, j) =>
+                  			<span key={j}>
+                  				{wordTranslation.language}<br />
+                  				{wordTranslation.translation}
+                  			</span>
+                  		)}
+                  		<br /><br />
+                  	</div>
+                  )}   
+                  
                 </Paper>
 
               </div>
@@ -195,14 +229,12 @@ export default class ExploreDialect extends Component {
                   <p><strong># of Words Archived</strong><br/>{dialect.get('fvdialect:aaa')}</p>
                   <hr/>
                   <p><strong># of Phrases Archived</strong><br/>{dialect.get('fvdialect:aaaa')}</p>
-
-                  <List>
-
-                    {relatedLinks.map(function(word, i) {
-                      return (<ListItem key={i} primaryText={word} />);
-                    })}
-
-                  </List>
+                  
+                  <strong>Related Links</strong>
+                  {portalContextParams['fv-portal:related_links'].map((link, i) =>
+                  	<Link key={i} data={link} showDescription={false} />
+                  )}                      	
+                  
                 </Paper>
 
               </div>

@@ -16,6 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import ConfGlobal from 'conf/local.json';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -32,6 +33,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import StatsPanel from 'views/components/Dashboard/StatsPanel';
+import Link from 'views/components/Document/Link';
 
 /**
 * Learn portion of the dialect portal
@@ -161,6 +163,11 @@ export default class DialectLearn extends Component {
     let portal = computePortal.response;
     let dialectStats = computeDialectStats;
     let characters = computeCharacters.response;
+        
+    let keyboardLinks = [];
+    if(computeDialect.success) {
+    	keyboardLinks = dialect.contextParameters.dialect.keyboards;
+    }
     
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
     
@@ -185,27 +192,30 @@ export default class DialectLearn extends Component {
 	          <div className={classNames('col-xs-12', 'col-md-6')}>
 	            <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
 	            {/* Display alphabet characters - move to separate component later */}
-	            {(characters.entries) ? characters.entries.map((char, i) => 
+	            {(characters && characters.entries) ? characters.entries.map((char, i) => 
 	    		  <div key={char.uid} className="col-xs-1">
 		    		  <a href={'/explore' + char.path}>{char.title}</a>
 		    		  
 		    		  {(char.contextParameters.character.related_audio[0]) ? 
-		    		    <a href={'/nuxeo' + char.contextParameters.character.related_audio[0].path}>
+		    		    <a href={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path}>
 	  			  	      <span className="glyphicon glyphicon-volume-up" />
 	  			        </a>
 		    		  : ''}	    		  
 	    		  </div>
 	    		) : circularProgress}
-		      </div>	
+		      </div>
+		      
 		      <div className={classNames('col-xs-12', 'col-md-6')}>
 		        <h1>Keyboards</h1>
-		        <p>Keyboards go here</p>
+		        {(keyboardLinks) ? keyboardLinks.map((keyboardLink, i) =>
+		        	<Link key={i} data={keyboardLink} showDescription={true} />
+                ) : ''}		        
 		      </div> 
 	      </div>
 	      <div className="row">
 		      <div className={classNames('col-xs-12', 'col-md-12')}>
-		        <h1>Contact Info</h1>
-		        <p>Status of our language here.</p>
+		        <h1>Contact Information</h1>
+		        <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
 		      </div>
 	      </div>
         </div>
