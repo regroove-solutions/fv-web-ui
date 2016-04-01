@@ -100,6 +100,10 @@ renderSuggestion(suggestion) {
       case 'audio':
         return this.props.computeSharedAudios;
       break;
+
+      case 'directory':
+        return this.props.computeSharedAudios;
+      break;
     }
   }
 

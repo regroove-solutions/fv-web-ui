@@ -16,6 +16,8 @@ limitations under the License.
 import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 
+import Nuxeo from 'nuxeo';
+
 import BaseOperations from 'operations/BaseOperations';
 
 // Models
@@ -29,7 +31,7 @@ import Dialects from 'models/Dialects';
 
 export default class DirectoryOperations extends BaseOperations {
 
-  constructor(directoryType, directoryTypePlural, client, properties = []){
+  /*constructor(directoryType, directoryTypePlural, client, properties = []){
     super();
 
     this.directoryType = directoryType;
@@ -38,7 +40,7 @@ export default class DirectoryOperations extends BaseOperations {
     this.properties = properties;
 
     this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
-  }
+  }*/
 
   /**
   * Get a single document of a certain type based on a path and title match
@@ -94,8 +96,20 @@ export default class DirectoryOperations extends BaseOperations {
   }
 
 
+  static getDirectory(name = "", headers = {}, params = {}) {
 
+    let properties = this.properties;
 
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .directory(name)
+        .fetchAll()
+        .then((directory) => {
+          resolve(directory);
+        }).catch((error) => { reject('Could not retrieve directory.'); });
+    });
+  }
 
   /**
   * Get all documents of a certain type based on a path

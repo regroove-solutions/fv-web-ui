@@ -19,7 +19,8 @@ export default class EditableComponent extends Component {
   static propTypes = {
     computeEntity: PropTypes.object.isRequired,
     updateEntity: PropTypes.func.isRequired,
-    property: PropTypes.string.isRequired
+    property: PropTypes.string.isRequired,
+    options: PropTypes.object
   };
 
   constructor(props, context) {
@@ -68,6 +69,10 @@ export default class EditableComponent extends Component {
 
       // If fields and options found, try to create form our of field
       if (fieldFormFields && fieldFormOptions) {
+        // If extended options enabled
+        if (this.props.options.length > 0) {
+          fieldFormOptions.fields[property].options = this.props.options;
+        }
 
         // Create a sub-structure for this field
         let newFieldFormSchema = {};
@@ -84,7 +89,12 @@ export default class EditableComponent extends Component {
           fieldFormValues[property] = currentValue;
 
           return <form onSubmit={e => this._onRequestSaveField(e, property)}>
-                    <t.form.Form ref={"form_" + property} value={fieldFormValues} type={fieldFormStruct} options={fieldFormOptions} />
+                    <t.form.Form
+                      ref={"form_" + property}
+                      value={fieldFormValues}
+                      type={fieldFormStruct}
+                      context={this.props.computeEntity.response}
+                      options={fieldFormOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
@@ -103,6 +113,9 @@ export default class EditableComponent extends Component {
   shouldComponentUpdate(newProps, newState) {
 
     if (newState != this.state || newProps.computeEntity.response != this.props.computeEntity.response)
+      return true;
+
+    if (newProps.options != null) 
       return true;
 
     return false;

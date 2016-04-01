@@ -31,10 +31,6 @@ const DefinitionsLayout = function (locals) {
   );
 };
 
-
-
-
-
 const options = {
   FVWord: {
     order: ['dc:title', 'fv:definitions', 'fv:literal_translation', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
@@ -136,19 +132,18 @@ const options = {
   FVDialect: {
     fields: {
       'dc:title': {
-        label: <i>Portal Introduction</i>,
-        type: 'text',
-        attrs: {
-          placeholder: 'Enter portal description here'
-        }
+        label: 'Dialect Name',
+        type: 'text'
       },
       'dc:description': {
-        label: <i>Portal Introduction</i>,
+        label: 'About Dialect',
         type: 'textarea',
-        factory: WysiwygFactory,
-        attrs: {
-          placeholder: 'Enter portal description here'
-        }
+        factory: WysiwygFactory
+      },
+      'fvdialect:country': {
+        label: 'Country',
+        factory: t.form.Select,
+        options: []
       }
     },
     i18n: i18nExt

@@ -49,7 +49,9 @@ export default class ExploreDialect extends Component {
     updateDialect: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired
+    updatePortal: PropTypes.func.isRequired,
+    fetchDirectory: PropTypes.func.isRequired,
+    computeDirectory: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -70,6 +72,7 @@ export default class ExploreDialect extends Component {
 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchDirectory('fv_countries');
   }
 
   // Fetch data on initial render
@@ -185,7 +188,7 @@ export default class ExploreDialect extends Component {
 
                   <div><strong>Name of Archive</strong><br/><EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" /></div>
                   <hr/>
-                  <p><strong>Country</strong><br/>{dialect.get('fvdialect:country')}</p>
+                  <div><strong>Country</strong><br/><EditableComponent options={this.props.computeDirectory.entries} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" /></div>
                   <hr/>
                   <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
                   <hr/>

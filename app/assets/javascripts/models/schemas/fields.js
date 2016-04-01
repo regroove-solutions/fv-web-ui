@@ -43,9 +43,9 @@ const fields = {
     'fv-portal:logo' : t.String
   },
   FVDialect: Object.assign({}, Dublincore, {
-    'country' : t.String,
-    'dominant_language' : t.String,
-    'region' : t.String
+    'fvdialect:country' : t.String,
+    'fvdialect:dominant_language' : t.String,
+    'fvdialect:region' : t.String
   })
 }
 

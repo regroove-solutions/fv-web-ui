@@ -2,7 +2,6 @@
 import thunk from 'redux-thunk';
 
 // Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
 import DocumentOperations from 'operations/DocumentOperations';
 
 const DISMISS_ERROR = 'DISMISS_ERROR';
