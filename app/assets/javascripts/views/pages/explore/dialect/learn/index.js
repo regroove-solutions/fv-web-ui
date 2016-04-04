@@ -155,6 +155,10 @@ export default class DialectLearn extends Component {
   _navigate(page) {
     this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/' + page );
   }
+
+  _onCharAudioTouchTap(charAudioId) {
+	  document.getElementById(charAudioId).play();
+  }  
   
   render() {
     const { computeDialect, computePortal, computeDocument, computeDialectStats, computeCharacters } = this.props;      
@@ -197,9 +201,10 @@ export default class DialectLearn extends Component {
 		    		  <a href={'/explore' + char.path}>{char.title}</a>
 		    		  
 		    		  {(char.contextParameters.character.related_audio[0]) ? 
-		    		    <a href={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path}>
-	  			  	      <span className="glyphicon glyphicon-volume-up" />
-	  			        </a>
+		  			    <span>
+		    			  <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
+		  			  	  <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
+		    		    </span>
 		    		  : ''}	    		  
 	    		  </div>
 	    		) : circularProgress}

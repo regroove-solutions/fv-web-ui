@@ -96,7 +96,7 @@ export default class ExploreDialect extends Component {
   //_onRequestClose() {
   //  this.props.dismissError();
   //}
-
+  
   render() {
 
     const { computeDialect, computePortal } = this.props;
@@ -143,12 +143,7 @@ export default class ExploreDialect extends Component {
             
             <div>
             	{(portalContextParams['fv-portal:featured_audio'][0]) ? 
-          			<h2>Featured Audio:
-          				&nbsp;
-                		<a href={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path}>
-		  					<span className="glyphicon glyphicon-volume-up" />
-		  				</a>          				
-          			</h2>
+		  			<audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path} controls />
   			    : ''}
             </div>
             
@@ -185,11 +180,7 @@ export default class ExploreDialect extends Component {
                   	<div key={i}>
                   		<strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
                   		{(word['fv:related_audio'][0]) ? 
-                  			<span>&nbsp;
-	                  			<a href={ConfGlobal.baseURL + word['fv:related_audio'][0].path}>
-	      		  			  	   	<span className="glyphicon glyphicon-volume-up" />
-	      		  			    </a>
-      		  			    </span>
+                  				<audio src={ConfGlobal.baseURL + word['fv:related_audio'][0].path} controls />
       			    	: ''}
                   		<br />
                   		<span>{word['fv-word:part_of_speech']}</span><br />
