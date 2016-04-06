@@ -39,6 +39,9 @@ public class FVGenerateJsonStatistics {
 
     @Param(name = "dialectPath")
     protected String dialectPath;     
+
+    @Param(name = "docTypes")
+    protected String[] docTypes;        
     
     protected String sectionDialectId;
     
@@ -49,10 +52,10 @@ public class FVGenerateJsonStatistics {
     protected ObjectMapper mapper = new ObjectMapper();
 
 	protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
-	protected final String BASE_DOCS_QUERY2 = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
+//	protected final String BASE_DOCS_QUERY2 = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
 	
-	protected final String BASE_DOCS_COUNT_QUERY = "SELECT COUNT(ecm:uuid) FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
-	protected final String BASE_DOCS_COUNT_QUERY2 = "SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
+//	protected final String BASE_DOCS_COUNT_QUERY = "SELECT COUNT(ecm:uuid) FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
+//	protected final String BASE_DOCS_COUNT_QUERY2 = "SELECT COUNT(ecm:uuid) FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
 	
     @OperationMethod
     public Blob run() {
@@ -67,42 +70,11 @@ public class FVGenerateJsonStatistics {
     	principalName = principal.getName();		
 		rootJsonObj.put("user", principalName);		
 		
-    	// Words
-    	ObjectNode wordJsonObj = generateDocumentStatsJson("FVWord");
-		rootJsonObj.put("words", wordJsonObj);		
-		
-		// Phrases
-    	ObjectNode phraseJsonObj = generateDocumentStatsJson("FVPhrase");				
-		rootJsonObj.put("phrases", phraseJsonObj);		
-
-//		// Books (Stories & Songs)
-//    	ObjectNode booksJsonObj = generateDocumentStatsJson("FVBook");				
-//		rootJsonObj.put("books", booksJsonObj);		
-//
-//		// Stories & Songs
-//    	ObjectNode charactersJsonObj = generateDocumentStatsJson("FVCharacter");				
-//		rootJsonObj.put("characters", charactersJsonObj);			
-//		
-//		// Contributors
-//    	ObjectNode contributorsJsonObj = generateDocumentStatsJson("FVContributor");				
-//		rootJsonObj.put("contributors", contributorsJsonObj);
-//
-//		// Categories
-//    	ObjectNode categoriesJsonObj = generateDocumentStatsJson("FVCategory");				
-//		rootJsonObj.put("categories", categoriesJsonObj);		
-//		
-//		// Audio
-//    	ObjectNode audioJsonObj = generateDocumentStatsJson("FVAudio");				
-//		rootJsonObj.put("audio", audioJsonObj);		
-//
-//		// Picture
-//    	ObjectNode pictureJsonObj = generateDocumentStatsJson("FVPicture");				
-//		rootJsonObj.put("pictures", pictureJsonObj);		
-//		
-//		// Video
-//    	ObjectNode videoJsonObj = generateDocumentStatsJson("FVVideo");				
-//		rootJsonObj.put("videos", videoJsonObj);		
-		
+		// Generate statistics for each specified docType, and add them to the root JSON object
+		for(String docType : docTypes) {
+	    	ObjectNode jsonObj = generateDocumentStatsJson(docType);
+			rootJsonObj.put(docType, jsonObj);				
+		}			
         return new StringBlob(rootJsonObj.toString(), "application/json");    
     } 
     
@@ -111,7 +83,6 @@ public class FVGenerateJsonStatistics {
     	
     	// Query to get documents from the workspace
     	String baseDocumentsQuery = String.format(BASE_DOCS_QUERY, documentType);
-    	//String baseDocumentsCountQuery = String.format(BASE_DOCS_COUNT_QUERY, documentType); 
     	
     	// Add additional query parameters depending on path
     	if(dialectPath.contains("/Workspaces/")) {
