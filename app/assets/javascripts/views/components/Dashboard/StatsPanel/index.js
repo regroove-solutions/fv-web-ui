@@ -12,9 +12,10 @@ export default class StatsPanel extends Component {
 
   _generateDoughnutData(data, docType) {
     let doughnutData = [];
-    doughnutData.push({ value: data[docType].disabled, color:"#F7464A", highlight: "#FF5A5E", label: "Disabled" })
-    doughnutData.push({ value: data[docType].enabled, color: "#46BFBD", highlight: "#5AD3D1", label: "Enabled" }),
-    doughnutData.push({ value: data[docType].new, color: "#FDB45C", highlight: "#FFC870", label: "New" });
+    doughnutData.push({ value: data[docType].new, color: "#949FB1", highlight: "#A8B3C5", label: "New" });      
+    doughnutData.push({ value: data[docType].enabled, color: "#FDB45C", highlight: "#FFC870", label: "Enabled" });   
+    doughnutData.push({ value: data[docType].published, color: "#46BFBD", highlight: "#5AD3D1", label: "Published" }),
+    doughnutData.push({ value: data[docType].disabled, color:"#F7464A", highlight: "#FF5A5E", label: "Disabled" })   
     return doughnutData;
   }  
   
@@ -38,8 +39,9 @@ export default class StatsPanel extends Component {
     		<p><strong>Total:</strong> {dataResponse[docType].total}</p>
     		<p><strong>New:</strong> {dataResponse[docType].new}</p>
     		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>
+    		<p><strong>Published:</strong> {dataResponse[docType].published}</p> 
     		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p>                         
-
+    		
     		<Doughnut data={doughnutData} />
 {/*
     		<p><strong>Created Today:</strong> {this.props.data[this.props.docType].created_today}</p>
