@@ -118,12 +118,12 @@ const fetchDialect = function fetchDialect(pathOrId) {
   }
 };
 
-const fetchDialectStats = function fetchDialectStats(dialectPath) {
+const fetchDialectStats = function fetchDialectStats(dialectPath, docTypes) {
   return function (dispatch) {
 
   dispatch( { type: FV_DIALECT_FETCH_STATS_START } );
 
-  return DocumentOperations.getDialectStats(dialectPath)
+  return DocumentOperations.getDialectStats(dialectPath, docTypes)
 	.then((response) => {
 	  dispatch( { type: FV_DIALECT_FETCH_STATS_SUCCESS, document: response } )
 	  }).catch((error) => {

@@ -89,10 +89,9 @@ export default class DialectLearn extends Component {
   fetchData(newProps) {
     let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
 
-    // TODO: 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
-    newProps.fetchDialectStats('/' + path);
+    newProps.fetchDialectStats('/' + path, ["FVWord","FVPhrase"]);
     newProps.fetchCharacters('/' + path + '/Alphabet');
   }
 
@@ -225,8 +224,8 @@ export default class DialectLearn extends Component {
 	      </div>
         </div>
         <div className={classNames('col-xs-12', 'col-md-4')}>
-          <StatsPanel data={dialectStats} childElementName="words" headerText="Words" />
-          <StatsPanel data={dialectStats} childElementName="phrases" headerText="Phrases" />
+          <StatsPanel data={dialectStats} docType="FVWord" headerText="Words" />
+          <StatsPanel data={dialectStats} docType="FVPhrase" headerText="Phrases" />
         </div>
       </div>
     }

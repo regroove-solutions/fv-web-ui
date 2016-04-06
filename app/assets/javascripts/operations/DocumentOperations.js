@@ -296,7 +296,7 @@ export default class DocumentOperations extends BaseOperations {
    * 
    * 
    */
-   static getDialectStats(path, headers = {}, params = {}) {
+   static getDialectStats(path, docTypes, headers = {}, params = {}) {
 
      let properties = this.properties;
 
@@ -308,6 +308,7 @@ export default class DocumentOperations extends BaseOperations {
     	   .operation('FVGenerateJsonStatistics')
     	   .params({
     	     dialectPath: cleanedDialectPath,
+    	     docTypes: docTypes
     	   })
     	   .execute(headers)
     	   .then(function(stats) {
