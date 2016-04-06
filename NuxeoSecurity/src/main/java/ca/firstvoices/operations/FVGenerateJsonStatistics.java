@@ -104,7 +104,8 @@ public class FVGenerateJsonStatistics {
 			int newDocs = 0;
 			int enabledDocs = 0;
 			int disabledDocs = 0;
-		    
+			int publishedDocs = 0;
+			
 			for (Map<String, Serializable> docResult : totalDocsResult) {
 		        String value = (String) docResult.get("ecm:uuid");
 		        DocumentRef docRef = new IdRef(value);
@@ -118,10 +119,14 @@ public class FVGenerateJsonStatistics {
 		        else if(doc.getCurrentLifeCycleState().equals("Disabled")) {
 		        	disabledDocs++;
 		        }
+		        else if(doc.getCurrentLifeCycleState().equals("Published")) {
+		        	publishedDocs++;
+		        }
 		    }
 			documentJsonObj.put("new", newDocs);
 			documentJsonObj.put("enabled", enabledDocs);
 			documentJsonObj.put("disabled", disabledDocs);
+			documentJsonObj.put("published", publishedDocs);
 		}
 		// Close the IterableQueryResult - important
 		totalDocsResult.close();	        
