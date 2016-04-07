@@ -40,22 +40,17 @@ export default class StatsPanel extends Component {
     		<p><strong>New:</strong> {dataResponse[docType].new}</p>
     		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>
     		<p><strong>Published:</strong> {dataResponse[docType].published}</p> 
-    		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p>                         
-    		
-    		<Doughnut data={doughnutData} />
-{/*
-    		<p><strong>Created Today:</strong> {this.props.data[this.props.docType].created_today}</p>
-    		<p><strong>Modified Today:</strong> {this.props.data[this.props.docType].modified_today}</p>
+    		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p> 
 
-			<p><strong>Most Recently Created:</strong></p>
-    		<ul>
-    		{this.props.data[this.props.docType].most_recently_created.map((document, i) => 
-    		  <li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
-    			<br />{document['dc:created']} by {document['dc:creator']}
-    		  </li>
-    		)}
-    		</ul>
-*/}    		
+    		<Doughnut data={doughnutData} />
+    		
+    		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
+    		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p>                             		
+    		<p><strong>Without Related Audio:</strong> {dataResponse[docType].without_audio}</p>                         
+    		<p><strong>Without Related Pictures:</strong> {dataResponse[docType].without_images}</p>
+    		<p><strong>Without Related Video:</strong> {dataResponse[docType].without_video}</p>                             		
+    		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>                         
+		
     		<p><strong>Most Recently Modified:</strong></p>
     		<ul>
     		{dataResponse[docType].most_recently_modified.map((document, i) => 
