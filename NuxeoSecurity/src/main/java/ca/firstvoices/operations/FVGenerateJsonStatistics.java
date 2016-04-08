@@ -48,7 +48,7 @@ public class FVGenerateJsonStatistics {
     
     protected String principalName;
     
-    protected int maxQueryResults = 10;
+    protected int maxQueryResults = 5;
     
     protected ObjectMapper mapper = new ObjectMapper();
 
@@ -77,6 +77,30 @@ public class FVGenerateJsonStatistics {
     } 
     
     private ObjectNode generateDocumentStatsJson(String documentType) {
+		
+    	int newDocsCount = 0;
+		int enabledDocsCount = 0;
+		int disabledDocsCount = 0;
+		int publishedDocsCount = 0;
+		
+		int docsWithoutImagesCount = 0;
+		int docsWithoutAudioCount = 0;
+		int docsWithoutVideoCount = 0;
+		int docsWithoutSourceCount = 0;
+
+		int docsModifiedTodayCount = 0;
+		int docsCreatedTodayCount = 0;			
+
+		int wordsWithoutPartOfSpeechCount = 0;
+		int wordsWithoutPronunciationCount = 0;
+		int wordsWithoutCategoriesCount = 0;			
+		int wordsWithoutRelatedPhrasesCount = 0;
+		
+		int phrasesWithoutPhraseBooksCount = 0;			
+		
+		ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
+		ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();	    	
+    	
     	ObjectNode documentJsonObj = mapper.createObjectNode();
     	
     	// Query to get documents from the workspace
@@ -98,23 +122,7 @@ public class FVGenerateJsonStatistics {
 
 		// If the document uses the fv-lifecycle
 		if(hasFVLifecycle(documentType)) {		
-		
-			int newDocsCount = 0;
-			int enabledDocsCount = 0;
-			int disabledDocsCount = 0;
-			int publishedDocsCount = 0;
-			
-			int docsWithoutImagesCount = 0;
-			int docsWithoutAudioCount = 0;
-			int docsWithoutVideoCount = 0;
-			int docsWithoutSourceCount = 0;
-
-			int docsModifiedTodayCount = 0;
-			int docsCreatedTodayCount = 0;			
-			
-			ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
-			ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();		
-			
+						
 			// Loop through each document in the result and generate statistics
 			for (Map<String, Serializable> docResult : totalDocsResult) {
 		        String value = (String) docResult.get("ecm:uuid");
@@ -136,23 +144,43 @@ public class FVGenerateJsonStatistics {
 		        }
 		        
 		        // Check for missing properties
-		        String[] relatedPictures = (String[]) doc.getProperty("fvcore", "related_pictures");		        
-		        if(relatedPictures.length == 0) {
+		        if(fieldValueIsEmpty(doc, "fvcore", "related_pictures")) {	
 		        	docsWithoutImagesCount++;
 		        }
-		        String[] relatedAudio = (String[]) doc.getProperty("fvcore", "related_audio");		        
-		        if(relatedAudio.length == 0) {
+		        if(fieldValueIsEmpty(doc, "fvcore", "related_audio")) {	
 		        	docsWithoutAudioCount++;
 		        }
-		        String[] relatedVideo = (String[]) doc.getProperty("fvcore", "related_videos");		        
-		        if(relatedVideo.length == 0) {
+		        if(fieldValueIsEmpty(doc, "fvcore", "related_videos")) {	
 		        	docsWithoutVideoCount++;
 		        }		        
-		        String[] source = (String[]) doc.getProperty("fvcore", "source");		        
-		        if(source.length == 0) {
+		        if(fieldValueIsEmpty(doc, "fvcore", "source")) {	
 		        	docsWithoutSourceCount++;
 		        }
-		       
+
+		        // Check for missing FVWord-specific properties
+		        if(doc.getType().equals("FVWord")) {			        
+			        if(fieldValueIsEmpty(doc, "fv-word", "part_of_speech")) {	
+			        	wordsWithoutPartOfSpeechCount++;
+			        }
+			        if(fieldValueIsEmpty(doc, "fv-word", "pronunciation")) {	
+			        	wordsWithoutPronunciationCount++;
+			        }			        
+			        if(fieldValueIsEmpty(doc, "fv-word", "categories")) {	
+			        	wordsWithoutCategoriesCount++;
+			        }
+			        if(fieldValueIsEmpty(doc, "fv-word", "related_phrases")) {	
+			        	wordsWithoutRelatedPhrasesCount++;
+			        }			        
+		        }
+		        
+		        // Check for missing FVPhrase-specific properties
+		        if(doc.getType().equals("FVPhrase")) {			        
+			        if(fieldValueIsEmpty(doc, "fv-phrase", "phrase_books")) {	
+			        	phrasesWithoutPhraseBooksCount++;
+			        }			        
+		        }
+		        
+		        // Get current date
 		        GregorianCalendar gregorianCalendar = new GregorianCalendar();            
 		        int currentMonth = gregorianCalendar.get(GregorianCalendar.MONTH);            
 		        int currentDay = gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH);
@@ -208,8 +236,24 @@ public class FVGenerateJsonStatistics {
 			documentJsonObj.put("without_audio", docsWithoutAudioCount);
 			documentJsonObj.put("without_video", docsWithoutVideoCount);
 			documentJsonObj.put("without_source", docsWithoutSourceCount);
+			
+			// Word-specific JSON elements
+	        if(documentType.equals("FVWord")) {    	
+	        	documentJsonObj.put("without_part_of_speech", wordsWithoutPartOfSpeechCount);	
+	        	documentJsonObj.put("without_pronunciation", wordsWithoutPronunciationCount);			        			    
+	        	documentJsonObj.put("without_categories", wordsWithoutCategoriesCount);					
+	        	documentJsonObj.put("without_related_phrases", wordsWithoutRelatedPhrasesCount);
+	        }			
+
+			// Phrase-specific JSON elements
+	        if(documentType.equals("FVPhrase")) {
+	        	documentJsonObj.put("without_phrase_books", phrasesWithoutPhraseBooksCount);
+	        }	        
+	        
 		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);					
+		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
+		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	    
 			
 		}
 		// Close the IterableQueryResult - important
@@ -224,5 +268,29 @@ public class FVGenerateJsonStatistics {
     		return true;
     	}
     	return false;
-    }   
+    }
+    
+    // Check if a document string field has an empty value
+    private boolean fieldValueIsEmpty(DocumentModel doc, String schema, String field) {    	
+    	
+    	Object obj = doc.getProperty(schema, field);
+    	// Field is single value
+    	if(obj instanceof String) {
+    		String fieldValue = (String)obj;
+        	if(fieldValue.isEmpty()) {
+        		return true;
+        	}
+        	return false;
+    	}
+    	// Field is multivalued
+    	else if(obj instanceof String[]) {
+        	String[] fieldValues = (String[])obj;
+        	if(fieldValues.length == 0) {
+        		return true;
+        	}
+        	return false;    		
+    	}
+    	return true;
+    }
+
 }
