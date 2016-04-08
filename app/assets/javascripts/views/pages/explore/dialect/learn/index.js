@@ -198,7 +198,7 @@ export default class DialectLearn extends Component {
 	            {(characters && characters.entries) ? characters.entries.map((char, i) => 
 	    		  <div key={char.uid} className="col-xs-1">
 		    		  <a href={'/explore' + char.path}>{char.title}</a>
-		    		  
+		    		  <br />
 		    		  {(char.contextParameters.character.related_audio[0]) ? 
 		  			    <span>
 		    			  <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
