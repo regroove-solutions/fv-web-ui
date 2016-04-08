@@ -90,6 +90,7 @@ public class FVGenerateJsonStatistics {
 
 		int docsModifiedTodayCount = 0;
 		int docsCreatedTodayCount = 0;			
+		int docsCreatedWithinSevenDaysCount = 0;			
 
 		int wordsWithoutPartOfSpeechCount = 0;
 		int wordsWithoutPronunciationCount = 0;
@@ -181,10 +182,10 @@ public class FVGenerateJsonStatistics {
 		        }
 		        
 		        // Get current date
-		        GregorianCalendar gregorianCalendar = new GregorianCalendar();            
-		        int currentMonth = gregorianCalendar.get(GregorianCalendar.MONTH);            
-		        int currentDay = gregorianCalendar.get(GregorianCalendar.DAY_OF_MONTH);
-		        int currentYear = gregorianCalendar.get(GregorianCalendar.YEAR);
+		        GregorianCalendar today = new GregorianCalendar();            
+		        int currentMonth = today.get(GregorianCalendar.MONTH);            
+		        int currentDay = today.get(GregorianCalendar.DAY_OF_MONTH);
+		        int currentYear = today.get(GregorianCalendar.YEAR);
 		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
 		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
 		    	
@@ -199,6 +200,13 @@ public class FVGenerateJsonStatistics {
 		    			&& dateCreated.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
 					docsCreatedTodayCount++;
 		    	}
+
+		    	// Count documents created within the last 7 days
+		    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
+		    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
+		    	if(dateCreated.after(sevenDaysAgo)) {
+					docsCreatedWithinSevenDaysCount++;
+		    	}		    	
 		    	
 		    	// Most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
 		    	if(recentlyModifiedJsonArray.size() < maxQueryResults) {
@@ -231,6 +239,7 @@ public class FVGenerateJsonStatistics {
 			documentJsonObj.put("published", publishedDocsCount);
 			documentJsonObj.put("created_today", docsCreatedTodayCount);
 			documentJsonObj.put("modified_today", docsModifiedTodayCount);
+			documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
 			
 			documentJsonObj.put("without_images", docsWithoutImagesCount);
 			documentJsonObj.put("without_audio", docsWithoutAudioCount);
