@@ -44,6 +44,7 @@ export default class StatsPanel extends Component {
     let docType = this.props.docType;	
 	let lifecycleStateDoughnutData = this._generateLifecycleStateDoughnutData(dataResponse, docType);
 	let missingAudioDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_audio, ["Has Audio", "Missing Audio"]);
+	let missingSourceDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_source, ["Has Source", "Missing Source"]);
 	
 	let missingWordRelatedPhrasesDoughnutData;
 	if(docType == 'FVWord') {
@@ -58,18 +59,18 @@ export default class StatsPanel extends Component {
     		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>
     		<p><strong>Published:</strong> {dataResponse[docType].published}</p> 
     		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p> 
-
     		<Doughnut data={lifecycleStateDoughnutData} />
     		
     		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
-    		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p>                             		
+    		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p> 
+    		<p><strong>Created Within Last 7 Days:</strong> {dataResponse[docType].created_within_7_days}</p>                         
     		<p><strong>Without Related Audio:</strong> {dataResponse[docType].without_audio}</p>                         
-
     		<Doughnut data={missingAudioDoughnutData} />
     		
     		<p><strong>Without Related Pictures:</strong> {dataResponse[docType].without_images}</p>
     		<p><strong>Without Related Video:</strong> {dataResponse[docType].without_video}</p>                             		
-    		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>                         
+    		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>     		
+    		<Doughnut data={missingSourceDoughnutData} />
     		
     		{(docType == 'FVWord') ? 
     			<div>
