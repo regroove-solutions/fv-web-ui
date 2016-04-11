@@ -76,7 +76,7 @@ public class FVGenerateJsonStatistics {
         return new StringBlob(rootJsonObj.toString(), "application/json");    
     } 
     
-    private ObjectNode generateDocumentStatsJson(String documentType) {
+    private ObjectNode generateDocumentStatsJson(String docType) {
 		
     	int newDocsCount = 0;
 		int enabledDocsCount = 0;
@@ -104,26 +104,26 @@ public class FVGenerateJsonStatistics {
     	
     	ObjectNode documentJsonObj = mapper.createObjectNode();
     	
-    	// Query to get documents from the workspace
-    	String baseDocumentsQuery = String.format(BASE_DOCS_QUERY, documentType);
+    	// Build the base document query for the specified type
+    	String baseDocumentsQuery = getBaseDocumentsQuery(docType);
     	
-    	// Add additional query parameters depending on path
-    	if(dialectPath.contains("/Workspaces/")) {
-    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
-    	} 
-    	else if(dialectPath.contains("/sections/")) {
-    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 1";   		
-    	}
-   	    	
-    	// Restrict the query to the specified dialect. Otherwise leave it empty
-        String queryDialectRestriction = " AND ecm:path STARTSWITH '" + dialectPath + "'"; 		
+    	if(baseDocumentsQuery != null) {
     	
-		IterableQueryResult totalDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction + " ORDER BY dc:modified DESC", NXQL.NXQL);
-		documentJsonObj.put("total", totalDocsResult.size());	
-
-		// If the document uses the fv-lifecycle
-		if(hasFVLifecycle(documentType)) {		
-						
+	    	// Add additional query parameters depending on path
+	    	if(dialectPath.contains("/Workspaces/")) {
+	    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
+	    	} 
+	    	else if(dialectPath.contains("/sections/")) {
+	    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 1";   		
+	    	}
+	   	    	
+	    	// Restrict the query to the specified dialect. Otherwise leave it empty
+	        String queryDialectRestriction = " AND ecm:path STARTSWITH '" + dialectPath + "'"; 		
+	    	
+	        // Execute the query
+			IterableQueryResult totalDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction + " ORDER BY dc:modified DESC", NXQL.NXQL);
+			documentJsonObj.put("total", totalDocsResult.size());	
+								
 			// Loop through each document in the result and generate statistics
 			for (Map<String, Serializable> docResult : totalDocsResult) {
 		        String value = (String) docResult.get("ecm:uuid");
@@ -157,29 +157,6 @@ public class FVGenerateJsonStatistics {
 		        if(fieldValueIsEmpty(doc, "fvcore", "source")) {	
 		        	docsWithoutSourceCount++;
 		        }
-
-		        // Check for missing FVWord-specific properties
-		        if(doc.getType().equals("FVWord")) {			        
-			        if(fieldValueIsEmpty(doc, "fv-word", "part_of_speech")) {	
-			        	wordsWithoutPartOfSpeechCount++;
-			        }
-			        if(fieldValueIsEmpty(doc, "fv-word", "pronunciation")) {	
-			        	wordsWithoutPronunciationCount++;
-			        }			        
-			        if(fieldValueIsEmpty(doc, "fv-word", "categories")) {	
-			        	wordsWithoutCategoriesCount++;
-			        }
-			        if(fieldValueIsEmpty(doc, "fv-word", "related_phrases")) {	
-			        	wordsWithoutRelatedPhrasesCount++;
-			        }			        
-		        }
-		        
-		        // Check for missing FVPhrase-specific properties
-		        if(doc.getType().equals("FVPhrase")) {			        
-			        if(fieldValueIsEmpty(doc, "fv-phrase", "phrase_books")) {	
-			        	phrasesWithoutPhraseBooksCount++;
-			        }			        
-		        }
 		        
 		        // Get current date
 		        GregorianCalendar today = new GregorianCalendar();            
@@ -200,7 +177,7 @@ public class FVGenerateJsonStatistics {
 		    			&& dateCreated.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
 					docsCreatedTodayCount++;
 		    	}
-
+	
 		    	// Count documents created within the last 7 days
 		    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
 		    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
@@ -219,7 +196,7 @@ public class FVGenerateJsonStatistics {
 			    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
 			    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
 		        }		        
-
+	
 		    	// Current user most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
 		    	if(doc.getPropertyValue("dc:lastContributor").equals(principalName) && userRecentlyModifiedJsonArray.size() < maxQueryResults) {
 			    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
@@ -231,53 +208,69 @@ public class FVGenerateJsonStatistics {
 			    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
 			    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
 		        }			        
-		    }
-			// Build JSON object
-			documentJsonObj.put("new", newDocsCount);
-			documentJsonObj.put("enabled", enabledDocsCount);
-			documentJsonObj.put("disabled", disabledDocsCount);
-			documentJsonObj.put("published", publishedDocsCount);
-			documentJsonObj.put("created_today", docsCreatedTodayCount);
-			documentJsonObj.put("modified_today", docsModifiedTodayCount);
-			documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
-			
-			documentJsonObj.put("without_images", docsWithoutImagesCount);
-			documentJsonObj.put("without_audio", docsWithoutAudioCount);
-			documentJsonObj.put("without_video", docsWithoutVideoCount);
-			documentJsonObj.put("without_source", docsWithoutSourceCount);
-			
-			// Word-specific JSON elements
-	        if(documentType.equals("FVWord")) {    	
-	        	documentJsonObj.put("without_part_of_speech", wordsWithoutPartOfSpeechCount);	
-	        	documentJsonObj.put("without_pronunciation", wordsWithoutPronunciationCount);			        			    
-	        	documentJsonObj.put("without_categories", wordsWithoutCategoriesCount);					
-	        	documentJsonObj.put("without_related_phrases", wordsWithoutRelatedPhrasesCount);
-	        }			
-
-			// Phrase-specific JSON elements
-	        if(documentType.equals("FVPhrase")) {
-	        	documentJsonObj.put("without_phrase_books", phrasesWithoutPhraseBooksCount);
-	        }	        
-	        
-		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
-		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	    
-			
-		}
-		// Close the IterableQueryResult - important
-		totalDocsResult.close();	        
-
+	
+	
+		        // Gather some word-specific stats
+		        if(docType.equalsIgnoreCase("words")) {			        
+			        if(fieldValueIsEmpty(doc, "fv-word", "part_of_speech")) {	
+			        	wordsWithoutPartOfSpeechCount++;
+			        }
+			        if(fieldValueIsEmpty(doc, "fv-word", "pronunciation")) {	
+			        	wordsWithoutPronunciationCount++;
+			        }			        
+			        if(fieldValueIsEmpty(doc, "fv-word", "categories")) {	
+			        	wordsWithoutCategoriesCount++;
+			        }
+			        if(fieldValueIsEmpty(doc, "fv-word", "related_phrases")) {	
+			        	wordsWithoutRelatedPhrasesCount++;
+			        }			        
+		        }
+		        
+		        // Gather some phrase-specific stats
+		        else if(docType.equalsIgnoreCase("phrases")) {			        
+			        if(fieldValueIsEmpty(doc, "fv-phrase", "phrase_books")) {	
+			        	phrasesWithoutPhraseBooksCount++;
+			        }			        
+		        }	    	
+		    		    	
+				// Build JSON object
+				documentJsonObj.put("new", newDocsCount);
+				documentJsonObj.put("enabled", enabledDocsCount);
+				documentJsonObj.put("disabled", disabledDocsCount);
+				documentJsonObj.put("published", publishedDocsCount);
+				documentJsonObj.put("created_today", docsCreatedTodayCount);
+				documentJsonObj.put("modified_today", docsModifiedTodayCount);
+				documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
+				
+				documentJsonObj.put("without_images", docsWithoutImagesCount);
+				documentJsonObj.put("without_audio", docsWithoutAudioCount);
+				documentJsonObj.put("without_video", docsWithoutVideoCount);
+				documentJsonObj.put("without_source", docsWithoutSourceCount);
+					        
+			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
+			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
+			    
+				// Word-specific JSON elements
+		        if(docType.equals("words")) {    	
+		        	documentJsonObj.put("without_part_of_speech", wordsWithoutPartOfSpeechCount);	
+		        	documentJsonObj.put("without_pronunciation", wordsWithoutPronunciationCount);			        			    
+		        	documentJsonObj.put("without_categories", wordsWithoutCategoriesCount);					
+		        	documentJsonObj.put("without_related_phrases", wordsWithoutRelatedPhrasesCount);
+		        }			
+	
+				// Phrase-specific JSON elements
+		        if(docType.equals("phrases")) {
+		        	documentJsonObj.put("without_phrase_books", phrasesWithoutPhraseBooksCount);
+		        }		    
+				
+			}
+			// Close the IterableQueryResult - important
+			totalDocsResult.close();	        
+    	}
     	return documentJsonObj;
     }   
-    
-    // Only some of the FV document types use the fv-lifecycle (New/Enabled/Disabled)
-    private boolean hasFVLifecycle(String documentType) {
-    	if(documentType.matches("FVWord|FVPhrase|FVBook|FVAudio|FVPicture|FVVideo")) {
-    		return true;
-    	}
-    	return false;
-    }
     
     // Check if a document string field has an empty value
     private boolean fieldValueIsEmpty(DocumentModel doc, String schema, String field) {    	
@@ -300,6 +293,31 @@ public class FVGenerateJsonStatistics {
         	return false;    		
     	}
     	return true;
+    }
+    
+    // Build the base document query for a specified type
+    private String getBaseDocumentsQuery(String docType) {
+    	
+    	String baseDocumentsQuery = null;
+    	
+    	if(docType.equalsIgnoreCase("words")) {
+    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVWord");
+    	}
+    	else if(docType.equalsIgnoreCase("phrases")) {
+    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVPhrase");
+    	}
+    	else if(docType.equalsIgnoreCase("characters")) {
+    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVCharacter");
+    	}    	
+    	else if(docType.equalsIgnoreCase("songs")) {
+    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVBook");
+    		baseDocumentsQuery = baseDocumentsQuery + " AND fvbook:type = 'song'";
+    	}
+    	else if(docType.equalsIgnoreCase("stories")) {
+    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVBook");
+    		baseDocumentsQuery = baseDocumentsQuery + " AND fvbook:type = 'story'";
+    	}    	
+    	return baseDocumentsQuery;
     }
 
 }
