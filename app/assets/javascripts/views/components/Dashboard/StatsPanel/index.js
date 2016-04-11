@@ -47,7 +47,7 @@ export default class StatsPanel extends Component {
 	let missingSourceDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_source, ["Has Source", "Missing Source"]);
 	
 	let missingWordRelatedPhrasesDoughnutData;
-	if(docType == 'FVWord') {
+	if(docType == 'words') {
 		missingWordRelatedPhrasesDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_related_phrases, ["Has Related Phrases", "Missing Related Phrases"]);
 	}
 
@@ -72,7 +72,7 @@ export default class StatsPanel extends Component {
     		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>     		
     		<Doughnut data={missingSourceDoughnutData} />
     		
-    		{(docType == 'FVWord') ? 
+    		{(docType == 'words') ? 
     			<div>
     				<h4>Word-Specific</h4>
     	    		<p><strong>Without Categories:</strong> {dataResponse[docType].without_categories}</p>  
@@ -83,7 +83,7 @@ export default class StatsPanel extends Component {
     	    	</div>
 	    	: ''}	
     		
-    		{(docType == 'FVPhrase') ? 
+    		{(docType == 'phrases') ? 
         		<div>
     				<h4>Phrase-Specific</h4>
         	    	<p><strong>Without Phrase Books:</strong> {dataResponse[docType].without_phrase_books}</p>  
@@ -92,20 +92,22 @@ export default class StatsPanel extends Component {
     		
     		<p><strong>Most Recently Modified:</strong></p>
     		<ul>
-    		{dataResponse[docType].most_recently_modified.map((document, i) => 
-    		  <li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
-    		    <br />{document['dc:modified']} by {document['dc:lastContributor']}
-    		  </li>
-    		)}
+    			{(dataResponse[docType].most_recently_modified) ? dataResponse[docType].most_recently_modified.map((document, i) => 
+    				<li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
+    	    			<br />{document['dc:modified']} by {document['dc:lastContributor']}
+    	    		</li>
+    	    	)	
+    			: ''}
     		</ul>
     		<p><strong>My Most Recently Modified:</strong></p>
     		<ul>
-    		{dataResponse[docType].user_most_recently_modified.map((document, i) => 
-    		  <li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
-    		    <br />{document['dc:modified']} by {document['dc:lastContributor']}
-    		  </li>
-    		)}
-    		</ul>        
+				{(dataResponse[docType].user_most_recently_modified) ? dataResponse[docType].user_most_recently_modified.map((document, i) => 
+					<li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
+		    			<br />{document['dc:modified']} by {document['dc:lastContributor']}
+		    		</li>
+		    	)	
+				: ''}
+			</ul>       
 		</div>
     );
   }
