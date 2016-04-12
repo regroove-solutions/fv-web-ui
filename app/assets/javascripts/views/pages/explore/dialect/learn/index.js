@@ -91,7 +91,7 @@ export default class DialectLearn extends Component {
 
     newProps.fetchDialect('/' + path);
     newProps.fetchPortal('/' + path + '/Portal');
-    newProps.fetchDialectStats('/' + path, ["words","phrases","characters","songs","stories"]);
+    newProps.fetchDialectStats('/' + path, ["words","phrases","songs","stories"]);
     newProps.fetchCharacters('/' + path + '/Alphabet');
   }
 
@@ -228,7 +228,6 @@ export default class DialectLearn extends Component {
           <StatsPanel data={dialectStats} docType="phrases" headerText="Phrases" />
           <StatsPanel data={dialectStats} docType="songs" headerText="Songs" />
           <StatsPanel data={dialectStats} docType="stories" headerText="Stories" />     
-          <StatsPanel data={dialectStats} docType="characters" headerText="Characters" />          
         </div>
       </div>
     }
@@ -240,7 +239,8 @@ export default class DialectLearn extends Component {
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(this.state.wordCount == null) ? "Words (0)" : "Phrases (" + this.state.wordCount + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(this.state.phraseCount == null) ? "Phrases (0)" : "Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label="Songs" secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label="Stories" secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label="Stories" secondary={true} />
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'reports')} label="Reports" secondary={true} />                 
                 </div>
               </div>
             </div>

@@ -346,7 +346,37 @@ export default class DocumentOperations extends BaseOperations {
 	        	.catch((error) => { reject(error); });
 	        });
 	  }   
-   
+
+   static queryDocumentsByDialect(path, queryOptions, headers = {}, params = {}) {
+
+	   let properties = this.properties;
+	   let cleanedDialectPath = StringHelpers.clean(path);
+
+	   return new Promise(
+	        function(resolve, reject) {
+
+	        let defaultParams = {
+	        	query: 
+	        		"SELECT * FROM Document" +
+	        		" WHERE (ecm:path STARTSWITH '" + cleanedDialectPath + "'" + 
+	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
+	        		queryOptions
+	          	};
+	        	
+	        	console.log(defaultParams.query);
+	        
+	          	params = Object.assign(defaultParams, params);
+
+	          	properties.client.operation('Document.Query')
+		            .params(params)
+		            .execute(headers)
+		         	.then(function(results) {
+		         		console.log(results);
+		         		resolve(results);
+		        	})
+	        	.catch((error) => { reject(error); });
+	        });
+	  }   
    
    
 }

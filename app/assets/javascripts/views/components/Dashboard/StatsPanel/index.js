@@ -71,6 +71,8 @@ export default class StatsPanel extends Component {
     		<p><strong>Without Related Video:</strong> {dataResponse[docType].without_video}</p>                             		
     		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>     		
     		<Doughnut data={missingSourceDoughnutData} />
+
+    		<p><strong>Available In Childrens Archive:</strong> {dataResponse[docType].available_in_childrens_archive}</p>     		
     		
     		{(docType == 'words') ? 
     			<div>
