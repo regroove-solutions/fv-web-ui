@@ -82,22 +82,12 @@ public class FVGenerateJsonStatistics {
 		int enabledDocsCount = 0;
 		int disabledDocsCount = 0;
 		int publishedDocsCount = 0;
-		
-		int docsWithoutImagesCount = 0;
-		int docsWithoutAudioCount = 0;
-		int docsWithoutVideoCount = 0;
-		int docsWithoutSourceCount = 0;
 
+		int docsAvailableInChildrensArchiveCount = 0;
+		
 		int docsModifiedTodayCount = 0;
 		int docsCreatedTodayCount = 0;			
-		int docsCreatedWithinSevenDaysCount = 0;			
-
-		int wordsWithoutPartOfSpeechCount = 0;
-		int wordsWithoutPronunciationCount = 0;
-		int wordsWithoutCategoriesCount = 0;			
-		int wordsWithoutRelatedPhrasesCount = 0;
-		
-		int phrasesWithoutPhraseBooksCount = 0;			
+		int docsCreatedWithinSevenDaysCount = 0;				
 		
 		ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
 		ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();	    	
@@ -142,20 +132,10 @@ public class FVGenerateJsonStatistics {
 		        }
 		        else if(doc.getCurrentLifeCycleState().equals("Published")) {
 		        	publishedDocsCount++;
-		        }
-		        
-		        // Check for missing properties
-		        if(fieldValueIsEmpty(doc, "fvcore", "related_pictures")) {	
-		        	docsWithoutImagesCount++;
-		        }
-		        if(fieldValueIsEmpty(doc, "fvcore", "related_audio")) {	
-		        	docsWithoutAudioCount++;
-		        }
-		        if(fieldValueIsEmpty(doc, "fvcore", "related_videos")) {	
-		        	docsWithoutVideoCount++;
-		        }		        
-		        if(fieldValueIsEmpty(doc, "fvcore", "source")) {	
-		        	docsWithoutSourceCount++;
+		        }	        
+	        	Boolean isAvailableInChildrensArchive = (Boolean)doc.getProperty("fvcore", "available_in_childrens_archive");
+	        	if(isAvailableInChildrensArchive != null && isAvailableInChildrensArchive.booleanValue()) {
+	        		docsAvailableInChildrensArchiveCount++;
 		        }
 		        
 		        // Get current date
@@ -208,31 +188,7 @@ public class FVGenerateJsonStatistics {
 			    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
 			    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
 		        }			        
-	
-	
-		        // Gather some word-specific stats
-		        if(docType.equalsIgnoreCase("words")) {			        
-			        if(fieldValueIsEmpty(doc, "fv-word", "part_of_speech")) {	
-			        	wordsWithoutPartOfSpeechCount++;
-			        }
-			        if(fieldValueIsEmpty(doc, "fv-word", "pronunciation")) {	
-			        	wordsWithoutPronunciationCount++;
-			        }			        
-			        if(fieldValueIsEmpty(doc, "fv-word", "categories")) {	
-			        	wordsWithoutCategoriesCount++;
-			        }
-			        if(fieldValueIsEmpty(doc, "fv-word", "related_phrases")) {	
-			        	wordsWithoutRelatedPhrasesCount++;
-			        }			        
-		        }
-		        
-		        // Gather some phrase-specific stats
-		        else if(docType.equalsIgnoreCase("phrases")) {			        
-			        if(fieldValueIsEmpty(doc, "fv-phrase", "phrase_books")) {	
-			        	phrasesWithoutPhraseBooksCount++;
-			        }			        
-		        }	    	
-		    		    	
+	    		    	
 				// Build JSON object
 				documentJsonObj.put("new", newDocsCount);
 				documentJsonObj.put("enabled", enabledDocsCount);
@@ -241,59 +197,19 @@ public class FVGenerateJsonStatistics {
 				documentJsonObj.put("created_today", docsCreatedTodayCount);
 				documentJsonObj.put("modified_today", docsModifiedTodayCount);
 				documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
-				
-				documentJsonObj.put("without_images", docsWithoutImagesCount);
-				documentJsonObj.put("without_audio", docsWithoutAudioCount);
-				documentJsonObj.put("without_video", docsWithoutVideoCount);
-				documentJsonObj.put("without_source", docsWithoutSourceCount);
-					        
+				        
 			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
 			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
 			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
 			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
-			    
-				// Word-specific JSON elements
-		        if(docType.equals("words")) {    	
-		        	documentJsonObj.put("without_part_of_speech", wordsWithoutPartOfSpeechCount);	
-		        	documentJsonObj.put("without_pronunciation", wordsWithoutPronunciationCount);			        			    
-		        	documentJsonObj.put("without_categories", wordsWithoutCategoriesCount);					
-		        	documentJsonObj.put("without_related_phrases", wordsWithoutRelatedPhrasesCount);
-		        }			
-	
-				// Phrase-specific JSON elements
-		        if(docType.equals("phrases")) {
-		        	documentJsonObj.put("without_phrase_books", phrasesWithoutPhraseBooksCount);
-		        }		    
-				
+
+				documentJsonObj.put("available_in_childrens_archive", docsAvailableInChildrensArchiveCount);							    			
 			}
 			// Close the IterableQueryResult - important
 			totalDocsResult.close();	        
     	}
     	return documentJsonObj;
     }   
-    
-    // Check if a document string field has an empty value
-    private boolean fieldValueIsEmpty(DocumentModel doc, String schema, String field) {    	
-    	
-    	Object obj = doc.getProperty(schema, field);
-    	// Field is single value
-    	if(obj instanceof String) {
-    		String fieldValue = (String)obj;
-        	if(fieldValue.isEmpty()) {
-        		return true;
-        	}
-        	return false;
-    	}
-    	// Field is multivalued
-    	else if(obj instanceof String[]) {
-        	String[] fieldValues = (String[])obj;
-        	if(fieldValues.length == 0) {
-        		return true;
-        	}
-        	return false;    		
-    	}
-    	return true;
-    }
     
     // Build the base document query for a specified type
     private String getBaseDocumentsQuery(String docType) {
