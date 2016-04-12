@@ -43,7 +43,7 @@ export default class StatsPanel extends Component {
 
     return (
 		<div className={classNames('col-xs-12', 'col-md-6')}>
-    		<h1>{this.props.headerText}</h1>
+    		<h2>{this.props.headerText}</h2>
     		<p><strong>Total:</strong> {dataResponse[docType].total}</p>
     		<p><strong>New:</strong> {dataResponse[docType].new}</p>
     		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>

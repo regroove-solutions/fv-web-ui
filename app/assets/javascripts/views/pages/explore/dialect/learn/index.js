@@ -224,6 +224,7 @@ export default class DialectLearn extends Component {
 	      </div>
         </div>
         <div className={classNames('col-xs-12', 'col-md-4')}>
+          <h1>Dashboard</h1>
           <StatsPanel data={dialectStats} docType="words" headerText="Words" />
           <StatsPanel data={dialectStats} docType="phrases" headerText="Phrases" />
           <StatsPanel data={dialectStats} docType="songs" headerText="Songs" />

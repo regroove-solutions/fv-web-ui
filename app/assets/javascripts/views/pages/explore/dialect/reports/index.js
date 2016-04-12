@@ -62,6 +62,11 @@ export default class PageDialectReports extends React.Component {
                 		<ListItem primaryText="List of words without video" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv:related_videos/* IS NULL")} />
                 		<ListItem primaryText="List of words without source" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv:source/* IS NULL")} />               		
 
+                		<ListItem primaryText="List of words without categories" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv-word:categories/* IS NULL")} />               		         		                		
+                		<ListItem primaryText="List of words without part of speech" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv-word:part_of_speech=''")} />               		
+                		<ListItem primaryText="List of words without pronunciation" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv-word:pronunciation=''")} />               		
+                		<ListItem primaryText="List of words without related phrases" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv-word:related_phrases/* IS NULL")} />               		         		
+                		
             			<ListItem primaryText="List of children's words in new status" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='New' AND fv:available_in_childrens_archive=1" )} />               	
                 		<ListItem primaryText="List of children's words in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Enabled' AND fv:available_in_childrens_archive=1")} />
                 		<ListItem primaryText="List of children's words in published status" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Published' AND fv:available_in_childrens_archive=1")} />
@@ -70,7 +75,6 @@ export default class PageDialectReports extends React.Component {
                 		<ListItem primaryText="List of children's words without audio" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv:related_audio/* IS NULL AND fv:available_in_childrens_archive=1")} />
                 		<ListItem primaryText="List of children's words without images" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv:related_pictures/* IS NULL AND fv:available_in_childrens_archive=1")} />
                 		<ListItem primaryText="List of children's words without video" onTouchTap={this._handleQueryDataRequest.bind(this, " AND ecm:primaryType='FVWord' AND fv:related_videos/* IS NULL AND fv:available_in_childrens_archive=1")} />               		
-
             		</List>
 
                 </div>
