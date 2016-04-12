@@ -21,9 +21,6 @@ export default class StatsPanel extends Component {
 
   _generateTwoSliceDoughnutData(total, subset, labels) {
 	    let doughnutData = [];
-	    //let total = data[docType].total;
-	    //let docsWithMissingValues = data[docType].jsonFieldElement;	    
-	    //let docsWithoutMissingValues = total - docsWithMissingValues;
 	    let totalMinusSubset = total - subset;
 	    doughnutData.push({ value: totalMinusSubset, color: "#46BFBD", highlight: "#5AD3D1", label: labels[0] }),
 	    doughnutData.push({ value: subset, color:"#F7464A", highlight: "#FF5A5E", label: labels[1] })   
@@ -43,13 +40,6 @@ export default class StatsPanel extends Component {
     let dataResponse = this.props.data.response;
     let docType = this.props.docType;	
 	let lifecycleStateDoughnutData = this._generateLifecycleStateDoughnutData(dataResponse, docType);
-	let missingAudioDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_audio, ["Has Audio", "Missing Audio"]);
-	let missingSourceDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_source, ["Has Source", "Missing Source"]);
-	
-	let missingWordRelatedPhrasesDoughnutData;
-	if(docType == 'words') {
-		missingWordRelatedPhrasesDoughnutData = this._generateTwoSliceDoughnutData(dataResponse[docType].total, dataResponse[docType].without_related_phrases, ["Has Related Phrases", "Missing Related Phrases"]);
-	}
 
     return (
 		<div className={classNames('col-xs-12', 'col-md-6')}>
@@ -64,33 +54,8 @@ export default class StatsPanel extends Component {
     		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
     		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p> 
     		<p><strong>Created Within Last 7 Days:</strong> {dataResponse[docType].created_within_7_days}</p>                         
-    		<p><strong>Without Related Audio:</strong> {dataResponse[docType].without_audio}</p>                         
-    		<Doughnut data={missingAudioDoughnutData} />
-    		
-    		<p><strong>Without Related Pictures:</strong> {dataResponse[docType].without_images}</p>
-    		<p><strong>Without Related Video:</strong> {dataResponse[docType].without_video}</p>                             		
-    		<p><strong>Without Source:</strong> {dataResponse[docType].without_source}</p>     		
-    		<Doughnut data={missingSourceDoughnutData} />
 
     		<p><strong>Available In Childrens Archive:</strong> {dataResponse[docType].available_in_childrens_archive}</p>     		
-    		
-    		{(docType == 'words') ? 
-    			<div>
-    				<h4>Word-Specific</h4>
-    	    		<p><strong>Without Categories:</strong> {dataResponse[docType].without_categories}</p>  
-    	    		<p><strong>Without Part of Speech:</strong> {dataResponse[docType].without_part_of_speech}</p>  
-    	    		<p><strong>Without Pronunciation:</strong> {dataResponse[docType].without_pronunciation}</p>  
-    	    		<p><strong>Without Related Phrases:</strong> {dataResponse[docType].without_related_phrases}</p>
-    	    		<Doughnut data={missingWordRelatedPhrasesDoughnutData} />
-    	    	</div>
-	    	: ''}	
-    		
-    		{(docType == 'phrases') ? 
-        		<div>
-    				<h4>Phrase-Specific</h4>
-        	    	<p><strong>Without Phrase Books:</strong> {dataResponse[docType].without_phrase_books}</p>  
-        	    </div>
-    	    : ''}
     		
     		<p><strong>Most Recently Modified:</strong></p>
     		<ul>
