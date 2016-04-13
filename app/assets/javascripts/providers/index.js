@@ -13,7 +13,8 @@ import FVAudio from './FVAudio';
 import FVCharacter from './FVCharacter';
 
 import connect from './connect';
-import navigation from './navigation';
+import navigation from './navigation'
+import reports from './reports';
 
 const loggerMiddleware = createLoggerMiddleware();
 
@@ -38,5 +39,6 @@ export default {
   FVPortal,
   FVAudio,
   FVWord,
-  FVCharacter
+  FVCharacter,
+  reports
 };
