@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -31,7 +32,7 @@ const DEFAULT_PAGE_SIZE = 10;
 export default class PageDialectReports extends React.Component {
 
   static propTypes = {
-	  
+	  pushWindowPath: PropTypes.func.isRequired,	  
 	  splitWindowPath: PropTypes.array.isRequired,
   	  fetchReportDocuments: PropTypes.func.isRequired,
       computeReportDocuments: PropTypes.object.isRequired
@@ -42,7 +43,7 @@ export default class PageDialectReports extends React.Component {
 	  super(props, context);
 	  
 	    // Expose 'this' to columns functions below
-	    let _this = this;    
+//	    let _this = this;    
 
 	    this.state = {
 	      columns : [
@@ -51,10 +52,12 @@ export default class PageDialectReports extends React.Component {
 	          return v;
 	        }}
 	      ],
-	      path : this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/')
+	      path : this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/'),
+	      queryName : '',
+	      queryAppend : ''
 	    };	  
 	    // Bind methods to 'this'
-	    ['_handleQueryDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) ); 
+	    ['_handleQueryDataRequest', '_handleRefetch', '_buildColumns', '_resetQueryData', '_onEntryNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) ); 
   }
   
   _handleQueryDataRequest(queryName, queryAppend, dataGridProps) {
@@ -76,17 +79,55 @@ export default class PageDialectReports extends React.Component {
 	//console.log("page: " + page);
 	//console.log("pageSize: " + pageSize);
 
+	this._buildColumns();  
+	
 	this.props.fetchReportDocuments(this.state.path, this.state.queryAppend, page, pageSize);
   }  
 
   _handleRefetch(dataGridProps, page, pageSize) {
+	
 	//console.log("path: " + this.state.path);
 	//console.log("queryAppend: " + this.state.queryAppend);
 	//console.log("page: " + page);
 	//console.log("pageSize: " + pageSize);
+	
+	this._buildColumns();  
 	  
 	this.props.fetchReportDocuments(this.state.path, this.state.queryAppend, page, pageSize);
   }  
+  
+  // Render different columns based on the doctype in the query
+  _buildColumns() {
+	  console.log(this.state.queryAppend);
+	  if(this.state.queryAppend.indexOf("ecm:primaryType='FVWord'") != -1) {
+		  this.state.columns = [
+		    { name: 'title', title: 'Word', render: function(v, data, cellProps) { return v; }}
+		  ]	 		  
+	  }
+	  else if(this.state.queryAppend.indexOf("ecm:primaryType='FVPhrase'") != -1) {
+		  this.state.columns = [
+		    { name: 'title', title: 'Phrase', render: function(v, data, cellProps) { return v; }}
+		  ]
+	  }
+	  else if(this.state.queryAppend.indexOf("fvbook:type='song'") != -1) {
+		  this.state.columns = [
+		    { name: 'title', title: 'Song', render: function(v, data, cellProps) { return v; }}
+		  ]
+	  }
+	  else if(this.state.queryAppend.indexOf("fvbook:type='story'") != -1) {
+		  this.state.columns = [
+		    { name: 'title', title: 'Story', render: function(v, data, cellProps) { return v; }}
+		  ]
+	  }		  
+  }
+
+  _resetQueryData() {
+	  this.setState({queryName: '', queryAppend: ''});
+  }
+  
+  _onEntryNavigateRequest(path) {
+	  this.props.pushWindowPath('/explore' + path);
+  }
   
   render() {
 
@@ -96,15 +137,13 @@ export default class PageDialectReports extends React.Component {
 		return <CircularProgress mode="indeterminate" size={3} />;
 	}
 	
-	if(computeReportDocuments.success) {
-
-		console.log(this.state.queryAppend);
+	if(this.state.queryName != '' && this.state.queryAppend != '') {
 		
 		return <div className="row">
         <div className="col-xs-12">
-        <h1>Report - {this.state.queryName}</h1>
+        <h1>Reports - {this.state.queryName}</h1>
+        <a onTouchTap={this._resetQueryData}>Reset query data</a>
         <DocumentListView
-          objectDescriptions="words" 
           data={this.props.computeReportDocuments}
           refetcher={this._handleRefetch}
           onSelectionChange={this._onEntryNavigateRequest}
@@ -152,13 +191,28 @@ export default class PageDialectReports extends React.Component {
                 	<h2>Phrases</h2>
                 	<List>
                 		<ListItem primaryText="List of phrases in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in new status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='New'")} />               	
+                		<ListItem primaryText="List of phrases in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in enabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Enabled'")} />               	
+                		<ListItem primaryText="List of phrases in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in published status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Published'")} />               	
+                		<ListItem primaryText="List of phrases in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in disabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Disabled'")} />               	
                 	</List>
                 </div>
 		        <div className="col-xs-3">
                 	<h2>Songs</h2>
+                	<List>
+            			<ListItem primaryText="List of songs in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='New'")} />               	
+            			<ListItem primaryText="List of songs in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Enabled'")} />               	
+            			<ListItem primaryText="List of songs in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in pubilshed status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Published'")} />               	
+            			<ListItem primaryText="List of songs in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in disabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Disabled'")} />               	
+           			</List>                	
                 </div>
 			    <div className="col-xs-3">
                 	<h2>Stories</h2>
+                	<List>
+        				<ListItem primaryText="List of stories in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='New'")} />               	
+        				<ListItem primaryText="List of stories in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Enabled'")} />               	
+        				<ListItem primaryText="List of stories in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in published status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Published'")} />               	
+        				<ListItem primaryText="List of stories in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in disabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Disabled'")} />               	
+       				</List>                 	
                 </div>		                
               </div>
             </div>

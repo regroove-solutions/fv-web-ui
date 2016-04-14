@@ -360,7 +360,8 @@ export default class DocumentOperations extends BaseOperations {
 	        		"SELECT * FROM Document" +
 	        		" WHERE (ecm:path STARTSWITH '" + cleanedDialectPath + "'" + 
 	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
-	        		queryAppend
+	        		queryAppend +
+	        		" ORDER BY dc:title ASC"
 	          	};
 	        	
 	        	console.log(defaultParams.query);
