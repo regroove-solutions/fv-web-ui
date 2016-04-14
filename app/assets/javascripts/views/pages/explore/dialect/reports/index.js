@@ -20,8 +20,9 @@ import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 
 import DocumentOperations from 'operations/DocumentOperations';
-
 import DocumentListView from 'views/components/Document/DocumentListView';
+
+import CircularProgress from 'material-ui/lib/circular-progress';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_PAGE_SIZE = 10;
@@ -31,22 +32,13 @@ export default class PageDialectReports extends React.Component {
 
   static propTypes = {
 	  
-//	  properties: PropTypes.object.isRequired,
-//	  windowPath: PropTypes.string.isRequired,
-	  
 	  splitWindowPath: PropTypes.array.isRequired,
   	  fetchReportDocuments: PropTypes.func.isRequired,
-      computeReportDocuments: PropTypes.object.isRequired,
-      
-      fetchWordsInPath: PropTypes.func.isRequired,
-      computeWordsInPath: PropTypes.object.isRequired,
-
-      getReport: PropTypes.func.isRequired,
-      computeReport: PropTypes.object.isRequired
-     
+      computeReportDocuments: PropTypes.object.isRequired
   };	
 	
   constructor(props, context){
+	  
 	  super(props, context);
 	  
 	    // Expose 'this' to columns functions below
@@ -58,44 +50,55 @@ export default class PageDialectReports extends React.Component {
 	          //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
 	          return v;
 	        }}
-	      ]
+	      ],
+	      path : this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/')
 	    };	  
-	  
+	    // Bind methods to 'this'
+	    ['_handleQueryDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) ); 
   }
-
-  _handleQueryDataRequest(queryName, queryOptions) {
+  
+  _handleQueryDataRequest(queryName, queryAppend, dataGridProps) {
 	  
-	let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-
 	this.state.queryName = queryName;
-	this.state.queryOptions = queryOptions;
-	
-//	return DocumentOperations.queryDocumentsByDialect(
-//		"/" + path,
-//		queryOptions,
-//	    {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-//	    {'currentPageIndex': 0, 'pageSize': 20}
-//	);
-	
-	this.props.fetchReportDocuments(path, queryOptions);
-	
-//	this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
-	
-	//this.props.getReport(path, queryOptions);
-	
-	//console.log(this.props.computeReport);
-	
-	//console.log(this.props.properties);
-	//console.log(this.props.windowPath);
+	this.state.queryAppend = queryAppend;
+		
+	let page = DEFAULT_PAGE;
+	let pageSize = DEFAULT_PAGE_SIZE;
+	if(dataGridProps.page != undefined) {
+		page = dataGridProps.page;
+	}
+	if(dataGridProps.pageSize != undefined) {
+		pageSize = dataGridProps.pageSize;
+	}	
+
+	//console.log("path: " + this.state.path);
+	//console.log("queryAppend: " + this.state.queryAppend);
+	//console.log("page: " + page);
+	//console.log("pageSize: " + pageSize);
+
+	this.props.fetchReportDocuments(this.state.path, this.state.queryAppend, page, pageSize);
+  }  
+
+  _handleRefetch(dataGridProps, page, pageSize) {
+	//console.log("path: " + this.state.path);
+	//console.log("queryAppend: " + this.state.queryAppend);
+	//console.log("page: " + page);
+	//console.log("pageSize: " + pageSize);
+	  
+	this.props.fetchReportDocuments(this.state.path, this.state.queryAppend, page, pageSize);
   }  
   
   render() {
 
 	const { computeReportDocuments } = this.props;
 	
+	if(computeReportDocuments.isFetching) {
+		return <CircularProgress mode="indeterminate" size={3} />;
+	}
+	
 	if(computeReportDocuments.success) {
 
-		console.log(this.state.queryOptions);
+		console.log(this.state.queryAppend);
 		
 		return <div className="row">
         <div className="col-xs-12">
@@ -147,6 +150,9 @@ export default class PageDialectReports extends React.Component {
                 </div>
 	            <div className="col-xs-3">
                 	<h2>Phrases</h2>
+                	<List>
+                		<ListItem primaryText="List of phrases in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in new status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='New'")} />               	
+                	</List>
                 </div>
 		        <div className="col-xs-3">
                 	<h2>Songs</h2>

@@ -9,16 +9,19 @@ const REPORT_DOCUMENTS_FETCH_START = "REPORT_DOCUMENTS_FETCH_START";
 const REPORT_DOCUMENTS_FETCH_SUCCESS = "REPORT_DOCUMENTS_FETCH_SUCCESS";
 const REPORT_DOCUMENTS_FETCH_ERROR = "REPORT_DOCUMENTS_FETCH_ERROR";
 
-const GET_REPORT = "GET_REPORT";
-
-const fetchReportDocuments = function fetchReportDocuments(path, queryAppend, type) {
+const fetchReportDocuments = function fetchReportDocuments(path, queryAppend, page, pageSize) {
   return function (dispatch) {
 
     dispatch( { type: REPORT_DOCUMENTS_FETCH_START } );
-    
+
+//    console.log("path: " + path);
+//    console.log("queryAppend: " + queryAppend);
+//    console.log("page: " + page);
+//    console.log("pageSize: " + pageSize);
+
 	return DocumentOperations.queryDocumentsByDialect("/" + path, queryAppend,
 	    {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-	    {'currentPageIndex': 0, 'pageSize': 20}
+	    {'currentPageIndex': (page - 1), 'pageSize': pageSize}
 	)     
     .then((response) => {
       dispatch( { type: REPORT_DOCUMENTS_FETCH_SUCCESS, documents: response } )
@@ -28,13 +31,7 @@ const fetchReportDocuments = function fetchReportDocuments(path, queryAppend, ty
   }
 };
 
-const getReport = function getReport(path, queryAppend) {
-    return function(dispatch) {
-		dispatch( { type: GET_REPORT, path: path, queryAppend: queryAppend } );
-    };
-}
-
-const actions = { fetchReportDocuments, getReport };
+const actions = { fetchReportDocuments };
 
 const reducers = {
   computeReportDocuments(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -55,18 +52,6 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
-  
-  computeReport(state = {}, action) {
-	    switch (action.type) {
-	      case GET_REPORT:
-	        return Object.assign({}, state, { path: action.path, queryAppend: action.queryAppend });
-	      break;
-
-	      default: 
-	        return Object.assign({}, state, {});
-	      break;
-	    }	  
   }
 };
 
