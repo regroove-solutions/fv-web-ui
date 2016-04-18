@@ -176,14 +176,7 @@ export default class PageDialectReports extends React.Component {
                 		<ListItem primaryText="List of words without pronunciation" onTouchTap={this._handleQueryDataRequest.bind(this, "List of words without pronunciation", " AND ecm:primaryType='FVWord' AND fv-word:pronunciation=''")} />               		
                 		<ListItem primaryText="List of words without related phrases" onTouchTap={this._handleQueryDataRequest.bind(this, "List of words without related phrases", " AND ecm:primaryType='FVWord' AND fv-word:related_phrases/* IS NULL")} />               		         		
                 		
-            			<ListItem primaryText="List of children's words in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words in new status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='New' AND fv:available_in_childrens_archive=1" )} />               	
-                		<ListItem primaryText="List of children's words in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words in enabled status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Enabled' AND fv:available_in_childrens_archive=1")} />
-                		<ListItem primaryText="List of children's words in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words in published status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Published' AND fv:available_in_childrens_archive=1")} />
-                		<ListItem primaryText="List of children's words in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words in disabled status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Disabled' AND fv:available_in_childrens_archive=1")} />           			
-                		
-                		<ListItem primaryText="List of children's words without audio" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words without audio", " AND ecm:primaryType='FVWord' AND fv:related_audio/* IS NULL AND fv:available_in_childrens_archive=1")} />
-                		<ListItem primaryText="List of children's words without images" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words without images", " AND ecm:primaryType='FVWord' AND fv:related_pictures/* IS NULL AND fv:available_in_childrens_archive=1")} />
-                		<ListItem primaryText="List of children's words without video" onTouchTap={this._handleQueryDataRequest.bind(this, "List of children's words without video", " AND ecm:primaryType='FVWord' AND fv:related_videos/* IS NULL AND fv:available_in_childrens_archive=1")} />               		
+            			<ListItem primaryText="List of words in children's archive" onTouchTap={this._handleQueryDataRequest.bind(this, "List of words in children's archive", " AND ecm:primaryType='FVWord' AND fv:available_in_childrens_archive=1" )} />               	
             		</List>
 
                 </div>
@@ -194,6 +187,15 @@ export default class PageDialectReports extends React.Component {
                 		<ListItem primaryText="List of phrases in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in enabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Enabled'")} />               	
                 		<ListItem primaryText="List of phrases in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in published status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Published'")} />               	
                 		<ListItem primaryText="List of phrases in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in disabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Disabled'")} />               	
+                	
+                		<ListItem primaryText="List of phrases without audio" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases without audio", " AND ecm:primaryType='FVPhrase' AND fv:related_audio/* IS NULL")} />
+                		<ListItem primaryText="List of phrases without images" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases without images", " AND ecm:primaryType='FVPhrase' AND fv:related_pictures/* IS NULL")} />
+                		<ListItem primaryText="List of phrases without video" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases without video", " AND ecm:primaryType='FVPhrase' AND fv:related_videos/* IS NULL")} />
+                		<ListItem primaryText="List of phrases without source" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases without source", " AND ecm:primaryType='FVPhrase' AND fv:source/* IS NULL")} />               		
+                	
+                		<ListItem primaryText="List of phrases without phrase books" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases without phrase books", " AND ecm:primaryType='FVPhrase' AND fv-phrase:phrase_books/* IS NULL")} />               		         		                		                		
+            			
+                		<ListItem primaryText="List of phrases in children's archive" onTouchTap={this._handleQueryDataRequest.bind(this, "List of phrases in children's archive", " AND ecm:primaryType='FVPhrase' AND fv:available_in_childrens_archive=1" )} />               	               		
                 	</List>
                 </div>
 		        <div className="col-xs-3">
@@ -203,7 +205,14 @@ export default class PageDialectReports extends React.Component {
             			<ListItem primaryText="List of songs in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Enabled'")} />               	
             			<ListItem primaryText="List of songs in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in pubilshed status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Published'")} />               	
             			<ListItem primaryText="List of songs in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in disabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Disabled'")} />               	
-           			</List>                	
+
+                		<ListItem primaryText="List of songs without audio" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs without audio", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_audio/* IS NULL")} />
+                		<ListItem primaryText="List of songs without images" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs without images", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_pictures/* IS NULL")} />
+                		<ListItem primaryText="List of songs without video" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs without video", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_videos/* IS NULL")} />
+                		<ListItem primaryText="List of songs without source" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs without source", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:source/* IS NULL")} />               		                		
+
+                		<ListItem primaryText="List of songs in children's archive" onTouchTap={this._handleQueryDataRequest.bind(this, "List of songs in children's archive", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:available_in_childrens_archive=1" )} />               	               		                		
+            		</List>                	
                 </div>
 			    <div className="col-xs-3">
                 	<h2>Stories</h2>
@@ -212,7 +221,14 @@ export default class PageDialectReports extends React.Component {
         				<ListItem primaryText="List of stories in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Enabled'")} />               	
         				<ListItem primaryText="List of stories in published status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in published status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Published'")} />               	
         				<ListItem primaryText="List of stories in disabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in disabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Disabled'")} />               	
-       				</List>                 	
+
+                		<ListItem primaryText="List of stories without audio" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories without audio", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_audio/* IS NULL")} />
+                		<ListItem primaryText="List of stories without images" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories without images", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_pictures/* IS NULL")} />
+                		<ListItem primaryText="List of stories without video" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories without video", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_videos/* IS NULL")} />
+                		<ListItem primaryText="List of stories without source" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories without source", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:source/* IS NULL")} />         				
+
+                		<ListItem primaryText="List of stories in children's archive" onTouchTap={this._handleQueryDataRequest.bind(this, "List of stories in children's archive", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:available_in_childrens_archive=1" )} />               	               		                		       			
+                	</List>                 	
                 </div>		                
               </div>
             </div>
