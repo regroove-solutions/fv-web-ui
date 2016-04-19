@@ -141,14 +141,14 @@ export default class PageDialectReports extends React.Component {
 	    doughnutData.push({ value: songsCount, color: "#46BFBD", highlight: "#5AD3D1", label: "Songs" }),
 	    doughnutData.push({ value: storiesCount, color:"#F7464A", highlight: "#FF5A5E", label: "Stories" })   
 	    return doughnutData;
-	  }   
+  }   
   
   _generateTwoSliceDoughnutData(total, subset, labels) {
 	    let doughnutData = [];
 	    //let total = this.state.totalCounts[this.state.queryDocType];
 	    let totalMinusSubset = total - subset;
-	    doughnutData.push({ value: totalMinusSubset, color: "#46BFBD", highlight: "#5AD3D1", label: labels[0] }),
-	    doughnutData.push({ value: subset, color:"#F7464A", highlight: "#FF5A5E", label: labels[1] })   
+	    doughnutData.push({ value: subset, color: "#46BFBD", highlight: "#5AD3D1", label: labels[1] });
+	    doughnutData.push({ value: totalMinusSubset, color:"#F7464A", highlight: "#FF5A5E", label: labels[0] });
 	    return doughnutData;
   }   
   
@@ -193,15 +193,26 @@ export default class PageDialectReports extends React.Component {
 	        <div className="col-xs-12">
 		        <h1>Reports - {this.state.queryName}</h1>
 		        <a onTouchTap={this._resetQueryData}>Reset query data</a>
-		        
-		    	<Doughnut data={doughnutData} />
+		        		    	
+                <div className="col-xs-12">
+	                <div className="col-xs-2 col-xs-offset-4">
+			    		<Doughnut data={doughnutData} />		    			      		 
+	    		    </div>
+	                <div className="col-xs-2">
+	                	{doughnutData.map((slice, i) =>
+	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
+	    		    	)}	                                  	
+	                </div>
+	            </div>		    	
 		    	
-		        <DocumentListView
-		          data={this.props.computeReportDocuments}
-		          refetcher={this._handleRefetch}
-		          onSelectionChange={this._onEntryNavigateRequest}
-		          columns={this.state.columns}
-		          className="browseDataGrid" />
+                <div className="col-xs-12">
+			        <DocumentListView
+			          data={this.props.computeReportDocuments}
+			          refetcher={this._handleRefetch}
+			          onSelectionChange={this._onEntryNavigateRequest}
+			          columns={this.state.columns}
+			          className="browseDataGrid" />
+		        </div>
 	       </div>
        </div>  
 	}
@@ -215,11 +226,18 @@ export default class PageDialectReports extends React.Component {
                 <h1>Reports</h1>
                 
                 <div className="col-xs-12">
-                	<Doughnut data={docTypeDoughnutData} />
+	                <div className="col-xs-2 col-xs-offset-4">
+	                	<Doughnut data={docTypeDoughnutData} />
+	    		    </div>
+	                <div className="col-xs-2">
+	                	{docTypeDoughnutData.map((slice, i) =>
+	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
+	    		    	)}	                                  	
+	                </div>
                 </div>
                 
                 <div className="col-xs-3">
-                	<h2>Words</h2>
+                	<h2>Words: {wordsCount}</h2>
                 	<List>
             			<ListItem primaryText="List of words in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Words in new status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='New'")} />               	
                 		<ListItem primaryText="List of words in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Words in enabled status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Enabled'")} />
@@ -241,7 +259,7 @@ export default class PageDialectReports extends React.Component {
 
                 </div>
 	            <div className="col-xs-3">
-                	<h2>Phrases</h2>
+                	<h2>Phrases: {phrasesCount}</h2>
                 	<List>
                 		<ListItem primaryText="List of phrases in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Phrases in new status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='New'")} />               	
                 		<ListItem primaryText="List of phrases in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Phrases in enabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Enabled'")} />               	
@@ -259,7 +277,7 @@ export default class PageDialectReports extends React.Component {
                 	</List>
                 </div>
 		        <div className="col-xs-3">
-                	<h2>Songs</h2>
+                	<h2>Songs: {songsCount}</h2>
                 	<List>
             			<ListItem primaryText="List of songs in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Songs in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='New'")} />               	
             			<ListItem primaryText="List of songs in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Songs in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Enabled'")} />               	
@@ -275,7 +293,7 @@ export default class PageDialectReports extends React.Component {
             		</List>                	
                 </div>
 			    <div className="col-xs-3">
-                	<h2>Stories</h2>
+                	<h2>Stories: {storiesCount}</h2>
                 	<List>
         				<ListItem primaryText="List of stories in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Stories in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='New'")} />               	
         				<ListItem primaryText="List of stories in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Stories in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Enabled'")} />               	
