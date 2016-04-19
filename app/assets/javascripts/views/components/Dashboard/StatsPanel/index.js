@@ -43,13 +43,19 @@ export default class StatsPanel extends Component {
 
     return (
 		<div className={classNames('col-xs-12', 'col-md-6')}>
-    		<h2>{this.props.headerText}</h2>
+    		<h3>{this.props.headerText}: {dataResponse[docType].total}</h3>
+    		{/*
     		<p><strong>Total:</strong> {dataResponse[docType].total}</p>
     		<p><strong>New:</strong> {dataResponse[docType].new}</p>
     		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>
     		<p><strong>Published:</strong> {dataResponse[docType].published}</p> 
     		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p> 
+    		*/}
     		<Doughnut data={lifecycleStateDoughnutData} />
+    		
+        	{lifecycleStateDoughnutData.map((slice, i) =>
+  		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
+	    	)}	                                  	
     		
     		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
     		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p> 
