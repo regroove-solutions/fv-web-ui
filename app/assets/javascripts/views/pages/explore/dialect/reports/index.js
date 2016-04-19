@@ -200,7 +200,7 @@ export default class PageDialectReports extends React.Component {
 	    		    </div>
 	                <div className="col-xs-2">
 	                	{doughnutData.map((slice, i) =>
-	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}</div>
+	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
 	    		    	)}	                                  	
 	                </div>
 	            </div>		    	
@@ -231,13 +231,13 @@ export default class PageDialectReports extends React.Component {
 	    		    </div>
 	                <div className="col-xs-2">
 	                	{docTypeDoughnutData.map((slice, i) =>
-	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}</div>
+	  	    		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
 	    		    	)}	                                  	
 	                </div>
                 </div>
                 
                 <div className="col-xs-3">
-                	<h2>Words</h2>
+                	<h2>Words: {wordsCount}</h2>
                 	<List>
             			<ListItem primaryText="List of words in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Words in new status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='New'")} />               	
                 		<ListItem primaryText="List of words in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Words in enabled status", " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Enabled'")} />
@@ -259,7 +259,7 @@ export default class PageDialectReports extends React.Component {
 
                 </div>
 	            <div className="col-xs-3">
-                	<h2>Phrases</h2>
+                	<h2>Phrases: {phrasesCount}</h2>
                 	<List>
                 		<ListItem primaryText="List of phrases in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Phrases in new status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='New'")} />               	
                 		<ListItem primaryText="List of phrases in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Phrases in enabled status", " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Enabled'")} />               	
@@ -277,7 +277,7 @@ export default class PageDialectReports extends React.Component {
                 	</List>
                 </div>
 		        <div className="col-xs-3">
-                	<h2>Songs</h2>
+                	<h2>Songs: {songsCount}</h2>
                 	<List>
             			<ListItem primaryText="List of songs in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Songs in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='New'")} />               	
             			<ListItem primaryText="List of songs in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Songs in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Enabled'")} />               	
@@ -293,7 +293,7 @@ export default class PageDialectReports extends React.Component {
             		</List>                	
                 </div>
 			    <div className="col-xs-3">
-                	<h2>Stories</h2>
+                	<h2>Stories: {storiesCount}</h2>
                 	<List>
         				<ListItem primaryText="List of stories in new status" onTouchTap={this._handleQueryDataRequest.bind(this, "Stories in new status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='New'")} />               	
         				<ListItem primaryText="List of stories in enabled status" onTouchTap={this._handleQueryDataRequest.bind(this, "Stories in enabled status", " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Enabled'")} />               	
