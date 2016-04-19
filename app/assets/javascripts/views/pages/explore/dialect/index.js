@@ -21,6 +21,7 @@ import ConfGlobal from 'conf/local.json';
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -34,6 +35,16 @@ import Snackbar from 'material-ui/lib/snackbar';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import Link from 'views/components/Document/Link';
+
+class EditableComponentHelper extends Component {
+  render() {
+    if (this.props.isSection) {
+      return <div dangerouslySetInnerHTML={{__html: this.props.entity.get(this.props.property)}}></div>;
+    }
+
+    return <EditableComponent {...this.props} />;
+  }
+}
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -90,7 +101,7 @@ export default class ExploreDialect extends Component {
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath + '/' + path);
+    this.props.pushWindowPath(path);
   }
 
   //_onRequestClose() {
@@ -99,7 +110,8 @@ export default class ExploreDialect extends Component {
   
   render() {
 
-    const { computeDialect, computePortal } = this.props;
+    const { computeDialect, computePortal, splitWindowPath } = this.props;
+    const isSection = splitWindowPath.includes('sections');
 
     let dialect = computeDialect.response;
     let portal = computePortal.response;
@@ -124,7 +136,7 @@ export default class ExploreDialect extends Component {
     	backgroundImage: 'url(' + portalBackgroundImagePath + ')',
     	backgroundPosition: '0 0',
     }    
-    
+
     return <div>
 
             <h1>{dialect.get('dc:title')} Community Portal</h1>
@@ -133,10 +145,11 @@ export default class ExploreDialect extends Component {
 
             	{(portalContextParams['fv-portal:logo']) ? 
                 	<img style={{float: 'left'}} src={ConfGlobal.baseURL + portalContextParams['fv-portal:logo'].path} />
-      			: ''}            
+                  : ''
+              }
             
               <h2 style={{float: 'left', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
-                <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" /><br/>
+                <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
               </h2>
 
             </div>
@@ -150,20 +163,25 @@ export default class ExploreDialect extends Component {
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'Dictionary')} label="Learn" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'play')} label="Play" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'community-slideshow')} label="Community Slideshow" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'art-gallery')} label="Art Gallery" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/Dictionary')} label="Learn" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/community-slideshow')} label="Community Slideshow" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/art-gallery')} label="Art Gallery" /> 
               </ToolbarGroup>
 
               <ToolbarGroup firstChild={true} float="right">
+
+                <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/')} />
+                <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+
+                <ToolbarSeparator />
+
                 <IconMenu iconButtonElement={
                   <IconButton tooltip="More Options" touch={true}>
                     <NavigationExpandMoreIcon />
                   </IconButton>
                 }>
-                  <MenuItem onTouchTap={this._onNavigateRequest.bind(this, 'edit')} primaryText="Edit Portal" />
-                  <MenuItem primaryText="Contact" />
+                  <MenuItem primaryText="Contact (TBD)" />
                 </IconMenu>
               </ToolbarGroup>
 
@@ -181,7 +199,7 @@ export default class ExploreDialect extends Component {
                   		<strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
                   		{(word['fv:related_audio'][0]) ? 
                   				<audio src={ConfGlobal.baseURL + word['fv:related_audio'][0].path} controls />
-      			    	: ''}
+      			    	    : ''}
                   		<br />
                   		<span>{word['fv-word:part_of_speech']}</span><br />
                   		{word['fv:literal_translation'].map((wordTranslation, j) =>
@@ -201,7 +219,7 @@ export default class ExploreDialect extends Component {
               <div className={classNames('col-xs-6', 'col-md-8')}>
                 <div>
                   <h1>Portal</h1>
-                  <EditableComponent computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" />
+                  <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" entity={portal} />
                 </div>
               </div>
 
@@ -211,14 +229,28 @@ export default class ExploreDialect extends Component {
 
                   <div className="subheader">Status of our Langauge</div>
 
-                  <div><strong>Name of Archive</strong><br/><EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" /></div>
+                  <div>
+                    <strong>Name of Archive</strong><br/>
+                    <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" entity={dialect} />
+                  </div>
+
                   <hr/>
-                  <div><strong>Country</strong><br/><EditableComponent options={this.props.computeDirectory.entries} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" /></div>
+
+                  <div>
+                    <strong>Country</strong><br/>
+                    <EditableComponentHelper isSection={isSection} options={this.props.computeDirectory.entries} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" entity={dialect} />
+                  </div>
+
                   <hr/>
+
                   <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
+
                   <hr/>
+
                   <p><strong># of Words Archived</strong><br/>{dialect.get('fvdialect:aaa')}</p>
+
                   <hr/>
+
                   <p><strong># of Phrases Archived</strong><br/>{dialect.get('fvdialect:aaaa')}</p>
                   
                   <strong>Related Links</strong>

@@ -20,7 +20,7 @@ export default class EditableComponent extends Component {
     computeEntity: PropTypes.object.isRequired,
     updateEntity: PropTypes.func.isRequired,
     property: PropTypes.string.isRequired,
-    options: PropTypes.object
+    options: PropTypes.array
   };
 
   constructor(props, context) {
@@ -70,7 +70,7 @@ export default class EditableComponent extends Component {
       // If fields and options found, try to create form our of field
       if (fieldFormFields && fieldFormOptions) {
         // If extended options enabled
-        if (this.props.options.length > 0) {
+        if (this.props.options && this.props.options.length > 0) {
           fieldFormOptions.fields[property].options = this.props.options;
         }
 
@@ -105,7 +105,7 @@ export default class EditableComponent extends Component {
 
     // Render regular field if not in edit mode
     return <div>
-            <div dangerouslySetInnerHTML={{__html: currentValue}}></div>
+              <div dangerouslySetInnerHTML={{__html: currentValue}}></div>
               <IconButton iconClassName="material-icons" onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }

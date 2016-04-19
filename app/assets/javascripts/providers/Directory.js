@@ -22,7 +22,7 @@ const fetchDirectory = function fetchDirectory(name, headers) {
       let options = response.map(function(directoryEntry) {
         return { value: directoryEntry.properties.id, text: directoryEntry.properties.label };
       });
-console.log(options);
+
       dispatch( { type: DIRECTORY_FETCH_SUCCESS, entries: options, name: name } )
 
 
