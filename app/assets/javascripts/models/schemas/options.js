@@ -144,6 +144,11 @@ const options = {
         label: 'Country',
         factory: t.form.Select,
         options: []
+      },
+      'fvdialect:contact_information': {
+        label: 'Contact Information',
+        type: 'textarea',
+        factory: WysiwygFactory
       }
     },
     i18n: i18nExt

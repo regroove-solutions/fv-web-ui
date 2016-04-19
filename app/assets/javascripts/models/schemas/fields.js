@@ -45,7 +45,8 @@ const fields = {
   FVDialect: Object.assign({}, Dublincore, {
     'fvdialect:country' : t.String,
     'fvdialect:dominant_language' : t.String,
-    'fvdialect:region' : t.String
+    'fvdialect:region' : t.String,
+    'fvdialect:contact_information' : t.String
   })
 }
 

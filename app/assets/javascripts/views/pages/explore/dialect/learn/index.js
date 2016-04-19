@@ -17,6 +17,7 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import ConfGlobal from 'conf/local.json';
+import selectn from 'selectn';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -168,8 +169,9 @@ export default class DialectLearn extends Component {
     let characters = computeCharacters.response;
         
     let keyboardLinks = [];
-    if(computeDialect.success) {
-    	keyboardLinks = dialect.contextParameters.dialect.keyboards;
+
+    if ( computeDialect.success && selectn('contextParameters.dialect.keyboards', dialect) ) {
+    	keyboardLinks = selectn('contextParameters.dialect.keyboards', dialect);
     }
     
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
