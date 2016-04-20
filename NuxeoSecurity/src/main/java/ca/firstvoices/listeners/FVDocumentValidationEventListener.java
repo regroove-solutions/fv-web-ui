@@ -89,8 +89,12 @@ public class FVDocumentValidationEventListener implements EventListener {
         // searching for documents with same title in the parent folderish document Exclude the current document from the results
         StringBuilder sb = new StringBuilder("SELECT " + NXQL.ECM_UUID + " FROM " + docType + " WHERE ");
         sb.append("dc:title").append("=").append(NXQL.escapeString(title))
-        .append(" AND ").append(NXQL.ECM_PARENTID).append("=").append(NXQL.escapeString(parentDoc.getId()))
-        .append(" AND ").append(NXQL.ECM_UUID).append("!=").append(NXQL.escapeString(doc.getId()));
+        .append(" AND ").append(NXQL.ECM_PARENTID).append("=").append(NXQL.escapeString(parentDoc.getId()));
+
+        // If an existing document is being modified, exclude it from the results of the query
+        if(doc.getId() != null) {
+        	sb.append(" AND ").append(NXQL.ECM_UUID).append("!=").append(NXQL.escapeString(doc.getId()));
+        }        
         
         IterableQueryResult result = ctx.getCoreSession().queryAndFetch(sb.toString(), NXQL.NXQL);
         return (result.size() == 0);
@@ -110,12 +114,16 @@ public class FVDocumentValidationEventListener implements EventListener {
         }
         
         DocumentModel parentDoc = ctx.getCoreSession().getDocument(parentRef);
-        // searching for documents with same title in the parent folderish document. Exclude the current document from the results
+        // searching for documents with same title in the parent folderish document
         StringBuilder sb = new StringBuilder("SELECT " + NXQL.ECM_UUID + " FROM FVWord WHERE ");
         sb.append("dc:title").append("=").append(NXQL.escapeString(title))
         .append(" AND ").append(NXQL.ECM_PARENTID).append("=").append(NXQL.escapeString(parentDoc.getId()))
-        .append(" AND ").append(NXQL.ECM_UUID).append("!=").append(NXQL.escapeString(doc.getId()))
         .append(" AND ").append("fv-word:part_of_speech='" + partOfSpeech + "'");
+        
+        // If an existing word is being modified, exclude it from the results of the query
+        if(doc.getId() != null) {
+        	sb.append(" AND ").append(NXQL.ECM_UUID).append("!=").append(NXQL.escapeString(doc.getId()));
+        }
         
         IterableQueryResult result = ctx.getCoreSession().queryAndFetch(sb.toString(), NXQL.NXQL);
         return (result.size() == 0);
