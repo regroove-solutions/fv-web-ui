@@ -83,12 +83,14 @@ export default class PageDialectWordsCreate extends Component {
     // Passed validation
     if (formValue) {
 
-      let properties = '';
-
+      //let properties = '';
+      let properties = {};
+      
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
-	        properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+	        //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+	    	  properties[key] = formValue[key];
 	  	  }
 	    }
 	  }
