@@ -13,6 +13,10 @@ const DOCUMENT_FETCH_START = "DOCUMENT_FETCH_START";
 const DOCUMENT_FETCH_SUCCESS = "DOCUMENT_FETCH_SUCCESS";
 const DOCUMENT_FETCH_ERROR = "DOCUMENT_FETCH_ERROR";
 
+const DOCUMENT_PUBLISH_START = "DOCUMENT_PUBLISH_START";
+const DOCUMENT_PUBLISH_SUCCESS = "DOCUMENT_PUBLISH_SUCCESS";
+const DOCUMENT_PUBLISH_ERROR = "DOCUMENT_PUBLISH_ERROR";
+
 const fetchDocument = function fetchDocument(pathOrId, headers) {
   return function (dispatch) {
 
@@ -27,7 +31,21 @@ const fetchDocument = function fetchDocument(pathOrId, headers) {
   }
 };
 
-const actions = { fetchDocument };
+const publishDocument = function publishDocument(workspaceDocPath, sectionTargetPath) {
+  return function (dispatch) {
+
+    dispatch( { type: DOCUMENT_PUBLISH_START } );
+
+    return DocumentOperations.publishDocument(workspaceDocPath, {target: sectionTargetPath, override: "true"})
+    .then((response) => {
+      dispatch( { type: DOCUMENT_PUBLISH_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: DOCUMENT_PUBLISH_ERROR, error: error } )
+    });
+  }
+};
+
+const actions = { fetchDocument, publishDocument };
 
 const reducers = {
   computeDocument(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
@@ -49,7 +67,28 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }
+  },
+  
+  computePublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+    switch (action.type) {
+      case DOCUMENT_PUBLISH_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      case DOCUMENT_PUBLISH_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      case DOCUMENT_PUBLISH_ERROR:
+      case DISMISS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  }  
 };
 
 const middleware = [thunk];

@@ -43,6 +43,26 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   /**
+   * Publish a document 
+   */  
+  static publishDocument(pathOrUid = "", params = {}) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .operation('Document.PublishToSection')
+        .params(params)
+        .input(pathOrUid)
+        .execute()        
+        .then((doc) => {
+          resolve(doc);
+        }).catch((error) => { reject('Could not publish document.'); });
+    });
+  }  
+
+  /**
   * Update a document 
   */
   static updateDocument(doc) {

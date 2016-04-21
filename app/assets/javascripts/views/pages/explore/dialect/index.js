@@ -64,7 +64,10 @@ export default class ExploreDialect extends Component {
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
     fetchDirectory: PropTypes.func.isRequired,
-    computeDirectory: PropTypes.object.isRequired
+    computeDirectory: PropTypes.object.isRequired,
+    
+    publishDocument: PropTypes.func.isRequired,
+    computePublish: PropTypes.object.isRequired    
   };
 
   static contextTypes = {
@@ -75,7 +78,7 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_publishPortal'].forEach( (method => this[method] = this[method].bind(this)) );
 
     this.state = { UISnackBarOpen: false };
   }
@@ -107,10 +110,25 @@ export default class ExploreDialect extends Component {
   //_onRequestClose() {
   //  this.props.dismissError();
   //}
+
+  // Publish the portal
+  _publishPortal() {
+	  let workspaceDialectPath = "/" + this.props.splitWindowPath.slice(1).join('/');
+	  workspaceDialectPath = decodeURI(workspaceDialectPath);
+	  console.log("workspaceDialectPath: " + workspaceDialectPath);
+
+	  let workspaceDocPath = workspaceDialectPath + "/Portal";
+	  console.log("workspaceDocPath: " + workspaceDocPath);
+	  
+	  let sectionTargetPath = workspaceDialectPath.replace('Workspaces', 'sections');
+	  console.log("sectionTargetPath: " + sectionTargetPath);
+	  
+	  this.props.publishDocument(workspaceDocPath, sectionTargetPath);
+  }  
   
   render() {
 
-    const { computeDialect, computePortal, splitWindowPath } = this.props;
+    const { computeDialect, computePortal, splitWindowPath, computePublish } = this.props;
     const isSection = splitWindowPath.includes('sections');
 
     let dialect = computeDialect.response;
@@ -121,6 +139,10 @@ export default class ExploreDialect extends Component {
     if (computeDialect.isFetching || computePortal.isFetching || portal.contextParameters == undefined) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
+
+    if (computePublish.isFetching) {
+        return <CircularProgress mode="indeterminate" size={5} />;
+    }    
     
     let portalContextParams = portal.contextParameters.portal;
     
@@ -170,7 +192,7 @@ export default class ExploreDialect extends Component {
               </ToolbarGroup>
 
               <ToolbarGroup firstChild={true} float="right">
-
+              	<RaisedButton label="Publish" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishPortal} />
                 <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces'))} />
                 <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
                 <RaisedButton label="Public Version" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('Workspaces', 'sections'))} />
