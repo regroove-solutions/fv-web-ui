@@ -26,6 +26,10 @@ const FV_WORDS_DELETE_START = "FV_WORDS_DELETE_START";
 const FV_WORDS_DELETE_SUCCESS = "FV_WORDS_DELETE_SUCCESS";
 const FV_WORDS_DELETE_ERROR = "FV_WORDS_DELETE_ERROR";
 
+const FV_WORDS_SHARED_FETCH_START = "FV_WORDS_SHARED_FETCH_START";
+const FV_WORDS_SHARED_FETCH_SUCCESS = "FV_WORDS_SHARED_FETCH_SUCCESS";
+const FV_WORDS_SHARED_FETCH_ERROR = "FV_WORDS_SHARED_FETCH_ERROR";
+
 /**
 * Single Word Actions
 */
@@ -77,6 +81,20 @@ const updateWord = function updateWord(newDoc, field) {
   }
 };
 
+const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_WORDS_SHARED_FETCH_START } );
+
+    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVWord', headers, params)
+    .then((response) => {
+      dispatch( { type: FV_WORDS_SHARED_FETCH_SUCCESS, documents: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_WORDS_SHARED_FETCH_ERROR, error: error } )
+    });
+  }
+};
+
 const fetchWordsAll = function fetchWordsAll(path, type) {
   return function (dispatch) {
 
@@ -119,9 +137,30 @@ const fetchWord = function fetchWord(pathOrId) {
   }
 };
 
-const actions = { fetchWordsInPath, fetchWord, createWord, fetchWordsAll, updateWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, fetchWordsAll, updateWord };
 
 const reducers = {
+  computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
+    switch (action.type) {
+      case FV_WORDS_SHARED_FETCH_START:
+        return Object.assign({}, state, { isFetching: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_SHARED_FETCH_SUCCESS:
+        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_SHARED_FETCH_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
   computeWordsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {
       case FV_WORDS_FETCH_START:

@@ -10,6 +10,8 @@ import FVDialect from './FVDialect';
 import FVPortal from './FVPortal';
 import FVWord from './FVWord';
 import FVAudio from './FVAudio';
+import FVPicture from './FVPicture';
+import FVVideo from './FVVideo';
 import FVCharacter from './FVCharacter';
 
 import connect from './connect';
@@ -38,6 +40,8 @@ export default {
   FVDialect,
   FVPortal,
   FVAudio,
+  FVVideo,
+  FVPicture,
   FVWord,
   FVCharacter,
   reports

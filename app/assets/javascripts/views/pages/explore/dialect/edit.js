@@ -30,6 +30,18 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
+
+
+
+
+
+import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
+
+
+
+
+
+
 @provide
 export default class ExploreDialectEdit extends Component {
 
@@ -90,6 +102,10 @@ export default class ExploreDialectEdit extends Component {
         return true;
       break;
 
+      case (newProps.computeDialect.response != this.props.computeDialect.response):
+        return true;
+      break;
+
       case (newProps.computePortalUpdate.response != this.props.computePortalUpdate.response):
         return false; // TODO: Change to true and handle submit
       break;
@@ -131,7 +147,7 @@ export default class ExploreDialectEdit extends Component {
     let dialect = computeDialect.response;
     let portal = computePortal.response;
 
-    if (computeDialect.isFetching || computePortal.isFetching || !computePortal.success) {
+    if (computeDialect.isFetching || computePortal.isFetching || !computePortal.success || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
@@ -146,7 +162,7 @@ export default class ExploreDialectEdit extends Component {
                   <t.form.Form
                     ref="form_portal"
                     type={t.struct(selectn("FVPortal", fields))}
-                    context={dialect}
+                    context={Object.assign(dialect, {initialValues: selectn("properties", portal)})}
                     value={selectn("properties", portal)}
                     options={selectn("FVPortal", options)} />
                     <div className="form-group">

@@ -17,27 +17,28 @@ export default class AutoSuggestComponent extends Component {
   static propTypes = {
     fetchSharedAudios: PropTypes.func.isRequired,
     computeSharedAudios: PropTypes.object.isRequired,
+    fetchSharedWords: PropTypes.func.isRequired,
+    computeSharedWords: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired
   };
 
+  shouldRenderSuggestions(value) {
+    return value.trim().length > 2;
+  }
 
-shouldRenderSuggestions(value) {
-  return value.trim().length > 2;
-}
+  getSuggestionValue(suggestion) {
+      this.props.onChange(
+        event, suggestion
+      );
+    return suggestion.title;
+  }
 
-getSuggestionValue(suggestion) {
-    this.props.onChange(
-      event, suggestion
-    );
-  return suggestion.title;
-}
-
-renderSuggestion(suggestion) {
-  return (<a href='#'>{suggestion.title}</a>);
-}
+  renderSuggestion(suggestion) {
+    return (<a href='#'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+  }
 
   constructor(props) {
     super(props);
@@ -71,8 +72,11 @@ renderSuggestion(suggestion) {
     });
 
     switch (this.props.type) {
-      case 'audio':
+      case 'FVAudio':
         this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+      break;
+      case 'FVWord':
+        this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
       break;
     }   
   }
@@ -97,12 +101,12 @@ renderSuggestion(suggestion) {
 
   getComputeType() {
     switch (this.props.type) {
-      case 'audio':
+      case 'FVAudio':
         return this.props.computeSharedAudios;
       break;
 
-      case 'directory':
-        return this.props.computeSharedAudios;
+      case 'FVWord':
+        return this.props.computeSharedWords;
       break;
     }
   }

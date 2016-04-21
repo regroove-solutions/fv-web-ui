@@ -36,7 +36,7 @@ const login = function login(username, password) {
     dispatch( { type: LOGIN_START } );
 
     // TODO: Better way of handling logout. Currently the 'login' method does not invalidate an existing cookie.
-    Request({url: ConfGlobal.baseURL + "/logout", method: "GET"}, function (error, response, body) {
+    Request({url: ConfGlobal.baseURL + "logout", method: "GET"}, function (error, response, body) {
       return BaseOperations.login(username, password)
         .then((response) => {
           dispatch( { type: LOGIN_SUCCESS, user: response, isAnonymous: response.isAnonymous} );

@@ -2,6 +2,7 @@ import React from 'react';
 import t from 'tcomb-form';
 import WysiwygFactory from 'views/components/Editor/fields/wysiwyg';
 import SelectFactory from 'views/components/Editor/fields/select';
+import MediaFactory from 'views/components/Editor/fields/media';
 
 const i18nExt = {
   add: 'New Item',
@@ -65,22 +66,22 @@ const options = {
       'fv:related_audio' : {
         label: 'Related Audio',
         item: {
-          factory: SelectFactory,
-          type: 'audio'
+          factory: MediaFactory,
+          type: 'FVAudio'
         }
       },
       'fv:related_pictures' : {
         label: 'Related Pictures',
         item: {
-          factory: SelectFactory,
-          type: 'picture'
+          factory: MediaFactory,
+          type: 'FVPicture'
         }
       },
       'fv:related_videos' : {
         label: 'Related Videos',
         item: {
-          factory: SelectFactory,
-          type: 'video'
+          factory: MediaFactory,
+          type: 'FVVideo'
         }
       },
       'fv:cultural_note' : {
@@ -112,19 +113,25 @@ const options = {
       },
       'fv-portal:featured_audio' : {
         label: 'Featured Audio',
-        item: {
-          factory: SelectFactory,
-          type: 'audio'
-        }
+        factory: MediaFactory,
+        type: 'FVAudio'
       },
       'fv-portal:featured_words' : {
-        label: 'Featured Words'
+        label: 'Featured Words',
+        item: {
+          factory: SelectFactory,
+          type: 'FVWord'
+        }
       },
       'fv-portal:background_top_image' : {
-        label: 'Background Image'
+        label: 'Background Image',
+        factory: MediaFactory,
+        type: 'FVPicture'
       },
       'fv-portal:logo' : {
-        label: 'Logo'
+        label: 'Logo',
+        factory: MediaFactory,
+        type: 'FVPicture'
       }
     },
     i18n: i18nExt

@@ -155,15 +155,15 @@ export default class ExploreDialect extends Component {
             </div>
             
             <div>
-            	{(portalContextParams['fv-portal:featured_audio'][0]) ? 
-		  			<audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'][0].path} controls />
-  			    : ''}
+            	{(portalContextParams['fv-portal:featured_audio']) ? 
+		  			   <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + portalContextParams['fv-portal:featured_audio'].path} controls />
+  			      : ''}
             </div>
             
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/Dictionary')} label="Learn" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/Dictionary')} label="Dictionary" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/community-slideshow')} label="Community Slideshow" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/art-gallery')} label="Art Gallery" /> 
@@ -171,8 +171,9 @@ export default class ExploreDialect extends Component {
 
               <ToolbarGroup firstChild={true} float="right">
 
-                <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/')} />
+                <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces'))} />
                 <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                <RaisedButton label="Public Version" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('Workspaces', 'sections'))} />
 
                 <ToolbarSeparator />
 

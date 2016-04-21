@@ -28,14 +28,17 @@ import {
 
 // TODO: Cleanup class
 @provide
-export default class AddMediaComponent extends React.Component {
+export default class AddMediaComponent extends Component {
 
   static propTypes = {
     createAudio: PropTypes.func.isRequired,
     computeCreateAudio: PropTypes.object.isRequired,
+    createPicture: PropTypes.func.isRequired,
+    computeCreatePicture: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
-    onUploadComplete: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired
+    onComplete: PropTypes.func.isRequired,
+    label: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired
   };
 
   getDefaultValues() {
@@ -92,7 +95,10 @@ export default class AddMediaComponent extends React.Component {
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
     if (nextProps.computeCreateAudio.success && !this.props.computeCreateAudio.success) {
-      this.props.onUploadComplete(nextProps.computeCreateAudio.response.uid);
+      this.props.onComplete(nextProps.computeCreateAudio.response.uid);
+    }
+    else if (nextProps.computeCreatePicture.success && !this.props.computeCreatePicture.success) {
+      this.props.onComplete(nextProps.computeCreatePicture.response.uid);
     }
   }
 
@@ -101,7 +107,7 @@ export default class AddMediaComponent extends React.Component {
     e.preventDefault();
 
 
-    //this.setState({'uploading': true});
+    this.setState({'uploading': true});
 
     var value = this.refs['form_media'].getValue();
 
@@ -124,11 +130,25 @@ export default class AddMediaComponent extends React.Component {
       }
 
       if (file) {
-        this.props.createAudio(this.props.dialect.path + '/Resources', {
-          type: 'FVAudio',
-          name: value.title,
-          properties: 'dc:title=' + value.title + ' \ndc:description=' + value.description
-        }, file);
+        switch (this.props.type) {
+
+          case 'FVAudio': 
+            this.props.createAudio(this.props.dialect.path + '/Resources', {
+              type: 'FVAudio',
+              name: value.title,
+              properties: 'dc:title=' + value.title + ' \ndc:description=' + value.description
+            }, file);
+          break;
+
+          case 'FVPicture': 
+            this.props.createPicture(this.props.dialect.path + '/Resources', {
+              type: 'FVPicture',
+              name: value.title,
+              properties: 'dc:title=' + value.title + ' \ndc:description=' + value.description
+            }, file);
+          break;
+
+        }
       }
    }
   }
@@ -137,47 +157,62 @@ export default class AddMediaComponent extends React.Component {
 
   render() {
 
-    var form = "";
+      var form = "";
 
-    if (this.state.schema != undefined){
-     form = <form onSubmit={this._save} id="myForm" encType="multipart/form-data">
-            <t.form.Form
-              ref="form_media"
-              options={this.state.options}
-              type={this.state.schema} 
-              value={this.state.value}
-              onChange={this._change} />
-              <button type="submit" className={classNames('btn', 'btn-primary')}>Upload Media</button>
-          </form>;
-    }
+      if (this.state.schema != undefined){
+       form = <form onSubmit={this._save} id="myForm" encType="multipart/form-data">
+              <t.form.Form
+                ref="form_media"
+                options={this.state.options}
+                type={this.state.schema} 
+                value={this.state.value}
+                onChange={this._change} />
+                <button type="submit" className={classNames('btn', 'btn-primary')}>Upload Media</button>
+            </form>;
+      }
 
-    var uploadText = "";
+      var uploadText = "";
 
-    if (this.state.uploading) {
-      uploadText = <div className={classNames('alert', 'alert-info')} role="alert">Uploading... Please be patient...</div>
-    }
+      if (this.state.uploading) {
+        uploadText = <div className={classNames('alert', 'alert-info')} role="alert">Uploading... Please be patient...</div>
+      }
 
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        secondary={true}
-        onTouchTap={this.handleClose} />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        disabled={true}
-        onTouchTap={this.handleClose} />,
-    ];
+      const actions = [
+        <FlatButton
+          label="Cancel"
+          secondary={true}
+          onTouchTap={this.handleClose} />,
+        <FlatButton
+          label="Submit"
+          primary={true}
+          disabled={true}
+          onTouchTap={this.handleClose} />,
+      ];
+
+      let fileTypeLabel = "File";
+
+      switch (this.props.type) {
+        case 'FVAudio':
+          fileTypeLabel = 'Audio';
+        break;
+
+        case 'FVPicture':
+          fileTypeLabel = 'Picture';
+        break;
+
+        case 'FVVideo':
+          fileTypeLabel = 'Video';
+        break;
+      }
 
       return (
         <div>
           <RaisedButton label={this.props.label} onTouchTap={this.handleOpen} />
           <Dialog
-            title="Dialog With Actions"
+            title={"Create New " + fileTypeLabel + " in the " + this.props.dialect.get('dc:title') + " dialect."}
             actions={actions}
             modal={true}
             open={this.state.open}>
-            Upload to {this.props.dialect.get('dc:title')}
             <div className="form-horizontal">
               {uploadText}
               {form}

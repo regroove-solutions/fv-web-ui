@@ -62,15 +62,6 @@ export default class DialectLearn extends Component {
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      wordCount: null,
-      phraseCount: null
-    };
-
-    // Pre-fetch words and phrases to speed up display and extract count
-    //this._getPhrasesAndSetResultSize(props);
-    //this._getWordsAndSetResultSize(props);
-
     //this._handlePhrasesDataRequest = this._handlePhrasesDataRequest.bind(this);
     //this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
     
@@ -108,34 +99,6 @@ export default class DialectLearn extends Component {
     }
   }
 
-  // Handle change of params when navigating within router
-  // See https://github.com/rackt/react-router/blob/latest/docs/guides/advanced/ComponentLifecycle.md
-  componentDidUpdate (prevProps) {
-    let oldDialect = prevProps.dialect;
-    let newDialect = this.props.dialect;
-
-    if (newDialect !== oldDialect && newDialect != null) {
-      if (this.state.wordCount == null) this._getWordsAndSetResultSize(this.props);
-      if (this.state.phraseCount == null) this._getPhrasesAndSetResultSize(this.props);
-    }
-  }
-
-  _getPhrasesAndSetResultSize(props){
-    this._handlePhrasesDataRequest(props).then((function(phrases){
-      this.setState({
-        phraseCount: phrases.totalResultSize
-      });
-    }).bind(this));
-  }
-
-  _getWordsAndSetResultSize(props){
-    this._handleWordsDataRequest(props).then((function(words){
-      this.setState({
-        wordCount: words.totalResultSize
-      });
-    }).bind(this));
-  }
-
   _handlePhrasesDataRequest(childProps, page = 1, pageSize = 20) {
     return this.phraseOperations.getDocumentsByPath(
         '/sections/Data/' + this.state.dialectPath,
@@ -167,7 +130,7 @@ export default class DialectLearn extends Component {
     let portal = computePortal.response;
     let dialectStats = computeDialectStats;
     let characters = computeCharacters.response;
-        
+
     let keyboardLinks = [];
 
     if ( computeDialect.success && selectn('contextParameters.dialect.keyboards', dialect) ) {
@@ -239,8 +202,8 @@ export default class DialectLearn extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <div>
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(this.state.wordCount == null) ? "Words (0)" : "Phrases (" + this.state.wordCount + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(this.state.phraseCount == null) ? "Phrases (0)" : "Phrases (" + this.state.phraseCount + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.total', dialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.total', dialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.total', dialectStats) + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label="Songs" secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label="Stories" secondary={true} />
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'reports')} label="Reports" secondary={true} />                 

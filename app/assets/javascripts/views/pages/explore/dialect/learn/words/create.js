@@ -39,8 +39,7 @@ export default class PageDialectWordsCreate extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    createWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired
+    createWord: PropTypes.func.isRequired
   };
 
   constructor(props, context){
@@ -66,6 +65,21 @@ export default class PageDialectWordsCreate extends Component {
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
     }
+  }
+
+  shouldComponentUpdate(newProps) {
+
+    switch (true) {
+      case (newProps.windowPath != this.props.windowPath):
+        return true;
+      break;
+
+      case (newProps.computeDialect.response != this.props.computeDialect.response):
+        return true;
+      break;
+    }
+
+    return false;
   }
 
   _onNavigateRequest(path) {
@@ -108,7 +122,7 @@ export default class PageDialectWordsCreate extends Component {
 
     let dialect = computeDialect.response;
 
-    if (computeDialect.isFetching) {
+    if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
