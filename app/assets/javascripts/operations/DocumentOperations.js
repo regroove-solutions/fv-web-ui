@@ -70,20 +70,31 @@ export default class DocumentOperations extends BaseOperations {
 
     let properties = this.properties;
 
+//    return new Promise(
+//      function(resolve, reject) {
+//
+//        // Create document
+//        properties.client
+//        .operation('Document.Create')
+//        .params(docParams)
+//        .input(parentDoc)
+//        .execute()
+//        .then((newDoc) => {
+//            resolve(newDoc);
+//        })
+//        .catch((error) => { reject('Could not create document.'); } );
+//    });
+    
     return new Promise(
       function(resolve, reject) {
-
-        // Create document
         properties.client
-        .operation('Document.Create')
-        .params(docParams)
-        .input(parentDoc)
-        .execute()
-        .then((newDoc) => {
-            resolve(newDoc);
-        })
-        .catch((error) => { reject('Could not create document.'); } );
-    });
+    	.repository()
+    	.create(parentDoc, docParams)
+    	.then((doc) => {
+    	  resolve(doc);
+    	})
+    	.catch((error) => { reject('Could not access server.'); });
+    });            
   }
 
   /**

@@ -201,7 +201,7 @@ const reducers = {
       // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_ERROR:
       case FV_WORD_UPDATE_ERROR:
-      case FV_WORD_UPDATE_ERROR:
+      case FV_WORD_CREATE_ERROR:
       case DISMISS_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;

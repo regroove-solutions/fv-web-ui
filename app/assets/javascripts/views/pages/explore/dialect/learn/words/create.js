@@ -23,6 +23,7 @@ import t from 'tcomb-form';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import Snackbar from 'material-ui/lib/snackbar';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -97,12 +98,14 @@ export default class PageDialectWordsCreate extends Component {
     // Passed validation
     if (formValue) {
 
-      let properties = '';
-
+      //let properties = '';
+      let properties = {};
+      
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
-	        properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + ' \n';
+	        //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+	    	  properties[key] = formValue[key];
 	  	  }
 	    }
 	  }
@@ -118,7 +121,7 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const { computeDialect } = this.props;
+    const { computeDialect, computeWord } = this.props;
 
     let dialect = computeDialect.response;
 
@@ -126,6 +129,17 @@ export default class PageDialectWordsCreate extends Component {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
+    if (computeWord.isError) {
+        return <Snackbar
+	        open={true}
+	        message={computeWord.error || ""}
+	        action="Close"
+	        onActionTouchTap={this._onRequestClose}
+	        onRequestClose={this._onRequestClose}
+	        autoHideDuration={3000}
+        />;
+    }    
+    
     return <div>
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
