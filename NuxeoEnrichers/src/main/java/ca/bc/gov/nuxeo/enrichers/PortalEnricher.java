@@ -120,19 +120,14 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 				jsonObj.put("fv-portal:featured_words", featuredWordJsonArray);
 			}
 			
-			// Process "fv-portal:featured_audio" values
-			String[] featuredAudioIds = (String[]) doc.getProperty("fv-portal", "featured_audio");
-			if (featuredAudioIds != null) {
-				ArrayNode featuredAudioJsonArray = mapper.createArrayNode();		
-				
+			// Process "fv-portal:featured_audio" value
+			String featuredAudioId = (String) doc.getProperty("fv-portal", "featured_audio");
+			if (featuredAudioId != null) {
 				// Retrieve additional properties from the referenced binaries, and add them to the JSON
-				for (String featuredAudioId : featuredAudioIds) {
-					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(featuredAudioId, session);
-					if(binaryJsonObj != null) {
-						featuredAudioJsonArray.add(binaryJsonObj);
-					}
+				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(featuredAudioId, session);
+				if(binaryJsonObj != null) {
+					jsonObj.put("fv-portal:featured_audio", binaryJsonObj);
 				}
-				jsonObj.put("fv-portal:featured_audio", featuredAudioJsonArray);
 			}
 			
 			// Process "fv-portal:background_top_image" value
