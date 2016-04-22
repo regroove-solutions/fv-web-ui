@@ -23,8 +23,10 @@ const fetchDirectory = function fetchDirectory(name, headers) {
         return { value: directoryEntry.properties.id, text: directoryEntry.properties.label };
       });
 
-      dispatch( { type: DIRECTORY_FETCH_SUCCESS, entries: options, name: name } )
+      let directories = {};
+      directories[name] = options;
 
+      dispatch( { type: DIRECTORY_FETCH_SUCCESS, directories: directories, directory: name } )
 
     }).catch((error) => {
         dispatch( { type: DIRECTORY_FETCH_ERROR, error: error } )
@@ -35,14 +37,14 @@ const fetchDirectory = function fetchDirectory(name, headers) {
 const actions = { fetchDirectory };
 
 const reducers = {
-  computeDirectory(state = { isFetching: false, entries: [], directory: null, success: false }, action) {
+  computeDirectory(state = { isFetching: false, directories: {}, directory: null, success: false }, action) {
     switch (action.type) {
       case DIRECTORY_FETCH_START:
         return Object.assign({}, state, { isFetching: true, success: false, directory: action.name });
       break;
 
       case DIRECTORY_FETCH_SUCCESS:
-        return Object.assign({}, state, { entries: action.entries, directory: action.name, isFetching: false, success: true });
+        return Object.assign({}, state, { directories: Object.assign(state.directories, action.directories), directory: action.name, isFetching: false, success: true });
       break;
 
       case DIRECTORY_FETCH_ERROR:

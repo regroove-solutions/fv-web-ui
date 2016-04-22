@@ -15,6 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 import SelectField from 'material-ui/lib/SelectField';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -36,8 +37,7 @@ export default class DirectoryList extends Component {
     this._handleChange = this._handleChange.bind(this);
 
     this.state = {
-      value: null,
-      fetched: false
+      value: null
     };
   }
 
@@ -47,10 +47,7 @@ export default class DirectoryList extends Component {
   }
 
   componentDidMount() {
-    if (!this.state.fetched)
-      this.props.fetchDirectory(this.props.directory);
-
-    this.setState({fetched: true});
+    this.props.fetchDirectory(this.props.directory);
   }
 
   render() {
@@ -61,14 +58,17 @@ export default class DirectoryList extends Component {
 
       const { computeDirectory } = this.props;
 
-      let entries = computeDirectory.entries || [];
+      let entries = selectn('directories.' + this.props.directory, computeDirectory) || [];
 
       return (
-        <SelectField value={this.state.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
-          {entries.map((entry) => 
-            <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
-          )}   
-        </SelectField>
+        <div>
+          {this.props.computeDirectory.directory}
+          <SelectField value={this.state.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
+            {entries.map((entry) => 
+              <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
+            )}   
+          </SelectField>
+        </div>
       );
     }
 }

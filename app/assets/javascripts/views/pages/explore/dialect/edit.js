@@ -30,18 +30,6 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
-
-
-
-
-
-import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
-
-
-
-
-
-
 @provide
 export default class ExploreDialectEdit extends Component {
 

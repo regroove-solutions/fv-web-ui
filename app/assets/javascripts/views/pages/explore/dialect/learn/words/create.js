@@ -141,8 +141,6 @@ export default class PageDialectWordsCreate extends Component {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
     
-    console.log(computeWord);
-    
     return <div>
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>

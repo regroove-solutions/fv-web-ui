@@ -9,7 +9,9 @@ function renderInput(locals) {
     locals.onChange(value)
   };
 
-  return <div><DirectoryList label={locals.label} onChange={onChange} directory={locals.attrs.directory} /></div>;
+  return <div>
+  	<DirectoryList label={locals.label} onChange={onChange} directory={locals.attrs.directory} />
+  </div>;
 }
 
 const selectTemplate = t.form.Form.templates.textbox.clone({ renderInput })
