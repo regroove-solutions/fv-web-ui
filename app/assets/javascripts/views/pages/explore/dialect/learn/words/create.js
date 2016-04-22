@@ -47,6 +47,10 @@ export default class PageDialectWordsCreate extends Component {
   constructor(props, context){
     super(props, context);
 
+    this.state = {
+      formValue: null
+    };
+
     // Bind methods to 'this'
     ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
@@ -69,7 +73,7 @@ export default class PageDialectWordsCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps) {
+  shouldComponentUpdate(newProps, newState) {
 
     switch (true) {
       case (newProps.windowPath != this.props.windowPath):
@@ -80,9 +84,9 @@ export default class PageDialectWordsCreate extends Component {
         return true;
       break;
       
-      case (newProps.computeWord.isError):
+      case (newProps.computeWord.error != this.props.computeWord.error):
         return true;
-      break;      
+      break;
     }
 
     return false;
@@ -100,12 +104,9 @@ export default class PageDialectWordsCreate extends Component {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 3).join('/');
     let formValue = this.refs["form_word_create"].getValue();
 
-    // Passed validation
-    if (formValue) {
-
-      //let properties = '';
-      let properties = {};
-      
+    //let properties = '';
+    let properties = {};
+    
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
@@ -115,11 +116,17 @@ export default class PageDialectWordsCreate extends Component {
 	    }
 	  }
 
-	  this.props.createWord('/' + path + '/Dictionary', {
-	    type: 'FVWord',
-	    name: formValue['dc:title'],
-	    properties: properties
-	  });
+    this.setState({
+      formValue: properties
+    })
+
+    // Passed validation
+    if (formValue) {
+  	  this.props.createWord('/' + path + '/Dictionary', {
+  	    type: 'FVWord',
+  	    name: formValue['dc:title'],
+  	    properties: properties
+  	  });
     }
 
   }
@@ -150,6 +157,7 @@ export default class PageDialectWordsCreate extends Component {
                     ref="form_word_create"
                     type={t.struct(selectn("FVWord", fields))}
                     context={dialect}
+                    value={this.state.formValue}
                     options={selectn("FVWord", options)} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
