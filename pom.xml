@@ -16,7 +16,7 @@
 
   <properties>
     <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
-    <fv.studio.version>0.0.4</fv.studio.version>
+    <fv.studio.version>0.0.5</fv.studio.version>
   </properties>
 
   <modules>
