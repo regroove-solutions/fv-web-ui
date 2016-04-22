@@ -38,6 +38,7 @@ function renderInput(locals) {
       </div>;
     break;
 
+    // TODO: Preview not working?
     case 'FVAudio':
       content = <div>
         <audio src={ConfGlobal.baseURL + 'nxfile/default/' + locals.value} controls />

@@ -1,11 +1,12 @@
 import React from 'react';
 import t from 'tcomb-form';
 import WysiwygFactory from 'views/components/Editor/fields/wysiwyg';
+import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
 import SelectFactory from 'views/components/Editor/fields/select';
 import MediaFactory from 'views/components/Editor/fields/media';
 
 const i18nExt = {
-  add: 'New Item',
+  add: '+ Add New',
   down: '▼',
   remove: 'X',
   up: '▲',
@@ -24,10 +25,15 @@ const configExt = {
 
 const DefinitionsLayout = function (locals) {
   return (
-    <div>
-      <p>DefinitionsLayout</p>
-      <div>{locals.inputs.translation}</div>
-      <div>{locals.inputs.language}</div>
+    <div className="table-responsive">
+      <table className="table">
+        <tbody>
+        <tr>
+          <td>{locals.inputs.language}</td>
+          <td>{locals.inputs.translation}</td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   );
 };
@@ -42,17 +48,45 @@ const options = {
       'fv:definitions': {
         label: 'Definitions',
         item: {
-          //template: DefinitionsLayout
+          fields: {
+            translation: {
+              label: 'Translation'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
         }
       },
       'fv:literal_translation': {
         label: 'Literal Translation',
         item: {
-          //template: DefinitionsLayout
+          fields: {
+            translation: {
+              label: 'Translation'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
         }
       },
       'fv-word:part_of_speech' : {
-        label: 'Part of Speech'
+        label: 'Part of Speech',
+        factory: SelectFactory,
+        attrs: {
+          directory: 'parts_of_speech'
+        }
       },
       'fv-word:pronunciation' : {
         label: 'Pronunciation'
@@ -96,7 +130,8 @@ const options = {
       'fv:available_in_childrens_archive': {
         label: 'Available in Children\'s Archive'
       }
-    }
+    },
+    i18n: i18nExt
   },
   FVPortal: {
     fields: {
@@ -119,7 +154,7 @@ const options = {
       'fv-portal:featured_words' : {
         label: 'Featured Words',
         item: {
-          factory: SelectFactory,
+          factory: SelectSuggestFactory,
           type: 'FVWord'
         }
       },
@@ -149,8 +184,10 @@ const options = {
       },
       'fvdialect:country': {
         label: 'Country',
-        factory: t.form.Select,
-        options: []
+        factory: SelectFactory,
+        attrs: {
+          directory: 'fv_countries'
+        }
       },
       'fvdialect:contact_information': {
         label: 'Contact Information',

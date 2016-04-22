@@ -261,7 +261,7 @@ export default class ExploreDialect extends Component {
 
                   <div>
                     <strong>Country</strong><br/>
-                    <EditableComponentHelper isSection={isSection} options={this.props.computeDirectory.entries} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" entity={dialect} />
+                    <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" entity={dialect} />
                   </div>
 
                   <hr/>

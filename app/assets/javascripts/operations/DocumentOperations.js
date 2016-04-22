@@ -113,7 +113,11 @@ export default class DocumentOperations extends BaseOperations {
     	.then((doc) => {
     	  resolve(doc);
     	})
-    	.catch((error) => { reject('Could not access server.'); });
+    	.catch((error) => {
+        error.response.json().then(
+          (jsonError) => console.log/*reject*/(jsonError.message)
+        );
+      });
     });            
   }
 

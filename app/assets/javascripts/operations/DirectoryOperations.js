@@ -62,7 +62,7 @@ export default class DirectoryOperations extends BaseOperations {
     return new Promise(
       function(resolve, reject) {
         properties.client.request(
-          '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' ORDER BY dc:title ' + queryAppend,
+          '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\' ORDER BY dc:title' + queryAppend,
           params
         )
         .get(headers)

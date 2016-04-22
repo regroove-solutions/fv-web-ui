@@ -1,34 +1,15 @@
 import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
 
-import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
-//import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
-import Preview from 'views/components/Editor/Preview';
+import DirectoryList from 'views/components/Editor/DirectoryList';
 
-/**
-* Define auto-suggest factory
-*/
 function renderInput(locals) {
 
-  const onChange = function (event, full) {
-    locals.onChange(full.uid)
+  const onChange = function (value) {
+    locals.onChange(value)
   };
 
-  /*const onComplete = function (uid) {
-    locals.onChange(uid);
-  };*/
-
-  // <AddMediaComponent label="Upload" type={locals.type} onComplete={onComplete} dialect={locals.context} />
-
-  let content = <Preview id={locals.value} type={locals.type} />;
-
-  if (!locals.value) {
-    content = <div>
-                <AutoSuggestComponent type={locals.type} value={locals.value || ''} dialect={locals.context} onChange={onChange} />
-              </div>;
-  }
-
-  return <div>{content}</div>;
+  return <div><DirectoryList label={locals.label} onChange={onChange} directory={locals.attrs.directory} /></div>;
 }
 
 const selectTemplate = t.form.Form.templates.textbox.clone({ renderInput })

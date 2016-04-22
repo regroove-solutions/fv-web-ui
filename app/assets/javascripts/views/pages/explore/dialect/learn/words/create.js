@@ -121,7 +121,7 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const { computeDialect, computeWord } = this.props;
+    const { computeDialect/*, computeWord*/ } = this.props;
 
     let dialect = computeDialect.response;
 
@@ -129,7 +129,7 @@ export default class PageDialectWordsCreate extends Component {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
-    if (computeWord.isError) {
+    /*if (computeWord.isError) {
         return <Snackbar
 	        open={true}
 	        message={computeWord.error || ""}
@@ -138,7 +138,7 @@ export default class PageDialectWordsCreate extends Component {
 	        onRequestClose={this._onRequestClose}
 	        autoHideDuration={3000}
         />;
-    }    
+    } */   
     
     return <div>
 
