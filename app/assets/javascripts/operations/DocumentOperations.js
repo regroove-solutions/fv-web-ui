@@ -115,7 +115,7 @@ export default class DocumentOperations extends BaseOperations {
     	})
     	.catch((error) => {
         error.response.json().then(
-          (jsonError) => console.log/*reject*/(jsonError.message)
+          (jsonError) => reject(jsonError.message)
         );
       });
     });            

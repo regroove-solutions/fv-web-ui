@@ -40,7 +40,8 @@ export default class PageDialectWordsCreate extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    createWord: PropTypes.func.isRequired
+    createWord: PropTypes.func.isRequired,
+    computeWord: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -78,6 +79,10 @@ export default class PageDialectWordsCreate extends Component {
       case (newProps.computeDialect.response != this.props.computeDialect.response):
         return true;
       break;
+      
+      case (newProps.computeWord.isError):
+        return true;
+      break;      
     }
 
     return false;
@@ -121,29 +126,22 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const { computeDialect/*, computeWord*/ } = this.props;
+    const { computeDialect, computeWord } = this.props;
 
     let dialect = computeDialect.response;
 
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
-
-    /*if (computeWord.isError) {
-        return <Snackbar
-	        open={true}
-	        message={computeWord.error || ""}
-	        action="Close"
-	        onActionTouchTap={this._onRequestClose}
-	        onRequestClose={this._onRequestClose}
-	        autoHideDuration={3000}
-        />;
-    } */   
+    
+    console.log(computeWord);
     
     return <div>
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
- 
+            
+            {computeWord.isError ? <h2>{computeWord.error}</h2> : ''}
+            
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
