@@ -145,7 +145,7 @@ export default class PageDialectWordsCreate extends Component {
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
             
-            {computeWord.isError ? <h2>{computeWord.error}</h2> : ''}
+            {computeWord.isError ? <div className="alert alert-danger" role="alert">{computeWord.error}</div> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 

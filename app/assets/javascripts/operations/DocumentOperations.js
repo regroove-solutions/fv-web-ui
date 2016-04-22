@@ -89,21 +89,6 @@ export default class DocumentOperations extends BaseOperations {
   static createDocument(parentDoc, docParams) {
 
     let properties = this.properties;
-
-//    return new Promise(
-//      function(resolve, reject) {
-//
-//        // Create document
-//        properties.client
-//        .operation('Document.Create')
-//        .params(docParams)
-//        .input(parentDoc)
-//        .execute()
-//        .then((newDoc) => {
-//            resolve(newDoc);
-//        })
-//        .catch((error) => { reject('Could not create document.'); } );
-//    });
     
     return new Promise(
       function(resolve, reject) {
@@ -115,7 +100,11 @@ export default class DocumentOperations extends BaseOperations {
     	})
     	.catch((error) => {
         error.response.json().then(
-          (jsonError) => reject(jsonError.message)
+          (jsonError) => {
+        	  let errorMessage = jsonError.message.split(": ")[1];
+        	  errorMessage = "An error occurred during word creation: " + errorMessage;
+        	  reject(errorMessage);
+          }
         );
       });
     });            
