@@ -7,7 +7,7 @@ package ca.firstvoices.listeners;
 import java.util.List;
 import java.util.Map;
 
-import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -26,7 +26,7 @@ import org.nuxeo.ecm.platform.web.common.exceptionhandling.ExceptionHelper;
  */
 public class FVDocumentValidationEventListener implements EventListener {
 	
-    public void handleEvent(Event event) throws ClientException {
+    public void handleEvent(Event event) throws NuxeoException {
 
     	// aboutToCreate and beforeDocumentModification events
     	if (!DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName()) && !DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
@@ -121,7 +121,9 @@ public class FVDocumentValidationEventListener implements EventListener {
         }        
         
         IterableQueryResult result = ctx.getCoreSession().queryAndFetch(sb.toString(), NXQL.NXQL);
-        return (result.size() == 0);
+        long resultsCount = result.size();
+        result.close();
+        return (resultsCount == 0);
     } 
     
     // Validate the title of a word. A word must have a unique combination of title/part of speech under the same parent
@@ -150,14 +152,16 @@ public class FVDocumentValidationEventListener implements EventListener {
         }
         
         IterableQueryResult result = ctx.getCoreSession().queryAndFetch(sb.toString(), NXQL.NXQL);
-        return (result.size() == 0);
+        long resultsCount = result.size();
+        result.close();
+        return (resultsCount == 0);
     }
     
     // Roll back the event and throw an exception containing a description of the validation error
     protected void generateValidationError(Event event, String message) {
         event.markBubbleException();
         event.markRollBack();
-        throw new ClientException(ExceptionHelper.unwrapException(new RecoverableClientException("Bubbling exception by " + FVDocumentValidationEventListener.class.getName(), message, null)));
+        throw new NuxeoException(ExceptionHelper.unwrapException(new RecoverableClientException("Bubbling exception by " + FVDocumentValidationEventListener.class.getName(), message, null)));
     }
     
 }
