@@ -126,13 +126,13 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
 const fetchPhrase = function fetchPhrase(pathOrId) {
   return function (dispatch) {
 
-    dispatch( { type: FV_PHRASE_FETCH_START } );
+    dispatch( { type: FV_PHRASE_FETCH_START, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
-      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, document: response } )
+      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, document: response, pathOrId: pathOrId } )
     }).catch((error) => {
-        dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error } )
+        dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error, pathOrId: pathOrId } )
     });
   }
 };
@@ -183,19 +183,19 @@ const reducers = {
       break;
     }
   },
-  computePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  computePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_PHRASE_FETCH_START:
       case FV_PHRASE_UPDATE_START:
       case FV_PHRASE_CREATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PHRASE_FETCH_SUCCESS:
       case FV_PHRASE_UPDATE_SUCCESS:
       case FV_PHRASE_CREATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
       break;
 
       // Send modified document to UI without access REST end-point
@@ -203,7 +203,7 @@ const reducers = {
       case FV_PHRASE_UPDATE_ERROR:
       case FV_PHRASE_CREATE_ERROR:
       case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false, pathOrId: action.pathOrId });
       break;
 
       default: 

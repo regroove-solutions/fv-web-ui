@@ -47,6 +47,12 @@ export default class Preview extends Component {
       }
     }
 
+    if (newProps.computePhrase.pathOrId == this.props.id) {
+      if (newProps.computePhrase.success) {
+        return true;
+      }
+    }
+
     return false;
   }
 
