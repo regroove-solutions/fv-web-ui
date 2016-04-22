@@ -5,7 +5,7 @@ import {Link} from 'provide-page';
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCommunitySlideshow, PageDialectReports } from 'views/pages';
 import { PageDialectLearnWords, PageDialectViewDictionaryItem } from 'views/pages';
-import { PageGetStarted, PageContribute, PagePlay } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit } from 'views/pages/edit';
 import { PageDialectWordsCreate } from 'views/pages/create';
@@ -114,11 +114,14 @@ export default class AppFrontController extends Component {
         return this.renderWithBreadcrumb(<PageContribute />);
 
       case this.matchPath(['play']):
-        return this.renderWithBreadcrumb(<PagePlay />);
-
+        return this.renderWithBreadcrumb(<PagePlay />);    
+      
       case this.matchPath(['explore']):
         return this.renderWithBreadcrumb(<PageExploreArchive />);
 
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', 'search']):
+          return this.renderWithBreadcrumb(<PageSearch />);       
+      
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH]):
         return this.renderWithBreadcrumb(<PageExploreFamily />);
 

@@ -18,6 +18,7 @@ import FVCharacter from './FVCharacter';
 import connect from './connect';
 import navigation from './navigation'
 import reports from './reports';
+import search from './search';
 
 const loggerMiddleware = createLoggerMiddleware();
 
@@ -46,5 +47,6 @@ export default {
   FVWord,
   FVPhrase,
   FVCharacter,
-  reports
+  reports,
+  search
 };

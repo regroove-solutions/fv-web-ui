@@ -402,6 +402,39 @@ export default class DocumentOperations extends BaseOperations {
 	        	.catch((error) => { reject(error); });
 	        });
 	  }   
+
+   static queryDocumentsByTitle(title, path, headers = {}, params = {}) {
+
+	   let properties = this.properties;
+	   let cleanedDialectPath = StringHelpers.clean(path);
+
+	   return new Promise(
+	        function(resolve, reject) {
+
+	        let defaultParams = {
+	        	query: 
+	        		"SELECT * FROM Document" +
+	        		" WHERE (ecm:path STARTSWITH '" + path + "'" + 
+	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
+	        		" AND ecm:primaryType IN ('FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry')" +
+	        		" AND (dc:title LIKE '" + title + "%' OR dc:description LIKE '" + title + "%')" +
+	        		" ORDER BY dc:title ASC"
+	          	};
+	        	
+	        	console.log(defaultParams.query);
+	        
+	          	params = Object.assign(defaultParams, params);
+
+	          	properties.client.operation('Document.Query')
+		            .params(params)
+		            .execute(headers)
+		         	.then(function(results) {
+		         		console.log(results);
+		         		resolve(results);
+		        	})
+	        	.catch((error) => { reject(error); });
+	        });
+	  }    
    
    
 }

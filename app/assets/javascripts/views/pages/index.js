@@ -31,6 +31,7 @@ import {default as PageDialectViewDictionaryItem} from './explore/dialect/learn/
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
 import {default as PagePlay} from './play'
+import {default as PageSearch} from './search'
 
 module.exports = {
   PageExploreArchive,
@@ -46,6 +47,7 @@ module.exports = {
   PageDialectArtGallery,
   PageDialectCommunitySlideshow,
   PageDialectReports,
-  PagePlay
+  PagePlay,
+  PageSearch
 }
 
