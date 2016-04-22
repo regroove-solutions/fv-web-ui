@@ -41,11 +41,11 @@ export default class AutoSuggestComponent extends Component {
   renderSuggestion(suggestion) {
     switch (this.props.type) {
       case 'FVWord':
-        return (<a href='#'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+        return (<a href='javascript:void(0);'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
       break;
 
       default:
-        return (<a href='#'>{suggestion.title}</a>);
+        return (<a href='javascript:void(0);'>{suggestion.title}</a>);
       break;
     }
   }
