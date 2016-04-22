@@ -62,7 +62,6 @@ export default class DirectoryList extends Component {
 
       return (
         <div>
-          {this.props.computeDirectory.directory}
           <SelectField value={this.state.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
             {entries.map((entry) => 
               <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />

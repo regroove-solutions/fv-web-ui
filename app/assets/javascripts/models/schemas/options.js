@@ -40,7 +40,7 @@ const DefinitionsLayout = function (locals) {
 
 const options = {
   FVWord: {
-    order: ['dc:title', 'fv:definitions', 'fv:literal_translation', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
+    order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
     fields: {
       'dc:title': {
         label: 'Word'
@@ -61,7 +61,8 @@ const options = {
             }
           },
           template: DefinitionsLayout
-        }
+        },
+        help: <i>Describe what the word actually means.</i>
       },
       'fv:literal_translation': {
         label: 'Literal Translation',
@@ -79,7 +80,8 @@ const options = {
             }
           },
           template: DefinitionsLayout
-        }
+        },
+        help: <i>Describe what the word translates to regradless of context.</i>
       },
       'fv-word:part_of_speech' : {
         label: 'Part of Speech',
@@ -92,7 +94,11 @@ const options = {
         label: 'Pronunciation'
       },
       'fv-word:related_phrases' : {
-        label: 'Related Phrases'
+        label: 'Related Phrases',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVPhrase'
+        }
       },
       'fv-word:categories' : {
         label: 'Categories'
@@ -122,10 +128,12 @@ const options = {
         label: 'Cultural Notes'
       },
       'fv:reference': {
-        label: 'Reference'
+        label: 'Reference',
+        help: <i>Origin of record (person, book, etc).</i>
       },
       'fv:source': {
-        label: 'Source'
+        label: 'Source',
+        help: <i>Contributor(s) who helped create this record.</i>
       },
       'fv:available_in_childrens_archive': {
         label: 'Available in Children\'s Archive'

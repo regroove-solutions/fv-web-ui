@@ -24,6 +24,8 @@ export default class Preview extends Component {
   static propTypes = {
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
+    fetchPhrase: PropTypes.func.isRequired,
+    computePhrase: PropTypes.object.isRequired,
     id: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired
   };
@@ -36,20 +38,30 @@ export default class Preview extends Component {
     };
   }
 
-/*  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps, newState) {
 
-    if (newProps.computeWord.response.title != this.props.computeWord.response.title) {
-      return true;
+    // Only update if this word has been recomputed
+    if (newProps.computeWord.pathOrId == this.props.id) {
+      if (newProps.computeWord.success) {
+        return true;
+      }
     }
 
     return false;
   }
-*/
+
   componentDidMount() {
     switch (this.props.type) {
       case 'FVWord':
         if (!this.state.fetched)
           this.props.fetchWord(this.props.id);
+
+        this.setState({fetched: true});
+      break;
+
+      case 'FVPhrase':
+        if (!this.state.fetched)
+          this.props.fetchPhrase(this.props.id);
 
         this.setState({fetched: true});
       break;
@@ -80,6 +92,17 @@ export default class Preview extends Component {
 
           if (computeResult.success) {
             body = <div><strong>{word.title}</strong> (Part of Speech: {word.properties['fv-word:part_of_speech']})</div>;
+          }
+        break;
+
+        case 'FVPhrase':
+          computeResult = this.props.computePhrase;
+          this._renderIsFetching(computeResult);
+
+          let pharse = computeResult.response;
+
+          if (computeResult.success) {
+            body = <div><strong>{pharse.title}</strong></div>;
           }
         break;
       }

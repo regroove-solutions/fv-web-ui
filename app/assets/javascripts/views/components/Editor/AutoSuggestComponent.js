@@ -19,6 +19,8 @@ export default class AutoSuggestComponent extends Component {
     computeSharedAudios: PropTypes.object.isRequired,
     fetchSharedWords: PropTypes.func.isRequired,
     computeSharedWords: PropTypes.object.isRequired,
+    fetchSharedPhrases: PropTypes.func.isRequired,
+    computeSharedPhrases: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
@@ -37,7 +39,15 @@ export default class AutoSuggestComponent extends Component {
   }
 
   renderSuggestion(suggestion) {
-    return (<a href='#'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+    switch (this.props.type) {
+      case 'FVWord':
+        return (<a href='#'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+      break;
+
+      default:
+        return (<a href='#'>{suggestion.title}</a>);
+      break;
+    }
   }
 
   constructor(props) {
@@ -53,13 +63,13 @@ export default class AutoSuggestComponent extends Component {
     this.onChange = this.onChange.bind(this);
     this.getSuggestionValue = this.getSuggestionValue.bind(this);
     this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
+    this.renderSuggestion = this.renderSuggestion.bind(this);
   }
   
   // BUG: this will show UID instead of title?
   componentWillReceiveProps(newProps) {
     
     if (newProps.value && newProps.value != this.state.value) {
-      console.log(newProps.value);
       this.setState({
         value: newProps.value
       });
@@ -77,6 +87,9 @@ export default class AutoSuggestComponent extends Component {
       break;
       case 'FVWord':
         this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+      break;
+      case 'FVPhrase':
+        this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
       break;
     }   
   }
@@ -107,6 +120,10 @@ export default class AutoSuggestComponent extends Component {
 
       case 'FVWord':
         return this.props.computeSharedWords;
+      break;
+
+      case 'FVPhrase':
+        return this.props.computeSharedPhrases;
       break;
     }
   }

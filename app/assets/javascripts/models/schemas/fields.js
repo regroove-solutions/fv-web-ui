@@ -20,7 +20,7 @@ const FVCore = {
     'fv:cultural_note' : t.list(t.String),
     'fv:available_in_childrens_archive' : t.Boolean,
     'fv:custom_order' : t.maybe(t.String),
-    'fv:reference' : t.String,
+    'fv:reference' : t.maybe(t.String),
     'fv:source' : t.list(t.String)
 };
 
