@@ -28,6 +28,7 @@ export default class Search extends React.Component {
 
   static propTypes = {
 	splitWindowPath: PropTypes.array.isRequired,
+	replaceWindowPath: PropTypes.array.isRequired,	
     querySearchResults: PropTypes.func.isRequired,
 	computeSearchResults: PropTypes.object.isRequired
   };	
@@ -37,26 +38,31 @@ export default class Search extends React.Component {
     
     this.state = {
     	columns: [ 
-    	           { name: 'title', title: 'Document Title', render: function(v, data, cellProps) { return v; } },
-    	           { name: 'type', title: 'Document Type', render: function(v, data, cellProps) { return v; } },
-    	           { name: 'path', title: 'Document Path', render: function(v, data, cellProps) { return v; } }
+    	           { name: 'title', title: 'Document Title'},
+    	           { name: 'type', title: 'Document Type'},
+    	           { name: 'path', title: 'Document Path'}    	           
     	],
-    	path : "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 1).join('/'),
-    	queryParameter: ""
+    	queryParam: "",
+    	queryPath: ""
     };
         
     // Bind methods to 'this'
-    ['_handleRefetch', '_handleTextFieldSubmit', '_handleTextFieldChange'].forEach( (method => this[method] = this[method].bind(this)) ); 
+    ['_handleRefetch', '_handleSearchSubmit', '_getQueryParam', '_getQueryPath', '_handleSearchFieldChange'].forEach( (method => this[method] = this[method].bind(this)) ); 
 
   }
 
-  fetchData(newProps) {
-    newProps.querySearchResults(this.state.queryParameter, this.state.path, 1, 10);	  
+  fetchData(newProps) {	  
+	  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);	  
   }
 
   // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
+  componentDidMount() {  
+	  this.state.queryParam = this._getQueryParam();
+	  this.state.queryPath = this._getQueryPath();
+	  console.log(this.state.queryParam);	  
+	  console.log(this.state.queryPath);	  
+
+	  this.fetchData(this.props);
   }   
 
 //  shouldComponentUpdate(newProps, newState) {
@@ -69,20 +75,42 @@ export default class Search extends React.Component {
 //
 //    return false;
 //  }  
-  
+  componentDidUpdate(oldProps, oldState) {
+	  if(oldProps.splitWindowPath.join("/") != this.props.splitWindowPath.join("/")) {
+		  console.log("new path detected!");
+		  
+		  this.state.queryParam = this._getQueryParam();
+		  this.state.queryPath = this._getQueryPath();		  
+		  this.fetchData(this.props);
+	  }
+  }
+	  
   _handleRefetch(dataGridProps, page, pageSize) { 
-    this.props.querySearchResults(this.state.queryParameter, this.state.path, page, pageSize);
+    this.props.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), page, pageSize);
   }    
   
-  _handleTextFieldSubmit() {
-	  console.log(this.refs.queryParamTextField.getValue());
-	  //this.state.queryParameter = this.refs.queryParamTextField.getValue();
-	  this.props.querySearchResults(this.state.queryParameter, this.state.path, 1, 10);
+  _handleSearchSubmit() {
+	  let newQueryParam = this.refs.searchTextField.getValue();
+	  this.state.queryParam = newQueryParam;	  
+	  this.props.replaceWindowPath('/explore' + this.state.queryPath + '/search/' + this.state.queryParam);
+	  this.fetchData(this.props);
   }
 
-  _handleTextFieldChange() {
-	  console.log(this.refs.queryParamTextField.getValue());
-	  this.setState({queryParameter: this.refs.queryParamTextField.getValue()});
+  _handleSearchFieldChange() {
+	  console.log(this.refs.searchTextField.getValue());
+	  this.setState({queryParam: this.refs.searchTextField.getValue()});
+  }  
+
+  _getQueryPath(){
+	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
+	  let queryPath = path.split("/search/")[0];
+	  return queryPath;
+  }
+
+  _getQueryParam() {
+	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
+	  let queryParam = path.split("/search/")[1];
+	  return queryParam;
   }  
   
   render() {
@@ -98,7 +126,7 @@ export default class Search extends React.Component {
     		
     		<div className="row">
 	    		<div className="col-xs-6">
-	    			<TextField ref="queryParamTextField" hintText="Type a search value then press enter to perform the search..." onEnterKeyDown={this._handleTextFieldSubmit} onChange={this._handleTextFieldChange} value={this.state.queryParameter} fullWidth={true} />
+	    			<TextField ref="searchTextField" hintText="Type a search value then press enter to perform the search..." onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} value={this.state.queryParam} fullWidth={true} />
 	    		</div>
     		</div>
     		

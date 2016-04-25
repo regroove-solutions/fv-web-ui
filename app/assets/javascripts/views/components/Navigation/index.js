@@ -42,6 +42,9 @@ import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 export default class Navigation extends Component {
 
   static propTypes = {
+    pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,    
+	splitWindowPath: PropTypes.array.isRequired,    
     toggleMenuAction: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired
@@ -72,6 +75,8 @@ export default class Navigation extends Component {
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
+    this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
+    
   }
 
   _handleMenuToggle (event) {
@@ -100,6 +105,26 @@ export default class Navigation extends Component {
     });
   }
 
+  _handleNavigationSearchSubmit() {
+	  let searchQueryParam = this.refs.navigationSearchField.getValue();	  
+      let path = "/" + this.props.splitWindowPath.join("/");
+            
+      // If no path provided, default to search within the section
+      if(!path.includes("/explore/FV/Workspaces/Data") && !path.includes("/explore/FV/sections/Data")) {
+    	  path = "/explore/FV/sections/Data"
+      }
+      
+      // If already on the search results page, remove the search parameter portion of the path
+      if(path.includes("/search/")) {
+    	  path = path.split("/search/")[0];
+      }  
+      console.log(path);
+      
+      // Clear out the input field
+      this.refs.navigationSearchField.setValue("");
+	  this.props.replaceWindowPath(path + '/search/' + searchQueryParam); 
+  } 
+  
   render() {
 
     let LoginCont = <Login label="Sign in"/>;
@@ -115,7 +140,7 @@ export default class Navigation extends Component {
 
           <ToolbarGroup>
             {LoginCont}
-            <TextField ref="navigationSearchTextField" hintText="Search:" onEnterKeyDown={this._handleTextFieldSubmit} />
+            <TextField ref="navigationSearchField" hintText="Search:" onEnterKeyDown={this._handleNavigationSearchSubmit} />
             
             <IconMenu
                 iconButtonElement={

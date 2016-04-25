@@ -421,13 +421,12 @@ export default class DocumentOperations extends BaseOperations {
 	        		" ORDER BY dc:title ASC"
 	          	};
 	        	
-	        	console.log(defaultParams.query);
-	        
+	        	console.log(defaultParams.query);	        
 	          	params = Object.assign(defaultParams, params);
-
+	            
 	          	properties.client.operation('Document.Query')
 		            .params(params)
-		            .execute(headers)
+		            .execute({headers: {'X-NXenrichers.document': 'ancestry'}})
 		         	.then(function(results) {
 		         		console.log(results);
 		         		resolve(results);

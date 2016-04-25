@@ -76,7 +76,7 @@ export default class AppFrontController extends Component {
 
     // Remove empties from path array
     const currentPathArray = this.props.splitWindowPath.filter(function(e){ return e; });
-
+        
     if (pathMatchArray.length != currentPathArray.length) {
       return false;
     }
@@ -119,7 +119,10 @@ export default class AppFrontController extends Component {
       case this.matchPath(['explore']):
         return this.renderWithBreadcrumb(<PageExploreArchive />);
 
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', 'search']):
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]):      
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]):
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]):
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]):	  
           return this.renderWithBreadcrumb(<PageSearch />);       
       
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH]):

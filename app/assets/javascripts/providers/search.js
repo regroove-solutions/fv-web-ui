@@ -15,7 +15,7 @@ const querySearchResults = function querySearchResults(title, path, page, pageSi
     dispatch( { type: QUERY_SEARCH_RESULTS_START } );
 
 	return DocumentOperations.queryDocumentsByTitle(title, path,
-	    {'X-NXproperties': 'dublincore, fv-word, fvcore'},
+	    {'X-NXproperties': 'fvcore'},
 	    {'currentPageIndex': (page - 1), 'pageSize': pageSize}
 	)     
     .then((response) => {
