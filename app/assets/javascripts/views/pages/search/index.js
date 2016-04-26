@@ -39,48 +39,51 @@ export default class Search extends React.Component {
     this.state = {
     	columns: [ 
     	           { name: 'title', title: 'Document Title'},
-    	           { name: 'type', title: 'Document Type'},
-    	           { name: 'path', title: 'Document Path'}    	           
+    	           { name: 'type', title: 'Document Type', 
+    	        	   render: function(v) {
+    	        		   return v.replace("FV", "");
+    	        	   }
+    	           },
+    	           { name: 'path', title: 'Document Location',
+    	        	   render: function(v) {
+    	        		   return (v.includes("/Workspaces/") ? "Workspace" : "Section");
+    	        	   }
+    	           },
+    	           { name: 'ancestry_family_title', title: 'Family'},
+    	           { name: 'ancestry_language_title', title: 'Language'},    	               	           
+    	           { name: 'ancestry_dialect_title', title: 'Dialect'}    	               	               	           
     	],
     	queryParam: "",
     	queryPath: ""
     };
         
     // Bind methods to 'this'
-    ['_handleRefetch', '_handleSearchSubmit', '_getQueryParam', '_getQueryPath', '_handleSearchFieldChange'].forEach( (method => this[method] = this[method].bind(this)) ); 
+    ['_handleRefetch', '_handleSearchSubmit', '_computeQueryParam', '_computeQueryPath', '_handleSearchFieldChange',  '_onEntryNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) ); 
 
   }
 
-  fetchData(newProps) {	  
-	  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);	  
+  fetchData(newProps) {
+	  if(this.state.queryParam != "") {
+		  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);
+		  this.refs.searchDocumentListView.resetPage();
+	  }
   }
 
   // Fetch data on initial render
   componentDidMount() {  
-	  this.state.queryParam = this._getQueryParam();
-	  this.state.queryPath = this._getQueryPath();
-	  console.log(this.state.queryParam);	  
-	  console.log(this.state.queryPath);	  
-
+	  this.state.queryParam = this._computeQueryParam();
+	  this.state.queryPath = this._computeQueryPath();
+//	  console.log(this.state.queryParam);	  
+//	  console.log(this.state.queryPath);	  
 	  this.fetchData(this.props);
   }   
 
-//  shouldComponentUpdate(newProps, newState) {
-//
-//    switch (true) {
-//      case (newProps.computeDialect.response != this.props.computeDialect.response):
-//        return true;
-//      break;
-//    }
-//
-//    return false;
-//  }  
   componentDidUpdate(oldProps, oldState) {
+	  // If url has changed, either the queryParam or queryPath is different - need to refetch
 	  if(oldProps.splitWindowPath.join("/") != this.props.splitWindowPath.join("/")) {
-		  console.log("new path detected!");
-		  
-		  this.state.queryParam = this._getQueryParam();
-		  this.state.queryPath = this._getQueryPath();		  
+//		  console.log("new path detected!");		  
+		  this.state.queryParam = this._computeQueryParam();
+		  this.state.queryPath = this._computeQueryPath();		  
 		  this.fetchData(this.props);
 	  }
   }
@@ -93,23 +96,37 @@ export default class Search extends React.Component {
 	  let newQueryParam = this.refs.searchTextField.getValue();
 	  this.state.queryParam = newQueryParam;	  
 	  this.props.replaceWindowPath('/explore' + this.state.queryPath + '/search/' + this.state.queryParam);
-	  this.fetchData(this.props);
+//	  this.fetchData(this.props);
+//	  this.refs.searchDocumentListView.resetPage();
   }
 
   _handleSearchFieldChange() {
-	  console.log(this.refs.searchTextField.getValue());
+//	  console.log(this.refs.searchTextField.getValue());
 	  this.setState({queryParam: this.refs.searchTextField.getValue()});
   }  
 
-  _getQueryPath(){
+  _onEntryNavigateRequest(path) {  
+	  this.props.replaceWindowPath('/explore' + path);
+  }  
+  
+  _computeQueryPath() {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  let queryPath = path.split("/search/")[0];
+	  // Extract the query path
+	  let queryPath = path.split("/search")[0];
+	  //console.log("queryPath:" + queryPath);	  
 	  return queryPath;
   }
 
-  _getQueryParam() {
+  _computeQueryParam() {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  let queryParam = path.split("/search/")[1];
+	  //console.log(this.props.splitWindowPath);
+	  let lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1];
+	  
+	  let queryParam = "";
+	  if(lastPathSegment != "search") {
+		  queryParam = lastPathSegment;
+		  //console.log("queryParam:" + queryParam);		  
+	  }
 	  return queryParam;
   }  
   
@@ -132,6 +149,7 @@ export default class Search extends React.Component {
     		
 		    <div className="col-xs-12">
 			    <DocumentListView
+			      ref="searchDocumentListView"
 			      data={this.props.computeSearchResults}
 			      refetcher={this._handleRefetch}
 			      onSelectionChange={this._onEntryNavigateRequest}
