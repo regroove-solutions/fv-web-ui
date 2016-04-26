@@ -15,7 +15,9 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
+import CircularProgress from 'material-ui/lib/circular-progress';
 import Paper from 'material-ui/lib/paper';
 
 @provide
@@ -32,51 +34,17 @@ export default class Preview extends Component {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      fetched: false
-    };
-  }
-
-  shouldComponentUpdate(newProps, newState) {
-
-    // Only update if this word has been recomputed
-    if (newProps.computeWord.pathOrId == this.props.id) {
-      if (newProps.computeWord.success) {
-        return true;
-      }
-    }
-
-    if (newProps.computePhrase.pathOrId == this.props.id) {
-      if (newProps.computePhrase.success) {
-        return true;
-      }
-    }
-
-    return false;
   }
 
   componentDidMount() {
     switch (this.props.type) {
       case 'FVWord':
-        if (!this.state.fetched)
-          this.props.fetchWord(this.props.id);
-
-        this.setState({fetched: true});
+        this.props.fetchWord(this.props.id);
       break;
 
       case 'FVPhrase':
-        if (!this.state.fetched)
-          this.props.fetchPhrase(this.props.id);
-
-        this.setState({fetched: true});
+        this.props.fetchPhrase(this.props.id);
       break;
-    }
-  }
-
-  _renderIsFetching(computeResult) {
-    if (computeResult.response.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
     }
   }
 
@@ -87,28 +55,28 @@ export default class Preview extends Component {
       }
 
       let computeResult;
-      let body = '';
+      let body = <CircularProgress mode="indeterminate" size={1} />;
 
       switch (this.props.type) {
         case 'FVWord':
           computeResult = this.props.computeWord;
-          this._renderIsFetching(computeResult);
 
-          let word = computeResult.response;
+          let word = selectn('words.' + this.props.id, this.props.computeWord);
+          let wordResponse = selectn('response', word);
 
-          if (computeResult.success) {
-            body = <div><strong>{word.title}</strong> (Part of Speech: {word.properties['fv-word:part_of_speech']})</div>;
+          if (wordResponse && word.success) {
+            body = <div><strong>{wordResponse.title}</strong> (Part of Speech: {wordResponse.properties['fv-word:part_of_speech']})</div>;
           }
         break;
 
         case 'FVPhrase':
           computeResult = this.props.computePhrase;
-          this._renderIsFetching(computeResult);
 
-          let pharse = computeResult.response;
+          let phrase = selectn('phrases.' + this.props.id, this.props.computePhrase);
+          let phraseResponse = selectn('response', phrase);
 
-          if (computeResult.success) {
-            body = <div><strong>{pharse.title}</strong></div>;
+          if (phraseResponse && phrase.success) {
+            body = <div><strong>{phraseResponse.title}</strong></div>;
           }
         break;
       }

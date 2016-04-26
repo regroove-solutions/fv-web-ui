@@ -41,7 +41,7 @@ export default class PageDialectWordsCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired
+    computeCreateWord: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -84,7 +84,7 @@ export default class PageDialectWordsCreate extends Component {
         return true;
       break;
       
-      case (newProps.computeWord.error != this.props.computeWord.error):
+      case (newProps.computeCreateWord.error != this.props.computeCreateWord.error):
         return true;
       break;
     }
@@ -133,19 +133,19 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const { computeDialect, computeWord } = this.props;
+    const { computeDialect, computeCreateWord } = this.props;
 
     let dialect = computeDialect.response;
 
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
-    
+
     return <div>
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
             
-            {computeWord.isError ? <div className="alert alert-danger" role="alert">{computeWord.error}</div> : ''}
+            {computeCreateWord.isError ? <div className="alert alert-danger" role="alert">{computeCreateWord.error}</div> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 
