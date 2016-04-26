@@ -40,7 +40,7 @@ export default class DocumentListView extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', 'resetPage'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _handleSelectionChange(newSelectedId, data){
@@ -64,7 +64,11 @@ export default class DocumentListView extends Component {
     // Refresh data
     this.props.refetcher(this.props, PAGE, PAGE_SIZE);
   }
-
+  
+  resetPage() {
+	  PAGE = 1;
+  }
+  
   render() {
 
     // Styles
