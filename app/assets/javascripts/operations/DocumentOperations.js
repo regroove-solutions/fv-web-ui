@@ -417,7 +417,7 @@ export default class DocumentOperations extends BaseOperations {
 	        		" WHERE (ecm:path STARTSWITH '" + path + "'" + 
 	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
 	        		" AND ecm:primaryType IN ('FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry')" +
-	        		" AND (dc:title LIKE '" + title + "%' OR dc:description LIKE '" + title + "%')" +
+	        		" AND dc:title LIKE '" + title + "%'" +
 	        		" ORDER BY dc:title ASC"
 	          	};
 	        	
@@ -429,6 +429,17 @@ export default class DocumentOperations extends BaseOperations {
 		            .execute({headers: {'X-NXenrichers.document': 'ancestry'}})
 		         	.then(function(results) {
 		         		console.log(results);
+		         		// Get the ancestry information out of the contextParameters and store it at the object root
+		         		// Necessary to display these in the data grid
+		         		results.entries.map(
+		         			function(entry) {
+		         				entry['ancestry_family_title'] = entry.contextParameters.ancestry.family['dc:title'];
+		         				entry['ancestry_language_title'] = entry.contextParameters.ancestry.language['dc:title'];
+		         				entry['ancestry_dialect_title'] = entry.contextParameters.ancestry.dialect['dc:title'];	         		
+		         			}
+		         		);
+
+		         		
 		         		resolve(results);
 		        	})
 	        	.catch((error) => { reject(error); });

@@ -39,8 +39,19 @@ export default class Search extends React.Component {
     this.state = {
     	columns: [ 
     	           { name: 'title', title: 'Document Title'},
-    	           { name: 'type', title: 'Document Type'},
-    	           { name: 'path', title: 'Document Path'}    	           
+    	           { name: 'type', title: 'Document Type', 
+    	        	   render: function(v) {
+    	        		   return v.replace("FV", "");
+    	        	   }
+    	           },
+    	           { name: 'path', title: 'Document Location',
+    	        	   render: function(v) {
+    	        		   return (v.includes("/Workspaces/") ? "Workspace" : "Section");
+    	        	   }
+    	           },
+    	           { name: 'ancestry_family_title', title: 'Family'},
+    	           { name: 'ancestry_language_title', title: 'Language'},    	               	           
+    	           { name: 'ancestry_dialect_title', title: 'Dialect'}    	               	               	           
     	],
     	queryParam: "",
     	queryPath: ""
