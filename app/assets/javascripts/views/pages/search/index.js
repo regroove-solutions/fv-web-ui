@@ -47,13 +47,15 @@ export default class Search extends React.Component {
     };
         
     // Bind methods to 'this'
-    ['_handleRefetch', '_handleSearchSubmit', '_computeQueryParam', '_computeQueryPath', '_handleSearchFieldChange'].forEach( (method => this[method] = this[method].bind(this)) ); 
+    ['_handleRefetch', '_handleSearchSubmit', '_computeQueryParam', '_computeQueryPath', '_handleSearchFieldChange',  '_onEntryNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) ); 
 
   }
 
-  fetchData(newProps) {	  
-	  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);
-	  this.refs.searchDocumentListView.resetPage();
+  fetchData(newProps) {
+	  if(this.state.queryParam != "") {
+		  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);
+		  this.refs.searchDocumentListView.resetPage();
+	  }
   }
 
   // Fetch data on initial render
@@ -92,15 +94,28 @@ export default class Search extends React.Component {
 	  this.setState({queryParam: this.refs.searchTextField.getValue()});
   }  
 
+  _onEntryNavigateRequest(path) {  
+	  this.props.replaceWindowPath('/explore' + path);
+  }  
+  
   _computeQueryPath() {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  let queryPath = path.split("/search/")[0];
+	  // Extract the query path
+	  let queryPath = path.split("/search")[0];
+	  //console.log("queryPath:" + queryPath);	  
 	  return queryPath;
   }
 
   _computeQueryParam() {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  let queryParam = path.split("/search/")[1];
+	  //console.log(this.props.splitWindowPath);
+	  let lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1];
+	  
+	  let queryParam = "";
+	  if(lastPathSegment != "search") {
+		  queryParam = lastPathSegment;
+		  //console.log("queryParam:" + queryParam);		  
+	  }
 	  return queryParam;
   }  
   
