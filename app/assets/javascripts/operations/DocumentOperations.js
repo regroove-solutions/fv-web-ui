@@ -432,16 +432,14 @@ export default class DocumentOperations extends BaseOperations {
 		         	.then(function(results) {
 		         		console.log(results);
 		         		// Get the ancestry information out of the contextParameters and store it at the object root
-		         		// Necessary to display these in the data grid
+		         		// This is necessary for the datagrid to be able to access it
 		         		results.entries.map(
 		         			function(entry) {
 		         				entry['ancestry_family_title'] = entry.contextParameters.ancestry.family['dc:title'];
 		         				entry['ancestry_language_title'] = entry.contextParameters.ancestry.language['dc:title'];
 		         				entry['ancestry_dialect_title'] = entry.contextParameters.ancestry.dialect['dc:title'];	         		
 		         			}
-		         		);
-
-		         		
+		         		);		         		
 		         		resolve(results);
 		        	})
 	        	.catch((error) => { reject(error); });
