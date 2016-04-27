@@ -193,7 +193,7 @@ export default class SelectMediaComponent extends React.Component {
                   {
                     results.map(tile => <GridTile
                     key={tile.uid}
-                    onTouchTap={this._handleSelectElement.bind(this, tile.uid)}
+                    onTouchTap={this._handleSelectElement.bind(this, tile)}
                     title={tile.title}
                     titlePosition={fileTypeTilePosition}
                     subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
