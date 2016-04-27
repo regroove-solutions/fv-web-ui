@@ -35,9 +35,10 @@ export default class AutoSuggestComponent extends Component {
   }
 
   getSuggestionValue(suggestion) {
-      this.props.onChange(
+    this.props.onChange(
         event, suggestion
-      );
+    );
+
     return suggestion.title;
   }
 
@@ -93,24 +94,30 @@ export default class AutoSuggestComponent extends Component {
   }
 
   loadSuggestions(value) {
-    this.setState({
-      isLoading: true
-    });
+    this.setState({ isLoading: true });
 
-    switch (this.props.type) {
-      case 'FVAudio':
-        this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-      break;
-      case 'FVWord':
-        this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-      break;
-      case 'FVPhrase':
-        this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-      break;
-      case 'FVCategory':
-        this.props.fetchSharedCategories('category_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, { 'X-NXenrichers.document': 'breadcrumb' } );
-      break;
-    }   
+    var timeout;
+
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+
+    timeout = setTimeout(function() {
+      switch (this.props.type) {
+        case 'FVAudio':
+          this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+        break;
+        case 'FVWord':
+          this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+        break;
+        case 'FVPhrase':
+          this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+        break;
+        case 'FVCategory':
+          this.props.fetchSharedCategories('category_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, { 'X-NXenrichers.document': 'breadcrumb' } );
+        break;
+      }
+    }.bind(this), 750);
   }
 
   onChange(event, { newValue }) {
@@ -163,7 +170,8 @@ export default class AutoSuggestComponent extends Component {
     const status = (this.getComputeType().isFetching ? 'Loading suggestions...' : '');
 
     return (
-      <div className="app-container">
+      <div className="row">
+        <div className="col-xs-9">
         <Autosuggest
           theme={theme}
           suggestions={this.getComputeType().response.entries || []}
@@ -173,8 +181,9 @@ export default class AutoSuggestComponent extends Component {
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}
           inputProps={inputProps} />
-        <div className="status">
-          <strong>Status:</strong> {status}
+        </div>
+        <div className="col-xs-3">
+          {status}
         </div>
       </div>
     );

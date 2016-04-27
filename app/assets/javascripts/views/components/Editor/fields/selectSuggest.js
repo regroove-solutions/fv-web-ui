@@ -2,7 +2,6 @@ import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
 
 import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
-//import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 import Preview from 'views/components/Editor/Preview';
 
 /**
@@ -17,8 +16,6 @@ function renderInput(locals) {
   /*const onComplete = function (uid) {
     locals.onChange(uid);
   };*/
-
-  // <AddMediaComponent label="Upload" type={locals.type} onComplete={onComplete} dialect={locals.context} />
 
   let content = <Preview id={locals.value} type={locals.type} />;
 

@@ -53,6 +53,8 @@ export default class MediaFactory extends t.form.Textbox {
   constructor(props) {
     super(props);
     this.state = Object.assign(this.state, { expandedValue: null } );
+
+    this.setExpandedValue = this.setExpandedValue.bind(this);
   }
 
   setExpandedValue(expandedValue) {
