@@ -10,6 +10,7 @@ import FVDialect from './FVDialect';
 import FVPortal from './FVPortal';
 import FVWord from './FVWord';
 import FVPhrase from './FVPhrase';
+import FVCategory from './FVCategory';
 import FVAudio from './FVAudio';
 import FVPicture from './FVPicture';
 import FVVideo from './FVVideo';
@@ -46,6 +47,7 @@ export default {
   FVPicture,
   FVWord,
   FVPhrase,
+  FVCategory,
   FVCharacter,
   reports,
   search

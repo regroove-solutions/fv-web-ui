@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 import Autosuggest from 'react-autosuggest';
 
 const theme = {
@@ -21,6 +22,8 @@ export default class AutoSuggestComponent extends Component {
     computeSharedWords: PropTypes.object.isRequired,
     fetchSharedPhrases: PropTypes.func.isRequired,
     computeSharedPhrases: PropTypes.object.isRequired,
+    fetchSharedCategories: PropTypes.func.isRequired,
+    computeSharedCategories: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
@@ -42,6 +45,19 @@ export default class AutoSuggestComponent extends Component {
     switch (this.props.type) {
       case 'FVWord':
         return (<a href='javascript:void(0);'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+      break;
+
+      case 'FVCategory':
+
+        let breadcrumb = [];
+
+        selectn('contextParameters.breadcrumb.entries', suggestion).map(function(entry, i) {
+          if (entry.type === 'FVCategory') {
+            breadcrumb.push(<span key={i}> &raquo; {entry.title}</span>);
+          }
+        });
+
+        return (<a href='javascript:void(0);'>{breadcrumb}</a>);
       break;
 
       default:
@@ -91,6 +107,9 @@ export default class AutoSuggestComponent extends Component {
       case 'FVPhrase':
         this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
       break;
+      case 'FVCategory':
+        this.props.fetchSharedCategories('category_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, { 'X-NXenrichers.document': 'breadcrumb' } );
+      break;
     }   
   }
 
@@ -124,6 +143,10 @@ export default class AutoSuggestComponent extends Component {
 
       case 'FVPhrase':
         return this.props.computeSharedPhrases;
+      break;
+
+      case 'FVCategory':
+        return this.props.computeSharedCategories;
       break;
     }
   }

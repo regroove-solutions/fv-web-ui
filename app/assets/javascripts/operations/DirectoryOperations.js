@@ -88,7 +88,7 @@ export default class DirectoryOperations extends BaseOperations {
           '/query/' + page_provider + '?' + queryAppend,
           params
         )
-        .get(headers)
+        .get({ headers: headers })
         .then((docs) => {
           resolve(docs);
         }).catch((error) => { reject('Could not access server.'); });

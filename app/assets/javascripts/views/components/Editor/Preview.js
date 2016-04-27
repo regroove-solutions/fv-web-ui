@@ -28,6 +28,8 @@ export default class Preview extends Component {
     computeWord: PropTypes.object.isRequired,
     fetchPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
+    fetchCategory: PropTypes.func.isRequired,
+    computeCategory: PropTypes.object.isRequired,
     id: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired
   };
@@ -44,6 +46,10 @@ export default class Preview extends Component {
 
       case 'FVPhrase':
         this.props.fetchPhrase(this.props.id);
+      break;
+
+      case 'FVCategory':
+        this.props.fetchCategory(this.props.id);
       break;
     }
   }
@@ -77,6 +83,26 @@ export default class Preview extends Component {
 
           if (phraseResponse && phrase.success) {
             body = <div><strong>{phraseResponse.title}</strong></div>;
+          }
+        break;
+
+        case 'FVCategory':
+          computeResult = this.props.computeCategory;
+
+          let category = selectn('categories.' + this.props.id, this.props.computeCategory);
+          let categoryResponse = selectn('response', category);
+
+          if (categoryResponse && category.success) {
+
+            let breadcrumb = [];
+
+            selectn('contextParameters.breadcrumb.entries', categoryResponse).map(function(entry, i) {
+              if (entry.type === 'FVCategory') {
+                breadcrumb.push(<span key={i}> &raquo; {entry.title}</span>);
+              }
+            });
+
+            body = <div><strong>{breadcrumb}</strong></div>;
           }
         break;
       }

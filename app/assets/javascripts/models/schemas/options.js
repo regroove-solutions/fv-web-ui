@@ -101,7 +101,11 @@ const options = {
         }
       },
       'fv-word:categories' : {
-        label: 'Categories'
+        label: 'Categories',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVCategory'
+        }
       },
       'fv:related_audio' : {
         label: 'Related Audio',
