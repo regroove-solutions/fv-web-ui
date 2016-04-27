@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
+import selectn from 'selectn';
 
 import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
 import Preview from 'views/components/Editor/Preview';
@@ -9,15 +10,12 @@ import Preview from 'views/components/Editor/Preview';
 */
 function renderInput(locals) {
 
-  const onChange = function (event, full) {
-    locals.onChange(full.uid)
+  const onChange = function (event, fullValue) {
+    locals.onChange(fullValue.uid);
+    locals.setExpandedValue(fullValue);
   };
 
-  /*const onComplete = function (uid) {
-    locals.onChange(uid);
-  };*/
-
-  let content = <Preview id={locals.value} type={locals.type} />;
+  let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
 
   if (!locals.value) {
     content = <div>
@@ -31,6 +29,26 @@ function renderInput(locals) {
 const selectSuggestTemplate = t.form.Form.templates.textbox.clone({ renderInput })
 
 export default class SelectSuggestFactory extends t.form.Textbox {
+
+  constructor(props) {
+    super(props);
+    this.state = Object.assign(this.state, { expandedValue: null } );
+
+    this.setExpandedValue = this.setExpandedValue.bind(this);
+  }
+
+  setExpandedValue(expandedValue) {
+    this.setState({ expandedValue });
+  }
+
+  getLocals() {
+    const locals = super.getLocals();
+    locals.attrs = this.getAttrs();
+    locals.setExpandedValue = this.setExpandedValue;
+    locals.attrs.expandedValue = this.state.expandedValue;
+
+    return locals;
+  }
 
   getTemplate() {
     return selectSuggestTemplate

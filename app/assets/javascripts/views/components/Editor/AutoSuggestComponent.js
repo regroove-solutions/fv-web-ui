@@ -24,6 +24,8 @@ export default class AutoSuggestComponent extends Component {
     computeSharedPhrases: PropTypes.object.isRequired,
     fetchSharedCategories: PropTypes.func.isRequired,
     computeSharedCategories: PropTypes.object.isRequired,
+    fetchSharedContributors: PropTypes.func.isRequired,
+    computeSharedContributors: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
@@ -46,6 +48,10 @@ export default class AutoSuggestComponent extends Component {
     switch (this.props.type) {
       case 'FVWord':
         return (<a href='javascript:void(0);'>{suggestion.title} {(suggestion.properties['fv-word:part_of_speech']) ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')' : ''}</a>);
+      break;
+
+      case 'FVContributor':
+        return (<a href='javascript:void(0);'>{suggestion.title} {(suggestion.properties['dc:description']) ? '(' + suggestion.properties['dc:description'] + ')' : ''}</a>);
       break;
 
       case 'FVCategory':
@@ -82,8 +88,7 @@ export default class AutoSuggestComponent extends Component {
     this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
     this.renderSuggestion = this.renderSuggestion.bind(this);
   }
-  
-  // BUG: this will show UID instead of title?
+
   componentWillReceiveProps(newProps) {
     
     if (newProps.value && newProps.value != this.state.value) {
@@ -116,21 +121,19 @@ export default class AutoSuggestComponent extends Component {
         case 'FVCategory':
           this.props.fetchSharedCategories('category_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, { 'X-NXenrichers.document': 'breadcrumb' } );
         break;
+        case 'FVContributor':
+          this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+        break;
       }
     }.bind(this), 750);
   }
 
   onChange(event, { newValue }) {
-
     this.setState({
       value: newValue
     });
   }
-  
-  //onSuggestionSelected(event, { suggestionValue }) {
-    //this.loadSuggestions(suggestionValue);
-  //}
-  
+
   onSuggestionsUpdateRequested({ value, reason }) {
 
     if (reason === 'type')
@@ -155,6 +158,10 @@ export default class AutoSuggestComponent extends Component {
       case 'FVCategory':
         return this.props.computeSharedCategories;
       break;
+
+      case 'FVContributor':
+        return this.props.computeSharedContributors;
+      break;
     }
   }
 
@@ -176,7 +183,6 @@ export default class AutoSuggestComponent extends Component {
           theme={theme}
           suggestions={this.getComputeType().response.entries || []}
           shouldRenderSuggestions={this.shouldRenderSuggestions}
-          //onSuggestionSelected={this.props.onSuggestionSelected}
           onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
           getSuggestionValue={this.getSuggestionValue}
           renderSuggestion={this.renderSuggestion}

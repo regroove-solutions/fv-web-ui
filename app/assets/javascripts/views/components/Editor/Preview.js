@@ -36,6 +36,8 @@ export default class Preview extends Component {
     computeAudio: PropTypes.object.isRequired,
     fetchVideo: PropTypes.func.isRequired,
     computeVideo: PropTypes.object.isRequired,
+    fetchContributor: PropTypes.func.isRequired,
+    computeContributor: PropTypes.object.isRequired,
     id: PropTypes.string,
     type: PropTypes.string.isRequired,
     expandedValue: PropTypes.object
@@ -46,33 +48,38 @@ export default class Preview extends Component {
   }
 
   componentDidMount() {
-    switch (this.props.type) {
-      case 'FVWord':
-        this.props.fetchWord(this.props.id);
-      break;
 
-      case 'FVPhrase':
-        this.props.fetchPhrase(this.props.id);
-      break;
+    // Only fetch from server if expanded value isn't provided
+    if (!this.props.expandedValue && this.props.id) {
+      switch (this.props.type) {
+        case 'FVWord':
+          this.props.fetchWord(this.props.id);
+        break;
 
-      case 'FVCategory':
-        this.props.fetchCategory(this.props.id);
-      break;
+        case 'FVPhrase':
+          this.props.fetchPhrase(this.props.id);
+        break;
 
-      case 'FVPicture':
-        if (!this.props.expandedValue && this.props.id)
-          this.props.fetchPicture(this.props.id);
-      break;
+        case 'FVCategory':
+          this.props.fetchCategory(this.props.id);
+        break;
 
-      case 'FVAudio':
-        if (!this.props.expandedValue && this.props.id)
-          this.props.fetchAudio(this.props.id);
-      break;
+        case 'FVPicture':
+            this.props.fetchPicture(this.props.id);
+        break;
 
-      case 'FVVideo':
-        if (!this.props.expandedValue && this.props.id)
-          this.props.fetchVideo(this.props.id);
-      break;
+        case 'FVAudio':
+            this.props.fetchAudio(this.props.id);
+        break;
+
+        case 'FVVideo':
+            this.props.fetchVideo(this.props.id);
+        break;
+
+        case 'FVContributor':
+            this.props.fetchContributor(this.props.id);
+        break;
+      }
     }
   }
 
@@ -188,6 +195,29 @@ export default class Preview extends Component {
               <strong>{selectn('title', videoResponse)}</strong> 
               <span> {selectn('properties.dc:description', videoResponse)}</span><br/>
               <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse)} controls />
+            </div>;
+          }
+
+        break;
+
+        case 'FVContributor':
+
+          let contributor = {};
+          let contributorResponse;
+
+          if (this.props.expandedValue) {
+            contributor.success = true;
+            contributorResponse = this.props.expandedValue;
+          }
+          else {
+            contributor = selectn('contributors.' + this.props.id, this.props.computeContributor);
+            contributorResponse = selectn('response', contributor);
+          }
+
+          if (contributorResponse && contributor.success) {
+            body = <div>
+              <strong>{selectn('title', contributorResponse)}</strong> 
+              <span> {selectn('properties.dc:description', contributorResponse)}</span><br/>
             </div>;
           }
 

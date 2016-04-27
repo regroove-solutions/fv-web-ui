@@ -137,7 +137,11 @@ const options = {
       },
       'fv:source': {
         label: 'Source',
-        help: <i>Contributor(s) who helped create this record.</i>
+        help: <i>Contributor(s) who helped create this record.</i>,
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
       },
       'fv:available_in_childrens_archive': {
         label: 'Available in Children\'s Archive'
