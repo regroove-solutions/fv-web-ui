@@ -36,7 +36,7 @@ export default class Preview extends Component {
     computeAudio: PropTypes.object.isRequired,
     fetchVideo: PropTypes.func.isRequired,
     computeVideo: PropTypes.object.isRequired,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.string,
     type: PropTypes.string.isRequired,
     expandedValue: PropTypes.object
   };
