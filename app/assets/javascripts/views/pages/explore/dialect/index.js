@@ -23,6 +23,7 @@ import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RaisedButton from 'material-ui/lib/raised-button';
+import TextField from 'material-ui/lib/text-field';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -57,6 +58,7 @@ export default class ExploreDialect extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     updateDialect: PropTypes.func.isRequired,
@@ -78,7 +80,7 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_publishPortal'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_publishPortal', '_handleDialectSearchSubmit'].forEach( (method => this[method] = this[method].bind(this)) );
 
     this.state = { UISnackBarOpen: false };
   }
@@ -125,6 +127,14 @@ export default class ExploreDialect extends Component {
 	  
 	  this.props.publishDocument(workspaceDocPath, sectionTargetPath);
   }  
+
+  _handleDialectSearchSubmit() {
+	  let queryParam = this.refs.dialectSearchField.getValue();	  
+	  console.log(queryParam);	  
+      // Clear out the input field
+      //this.refs.dialectSearchField.setValue("");
+	  this.props.replaceWindowPath(this.props.windowPath + '/search/' + queryParam); 
+  }   
   
   render() {
 
@@ -189,8 +199,10 @@ export default class ExploreDialect extends Component {
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/community-slideshow')} label="Community Slideshow" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/art-gallery')} label="Art Gallery" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/search')} label="Search Within Dialect" /> 
                 
+                {/*<RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/search')} label="Search Within Dialect" /> */}
+                <TextField ref="dialectSearchField" hintText="Search dialect..." onEnterKeyDown={this._handleDialectSearchSubmit} />
+
               </ToolbarGroup>
 
               <ToolbarGroup firstChild={true} float="right">

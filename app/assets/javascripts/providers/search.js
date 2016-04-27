@@ -14,10 +14,7 @@ const querySearchResults = function querySearchResults(queryParam, queryPath, do
 
     dispatch( { type: QUERY_SEARCH_RESULTS_START } );
 
-	return DocumentOperations.searchDocuments(queryParam, queryPath, docTypes,
-	    {'X-NXproperties': 'fvcore'},
-	    {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-	)     
+	return DocumentOperations.searchDocuments(queryParam, queryPath, docTypes, {}, { 'currentPageIndex': (page - 1), 'pageSize': pageSize })     
     .then((response) => {
       dispatch( { type: QUERY_SEARCH_RESULTS_SUCCESS, documents: response } )
     }).catch((error) => {
