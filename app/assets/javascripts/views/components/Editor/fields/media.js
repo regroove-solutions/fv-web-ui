@@ -4,6 +4,7 @@ import selectn from 'selectn';
 
 import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
+import Preview from 'views/components/Editor/Preview';
 
 import Paper from 'material-ui/lib/paper';
 
@@ -29,36 +30,10 @@ function renderInput(locals) {
       locals.onChange(initialValue);
   };
 
-  let content;
-
-  switch (locals.type) {
-    case 'FVPicture':
-      content = <Paper zDepth={1}>
-        <strong>{selectn('attrs.expandedValue.title', locals)}</strong> 
-        <span> {selectn('attrs.expandedValue.properties.dc:description', locals)}</span><br/>
-        <img src={selectn('attrs.expandedValue.properties.file:content.data', locals)} alt={selectn('attrs.expandedValue.title', locals)} />
-        <a onTouchTap={onRequestEdit}>Replace</a>
-      </Paper>;
-    break;
-
-    case 'FVAudio':
-      content = <Paper zDepth={1}>
-        <strong>{selectn('attrs.expandedValue.title', locals)}</strong> 
-        <span> {selectn('attrs.expandedValue.properties.dc:description', locals)}</span><br/>
-        <audio src={selectn('attrs.expandedValue.properties.file:content.data', locals)} controls />
-        <a onTouchTap={onRequestEdit}>Replace</a>
-      </Paper>;
-    break;
-
-    case 'FVVideo':
-      content = <Paper zDepth={1}>
-        <strong>{selectn('attrs.expandedValue.title', locals)}</strong> 
-        <span> {selectn('attrs.expandedValue.properties.dc:description', locals)}</span><br/>
-        <video width="320" height="240" src={selectn('attrs.expandedValue.properties.file:content.data', locals)} controls />
-        <a onTouchTap={onRequestEdit}>Replace</a>
-      </Paper>;
-    break;
-  }
+  let content = <Paper zDepth={1}>
+      <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
+      <a onTouchTap={onRequestEdit}>Replace</a>
+  </Paper>;
 
   if (!locals.value) {
     content = <div>

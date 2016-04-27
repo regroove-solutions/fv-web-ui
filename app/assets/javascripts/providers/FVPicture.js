@@ -73,16 +73,26 @@ const createPicture = function createPicture(parentDoc, docParams, file) {
 };
 
 
+
 const updatePicture = function updatePicture(newDoc, field) {
   return function (dispatch) {
 
-    dispatch( { type: FV_PICTURE_UPDATE_START, document: newDoc, field: field } );
+    let pictures = {};
+    pictures[newDoc.id] = {};
+
+    dispatch( { type: FV_PICTURE_UPDATE_START, pictures: pictures, pathOrId: newDoc.id } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
-        dispatch( { type: FV_PICTURE_UPDATE_SUCCESS, document: response, field: field} );
+
+        pictures[newDoc.id] = { response: response };
+
+        dispatch( { type: FV_PICTURE_UPDATE_SUCCESS, pictures: pictures, pathOrId: newDoc.id} );
       }).catch((error) => {
-          dispatch( { type: FV_PICTURE_UPDATE_ERROR, error: error, field: field } )
+
+          pictures[newDoc.id] = { error: error };
+
+          dispatch( { type: FV_PICTURE_UPDATE_ERROR, pictures: pictures, pathOrId: newDoc.id } )
     });
   }
 };
@@ -108,19 +118,27 @@ const fetchSharedPictures = function fetchSharedPictures(page_provider, headers 
       ]);
 }*/
 
+
 const fetchPicture = function fetchPicture(pathOrId) {
   return function (dispatch) {
 
-    dispatch( { type: FV_PICTURE_FETCH_START } );
+    let pictures = {};
+    pictures[pathOrId] = {};
+
+    dispatch( { type: FV_PICTURE_FETCH_START, pictures: pictures, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVPicture', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
-      dispatch( { type: FV_PICTURE_FETCH_SUCCESS, document: response } )
+
+      pictures[pathOrId] = { response: response };
+
+      dispatch( { type: FV_PICTURE_FETCH_SUCCESS, pictures: pictures, pathOrId: pathOrId } )
     }).catch((error) => {
-        dispatch( { type: FV_PICTURE_FETCH_ERROR, error: error } )
+
+        pictures[pathOrId] = { error: error };
+
+        dispatch( { type: FV_PICTURE_FETCH_ERROR, pictures: pictures, pathOrId: pathOrId } )
     });
-    
-    
   }
 };
 
@@ -162,28 +180,41 @@ const reducers = {
       break;
     }
   },
-  computePicture(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  computePicture(state = { pictures: {} }, action) {
     switch (action.type) {
       case FV_PICTURE_FETCH_START:
       case FV_PICTURE_UPDATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+
+        action.pictures[action.pathOrId].isFetching = true;
+        action.pictures[action.pathOrId].success = false;
+
+        return Object.assign({}, state, { pictures: Object.assign(state.pictures, action.pictures) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PICTURE_FETCH_SUCCESS:
       case FV_PICTURE_UPDATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        
+        action.pictures[action.pathOrId].isFetching = false;
+        action.pictures[action.pathOrId].success = true;
+
+        return Object.assign({}, state, { pictures: Object.assign(state.pictures, action.pictures) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PICTURE_FETCH_ERROR:
       case FV_PICTURE_UPDATE_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+
+        action.pictures[action.pathOrId].isFetching = false;
+        action.pictures[action.pathOrId].success = false;
+        action.pictures[action.pathOrId].isError = true;
+        action.pictures[action.pathOrId].error = action.error;
+
+        return Object.assign({}, state, { pictures: Object.assign(state.pictures, action.pictures) });
       break;
 
       default: 
-        return Object.assign({}, state, { isFetching: false });
+        return Object.assign({}, state);
       break;
     }
   },

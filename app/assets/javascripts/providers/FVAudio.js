@@ -57,7 +57,6 @@ const FV_AUDIO_DELETE_START = "FV_AUDIO_DELETE_START";
 const FV_AUDIO_DELETE_SUCCESS = "FV_AUDIO_DELETE_SUCCESS";
 const FV_AUDIO_DELETE_ERROR = "FV_AUDIO_DELETE_ERROR";
 
-
 const createAudio = function createAudio(parentDoc, docParams, file) {
   return function (dispatch) {
 
@@ -72,17 +71,25 @@ const createAudio = function createAudio(parentDoc, docParams, file) {
   }
 };
 
-
 const updateAudio = function updateAudio(newDoc, field) {
   return function (dispatch) {
 
-    dispatch( { type: FV_AUDIO_UPDATE_START, document: newDoc, field: field } );
+    let audios = {};
+    audios[newDoc.id] = {};
+
+    dispatch( { type: FV_AUDIO_UPDATE_START, audios: audios, pathOrId: newDoc.id } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
-        dispatch( { type: FV_AUDIO_UPDATE_SUCCESS, document: response, field: field} );
+
+        audios[newDoc.id] = { response: response };
+
+        dispatch( { type: FV_AUDIO_UPDATE_SUCCESS, audios: audios, pathOrId: newDoc.id} );
       }).catch((error) => {
-          dispatch( { type: FV_AUDIO_UPDATE_ERROR, error: error, field: field } )
+
+          audios[newDoc.id] = { error: error };
+
+          dispatch( { type: FV_AUDIO_UPDATE_ERROR, audios: audios, pathOrId: newDoc.id } )
     });
   }
 };
@@ -111,16 +118,23 @@ const fetchSharedAudios = function fetchSharedAudios(page_provider, headers = {}
 const fetchAudio = function fetchAudio(pathOrId) {
   return function (dispatch) {
 
-    dispatch( { type: FV_AUDIO_FETCH_START } );
+    let audios = {};
+    audios[pathOrId] = {};
+
+    dispatch( { type: FV_AUDIO_FETCH_START, audios: audios, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
-      dispatch( { type: FV_AUDIO_FETCH_SUCCESS, document: response } )
+
+      audios[pathOrId] = { response: response };
+
+      dispatch( { type: FV_AUDIO_FETCH_SUCCESS, audios: audios, pathOrId: pathOrId } )
     }).catch((error) => {
-        dispatch( { type: FV_AUDIO_FETCH_ERROR, error: error } )
+
+        audios[pathOrId] = { error: error };
+
+        dispatch( { type: FV_AUDIO_FETCH_ERROR, audios: audios, pathOrId: pathOrId } )
     });
-    
-    
   }
 };
 
@@ -162,28 +176,41 @@ const reducers = {
       break;
     }
   },
-  computeAudio(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  computeAudio(state = { audios: {} }, action) {
     switch (action.type) {
       case FV_AUDIO_FETCH_START:
       case FV_AUDIO_UPDATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+
+        action.audios[action.pathOrId].isFetching = true;
+        action.audios[action.pathOrId].success = false;
+
+        return Object.assign({}, state, { audios: Object.assign(state.audios, action.audios) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_AUDIO_FETCH_SUCCESS:
       case FV_AUDIO_UPDATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        
+        action.audios[action.pathOrId].isFetching = false;
+        action.audios[action.pathOrId].success = true;
+
+        return Object.assign({}, state, { audios: Object.assign(state.audios, action.audios) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_AUDIO_FETCH_ERROR:
       case FV_AUDIO_UPDATE_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+
+        action.audios[action.pathOrId].isFetching = false;
+        action.audios[action.pathOrId].success = false;
+        action.audios[action.pathOrId].isError = true;
+        action.audios[action.pathOrId].error = action.error;
+
+        return Object.assign({}, state, { audios: Object.assign(state.audios, action.audios) });
       break;
 
       default: 
-        return Object.assign({}, state, { isFetching: false });
+        return Object.assign({}, state);
       break;
     }
   },

@@ -30,8 +30,15 @@ export default class Preview extends Component {
     computePhrase: PropTypes.object.isRequired,
     fetchCategory: PropTypes.func.isRequired,
     computeCategory: PropTypes.object.isRequired,
+    fetchPicture: PropTypes.func.isRequired,
+    computePicture: PropTypes.object.isRequired,
+    fetchAudio: PropTypes.func.isRequired,
+    computeAudio: PropTypes.object.isRequired,
+    fetchVideo: PropTypes.func.isRequired,
+    computeVideo: PropTypes.object.isRequired,
     id: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    expandedValue: PropTypes.object
   };
 
   constructor(props) {
@@ -51,6 +58,21 @@ export default class Preview extends Component {
       case 'FVCategory':
         this.props.fetchCategory(this.props.id);
       break;
+
+      case 'FVPicture':
+        if (!this.props.expandedValue && this.props.id)
+          this.props.fetchPicture(this.props.id);
+      break;
+
+      case 'FVAudio':
+        if (!this.props.expandedValue && this.props.id)
+          this.props.fetchAudio(this.props.id);
+      break;
+
+      case 'FVVideo':
+        if (!this.props.expandedValue && this.props.id)
+          this.props.fetchVideo(this.props.id);
+      break;
     }
   }
 
@@ -60,13 +82,10 @@ export default class Preview extends Component {
         padding: '10px'
       }
 
-      let computeResult;
       let body = <CircularProgress mode="indeterminate" size={1} />;
 
       switch (this.props.type) {
         case 'FVWord':
-          computeResult = this.props.computeWord;
-
           let word = selectn('words.' + this.props.id, this.props.computeWord);
           let wordResponse = selectn('response', word);
 
@@ -76,8 +95,6 @@ export default class Preview extends Component {
         break;
 
         case 'FVPhrase':
-          computeResult = this.props.computePhrase;
-
           let phrase = selectn('phrases.' + this.props.id, this.props.computePhrase);
           let phraseResponse = selectn('response', phrase);
 
@@ -87,8 +104,6 @@ export default class Preview extends Component {
         break;
 
         case 'FVCategory':
-          computeResult = this.props.computeCategory;
-
           let category = selectn('categories.' + this.props.id, this.props.computeCategory);
           let categoryResponse = selectn('response', category);
 
@@ -104,6 +119,78 @@ export default class Preview extends Component {
 
             body = <div><strong>{breadcrumb}</strong></div>;
           }
+        break;
+
+        case 'FVPicture':
+
+          let picture = {};
+          let pictureResponse;
+
+          if (this.props.expandedValue) {
+            picture.success = true;
+            pictureResponse = this.props.expandedValue;
+          }
+          else {
+            picture = selectn('pictures.' + this.props.id, this.props.computePicture);
+            pictureResponse = selectn('response', picture);
+          }
+
+          if (pictureResponse && picture.success) {
+            body = <div>
+              <strong>{selectn('title', pictureResponse)}</strong> 
+              <span> {selectn('properties.dc:description', pictureResponse)}</span><br/>
+              <img src={selectn('properties.file:content.data', pictureResponse)} alt={selectn('title', pictureResponse)} />
+            </div>;
+          }
+
+        break;
+
+        case 'FVAudio':
+
+          let audio = {};
+          let audioResponse;
+
+          if (this.props.expandedValue) {
+            audio.success = true;
+            audioResponse = this.props.expandedValue;
+          }
+          else {
+            audio = selectn('audios.' + this.props.id, this.props.computeAudio);
+            audioResponse = selectn('response', audio);
+          }
+
+          if (audioResponse && audio.success) {
+            body = <div>
+              <strong>{selectn('title', audioResponse)}</strong> 
+              <span> {selectn('properties.dc:description', audioResponse)}</span><br/>
+              <audio src={selectn('properties.file:content.data', audioResponse)} controls />
+            </div>;
+          }
+
+        break;
+
+        case 'FVVideo':
+
+          let video = {};
+          let videoResponse;
+
+          if (this.props.expandedValue) {
+            video.success = true;
+            videoResponse = this.props.expandedValue;
+          }
+          else {
+            video = selectn('videos.' + this.props.id, this.props.computeVideo);
+            videoResponse = selectn('response', video);
+          }
+
+          if (videoResponse && video.success) {
+            body = <div>
+              <strong>{selectn('title', videoResponse)}</strong> 
+              <span> {selectn('properties.dc:description', videoResponse)}</span><br/>
+              <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse)} controls />
+            </div>;
+          }
+
         break;
       }
 

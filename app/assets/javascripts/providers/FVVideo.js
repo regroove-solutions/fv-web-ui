@@ -72,17 +72,25 @@ const createVideo = function createVideo(parentDoc, docParams, file) {
   }
 };
 
-
 const updateVideo = function updateVideo(newDoc, field) {
   return function (dispatch) {
 
-    dispatch( { type: FV_VIDEO_UPDATE_START, document: newDoc, field: field } );
+    let videos = {};
+    videos[newDoc.id] = {};
+
+    dispatch( { type: FV_VIDEO_UPDATE_START, videos: videos, pathOrId: newDoc.id } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
-        dispatch( { type: FV_VIDEO_UPDATE_SUCCESS, document: response, field: field} );
+
+        videos[newDoc.id] = { response: response };
+
+        dispatch( { type: FV_VIDEO_UPDATE_SUCCESS, videos: videos, pathOrId: newDoc.id} );
       }).catch((error) => {
-          dispatch( { type: FV_VIDEO_UPDATE_ERROR, error: error, field: field } )
+
+          videos[newDoc.id] = { error: error };
+
+          dispatch( { type: FV_VIDEO_UPDATE_ERROR, videos: videos, pathOrId: newDoc.id } )
     });
   }
 };
@@ -111,16 +119,23 @@ const fetchSharedVideos = function fetchSharedVideos(page_provider, headers = {}
 const fetchVideo = function fetchVideo(pathOrId) {
   return function (dispatch) {
 
-    dispatch( { type: FV_VIDEO_FETCH_START } );
+    let videos = {};
+    videos[pathOrId] = {};
+
+    dispatch( { type: FV_VIDEO_FETCH_START, videos: videos, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVVideo', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
-      dispatch( { type: FV_VIDEO_FETCH_SUCCESS, document: response } )
+
+      videos[pathOrId] = { response: response };
+
+      dispatch( { type: FV_VIDEO_FETCH_SUCCESS, videos: videos, pathOrId: pathOrId } )
     }).catch((error) => {
-        dispatch( { type: FV_VIDEO_FETCH_ERROR, error: error } )
+
+        videos[pathOrId] = { error: error };
+
+        dispatch( { type: FV_VIDEO_FETCH_ERROR, videos: videos, pathOrId: pathOrId } )
     });
-    
-    
   }
 };
 
@@ -162,28 +177,41 @@ const reducers = {
       break;
     }
   },
-  computeVideo(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  computeVideo(state = { videos: {} }, action) {
     switch (action.type) {
       case FV_VIDEO_FETCH_START:
       case FV_VIDEO_UPDATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+
+        action.videos[action.pathOrId].isFetching = true;
+        action.videos[action.pathOrId].success = false;
+
+        return Object.assign({}, state, { videos: Object.assign(state.videos, action.videos) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_VIDEO_FETCH_SUCCESS:
       case FV_VIDEO_UPDATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        
+        action.videos[action.pathOrId].isFetching = false;
+        action.videos[action.pathOrId].success = true;
+
+        return Object.assign({}, state, { videos: Object.assign(state.videos, action.videos) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_VIDEO_FETCH_ERROR:
       case FV_VIDEO_UPDATE_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+
+        action.videos[action.pathOrId].isFetching = false;
+        action.videos[action.pathOrId].success = false;
+        action.videos[action.pathOrId].isError = true;
+        action.videos[action.pathOrId].error = action.error;
+
+        return Object.assign({}, state, { videos: Object.assign(state.videos, action.videos) });
       break;
 
       default: 
-        return Object.assign({}, state, { isFetching: false });
+        return Object.assign({}, state);
       break;
     }
   },
