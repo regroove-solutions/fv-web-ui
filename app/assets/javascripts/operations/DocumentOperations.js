@@ -403,11 +403,13 @@ export default class DocumentOperations extends BaseOperations {
 	        });
 	  }   
 
-   static queryDocumentsByTitle(title, path, headers = {}, params = {}) {
+   static queryDocumentsByTitle(title, path, docTypes, headers = {}, params = {}) {
 
 	   let properties = this.properties;
 	   let cleanedDialectPath = StringHelpers.clean(path);
-
+	   console.log("docTypes");	   
+	   console.log(docTypes);
+	   
 	   return new Promise(
 	        function(resolve, reject) {
 
@@ -416,7 +418,7 @@ export default class DocumentOperations extends BaseOperations {
 	        		"SELECT * FROM Document" +
 	        		" WHERE (ecm:path STARTSWITH '" + path + "'" + 
 	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
-	        		" AND ecm:primaryType IN ('FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry')" +
+	        		" AND ecm:primaryType IN (" + docTypes + ")" +
 	        		" AND dc:title LIKE '" + title + "%'" +
 	        		" ORDER BY dc:title ASC"
 	          	};
