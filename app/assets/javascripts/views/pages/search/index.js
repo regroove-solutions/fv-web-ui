@@ -20,6 +20,9 @@ import provide from 'react-redux-provide';
 
 import TextField from 'material-ui/lib/text-field';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import RaisedButton from 'material-ui/lib/raised-button';
+import SelectField from 'material-ui/lib/select-field';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
 
@@ -54,7 +57,8 @@ export default class Search extends React.Component {
     	           { name: 'ancestry_dialect_title', title: 'Dialect'}    	               	               	           
     	],
     	queryParam: "",
-    	queryPath: ""
+    	queryPath: "",
+    	queryFilter: "'FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry'"
     };
         
     // Bind methods to 'this'
@@ -63,8 +67,16 @@ export default class Search extends React.Component {
   }
 
   fetchData(newProps) {
+	  
+	  console.log("fetchData");
+	  console.log(this.state);
+	  
+	  if(this.state.queryFilter == "") {
+		  this.state.queryFilter = "'FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry'";
+	  }
+	  
 	  if(this.state.queryParam != "") {
-		  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), 1, 10);
+		  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), this.state.queryFilter, 1, 10);
 		  this.refs.searchDocumentListView.resetPage();
 	  }
   }
@@ -79,6 +91,7 @@ export default class Search extends React.Component {
   }   
 
   componentDidUpdate(oldProps, oldState) {
+	  console.log("componentDidUpdate");
 	  // If url has changed, either the queryParam or queryPath is different - need to refetch
 	  if(oldProps.splitWindowPath.join("/") != this.props.splitWindowPath.join("/")) {
 //		  console.log("new path detected!");		  
@@ -89,7 +102,7 @@ export default class Search extends React.Component {
   }
 	  
   _handleRefetch(dataGridProps, page, pageSize) { 
-    this.props.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), page, pageSize);
+    this.props.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), this.state.queryFilter, page, pageSize);
   }    
   
   _handleSearchSubmit() {
@@ -130,6 +143,14 @@ export default class Search extends React.Component {
 	  return queryParam;
   }  
   
+  handleChange = (event, index, value) => {
+	  //console.log(value);  
+	  //this.state.queryFilter = value;
+
+	  this.setState({queryFilter: value});
+	  //console.log(this.state.queryFilter);  
+  };
+  
   render() {
 	  
 	const { computeSearchResults } = this.props;
@@ -142,9 +163,20 @@ export default class Search extends React.Component {
     		<h1>Search</h1>
     		
     		<div className="row">
-	    		<div className="col-xs-6">
-	    			<TextField ref="searchTextField" hintText="Type a search value then press enter to perform the search..." onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} value={this.state.queryParam} fullWidth={true} />
+	    		<div className="col-xs-4">
+	    			<TextField ref="searchTextField" hintText="Please enter a search parameter..." onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} value={this.state.queryParam} fullWidth={true} />
 	    		</div>
+	    		<div className="col-xs-2">	    		
+		            <SelectField value={this.state.queryFilter} onChange={this.handleChange}>
+			            <MenuItem value="'FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry'" primaryText="All Document Types" />
+			            <MenuItem value="'FVWord'" primaryText="Words" />
+			            <MenuItem value="'FVPhrase'" primaryText="Phrases" />
+			            <MenuItem value="'FVBook', 'FVBookEntry'" primaryText="Songs and Stories" />
+		            </SelectField>	    			    		
+                </div>
+    	    	<div className="col-xs-1">  			    		
+                	<RaisedButton onTouchTap={this._handleSearchSubmit} label="Search" primary={true} /> 
+                </div>	                 	
     		</div>
     		
 		    <div className="col-xs-12">

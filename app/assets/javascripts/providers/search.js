@@ -9,12 +9,12 @@ const QUERY_SEARCH_RESULTS_START = "QUERY_SEARCH_RESULTS_START";
 const QUERY_SEARCH_RESULTS_SUCCESS = "QUERY_SEARCH_RESULTS_SUCCESS";
 const QUERY_SEARCH_RESULTS_ERROR = "QUERY_SEARCH_RESULTS_ERROR";
 
-const querySearchResults = function querySearchResults(title, path, page, pageSize) {
+const querySearchResults = function querySearchResults(title, path, docTypes, page, pageSize) {
   return function (dispatch) {
 
     dispatch( { type: QUERY_SEARCH_RESULTS_START } );
 
-	return DocumentOperations.queryDocumentsByTitle(title, path,
+	return DocumentOperations.queryDocumentsByTitle(title, path, docTypes,
 	    {'X-NXproperties': 'fvcore'},
 	    {'currentPageIndex': (page - 1), 'pageSize': pageSize}
 	)     
