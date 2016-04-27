@@ -63,7 +63,18 @@ export default class SelectMediaComponent extends React.Component {
   }
 
   _handleSearchChange(event) {
-    this.fetchData(event.target.value);
+
+    var timeout;
+
+    if (timeout) {
+        clearTimeout(timeout);
+    }
+
+    var target = event.target;  
+
+    timeout = setTimeout(function() {
+        this.fetchData(target.value);
+    }.bind(this), 750);
   }
 
   _handleSelectElement(value) {
