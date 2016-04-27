@@ -70,13 +70,22 @@ const createPhrase = function createPhrase(parentDoc, docParams) {
 const updatePhrase = function updatePhrase(newDoc, field) {
   return function (dispatch) {
 
-    dispatch( { type: FV_PHRASE_UPDATE_START, document: newDoc, field: field } );
+    let phrases = {};
+    phrases[newDoc.id] = {};
+
+    dispatch( { type: FV_PHRASE_UPDATE_START, phrases: phrases, pathOrId: newDoc.id } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
-        dispatch( { type: FV_PHRASE_UPDATE_SUCCESS, document: response, field: field} );
+
+        phrases[newDoc.id] = { response: response };
+
+        dispatch( { type: FV_PHRASE_UPDATE_SUCCESS, phrases: phrases, pathOrId: newDoc.id} );
       }).catch((error) => {
-          dispatch( { type: FV_PHRASE_UPDATE_ERROR, error: error, field: field } )
+
+          phrases[newDoc.id] = { error: error };
+
+          dispatch( { type: FV_PHRASE_UPDATE_ERROR, phrases: phrases, pathOrId: newDoc.id } )
     });
   }
 };
@@ -126,13 +135,22 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
 const fetchPhrase = function fetchPhrase(pathOrId) {
   return function (dispatch) {
 
-    dispatch( { type: FV_PHRASE_FETCH_START, pathOrId: pathOrId } );
+    let phrases = {};
+    phrases[pathOrId] = {};
+
+    dispatch( { type: FV_PHRASE_FETCH_START, phrases: phrases, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
-      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, document: response, pathOrId: pathOrId } )
+
+      phrases[pathOrId] = { response: response };
+
+      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, phrases: phrases, pathOrId: pathOrId } )
     }).catch((error) => {
-        dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error, pathOrId: pathOrId } )
+
+        phrases[pathOrId] = { error: error };
+
+        dispatch( { type: FV_PHRASE_FETCH_ERROR, phrases: phrases, pathOrId: pathOrId } )
     });
   }
 };
@@ -183,27 +201,58 @@ const reducers = {
       break;
     }
   },
-  computePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
+  computePhrase(state = { phrases: {} }, action) {
     switch (action.type) {
       case FV_PHRASE_FETCH_START:
       case FV_PHRASE_UPDATE_START:
-      case FV_PHRASE_CREATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
+
+        action.phrases[action.pathOrId].isFetching = true;
+        action.phrases[action.pathOrId].success = false;
+
+        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PHRASE_FETCH_SUCCESS:
       case FV_PHRASE_UPDATE_SUCCESS:
-      case FV_PHRASE_CREATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
+        
+        action.phrases[action.pathOrId].isFetching = false;
+        action.phrases[action.pathOrId].success = true;
+
+        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PHRASE_FETCH_ERROR:
       case FV_PHRASE_UPDATE_ERROR:
+
+        action.phrases[action.pathOrId].isFetching = false;
+        action.phrases[action.pathOrId].success = false;
+        action.phrases[action.pathOrId].isError = true;
+        action.phrases[action.pathOrId].error = action.error;
+
+        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
+      break;
+
+      default: 
+        return Object.assign({}, state);
+      break;
+    }
+  },  
+  computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
+    switch (action.type) {
+      case FV_PHRASE_CREATE_START:
+        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_PHRASE_CREATE_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
+      break;
+
+      // Send modified document to UI without access REST end-point
       case FV_PHRASE_CREATE_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false, pathOrId: action.pathOrId });
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
       break;
 
       default: 
