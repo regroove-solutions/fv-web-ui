@@ -113,17 +113,13 @@ export default class Navigation extends Component {
       // Do a global search in either the workspace or section
       if(path.includes("/explore/FV/Workspaces/Data")) {
     	  queryPath = "/explore/FV/Workspaces/Data"
-      }
-      
-      if(path.includes("/explore/FV/sections/Data")) {
+      }      
+      else if(path.includes("/explore/FV/sections/Data")) {
     	  queryPath = "/explore/FV/sections/Data"
       }
-      
-      // If already on the search results page, remove the search parameter portion of the path
-//      if(path.includes("/search/")) {
-//    	  path = path.split("/search/")[0];
-//      }  
-//      console.log(path);
+      else {
+    	  queryPath = "/explore/FV/sections/Data"    	  
+      }
       
       // Clear out the input field
       this.refs.navigationSearchField.setValue("");

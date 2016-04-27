@@ -24,6 +24,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import StringHelpers from 'common/StringHelpers';
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 @provide
@@ -62,42 +63,42 @@ export default class Search extends React.Component {
     };
         
     // Bind methods to 'this'
-    ['_handleRefetch', '_handleSearchSubmit', '_computeQueryParam', '_computeQueryPath', '_handleSearchFieldChange',  '_onEntryNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) ); 
+    ['_handleRefetch', '_handleSearchSubmit', '_computeQueryParam', '_computeQueryPath', '_handleSearchFieldChange',  '_onEntryNavigateRequest', '_handleQueryFilterChange'].forEach( (method => this[method] = this[method].bind(this)) ); 
 
   }
 
-  fetchData(newProps) {
-	  
-	  console.log("fetchData");
-	  console.log(this.state);
-	  
-	  if(this.state.queryFilter == "") {
-		  this.state.queryFilter = "'FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry'";
-	  }
-	  
-	  if(this.state.queryParam != "") {
-		  newProps.querySearchResults(this.state.queryParam, decodeURI(this.state.queryPath), this.state.queryFilter, 1, 10);
-		  this.refs.searchDocumentListView.resetPage();
+  fetchData(newProps) {	  
+	  //console.log("fetchData");	  
+	  if(this.state.queryParam != "") { 
+		  // Decode URL and unescape single quotes
+		  let queryParam = StringHelpers.clean(this.state.queryParam);		  
+		  let queryPath = StringHelpers.clean(this.state.queryPath);		  
+		  
+		  newProps.querySearchResults(queryParam, queryPath, this.state.queryFilter, 1, 10);
 	  }
   }
 
   // Fetch data on initial render
   componentDidMount() {  
 	  this.state.queryParam = this._computeQueryParam();
-	  this.state.queryPath = this._computeQueryPath();
-//	  console.log(this.state.queryParam);	  
-//	  console.log(this.state.queryPath);	  
+	  this.state.queryPath = this._computeQueryPath();	
 	  this.fetchData(this.props);
   }   
 
   componentDidUpdate(oldProps, oldState) {
 	  console.log("componentDidUpdate");
+	  
 	  // If url has changed, either the queryParam or queryPath is different - need to refetch
 	  if(oldProps.splitWindowPath.join("/") != this.props.splitWindowPath.join("/")) {
-//		  console.log("new path detected!");		  
+		  //console.log("new path detected!");		  
 		  this.state.queryParam = this._computeQueryParam();
-		  this.state.queryPath = this._computeQueryPath();		  
-		  this.fetchData(this.props);
+		  this.state.queryPath = this._computeQueryPath();	
+		  
+		  // Handle the case where user is already on the search results page, but they submit a new search from the navigation search field
+		  if(!this.props.computeSearchResults.isFetching) {
+			  this.fetchData(this.props);
+			  this.refs.searchDocumentListView.resetPage();
+		  }	  
 	  }
   }
 	  
@@ -109,12 +110,11 @@ export default class Search extends React.Component {
 	  let newQueryParam = this.refs.searchTextField.getValue();
 	  this.state.queryParam = newQueryParam;	  
 	  this.props.replaceWindowPath('/explore' + this.state.queryPath + '/search/' + this.state.queryParam);
-//	  this.fetchData(this.props);
-//	  this.refs.searchDocumentListView.resetPage();
+	  this.fetchData(this.props);
+	  this.refs.searchDocumentListView.resetPage();
   }
 
   _handleSearchFieldChange() {
-//	  console.log(this.refs.searchTextField.getValue());
 	  this.setState({queryParam: this.refs.searchTextField.getValue()});
   }  
 
@@ -126,29 +126,27 @@ export default class Search extends React.Component {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
 	  // Extract the query path
 	  let queryPath = path.split("/search")[0];
-	  //console.log("queryPath:" + queryPath);	  
+
+	  console.log("queryPath:" + queryPath);	  
 	  return queryPath;
   }
 
   _computeQueryParam() {
 	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  //console.log(this.props.splitWindowPath);
 	  let lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1];
 	  
 	  let queryParam = "";
 	  if(lastPathSegment != "search") {
 		  queryParam = lastPathSegment;
-		  //console.log("queryParam:" + queryParam);		  
+		  console.log("queryParam:" + queryParam);		  
 	  }
+	  
 	  return queryParam;
   }  
   
-  handleChange = (event, index, value) => {
-	  //console.log(value);  
-	  //this.state.queryFilter = value;
-
+  _handleQueryFilterChange = (event, index, value) => {
 	  this.setState({queryFilter: value});
-	  //console.log(this.state.queryFilter);  
+	  console.log(this.state.queryFilter);  
   };
   
   render() {
@@ -162,12 +160,12 @@ export default class Search extends React.Component {
     return <div>
     		<h1>Search</h1>
     		
-    		<div className="row">
+    		<div className="col-xs-12">
 	    		<div className="col-xs-4">
 	    			<TextField ref="searchTextField" hintText="Please enter a search parameter..." onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} value={this.state.queryParam} fullWidth={true} />
 	    		</div>
 	    		<div className="col-xs-2">	    		
-		            <SelectField value={this.state.queryFilter} onChange={this.handleChange}>
+		            <SelectField value={this.state.queryFilter} onChange={this._handleQueryFilterChange}>
 			            <MenuItem value="'FVWord', 'FVPhrase', 'FVBook', 'FVBookEntry'" primaryText="All Document Types" />
 			            <MenuItem value="'FVWord'" primaryText="Words" />
 			            <MenuItem value="'FVPhrase'" primaryText="Phrases" />
