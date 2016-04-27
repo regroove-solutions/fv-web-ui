@@ -126,7 +126,7 @@ export default class SelectMediaComponent extends React.Component {
       break;
 
       case 'FVVideo':
-        return 'test123';
+        return <video height={190} src={tile.properties['file:content'].data} controls />
       break;
     }
 
@@ -175,6 +175,7 @@ export default class SelectMediaComponent extends React.Component {
 
         case 'FVVideo':
           fileTypeLabel = 'videos';
+          fileTypeTilePosition = 'top';
         break;
       }
 
