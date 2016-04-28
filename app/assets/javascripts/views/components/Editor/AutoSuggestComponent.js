@@ -29,7 +29,8 @@ export default class AutoSuggestComponent extends Component {
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    provider: PropTypes.object
   };
 
   shouldRenderSuggestions(value) {
@@ -60,7 +61,12 @@ export default class AutoSuggestComponent extends Component {
 
         selectn('contextParameters.breadcrumb.entries', suggestion).map(function(entry, i) {
           if (entry.type === 'FVCategory') {
-            breadcrumb.push(<span key={i}> &raquo; {entry.title}</span>);
+            let shared = '';
+
+            if (entry.path.indexOf('SharedData') !== -1)
+              shared = ' (Shared)';
+
+            breadcrumb.push(<span key={i}> &raquo; {entry.title} {shared}</span>);
           }
         });
 
@@ -119,7 +125,7 @@ export default class AutoSuggestComponent extends Component {
           this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
         break;
         case 'FVCategory':
-          this.props.fetchSharedCategories('category_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, { 'X-NXenrichers.document': 'breadcrumb' } );
+          this.props.fetchSharedCategories(this.props.provider.name, 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.path + '/' + this.props.provider.folder, { 'X-NXenrichers.document': 'breadcrumb' } );
         break;
         case 'FVContributor':
           this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});

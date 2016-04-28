@@ -148,7 +148,13 @@ export default class Preview extends Component {
 
             selectn('contextParameters.breadcrumb.entries', categoryResponse).map(function(entry, i) {
               if (entry.type === 'FVCategory') {
-                breadcrumb.push(<span key={i}> &raquo; {entry.title}</span>);
+
+                let shared = '';
+
+                if (entry.path.indexOf('SharedData') !== -1)
+                  shared = ' (Shared)';
+
+                breadcrumb.push(<span key={i}> &raquo; {entry.title} {shared}</span>);
               }
             });
 

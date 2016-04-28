@@ -8,7 +8,7 @@ import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectViewDictiona
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -162,6 +162,9 @@ export default class AppFrontController extends Component {
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', 'phrases' ]):
         return this.renderWithBreadcrumb(<PageDialectLearnPhrases />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', 'phrases', 'create' ]):
+        return this.renderWithBreadcrumb(<PageDialectPhrasesCreate />);
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Dictionary', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
         return this.renderWithBreadcrumb(<PageDialectViewDictionaryItem />);

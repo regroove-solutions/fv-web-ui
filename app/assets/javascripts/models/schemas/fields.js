@@ -34,6 +34,10 @@ const fields = {
     'fv-word:related_phrases' : t.list(t.String),
     'fv-word:part_of_speech' : t.String
   }),
+  FVPhrase: Object.assign({}, Dublincore, FVCore, {
+    'fv:literal_translation' : t.maybe(t.String),
+    'fv-phrase:phrase_books' : t.list(t.String)
+  }),
   FVPortal : {
     'fv-portal:about': t.String,
     'fv-portal:greeting': t.String,

@@ -104,7 +104,93 @@ const options = {
         label: 'Categories',
         item: {
           factory: SelectSuggestFactory,
-          type: 'FVCategory'
+          type: 'FVCategory',
+          attrs: {
+            page_provider: {
+              name: 'category_suggestion',
+              folder: 'Categories'
+            }
+          }
+        }
+      },
+      'fv:related_audio' : {
+        label: 'Related Audio',
+        item: {
+          factory: MediaFactory,
+          type: 'FVAudio'
+        }
+      },
+      'fv:related_pictures' : {
+        label: 'Related Pictures',
+        item: {
+          factory: MediaFactory,
+          type: 'FVPicture'
+        }
+      },
+      'fv:related_videos' : {
+        label: 'Related Videos',
+        item: {
+          factory: MediaFactory,
+          type: 'FVVideo'
+        }
+      },
+      'fv:cultural_note' : {
+        label: 'Cultural Notes'
+      },
+      'fv:reference': {
+        label: 'Reference',
+        help: <i>Origin of record (person, book, etc).</i>
+      },
+      'fv:source': {
+        label: 'Source',
+        help: <i>Contributor(s) who helped create this record.</i>,
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      },
+      'fv:available_in_childrens_archive': {
+        label: 'Available in Children\'s Archive'
+      }
+    },
+    i18n: i18nExt
+  },
+  FVPhrase: {
+    order: ['dc:title', 'fv:definitions', 'fv-phrase:phrase_books', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
+    fields: {
+      'dc:title': {
+        label: 'Phrase'
+       },
+      'fv:definitions': {
+        label: 'Definitions',
+        item: {
+          fields: {
+            translation: {
+              label: 'Translation'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
+        },
+        help: <i>Describe what the word actually means.</i>
+      },
+      'fv-phrase:phrase_books' : {
+        label: 'Phrase Books',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVCategory',
+          attrs: {
+            page_provider: {
+              name: 'phrasebook_suggestion',
+              folder: 'Phrase Books'
+            }
+          }
         }
       },
       'fv:related_audio' : {
