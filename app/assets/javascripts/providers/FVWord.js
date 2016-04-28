@@ -124,7 +124,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
 
     dispatch( { type: FV_WORDS_FETCH_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVWord', queryAppend, headers, params)
+    return DirectoryOperations.getDocumentByPath2(path, 'FVWord', queryAppend, {headers: headers}, params)
     .then((response) => {
       dispatch( { type: FV_WORDS_FETCH_SUCCESS, documents: response } )
     }).catch((error) => {

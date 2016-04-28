@@ -109,7 +109,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 
     dispatch( { type: FV_PHRASE_FETCH_ALL_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', '', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', '', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } })
     .then((response) => {
       dispatch( { type: FV_PHRASE_FETCH_ALL_SUCCESS, documents: response } )
     }).catch((error) => {
@@ -123,7 +123,7 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
 
     dispatch( { type: FV_PHRASES_FETCH_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', queryAppend, headers, params)
+    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', queryAppend, {headers: headers}, params)
     .then((response) => {
       dispatch( { type: FV_PHRASES_FETCH_SUCCESS, documents: response } )
     }).catch((error) => {
@@ -140,7 +140,7 @@ const fetchPhrase = function fetchPhrase(pathOrId) {
 
     dispatch( { type: FV_PHRASE_FETCH_START, phrases: phrases, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } })
     .then((response) => {
 
       phrases[pathOrId] = { response: response };
