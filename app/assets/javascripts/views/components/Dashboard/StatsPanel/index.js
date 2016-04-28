@@ -28,17 +28,15 @@ export default class StatsPanel extends Component {
   }   
   
   render() {
-    
-	if (!this.props.data.success) {
-		return ( 
-			<div className={classNames('col-xs-12', 'col-md-6')}>
-				<CircularProgress mode="indeterminate" size={3} />
-			</div>
-		);
-	}
 	
     let dataResponse = this.props.data.response;
     let docType = this.props.docType;	
+    
+    // If no documents of the specified type, don't display anything
+    if(dataResponse[docType].total == '0') {
+		return <div></div>;	
+    }
+    
 	let lifecycleStateDoughnutData = this._generateLifecycleStateDoughnutData(dataResponse, docType);
 
     return (

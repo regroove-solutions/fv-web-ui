@@ -86,7 +86,7 @@ export default class Search extends React.Component {
   }   
 
   componentDidUpdate(oldProps, oldState) {
-	  console.log("componentDidUpdate");
+	  //console.log("componentDidUpdate");
 	  
 	  // If url has changed, either the queryParam or queryPath is different - need to refetch
 	  if(oldProps.splitWindowPath.join("/") != this.props.splitWindowPath.join("/")) {
@@ -138,7 +138,7 @@ export default class Search extends React.Component {
 	  let queryParam = "";
 	  if(lastPathSegment != "search") {
 		  queryParam = lastPathSegment;
-		  console.log("queryParam:" + queryParam);		  
+		  //console.log("queryParam:" + queryParam);		  
 	  }
 	  
 	  return queryParam;
@@ -146,7 +146,7 @@ export default class Search extends React.Component {
   
   _handleQueryFilterChange = (event, index, value) => {
 	  this.setState({queryFilter: value});
-	  console.log(this.state.queryFilter);  
+	  //console.log(this.state.queryFilter);  
   };
   
   render() {
