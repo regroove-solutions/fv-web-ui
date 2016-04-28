@@ -16,9 +16,13 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
+import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 
+import Preview from 'views/components/Editor/Preview';
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 const DEFAULT_PAGE = 0;
@@ -28,7 +32,7 @@ const DEFAULT_PAGE_SIZE = 10;
 * Learn words
 */
 @provide
-export default class PageDialectLearnWords extends Component {
+export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -44,69 +48,35 @@ export default class PageDialectLearnWords extends Component {
   constructor(props, context) {
     super(props, context);
 
-    // Expose 'this' to columns functions below
-    let _this = this;    
-
     this.state = {
       columns : [
         { name: 'title', title: 'Word', render: function(v, data, cellProps){
           //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
           return v;
         }},
-        {
-          name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps){
-
-          if (v != undefined && v.length > 0) {
-            var rows = [];
-
-            for (var i = 0; i < v.length ; ++i) {
-              rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
-            }
-
-            return  <div><table className="innerRowTable" border="1" cellspacing="5" cellpadding="5" id={data['dc:title']} key={data.id}>
-                      <tbody>
-                        {rows}
-                      </tbody>
-                    </table></div>
-          }
-        }},
-        {
-          name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps){
-          if (v != undefined && v.length > 0) {
-            var rows = [];
-
-            for (var i = 0; i < v.length ; ++i) {
-              rows.push(<tr><th>{v[i].language}</th><td>{v[i].translation}</td></tr>);
-            }
-
-            return  <div><table className="innerRowTable" id={data['dc:title']} key={data.id}>
-                      <tbody>
-                        {rows}
-                      </tbody>
-                    </table></div>
-          }
-        }},
-        {
-          name: 'fv-word:part_of_speech', title: 'Part of Speech'
+        { name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
+            return this.renderComplexTranslation(selectn('properties.fv:definitions', data));
+          }.bind(this)
         },
-        {
-          name: 'fv-word:pronunciation', title: 'Pronunciation'
+        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
+            return this.renderComplexTranslation(selectn('properties.fv:literal_translation', data));
+          }.bind(this)
         },
-        {
-          name: 'fv-word:categories', title: 'Categories'
-        }
+        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } },
+        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
+        { name: 'state', title: 'State' }
       ]
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleWordsDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 2).join('/');
 
     newProps.fetchDialect('/' + path);
-    newProps.fetchWordsInPath('/' + path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    newProps.fetchWordsInPath('/' + path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
   // Fetch data on initial render
@@ -121,14 +91,9 @@ export default class PageDialectLearnWords extends Component {
     }
   }
 
-  _handleWordsDataRequest(dataGridProps, dataGridObj) {
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + dataGridProps.page + '&pageSize=' + dataGridProps.pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
-  }
-
   _handleRefetch(dataGridProps, page, pageSize) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
   _onNavigateRequest(path) {
