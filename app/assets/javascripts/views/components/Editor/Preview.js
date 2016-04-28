@@ -93,17 +93,35 @@ export default class Preview extends Component {
 
       switch (this.props.type) {
         case 'FVWord':
-          let word = selectn('words.' + this.props.id, this.props.computeWord);
-          let wordResponse = selectn('response', word);
+          let word = {};
+          let wordResponse;
+
+          if (this.props.expandedValue) {
+            word.success = true;
+            wordResponse = this.props.expandedValue;
+          }
+          else {
+            word = selectn('words.' + this.props.id, this.props.computeWord);
+            wordResponse = selectn('response', word);
+          }
 
           if (wordResponse && word.success) {
-            body = <div><strong>{wordResponse.title}</strong> (Part of Speech: {wordResponse.properties['fv-word:part_of_speech']})</div>;
+            body = <div><strong>{wordResponse.title}</strong></div>;
           }
         break;
 
         case 'FVPhrase':
-          let phrase = selectn('phrases.' + this.props.id, this.props.computePhrase);
-          let phraseResponse = selectn('response', phrase);
+          let phrase = {};
+          let phraseResponse;
+
+          if (this.props.expandedValue) {
+            phrase.success = true;
+            phraseResponse = this.props.expandedValue;
+          }
+          else {
+            phrase = selectn('phrases.' + this.props.id, this.props.computePhrase);
+            phraseResponse = selectn('response', phrase);
+          }
 
           if (phraseResponse && phrase.success) {
             body = <div><strong>{phraseResponse.title}</strong></div>;
@@ -111,8 +129,18 @@ export default class Preview extends Component {
         break;
 
         case 'FVCategory':
-          let category = selectn('categories.' + this.props.id, this.props.computeCategory);
-          let categoryResponse = selectn('response', category);
+
+          let category = {};
+          let categoryResponse;
+
+          if (this.props.expandedValue) {
+            category.success = true;
+            categoryResponse = this.props.expandedValue;
+          }
+          else {
+            category = selectn('categories.' + this.props.id, this.props.computeCategory);
+            categoryResponse = selectn('response', category);
+          }
 
           if (categoryResponse && category.success) {
 
