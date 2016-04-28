@@ -16,8 +16,6 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 
-const DEFAULT_LANGUAGE = 'english';
-
 const innerUlStyle = {
     'fontSize': '0.9em',
     'margin': 0,
@@ -33,13 +31,11 @@ export default class PageDialectLearnBase extends Component {
     super(props, context);
   }
 
-  renderComplexTranslation(dataItems) {
+  renderComplexArrayRow(dataItems, render) {
       let rows = [];
 
       dataItems.map(function(entry, i) {
-        if (entry.language == DEFAULT_LANGUAGE && i < 2) {
-          rows.push(<li key={i}>{entry.translation}</li>);
-        }
+        rows.push(render(entry, i));
       });
 
       if (dataItems.length >= 2) {

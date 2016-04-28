@@ -26,6 +26,7 @@ import DocumentListView from 'views/components/Document/DocumentListView';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_LANGUAGE = 'english';
 
 /**
 * Learn phrases
@@ -54,13 +55,20 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
           return v;
         }},
         { name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-            return this.renderComplexTranslation(selectn('properties.fv:definitions', data));
+            return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
+              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
+                return <li key={i}>{entry.translation}</li>;
+              }
+            });
           }.bind(this)
         },
-        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
-            return this.renderComplexTranslation(selectn('properties.fv:literal_translation', data));
+        { name: 'fv-phrase:phrase_books', title: 'Categories', render: function(v, data, cellProps) {
+            return this.renderComplexArrayRow(selectn('contextParameters.phrase.phrase_books', data), function (entry, i) {
+                return <li key={i}>{selectn('dc:title', entry)}</li>;
+            });
           }.bind(this)
-        }
+        },
+        { name: 'state', title: 'State' }
       ]
     };
 

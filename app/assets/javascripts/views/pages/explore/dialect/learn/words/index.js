@@ -27,6 +27,7 @@ import DocumentListView from 'views/components/Document/DocumentListView';
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_LANGUAGE = 'english';
 
 /**
 * Learn words
@@ -55,15 +56,29 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           return v;
         }},
         { name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-            return this.renderComplexTranslation(selectn('properties.fv:definitions', data));
+            return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
+              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
+                return <li key={i}>{entry.translation}</li>;
+              }
+            });
           }.bind(this)
         },
         { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
-            return this.renderComplexTranslation(selectn('properties.fv:literal_translation', data));
+            return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
+              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
+                return <li key={i}>{entry.translation}</li>;
+              }
+            });
+          }.bind(this)
+        },
+        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
+        { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
+            return this.renderComplexArrayRow(selectn('contextParameters.word.categories', data), function (entry, i) {
+                return <li key={i}>{selectn('dc:title', entry)}</li>;
+            });
           }.bind(this)
         },
         { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } },
-        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
         { name: 'state', title: 'State' }
       ]
     };
