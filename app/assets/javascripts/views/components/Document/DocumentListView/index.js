@@ -50,7 +50,7 @@ export default class DocumentListView extends Component {
 
   _onPageChange(page) {
     PAGE = page;
-    this.props.refetcher(this.props, PAGE, PAGE_SIZE);
+    this.props.refetcher(this.props, (PAGE - 1), PAGE_SIZE);
   }
 
   _onPageSizeChange(pageSize, props) {
@@ -62,7 +62,7 @@ export default class DocumentListView extends Component {
     PAGE_SIZE = pageSize;
 
     // Refresh data
-    this.props.refetcher(this.props, PAGE, PAGE_SIZE);
+    this.props.refetcher(this.props, (PAGE - 1), PAGE_SIZE);
   }
   
   resetPage() {

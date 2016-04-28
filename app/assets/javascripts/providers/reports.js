@@ -32,7 +32,7 @@ const fetchReportDocuments = function fetchReportDocuments(path, queryAppend, pa
 
 	return DocumentOperations.queryDocumentsByDialect("/" + path, queryAppend,
 	    {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-	    {'currentPageIndex': (page - 1), 'pageSize': pageSize}
+	    {'currentPageIndex': page, 'pageSize': pageSize}
 	)     
     .then((response) => {
       dispatch( { type: REPORT_DOCUMENTS_FETCH_SUCCESS, documents: response } )
