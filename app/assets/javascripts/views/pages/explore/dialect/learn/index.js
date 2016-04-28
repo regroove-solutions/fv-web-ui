@@ -99,22 +99,6 @@ export default class DialectLearn extends Component {
     }
   }
 
-  _handlePhrasesDataRequest(childProps, page = 1, pageSize = 20) {
-    return this.phraseOperations.getDocumentsByPath(
-        '/sections/Data/' + this.state.dialectPath,
-        {'X-NXproperties': 'dublincore, fv-phrase, fvcore'},
-        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-    );
-  }
-
-  _handleWordsDataRequest(childProps, page = 1, pageSize = 20) {
-    return this.wordOperations.getDocumentsByPath(
-        '/sections/Data/' + this.state.dialectPath,
-        {'X-NXproperties': 'dublincore, fv-word, fvcore'},
-        {'currentPageIndex': (page - 1), 'pageSize': pageSize}
-    );
-  }
-
   _navigate(page) {
     this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/' + page );
   }
@@ -138,65 +122,6 @@ export default class DialectLearn extends Component {
     }
     
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
-    
-    // Assign dialect prop, from parent, to all children
-    let content = React.Children.map(this.props.children, function(child) {
-        return React.cloneElement(child, {
-          dialect: this.props.dialect,
-          handlePhrasesDataRequest: this._handlePhrasesDataRequest,
-          handleWordsDataRequest: this._handleWordsDataRequest
-        });
-    }, this);
-
-    // If no children, render main content.
-    if (!this.props.children) {
-      content = <div className="row">
-                
-        <div className={classNames('col-xs-12', 'col-md-8')}>
-          <h1>About our Language</h1>
-          <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
-
-          <div className="row">
-	          <div className={classNames('col-xs-12', 'col-md-6')}>
-	            <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
-	            {/* Display alphabet characters - move to separate component later */}
-	            {(characters && characters.entries) ? characters.entries.map((char, i) => 
-	    		  <div key={char.uid} className="col-xs-1">
-		    		  <a href={'/explore' + char.path}>{char.title}</a>
-		    		  <br />
-		    		  {(char.contextParameters.character.related_audio[0]) ? 
-		  			    <span>
-		    			  <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
-		  			  	  <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
-		    		    </span>
-		    		  : ''}	    		  
-	    		  </div>
-	    		) : circularProgress}
-		      </div>
-		      
-		      <div className={classNames('col-xs-12', 'col-md-6')}>
-		        <h1>Keyboards</h1>
-		        {(keyboardLinks) ? keyboardLinks.map((keyboardLink, i) =>
-		        	<Link key={i} data={keyboardLink} showDescription={true} />
-                ) : ''}		        
-		      </div> 
-	      </div>
-	      <div className="row">
-		      <div className={classNames('col-xs-12', 'col-md-12')}>
-		        <h1>Contact Information</h1>
-		        <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
-		      </div>
-	      </div>
-        </div>
-        <div className={classNames('col-xs-12', 'col-md-4')}>
-          <h1>Dashboard</h1>
-          <StatsPanel data={dialectStats} docType="words" headerText="Words" />
-          <StatsPanel data={dialectStats} docType="phrases" headerText="Phrases" />
-          <StatsPanel data={dialectStats} docType="songs" headerText="Songs" />
-          <StatsPanel data={dialectStats} docType="stories" headerText="Stories" />     
-        </div>
-      </div>
-    }
 
     return <div>
             <div className="row">
@@ -211,7 +136,52 @@ export default class DialectLearn extends Component {
               </div>
             </div>
 
-            {content}
+            <div className="row">
+                      
+              <div className={classNames('col-xs-12', 'col-md-8')}>
+                <h1>About our Language</h1>
+                <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
+
+                <div className="row">
+                  <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
+                    {/* Display alphabet characters - move to separate component later */}
+                    {(characters && characters.entries) ? characters.entries.map((char, i) => 
+                  <div key={char.uid} className="col-xs-1">
+                    <a href={'/explore' + char.path}>{char.title}</a>
+                    <br />
+                    {(char.contextParameters.character.related_audio[0]) ? 
+                      <span>
+                      <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
+                        <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
+                      </span>
+                    : ''}           
+                  </div>
+                ) : circularProgress}
+                </div>
+                
+                <div className={classNames('col-xs-12', 'col-md-6')}>
+                  <h1>Keyboards</h1>
+                  {(keyboardLinks) ? keyboardLinks.map((keyboardLink, i) =>
+                    <Link key={i} data={keyboardLink} showDescription={true} />
+                      ) : ''}           
+                </div> 
+              </div>
+              <div className="row">
+                <div className={classNames('col-xs-12', 'col-md-12')}>
+                  <h1>Contact Information</h1>
+                  <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
+                </div>
+              </div>
+              </div>
+              <div className={classNames('col-xs-12', 'col-md-4')}>
+                <h1>Dashboard</h1>
+                <StatsPanel data={dialectStats} docType="words" headerText="Words" />
+                <StatsPanel data={dialectStats} docType="phrases" headerText="Phrases" />
+                <StatsPanel data={dialectStats} docType="songs" headerText="Songs" />
+                <StatsPanel data={dialectStats} docType="stories" headerText="Stories" />     
+              </div>
+            </div>
         </div>;
   }
 }
