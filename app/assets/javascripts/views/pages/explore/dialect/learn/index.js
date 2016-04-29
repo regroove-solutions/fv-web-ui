@@ -129,9 +129,7 @@ export default class DialectLearn extends Component {
                 <div>
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.enabled', dialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.enabled', dialectStats) + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.enabled', dialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.enabled', dialectStats) + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label="Songs" secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label="Stories" secondary={true} />
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'reports')} label="Reports" secondary={true} />                 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label="Stories & Songs" secondary={true} /> 
                 </div>
               </div>
             </div>

@@ -45,7 +45,7 @@ export default class DocumentListView extends Component {
 
   _handleSelectionChange(newSelectedId, data){
     SELECTED_ID = newSelectedId;
-    this.props.onSelectionChange(data.path);
+    this.props.onSelectionChange(data);
   }
 
   _onPageChange(page) {

@@ -16,6 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 import WordView from 'views/pages/explore/dialect/learn/words/view';
 
@@ -33,7 +34,8 @@ export default class PageDialectViewDictionaryItem extends Component {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired
+    computeDocument: PropTypes.object.isRequired,
+    entityType: PropTypes.string.isRequired
   };
 
   constructor(props, context){
@@ -41,8 +43,22 @@ export default class PageDialectViewDictionaryItem extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1).join('/');
-    newProps.fetchDocument('/' + path, { 'X-NXenrichers.document': 'ancestry, word' });
+
+    let pathArray = newProps.splitWindowPath.slice(1);
+
+    if (this.props.entityType == 'FVWord' || this.props.entityType == 'FVPhrase') {
+      // Remove 'learn' from path
+      pathArray.splice(pathArray.indexOf('learn'), 1);
+
+      // Replace words with Dictionary
+      pathArray[pathArray.indexOf('words')] = 'Dictionary';
+    }
+
+    let path = pathArray.join('/');
+
+    console.log(path);
+
+    newProps.fetchDocument('/' + path, { 'X-NXenrichers.document': 'ancestry, word, phrase' });
   }
 
   componentDidMount() {
@@ -53,18 +69,20 @@ export default class PageDialectViewDictionaryItem extends Component {
 
     const { computeDocument } = this.props;
 
-    let document = computeDocument.response;
-
-    let debug = <pre>{JSON.stringify(document, null, 4)}</pre>;
+    let entity = computeDocument.response;
 
     if (computeDocument.isFetching || !computeDocument.success) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-    switch (document.type) {
+    switch (this.props.entityType) {
     	case 'FVWord':
-    		return <div><WordView word={document} /></div>;
+    		return <div><WordView word={entity} /></div>;
     	break;
+
+      case 'FVBook':
+        return <div>test {selectn(entity.properties.type)}</div>;
+      break;
     }
 
     return <div>404</div>;

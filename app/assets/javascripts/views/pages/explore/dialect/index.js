@@ -195,10 +195,11 @@ export default class ExploreDialect extends Component {
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/Dictionary')} label="Dictionary" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play" /> 
                 <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/community-slideshow')} label="Community Slideshow" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/art-gallery')} label="Art Gallery" /> 
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/art-gallery')} label="Art Gallery" />
+                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/reports')} label="Reports" />               
                 
                 {/*<RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/search')} label="Search Within Dialect" /> */}
                 <TextField ref="dialectSearchField" hintText="Search dialect..." onEnterKeyDown={this._handleDialectSearchSubmit} />

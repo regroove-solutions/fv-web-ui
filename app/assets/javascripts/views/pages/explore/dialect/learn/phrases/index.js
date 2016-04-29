@@ -73,7 +73,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handlePhrasesDataRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -93,11 +93,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
     }
-  }
-
-  _handlePhrasesDataRequest(dataGridProps, dataGridObj) {
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchPhrasesInPath('/' + path, '&currentPageIndex=' + dataGridProps.page + '&pageSize=' + dataGridProps.pageSize, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
   }
 
   _handleRefetch(dataGridProps, page, pageSize) {
