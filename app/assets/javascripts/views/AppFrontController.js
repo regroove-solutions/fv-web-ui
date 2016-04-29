@@ -3,8 +3,9 @@ import provide from 'react-redux-provide';
 import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
-import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCommunitySlideshow, PageDialectReports } from 'views/pages';
-import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs } from 'views/pages';
+
+import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
+import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageDialectViewWord } from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
@@ -147,11 +148,8 @@ export default class AppFrontController extends Component {
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'play' ]):
         return this.renderWithBreadcrumb(<PageDialectPlay />);
 
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'community-slideshow' ]):
-        return this.renderWithBreadcrumb(<PageDialectCommunitySlideshow />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'art-gallery' ]):
-        return this.renderWithBreadcrumb(<PageDialectArtGallery />);
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'gallery', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
+        return this.renderWithBreadcrumb(<PageDialectGallery />);
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'reports' ]):
           return this.renderWithBreadcrumb(<PageDialectReports />);      

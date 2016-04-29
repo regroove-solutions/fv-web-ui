@@ -24,7 +24,7 @@ import ConfGlobal from 'conf/local.json';
 import '!style!css!react-image-gallery/build/image-gallery.css';
 
 @provide
-export default class ArtGallery extends React.Component {
+export default class Gallery extends React.Component {
 
   static propTypes = {
 	  splitWindowPath: PropTypes.array.isRequired,	  
@@ -41,8 +41,9 @@ export default class ArtGallery extends React.Component {
   }
  
   fetchData(newProps) {
-	  let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 1).join('/');
-	  newProps.fetchGallery("/" + path + "/Portal/Community Slideshow");  
+	  let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');	  
+	  let galleryName = this.props.splitWindowPath.pop();
+	  newProps.fetchGallery("/" + path + "/Portal/" + galleryName);  
   }
 
   // Fetch data on initial render
@@ -53,44 +54,40 @@ export default class ArtGallery extends React.Component {
   render() {
 
 	  const { computeGallery } = this.props;
-	  
-	  if(computeGallery.isFetching) {
+	  	  
+	  if(computeGallery.isFetching || !computeGallery.success) {
 			return <CircularProgress mode="indeterminate" size={3} />;
 	}
 
 	const images = [];
-	
-	if(computeGallery.success) {
-		computeGallery.response.entries.map(function(entry) { 
-			console.log(entry.title);
-			console.log(entry.uid);
 			
-			let nxPath = entry.properties['file:content'].data;
-			let image = { original: nxPath, description: entry.properties['dc:description'] };
-			images.push(image);
-			console.log(images);
-			
-		});
-		//images.push({ original: 'http://lorempixel.com/400/300/nature/1/', description: 'Optional description...' })
-		//images.push({ original: 'http://lorempixel.com/1000/600/nature/2/', description: 'Optional description...' })
-		//images.push({ original: 'http://lorempixel.com/1500/600/nature/3/', description: 'Optional description...' })
+	let gallery = computeGallery.response;
 
-	}
+	gallery.contextParameters.gallery.related_pictures.map(function(picture) { 
+		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
+		images.push(image);
+		//console.log(images);			
+	});
+	
+	images.push({ original: 'http://lorempixel.com/400/300/nature/1/', description: 'Optional description...' })
+	images.push({ original: 'http://lorempixel.com/1000/600/nature/2/', description: 'Optional description...' })
+	images.push({ original: 'http://lorempixel.com/1500/600/nature/3/', description: 'Optional description...' })
 	  
     return <div>
             <div className="row">
               <div className="col-xs-12">
-                <h1>Community Slideshow</h1>
-                <div className="col-sm-4 col-sm-offset-4">
-	                <ImageGallery
-	                  ref={i => this._imageGallery = i}
-	                  items={images}
-	                  slideInterval={2000}
-	                  handleImageLoad={this.handleImageLoad}
-	                  showThumbnails={false}
-	                  showBullets={true} />
-	            </div>
-              </div>
+                <h1>{gallery.title}</h1>
+                <p>{gallery.properties['dc:description']}</p>
+                <div className="col-xs-4 col-xs-offset-4">
+	           	 <ImageGallery
+	              ref={i => this._imageGallery = i}
+	              items={images}
+	           	  slideInterval={2000}
+	              handleImageLoad={this.handleImageLoad}
+	              showThumbnails={false}
+	              showBullets={true} />                
+	           	 </div>
+	           </div>
             </div>
         </div>;
   }
