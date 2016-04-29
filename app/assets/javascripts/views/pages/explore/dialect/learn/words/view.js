@@ -43,12 +43,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
-// Models
-import Word from 'models/Word';
-import Words from 'models/Words';
-
-// Operations
-import DocumentOperations from 'operations/DocumentOperations';
+import CircularProgress from 'material-ui/lib/circular-progress';
 
 /**
 * View word entry
@@ -61,52 +56,48 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    word: PropTypes.object.isRequired
+    fetchWord: PropTypes.func.isRequired,
+    computeWord: PropTypes.object.isRequired,
+    word: PropTypes.object
   };
 
   constructor(props, context){
     super(props, context);
 
-    //this.wordOperations = new DocumentOperations(Word, Words, context.client, { domain: context.siteProps.domain });
-
     this.state = {
       word: null,
+      wordPath: null,
       children: null,
       picturesContent: [],
       videoContent: [],
       audioContent: []
     };
 
-    //this._fetchWord();
-
     this.handleTabActive = this.handleTabActive.bind(this);
   }
 
+  fetchData(newProps) {
 
-  // Handle change of params when navigating within router
-  // See https://github.com/rackt/react-router/blob/latest/docs/guides/advanced/ComponentLifecycle.md
-  componentDidUpdate (prevProps) {
-    //let oldWord = prevProps.params.word
-    //let newWord = this.props.params.word
+    let pathArray = newProps.splitWindowPath.slice(1);
 
-    //if (newWord !== oldWord)
-      //this._fetchWord();
+    // Remove 'learn' from path
+    pathArray.splice(pathArray.indexOf('learn'), 1);
+
+    // Replace words with Dictionary
+    pathArray[pathArray.indexOf('words')] = 'Dictionary';
+
+    let path = pathArray.join('/');
+
+    this.setState({
+      wordPath: path
+    });
+
+    newProps.fetchWord('/' + path);
   }
 
-  _fetchWord() {
-    /*this.wordOperations.getDocumentByID(this.props.params.word).then((function(word){
-      this.setState({
-        word: word
-      });
-
-       this.wordOperations.getMediaByDocument(word).then((function(children){
-          this.setState({
-            children: children
-          });
-        }).bind(this));
-    }).bind(this));*/
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
   }
 
   handleTabActive(tab) {
@@ -192,34 +183,22 @@ export default class View extends Component {
 
   render() {
 
-    const { word } = this.props;
+    const { computeWord } = this.props;
+
+    let word = selectn('words[/' + this.state.wordPath + ']', computeWord);
+    let wordResponse = selectn('response', word);
 
     var tabItemStyles = {
       userSelect: 'none'
     }
 
-    var addMediaView;
-
-    if (this.state.word != null && this.state.word.initialized) {
-      /*addMediaView = <Dialog
-      id="addMediaView" 
-      ref="addMediaDialog"
-      title={"Contribute Media to " + title + " Entry"}
-      actions={[{ text: 'Close' }]}
-      modal={this.state.modal}>
-        <div className="text-left">
-          <WordAddMediaView
-            client={this.props.client}
-            router={this.props.router} 
-            word={this.state.word} />
-        </div>
-      </Dialog>*/
+    if (!wordResponse || !word || !word.success) {
+      return <CircularProgress mode="indeterminate" size={5} />;
     }
 
     /**
     * Generate definitions body
     */
-
     return <div>
             <div className="row">
               <div className="col-xs-12">
@@ -227,8 +206,8 @@ export default class View extends Component {
 
                   <Card>
                     <CardHeader
-                      title={word.get('dc:title')}
-                      subtitle={(selectn('contextParameters.word.part_of_speech', word) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', word) : ""}
+                      title={selectn('title', wordResponse)}
+                      subtitle={(selectn('contextParameters.word.part_of_speech', wordResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', wordResponse) : ""}
                       avatar="http://lorempixel.com/100/100/"/>
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
@@ -238,24 +217,24 @@ export default class View extends Component {
 
                             <div className="col-xs-8">
 
-                              <h2>{word.get('dc:title')}</h2>
+                              <h2>{selectn('title', wordResponse)}</h2>
 
-                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', word)}</p>
+                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', wordResponse)}</p>
 
-                              <p>Pronunciation: {word.get('fv-word:pronunciation')}</p>
+                              <p>Pronunciation: {selectn('properties.fv-word:pronunciation', wordResponse)}</p>
 
-                              <SubView group={word.get('fv:definitions')} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('properties.fv:definitions', wordResponse)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
                               </SubView>
 
-                              <SubView group={word.get('fv:literal_translation')} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('properties.fv:literal_translation', wordResponse)} groupByElement="language" groupValue="translation">
                                 <p>Literal Translations:</p>
                               </SubView>
 
 
                               <h3>Related Phrases:</h3>
 
-                              {selectn('contextParameters.word.related_phrases', word).map(function(phrase, key) {
+                              {(selectn('contextParameters.word.related_phrases', wordResponse) || []).map(function(phrase, key) {
                                 let translation = selectn('fv:literal_translation', phrase);
 
                                 // TODO: Fix hack... Use JSON marshalling on server
@@ -283,17 +262,17 @@ export default class View extends Component {
 
                             <div className="col-xs-4">
                               <p>
-                                Categories: {selectn('contextParameters.word.categories', word).map(function(category, key) {
+                                Categories: {(selectn('contextParameters.word.categories', wordResponse) || []).map(function(category, key) {
                                   return (selectn('dc:title', category));
                                 })}
                               </p>
                               <Divider />
-                              <p>Cultural Note: {word.get('fv-word:cultural_note')}</p>
+                              <p>Cultural Note: {selectn('properties.fv-word:cultural_note', wordResponse)}</p>
                               <Divider />
-                              <p>Reference: {word.get('fv-word:reference')}</p>
+                              <p>Reference: {selectn('properties.fv-word:reference', wordResponse)}</p>
                               <Divider />
                               <p>
-                                Sources: {selectn('contextParameters.word.sources', word).map(function(source, key) {
+                                Sources: {(selectn('contextParameters.word.sources', wordResponse) || []).map(function(source, key) {
                                   return (selectn('dc:title', source));
                                 })}
                               </p>
@@ -307,7 +286,7 @@ export default class View extends Component {
                           <CardText>
                             <h2>Photos</h2> 
                             <div className="row">
-                              {word.get('fv:related_pictures').map(function(picture, key) {
+                              {(selectn('contextParameters.word.related_pictures', wordResponse) || []).map(function(picture, key) {
                                 return (picture);
                               })}
                             </div>

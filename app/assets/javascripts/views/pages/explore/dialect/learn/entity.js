@@ -56,8 +56,6 @@ export default class PageDialectViewDictionaryItem extends Component {
 
     let path = pathArray.join('/');
 
-    console.log(path);
-
     newProps.fetchDocument('/' + path, { 'X-NXenrichers.document': 'ancestry, word, phrase' });
   }
 

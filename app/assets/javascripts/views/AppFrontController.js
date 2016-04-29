@@ -4,7 +4,9 @@ import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 import { PageDialectLearn, PageDialectPlay, PageDialectArtGallery, PageDialectCommunitySlideshow, PageDialectReports } from 'views/pages';
-import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
+import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs } from 'views/pages';
+import { PageDialectViewWord } from 'views/pages';
+
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit } from 'views/pages/edit';
@@ -173,7 +175,7 @@ export default class AppFrontController extends Component {
         return this.renderWithBreadcrumb(<PageDialectStoriesAndSongsCreate />);
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectViewDictionaryItem entityType='FVWord' />);
+        return this.renderWithBreadcrumb(<PageDialectViewWord />);
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'Stories%20&%20Songs', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
         return this.renderWithBreadcrumb(<PageDialectViewDictionaryItem />);
