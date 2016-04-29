@@ -45,31 +45,25 @@ public class FVDocumentValidationEventListener implements EventListener {
         if (doc.isProxy() || doc.isVersion()) {
             return;
         }    
-        
-        // Word-specific validation
-        if(doc.getType().equals("FVWord")) {
-            
+                
+        // Word and Phrase validation rules
+        if(doc.getType().matches("FVWord|FVPhrase")) {
+
         	// Return an error if dc:title is empty
             String title = (String) doc.getPropertyValue("dc:title");        
         	if(title == null || title.isEmpty()) {
         		generateValidationError(event, "Title cannot be empty.");
-         	}     
+         	}         	   
         	
-        	// Return an error if part of speech is empty
-        	String partOfSpeech = (String) doc.getPropertyValue("fv-word:part_of_speech");
-        	if(partOfSpeech == null || partOfSpeech.isEmpty()) {
-        		generateValidationError(event, "Part of speech cannot be empty.");
-        	}       
-        	        	
-        	// Check title and part of speech combination
-        	if(!wordTitleValidates(ctx, title)) {
-        		generateValidationError(event, "A word with the same title and part of speech already exists in the current dictionary.");
-        	}
-        	
-        	// Check for values that are duplicated between the Literal Translation and Definition fields. 
         	List<Map<String, String>> literalTranslations = (List<Map<String, String>>)doc.getPropertyValue("fv:literal_translation");
         	List<Map<String, String>> definitions = (List<Map<String, String>>)doc.getPropertyValue("fv:definitions");        	
+
+        	// Return an error if definitions is empty
+        	if(definitions == null || definitions.isEmpty()) {
+        		generateValidationError(event, "At least one definition is required.");
+        	}           	
         	
+        	// Check for values that are duplicated between the Literal Translation and Definition fields.         	
         	for(Map<String, String> literalTranslation : literalTranslations) {
         		String literalTranslationLanguage = (String)literalTranslation.get("language");
         		String literalTranslationValue = (String)literalTranslation.get("translation");            	
@@ -82,16 +76,32 @@ public class FVDocumentValidationEventListener implements EventListener {
             			generateValidationError(event, "Literal translation values cannot be the same as definition values.");
             		}
             	}
-        	}  	
+        	}
+        	
+        	// Word-specific
+        	if(doc.getType().equals("FVWord")) {
+            	// Return an error if part of speech is empty
+            	String partOfSpeech = (String) doc.getPropertyValue("fv-word:part_of_speech");
+            	if(partOfSpeech == null || partOfSpeech.isEmpty()) {
+            		generateValidationError(event, "Part of speech cannot be empty.");
+            	}       
+            	        	
+            	// Check title and part of speech combination
+            	if(!wordTitleValidates(ctx, title)) {
+            		generateValidationError(event, "A word with the same title and part of speech already exists in the current dictionary.");
+            	}        		
+        	}         	
         }
         // Validation for other specified document types
-        else if(doc.getType().matches("FVPhrase|FVCategory|FVContributor|FVPhraseBook|FVBook")) {
-            // Return an error if dc:title is empty
+        else if(doc.getType().matches("FVCategory|FVContributor|FVPhraseBook|FVBook")) {   
+
+        	// Return an error if dc:title is empty
             String title = (String) doc.getPropertyValue("dc:title");        
         	if(title == null || title.isEmpty()) {
         		generateValidationError(event, "Title cannot be empty.");
-         	}    
-	        if (!documentTitleValidates(ctx, title)) {
+         	}         	
+        	
+        	if (!documentTitleValidates(ctx, title)) {
 	            generateValidationError(event, "A document with the same title already exists under the current parent.");
 	        }
         }    
