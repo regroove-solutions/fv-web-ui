@@ -141,7 +141,7 @@ const fetchWord = function fetchWord(pathOrId) {
 
     dispatch( { type: FV_WORD_FETCH_START, words: words, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } })
     .then((response) => {
 
       words[pathOrId] = { response: response };

@@ -46,7 +46,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
 /**
-* View word entry
+* View phrase entry
 */
 @provide
 export default class View extends Component {
@@ -56,17 +56,17 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    word: PropTypes.object
+    fetchPhrase: PropTypes.func.isRequired,
+    computePhrase: PropTypes.object.isRequired,
+    phrase: PropTypes.object
   };
 
   constructor(props, context){
     super(props, context);
 
     this.state = {
-      word: null,
-      wordPath: null,
+      phrase: null,
+      phrasePath: null,
       children: null,
       picturesContent: [],
       videoContent: [],
@@ -83,16 +83,16 @@ export default class View extends Component {
     // Remove 'learn' from path
     pathArray.splice(pathArray.indexOf('learn'), 1);
 
-    // Replace words with Dictionary
-    pathArray[pathArray.indexOf('words')] = 'Dictionary';
+    // Replace phrases with Dictionary
+    pathArray[pathArray.indexOf('phrases')] = 'Dictionary';
 
     let path = pathArray.join('/');
 
     this.setState({
-      wordPath: path
+      phrasePath: path
     });
 
-    newProps.fetchWord('/' + path);
+    newProps.fetchPhrase('/' + path);
   }
 
   // Fetch data on initial render
@@ -183,16 +183,16 @@ export default class View extends Component {
 
   render() {
 
-    const { computeWord } = this.props;
+    const { computePhrase } = this.props;
 
-    let word = selectn('words[/' + this.state.wordPath + ']', computeWord);
-    let wordResponse = selectn('response', word);
+    let phrase = selectn('phrases[/' + this.state.phrasePath + ']', computePhrase);
+    let phraseResponse = selectn('response', phrase);
 
     var tabItemStyles = {
       userSelect: 'none'
     }
 
-    if (!wordResponse || !word || !word.success) {
+    if (!phraseResponse || !phrase || !phrase.success) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
@@ -206,8 +206,8 @@ export default class View extends Component {
 
                   <Card>
                     <CardHeader
-                      title={selectn('title', wordResponse)}
-                      subtitle={(selectn('contextParameters.word.part_of_speech', wordResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', wordResponse) : ""}
+                      title={selectn('title', phraseResponse)}
+                      subtitle={(selectn('contextParameters.word.part_of_speech', phraseResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.phrase.part_of_speech', phraseResponse) : ""}
                       avatar="http://lorempixel.com/100/100/"/>
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
@@ -217,24 +217,24 @@ export default class View extends Component {
 
                             <div className="col-xs-8">
 
-                              <h2>{selectn('title', wordResponse)}</h2>
+                              <h2>{selectn('title', phraseResponse)}</h2>
 
-                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', wordResponse)}</p>
+                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', phraseResponse)}</p>
 
-                              <p>Pronunciation: {selectn('properties.fv-word:pronunciation', wordResponse)}</p>
+                              <p>Pronunciation: {selectn('properties.fv-word:pronunciation', phraseResponse)}</p>
 
-                              <SubView group={selectn('properties.fv:definitions', wordResponse)} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('properties.fv:definitions', phraseResponse)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
                               </SubView>
 
-                              <SubView group={selectn('properties.fv:literal_translation', wordResponse)} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('properties.fv:literal_translation', phraseResponse)} groupByElement="language" groupValue="translation">
                                 <p>Literal Translations:</p>
                               </SubView>
 
 
                               <h3>Related Phrases:</h3>
 
-                              {(selectn('contextParameters.word.related_phrases', wordResponse) || []).map(function(phrase, key) {
+                              {(selectn('contextParameters.phrase.related_phrases', phraseResponse) || []).map(function(phrase, key) {
                                 let translation = selectn('fv:literal_translation', phrase);
 
                                 // TODO: Fix hack... Use JSON marshalling on server
@@ -262,17 +262,17 @@ export default class View extends Component {
 
                             <div className="col-xs-4">
                               <p>
-                                Categories: {(selectn('contextParameters.word.categories', wordResponse) || []).map(function(category, key) {
+                                Categories: {(selectn('contextParameters.phrase.categories', phraseResponse) || []).map(function(category, key) {
                                   return (selectn('dc:title', category));
                                 })}
                               </p>
                               <Divider />
-                              <p>Cultural Note: {selectn('properties.fv-word:cultural_note', wordResponse)}</p>
+                              <p>Cultural Note: {selectn('properties.fv-phrase:cultural_note', phraseResponse)}</p>
                               <Divider />
-                              <p>Reference: {selectn('properties.fv-word:reference', wordResponse)}</p>
+                              <p>Reference: {selectn('properties.fv-phrase:reference', phraseResponse)}</p>
                               <Divider />
                               <p>
-                                Sources: {(selectn('contextParameters.word.sources', wordResponse) || []).map(function(source, key) {
+                                Sources: {(selectn('contextParameters.phrase.sources', phraseResponse) || []).map(function(source, key) {
                                   return (selectn('dc:title', source));
                                 })}
                               </p>
@@ -286,7 +286,7 @@ export default class View extends Component {
                           <CardText>
                             <h2>Photos</h2> 
                             <div className="row">
-                              {(selectn('properties.related_pictures', wordResponse) || []).map(function(picture, key) {
+                              {(selectn('contextParameters.phrase.related_pictures', phraseResponse) || []).map(function(picture, key) {
                                 return (picture);
                               })}
                             </div>

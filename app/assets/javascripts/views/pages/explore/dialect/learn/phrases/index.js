@@ -104,8 +104,10 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     this.props.pushWindowPath(this.props.windowPath + '/' + path);
   }
 
-  _onEntryNavigateRequest(path) {
-    this.props.pushWindowPath('/explore' + path);
+  _onEntryNavigateRequest(item) {
+    // Get path name from path
+    let splitPath = item.path.split('/');
+    this.props.pushWindowPath(this.props.windowPath + '/' + splitPath[splitPath.length - 1]);
   }
 
   render() {
