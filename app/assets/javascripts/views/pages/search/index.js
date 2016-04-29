@@ -32,7 +32,7 @@ export default class Search extends React.Component {
 
   static propTypes = {
 	splitWindowPath: PropTypes.array.isRequired,
-	replaceWindowPath: PropTypes.array.isRequired,	
+	pushWindowPath: PropTypes.array.isRequired,	
     querySearchResults: PropTypes.func.isRequired,
 	computeSearchResults: PropTypes.object.isRequired
   };	
@@ -109,7 +109,7 @@ export default class Search extends React.Component {
   _handleSearchSubmit() {
 	  let newQueryParam = this.refs.searchTextField.getValue();
 	  this.state.queryParam = newQueryParam;	  
-	  this.props.replaceWindowPath('/explore' + this.state.queryPath + '/search/' + this.state.queryParam);
+	  this.props.pushWindowPath('/explore' + this.state.queryPath + '/search/' + this.state.queryParam);
 	  this.fetchData(this.props);
 	  this.refs.searchDocumentListView.resetPage();
   }
@@ -118,8 +118,26 @@ export default class Search extends React.Component {
 	  this.setState({queryParam: this.refs.searchTextField.getValue()});
   }  
 
-  _onEntryNavigateRequest(path) {  
-	  this.props.replaceWindowPath('/explore' + path);
+  _onEntryNavigateRequest(item) {
+
+  	let replacePath = '';
+    let splitPath = item.path.split('/');
+
+    switch(item.type) {
+    	case 'FVWord':
+    		replacePath = '/learn/words/';
+    	break;
+
+    	case 'FVPhrase':
+    		replacePath = '/learn/phrases/';
+    	break;
+
+    	case 'FVBook':
+    		replacePath = '/learn/songs-stories/';
+    	break;
+    }
+
+    this.props.pushWindowPath('/explore' + splitPath.join('/').replace('/Dictionary/', replacePath));
   }  
   
   _computeQueryPath() {

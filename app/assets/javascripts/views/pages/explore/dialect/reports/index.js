@@ -41,7 +41,7 @@ export default class PageDialectReports extends React.Component {
       computeReportWordsAll: PropTypes.object.isRequired,  	  
       fetchReportPhrasesAll: PropTypes.func.isRequired,
       computeReportPhrasesAll: PropTypes.object.isRequired,
-      
+      windowPath: PropTypes.string.isRequired,
       fetchReportSongsAll: PropTypes.func.isRequired,
       computeReportSongsAll: PropTypes.object.isRequired,
       fetchReportStoriesAll: PropTypes.func.isRequired,
@@ -53,7 +53,7 @@ export default class PageDialectReports extends React.Component {
 	  super(props, context);
  
 	    this.state = {
-	      path : this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/'),
+	      path : this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 1).join('/'),
 	      queryName : '',
 	      queryAppend : ''
 	    };	  
@@ -72,7 +72,7 @@ export default class PageDialectReports extends React.Component {
   // Fetch data on initial render
   componentDidMount() {
 	  this.fetchData(this.props);
-  }  
+  }
   
   _handleQueryDataRequest(queryName, queryAppend, dataGridProps) {	  
 	this.state.queryName = queryName;
@@ -99,7 +99,6 @@ export default class PageDialectReports extends React.Component {
   
   // Render different columns based on the doctype in the query
   _buildColumns() {
-	  console.log(this.state.queryAppend);
 	  if(this.state.queryAppend.indexOf("ecm:primaryType='FVWord'") != -1) {
 		  this.state.queryDocType = "words";
 		  this.state.columns = [
@@ -130,8 +129,26 @@ export default class PageDialectReports extends React.Component {
 	  this.setState({queryDocType: '', queryName: '', queryAppend: ''});
   }
   
-  _onEntryNavigateRequest(path) {
-	  this.props.pushWindowPath('/explore' + path);
+  _onEntryNavigateRequest(item) {
+
+  	let addPath = '';
+    let splitPath = item.path.split('/');
+
+    switch(item.type) {
+    	case 'FVWord':
+    		addPath = '/learn/words/';
+    	break;
+
+    	case 'FVPhrase':
+    		addPath = '/learn/phrases/';
+    	break;
+
+    	case 'FVBook':
+    		addPath = '/learn/songs-stories/';
+    	break;
+    }
+
+    this.props.pushWindowPath('/explore/' + this.state.path + addPath + splitPath[splitPath.length - 1]);
   }
 
   _generateDocTypeDoughnutData(wordsCount, phrasesCount, songsCount, storiesCount) {
