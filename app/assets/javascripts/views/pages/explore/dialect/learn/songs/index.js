@@ -111,7 +111,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath('/explore' + path);
+    this.props.pushWindowPath(path);
   }
 
   render() {
@@ -126,67 +126,79 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-    return <div className="row">
-            <div className="col-xs-12">
 
-              <h1>{dialect.get('dc:title')} Songs</h1>
-
-              {books.map((tile, tileKey) => 
-
-                <div className="row" style={{marginBottom: '20px'}}>
-
-                  <div className="col-xs-12">
-
-                    <Card key={tileKey}>
-
-                      <CardHeader
-                        title={tile.title}
-                        subtitle={selectn('properties.fvbook:title_literal_translation', tile).map(function(translation, i) {
-                          if (translation.language == DEFAULT_LANGUAGE) {
-                            return <span key={i}>
-                              {translation.translation}
-                            </span>;
-                          }
-                        })} />
-
-                      <CardMedia style={{display: (!selectn('properties.fv:related_pictures[0]', tile) ? 'none' : 'block')}}>
-                        <img style={{minWidth: 'inherit', width: 'inherit'}} src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_pictures[0]', tile) + '?inline=true'} />
-                      </CardMedia>
-
-                      <CardActions>
-                        <FlatButton disabled={!selectn('properties.fvbook:introduction', tile)} label={((this.state.expandedCards.indexOf(tileKey) == -1) ? 'Show' : 'Hide') + ' Details'} onTouchTap={this._handleShowMoreDetails.bind(this, tileKey)}/>
-                        <FlatButton onTouchTap={this._onNavigateRequest.bind(this, tile.path)} primary={true} label={'View ' + (selectn('properties.fvbook:type', tile) || 'Entry')} />
-                      </CardActions>
-
-                      <CardText style={{display: (this.state.expandedCards.indexOf(tileKey) == -1) ? 'none' : 'block'}}>
-
-                        <Tabs> 
-                          <Tab label="Introduction" > 
-                            <div> 
-                                {selectn('properties.fvbook:introduction', tile)}
-                            </div> 
-                          </Tab> 
-                          <Tab label={DEFAULT_LANGUAGE}> 
-                            <div> 
-                                {selectn('properties.fvbook:introduction_literal_translation', tile).map(function(translation, i) {
-                                    if (translation.language == DEFAULT_LANGUAGE) {
-                                      return <div key={i}>
-                                        {translation.translation}
-                                      </div>;
-                                    }
-                                  })}
-                            </div> 
-                          </Tab> 
-                        </Tabs> 
-
-                      </CardText>
-
-                    </Card>
-                  </div>
+    return <div>
+              <div className="row">
+                <div className="col-xs-8">
                 </div>
-              )}
+                <div className={classNames('col-xs-4', 'text-right')}>
+                  <RaisedButton label="New Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-xs-12">
 
-            </div>
-          </div>;
+                  <h1>{dialect.get('dc:title')} Songs &amp; Stories</h1>
+
+                  {books.map((tile, tileKey) => 
+
+                    <div className="row" style={{marginBottom: '20px'}}>
+
+                      <div className="col-xs-12">
+
+                        <h2>{selectn('properties.fvbook:type', tile) || ''}</h2>
+
+                        <Card key={tileKey}>
+
+                          <CardHeader
+                            title={tile.title}
+                            subtitle={selectn('properties.fvbook:title_literal_translation', tile).map(function(translation, i) {
+                              if (translation.language == DEFAULT_LANGUAGE) {
+                                return <span key={i}>
+                                  {translation.translation}
+                                </span>;
+                              }
+                            })} />
+
+                          <CardMedia style={{display: (!selectn('properties.fv:related_pictures[0]', tile) ? 'none' : 'block')}}>
+                            <img style={{minWidth: 'inherit', width: 'inherit'}} src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_pictures[0]', tile) + '?inline=true'} />
+                          </CardMedia>
+
+                          <CardActions>
+                            <FlatButton disabled={!selectn('properties.fvbook:introduction', tile)} label={((this.state.expandedCards.indexOf(tileKey) == -1) ? 'Show' : 'Hide') + ' Details'} onTouchTap={this._handleShowMoreDetails.bind(this, tileKey)}/>
+                            <FlatButton onTouchTap={this._onNavigateRequest.bind(this, '/explore' + tile.path.replace('Stories & Songs', 'learn/stories-songs'))} primary={true} label={'View ' + (selectn('properties.fvbook:type', tile) || 'Entry')} />
+                          </CardActions>
+
+                          <CardText style={{display: (this.state.expandedCards.indexOf(tileKey) == -1) ? 'none' : 'block'}}>
+
+                            <Tabs> 
+                              <Tab label="Introduction" > 
+                                <div> 
+                                    {selectn('properties.fvbook:introduction', tile)}
+                                </div> 
+                              </Tab> 
+                              <Tab label={DEFAULT_LANGUAGE}> 
+                                <div> 
+                                    {selectn('properties.fvbook:introduction_literal_translation', tile).map(function(translation, i) {
+                                        if (translation.language == DEFAULT_LANGUAGE) {
+                                          return <div key={i}>
+                                            {translation.translation}
+                                          </div>;
+                                        }
+                                      })}
+                                </div> 
+                              </Tab> 
+                            </Tabs> 
+
+                          </CardText>
+
+                        </Card>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+              </div>
+        </div>;
   }
 }

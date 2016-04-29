@@ -29,7 +29,7 @@ import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
 /**
-* Create phrase entry
+* Create book entry
 */
 @provide
 export default class PageDialectStoriesAndSongsCreate extends Component {
@@ -40,8 +40,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    createPhrase: PropTypes.func.isRequired,
-    computeCreatePhrase: PropTypes.object.isRequired
+    createBook: PropTypes.func.isRequired,
+    computeCreateBook: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -84,7 +84,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
         return true;
       break;
       
-      case (newProps.computeCreatePhrase.error != this.props.computeCreatePhrase.error):
+      case (newProps.computeCreateBook.error != this.props.computeCreateBook.error):
         return true;
       break;
     }
@@ -102,7 +102,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     e.preventDefault();
 
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 3).join('/');
-    let formValue = this.refs["form_phrase_create"].getValue();
+    let formValue = this.refs["form_book_create"].getValue();
 
     //let properties = '';
     let properties = {};
@@ -122,8 +122,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-  	  this.props.createPhrase('/' + path + '/Dictionary', {
-  	    type: 'FVPhrase',
+  	  this.props.createBook('/' + path + '/Stories & Songs', {
+  	    type: 'FVBook',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  });
@@ -133,7 +133,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
   render() {
 
-    const { computeDialect, computeCreatePhrase } = this.props;
+    const { computeDialect, computeCreateBook } = this.props;
 
     let dialect = computeDialect.response;
 
@@ -143,20 +143,20 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     return <div>
 
-            <h1>Add New Phrase to <i>{dialect.get('dc:title')}</i></h1>
+            <h1>Add New Book to <i>{dialect.get('dc:title')}</i></h1>
             
-            {computeCreatePhrase.isError ? <div className="alert alert-danger" role="alert">{computeCreatePhrase.error}</div> : ''}
+            {computeCreateBook.isError ? <div className="alert alert-danger" role="alert">{computeCreateBook.error}</div> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm}>
                   <t.form.Form
-                    ref="form_phrase_create"
-                    type={t.struct(selectn("FVPhrase", fields))}
+                    ref="form_book_create"
+                    type={t.struct(selectn("FVBook", fields))}
                     context={dialect}
                     value={this.state.formValue}
-                    options={selectn("FVPhrase", options)} />
+                    options={selectn("FVBook", options)} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

@@ -235,6 +235,111 @@ const options = {
     },
     i18n: i18nExt
   },
+  FVBook: {
+    order: ['dc:title', 'fvbook:title_literal_translation', 'fvbook:introduction', 'fvbook:introduction_literal_translation', 'fvbook:type', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fvbook:author', 'fv:cultural_note', 'fv:source', 'fv:available_in_childrens_archive'],
+    fields: {
+      'dc:title': {
+        label: 'Book Name',
+        help: <i>The name of the song or story</i>
+       },
+      'fvbook:title_literal_translation': {
+        label: 'Title Translation',
+        item: {
+          fields: {
+            translation: {
+              label: 'Translation'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
+        },
+        help: <i>Describe what the word translates to regradless of context.</i>
+      },
+      'fvbook:introduction': {
+        label: 'Book Introduction',
+        type: 'textarea',
+        attrs: {
+          placeholder: 'Enter book introduction here'
+        }
+      },
+      'fvbook:introduction_literal_translation': {
+        label: 'Introduction Translation',
+        item: {
+          fields: {
+            translation: {
+              label: 'Translation',
+              type: 'textarea'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
+        },
+        help: <i>Describe what the word translates to regradless of context.</i>
+      },
+      'fvbook:type': {
+        label: 'Type',
+        factory: SelectFactory,
+        attrs: {
+          directory: 'fv_book_type'
+        }
+      },
+      'fv:related_audio' : {
+        label: 'Related Audio',
+        item: {
+          factory: MediaFactory,
+          type: 'FVAudio'
+        }
+      },
+      'fv:related_pictures' : {
+        label: 'Related Pictures',
+        item: {
+          factory: MediaFactory,
+          type: 'FVPicture'
+        }
+      },
+      'fv:related_videos' : {
+        label: 'Related Videos',
+        item: {
+          factory: MediaFactory,
+          type: 'FVVideo'
+        }
+      },
+      'fvbook:author': {
+        label: 'Author',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      },
+      'fv:source': {
+        label: 'Source',
+        help: <i>Contributor(s) who helped create this record.</i>,
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      },
+      'fv:cultural_note' : {
+        label: 'Cultural Notes'
+      },
+      'fv:available_in_childrens_archive': {
+        label: 'Available in Children\'s Archive'
+      }      
+    },
+    i18n: i18nExt
+  },
   FVPortal: {
     fields: {
       'fv-portal:about': {

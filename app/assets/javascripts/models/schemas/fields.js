@@ -35,8 +35,23 @@ const fields = {
     'fv-word:part_of_speech' : t.String
   }),
   FVPhrase: Object.assign({}, Dublincore, FVCore, {
-    'fv:literal_translation' : t.maybe(t.String),
+    'fv:literal_translation' : t.maybe(t.String), // make optional
     'fv-phrase:phrase_books' : t.list(t.String)
+  }),
+  FVBook: Object.assign({}, Dublincore, FVCore, {
+    'fv:definitions' : t.maybe(t.String), // make optional
+    'fv:literal_translation' : t.maybe(t.String), // make optional
+    'fvbook:title_literal_translation' : t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    })),
+    'fvbook:introduction' : t.maybe(t.String),
+    'fvbook:introduction_literal_translation' : t.maybe(t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    }))),
+    'fvbook:author' : t.list(t.String),
+    'fvbook:type' : t.String
   }),
   FVPortal : {
     'fv-portal:about': t.String,
