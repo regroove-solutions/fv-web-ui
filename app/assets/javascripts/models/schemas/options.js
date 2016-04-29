@@ -340,6 +340,34 @@ const options = {
     },
     i18n: i18nExt
   },
+  
+  
+  FVGallery: {
+    order: ['dc:title', 'dc:description', 'fv:related_pictures'],
+    fields: {
+      'dc:title': {
+        label: 'Book Name',
+        help: <i>The name of the gallery</i>
+       },
+
+      'dc:description': {
+        label: 'Book Introduction',
+        type: 'textarea',
+        attrs: {
+          placeholder: 'Enter gallery description here'
+        }
+      },
+      'fv:related_pictures' : {
+        label: 'Related Pictures',
+        item: {
+          factory: MediaFactory,
+          type: 'FVPicture'
+        }
+      }    
+    },
+    i18n: i18nExt
+  },  
+  
   FVPortal: {
     fields: {
       'fv-portal:about': {

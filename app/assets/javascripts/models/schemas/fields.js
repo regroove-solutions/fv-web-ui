@@ -61,6 +61,9 @@ const fields = {
     'fv-portal:background_top_image' : t.String,
     'fv-portal:logo' : t.String
   },
+  FVGallery: Object.assign({}, Dublincore, {
+	 'fv:related_pictures' : t.list(t.String)
+  }),
   FVDialect: Object.assign({}, Dublincore, {
     'fvdialect:country' : t.String,
     'fvdialect:dominant_language' : t.String,
