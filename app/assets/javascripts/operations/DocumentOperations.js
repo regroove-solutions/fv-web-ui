@@ -102,7 +102,7 @@ export default class DocumentOperations extends BaseOperations {
         error.response.json().then(
           (jsonError) => {
         	  let errorMessage = jsonError.message.split(": ")[1];
-        	  errorMessage = "An error occurred during word creation: " + errorMessage;
+        	  errorMessage = "An error occurred during document creation: " + errorMessage;
         	  reject(errorMessage);
           }
         );

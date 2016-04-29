@@ -17,6 +17,7 @@ import FVAudio from './FVAudio';
 import FVPicture from './FVPicture';
 import FVVideo from './FVVideo';
 import FVCharacter from './FVCharacter';
+import FVGallery from './FVGallery';
 
 import connect from './connect';
 import navigation from './navigation'
@@ -53,6 +54,7 @@ export default {
   FVCategory,
   FVContributor,
   FVCharacter,
+  FVGallery,
   reports,
   search
 };
