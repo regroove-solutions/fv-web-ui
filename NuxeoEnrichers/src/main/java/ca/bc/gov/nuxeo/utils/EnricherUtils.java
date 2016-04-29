@@ -47,7 +47,9 @@ public class EnricherUtils {
 			binaryJsonObj.put("uid", binaryDoc.getId());
 			binaryJsonObj.put("name", filename);
 			binaryJsonObj.put("mime-type", mimeType);
-			binaryJsonObj.put("path", binaryPath);							
+			binaryJsonObj.put("path", binaryPath);
+			binaryJsonObj.put("dc:title", (String)binaryDoc.getPropertyValue("dc:title"));
+			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));			
 		} catch (DocumentNotFoundException de) {
     		log.warn("Could not retrieve binary document.", de);
 			return null;
