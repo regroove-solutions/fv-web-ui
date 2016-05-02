@@ -346,12 +346,12 @@ const options = {
     order: ['dc:title', 'dc:description', 'fv:related_pictures'],
     fields: {
       'dc:title': {
-        label: 'Book Name',
+        label: 'Gallery Name',
         help: <i>The name of the gallery</i>
        },
 
       'dc:description': {
-        label: 'Book Introduction',
+        label: 'Gallery Description',
         type: 'textarea',
         attrs: {
           placeholder: 'Enter gallery description here'
