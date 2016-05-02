@@ -11,7 +11,7 @@ import { PageDialectViewWord, PageDialectViewPhrase } from 'views/pages';
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -148,9 +148,12 @@ export default class AppFrontController extends Component {
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'play' ]):
         return this.renderWithBreadcrumb(<PageDialectPlay />);
 
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'gallery', 'create' ]):
+          return this.renderWithBreadcrumb(<PageDialectGalleryCreate />);       
+      
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'gallery', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectGallery />);
-
+        return this.renderWithBreadcrumb(<PageDialectGallery />);     
+      
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'reports' ]):
           return this.renderWithBreadcrumb(<PageDialectReports />);      
       
