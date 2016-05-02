@@ -9,13 +9,15 @@ const FV_GALLERY_FETCH_START = "FV_GALLERY_FETCH_START";
 const FV_GALLERY_FETCH_SUCCESS = "FV_GALLERY_FETCH_SUCCESS";
 const FV_GALLERY_FETCH_ERROR = "FV_GALLERY_FETCH_ERROR";
 
+const FV_GALLERY_CREATE_START = "FV_GALLERY_CREATE_START";
+const FV_GALLERY_CREATE_SUCCESS = "FV_GALLERY_CREATE_SUCCESS";
+const FV_GALLERY_CREATE_ERROR = "FV_GALLERY_CREATE_ERROR";
+
 const fetchGallery = function fetchGallery(pathOrId) {
   return function (dispatch) {
 
     dispatch( { type: FV_GALLERY_FETCH_START } );
 
-    //return DocumentOperations.getDocument(pathOrId, 'FVGallery', { headers: { 'X-NXenrichers.document': 'ancestry', 'X-NXenrichers.document': 'children' } })
-    //return DirectoryOperations.getDocumentByPath2(path, 'FVGallery', '', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     return DocumentOperations.getDocument(pathOrId, 'FVGallery', { headers: { 'X-NXenrichers.document': 'ancestry', 'X-NXenrichers.document': 'gallery' } })   
     
     .then((response) => {
@@ -26,7 +28,21 @@ const fetchGallery = function fetchGallery(pathOrId) {
   }
 };
 
-const actions = { fetchGallery };
+const createGallery = function createBook(parentDoc, docParams) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_GALLERY_CREATE_START, document: docParams } );
+
+    return DocumentOperations.createDocument(parentDoc, docParams)
+      .then((response) => {
+        dispatch( { type: FV_GALLERY_CREATE_SUCCESS, document: response} );
+      }).catch((error) => {
+          dispatch( { type: FV_GALLERY_CREATE_ERROR, error: error } )
+    });
+  }
+};
+
+const actions = { fetchGallery, createGallery };
 
 const reducers = {
 
@@ -48,7 +64,29 @@ const reducers = {
         return Object.assign({}, state);
       break;
     }
-  }
+  },
+  
+  computeCreateGallery(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
+	    switch (action.type) {
+	      case FV_GALLERY_CREATE_START:
+	        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
+	      break;
+
+	      // Send modified document to UI without access REST end-point
+	      case FV_GALLERY_CREATE_SUCCESS:
+	        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
+	      break;
+
+	      // Send modified document to UI without access REST end-point
+	      case FV_GALLERY_CREATE_ERROR:
+	        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
+	      break;
+
+	      default: 
+	        return Object.assign({}, state, { isFetching: false });
+	      break;
+	    }
+	  },  
 };
 
 const middleware = [thunk];
