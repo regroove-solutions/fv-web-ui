@@ -30,6 +30,7 @@ import {default as PageDialectLearnStoriesAndSongs} from './explore/dialect/lear
 
 import {default as PageDialectViewWord} from './explore/dialect/learn/words/view'
 import {default as PageDialectViewPhrase} from './explore/dialect/learn/phrases/view'
+import {default as PageDialectViewBook} from './explore/dialect/learn/songs-stories/view'
 
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
@@ -49,6 +50,7 @@ module.exports = {
   PageDialectLearnStoriesAndSongs,
   PageDialectViewWord,
   PageDialectViewPhrase,
+  PageDialectViewBook,
   PageDialectPlay,
   PageDialectGallery,
   PageDialectReports,

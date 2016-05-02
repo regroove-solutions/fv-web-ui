@@ -145,7 +145,9 @@ export default class ExploreDialect extends Component {
     let portal = computePortal.response;
 
     //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
-
+console.log(computeDialect);
+console.log(computePortal);
+console.log(portal);
     if (computeDialect.isFetching || computePortal.isFetching || portal.contextParameters == undefined) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
