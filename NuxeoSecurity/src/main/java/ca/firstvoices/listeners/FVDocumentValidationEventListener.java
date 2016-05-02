@@ -93,7 +93,7 @@ public class FVDocumentValidationEventListener implements EventListener {
         	}         	
         }
         // Validation for other specified document types
-        else if(doc.getType().matches("FVCategory|FVContributor|FVPhraseBook|FVBook")) {   
+        else if(doc.getType().matches("FVCategory|FVContributor|FVPhraseBook|FVBook|FVGallery")) {   
 
         	// Return an error if dc:title is empty
             String title = (String) doc.getPropertyValue("dc:title");        
