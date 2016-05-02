@@ -26,7 +26,7 @@ import {default as PageDialectReports} from './explore/dialect/reports'
 
 import {default as PageDialectLearnWords} from './explore/dialect/learn/words'
 import {default as PageDialectLearnPhrases} from './explore/dialect/learn/phrases'
-import {default as PageDialectLearnStoriesAndSongs} from './explore/dialect/learn/songs'
+import {default as PageDialectLearnStoriesAndSongs} from './explore/dialect/learn/songs-stories'
 
 import {default as PageDialectViewWord} from './explore/dialect/learn/words/view'
 import {default as PageDialectViewPhrase} from './explore/dialect/learn/phrases/view'
