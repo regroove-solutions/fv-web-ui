@@ -46,7 +46,7 @@ export default class DirectoryOperations extends BaseOperations {
   * Get a single document of a certain type based on a path and title match
   * This document may or may not contain children 
   */
-  static getDocumentByPath2(path = "", type = "Document", queryAppend = "", headers = null, params = null) {
+  static getDocumentByPath2(path = "", type = "Document", queryAppend = " ORDER BY dc:title", headers = null, params = null) {
 
     let defaultParams = {};
     let defaultHeaders = {};
@@ -62,7 +62,7 @@ export default class DirectoryOperations extends BaseOperations {
     return new Promise(
       function(resolve, reject) {
         properties.client.request(
-          '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\' ORDER BY dc:title' + queryAppend,
+          '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend,
           params
         )
         .get(headers)

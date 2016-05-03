@@ -97,7 +97,7 @@ export default class View extends Component {
     });
 
     newProps.fetchBook('/' + path);
-    newProps.fetchBookEntriesInPath('/' + path);
+    newProps.fetchBookEntriesInPath('/' + path, ' ORDER BY fvbookentry:sort_map');
   }
 
   // Fetch data on initial render
