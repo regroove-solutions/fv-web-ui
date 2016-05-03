@@ -84,7 +84,7 @@ export default class PageDialectWordEdit extends Component {
   componentDidMount() {
     this.fetchData(this.props);
   }  
-  
+
   _onRequestSaveForm(e) {
 
     // Prevent default behaviour
@@ -112,7 +112,21 @@ export default class PageDialectWordEdit extends Component {
     }
 
   }  
+  /*shouldComponentUpdate(newProps, newState) {
+console.log(newProps.computeWord);
+console.log(this.props.computeWord);
+    switch (true) {
+      case (newProps.windowPath != this.props.windowPath):
+        return true;
+      break;
 
+      case (newProps.computeWord.words != this.props.computeWord.words):
+        return true;
+      break;
+    }
+
+    return false;
+  }*/
   _onNavigateRequest(path) {
     //this.props.pushWindowPath('/' + path);
   }  

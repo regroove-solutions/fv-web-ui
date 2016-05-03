@@ -28,7 +28,8 @@ export default class DirectoryList extends Component {
     computeDirectory: PropTypes.object.isRequired,
     directory: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string
   };
 
   constructor(props) {
@@ -37,7 +38,7 @@ export default class DirectoryList extends Component {
     this._handleChange = this._handleChange.bind(this);
 
     this.state = {
-      value: null
+      value: this.props.value
     };
   }
 
