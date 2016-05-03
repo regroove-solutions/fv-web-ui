@@ -18,8 +18,10 @@ limitations under the License.
 //import {default as PageExploreFamily} from './explore/family'
 //import {default as PageExploreLanguage} from './explore/language'
 import {default as PageExploreDialectEdit} from './explore/dialect/edit'
+import {default as PageDialectWordEdit} from './explore/dialect/learn/words/edit'
 
 module.exports = {
-  PageExploreDialectEdit
+  PageExploreDialectEdit,
+  PageDialectWordEdit
 }
 

@@ -28,7 +28,7 @@ const fetchGallery = function fetchGallery(pathOrId) {
   }
 };
 
-const createGallery = function createBook(parentDoc, docParams) {
+const createGallery = function createGallery(parentDoc, docParams) {
   return function (dispatch) {
 
     dispatch( { type: FV_GALLERY_CREATE_START, document: docParams } );

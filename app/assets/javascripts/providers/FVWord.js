@@ -68,25 +68,25 @@ const createWord = function createWord(parentDoc, docParams) {
   }
 };
 
-const updateWord = function updateWord(newDoc, field) {
+const updateWord = function updateWord(newDoc) {
   return function (dispatch) {
 
     let words = {};
-    words[newDoc.id] = {};
+    words[newDoc.path] = {};
 
-    dispatch( { type: FV_WORD_UPDATE_START, words: words, pathOrId: newDoc.id } );
+    dispatch( { type: FV_WORD_UPDATE_START, words: words, pathOrId: newDoc.path } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
 
-        words[newDoc.id] = { response: response };
+        words[newDoc.path] = { response: response };
 
-        dispatch( { type: FV_WORD_UPDATE_SUCCESS, words: words, pathOrId: newDoc.id} );
+        dispatch( { type: FV_WORD_UPDATE_SUCCESS, words: words, pathOrId: newDoc.path} );
       }).catch((error) => {
 
-          words[newDoc.id] = { error: error };
+          words[newDoc.path] = { error: error };
 
-          dispatch( { type: FV_WORD_UPDATE_ERROR, words: words, pathOrId: newDoc.id } )
+          dispatch( { type: FV_WORD_UPDATE_ERROR, words: words, pathOrId: newDoc.path } )
     });
   }
 };
@@ -209,14 +209,12 @@ const reducers = {
 
         action.words[action.pathOrId].isFetching = true;
         action.words[action.pathOrId].success = false;
-
         return Object.assign({}, state, { words: Object.assign(state.words, action.words) });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_SUCCESS:
       case FV_WORD_UPDATE_SUCCESS:
-        
         action.words[action.pathOrId].isFetching = false;
         action.words[action.pathOrId].success = true;
 
