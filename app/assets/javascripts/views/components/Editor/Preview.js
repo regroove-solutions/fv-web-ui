@@ -121,7 +121,7 @@ export default class Preview extends Component {
             phraseResponse = this.props.expandedValue;
           }
           else {
-            phrase = selectn('phrases.' + this.props.id, this.props.computePhrase);
+            phrase = ProviderHelpers.getEntry(this.props.computePhrase, this.props.id);
             phraseResponse = selectn('response', phrase);
           }
 
