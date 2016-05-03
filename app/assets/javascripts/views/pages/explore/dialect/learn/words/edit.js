@@ -67,10 +67,10 @@ export default class PageDialectWordEdit extends Component {
     // Remove 'edit' from path
     pathArray.splice(pathArray.indexOf('edit'), 1);	    
     
-    let path = pathArray.join('/');
+    let path = decodeURI(pathArray.join('/'));
 
     this.setState({
-      wordPath: decodeURI(path)
+      wordPath: path
     });
     
     //console.log(path);
@@ -123,7 +123,7 @@ export default class PageDialectWordEdit extends Component {
 
     let word = selectn('words[/' + this.state.wordPath + ']', computeWord);
     let wordResponse = selectn('response', word);
-    
+
     if (!wordResponse || !word || !word.success) {
         return <CircularProgress mode="indeterminate" size={5} />;
     }
