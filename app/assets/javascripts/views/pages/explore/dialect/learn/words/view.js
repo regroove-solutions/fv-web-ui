@@ -231,22 +231,8 @@ export default class View extends Component {
                               <h3>Related Phrases:</h3>
 
                               {(selectn('contextParameters.word.related_phrases', wordResponse) || []).map(function(phrase, key) {
-                                let translation = selectn('fv:literal_translation', phrase);
-
-                                // TODO: Fix hack... Use JSON marshalling on server
-                                var re = /{/gi;
-                                var re2 = /=/gi;
-                                var re3 = /,\s/gi;
-                                var re4 = /}/gi;
-
-                                var str = selectn('fv:literal_translation', phrase);
-                                var newstr = str.replace(re, '{\"');
-                                newstr = newstr.replace(re2, '\":\"');
-                                newstr = newstr.replace(re3, '\",\"');
-                                newstr = newstr.replace(re4, '\"}');
-
-                                var phraseItem = JSON.parse(newstr);
-
+                                let phraseItem = selectn('fv:literal_translation', phrase);
+                                
                                 return (
                                 <SubView key={key} group={phraseItem} groupByElement="language" groupValue="translation">
                                   <p>{selectn('dc:title', phrase)}</p>
