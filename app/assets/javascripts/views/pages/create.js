@@ -20,12 +20,14 @@ limitations under the License.
 import {default as PageDialectWordsCreate} from './explore/dialect/learn/words/create'
 import {default as PageDialectPhrasesCreate} from './explore/dialect/learn/phrases/create'
 import {default as PageDialectStoriesAndSongsCreate} from './explore/dialect/learn/songs-stories/create'
-import {default as PageDialectGalleryCreate} from './explore/dialect/gallery/create'
+import {default as PageDialectStoriesAndSongsBookEntryCreate} from './explore/dialect/learn/songs-stories/entry/create'
+//import {default as PageDialectGalleryCreate} from './explore/dialect/gallery/create'
 
 module.exports = {
   PageDialectWordsCreate,
   PageDialectPhrasesCreate,
   PageDialectStoriesAndSongsCreate,
-  PageDialectGalleryCreate  
+  PageDialectStoriesAndSongsBookEntryCreate/*,
+  PageDialectGalleryCreate  */
 }
 

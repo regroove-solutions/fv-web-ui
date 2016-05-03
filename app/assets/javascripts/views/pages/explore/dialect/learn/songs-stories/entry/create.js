@@ -29,10 +29,10 @@ import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
 /**
-* Create song/story book
+* Create book entry
 */
 @provide
-export default class PageDialectStoriesAndSongsCreate extends Component {
+export default class PageDialectStoriesAndSongsBookEntryCreate extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,

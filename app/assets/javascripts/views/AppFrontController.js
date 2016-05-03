@@ -6,7 +6,7 @@ import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExplore
 
 import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
-import { PageDialectViewWord, PageDialectViewPhrase } from 'views/pages';
+import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
@@ -183,6 +183,9 @@ export default class AppFrontController extends Component {
 
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'stories-songs', 'create' ]):
         return this.renderWithBreadcrumb(<PageDialectStoriesAndSongsCreate />);
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'stories-songs', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
+        return this.renderWithBreadcrumb(<PageDialectViewBook />);
     }
 
     return (<div>404</div>);

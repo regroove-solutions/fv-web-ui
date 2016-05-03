@@ -126,7 +126,6 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-
     return <div>
               <div className="row">
                 <div className="col-xs-8">

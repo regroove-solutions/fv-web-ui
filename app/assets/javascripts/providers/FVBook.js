@@ -14,6 +14,10 @@ const FV_BOOKS_FETCH_START = "FV_BOOKS_FETCH_START";
 const FV_BOOKS_FETCH_SUCCESS = "FV_BOOKS_FETCH_SUCCESS";
 const FV_BOOKS_FETCH_ERROR = "FV_BOOKS_FETCH_ERROR";
 
+const FV_BOOK_ENTRIES_FETCH_START = "FV_BOOK_ENTRIES_FETCH_START";
+const FV_BOOK_ENTRIES_FETCH_SUCCESS = "FV_BOOKS_ENTRIES_FETCH_SUCCESS";
+const FV_BOOK_ENTRIES_FETCH_ERROR = "FV_BOOKS_ENTRIES_FETCH_ERROR";
+
 const FV_BOOKS_UPDATE_START = "FV_BOOKS_UPDATE_START";
 const FV_BOOKS_UPDATE_SUCCESS = "FV_BOOKS_UPDATE_SUCCESS";
 const FV_BOOKS_UPDATE_ERROR = "FV_BOOKS_UPDATE_ERROR";
@@ -132,6 +136,20 @@ const fetchBooksInPath = function fetchBooksInPath(path, queryAppend, headers = 
   }
 };
 
+const fetchBookEntriesInPath = function fetchBookEntriesInPath(path, queryAppend, headers = {}, params = {}) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_BOOK_ENTRIES_FETCH_START } );
+console.log(path);
+    return DirectoryOperations.getDocumentByPath2(path, 'FVBookEntry', queryAppend, {headers: headers}, params)
+    .then((response) => {
+      dispatch( { type: FV_BOOK_ENTRIES_FETCH_SUCCESS, documents: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_BOOK_ENTRIES_FETCH_ERROR, error: error } )
+    });
+  }
+};
+
 const fetchBook = function fetchBook(pathOrId) {
   return function (dispatch) {
 
@@ -139,7 +157,7 @@ const fetchBook = function fetchBook(pathOrId) {
     books[pathOrId] = {};
 
     dispatch( { type: FV_BOOK_FETCH_START, books: books, pathOrId: pathOrId } );
-
+console.log(pathOrId);
     return DocumentOperations.getDocument(pathOrId, 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
 
@@ -155,7 +173,7 @@ const fetchBook = function fetchBook(pathOrId) {
   }
 };
 
-const actions = { fetchSharedBooks, fetchBooksInPath, fetchBook, createBook, fetchBooksAll, updateBook };
+const actions = { fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, fetchBooksAll, updateBook };
 
 const reducers = {
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -194,6 +212,27 @@ const reducers = {
       case FV_BOOKS_FETCH_ERROR:
       case DISMISS_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+  computeBookEntriesInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
+    switch (action.type) {
+      case FV_BOOK_ENTRIES_FETCH_START:
+        return Object.assign({}, state, { isFetching: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_BOOK_ENTRIES_FETCH_SUCCESS:
+        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_BOOK_ENTRIES_FETCH_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
       break;
 
       default: 
