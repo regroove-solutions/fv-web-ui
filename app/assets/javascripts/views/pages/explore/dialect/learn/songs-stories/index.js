@@ -20,6 +20,8 @@ import selectn from 'selectn';
 
 import ConfGlobal from 'conf/local.json';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -69,10 +71,10 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 2).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchBooksInPath('/' + path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
   }
 
   // Fetch data on initial render

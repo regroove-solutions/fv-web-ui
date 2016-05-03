@@ -19,6 +19,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 // Models
 import {Document} from 'nuxeo';
 
@@ -57,10 +59,10 @@ export default class ExploreDialectEdit extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchPortal('/' + dialectPath + '/Portal');
   }
 
   // Fetch data on initial render

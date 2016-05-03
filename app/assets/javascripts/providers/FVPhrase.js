@@ -1,3 +1,5 @@
+import Immutable, { List, Map } from 'immutable';
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -135,22 +137,13 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
 const fetchPhrase = function fetchPhrase(pathOrId) {
   return function (dispatch) {
 
-    let phrases = {};
-    phrases[pathOrId] = {};
-
-    dispatch( { type: FV_PHRASE_FETCH_START, phrases: phrases, pathOrId: pathOrId } );
+    dispatch( { type: FV_PHRASE_FETCH_START, pathOrId: pathOrId } );
 
     return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } })
     .then((response) => {
-
-      phrases[pathOrId] = { response: response };
-
-      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, phrases: phrases, pathOrId: pathOrId } )
+      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, response: response, pathOrId: pathOrId } )
     }).catch((error) => {
-
-        phrases[pathOrId] = { error: error };
-
-        dispatch( { type: FV_PHRASE_FETCH_ERROR, phrases: phrases, pathOrId: pathOrId } )
+        dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error, pathOrId: pathOrId } )
     });
   }
 };
@@ -201,44 +194,56 @@ const reducers = {
       break;
     }
   },
-  computePhrase(state = { phrases: {} }, action) {
+  computePhrase(state = new List([]), action) {
+
+    // Find entry within state based on id
+    let indexOfEntry = state.findIndex(function(item) {
+      return item.get("id") === action.pathOrId; 
+    });
+
     switch (action.type) {
       case FV_PHRASE_FETCH_START:
       case FV_PHRASE_UPDATE_START:
 
-        action.phrases[action.pathOrId].isFetching = true;
-        action.phrases[action.pathOrId].success = false;
+        return state.push(Map({
+          id: action.pathOrId,
+          isFetching: true,
+          success: false
+        }));
 
-        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
       break;
 
-      // Send modified document to UI without access REST end-point
       case FV_PHRASE_FETCH_SUCCESS:
-      case FV_PHRASE_UPDATE_SUCCESS:
-        
-        action.phrases[action.pathOrId].isFetching = false;
-        action.phrases[action.pathOrId].success = true;
+      case FV_PHRASE_UPDATE_ERROR:
 
-        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
+        // Replace entry within state
+        return state.set(indexOfEntry, Map({
+          id: action.pathOrId,
+          isFetching: false,
+          success: true,
+          response: action.response
+        }));
+
       break;
 
-      // Send modified document to UI without access REST end-point
       case FV_PHRASE_FETCH_ERROR:
       case FV_PHRASE_UPDATE_ERROR:
 
-        action.phrases[action.pathOrId].isFetching = false;
-        action.phrases[action.pathOrId].success = false;
-        action.phrases[action.pathOrId].isError = true;
-        action.phrases[action.pathOrId].error = action.error;
+        // Add error message
+        return state.set(indexOfEntry, Map({
+          id: action.pathOrId,
+          isFetching: false,
+          isError: true,
+          success: false,
+          response: state.get(indexOfEntry).get('response'),
+          error: action.error
+        }));
 
-        return Object.assign({}, state, { phrases: Object.assign(state.phrases, action.phrases) });
-      break;
-
-      default: 
-        return Object.assign({}, state);
       break;
     }
-  },  
+
+    return state;
+ },
   computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_PHRASE_CREATE_START:

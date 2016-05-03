@@ -14,12 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
 import selectn from 'selectn';
 
 import _ from 'underscore';
+
+import ProviderHelpers from 'common/ProviderHelpers';
 
 import Avatar from 'material-ui/lib/avatar';
 import Card from 'material-ui/lib/card/card';
@@ -31,7 +34,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
 import Divider from 'material-ui/lib/divider';
 
-import List from 'material-ui/lib/lists/list';
+import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -78,21 +81,14 @@ export default class View extends Component {
 
   fetchData(newProps) {
 
-    let pathArray = newProps.splitWindowPath.slice(1);
-
-    // Remove 'learn' from path
-    pathArray.splice(pathArray.indexOf('learn'), 1);
-
-    // Replace words with Dictionary
-    pathArray[pathArray.indexOf('words')] = 'Dictionary';
-
-    let path = pathArray.join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let wordPath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
 
     this.setState({
-      wordPath: path
+      wordPath: wordPath
     });
 
-    newProps.fetchWord('/' + path);
+    newProps.fetchWord(wordPath);
   }
 
   // Fetch data on initial render
@@ -185,7 +181,7 @@ export default class View extends Component {
 
     const { computeWord } = this.props;
 
-    let word = selectn('words[/' + this.state.wordPath + ']', computeWord);
+    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
     let wordResponse = selectn('response', word);
 
     var tabItemStyles = {
@@ -379,13 +375,13 @@ class SubView extends Component {
 
         return <Tab style={SubView.tabStyles.headline} label={key} key={key}>
 
-        <List>
+        <ListUI>
 
           {group.map(function(groupValue, key) {
             return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
           })}
 
-        </List>
+        </ListUI>
 
         </Tab>;
 

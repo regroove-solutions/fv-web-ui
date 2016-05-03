@@ -19,6 +19,8 @@ import provide from 'react-redux-provide';
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
@@ -79,12 +81,12 @@ export default class DialectLearn extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 1).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchPortal('/' + path + '/Portal');
-    newProps.fetchDialectStats('/' + path, ["words","phrases","songs","stories"]);
-    newProps.fetchCharacters('/' + path + '/Alphabet');
+    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchPortal('/' + dialectPath + '/Portal');
+    newProps.fetchDialectStats('/' + dialectPath, ["words","phrases","songs","stories"]);
+    newProps.fetchCharacters('/' + dialectPath + '/Alphabet');
   }
 
   // Fetch data on initial render

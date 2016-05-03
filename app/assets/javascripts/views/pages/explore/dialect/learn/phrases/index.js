@@ -18,6 +18,8 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -77,10 +79,10 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 2).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchPhrasesInPath('/' + path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
+    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchPhrasesInPath('/' + dialectPath + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
   }
 
   // Fetch data on initial render

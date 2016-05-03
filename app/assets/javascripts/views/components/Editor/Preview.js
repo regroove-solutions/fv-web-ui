@@ -17,6 +17,8 @@ import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Paper from 'material-ui/lib/paper';
 
@@ -101,7 +103,7 @@ export default class Preview extends Component {
             wordResponse = this.props.expandedValue;
           }
           else {
-            word = selectn('words.' + this.props.id, this.props.computeWord);
+            word = ProviderHelpers.getEntry(this.props.computeWord, this.props.id);
             wordResponse = selectn('response', word);
           }
 

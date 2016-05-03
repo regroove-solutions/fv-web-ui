@@ -20,6 +20,8 @@ import selectn from 'selectn';
 
 import ConfGlobal from 'conf/local.json';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import _ from 'underscore';
 
 import Avatar from 'material-ui/lib/avatar';
@@ -82,22 +84,15 @@ export default class View extends Component {
 
   fetchData(newProps) {
 
-    let pathArray = newProps.splitWindowPath.slice(1);
-
-    // Remove 'learn' from path
-    pathArray.splice(pathArray.indexOf('learn'), 1);
-
-    // Replace stories-songs with Dictionary
-    pathArray[pathArray.indexOf('stories-songs')] = 'Stories & Songs';
-
-    let path = pathArray.join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let entryPath = '/' + dialectPath + '/Stories & Songs/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
 
     this.setState({
-      bookPath: path
+      bookPath: entryPath
     });
 
-    newProps.fetchBook('/' + path);
-    newProps.fetchBookEntriesInPath('/' + path, ' ORDER BY fvbookentry:sort_map');
+    newProps.fetchBook('/' + entryPath);
+    newProps.fetchBookEntriesInPath('/' + entryPath, ' ORDER BY fvbookentry:sort_map');
   }
 
   // Fetch data on initial render

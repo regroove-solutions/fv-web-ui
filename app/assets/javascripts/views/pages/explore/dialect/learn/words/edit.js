@@ -14,10 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
+
+import ProviderHelpers from 'common/ProviderHelpers';
 
 // Models
 import {Document} from 'nuxeo';
@@ -44,40 +47,27 @@ export default class PageDialectWordEdit extends Component {
   
   constructor(props, context){
     super(props, context);
-    
+
     this.state = {
       word: null,
-      wordPath: null
+      wordPath: null,
+      formValue: null
     };
-    
+
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   fetchData(newProps) {
 
-    let pathArray = newProps.splitWindowPath.slice(1);
-
-    // Remove 'learn' from path
-    pathArray.splice(pathArray.indexOf('learn'), 1);
-
-    // Replace words with Dictionary
-    pathArray[pathArray.indexOf('words')] = 'Dictionary';
-
-    // Remove 'edit' from path
-    pathArray.splice(pathArray.indexOf('edit'), 1);	    
-    
-    let path = decodeURI(pathArray.join('/'));
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let wordPath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
 
     this.setState({
-      wordPath: path
+      wordPath: wordPath
     });
-    
-    //console.log(path);
-    //path = decodeURI(path);
-    //console.log(path);
 
-    newProps.fetchWord('/' + path);
+    newProps.fetchWord(wordPath);
   }
 
   // Fetch data on initial render
@@ -92,61 +82,46 @@ export default class PageDialectWordEdit extends Component {
 
     let formValue = this.refs["form_word"].getValue();
 
+    this.setState({ formValue: formValue});
+
+    let word = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+
     // Passed validation
     if (formValue) {
     	
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
-      let newDocument = new Document(this.props.computeWord.words['/' + this.state.wordPath].response, { 
-        'repository': this.props.computeWord.words['/' + this.state.wordPath].response._repository,
-        'nuxeo': this.props.computeWord.words['/' + this.state.wordPath].response._nuxeo
+      let newDocument = new Document(word.response, { 
+        'repository': word.response._repository,
+        'nuxeo': word.response._nuxeo
       });
 
       // Set new value property on document
       newDocument.set(formValue);
 
-      //console.log(newDocument);	
-      
       // Save document
       this.props.updateWord(newDocument);
     }
 
   }  
-  /*shouldComponentUpdate(newProps, newState) {
-console.log(newProps.computeWord);
-console.log(this.props.computeWord);
-    switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
-        return true;
-      break;
 
-      case (newProps.computeWord.words != this.props.computeWord.words):
-        return true;
-      break;
-    }
-
-    return false;
-  }*/
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
-  }  
-  
   render() {
 
     const { computeWord } = this.props;
 
-    let word = selectn('words[/' + this.state.wordPath + ']', computeWord);
+    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
+
     let wordResponse = selectn('response', word);
 
-    if (!wordResponse || !word || !word.success) {
+    if (!word || word.isFetching) {
         return <CircularProgress mode="indeterminate" size={5} />;
     }
-    
-    //console.log(wordResponse.properties);
 
     return <div>
 
-	    <h1>edit {wordResponse.properties['dc:title']} word</h1>
+	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
+
+      {word.isError ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
 	
 	    <div className="row" style={{marginTop: '15px'}}>
 	
@@ -156,7 +131,7 @@ console.log(this.props.computeWord);
 	            ref="form_word"
 	            type={t.struct(selectn("FVWord", fields))}
 	            context={selectn("properties", wordResponse)}
-	            value={selectn("properties", wordResponse)}
+              value={this.state.formValue || selectn("properties", wordResponse)}
 	            options={selectn("FVWord", options)} />
 	            <div className="form-group">
 	              <button type="submit" className="btn btn-primary">Save</button> 

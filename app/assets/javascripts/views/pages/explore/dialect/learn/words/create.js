@@ -19,6 +19,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
@@ -48,7 +50,8 @@ export default class PageDialectWordsCreate extends Component {
     super(props, context);
 
     this.state = {
-      formValue: null
+      formValue: null,
+      dialectPath: null
     };
 
     // Bind methods to 'this'
@@ -56,9 +59,11 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 3).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    
+    this.setState({dialectPath: dialectPath});
 
-    newProps.fetchDialect('/' + path);
+    newProps.fetchDialect('/' + dialectPath);
   }
 
   // Fetch data on initial render
@@ -101,7 +106,6 @@ export default class PageDialectWordsCreate extends Component {
     // Prevent default behaviour
     e.preventDefault();
 
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 3).join('/');
     let formValue = this.refs["form_word_create"].getValue();
 
     //let properties = '';
@@ -122,7 +126,7 @@ export default class PageDialectWordsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-  	  this.props.createWord('/' + path + '/Dictionary', {
+  	  this.props.createWord('/' + this.state.dialectPath + '/Dictionary', {
   	    type: 'FVWord',
   	    name: formValue['dc:title'],
   	    properties: properties

@@ -79,7 +79,16 @@ export default class DocumentOperations extends BaseOperations {
             } else {
               reject('No ' + type +' found');
             }
-        }).catch((error) => { reject('Could not update document.'); } );
+        })
+        .catch((error) => {
+          error.response.json().then(
+            (jsonError) => {
+              let errorMessage = jsonError.message.split(": ")[1];
+              errorMessage = "An error occurred during document creation: " + errorMessage;
+              reject(errorMessage);
+            }
+          );
+        });
     });
   }
 

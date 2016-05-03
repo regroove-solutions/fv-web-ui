@@ -1,3 +1,5 @@
+import Immutable, { List, Map } from 'immutable';
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -53,7 +55,6 @@ const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
 const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
-
 const createWord = function createWord(parentDoc, docParams) {
   return function (dispatch) {
 
@@ -71,22 +72,27 @@ const createWord = function createWord(parentDoc, docParams) {
 const updateWord = function updateWord(newDoc) {
   return function (dispatch) {
 
-    let words = {};
-    words[newDoc.path] = {};
-
-    dispatch( { type: FV_WORD_UPDATE_START, words: words, pathOrId: newDoc.path } );
+    dispatch( { type: FV_WORD_UPDATE_START, pathOrId: newDoc.path } );
 
     return DocumentOperations.updateDocument(newDoc)
       .then((response) => {
-
-        words[newDoc.path] = { response: response };
-
-        dispatch( { type: FV_WORD_UPDATE_SUCCESS, words: words, pathOrId: newDoc.path} );
+        dispatch( { type: FV_WORD_UPDATE_SUCCESS, response: response, pathOrId: newDoc.path } )
       }).catch((error) => {
+          dispatch( { type: FV_WORD_UPDATE_ERROR, error: error, pathOrId: newDoc.path } )
+    });
+  }
+};
 
-          words[newDoc.path] = { error: error };
+const fetchWord = function fetchWord(pathOrId) {
+  return function (dispatch) {
 
-          dispatch( { type: FV_WORD_UPDATE_ERROR, words: words, pathOrId: newDoc.path } )
+    dispatch( { type: FV_WORD_FETCH_START, pathOrId: pathOrId } );
+
+    return DocumentOperations.getDocument(pathOrId, 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } })
+    .then((response) => {
+      dispatch( { type: FV_WORD_FETCH_SUCCESS, response: response, pathOrId: pathOrId } )
+    }).catch((error) => {
+        dispatch( { type: FV_WORD_FETCH_ERROR, error: error, pathOrId: pathOrId } )
     });
   }
 };
@@ -129,29 +135,6 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
       dispatch( { type: FV_WORDS_FETCH_SUCCESS, documents: response } )
     }).catch((error) => {
         dispatch( { type: FV_WORDS_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
-const fetchWord = function fetchWord(pathOrId) {
-  return function (dispatch) {
-
-    let words = {};
-    words[pathOrId] = {};
-
-    dispatch( { type: FV_WORD_FETCH_START, words: words, pathOrId: pathOrId } );
-
-    return DocumentOperations.getDocument(pathOrId, 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } })
-    .then((response) => {
-
-      words[pathOrId] = { response: response };
-
-      dispatch( { type: FV_WORD_FETCH_SUCCESS, words: words, pathOrId: pathOrId } )
-    }).catch((error) => {
-
-        words[pathOrId] = { error: error };
-
-        dispatch( { type: FV_WORD_FETCH_ERROR, words: words, pathOrId: pathOrId } )
     });
   }
 };
@@ -202,42 +185,56 @@ const reducers = {
       break;
     }
   },
-  computeWord(state = { words: {} }, action) {
+  computeWord(state = new List([]), action) {
+
+    // Find entry within state based on id
+    let indexOfEntry = state.findIndex(function(item) {
+      return item.get("id") === action.pathOrId; 
+    });
+
     switch (action.type) {
       case FV_WORD_FETCH_START:
       case FV_WORD_UPDATE_START:
 
-        action.words[action.pathOrId].isFetching = true;
-        action.words[action.pathOrId].success = false;
-        return Object.assign({}, state, { words: Object.assign(state.words, action.words) });
+        return state.push(Map({
+          id: action.pathOrId,
+          isFetching: true,
+          success: false
+        }));
+
       break;
 
-      // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_SUCCESS:
       case FV_WORD_UPDATE_SUCCESS:
-        action.words[action.pathOrId].isFetching = false;
-        action.words[action.pathOrId].success = true;
 
-        return Object.assign({}, state, { words: Object.assign(state.words, action.words) });
+        // Replace entry within state
+        return state.set(indexOfEntry, Map({
+          id: action.pathOrId,
+          isFetching: false,
+          success: true,
+          response: action.response
+        }));
+
       break;
 
-      // Send modified document to UI without access REST end-point
       case FV_WORD_FETCH_ERROR:
       case FV_WORD_UPDATE_ERROR:
 
-        action.words[action.pathOrId].isFetching = false;
-        action.words[action.pathOrId].success = false;
-        action.words[action.pathOrId].isError = true;
-        action.words[action.pathOrId].error = action.error;
+        // Add error message
+        return state.set(indexOfEntry, Map({
+          id: action.pathOrId,
+          isFetching: false,
+          isError: true,
+          success: false,
+          response: state.get(indexOfEntry).get('response'),
+          error: action.error
+        }));
 
-        return Object.assign({}, state, { words: Object.assign(state.words, action.words) });
-      break;
-
-      default: 
-        return Object.assign({}, state);
       break;
     }
-  },
+
+    return state;
+ },
  computeCreateWord(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
    switch (action.type) {
      case FV_WORD_CREATE_START:

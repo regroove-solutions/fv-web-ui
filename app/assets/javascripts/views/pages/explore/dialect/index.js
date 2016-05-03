@@ -18,6 +18,8 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import ConfGlobal from 'conf/local.json';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
@@ -86,10 +88,10 @@ export default class ExploreDialect extends Component {
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
 
-    newProps.fetchDialect('/' + path);
-    newProps.fetchPortal('/' + path + '/Portal');
+    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchPortal('/' + dialectPath + '/Portal');
     newProps.fetchDirectory('fv_countries');
   }
 

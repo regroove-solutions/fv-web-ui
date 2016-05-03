@@ -140,7 +140,7 @@ const fetchBookEntriesInPath = function fetchBookEntriesInPath(path, queryAppend
   return function (dispatch) {
 
     dispatch( { type: FV_BOOK_ENTRIES_FETCH_START } );
-console.log(path);
+
     return DirectoryOperations.getDocumentByPath2(path, 'FVBookEntry', queryAppend, {headers: headers}, params)
     .then((response) => {
       dispatch( { type: FV_BOOK_ENTRIES_FETCH_SUCCESS, documents: response } )
@@ -157,7 +157,7 @@ const fetchBook = function fetchBook(pathOrId) {
     books[pathOrId] = {};
 
     dispatch( { type: FV_BOOK_FETCH_START, books: books, pathOrId: pathOrId } );
-console.log(pathOrId);
+
     return DocumentOperations.getDocument(pathOrId, 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } })
     .then((response) => {
 

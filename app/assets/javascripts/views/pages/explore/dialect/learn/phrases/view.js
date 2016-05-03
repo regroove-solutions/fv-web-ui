@@ -19,6 +19,8 @@ import provide from 'react-redux-provide';
 
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import _ from 'underscore';
 
 import Avatar from 'material-ui/lib/avatar';
@@ -78,21 +80,14 @@ export default class View extends Component {
 
   fetchData(newProps) {
 
-    let pathArray = newProps.splitWindowPath.slice(1);
-
-    // Remove 'learn' from path
-    pathArray.splice(pathArray.indexOf('learn'), 1);
-
-    // Replace phrases with Dictionary
-    pathArray[pathArray.indexOf('phrases')] = 'Dictionary';
-
-    let path = pathArray.join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let phrasePath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
 
     this.setState({
-      phrasePath: path
+      phrasePath: phrasePath
     });
 
-    newProps.fetchPhrase('/' + path);
+    newProps.fetchPhrase(phrasePath);
   }
 
   // Fetch data on initial render
@@ -185,7 +180,7 @@ export default class View extends Component {
 
     const { computePhrase } = this.props;
 
-    let phrase = selectn('phrases[/' + this.state.phrasePath + ']', computePhrase);
+    let phrase = ProviderHelpers.getEntry(computePhrase, this.state.phrasePath);
     let phraseResponse = selectn('response', phrase);
 
     var tabItemStyles = {
