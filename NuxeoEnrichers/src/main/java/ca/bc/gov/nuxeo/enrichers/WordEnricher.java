@@ -4,8 +4,15 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
 import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -37,7 +44,7 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 		jg.writeObject(wordJsonObject);
 	}
 
-	private ObjectNode constructWordJSON(DocumentModel doc) {
+	private ObjectNode constructWordJSON(DocumentModel doc) throws JsonGenerationException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 
 		// JSON object to be returned
@@ -99,8 +106,39 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					ObjectNode phraseObj = mapper.createObjectNode();
 					phraseObj.put("uid", phraseId);
 					phraseObj.put("path", phraseDoc.getPath().toString());
-					phraseObj.put("fv:definitions", phraseDoc.getPropertyValue("fv:definitions").toString());
-					phraseObj.put("fv:literal_translation", phraseDoc.getPropertyValue("fv:literal_translation").toString());
+												
+					// Construct JSON array node for fv:definitions
+					ArrayList<Object> definitionsList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "definitions");									
+					ArrayNode definitionsJsonArray = mapper.createArrayNode();
+					for(Object definition : definitionsList) {
+						Map<String, Object> complexValue = (HashMap<String, Object>) definition;
+						String language = (String) complexValue.get("language");
+						String translation = (String) complexValue.get("translation");
+						
+						// Create JSON node and add it to the array
+						ObjectNode jsonNode = mapper.createObjectNode();
+						jsonNode.put("language", language);
+						jsonNode.put("translation", translation);	
+						definitionsJsonArray.add(jsonNode);
+					}
+					phraseObj.put("fv:definitions", definitionsJsonArray);					
+					
+					// Construct JSON array node for fv:literal_translation
+					ArrayList<Object> literalTranslationList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "literal_translation");									
+					ArrayNode literalTranslationJsonArray = mapper.createArrayNode();
+					for(Object literalTranslation : literalTranslationList) {
+						Map<String, Object> complexValue = (HashMap<String, Object>) literalTranslation;
+						String language = (String) complexValue.get("language");
+						String translation = (String) complexValue.get("translation");
+						
+						// Create JSON node and add it to the array
+						ObjectNode jsonNode = mapper.createObjectNode();
+						jsonNode.put("language", language);
+						jsonNode.put("translation", translation);	
+						literalTranslationJsonArray.add(jsonNode);
+					}
+					phraseObj.put("fv:literal_translation", literalTranslationJsonArray);
+										
 					phraseObj.put("dc:title", phraseDoc.getTitle());
 					phraseArray.add(phraseObj);
 				}
