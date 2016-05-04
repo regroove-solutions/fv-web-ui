@@ -155,6 +155,8 @@ const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-N
 
 const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase };
 
+const computePhraseFactory = RESTReducers.computeFetch('phrase');
+
 const reducers = {
   computeSharedPhrases(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {
@@ -199,7 +201,7 @@ const reducers = {
       break;
     }
   },
-  computePhrase(state = new List([]), action) {
+  /*computePhrase(state = new List([]), action) {
 
     // Find entry within state based on id
     let indexOfEntry = state.findIndex(function(item) {
@@ -248,7 +250,8 @@ const reducers = {
     }
 
     return state;
- },
+ },*/
+ computePhrase: computePhraseFactory.computePhrase, 
   computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_PHRASE_CREATE_START:

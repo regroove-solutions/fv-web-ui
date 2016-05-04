@@ -27,7 +27,7 @@ import search from './search';
 const loggerMiddleware = createLoggerMiddleware();
 
 // Enable log for specific provider
-//unshiftMiddleware([FVWord], loggerMiddleware);
+//unshiftMiddleware([connect], loggerMiddleware);
 
 //console.log(createCombinedStore({Editor, FVPortal}));
 

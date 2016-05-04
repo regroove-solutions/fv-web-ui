@@ -1,8 +1,17 @@
 import Immutable, { List, Map } from 'immutable';
 
+const TITLE_CASE_KEY = function (key) {
+  return key[0].toUpperCase()+key.substring(1)
+};
+
+const UPPER_CASE_KEY = function (key) {
+  return 'FV_' + key.toUpperCase()
+};
+
 export default {
   computeFetch: function computeFetch(key) {
-    return function (state = new List([]), action) {
+
+    return {['compute' + TITLE_CASE_KEY(key)]: (state = new List([]), action) => {
 
         // Find entry within state based on id
         let indexOfEntry = state.findIndex(function(item) {
@@ -10,8 +19,8 @@ export default {
         });
 
         switch (action.type) {
-          case key + '_FETCH_START':
-          case key + '_UPDATE_START':
+          case UPPER_CASE_KEY(key) + '_FETCH_START':
+          case UPPER_CASE_KEY(key) + '_UPDATE_START':
 
             return state.push(Map({
               id: action.pathOrId,
@@ -21,8 +30,8 @@ export default {
 
           break;
 
-          case key + '_FETCH_SUCCESS':
-          case key + '_UPDATE_ERROR':
+          case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
 
             // Replace entry within state
             return state.set(indexOfEntry, Map({
@@ -34,8 +43,8 @@ export default {
 
           break;
 
-          case key + '_FETCH_ERROR':
-          case key + '_UPDATE_ERROR':
+          case UPPER_CASE_KEY(key) + '_FETCH_ERROR':
+          case UPPER_CASE_KEY(key) + '_UPDATE_ERROR':
 
             // Add error message
             return state.set(indexOfEntry, Map({
@@ -51,6 +60,9 @@ export default {
         }
 
         return state;
-    }
+    }}
+
+
+
   }
 }

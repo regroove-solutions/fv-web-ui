@@ -103,7 +103,7 @@ const fetchWord = function fetchWord(pathOrId) {
 */
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-//const computeWord = RESTReducers.computeFetch('FV_WORD'); // Not working yet?
+const computeWordFactory = RESTReducers.computeFetch('word');
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -193,8 +193,8 @@ const reducers = {
       break;
     }
   },
-  //computeWord: computeWord,
-  computeWord(state = new List([]), action) {
+  computeWord: computeWordFactory.computeWord,
+  /*computeWord(state = new List([]), action) {
 
     // Find entry within state based on id
     let indexOfEntry = state.findIndex(function(item) {
@@ -243,7 +243,7 @@ const reducers = {
     }
 
     return state;
- },
+ },*/
  computeCreateWord(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
    switch (action.type) {
      case FV_WORD_CREATE_START:
