@@ -174,7 +174,7 @@ export default class Preview extends Component {
             pictureResponse = this.props.expandedValue;
           }
           else {
-            picture = selectn('pictures.' + this.props.id, this.props.computePicture);
+            picture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id);
             pictureResponse = selectn('response', picture);
           }
 
@@ -198,7 +198,7 @@ export default class Preview extends Component {
             audioResponse = this.props.expandedValue;
           }
           else {
-            audio = selectn('audios.' + this.props.id, this.props.computeAudio);
+            audio = ProviderHelpers.getEntry(this.props.computeAudio, this.props.id);
             audioResponse = selectn('response', audio);
           }
 
@@ -222,7 +222,7 @@ export default class Preview extends Component {
             videoResponse = this.props.expandedValue;
           }
           else {
-            video = selectn('videos.' + this.props.id, this.props.computeVideo);
+            video = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id);
             videoResponse = selectn('response', video);
           }
 

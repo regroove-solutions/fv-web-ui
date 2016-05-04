@@ -118,7 +118,7 @@ export default class SelectMediaComponent extends React.Component {
   _getMediaPreview(tile) {
     switch (this.props.type) {
       case 'FVAudio':
-        return <audio style={{height: '98px'}} src={tile.properties['file:content'].data} controls />
+        return <audio style={{height: '98px'}} src={tile.properties['file:content'].data} preload="none" controls />
       break;
 
       case 'FVPicture':
@@ -126,7 +126,7 @@ export default class SelectMediaComponent extends React.Component {
       break;
 
       case 'FVVideo':
-        return <video height={190} src={tile.properties['file:content'].data} controls />
+        return <video height={190} src={tile.properties['file:content'].data} preload="none" controls />
       break;
     }
 
