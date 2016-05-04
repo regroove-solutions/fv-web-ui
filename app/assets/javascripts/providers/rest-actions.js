@@ -32,7 +32,7 @@ export default {
 
 			    return DocumentOperations.getDocument(pathOrId, type, { headers: properties.headers })
 			    .then((response) => {
-			      dispatch( { type: key + '_FETCH_SUCCESS', response: response, pathOrId: pathOrId } )
+			      dispatch( { type: key + '_FETCH_SUCCESS', message: 'Document retrieved successfully!', response: response, pathOrId: pathOrId } )
 			    }).catch((error) => {
 			        dispatch( { type: key + '_FETCH_ERROR', message: error, pathOrId: pathOrId } )
 			    });

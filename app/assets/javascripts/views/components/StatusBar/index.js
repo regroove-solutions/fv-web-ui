@@ -25,11 +25,6 @@ export default class StatusBar extends React.Component {
   
   render() {
 	
-	  console.log(this.props);
-	  console.log(this.state);
-	  //this.state.open = true;
-	  
-	// Display snackbar only for create and update
 	if(this.props.message) {
 	    return (
 	      <div>
