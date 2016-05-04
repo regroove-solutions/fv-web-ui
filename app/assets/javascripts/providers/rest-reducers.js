@@ -21,6 +21,7 @@ export default {
         switch (action.type) {
           case UPPER_CASE_KEY(key) + '_FETCH_START':
           case UPPER_CASE_KEY(key) + '_UPDATE_START':
+          case UPPER_CASE_KEY(key) + '_CREATE_START':
 
             return state.push(Map({
               id: action.pathOrId,
@@ -32,6 +33,7 @@ export default {
 
           case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
           case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS':
 
             // Replace entry within state
             return state.set(indexOfEntry, Map({
@@ -45,6 +47,7 @@ export default {
 
           case UPPER_CASE_KEY(key) + '_FETCH_ERROR':
           case UPPER_CASE_KEY(key) + '_UPDATE_ERROR':
+          case UPPER_CASE_KEY(key) + '_CREATE_ERROR':
 
             // Add error message
             return state.set(indexOfEntry, Map({
@@ -61,8 +64,5 @@ export default {
 
         return state;
     }}
-
-
-
   }
 }

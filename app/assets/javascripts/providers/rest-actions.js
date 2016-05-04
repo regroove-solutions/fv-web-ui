@@ -1,6 +1,29 @@
 import DocumentOperations from 'operations/DocumentOperations';
 
 export default {
+	create: function(key, type, properties) {
+		return function create(parentDoc, docParams, file = null, timestamp) {
+			return function (dispatch) {
+
+				// timestamp specified as we can't rely on pathOrId to be unique at this point
+				let pathOrId = parentDoc + '/' + docParams.name + '.' + timestamp;
+
+			    dispatch( { type: key + '_CREATE_START', pathOrId: pathOrId } );
+
+			    let createMethod = DocumentOperations.createDocument(parentDoc, docParams)
+
+			    if (file) {
+			    	createMethod = DocumentOperations.createDocumentWithBlob(parentDoc, docParams, file);
+			    }
+
+			    return createMethod.then((response) => {
+			      dispatch( { type: key + '_CREATE_SUCCESS', response: response, pathOrId: pathOrId } )
+			    }).catch((error) => {
+			        dispatch( { type: key + '_CREATE_ERROR', error: error, pathOrId: pathOrId } )
+			    });
+			}
+		}
+	},
 	fetch: function(key, type, properties) {
 		return function fetch(pathOrId) {
 			return function (dispatch) {
