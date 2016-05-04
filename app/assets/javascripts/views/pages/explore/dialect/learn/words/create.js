@@ -43,7 +43,7 @@ export default class PageDialectWordsCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createWord: PropTypes.func.isRequired,
-    computeCreateWord: PropTypes.object.isRequired
+    computeWord: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -51,7 +51,8 @@ export default class PageDialectWordsCreate extends Component {
 
     this.state = {
       formValue: null,
-      dialectPath: null
+      dialectPath: null,
+      wordPath: null
     };
 
     // Bind methods to 'this'
@@ -88,8 +89,8 @@ export default class PageDialectWordsCreate extends Component {
       case (newProps.computeDialect.response != this.props.computeDialect.response):
         return true;
       break;
-      
-      case (newProps.computeCreateWord.error != this.props.computeCreateWord.error):
+
+      case (newProps.computeWord != this.props.computeWord):
         return true;
       break;
     }
@@ -126,18 +127,25 @@ export default class PageDialectWordsCreate extends Component {
 
     // Passed validation
     if (formValue) {
+      let now = Date.now();
   	  this.props.createWord('/' + this.state.dialectPath + '/Dictionary', {
   	    type: 'FVWord',
   	    name: formValue['dc:title'],
   	    properties: properties
-  	  });
+  	  }, null, now);
+
+      this.setState({
+        wordPath: '/' + this.state.dialectPath + '/Dictionary/' + formValue['dc:title'] + '.' + now
+      });
     }
 
   }
 
   render() {
 
-    const { computeDialect, computeCreateWord } = this.props;
+    const { computeDialect, computeWord } = this.props;
+
+    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
 
     let dialect = computeDialect.response;
 
@@ -149,7 +157,7 @@ export default class PageDialectWordsCreate extends Component {
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
             
-            {computeCreateWord.isError ? <div className="alert alert-danger" role="alert">{computeCreateWord.error}</div> : ''}
+            {(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 

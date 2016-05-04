@@ -42,6 +42,8 @@ export default class PageDialectWordEdit extends Component {
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     updateWord: PropTypes.func.isRequired,
+    fetchDialect: PropTypes.func.isRequired,
+    computeDialect: PropTypes.object.isRequired,
     word: PropTypes.object
   };
   
@@ -67,6 +69,7 @@ export default class PageDialectWordEdit extends Component {
       wordPath: wordPath
     });
 
+    newProps.fetchDialect('/' + dialectPath);
     newProps.fetchWord(wordPath);
   }
 
@@ -122,13 +125,14 @@ export default class PageDialectWordEdit extends Component {
 
   render() {
 
-    const { computeWord } = this.props;
+    const { computeDialect, computeWord } = this.props;
 
     let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
-
     let wordResponse = selectn('response', word);
 
-    if (!word || word.isFetching) {
+    let dialect = computeDialect.response;
+
+    if (!word || word.isFetching || computeDialect.isFetching || !computeDialect.success) {
         return <CircularProgress mode="indeterminate" size={5} />;
     }
 
@@ -136,7 +140,7 @@ export default class PageDialectWordEdit extends Component {
 
 	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
 
-      {word.isError ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
+      {(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
 	
 	    <div className="row" style={{marginTop: '15px'}}>
 	
@@ -145,7 +149,7 @@ export default class PageDialectWordEdit extends Component {
 	          <t.form.Form
 	            ref="form_word"
 	            type={t.struct(selectn("FVWord", fields))}
-	            context={selectn("properties", wordResponse)}
+	            context={dialect}
               value={this.state.formValue || selectn("properties", wordResponse)}
 	            options={selectn("FVWord", options)} />
 	            <div className="form-group">

@@ -43,7 +43,7 @@ export default class PageDialectPhrasesCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createPhrase: PropTypes.func.isRequired,
-    computeCreatePhrase: PropTypes.object.isRequired
+    computePhrase: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -51,7 +51,8 @@ export default class PageDialectPhrasesCreate extends Component {
 
     this.state = {
       formValue: null,
-      dialectPath: null
+      dialectPath: null,
+      phrasePath: null
     };
 
     // Bind methods to 'this'
@@ -89,7 +90,7 @@ export default class PageDialectPhrasesCreate extends Component {
         return true;
       break;
       
-      case (newProps.computeCreatePhrase.error != this.props.computeCreatePhrase.error):
+      case (newProps.computePhrase != this.props.computePhrase):
         return true;
       break;
     }
@@ -126,18 +127,25 @@ export default class PageDialectPhrasesCreate extends Component {
 
     // Passed validation
     if (formValue) {
+      let now = Date.now();
   	  this.props.createPhrase('/' + this.state.dialectPath + '/Dictionary', {
   	    type: 'FVPhrase',
   	    name: formValue['dc:title'],
   	    properties: properties
-  	  });
+  	  }, null, now);
+
+      this.setState({
+        phrasePath: '/' + this.state.dialectPath + '/Dictionary/' + formValue['dc:title'] + '.' + now
+      });
     }
 
   }
 
   render() {
 
-    const { computeDialect, computeCreatePhrase } = this.props;
+    const { computeDialect, computePhrase } = this.props;
+
+    let phrase = ProviderHelpers.getEntry(computePhrase, this.state.phrasePath);
 
     let dialect = computeDialect.response;
 
@@ -149,7 +157,7 @@ export default class PageDialectPhrasesCreate extends Component {
 
             <h1>Add New Phrase to <i>{dialect.get('dc:title')}</i></h1>
             
-            {computeCreatePhrase.isError ? <div className="alert alert-danger" role="alert">{computeCreatePhrase.error}</div> : ''}
+            {(phrase && phrase.isError) ? <div className="alert alert-danger" role="alert">{phrase.error}</div> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 
