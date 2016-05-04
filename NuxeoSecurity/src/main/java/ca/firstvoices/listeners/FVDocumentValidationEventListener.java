@@ -88,7 +88,7 @@ public class FVDocumentValidationEventListener implements EventListener {
             	        	
             	// Check title and part of speech combination
             	if(!wordTitleValidates(ctx, title)) {
-            		generateValidationError(event, "A word with the same title and part of speech already exists in the current dictionary.");
+            		generateValidationError(event, "A word with the same title/part of speech already exists in this dictionary.");
             	}        		
         	}         	
         }
