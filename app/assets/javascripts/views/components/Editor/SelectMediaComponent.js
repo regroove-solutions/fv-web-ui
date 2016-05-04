@@ -203,7 +203,7 @@ export default class SelectMediaComponent extends React.Component {
                   style={gridListStyle}
                   >
                   {
-                    results.map(tile => <GridTile
+                    results.filter(tile => selectn('properties.file:content.data', tile)).map(tile => <GridTile
                     key={tile.uid}
                     onTouchTap={this._handleSelectElement.bind(this, tile)}
                     title={tile.title}

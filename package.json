@@ -51,7 +51,7 @@
     "react-autosuggest": "^3.6.0",
     "react-chartjs": "^0.7.3",
     "react-d3": "^0.4.0",
-    "react-datagrid": "git@github.com:First-Peoples-Cultural-Council/react-datagrid.git",
+    "react-datagrid": "git+https://github.com/First-Peoples-Cultural-Council/react-datagrid.git",
     "react-dom": "^0.14.7",
     "react-image-gallery": "^0.6.0",
     "react-quill": "^0.4.1",
