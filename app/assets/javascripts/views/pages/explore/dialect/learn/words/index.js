@@ -90,7 +90,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
     newProps.fetchWordsInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });

@@ -84,7 +84,7 @@ export default class View extends Component {
 
   fetchData(newProps) {
 
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
     let entryPath = '/' + dialectPath + '/Stories & Songs/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
 
     this.setState({

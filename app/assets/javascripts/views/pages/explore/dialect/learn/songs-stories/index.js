@@ -71,7 +71,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
     newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });

@@ -28,6 +28,6 @@ export default {
     return null;
   },
   getDialectPathFromURLArray: function (url) {
-  	return url.slice(1, 7);
+  	return decodeURI(url.slice(1, 7).join('/'));
   }
 }

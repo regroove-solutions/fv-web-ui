@@ -1,5 +1,8 @@
 import Immutable, { List, Map } from 'immutable';
 
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -82,8 +85,9 @@ const updateWord = function updateWord(newDoc) {
     });
   }
 };
-
+/*
 const fetchWord = function fetchWord(pathOrId) {
+
   return function (dispatch) {
 
     dispatch( { type: FV_WORD_FETCH_START, pathOrId: pathOrId } );
@@ -96,6 +100,10 @@ const fetchWord = function fetchWord(pathOrId) {
     });
   }
 };
+*/
+
+const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+//const computeWord = RESTReducers.computeFetch('FV_WORD'); // Not working yet?
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -185,6 +193,7 @@ const reducers = {
       break;
     }
   },
+  //computeWord: computeWord,
   computeWord(state = new List([]), action) {
 
     // Find entry within state based on id

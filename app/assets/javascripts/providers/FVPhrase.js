@@ -1,5 +1,8 @@
 import Immutable, { List, Map } from 'immutable';
 
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -134,7 +137,7 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
   }
 };
 
-const fetchPhrase = function fetchPhrase(pathOrId) {
+/*const fetchPhrase = function fetchPhrase(pathOrId) {
   return function (dispatch) {
 
     dispatch( { type: FV_PHRASE_FETCH_START, pathOrId: pathOrId } );
@@ -146,7 +149,9 @@ const fetchPhrase = function fetchPhrase(pathOrId) {
         dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error, pathOrId: pathOrId } )
     });
   }
-};
+};*/
+
+const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
 
 const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase };
 

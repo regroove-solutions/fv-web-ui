@@ -59,7 +59,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     this.setState({dialectPath: dialectPath});
 

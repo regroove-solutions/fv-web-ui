@@ -79,7 +79,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
     newProps.fetchPhrasesInPath('/' + dialectPath + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });

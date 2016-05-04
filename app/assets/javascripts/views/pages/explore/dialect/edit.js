@@ -59,7 +59,7 @@ export default class ExploreDialectEdit extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
     newProps.fetchPortal('/' + dialectPath + '/Portal');

@@ -60,8 +60,8 @@ export default class PageDialectWordEdit extends Component {
 
   fetchData(newProps) {
 
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath).join('/');
-    let wordPath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
+    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
+    let wordPath = '/' + dialectPath + '/Dictionary/' + decodeURI(newProps.splitWindowPath[newProps.splitWindowPath.length - 1]);
 
     this.setState({
       wordPath: wordPath
@@ -74,6 +74,21 @@ export default class PageDialectWordEdit extends Component {
   componentDidMount() {
     this.fetchData(this.props);
   }  
+
+  shouldComponentUpdate(newProps, newState) {
+
+    switch (true) {
+      case (newProps.windowPath != this.props.windowPath):
+        return true;
+      break;
+      
+      case (newProps.computeWord != this.props.computeWord):
+        return true;
+      break;
+    }
+
+    return false;
+  }
 
   _onRequestSaveForm(e) {
 
