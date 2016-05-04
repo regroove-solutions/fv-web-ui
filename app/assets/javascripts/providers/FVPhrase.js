@@ -58,7 +58,7 @@ const FV_PHRASE_DELETE_START = "FV_PHRASE_DELETE_START";
 const FV_PHRASE_DELETE_SUCCESS = "FV_PHRASE_DELETE_SUCCESS";
 const FV_PHRASE_DELETE_ERROR = "FV_PHRASE_DELETE_ERROR";
 
-const createPhrase = function createPhrase(parentDoc, docParams) {
+/*const createPhrase = function createPhrase(parentDoc, docParams) {
   return function (dispatch) {
 
     dispatch( { type: FV_PHRASE_CREATE_START, document: docParams } );
@@ -70,7 +70,7 @@ const createPhrase = function createPhrase(parentDoc, docParams) {
           dispatch( { type: FV_PHRASE_CREATE_ERROR, error: error } )
     });
   }
-};
+};*/
 
 const updatePhrase = function updatePhrase(newDoc, field) {
   return function (dispatch) {
@@ -152,6 +152,7 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
 };*/
 
 const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase');
 
 const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase };
 
@@ -252,7 +253,7 @@ const reducers = {
     return state;
  },*/
  computePhrase: computePhraseFactory.computePhrase, 
-  computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
+ /* computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_PHRASE_CREATE_START:
         return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
@@ -272,7 +273,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  },*/
   computePhrasesAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_PHRASE_FETCH_ALL_START:

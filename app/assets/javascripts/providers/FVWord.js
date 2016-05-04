@@ -58,7 +58,7 @@ const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
 const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
-const createWord = function createWord(parentDoc, docParams) {
+/*const createWord = function createWord(parentDoc, docParams) {
   return function (dispatch) {
 
     dispatch( { type: FV_WORD_CREATE_START, document: docParams } );
@@ -70,7 +70,7 @@ const createWord = function createWord(parentDoc, docParams) {
           dispatch( { type: FV_WORD_CREATE_ERROR, error: error } )
     });
   }
-};
+};*/
 
 const updateWord = function updateWord(newDoc) {
   return function (dispatch) {
@@ -103,6 +103,8 @@ const fetchWord = function fetchWord(pathOrId) {
 */
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const createWord = RESTActions.create('FV_WORD', 'FVWord');
+
 const computeWordFactory = RESTReducers.computeFetch('word');
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
@@ -243,7 +245,7 @@ const reducers = {
     }
 
     return state;
- },*/
+ },
  computeCreateWord(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
    switch (action.type) {
      case FV_WORD_CREATE_START:
@@ -264,7 +266,7 @@ const reducers = {
        return Object.assign({}, state, { isFetching: false });
      break;
    }
- },
+ },*/
   computeWordsAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_WORD_FETCH_ALL_START:
