@@ -145,6 +145,8 @@ export default class PageDialectWordEdit extends Component {
 
 	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
   
+        {(word && word.message) ? <StatusBar message={word.message} /> : ''}	    
+	    
 	    <div className="row" style={{marginTop: '15px'}}>
 	
 	      <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -171,9 +173,7 @@ export default class PageDialectWordEdit extends Component {
 	
 	      </div>
 	  </div>
-	  
-	  <StatusBar message={word.message} />
-	  
+	  	  
 	</div>;
   }
 }
