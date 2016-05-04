@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -57,7 +62,7 @@ const FV_AUDIO_DELETE_START = "FV_AUDIO_DELETE_START";
 const FV_AUDIO_DELETE_SUCCESS = "FV_AUDIO_DELETE_SUCCESS";
 const FV_AUDIO_DELETE_ERROR = "FV_AUDIO_DELETE_ERROR";
 
-const createAudio = function createAudio(parentDoc, docParams, file) {
+/*const createAudio = function createAudio(parentDoc, docParams, file) {
   return function (dispatch) {
 
     dispatch( { type: FV_AUDIO_CREATE_START, document: docParams } );
@@ -69,7 +74,7 @@ const createAudio = function createAudio(parentDoc, docParams, file) {
           dispatch( { type: FV_AUDIO_CREATE_ERROR, error: error } )
     });
   }
-};
+};*/
 
 const updateAudio = function updateAudio(newDoc, field) {
   return function (dispatch) {
@@ -115,7 +120,7 @@ const fetchSharedAudios = function fetchSharedAudios(page_provider, headers = {}
       ]);
 }*/
 
-const fetchAudio = function fetchAudio(pathOrId) {
+/*const fetchAudio = function fetchAudio(pathOrId) {
   return function (dispatch) {
 
     let audios = {};
@@ -136,7 +141,7 @@ const fetchAudio = function fetchAudio(pathOrId) {
         dispatch( { type: FV_AUDIO_FETCH_ERROR, audios: audios, pathOrId: pathOrId } )
     });
   }
-};
+};*/
 
 const fetchAudioStats = function fetchAudioStats(dialectId) {
   return function (dispatch) {
@@ -152,7 +157,12 @@ const fetchAudioStats = function fetchAudioStats(dialectId) {
 	}
 };
 
+const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createAudio = RESTActions.create('FV_AUDIO', 'FVAudio');
+
 const actions = { fetchSharedAudios, createAudio, fetchAudio, updateAudio, fetchAudioStats };
+
+const computeAudioFactory = RESTReducers.computeFetch('audio');
 
 const reducers = {
   computeSharedAudios(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -175,7 +185,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  }/*,
   computeAudio(state = { audios: {} }, action) {
     switch (action.type) {
       case FV_AUDIO_FETCH_START:
@@ -234,7 +244,8 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  }*/,
+  computeAudio: computeAudioFactory.computeAudio,
   computeAudioStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_AUDIO_FETCH_STATS_START:

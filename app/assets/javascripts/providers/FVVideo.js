@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -58,7 +63,7 @@ const FV_VIDEO_DELETE_SUCCESS = "FV_VIDEO_DELETE_SUCCESS";
 const FV_VIDEO_DELETE_ERROR = "FV_VIDEO_DELETE_ERROR";
 
 
-const createVideo = function createVideo(parentDoc, docParams, file) {
+/*const createVideo = function createVideo(parentDoc, docParams, file) {
   return function (dispatch) {
 
     dispatch( { type: FV_VIDEO_CREATE_START, document: docParams } );
@@ -70,7 +75,7 @@ const createVideo = function createVideo(parentDoc, docParams, file) {
           dispatch( { type: FV_VIDEO_CREATE_ERROR, error: error } )
     });
   }
-};
+};*/
 
 const updateVideo = function updateVideo(newDoc, field) {
   return function (dispatch) {
@@ -116,7 +121,7 @@ const fetchSharedVideos = function fetchSharedVideos(page_provider, headers = {}
       ]);
 }*/
 
-const fetchVideo = function fetchVideo(pathOrId) {
+/*const fetchVideo = function fetchVideo(pathOrId) {
   return function (dispatch) {
 
     let videos = {};
@@ -138,7 +143,7 @@ const fetchVideo = function fetchVideo(pathOrId) {
     });
   }
 };
-
+*/
 const fetchVideoStats = function fetchVideoStats(dialectId) {
   return function (dispatch) {
 
@@ -153,7 +158,12 @@ const fetchVideoStats = function fetchVideoStats(dialectId) {
 	}
 };
 
+const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createVideo = RESTActions.create('FV_VIDEO', 'FVVideo');
+
 const actions = { fetchSharedVideos, createVideo, fetchVideo, updateVideo, fetchVideoStats };
+
+const computeVideoFactory = RESTReducers.computeFetch('video');
 
 const reducers = {
   computeSharedVideos(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -176,7 +186,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  }/*,
   computeVideo(state = { videos: {} }, action) {
     switch (action.type) {
       case FV_VIDEO_FETCH_START:
@@ -235,7 +245,8 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  }*/,
+  computeVideo: computeVideoFactory.computeVideo,
   computeVideoStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_VIDEO_FETCH_STATS_START:

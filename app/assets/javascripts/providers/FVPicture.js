@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -58,7 +63,7 @@ const FV_PICTURE_DELETE_SUCCESS = "FV_PICTURE_DELETE_SUCCESS";
 const FV_PICTURE_DELETE_ERROR = "FV_PICTURE_DELETE_ERROR";
 
 
-const createPicture = function createPicture(parentDoc, docParams, file) {
+/*const createPicture = function createPicture(parentDoc, docParams, file) {
   return function (dispatch) {
 
     dispatch( { type: FV_PICTURE_CREATE_START, document: docParams } );
@@ -70,7 +75,7 @@ const createPicture = function createPicture(parentDoc, docParams, file) {
           dispatch( { type: FV_PICTURE_CREATE_ERROR, error: error } )
     });
   }
-};
+};*/
 
 
 
@@ -119,7 +124,7 @@ const fetchSharedPictures = function fetchSharedPictures(page_provider, headers 
 }*/
 
 
-const fetchPicture = function fetchPicture(pathOrId) {
+/*const fetchPicture = function fetchPicture(pathOrId) {
   return function (dispatch) {
 
     let pictures = {};
@@ -140,7 +145,7 @@ const fetchPicture = function fetchPicture(pathOrId) {
         dispatch( { type: FV_PICTURE_FETCH_ERROR, pictures: pictures, pathOrId: pathOrId } )
     });
   }
-};
+};*/
 
 const fetchPictureStats = function fetchPictureStats(dialectId) {
   return function (dispatch) {
@@ -156,7 +161,12 @@ const fetchPictureStats = function fetchPictureStats(dialectId) {
 	}
 };
 
+const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createPicture = RESTActions.create('FV_PICTURE', 'FVPicture');
+
 const actions = { fetchSharedPictures, createPicture, fetchPicture, updatePicture, fetchPictureStats };
+
+const computePictureFactory = RESTReducers.computeFetch('picture');
 
 const reducers = {
   computeSharedPictures(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -179,10 +189,11 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  },/*,
   computePicture(state = { pictures: {} }, action) {
     switch (action.type) {
       case FV_PICTURE_FETCH_START:
+      case FV_PICTURE_UPDATE_START:
       case FV_PICTURE_UPDATE_START:
 
         action.pictures[action.pathOrId].isFetching = true;
@@ -217,8 +228,9 @@ const reducers = {
         return Object.assign({}, state);
       break;
     }
-  },
-  computeCreatePicture(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  },*/
+  computePicture: computePictureFactory.computePicture,
+  /*computeCreatePicture(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_PICTURE_CREATE_START:
         return Object.assign({}, state, { isFetching: true, success: false });
@@ -238,7 +250,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  },
+  },*/
   computePictureStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_PICTURE_FETCH_STATS_START:
