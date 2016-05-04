@@ -157,7 +157,7 @@ export default class PageDialectWordsCreate extends Component {
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
             
-            {(word && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''}
+            {(word && word.message && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 

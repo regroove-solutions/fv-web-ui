@@ -145,7 +145,7 @@ export default class PageDialectWordEdit extends Component {
 
 	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
   
-        {(word && word.action.includes('UPDATE')) ? <StatusBar message={word.message} /> : ''}
+        {(word && word.message && word.action.includes('UPDATE')) ? <StatusBar message={word.message} /> : ''}
 	    
 	    <div className="row" style={{marginTop: '15px'}}>
 	
