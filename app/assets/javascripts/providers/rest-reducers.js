@@ -24,6 +24,7 @@ export default {
           case UPPER_CASE_KEY(key) + '_CREATE_START':
 
             return state.push(Map({
+              action: action.type,            	
               id: action.pathOrId,
               isFetching: true,
               success: false
@@ -34,13 +35,15 @@ export default {
           case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
           case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
           case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS':
-
+        	  
             // Replace entry within state
             return state.set(indexOfEntry, Map({
+              action: action.type,
               id: action.pathOrId,
               isFetching: false,
               success: true,
-              response: action.response
+              response: action.response,
+              message: action.message
             }));
 
           break;
@@ -51,12 +54,13 @@ export default {
 
             // Add error message
             return state.set(indexOfEntry, Map({
+              action: action.type,            	
               id: action.pathOrId,
               isFetching: false,
               isError: true,
               success: false,
               response: state.get(indexOfEntry).get('response'),
-              error: action.error
+              message: action.message
             }));
 
           break;

@@ -32,6 +32,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import StatusBar from 'views/components/StatusBar';
 
 @provide
 export default class PageDialectWordEdit extends Component {
@@ -88,6 +89,10 @@ export default class PageDialectWordEdit extends Component {
       case (newProps.computeWord != this.props.computeWord):
         return true;
       break;
+      
+      case (newProps.computeDialect.success != this.props.computeDialect.success):
+        return true;
+      break;      
     }
 
     return false;
@@ -135,13 +140,11 @@ export default class PageDialectWordEdit extends Component {
     if (!word || word.isFetching || computeDialect.isFetching || !computeDialect.success) {
         return <CircularProgress mode="indeterminate" size={5} />;
     }
-
+        
     return <div>
 
 	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
-
-      {(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
-	
+  
 	    <div className="row" style={{marginTop: '15px'}}>
 	
 	      <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -168,6 +171,9 @@ export default class PageDialectWordEdit extends Component {
 	
 	      </div>
 	  </div>
+	  
+	  <StatusBar message={word.message} />
+	  
 	</div>;
   }
 }

@@ -71,7 +71,7 @@ const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
     });
   }
 };*/
-
+/*
 const updateWord = function updateWord(newDoc) {
   return function (dispatch) {
 
@@ -85,7 +85,7 @@ const updateWord = function updateWord(newDoc) {
     });
   }
 };
-/*
+
 const fetchWord = function fetchWord(pathOrId) {
 
   return function (dispatch) {
@@ -104,6 +104,7 @@ const fetchWord = function fetchWord(pathOrId) {
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord');
+const updateWord = RESTActions.update('FV_WORD', 'FVWord');
 
 const computeWordFactory = RESTReducers.computeFetch('word');
 
