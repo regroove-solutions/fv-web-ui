@@ -54,6 +54,53 @@ export default class AppWrapper extends Component {
     // Connect to Nuxeo
     this.props.connect();
     this.props.getUser();
+
+    //this.KWControlClick = this.KWControlClick.bind(this);
+  }
+
+
+  /* KWControlClick: Called when user clicks on the KWControl IMG */
+  /*KWControlClick()
+  {
+    var KWControl = document.getElementById('KWControl');
+    if(KeymanWeb.IsInterfaceVisible()) KeymanWeb.HideInterface();
+    else KeymanWeb.ShowInterface(
+          KeymanWeb.GetAbsoluteX(KWControl) + KWControl.offsetWidth - 1, 
+          KeymanWeb.GetAbsoluteY(KWControl));
+  }*/
+
+  keyboardLoaded() {
+
+    //KeymanWeb.Init();
+    //KeymanWeb.SetMode('manual');
+
+    console.log('loaded');
+
+    //KeymanWeb.HideHelp();
+
+
+    // Function: SetEnabled (for mobile?)
+    //console.log(KeymanWeb.GetKeyboards())
+
+    /*
+    Function: AttachToControl
+    Attaches KeymanWeb events to a control. This is useful where controls are created after KeymanWeb has initialized, for instance in AJAX applications or other JavaScript applications.
+    Parameters: elem: the HTML element that KeymanWeb should attach events to
+    */
+  }
+
+  componentDidMount() {
+
+    setTimeout(function () {
+      const scriptKeymanWebDialect = document.createElement("script");
+
+      scriptKeymanWebDialect.src = "http://www.firstvoices.com/kmw/Tsilhqotin-Xeni-Gwetin_kmw.js";
+      scriptKeymanWebDialect.async = true;
+      scriptKeymanWebDialect.onload = this.keyboardLoaded;
+
+      document.body.appendChild(scriptKeymanWebDialect);
+
+    }.bind(this), 0)
   }
 
   render() {
@@ -61,6 +108,7 @@ export default class AppWrapper extends Component {
       <Navigation />
       <div className="main">
         <AppFrontController />
+        {/*<img src='kmicon.png' alt='KeymanWeb' onTouchTap={this.KWControlClick} id='KWControl' />*/}
       </div>
       <Footer />
     </div>;
