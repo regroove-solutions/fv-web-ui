@@ -49,7 +49,7 @@ public class FVDocumentValidationEventListener implements EventListener {
         // Word and Phrase validation rules
         if(doc.getType().matches("FVWord|FVPhrase")) {
 
-        	// Return an error if dc:title is empty
+        	// Word and Phrase
             String title = (String) doc.getPropertyValue("dc:title");        
         	if(title == null || title.isEmpty()) {
         		generateValidationError(event, "Title cannot be empty.");
@@ -90,7 +90,14 @@ public class FVDocumentValidationEventListener implements EventListener {
             	if(!wordTitleValidates(ctx, title)) {
             		generateValidationError(event, "A word with the same title/part of speech already exists in this dictionary.");
             	}        		
-        	}         	
+        	}
+        	
+        	// Phrase-specific
+        	if(doc.getType().equals("FVPhrase")) {
+            	if (!documentTitleValidates(ctx, title)) {
+    	            generateValidationError(event, "A phrase with the same title already exists in this dictionary.");
+    	        }      		
+        	}        	
         }
         // Validation for other specified document types
         else if(doc.getType().matches("FVCategory|FVContributor|FVPhraseBook|FVBook|FVGallery")) {   
@@ -99,8 +106,7 @@ public class FVDocumentValidationEventListener implements EventListener {
             String title = (String) doc.getPropertyValue("dc:title");        
         	if(title == null || title.isEmpty()) {
         		generateValidationError(event, "Title cannot be empty.");
-         	}         	
-        	
+         	}         	        	
         	if (!documentTitleValidates(ctx, title)) {
 	            generateValidationError(event, "A document with the same title already exists under the current parent.");
 	        }
