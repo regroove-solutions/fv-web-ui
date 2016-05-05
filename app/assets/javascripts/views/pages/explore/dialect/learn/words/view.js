@@ -231,7 +231,7 @@ export default class View extends Component {
                               <h3>Related Phrases:</h3>
 
                               {(selectn('contextParameters.word.related_phrases', wordResponse) || []).map(function(phrase, key) {
-                                let phraseItem = selectn('fv:literal_translation', phrase);
+                                let phraseItem = selectn('fv:definitions', phrase);
                                 
                                 return (
                                 <SubView key={key} group={phraseItem} groupByElement="language" groupValue="translation">

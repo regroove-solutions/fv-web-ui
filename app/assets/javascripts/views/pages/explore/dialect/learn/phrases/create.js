@@ -25,7 +25,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
-import Snackbar from 'material-ui/lib/snackbar';
+import StatusBar from 'views/components/StatusBar';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -43,7 +43,8 @@ export default class PageDialectPhrasesCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createPhrase: PropTypes.func.isRequired,
-    computePhrase: PropTypes.object.isRequired
+    computePhrase: PropTypes.object.isRequired,
+    onPhraseCreated: PropTypes.func
   };
 
   constructor(props, context){
@@ -63,20 +64,26 @@ export default class PageDialectPhrasesCreate extends Component {
     let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     this.setState({dialectPath: dialectPath});
-
-    newProps.fetchDialect('/' + dialectPath);
+    
+    if(!this.props.computeDialect.success) {
+    	newProps.fetchDialect('/' + dialectPath);
+    }	
   }
 
   // Fetch data on initial render
-  componentDidMount() {
+  componentDidMount() {	  
     this.fetchData(this.props);
   }
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
+//    if (nextProps.windowPath !== this.props.windowPath) {
+//      this.fetchData(nextProps);
+//    }
+    
+    if(this.props.onPhraseCreated && this.state.phrasePath && selectn("success", ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath))) {
+    	this.props.onPhraseCreated(ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath).response);
+    }    	
   }
 
   shouldComponentUpdate(newProps, newState) {
@@ -157,7 +164,7 @@ export default class PageDialectPhrasesCreate extends Component {
 
             <h1>Add New Phrase to <i>{dialect.get('dc:title')}</i></h1>
             
-            {(phrase && phrase.isError) ? <div className="alert alert-danger" role="alert">{phrase.error}</div> : ''}
+            {(phrase && phrase.message && phrase.action.includes('CREATE')) ? <StatusBar message={phrase.message} /> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 

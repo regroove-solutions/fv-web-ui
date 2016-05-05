@@ -4,6 +4,7 @@ import selectn from 'selectn';
 
 import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
 import Preview from 'views/components/Editor/Preview';
+import FormDialog from 'views/components/FormDialog';
 
 /**
 * Define auto-suggest factory
@@ -20,6 +21,7 @@ function renderInput(locals) {
   if (!locals.value) {
     content = <div>
                 <AutoSuggestComponent type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
+                <FormDialog  onChange={onChange} />
               </div>;
   }
 
