@@ -17,9 +17,9 @@ export default {
 			    }
 
 			    return createMethod.then((response) => {
-			      dispatch( { type: key + '_CREATE_SUCCESS', response: response, pathOrId: pathOrId } )
+			      dispatch( { type: key + '_CREATE_SUCCESS', message: 'Document created successfully!', response: response, pathOrId: pathOrId } )
 			    }).catch((error) => {
-			        dispatch( { type: key + '_CREATE_ERROR', error: error, pathOrId: pathOrId } )
+			        dispatch( { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId } )
 			    });
 			}
 		}
@@ -32,9 +32,9 @@ export default {
 
 			    return DocumentOperations.getDocument(pathOrId, type, { headers: properties.headers })
 			    .then((response) => {
-			      dispatch( { type: key + '_FETCH_SUCCESS', response: response, pathOrId: pathOrId } )
+			      dispatch( { type: key + '_FETCH_SUCCESS', message: 'Document retrieved successfully!', response: response, pathOrId: pathOrId } )
 			    }).catch((error) => {
-			        dispatch( { type: key + '_FETCH_ERROR', error: error, pathOrId: pathOrId } )
+			        dispatch( { type: key + '_FETCH_ERROR', message: error, pathOrId: pathOrId } )
 			    });
 			}
 		}
@@ -47,9 +47,9 @@ export default {
 
 			    return DocumentOperations.updateDocument(newDoc)
 			      .then((response) => {
-			        dispatch( { type: key + '_UPDATE_SUCCESS', response: response, pathOrId: newDoc.path } )
+			        dispatch( { type: key + '_UPDATE_SUCCESS', message: 'Document updated successfully!', response: response, pathOrId: newDoc.path } )
 			      }).catch((error) => {
-			          dispatch( { type: key + '_UPDATE_ERROR', error: error, pathOrId: newDoc.path } )
+			          dispatch( { type: key + '_UPDATE_ERROR', message: error, pathOrId: newDoc.path } )
 			    });
 			}
 		}

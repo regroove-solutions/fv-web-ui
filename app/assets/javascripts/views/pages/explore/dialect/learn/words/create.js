@@ -25,10 +25,10 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
-import Snackbar from 'material-ui/lib/snackbar';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import StatusBar from 'views/components/StatusBar';
 
 /**
 * Create word entry
@@ -157,7 +157,7 @@ export default class PageDialectWordsCreate extends Component {
 
             <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
             
-            {(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
+            {(word && word.message && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''}
             
             <div className="row" style={{marginTop: '15px'}}>
 
@@ -185,6 +185,7 @@ export default class PageDialectWordsCreate extends Component {
 
               </div>
           </div>
+  
         </div>;
   }
 }
