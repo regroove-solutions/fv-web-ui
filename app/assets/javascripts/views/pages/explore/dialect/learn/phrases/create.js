@@ -44,7 +44,7 @@ export default class PageDialectPhrasesCreate extends Component {
     computeDialect: PropTypes.object.isRequired,
     createPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
-    onPhraseCreated: PropTypes.func
+    onDocumentCreated: PropTypes.func
   };
 
   constructor(props, context){
@@ -75,14 +75,10 @@ export default class PageDialectPhrasesCreate extends Component {
     this.fetchData(this.props);
   }
 
-  // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-//    if (nextProps.windowPath !== this.props.windowPath) {
-//      this.fetchData(nextProps);
-//    }
     
-    if(this.props.onPhraseCreated && this.state.phrasePath && selectn("success", ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath))) {
-    	this.props.onPhraseCreated(ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath).response);
+    if(this.props.onDocumentCreated && this.state.phrasePath && selectn("success", ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath))) {
+    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath).response);
     }    	
   }
 

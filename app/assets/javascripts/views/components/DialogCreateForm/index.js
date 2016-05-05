@@ -6,15 +6,16 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import PageDialectPhrasesCreate from 'views/pages/explore/dialect/learn/phrases/create';
 
 
-export default class FormDialog extends React.Component {
+export default class DialogCreateForm extends React.Component {
   constructor(props) {
     super(props);
+    
     this.state = {
       open: false,
     };
-    
+        
     // Bind methods to 'this'
-    ['_onPhraseCreated'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_onDocumentCreated'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   handleOpen = () => {
@@ -33,15 +34,21 @@ export default class FormDialog extends React.Component {
     return false;
   }  
   
-  _onPhraseCreated(phrase) {
-	  console.log("_onPhraseCreated()");
-	  if(phrase) {
-		  this.props.onChange(event, phrase);
+  _onDocumentCreated(document) {
+	  console.log("_onDocumentCreated()");
+	  if(document) {
+		  this.props.onChange(event, document);
 	  }
   }
   
   render() {
-
+	let createForm = "";
+	switch(this.props.formType) {
+		case "FVPhrase":
+			createForm = <PageDialectPhrasesCreate onDocumentCreated={this._onDocumentCreated} />;
+		break;
+	}  
+	  
     return (
       <div>
         <RaisedButton label="Create New" onTouchTap={this.handleOpen} />
@@ -50,7 +57,7 @@ export default class FormDialog extends React.Component {
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}	
         >  
-        <PageDialectPhrasesCreate onPhraseCreated={this._onPhraseCreated} />
+        {createForm}
 
         </Dialog>
 
