@@ -95,7 +95,7 @@ export default class DocumentOperations extends BaseOperations {
   /**
   * Create a document
   */
-  static createDocument(parentDoc, docParams) {
+  static createDocument(parentDocPathOrId, docParams) {
 
     let properties = this.properties;
     
@@ -103,7 +103,7 @@ export default class DocumentOperations extends BaseOperations {
       function(resolve, reject) {
         properties.client
     	.repository()
-    	.create(parentDoc, docParams, { headers: {'X-NXenrichers.document': 'breadcrumb'} })
+    	.create(parentDocPathOrId, docParams, { headers: {'X-NXenrichers.document': 'breadcrumb'} })
     	.then((doc) => {
     	  resolve(doc);
     	})

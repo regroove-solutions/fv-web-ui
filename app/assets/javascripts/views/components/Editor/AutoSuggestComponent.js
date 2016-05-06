@@ -24,7 +24,7 @@ export default class AutoSuggestComponent extends Component {
     fetchSharedPhrases: PropTypes.func.isRequired,
     computeSharedPhrases: PropTypes.object.isRequired,
     fetchSharedCategories: PropTypes.func.isRequired,
-    computeSharedCategories: PropTypes.object.isRequired,
+    computeSharedCategories: PropTypes.object.isRequired,  
     fetchSharedContributors: PropTypes.func.isRequired,
     computeSharedContributors: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
@@ -38,7 +38,7 @@ export default class AutoSuggestComponent extends Component {
   static contextTypes = {
     muiTheme: React.PropTypes.object,
     kmw: React.PropTypes.object
-  }
+  };
 
   shouldRenderSuggestions(value) {
     return value.trim().length > 2;

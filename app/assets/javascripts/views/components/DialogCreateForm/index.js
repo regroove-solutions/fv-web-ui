@@ -12,9 +12,9 @@ export default class DialogCreateForm extends React.Component {
     super(props);
     
     this.state = {
-      open: false,
+      open: false
     };
-        
+    
     // Bind methods to 'this'
     ['_onDocumentCreated'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
@@ -57,10 +57,16 @@ export default class DialogCreateForm extends React.Component {
 			createForm = <PageDialectContributorsCreate onDocumentCreated={this._onDocumentCreated} />;
 		break;				
 	}  
-	  
-    return (
+
+	// Show Create New button, unless otherwise specified
+	let createNewButton = "";
+	if(!this.props.disableCreateNewButton || this.props.disableCreateNewButton === false) {
+		createNewButton = <RaisedButton label="Create New" onTouchTap={this.handleOpen} />;
+	}
+		
+    return (		
       <div>
-        <RaisedButton label="Create New" onTouchTap={this.handleOpen} />
+      	{createNewButton}
         <Dialog
           open={this.state.open}
           onRequestClose={this.handleClose}

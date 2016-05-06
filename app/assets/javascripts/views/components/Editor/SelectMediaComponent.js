@@ -122,8 +122,12 @@ export default class SelectMediaComponent extends React.Component {
       break;
 
       case 'FVPicture':
+    	  if(tile.properties['picture:views'][1]) {
         return <img src={tile.properties['picture:views'][1].content.data} />;
-      break;
+    	  } else {
+    		  return '';
+    	  }
+        break;
 
       case 'FVVideo':
         return <video height={190} src={tile.properties['file:content'].data} preload="none" controls />

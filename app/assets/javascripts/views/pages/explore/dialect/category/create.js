@@ -126,17 +126,25 @@ export default class PageDialectCategoryCreate extends Component {
       formValue: properties
     })
 
+	// Check if a parent category was specified in the form    
+    let parentPathOrId = "";
+    if(formValue['fvcategory:parent_category']) {
+    	parentPathOrId = formValue['fvcategory:parent_category'];
+    } else {
+    	parentPathOrId = '/' + this.state.dialectPath + '/Categories'
+    }
+    
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createCategory('/' + this.state.dialectPath + '/Categories', {
+  	  this.props.createCategory(parentPathOrId, {
   	    type: 'FVCategory',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        categoryPath: '/' + this.state.dialectPath + '/Categories/' + formValue['dc:title'] + '.' + now
+        categoryPath: parentPathOrId + "/" + formValue['dc:title'] + '.' + now
       });
 
     }
