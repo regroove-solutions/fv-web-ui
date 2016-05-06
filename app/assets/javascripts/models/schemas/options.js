@@ -402,7 +402,26 @@ const options = {
     },
     i18n: i18nExt
   }, 
-	  
+
+  FVContributor: {
+    order: ['dc:title', 'dc:description'],
+    fields: {
+      'dc:title': {
+        label: 'Contributor Name',
+        help: <i>The name of the contributor</i>
+       },
+
+      'dc:description': {
+        label: 'Contributor Description',
+        type: 'textarea',
+        attrs: {
+          placeholder: 'Enter contributor description here'
+        }
+      }   
+    },
+    i18n: i18nExt
+  }, 
+  
   FVPortal: {
     fields: {
       'fv-portal:about': {

@@ -5,7 +5,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import PageDialectPhrasesCreate from 'views/pages/explore/dialect/learn/phrases/create';
 import PageDialectCategoryCreate from 'views/pages/explore/dialect/category/create';
-
+import PageDialectContributorsCreate from 'views/pages/explore/dialect/contributors/create';
 
 export default class DialogCreateForm extends React.Component {
   constructor(props) {
@@ -51,7 +51,11 @@ export default class DialogCreateForm extends React.Component {
 			
 		case "FVCategory":
 			createForm = <PageDialectCategoryCreate onDocumentCreated={this._onDocumentCreated} />;
-		break;			
+		break;
+			
+		case "FVContributor":
+			createForm = <PageDialectContributorsCreate onDocumentCreated={this._onDocumentCreated} />;
+		break;				
 	}  
 	  
     return (
