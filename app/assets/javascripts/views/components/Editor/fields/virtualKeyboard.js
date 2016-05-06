@@ -13,7 +13,7 @@ function renderInput(locals) {
 
   return <div>
   	<input type="text" label={locals.label} name={locals.attrs.name} value={locals.value} onChange={onChange} style={{display: 'none'}} />
-  	<input type="text" id={'virtual-keyboard-helper-' + locals.attrs.name} className="form-control" label={locals.label} onBlur={triggerRealInputChange} />
+  	<input type="text" id={'virtual-keyboard-helper-' + locals.attrs.name} value={locals.value} className="form-control" label={locals.label} onBlur={triggerRealInputChange} />
   </div>;
 }
 
