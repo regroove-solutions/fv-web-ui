@@ -103,7 +103,7 @@ export default class DocumentOperations extends BaseOperations {
       function(resolve, reject) {
         properties.client
     	.repository()
-    	.create(parentDoc, docParams)
+    	.create(parentDoc, docParams, { headers: {'X-NXenrichers.document': 'breadcrumb'} })
     	.then((doc) => {
     	  resolve(doc);
     	})

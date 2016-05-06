@@ -44,7 +44,8 @@ export default class PageDialectCategoryCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createCategory: PropTypes.func.isRequired,
-    computeCategory: PropTypes.object.isRequired    
+    computeCategory: PropTypes.object.isRequired,
+    onDocumentCreated: PropTypes.func    
   };
 
   constructor(props, context){
@@ -74,6 +75,13 @@ export default class PageDialectCategoryCreate extends Component {
     this.fetchData(this.props);
   }
 
+  componentWillReceiveProps(nextProps) {
+    
+    if(this.props.onDocumentCreated && this.state.categoryPath && selectn("success", ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath))) {
+    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath).response);
+    }    	
+  }  
+  
   shouldComponentUpdate(newProps, newState) {
 
     switch (true) {
@@ -138,12 +146,12 @@ export default class PageDialectCategoryCreate extends Component {
 	  
     const { computeDialect, computeCategory } = this.props;
 
+    let dialect = computeDialect.response;
+    let category = ProviderHelpers.getEntry(computeCategory, this.state.categoryPath);    
+    
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
-
-    let dialect = computeDialect.response;
-    let category = ProviderHelpers.getEntry(computeCategory, this.state.categoryPath);
     
     return <div>
     

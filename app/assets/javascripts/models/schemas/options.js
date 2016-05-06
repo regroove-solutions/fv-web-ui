@@ -396,10 +396,8 @@ const options = {
       },
       'fvcategory:image' : {
         label: 'Category Image',
-        item: {
-          factory: MediaFactory,
-          type: 'FVPicture'
-        }
+        factory: MediaFactory,
+        type: 'FVPicture'
       }    
     },
     i18n: i18nExt
