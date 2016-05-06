@@ -11,7 +11,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectContributorCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate, PageDialectContributorCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -189,6 +189,9 @@ export default class AppFrontController extends Component {
       
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ]):
           return this.renderWithBreadcrumb(<PageDialectCategoryCreate />);   
+
+      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ]):
+          return this.renderWithBreadcrumb(<PageDialectPhraseBooksCreate />);        
       
       case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'contributors', 'create' ]):
           return this.renderWithBreadcrumb(<PageDialectContributorsCreate />);       

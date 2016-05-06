@@ -44,7 +44,6 @@ export default class DialogCreateForm extends React.Component {
   
   render() {
 	let createForm = "";
-	let createNewType = "";
 	switch(this.props.formType) {
 		case "FVPhrase":
 			createForm = <PageDialectPhrasesCreate onDocumentCreated={this._onDocumentCreated} />;
@@ -61,9 +60,9 @@ export default class DialogCreateForm extends React.Component {
 
 	// Show Create New button, unless otherwise specified
 	let createNewButton = "";
-	let createNewButtonLabel = "Create New " + this.props.formType.slice(2, this.props.formType.length);
+	//let createNewButtonLabel = "Create New " + this.props.formType.slice(2, this.props.formType.length);
 	if(!this.props.disableCreateNewButton || this.props.disableCreateNewButton === false) {
-		createNewButton = <RaisedButton label={createNewButtonLabel} onTouchTap={this.handleOpen} />;
+		createNewButton = <RaisedButton label="Create New" onTouchTap={this.handleOpen} />;
 	}
 		
     return (		

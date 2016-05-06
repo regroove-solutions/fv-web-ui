@@ -23,6 +23,7 @@ import {default as PageDialectStoriesAndSongsCreate} from './explore/dialect/lea
 import {default as PageDialectStoriesAndSongsBookEntryCreate} from './explore/dialect/learn/songs-stories/entry/create'
 import {default as PageDialectGalleryCreate} from './explore/dialect/gallery/create'
 import {default as PageDialectCategoryCreate} from './explore/dialect/category/create'
+import {default as PageDialectPhraseBooksCreate} from './explore/dialect/phrasebooks/create'
 import {default as PageDialectContributorsCreate} from './explore/dialect/contributors/create'
 
 
@@ -33,6 +34,7 @@ module.exports = {
   PageDialectStoriesAndSongsBookEntryCreate,
   PageDialectGalleryCreate,
   PageDialectCategoryCreate,
+  PageDialectPhraseBooksCreate,
   PageDialectContributorsCreate,  
 }
 
