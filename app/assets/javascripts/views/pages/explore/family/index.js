@@ -38,7 +38,8 @@ export default class ExploreFamily extends Component {
     computeFamily: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired
+    splitWindowPath: PropTypes.array.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   /*static contextTypes = {
@@ -53,10 +54,8 @@ export default class ExploreFamily extends Component {
   }
 
   componentDidMount() {
-    let path = this.props.splitWindowPath.slice(1).join('/');
-
-    this.props.fetchFamily('/' + path);
-    this.props.fetchLanguagesInPath('/' + path);
+    this.props.fetchFamily(this.props.routeParams.language_family_path);
+    this.props.fetchLanguagesInPath(this.props.routeParams.language_family_path);
   }
 
   _onNavigateRequest(path) {

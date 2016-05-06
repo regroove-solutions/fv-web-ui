@@ -45,7 +45,7 @@ const login = function login(username, password) {
         .then((response) => {
           dispatch( { type: LOGIN_SUCCESS, user: response, isAnonymous: response.isAnonymous} );
         }).catch((error) => {
-            dispatch( { type: LOGIN_ERROR, error: error, field: field } )
+            dispatch( { type: LOGIN_ERROR, error: error } )
       });
     });
   }
@@ -76,7 +76,7 @@ const getUser = function getUser() {
       .then((response) => {
         dispatch( { type: GET_USER_SUCCESS, user: response, isAnonymous: response.isAnonymous} );
       }).catch((error) => {
-          dispatch( { type: GET_USER_ERROR, error: error, field: field } )
+          dispatch( { type: GET_USER_ERROR, error: error } )
     });
   }
 }
@@ -129,10 +129,6 @@ const reducers = {
     switch (action.type) {
       case LOGOUT_START:
         return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case LOGOUT_SUCCESS:
-        return Object.assign({}, state, { isFetching: false, success: true, isConnected: false });
       break;
 
       case LOGOUT_ERROR:

@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
 import {Link} from 'provide-page';
 
 import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
@@ -42,7 +44,9 @@ import Contribute from 'views/pages/contribute';
 import Play from 'views/pages/play';
 import NotFound from 'views/pages/not-found';*/
 
-const REGEX_MATCH_ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
+// Regex helper
+const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
+const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
 
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces'];
 
@@ -50,8 +54,8 @@ const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces'];
 export default class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired
+    splitWindowPath: PropTypes.array.isRequired,
+    computeLogin: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
@@ -81,116 +85,201 @@ export default class AppFrontController extends Component {
     const currentPathArray = this.props.splitWindowPath.filter(function(e){ return e; });
 
     if (pathMatchArray.length != currentPathArray.length) {
-      return false;
+      return { result: false, routeParams: {} };
     }
+
+    let matchedRouteParams = {};
 
     let matches = pathMatchArray.every(function(element, index) {
       if (element instanceof RegExp) {
         return element.test(currentPathArray[index]);
       }
+      else if (element instanceof paramMatch)
+      {
+        if (element.hasOwnProperty('matcher')) {
+          let testMatch = element.matcher.test(currentPathArray[index])
+
+          if (testMatch) {
+            matchedRouteParams[element.id] = currentPathArray[index];
+            return true;
+          }
+        }
+
+        return false;
+      }
       else {
         return element === currentPathArray[index]; 
       }
     });
-  
-    return matches;
+
+    return { result: matches, routeParams: matchedRouteParams };
   }
 
   render() {
 
-    const { splitWindowPath, windowPath } = this.props; 
-
-    // Remove empties from path array
-    const pathPartsArray = splitWindowPath.filter(function(e){return e});
-
-    // Routing
-    // TODO: Replace FV with dynamic domain
-    switch (true) {
-
-      case this.matchPath([]):
-        return this.renderWithBreadcrumb(<div>Welcome home!!!</div>);
-
-      case this.matchPath(['get-started']):
-        return this.renderWithBreadcrumb(<PageGetStarted />);
-
-      case this.matchPath(['contribute']):
-        return this.renderWithBreadcrumb(<PageContribute />);
-
-      case this.matchPath(['play']):
-        return this.renderWithBreadcrumb(<PagePlay />);    
-      
-      case this.matchPath(['explore']):
-        return this.renderWithBreadcrumb(<PageExploreArchive />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', 'search']):    
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]): 
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'search']):	      	  
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'search', REGEX_MATCH_ANYTHING_BUT_SLASH]):	  
-          return this.renderWithBreadcrumb(<PageSearch />);       
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH]):
-        return this.renderWithBreadcrumb(<PageExploreFamily />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageExploreLanguage />);
-
-      // Portal
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageExploreDialect />);
-
-      // Portal Edit view
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'edit' ]):
-        return this.renderWithBreadcrumb(<PageExploreDialectEdit />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn' ]):
-        return this.renderWithBreadcrumb(<PageDialectLearn />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'play' ]):
-        return this.renderWithBreadcrumb(<PageDialectPlay />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'gallery', 'create' ]):
-          return this.renderWithBreadcrumb(<PageDialectGalleryCreate />);       
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'gallery', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectGallery />);     
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'reports' ]):
-          return this.renderWithBreadcrumb(<PageDialectReports />);      
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words' ]):
-        return this.renderWithBreadcrumb(<PageDialectLearnWords />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ]):
-        return this.renderWithBreadcrumb(<PageDialectWordsCreate />);   
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectViewWord />);
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'words', 'edit', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectWordEdit />);         
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrases' ]):
-        return this.renderWithBreadcrumb(<PageDialectLearnPhrases />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ]):
-        return this.renderWithBreadcrumb(<PageDialectPhrasesCreate />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrases', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectViewPhrase />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'stories-songs' ]):
-        return this.renderWithBreadcrumb(<PageDialectLearnStoriesAndSongs />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'stories-songs', 'create' ]):
-        return this.renderWithBreadcrumb(<PageDialectStoriesAndSongsCreate />);
-
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'stories-songs', REGEX_MATCH_ANYTHING_BUT_SLASH ]):
-        return this.renderWithBreadcrumb(<PageDialectViewBook />);
-      
-      case this.matchPath(['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ]):
-          return this.renderWithBreadcrumb(<PageDialectCategoryCreate />);      
+    if (selectn("isConnected", this.props.computeLogin)) {
+      //fetchPath = 'Workspaces/';
     }
 
-    return (<div>404</div>);
+    let page = <div>404</div>;
+
+    let routes = [
+      {
+        path: [],
+        page: <div>Welcome home!!!</div>
+      },
+      {
+        path: ['get-started'],
+        page: <PageGetStarted />
+      },
+      {
+        path: ['contribute'],
+        page: <PageContribute />
+      },
+      {
+        path: ['play'],
+        page: <PagePlay />
+      },
+      {
+        path: ['explore'],
+        page: <PageExploreArchive />
+      },
+      {
+        path: ['explore', 'FV', , 'Data', 'search'],
+        page: <PageSearch />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', 'search', ANYTHING_BUT_SLASH],
+        page: <PageSearch />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
+        page: <PageSearch />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
+        page: <PageSearch />
+      },
+      {
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', new paramMatch('language_family', ANYTHING_BUT_SLASH)],
+        page: <PageExploreFamily />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        page: <PageExploreLanguage />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        page: <PageExploreDialect />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit' ],
+        page: <PageExploreDialectEdit />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
+        page: <PageDialectLearn />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
+        page: <PageDialectPlay />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create' ],
+        page: <PageDialectGalleryCreate />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', ANYTHING_BUT_SLASH ],
+        page: <PageDialectGallery />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
+        page: <PageDialectReports />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
+        page: <PageDialectLearnWords />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ],
+        page: <PageDialectWordsCreate />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', ANYTHING_BUT_SLASH ],
+        page: <PageDialectViewWord />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'edit', ANYTHING_BUT_SLASH ],
+        page: <PageDialectWordEdit />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
+        page: <PageDialectLearnPhrases />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ],
+        page: <PageDialectPhrasesCreate />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', ANYTHING_BUT_SLASH ],
+        page: <PageDialectViewPhrase />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs' ],
+        page: <PageDialectLearnStoriesAndSongs />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs', 'create' ],
+        page: <PageDialectStoriesAndSongsCreate />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs', ANYTHING_BUT_SLASH ],
+        page: <PageDialectViewBook />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
+        page: <PageDialectCategoryCreate />
+      }
+    ];
+
+    for (let i = 0; i < routes.length; ++i) {
+      let matchTest = this.matchPath(routes[i].path);
+
+      if (matchTest.result) {
+
+        let routeParams = matchTest.routeParams;
+        
+        // Extract common paths from URL
+        if (routes[i].hasOwnProperty('extractPaths') && routes[i].extractPaths) {
+          if (this.props.splitWindowPath.length >= 7)
+            routeParams['dialect_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 7).join('/'));
+
+          if (this.props.splitWindowPath.length >= 6)
+            routeParams['language_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 6).join('/'));
+
+          if (this.props.splitWindowPath.length >= 5)
+            routeParams['language_family_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 5).join('/'));
+        }
+
+        page = this.renderWithBreadcrumb(React.cloneElement(routes[i].page, {routeParams: routeParams}));
+
+        break;
+      }
+    };
+
+    return (page);
+  }
+}
+
+/**
+* Parameter matching class
+*/
+class paramMatch {
+  constructor(id, matcher) {
+    this.id = id;
+    this.matcher = matcher;
   }
 }
