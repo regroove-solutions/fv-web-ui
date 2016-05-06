@@ -16,6 +16,10 @@ const LOGIN_START = "LOGIN_START";
 const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 const LOGIN_ERROR = "LOGIN_ERROR";
 
+const LOGOUT_START = "LOGOUT_START";
+const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+const LOGOUT_ERROR = "LOGOUT_ERROR";
+
 const GET_USER_START = "GET_USER_START";
 const GET_USER_SUCCESS = "GET_USER_SUCCESS";
 const GET_USER_ERROR = "GET_USER_ERROR";
@@ -47,6 +51,22 @@ const login = function login(username, password) {
   }
 };
 
+const logout = function logout() {
+  return function (dispatch) {
+
+    dispatch( { type: LOGOUT_START } );
+
+    // TODO: Better way of handling logout. Currently the 'login' method does not invalidate an existing cookie.
+    Request({url: ConfGlobal.baseURL + "logout", method: "HEAD"}, function (error, response, body) {
+        if (response.statusCode == 200) {
+          dispatch( { type: LOGOUT_SUCCESS, user: 'test', isAnonymous: true} );
+        } else {
+          dispatch( { type: LOGOUT_ERROR, error: error } )
+        }
+    });
+  }
+};
+
 const getUser = function getUser() {
   return function (dispatch) {
 
@@ -61,7 +81,7 @@ const getUser = function getUser() {
   }
 }
 
-const actions = { connect, login, getUser };
+const actions = { connect, login, logout, getUser };
 
 /**
 * Reducers: Handle state changes based on an action
@@ -91,8 +111,32 @@ const reducers = {
         return Object.assign({}, state, { response: action.user, isFetching: false, success: true, isConnected: !action.isAnonymous });
       break;
 
+      case LOGOUT_SUCCESS:
+        return Object.assign({}, state, { isFetching: false, isError: false, isConnected: false, success: false, response: null });
+      break;
+
       case LOGIN_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+
+  computeLogout(state = { isFetching: false, success: false }, action) {
+    switch (action.type) {
+      case LOGOUT_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      case LOGOUT_SUCCESS:
+        return Object.assign({}, state, { isFetching: false, success: true, isConnected: false });
+      break;
+
+      case LOGOUT_ERROR:
+        return Object.assign({}, state, { isFetching: false, success: false, isError: true, error: action.error });
       break;
 
       default: 

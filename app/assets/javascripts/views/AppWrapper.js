@@ -144,7 +144,7 @@ export default class AppWrapper extends Component {
       <Navigation />
       <div className="main">
         <AppFrontController />
-        <div id="test" style={{position: 'fixed', bottom: '0', right: '0'}}>
+        <div id="test" style={{position: 'fixed', bottom: '0', right: '0', zIndex: '9999'}}>
           <para>Keyboard: <select id='KWControl' onChange={this.KWControlChange}><option value="Keyboard_Tsilhqotin_kmw">TESTA</option></select>
           <img src='form_help.jpg' onTouchTap={this.KWHelpClick} /></para>
         </div>

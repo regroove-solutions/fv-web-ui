@@ -36,12 +36,16 @@ import FlatButton from 'material-ui/lib/flat-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 
+import CircularProgress from 'material-ui/lib/circular-progress';
+
 @provide
 export default class Login extends Component {
 
   static propTypes = {
     login: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
+    logout: PropTypes.func.isRequired,
+    computeLogout: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired
   };
 
@@ -63,6 +67,7 @@ export default class Login extends Component {
     this._handleOpen = this._handleOpen.bind(this);
     this._handleClose = this._handleClose.bind(this);
     this._handleLogin = this._handleLogin.bind(this);
+    this._handleLogout = this._handleLogout.bind(this);
   }
 
   _handleOpen(event){
@@ -92,15 +97,25 @@ export default class Login extends Component {
     }
   }
 
+  _handleLogout() {
+
+    this.setState({loginAttempted: false, open: false});
+    this.props.logout();
+  }
+
   render() {
 
     let loginFeedbackMessage = "";
+
+    if (this.props.computeLogin.isFetching || this.props.computeLogout.isFetching) {
+      return <div style={{display: "inline-block", paddingRight: "10px"}}>Processing request...</div>;
+    }
 
     // Handle success (anonymous or actual)
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
         return (
           <div style={{display: "inline-block", paddingRight: "10px"}}>
-            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>!
+            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>! <RaisedButton onTouchTap={this._handleLogout} label="Sign Out"/>
           </div>
         );
     } else {
