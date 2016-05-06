@@ -340,8 +340,7 @@ const options = {
     },
     i18n: i18nExt
   },
-  
-  
+    
   FVGallery: {
     order: ['dc:title', 'dc:description', 'fv:related_pictures'],
     fields: {
@@ -368,6 +367,32 @@ const options = {
     i18n: i18nExt
   },  
   
+  FVCategory: {
+    order: ['dc:title', 'dc:description', 'fvcategory:image'],
+    fields: {
+      'dc:title': {
+        label: 'Category Name',
+        help: <i>The name of the category</i>
+       },
+
+      'dc:description': {
+        label: 'Category Description',
+        type: 'textarea',
+        attrs: {
+          placeholder: 'Enter category description here'
+        }
+      },
+      'fvcategory:image' : {
+        label: 'Category Image',
+        item: {
+          factory: MediaFactory,
+          type: 'FVPicture'
+        }
+      }    
+    },
+    i18n: i18nExt
+  }, 
+	  
   FVPortal: {
     fields: {
       'fv-portal:about': {
