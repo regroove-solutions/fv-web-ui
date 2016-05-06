@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -52,7 +57,7 @@ const FV_CATEGORY_CREATE_ERROR = "FV_CATEGORY_CREATE_ERROR";
 const FV_CATEGORY_DELETE_START = "FV_CATEGORY_DELETE_START";
 const FV_CATEGORY_DELETE_SUCCESS = "FV_CATEGORY_DELETE_SUCCESS";
 const FV_CATEGORY_DELETE_ERROR = "FV_CATEGORY_DELETE_ERROR";
-
+/*
 const createCategory = function createCategory(parentDoc, docParams) {
   return function (dispatch) {
 
@@ -66,7 +71,7 @@ const createCategory = function createCategory(parentDoc, docParams) {
     });
   }
 };
-
+*/
 const updateCategory = function updateCategory(newDoc, field) {
   return function (dispatch) {
 
@@ -131,7 +136,7 @@ const fetchCategoriesInPath = function fetchCategoriesInPath(path, queryAppend, 
     });
   }
 };
-
+/*
 const fetchCategory = function fetchCategory(pathOrId) {
   return function (dispatch) {
 
@@ -154,6 +159,10 @@ const fetchCategory = function fetchCategory(pathOrId) {
     });
   }
 };
+*/
+const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
+const computeCategoryFactory = RESTReducers.computeFetch('category');
 
 const actions = { fetchSharedCategories, fetchCategoriesInPath, fetchCategory, createCategory, fetchCategoriesAll, updateCategory };
 
@@ -201,6 +210,8 @@ const reducers = {
       break;
     }
   },
+  computeCategory: computeCategoryFactory.computeCategory, 
+/*  
   computeCategory(state = { categories: {} }, action) {
     switch (action.type) {
       case FV_CATEGORY_FETCH_START:
@@ -239,6 +250,7 @@ const reducers = {
       break;
     }
   },  
+*/  
   computeCreateCategory(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_CATEGORY_CREATE_START:

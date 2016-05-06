@@ -22,12 +22,15 @@ import {default as PageDialectPhrasesCreate} from './explore/dialect/learn/phras
 import {default as PageDialectStoriesAndSongsCreate} from './explore/dialect/learn/songs-stories/create'
 import {default as PageDialectStoriesAndSongsBookEntryCreate} from './explore/dialect/learn/songs-stories/entry/create'
 import {default as PageDialectGalleryCreate} from './explore/dialect/gallery/create'
+import {default as PageDialectCategoryCreate} from './explore/dialect/category/create'
+
 
 module.exports = {
   PageDialectWordsCreate,
   PageDialectPhrasesCreate,
   PageDialectStoriesAndSongsCreate,
   PageDialectStoriesAndSongsBookEntryCreate,
-  PageDialectGalleryCreate 
+  PageDialectGalleryCreate,
+  PageDialectCategoryCreate
 }
 

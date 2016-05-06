@@ -4,6 +4,7 @@ import selectn from 'selectn';
 
 import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
 import Preview from 'views/components/Editor/Preview';
+import DialogCreateForm from 'views/components/DialogCreateForm';
 
 /**
 * Define auto-suggest factory
@@ -16,10 +17,11 @@ function renderInput(locals) {
   };
 
   let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
-
+  
   if (!locals.value) {
     content = <div>
                 <AutoSuggestComponent locals={locals} type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
+                <DialogCreateForm onChange={onChange} formType={locals.type} />
               </div>;
   }
 
