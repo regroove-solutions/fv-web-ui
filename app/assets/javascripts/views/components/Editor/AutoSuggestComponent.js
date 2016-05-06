@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -30,8 +31,14 @@ export default class AutoSuggestComponent extends Component {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    provider: PropTypes.object
+    provider: PropTypes.object,
+    locals: PropTypes.object
   };
+
+  static contextTypes = {
+    muiTheme: React.PropTypes.object,
+    kmw: React.PropTypes.object
+  }
 
   shouldRenderSuggestions(value) {
     return value.trim().length > 2;
@@ -79,20 +86,24 @@ export default class AutoSuggestComponent extends Component {
     }
   }
 
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
 
     this.state = {
       value: '',
       suggestions: [],
       isLoading: false,
-      selectObj: null
+      selectObj: null,
+      virtualKeyboard: false,
+      virtualKeyboardId: 'virtual-keyboard-helper-' + props.locals.attrs.name
     };
     
     this.onChange = this.onChange.bind(this);
     this.getSuggestionValue = this.getSuggestionValue.bind(this);
     this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
     this.renderSuggestion = this.renderSuggestion.bind(this);
+    this.triggerRealInputChange = this.triggerRealInputChange.bind(this);
+    this.toggleVirtualKeyboard = this.toggleVirtualKeyboard.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -134,7 +145,7 @@ export default class AutoSuggestComponent extends Component {
     }.bind(this), 750);
   }
 
-  onChange(event, { newValue }) {
+  onChange(event, { newValue, method }) {
     this.setState({
       value: newValue
     });
@@ -171,6 +182,35 @@ export default class AutoSuggestComponent extends Component {
     }
   }
 
+  componentDidMount() {
+    setTimeout(function () {
+
+      // Disable KeymanWeb for autosuggest
+      if (this.context.kmw) {
+        this.context.kmw.DisableControl(ReactDOM.findDOMNode(this.refs["suggestion_widget"].input))
+      }
+
+    }.bind(this), 0);
+  }
+
+  toggleVirtualKeyboard() {
+    this.setState({
+      virtualKeyboard: !this.state.virtualKeyboard
+    });
+
+    document.getElementById(this.state.virtualKeyboardId).focus();
+  }
+
+  triggerRealInputChange(event) {
+
+    let keymanWebValue = document.getElementById(this.state.virtualKeyboardId).value;
+
+    this.loadSuggestions(keymanWebValue);
+    this.onChange(event, { newValue: keymanWebValue, method: 'type'});
+
+    ReactDOM.findDOMNode(this.refs["suggestion_widget"].input).focus();
+  };
+
   render() {
 
     const { value, isLoading } = this.state;
@@ -184,18 +224,26 @@ export default class AutoSuggestComponent extends Component {
 
     return (
       <div className="row">
-        <div className="col-xs-9">
-        <Autosuggest
-          theme={theme}
-          suggestions={this.getComputeType().response.entries || []}
-          shouldRenderSuggestions={this.shouldRenderSuggestions}
-          onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
-          getSuggestionValue={this.getSuggestionValue}
-          renderSuggestion={this.renderSuggestion}
-          inputProps={inputProps} />
-        </div>
-        <div className="col-xs-3">
+        <div className="col-xs-7">
+          <Autosuggest
+            ref="suggestion_widget"
+            theme={theme}
+            suggestions={this.getComputeType().response.entries || []}
+            shouldRenderSuggestions={this.shouldRenderSuggestions}
+            onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
+            getSuggestionValue={this.getSuggestionValue}
+            renderSuggestion={this.renderSuggestion}
+            inputProps={inputProps} />
+
           {status}
+
+          {/* KeymanWeb workaround */}
+          <input type="text" className="form-control" placeholder="Use the 'Reload' button to reload results with the virtual keyboard." style={{ maxWidth: '96%', position: 'absolute', top: '0px', display: (this.state.virtualKeyboard ? 'block' : 'none')}} id={this.state.virtualKeyboardId} className="form-control" label={this.props.locals.label} />
+
+        </div>
+        <div className="col-xs-5">
+          <input type="button" value={(this.state.virtualKeyboard ? 'Virtual Keyboard Off' : 'Virtual Keyboard On')} onClick={this.toggleVirtualKeyboard} />
+          <input type="button" value="Reload" style={{display: (this.state.virtualKeyboard ? 'inline' : 'none')}} onClick={this.triggerRealInputChange} />
         </div>
       </div>
     );

@@ -141,7 +141,7 @@ export default class Navigation extends Component {
 
           <ToolbarGroup>
             {LoginCont}
-            <TextField ref="navigationSearchField" hintText="Search:" onChange={(e) => console.log('test')} onEnterKeyDown={this._handleNavigationSearchSubmit} />
+            <TextField ref="navigationSearchField" hintText="Search:" onEnterKeyDown={this._handleNavigationSearchSubmit} />
             
             <IconMenu
                 iconButtonElement={

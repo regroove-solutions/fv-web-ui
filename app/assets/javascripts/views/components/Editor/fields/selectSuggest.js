@@ -19,7 +19,7 @@ function renderInput(locals) {
 
   if (!locals.value) {
     content = <div>
-                <AutoSuggestComponent type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
+                <AutoSuggestComponent locals={locals} type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
               </div>;
   }
 

@@ -26,6 +26,7 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
 import Navigation from 'views/components/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
+
 @ThemeDecorator(ThemeManager.getMuiTheme(FirstVoicesTheme))
 @provide
 export default class AppWrapper extends Component {
@@ -36,16 +37,21 @@ export default class AppWrapper extends Component {
   };
 
   static childContextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    kmw: React.PropTypes.object
   };
 
   /**
   * Pass essential context to all children
   */
   getChildContext() {
-    return {
-      muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme)
+
+    let newContext = {
+      muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme),
+      kmw: this.state.kmw
     };
+
+    return newContext;
   }
 
   constructor(props, context) {
@@ -55,43 +61,18 @@ export default class AppWrapper extends Component {
     this.props.connect();
     this.props.getUser();
 
-    //this.KWControlClick = this.KWControlClick.bind(this);
-  }
-
-
-  /* KWControlClick: Called when user clicks on the KWControl IMG */
-  /*KWControlClick()
-  {
-    var KWControl = document.getElementById('KWControl');
-    if(KeymanWeb.IsInterfaceVisible()) KeymanWeb.HideInterface();
-    else KeymanWeb.ShowInterface(
-          KeymanWeb.GetAbsoluteX(KWControl) + KWControl.offsetWidth - 1, 
-          KeymanWeb.GetAbsoluteY(KWControl));
-  }*/
-
-  keyboardLoaded() {
-
-    //KeymanWeb.Init();
-    //KeymanWeb.SetMode('manual');
-
-    console.log('loaded');
-
-    //KeymanWeb.HideHelp();
-
-
-    // Function: SetEnabled (for mobile?)
-    //console.log(KeymanWeb.GetKeyboards())
-
-    /*
-    Function: AttachToControl
-    Attaches KeymanWeb events to a control. This is useful where controls are created after KeymanWeb has initialized, for instance in AJAX applications or other JavaScript applications.
-    Parameters: elem: the HTML element that KeymanWeb should attach events to
-    */
+    this.state = {
+      // kmw: tavultesoft.keymanweb // version 2.0
+      kmw: KeymanWeb // version 1.0
+    };
   }
 
   componentDidMount() {
 
     setTimeout(function () {
+      
+      // Keymanweb v1.0
+
       const scriptKeymanWebDialect = document.createElement("script");
 
       scriptKeymanWebDialect.src = "http://www.firstvoices.com/kmw/Tsilhqotin-Xeni-Gwetin_kmw.js";
@@ -99,6 +80,18 @@ export default class AppWrapper extends Component {
       scriptKeymanWebDialect.onload = this.keyboardLoaded;
 
       document.body.appendChild(scriptKeymanWebDialect);
+
+      /*
+      // Keymanweb v2.0
+
+      var _this = this;
+
+      (function(kmw) {
+        kmw.init();
+        kmw.addKeyboards('@eng');
+        kmw.addKeyboards('fv_dakelh_kmw');
+      })(tavultesoft.keymanweb);
+      */
 
     }.bind(this), 0)
   }
@@ -108,7 +101,6 @@ export default class AppWrapper extends Component {
       <Navigation />
       <div className="main">
         <AppFrontController />
-        {/*<img src='kmicon.png' alt='KeymanWeb' onTouchTap={this.KWControlClick} id='KWControl' />*/}
       </div>
       <Footer />
     </div>;

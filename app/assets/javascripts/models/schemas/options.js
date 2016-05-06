@@ -1,12 +1,15 @@
 import React from 'react';
 import t from 'tcomb-form';
+
+import VirtualKeyboardFactory from 'views/components/Editor/fields/virtualKeyboard';
+
 import WysiwygFactory from 'views/components/Editor/fields/wysiwyg';
 import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
 import SelectFactory from 'views/components/Editor/fields/select';
 import MediaFactory from 'views/components/Editor/fields/media';
 
 const i18nExt = {
-  add: '+ Add New',
+  add: '+ Add',
   down: '▼',
   remove: 'X',
   up: '▲',
@@ -43,14 +46,16 @@ const options = {
     order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
     fields: {
       'dc:title': {
-        label: 'Word'
+        label: 'Word',
+        factory: VirtualKeyboardFactory
        },
       'fv:definitions': {
         label: 'Definitions',
         item: {
           fields: {
             translation: {
-              label: 'Translation'
+              label: 'Translation',
+              factory: VirtualKeyboardFactory
             },
             language: {
               label: 'Language',
@@ -69,7 +74,8 @@ const options = {
         item: {
           fields: {
             translation: {
-              label: 'Translation'
+              label: 'Translation',
+              factory: VirtualKeyboardFactory
             },
             language: {
               label: 'Language',
@@ -91,7 +97,8 @@ const options = {
         }
       },
       'fv-word:pronunciation' : {
-        label: 'Pronunciation'
+        label: 'Pronunciation',
+        factory: VirtualKeyboardFactory
       },
       'fv-word:related_phrases' : {
         label: 'Related Phrases',
@@ -135,11 +142,16 @@ const options = {
         }
       },
       'fv:cultural_note' : {
-        label: 'Cultural Notes'
+        label: 'Cultural Note',
+        item: {
+          factory: VirtualKeyboardFactory,
+          type: 'FVVideo'
+        }
       },
       'fv:reference': {
         label: 'Reference',
-        help: <i>Origin of record (person, book, etc).</i>
+        help: <i>Origin of record (person, book, etc).</i>,
+        factory: VirtualKeyboardFactory
       },
       'fv:source': {
         label: 'Source',
