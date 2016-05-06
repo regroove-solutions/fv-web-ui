@@ -27,6 +27,22 @@ import Navigation from 'views/components/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
 
+const getPosition = function getPosition() {
+    var doc = document, w = window;
+    var x, y, docEl;
+    
+    if ( typeof w.pageYOffset === 'number' ) {
+        x = w.pageXOffset;
+        y = w.pageYOffset;
+    } else {
+        docEl = (doc.compatMode && doc.compatMode === 'CSS1Compat')?
+                doc.documentElement: doc.body;
+        x = docEl.scrollLeft;
+        y = docEl.scrollTop;
+    }
+    return {x:x, y:y};
+};
+
 @ThemeDecorator(ThemeManager.getMuiTheme(FirstVoicesTheme))
 @provide
 export default class AppWrapper extends Component {
@@ -61,10 +77,32 @@ export default class AppWrapper extends Component {
     this.props.connect();
     this.props.getUser();
 
+    // Init version 1.0
+    KeymanWeb.SetMode('manual');
+
     this.state = {
       // kmw: tavultesoft.keymanweb // version 2.0
       kmw: KeymanWeb // version 1.0
     };
+  }
+
+
+  KWControlChange() {
+    console.log('yeat?')
+    KeymanWeb.SetActiveKeyboard(KWControl.value);
+    //document.f.multilingual.focus();
+  }
+
+  KWHelpClick(event) {
+
+    KeymanWeb.SetActiveKeyboard('Keyboard_Tsilhqotin_kmw');
+
+    if (KeymanWeb.IsHelpVisible()) {
+      KeymanWeb.HideHelp();
+    }
+    else {
+      KeymanWeb.ShowHelp(window.innerWidth - 500, getPosition().y + 200);
+    }
   }
 
   componentDidMount() {
@@ -81,17 +119,22 @@ export default class AppWrapper extends Component {
 
       document.body.appendChild(scriptKeymanWebDialect);
 
-      /*
+      window.onscroll = function() {
+        //console.log(KeymanWeb.GetHelpPos(0,0));
+        KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
+      };
+
       // Keymanweb v2.0
 
-      var _this = this;
+      /*var _this = this;
 
       (function(kmw) {
         kmw.init();
         kmw.addKeyboards('@eng');
         kmw.addKeyboards('fv_dakelh_kmw');
-      })(tavultesoft.keymanweb);
-      */
+
+      })(tavultesoft.keymanweb);*/
+      
 
     }.bind(this), 0)
   }
@@ -101,6 +144,10 @@ export default class AppWrapper extends Component {
       <Navigation />
       <div className="main">
         <AppFrontController />
+        <div id="test" style={{position: 'fixed', bottom: '0', right: '0'}}>
+          <para>Keyboard: <select id='KWControl' onChange={this.KWControlChange}><option value="Keyboard_Tsilhqotin_kmw">TESTA</option></select>
+          <img src='form_help.jpg' onTouchTap={this.KWHelpClick} /></para>
+        </div>
       </div>
       <Footer />
     </div>;

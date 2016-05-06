@@ -242,7 +242,7 @@ export default class AutoSuggestComponent extends Component {
 
         </div>
         <div className="col-xs-5">
-          <input type="button" value={(this.state.virtualKeyboard ? 'Virtual Keyboard Off' : 'Virtual Keyboard On')} onClick={this.toggleVirtualKeyboard} />
+          <input type="button" value={(this.state.virtualKeyboard ? 'Use Physical Keyboard' : 'Use Virtual Keyboard')} onClick={this.toggleVirtualKeyboard} />
           <input type="button" value="Reload" style={{display: (this.state.virtualKeyboard ? 'inline' : 'none')}} onClick={this.triggerRealInputChange} />
         </div>
       </div>
