@@ -107,7 +107,7 @@ const fetchDialect = function fetchDialect(pathOrId) {
 
     dispatch( { type: FV_DIALECT_FETCH_START } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions' } })
     .then((response) => {
       dispatch( { type: FV_DIALECT_FETCH_SUCCESS, document: response } )
     }).catch((error) => {

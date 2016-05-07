@@ -38,6 +38,7 @@ import Snackbar from 'material-ui/lib/snackbar';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import Link from 'views/components/Document/Link';
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 class EditableComponentHelper extends Component {
   render() {
@@ -69,7 +70,7 @@ export default class ExploreDialect extends Component {
     updatePortal: PropTypes.func.isRequired,
     fetchDirectory: PropTypes.func.isRequired,
     computeDirectory: PropTypes.object.isRequired,
-    
+    computeLogin: PropTypes.object.isRequired,
     publishDocument: PropTypes.func.isRequired,
     computePublish: PropTypes.object.isRequired    
   };
@@ -103,6 +104,10 @@ export default class ExploreDialect extends Component {
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
+
+    if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
       this.fetchData(nextProps);
     }
   }
@@ -139,6 +144,8 @@ export default class ExploreDialect extends Component {
   }   
   
   render() {
+
+    console.log(this.props.computeLogin);
 
     const { computeDialect, computePortal, splitWindowPath, computePublish } = this.props;
     const isSection = splitWindowPath.includes('sections');
@@ -213,7 +220,12 @@ console.log(portal);
               <ToolbarGroup firstChild={true} float="right">
               	<RaisedButton label="Publish" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishPortal} />
                 <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces'))} />
-                <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+
+                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={{float: 'left', margin: `${(this.context.muiTheme.toolbar.height - this.context.muiTheme.button.height) / 2}px ${this.context.muiTheme.baseTheme.spacing.desktopGutter}px`, position: 'relative'}}>
+                  <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                </AuthorizationFilter>
+
+
                 <RaisedButton label="Public Version" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('Workspaces', 'sections'))} />
 
                 <ToolbarSeparator />

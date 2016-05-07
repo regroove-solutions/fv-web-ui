@@ -13,7 +13,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectContributorCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectContributorsCreate } from 'views/pages/create';
 
 // To be used later views below:
 
