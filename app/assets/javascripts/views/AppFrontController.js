@@ -13,7 +13,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectContributorCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -242,6 +242,10 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
         page: <PageDialectCategoryCreate />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'contributors', 'create' ],
+        page: <PageDialectContributorsCreate />
       }
     ];
 

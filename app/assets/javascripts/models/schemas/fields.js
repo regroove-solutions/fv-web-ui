@@ -66,7 +66,8 @@ const fields = {
   }),
   FVCategory: Object.assign({}, Dublincore, {
 	'fvcategory:image' : t.maybe(t.String), // make optional
-  }),  
+  }),
+  FVContributor: Object.assign({}, Dublincore),   
   FVDialect: Object.assign({}, Dublincore, {
     'fvdialect:country' : t.String,
     'fvdialect:dominant_language' : t.String,

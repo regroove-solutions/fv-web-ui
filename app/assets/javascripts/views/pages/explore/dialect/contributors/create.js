@@ -32,10 +32,10 @@ import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
 /**
-* Create category
+* Create contributor
 */
 @provide
-export default class PageDialectCategoryCreate extends Component {
+export default class PageDialectContributorsCreate extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
@@ -43,8 +43,8 @@ export default class PageDialectCategoryCreate extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    createCategory: PropTypes.func.isRequired,
-    computeCategory: PropTypes.object.isRequired,
+    createContributor: PropTypes.func.isRequired,
+    computeContributor: PropTypes.object.isRequired,
     onDocumentCreated: PropTypes.func    
   };
 
@@ -54,7 +54,7 @@ export default class PageDialectCategoryCreate extends Component {
     this.state = {
       formValue: null,
       dialectPath: null,
-      categoryPath: null
+      contributorPath: null
     };
 
     // Bind methods to 'this'
@@ -77,8 +77,8 @@ export default class PageDialectCategoryCreate extends Component {
 
   componentWillReceiveProps(nextProps) {
     
-    if(this.props.onDocumentCreated && this.state.categoryPath && selectn("success", ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath))) {
-    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath).response);
+    if(this.props.onDocumentCreated && this.state.contributorPath && selectn("success", ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath))) {
+    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response);
     }    	
   }  
   
@@ -93,7 +93,7 @@ export default class PageDialectCategoryCreate extends Component {
         return true;
       break;
       
-      case (newProps.computeCategory != this.props.computeCategory):
+      case (newProps.computeContributor != this.props.computeContributor):
         return true;
       break;
     }
@@ -110,7 +110,7 @@ export default class PageDialectCategoryCreate extends Component {
     // Prevent default behaviour
     e.preventDefault();
     
-    let formValue = this.refs["form_category_create"].getValue();
+    let formValue = this.refs["form_contributor_create"].getValue();
 
     let properties = {};
 	
@@ -129,14 +129,14 @@ export default class PageDialectCategoryCreate extends Component {
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createCategory('/' + this.state.dialectPath + '/Categories', {
-  	    type: 'FVCategory',
+  	  this.props.createContributor('/' + this.state.dialectPath + '/Contributors', {
+  	    type: 'FVContributor',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        categoryPath: '/' + this.state.dialectPath + '/Categories/' + formValue['dc:title'] + '.' + now
+        contributorPath: '/' + this.state.dialectPath + '/Contributors/' + formValue['dc:title'] + '.' + now
       });
 
     }
@@ -144,10 +144,10 @@ export default class PageDialectCategoryCreate extends Component {
   
   render() {
 	  
-    const { computeDialect, computeCategory } = this.props;
+    const { computeDialect, computeContributor } = this.props;
 
     let dialect = computeDialect.response;
-    let category = ProviderHelpers.getEntry(computeCategory, this.state.categoryPath);    
+    let contributor = ProviderHelpers.getEntry(computeContributor, this.state.contributorPath);    
     
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
@@ -155,20 +155,20 @@ export default class PageDialectCategoryCreate extends Component {
     
     return <div>
     
-    		<h1>Add New Category to <i>{dialect.get('dc:title')}</i></h1>
+    		<h1>Add New Contributor to <i>{dialect.get('dc:title')}</i></h1>
 
-            {(category && category.message && category.action.includes('CREATE')) ? <StatusBar message={category.message} /> : ''}    		
+            {(contributor && contributor.message && contributor.action.includes('CREATE')) ? <StatusBar message={contributor.message} /> : ''}    		
     		
             <div className="row" style={{marginTop: '15px'}}>
 
 	            <div className={classNames('col-xs-8', 'col-md-10')}>
 	              <form onSubmit={this._onRequestSaveForm}>
 	                <t.form.Form
-	                  ref="form_category_create"
-	                  type={t.struct(selectn("FVCategory", fields))}
+	                  ref="form_contributor_create"
+	                  type={t.struct(selectn("FVContributor", fields))}
 	                  context={dialect}
 	                  value={this.state.formValue}
-	                  options={selectn("FVCategory", options)} />
+	                  options={selectn("FVContributor", options)} />
 	                  <div className="form-group">
 	                    <button type="submit" className="btn btn-primary">Save</button> 
 	                  </div>

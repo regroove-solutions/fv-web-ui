@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -53,7 +58,7 @@ const FV_CONTRIBUTOR_DELETE_START = "FV_CONTRIBUTOR_DELETE_START";
 const FV_CONTRIBUTOR_DELETE_SUCCESS = "FV_CONTRIBUTOR_DELETE_SUCCESS";
 const FV_CONTRIBUTOR_DELETE_ERROR = "FV_CONTRIBUTOR_DELETE_ERROR";
 
-
+/*
 const createContributor = function createContributor(parentDoc, docParams) {
   return function (dispatch) {
 
@@ -67,7 +72,7 @@ const createContributor = function createContributor(parentDoc, docParams) {
     });
   }
 };
-
+*/
 const updateContributor = function updateContributor(newDoc, field) {
   return function (dispatch) {
 
@@ -132,7 +137,7 @@ const fetchContributorsInPath = function fetchContributorsInPath(path, queryAppe
     });
   }
 };
-
+/*
 const fetchContributor = function fetchContributor(pathOrId) {
   return function (dispatch) {
 
@@ -155,6 +160,11 @@ const fetchContributor = function fetchContributor(pathOrId) {
     });
   }
 };
+*/
+
+const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createContributor = RESTActions.create('FV_CONTRIBUTOR', 'FVContributor');
+const computeContributorFactory = RESTReducers.computeFetch('contributor');
 
 const actions = { fetchSharedContributors, fetchContributorsInPath, fetchContributor, createContributor, fetchContributorsAll, updateContributor };
 
@@ -202,6 +212,9 @@ const reducers = {
       break;
     }
   },
+  computeContributor: computeContributorFactory.computeContributor, 
+
+/*  
   computeContributor(state = { contributors: {} }, action) {
     switch (action.type) {
       case FV_CONTRIBUTOR_FETCH_START:
@@ -240,6 +253,8 @@ const reducers = {
       break;
     }
   },
+*/  
+  
  computeCreateContributor(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
    switch (action.type) {
      case FV_CONTRIBUTOR_CREATE_START:
