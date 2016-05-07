@@ -380,7 +380,7 @@ const options = {
   },  
   
   FVCategory: {
-    order: ['dc:title', 'dc:description', 'fvcategory:image'],
+    order: ['dc:title', 'dc:description', 'fvcategory:parent_category', 'fvcategory:image'],
     fields: {
       'dc:title': {
         label: 'Category Name',
@@ -394,6 +394,19 @@ const options = {
           placeholder: 'Enter category description here'
         }
       },
+      'fvcategory:parent_category': {
+          label: 'Parent Category Name',
+          help: <i>The name of the parent category</i>,
+          factory: SelectSuggestFactory,
+          type: 'FVCategory',
+          attrs: {
+            page_provider: {
+              name: 'category_suggestion',
+              folder: 'Categories'
+            },
+            disableCreateNewButton: true
+          }          
+       },      
       'fvcategory:image' : {
         label: 'Category Image',
         factory: MediaFactory,
@@ -403,6 +416,25 @@ const options = {
     i18n: i18nExt
   }, 
 
+  FVPhraseBook: {
+    order: ['dc:title', 'dc:description'],
+    fields: {
+      'dc:title': {
+        label: 'Phrase Book Name',
+        help: <i>The name of the phrase book</i>
+       },
+
+      'dc:description': {
+        label: 'Phrase Book Description',
+        type: 'textarea',
+        attrs: {
+          placeholder: 'Enter phrase book description here'
+        }
+      }
+    },
+    i18n: i18nExt
+  },   
+  
   FVContributor: {
     order: ['dc:title', 'dc:description'],
     fields: {

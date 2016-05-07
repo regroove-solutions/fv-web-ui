@@ -32,10 +32,10 @@ import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
 /**
-* Create category
+* Create phrasebook
 */
 @provide
-export default class PageDialectCategoryCreate extends Component {
+export default class PageDialectPhraseBooksCreate extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
@@ -54,7 +54,7 @@ export default class PageDialectCategoryCreate extends Component {
     this.state = {
       formValue: null,
       dialectPath: null,
-      categoryPath: null
+      phrasebookPath: null
     };
 
     // Bind methods to 'this'
@@ -77,8 +77,8 @@ export default class PageDialectCategoryCreate extends Component {
 
   componentWillReceiveProps(nextProps) {
     
-    if(this.props.onDocumentCreated && this.state.categoryPath && selectn("success", ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath))) {
-    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computeCategory, this.state.categoryPath).response);
+    if(this.props.onDocumentCreated && this.state.phrasebookPath && selectn("success", ProviderHelpers.getEntry(nextProps.computeCategory, this.state.phrasebookPath))) {
+    	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computeCategory, this.state.phrasebookPath).response);
     }    	
   }  
   
@@ -110,7 +110,7 @@ export default class PageDialectCategoryCreate extends Component {
     // Prevent default behaviour
     e.preventDefault();
     
-    let formValue = this.refs["form_category_create"].getValue();
+    let formValue = this.refs["form_phrasebook_create"].getValue();
 
     let properties = {};
 	
@@ -125,26 +125,18 @@ export default class PageDialectCategoryCreate extends Component {
     this.setState({
       formValue: properties
     })
-
-	// Check if a parent category was specified in the form    
-    let parentPathOrId = "";
-    if(formValue['fvcategory:parent_category']) {
-    	parentPathOrId = formValue['fvcategory:parent_category'];
-    } else {
-    	parentPathOrId = '/' + this.state.dialectPath + '/Categories'
-    }
     
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createCategory(parentPathOrId, {
+  	  this.props.createCategory('/' + this.state.dialectPath + '/Phrase Books', {
   	    type: 'FVCategory',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        categoryPath: parentPathOrId + "/" + formValue['dc:title'] + '.' + now
+        phrasebookPath: '/' + this.state.dialectPath + '/Phrase Books/' + formValue['dc:title'] + '.' + now
       });
 
     }
@@ -155,7 +147,7 @@ export default class PageDialectCategoryCreate extends Component {
     const { computeDialect, computeCategory } = this.props;
 
     let dialect = computeDialect.response;
-    let category = ProviderHelpers.getEntry(computeCategory, this.state.categoryPath);    
+    let phrasebook = ProviderHelpers.getEntry(computeCategory, this.state.phrasebookPath);    
     
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />;
@@ -163,20 +155,20 @@ export default class PageDialectCategoryCreate extends Component {
     
     return <div>
     
-    		<h1>Add New Category to <i>{dialect.get('dc:title')}</i></h1>
+    		<h1>Add New Phrase Book to <i>{dialect.get('dc:title')}</i></h1>
 
-            {(category && category.message && category.action.includes('CREATE')) ? <StatusBar message={category.message} /> : ''}    		
+            {(phrasebook && phrasebook.message && phrasebook.action.includes('CREATE')) ? <StatusBar message={phrasebook.message} /> : ''}    		
     		
             <div className="row" style={{marginTop: '15px'}}>
 
 	            <div className={classNames('col-xs-8', 'col-md-10')}>
 	              <form onSubmit={this._onRequestSaveForm}>
 	                <t.form.Form
-	                  ref="form_category_create"
+	                  ref="form_phrasebook_create"
 	                  type={t.struct(selectn("FVCategory", fields))}
 	                  context={dialect}
 	                  value={this.state.formValue}
-	                  options={selectn("FVCategory", options)} />
+	                  options={selectn("FVPhraseBook", options)} />
 	                  <div className="form-group">
 	                    <button type="submit" className="btn btn-primary">Save</button> 
 	                  </div>

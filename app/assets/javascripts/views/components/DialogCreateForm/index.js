@@ -6,15 +6,16 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import PageDialectPhrasesCreate from 'views/pages/explore/dialect/learn/phrases/create';
 import PageDialectCategoryCreate from 'views/pages/explore/dialect/category/create';
 import PageDialectContributorsCreate from 'views/pages/explore/dialect/contributors/create';
+import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/phrasebooks/create';
 
 export default class DialogCreateForm extends React.Component {
   constructor(props) {
     super(props);
     
     this.state = {
-      open: false,
+      open: false
     };
-        
+    
     // Bind methods to 'this'
     ['_onDocumentCreated'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
@@ -44,23 +45,39 @@ export default class DialogCreateForm extends React.Component {
   
   render() {
 	let createForm = "";
-	switch(this.props.formType) {
+	let createNewButtonLabel = "";
+	switch(this.props.fieldAttributes.type) {
 		case "FVPhrase":
 			createForm = <PageDialectPhrasesCreate onDocumentCreated={this._onDocumentCreated} />;
+			createNewButtonLabel = "Create New Phrase";
 		break;
 			
 		case "FVCategory":
-			createForm = <PageDialectCategoryCreate onDocumentCreated={this._onDocumentCreated} />;
+			if(this.props.fieldAttributes.page_provider.folder == "Phrase Books") {
+				createForm = <PageDialectPhraseBooksCreate onDocumentCreated={this._onDocumentCreated} />;
+				createNewButtonLabel = "Create New Phrase Book";
+			}
+			else if(this.props.fieldAttributes.page_provider.folder == "Categories") {
+				createForm = <PageDialectCategoryCreate onDocumentCreated={this._onDocumentCreated} />;				
+				createNewButtonLabel = "Create New Category";
+			}
 		break;
 			
 		case "FVContributor":
 			createForm = <PageDialectContributorsCreate onDocumentCreated={this._onDocumentCreated} />;
+			createNewButtonLabel = "Create New Contributor";
 		break;				
 	}  
-	  
-    return (
+
+	// Show Create New button, unless otherwise specified
+	let createNewButton = "";
+	if(!this.props.fieldAttributes.disableCreateNewButton || this.props.fieldAttributes.disableCreateNewButton === false) {
+		createNewButton = <RaisedButton label={createNewButtonLabel} onTouchTap={this.handleOpen} />;
+	}
+		
+    return (		
       <div>
-        <RaisedButton label="Create New" onTouchTap={this.handleOpen} />
+      	{createNewButton}
         <Dialog
           open={this.state.open}
           onRequestClose={this.handleClose}

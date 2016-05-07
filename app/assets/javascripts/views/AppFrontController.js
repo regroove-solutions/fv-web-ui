@@ -13,7 +13,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectContributorsCreate } from 'views/pages/create';
+import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate, PageDialectContributorsCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -244,9 +244,9 @@ export default class AppFrontController extends Component {
         page: <PageDialectCategoryCreate />
       },
       {
-        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'contributors', 'create' ],
-        page: <PageDialectContributorsCreate />
-      }
+        path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
+        page: <PageDialectPhraseBooksCreate />
+      },
     ];
 
     for (let i = 0; i < routes.length; ++i) {

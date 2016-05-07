@@ -65,6 +65,7 @@ const fields = {
 	'fv:related_pictures' : t.list(t.String)
   }),
   FVCategory: Object.assign({}, Dublincore, {
+	'fvcategory:parent_category' : t.maybe(t.String), // make optional  
 	'fvcategory:image' : t.maybe(t.String), // make optional
   }),
   FVContributor: Object.assign({}, Dublincore),   
