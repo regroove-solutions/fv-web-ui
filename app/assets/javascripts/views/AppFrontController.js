@@ -244,7 +244,7 @@ export default class AppFrontController extends Component {
         page: <PageDialectCategoryCreate />
       },
       {
-        path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, REGEX_MATCH_ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
+        path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
         page: <PageDialectPhraseBooksCreate />
       },
     ];
