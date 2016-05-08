@@ -219,7 +219,10 @@ console.log(portal);
 
               <ToolbarGroup firstChild={true} float="right">
               	<RaisedButton label="Publish" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishPortal} />
-                <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces'))} />
+                
+                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={{float: 'left', margin: `${(this.context.muiTheme.toolbar.height - this.context.muiTheme.button.height) / 2}px ${this.context.muiTheme.baseTheme.spacing.desktopGutter}px`, position: 'relative'}}>
+                  <RaisedButton label="Inline Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces'))} />
+                </AuthorizationFilter>
 
                 <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={{float: 'left', margin: `${(this.context.muiTheme.toolbar.height - this.context.muiTheme.button.height) / 2}px ${this.context.muiTheme.baseTheme.spacing.desktopGutter}px`, position: 'relative'}}>
                   <RaisedButton label="Form Edit" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
