@@ -88,7 +88,6 @@ export default class AppWrapper extends Component {
 
   KWControlChange() {
     KeymanWeb.SetActiveKeyboard(KWControl.value);
-    //document.f.multilingual.focus();
   }
 
   KWHelpClick(event) {

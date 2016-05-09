@@ -44,7 +44,7 @@ export default class Navigation extends Component {
   static propTypes = {
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,    
-	splitWindowPath: PropTypes.array.isRequired,    
+    splitWindowPath: PropTypes.array.isRequired,    
     toggleMenuAction: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired
@@ -72,11 +72,15 @@ export default class Navigation extends Component {
   constructor(props, context){
     super(props, context);
 
+    this.state = {
+      hintTextSearch: "Search:"
+    };
+
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
-    
+    //this._test = this._test.bind(this);
   }
 
   _handleMenuToggle (event) {
@@ -125,7 +129,7 @@ export default class Navigation extends Component {
       this.refs.navigationSearchField.setValue("");
 	  this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
   } 
-  
+
   render() {
 
     let LoginCont = <Login label="Sign in"/>;
@@ -141,7 +145,9 @@ export default class Navigation extends Component {
 
           <ToolbarGroup>
             {LoginCont}
-            <TextField ref="navigationSearchField" hintText="Search:" onEnterKeyDown={this._handleNavigationSearchSubmit} />
+
+            {/* KeymanWeb workaround for hinttext not disappearing */}
+            <TextField ref="navigationSearchField" hintText={this.state.hintTextSearch} onBlur={() => this.setState({hintTextSearch: 'Search:'})} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />
             
             <IconMenu
                 iconButtonElement={
