@@ -1,3 +1,8 @@
+import Immutable, { List, Map } from 'immutable';
+
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -29,6 +34,7 @@ const FV_DIALECTS_DELETE_ERROR = "FV_DIALECTS_DELETE_ERROR";
 /**
 * Single Dialect Actions
 */
+
 const FV_DIALECT_FETCH_START = "FV_DIALECT_FETCH_START";
 const FV_DIALECT_FETCH_SUCCESS = "FV_DIALECT_FETCH_SUCCESS";
 const FV_DIALECT_FETCH_ERROR = "FV_DIALECT_FETCH_ERROR";
@@ -52,6 +58,14 @@ const FV_DIALECT_CREATE_ERROR = "FV_DIALECT_CREATE_ERROR";
 const FV_DIALECT_DELETE_START = "FV_DIALECT_DELETE_START";
 const FV_DIALECT_DELETE_SUCCESS = "FV_DIALECT_DELETE_SUCCESS";
 const FV_DIALECT_DELETE_ERROR = "FV_DIALECT_DELETE_ERROR";
+
+const FV_DIALECT_PUBLISH_START = "FV_DIALECT_PUBLISH_START";
+const FV_DIALECT_PUBLISH_SUCCESS = "FV_DIALECT_PUBLISH_SUCCESS";
+const FV_DIALECT_PUBLISH_ERROR = "FV_DIALECT_PUBLISH_ERROR";
+
+const FV_DIALECT_UNPUBLISH_START = "FV_DIALECT_UNPUBLISH_START";
+const FV_DIALECT_UNPUBLISH_SUCCESS = "FV_DIALECT_UNPUBLISH_SUCCESS";
+const FV_DIALECT_UNPUBLISH_ERROR = "FV_DIALECT_UNPUBLISH_ERROR";
 
 const updateDialect = function updateDialect(newDoc, field) {
   return function (dispatch) {
@@ -113,8 +127,7 @@ const fetchDialect = function fetchDialect(pathOrId) {
     }).catch((error) => {
         dispatch( { type: FV_DIALECT_FETCH_ERROR, error: error } )
     });
-    
-    
+
   }
 };
 
@@ -132,7 +145,37 @@ const fetchDialectStats = function fetchDialectStats(dialectPath, docTypes) {
 	}
 };
 
-const actions = { fetchDialectsInPath, fetchDialect, fetchDialectsAll, updateDialect, fetchDialectStats };
+const publishDialect = function publishDialect(pathOrId) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_DIALECT_PUBLISH_START } );
+
+    return DocumentOperations.publishDialect(pathOrId)
+    .then((response) => {
+      dispatch( { type: FV_DIALECT_PUBLISH_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_DIALECT_PUBLISH_ERROR, error: error } )
+    });
+
+  }
+};
+
+const unpublishDialect = function unpublishDialect(pathOrId) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_DIALECT_UNPUBLISH_START } );
+
+    return DocumentOperations.unpublishDialect(pathOrId)
+    .then((response) => {
+      dispatch( { type: FV_DIALECT_UNPUBLISH_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_DIALECT_UNPUBLISH_ERROR, error: error } )
+    });
+
+  }
+};
+
+const actions = { fetchDialectsInPath, fetchDialect, publishDialect, unpublishDialect, fetchDialectsAll, updateDialect, fetchDialectStats };
 
 const reducers = {
   computeDialectsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -220,7 +263,45 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }  
+  },
+  computeDialectPublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+    switch (action.type) {
+      case FV_DIALECT_PUBLISH_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      case FV_DIALECT_PUBLISH_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      case FV_DIALECT_PUBLISH_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+  computeDialectUnpublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+    switch (action.type) {
+      case FV_DIALECT_UNPUBLISH_START:
+        return Object.assign({}, state, { isFetching: true, success: false });
+      break;
+
+      case FV_DIALECT_UNPUBLISH_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      case FV_DIALECT_UNPUBLISH_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  }
 };
 
 const middleware = [thunk];

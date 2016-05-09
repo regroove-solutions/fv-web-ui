@@ -4,7 +4,12 @@ import selectn from 'selectn';
 export default class AuthorizationFilter extends Component {
 
   static propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
+    renderPartial: PropTypes.bool
+  };
+
+  static defaultProps = {
+    renderPartial: false
   };
 
   static contextTypes = {
@@ -25,7 +30,12 @@ export default class AuthorizationFilter extends Component {
     let currentUserEntityPermissions = selectn('contextParameters.permissions', filter.entity);
 
     if (currentUserEntityPermissions && currentUserEntityPermissions.indexOf(filter.permission) === -1) {
-    	return null;
+      if (this.props.renderPartial) {
+    	 return React.cloneElement(children, { accessDenied: true });
+      }
+      else {
+       return null;
+      }
     }
 
     let combinedStyle = { style: Object.assign({}, this.props.style, children.props.style) };

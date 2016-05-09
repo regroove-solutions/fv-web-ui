@@ -24,12 +24,6 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-// Models
-import Word from 'models/Word';
-import Words from 'models/Words';
-import Phrase from 'models/Phrase';
-import Phrases from 'models/Phrases';
-
 // Operations
 import DocumentOperations from 'operations/DocumentOperations';
 import DirectoryOperations from 'operations/DirectoryOperations';
@@ -37,6 +31,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import StatsPanel from 'views/components/Dashboard/StatsPanel';
 import Link from 'views/components/Document/Link';
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 /**
 * Learn portion of the dialect portal
@@ -58,7 +53,8 @@ export default class DialectLearn extends Component {
     fetchDialectStats: PropTypes.func.isRequired,
     computeDialectStats: PropTypes.object.isRequired,
     fetchCharacters: PropTypes.func.isRequired,
-    computeCharacters: PropTypes.object.isRequired
+    computeCharacters: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -81,12 +77,10 @@ export default class DialectLearn extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchPortal('/' + dialectPath + '/Portal');
-    newProps.fetchDialectStats('/' + dialectPath, ["words","phrases","songs","stories"]);
-    newProps.fetchCharacters('/' + dialectPath + '/Alphabet');
+    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+    newProps.fetchDialectStats(newProps.routeParams.dialect_path, ["words","phrases","songs","stories"]);
+    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
 
   // Fetch data on initial render
@@ -101,10 +95,6 @@ export default class DialectLearn extends Component {
     }
   }
 
-  _navigate(page) {
-    this.context.router.push('/explore/' + this.props.dialect.get('parentLanguageFamily').get('dc:title') + '/' + this.props.dialect.get('parentLanguage').get('dc:title') + '/' + this.props.dialect.get('dc:title') + '/learn/' + page );
-  }
-
   _onCharAudioTouchTap(charAudioId) {
 	  document.getElementById(charAudioId).play();
   }  
@@ -113,6 +103,7 @@ export default class DialectLearn extends Component {
     const { computeDialect, computePortal, computeDocument, computeDialectStats, computeCharacters } = this.props;      
     
     let dialect = computeDialect.response;
+
     let portal = computePortal.response;
     let dialectStats = computeDialectStats;
     let characters = computeCharacters.response;
@@ -129,9 +120,10 @@ export default class DialectLearn extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <div>
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.enabled', dialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.enabled', dialectStats) + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.enabled', dialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.enabled', dialectStats) + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label="Stories & Songs" secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.total', dialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.total', dialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label={(selectn('response.stories.total', dialectStats) == undefined) ? "Stories (0)" : "Stories (" + selectn('response.stories.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label={(selectn('response.songs.total', dialectStats) == undefined) ? "Songs (0)" : "Songs (" + selectn('response.songs.total', dialectStats) + ")"} secondary={true} /> 
                 </div>
               </div>
             </div>
@@ -140,7 +132,10 @@ export default class DialectLearn extends Component {
                       
               <div className={classNames('col-xs-12', 'col-md-8')}>
                 <h1>About our Language</h1>
-                <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
+
+                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
+                  <EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
+                </AuthorizationFilter>
 
                 <div className="row">
                   <div className={classNames('col-xs-12', 'col-md-6')}>
@@ -170,7 +165,9 @@ export default class DialectLearn extends Component {
               <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-12')}>
                   <h1>Contact Information</h1>
-                  <EditableComponent computeEntity={this.props.computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
+                  <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
+                    <EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
+                  </AuthorizationFilter>
                 </div>
               </div>
               </div>

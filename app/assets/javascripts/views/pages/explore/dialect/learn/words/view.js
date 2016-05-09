@@ -77,6 +77,10 @@ export default class View extends Component {
     };
 
     this.handleTabActive = this.handleTabActive.bind(this);
+
+    // Bind methods to 'this'
+    ['_handleEditRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+
   }
 
   fetchData(newProps) {
@@ -96,11 +100,25 @@ export default class View extends Component {
     this.fetchData(this.props);
   }
 
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
+  }
+
+  _handleEditRequest(item, event) {
+    // Get path name from path
+    let splitPath = item.path.split('/');
+    let wordName = splitPath[splitPath.length - 1];
+
+    this._onNavigateRequest(this.props.windowPath.replace(wordName, 'edit/' + wordName));
+  }
+
   handleTabActive(tab) {
 
     if (this.state.children != undefined && this.state.children.length > 0) {
       switch(tab.props.id) {
         case 'pictures':
+        console.log(this.state);
+        console.log(this.props);
           if (this.state.picturesContent.length == 0) {
             var pictures = _.filter(this.state.children, function(child){ if (child.type == 'FVPicture') return child; })
 
@@ -204,7 +222,7 @@ export default class View extends Component {
                     <CardHeader
                       title={selectn('title', wordResponse)}
                       subtitle={(selectn('contextParameters.word.part_of_speech', wordResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', wordResponse) : ""}
-                      avatar="http://lorempixel.com/100/100/"/>
+                      /*avatar="http://lorempixel.com/100/100/"*/ />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
                       <Tab label="Definition" > 
@@ -297,9 +315,7 @@ export default class View extends Component {
 
                   <Toolbar className="toolbar">
                     <ToolbarGroup key={0} float="right">
-                      <FontIcon className={classNames('glyphicon', 'glyphicon-pencil')} onTouchTap={this.handleEditTouchTap} />
-                      <ToolbarSeparator/>
-                      <RaisedButton onTouchTap={this.handleAddMedia} label="Add Media" primary={true} />
+                      <RaisedButton onTouchTap={this._handleEditRequest.bind(this, wordResponse)} secondary={true} label="Edit" />
                     </ToolbarGroup>
                   </Toolbar>
 

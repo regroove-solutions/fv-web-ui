@@ -203,7 +203,7 @@ export default class View extends Component {
                     <CardHeader
                       title={selectn('title', phraseResponse)}
                       subtitle={(selectn('contextParameters.word.part_of_speech', phraseResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.phrase.part_of_speech', phraseResponse) : ""}
-                      avatar="http://lorempixel.com/100/100/"/>
+                      /*avatar="http://lorempixel.com/100/100/"*/ />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
                       <Tab label="Definition" > 

@@ -20,7 +20,12 @@ export default class EditableComponent extends Component {
     computeEntity: PropTypes.object.isRequired,
     updateEntity: PropTypes.func.isRequired,
     property: PropTypes.string.isRequired,
-    options: PropTypes.array
+    options: PropTypes.array,
+    accessDenied: PropTypes.bool
+  };
+
+  static defaultProps = {
+    accessDenied: false
   };
 
   constructor(props, context) {
@@ -46,7 +51,7 @@ export default class EditableComponent extends Component {
 
     const { property } = this.props;
 
-    let entity = this.props.computeEntity.response;
+    let entity = selectn('response', this.props.computeEntity);
 
     // If still computing, return spinner
     if (entity.isFetching)
@@ -59,7 +64,7 @@ export default class EditableComponent extends Component {
     let fieldFormOptions = selectn(entity.type, options);
 
     // Handle edit mode
-    if (this.state.editModeEnabled) {
+    if (this.state.editModeEnabled && !this.props.accessDenied) {
 
       let fieldFormValues = {};
       let fieldFormStruct, fieldFormFields = null;
@@ -106,7 +111,7 @@ export default class EditableComponent extends Component {
     // Render regular field if not in edit mode
     return <div>
               <div dangerouslySetInnerHTML={{__html: currentValue}}></div>
-              <IconButton iconClassName="material-icons" onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
+              <IconButton iconClassName="material-icons" style={{display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
 

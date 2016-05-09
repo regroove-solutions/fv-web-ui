@@ -22,6 +22,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
+import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
@@ -44,7 +45,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     fetchDialect: PropTypes.func.isRequired,
     fetchPhrasesInPath: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    computePhrasesInPath: PropTypes.object.isRequired
+    computePhrasesInPath: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
@@ -79,10 +81,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchPhrasesInPath('/' + dialectPath + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
+    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchPhrasesInPath(newProps.routeParams.dialect_path + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
   }
 
   // Fetch data on initial render
@@ -103,7 +103,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath + '/' + path);
+    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
   }
 
   _onEntryNavigateRequest(item) {
@@ -117,6 +117,10 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     const { computeDialect, computePhrasesInPath } = this.props;
 
     let dialect = computeDialect.response;
+
+    if (!dialect || dialect.isFetching || !computePhrasesInPath || computePhrasesInPath.isFetching) {
+      return <CircularProgress mode="indeterminate" size={5} />;
+    }
 
     return <div>
               <div className="row">

@@ -43,7 +43,8 @@ export default class PageDialectWordsCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired
+    computeWord: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -51,7 +52,6 @@ export default class PageDialectWordsCreate extends Component {
 
     this.state = {
       formValue: null,
-      dialectPath: null,
       wordPath: null
     };
 
@@ -60,11 +60,7 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-    
-    this.setState({dialectPath: dialectPath});
-
-    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchDialect(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -128,14 +124,14 @@ export default class PageDialectWordsCreate extends Component {
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createWord('/' + this.state.dialectPath + '/Dictionary', {
+  	  this.props.createWord(this.props.routeParams.dialect_path + '/Dictionary', {
   	    type: 'FVWord',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        wordPath: '/' + this.state.dialectPath + '/Dictionary/' + formValue['dc:title'] + '.' + now
+        wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
       });
     }
 

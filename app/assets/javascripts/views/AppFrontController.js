@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+import classNames from 'classnames';
 
 import {Link} from 'provide-page';
 
@@ -48,7 +49,7 @@ import NotFound from 'views/pages/not-found';*/
 const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
 const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces'];
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit'];
 
 @provide
 export default class AppFrontController extends Component {
@@ -68,7 +69,13 @@ export default class AppFrontController extends Component {
     let splitPath = this.props.splitWindowPath;
     let breadcrumb = splitPath.map(function(path, index) {
       if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
-        return <span key={index}> &raquo; <Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></span>;
+        // Last element (i.e. current page)
+        if (index == splitPath.length - 1) {
+          return <li key={index} className="active">{decodeURIComponent(path).replace('&amp;', '&')}</li>;
+        }
+        else {
+          return <li key={index}><Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></li>;
+        }
       }
     });
     
@@ -76,7 +83,19 @@ export default class AppFrontController extends Component {
   }
 
   renderWithBreadcrumb(reactElement) {
-    return (<div><Link href="/">Home</Link> {this.renderBreadcrumb()} {reactElement}</div>)
+
+    let areaWarning;
+
+    if (reactElement.props.routeParams.area == 'Workspaces')
+      areaWarning = <div className={classNames('alert', 'alert-info')} role="alert"><strong>Reminder</strong>: <span>You are currently within a <strong>Workspace</strong>. Some of this content may not be visible to the public.</span></div>;
+
+    return (
+      <div>
+        <ol className="breadcrumb"><li><Link href="/">Home</Link></li>{this.renderBreadcrumb()}</ol>
+        {areaWarning}
+        {reactElement}
+      </div>
+    )
   }
 
   matchPath(pathMatchArray) {
@@ -171,7 +190,7 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
         page: <PageExploreDialect />,
         extractPaths: true
       },
@@ -180,8 +199,9 @@ export default class AppFrontController extends Component {
         page: <PageExploreDialectEdit />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
-        page: <PageDialectLearn />
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
+        page: <PageDialectLearn />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
@@ -196,19 +216,21 @@ export default class AppFrontController extends Component {
         page: <PageDialectGallery />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
         page: <PageDialectReports />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
-        page: <PageDialectLearnWords />
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
+        page: <PageDialectLearnWords />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ],
-        page: <PageDialectWordsCreate />
+        page: <PageDialectWordsCreate />,
+        extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', ANYTHING_BUT_SLASH ],
         page: <PageDialectViewWord />
       },
       {
@@ -216,8 +238,9 @@ export default class AppFrontController extends Component {
         page: <PageDialectWordEdit />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
-        page: <PageDialectLearnPhrases />
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
+        page: <PageDialectLearnPhrases />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ],
@@ -241,7 +264,8 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
-        page: <PageDialectCategoryCreate />
+        page: <PageDialectCategoryCreate />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],

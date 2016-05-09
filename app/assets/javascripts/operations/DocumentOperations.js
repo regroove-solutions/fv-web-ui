@@ -93,6 +93,118 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   /**
+  * Disable document
+  */
+  static disableDocument(pathOrUid) {
+
+    let properties = this.properties;
+    
+    return new Promise(
+      function(resolve, reject) {
+      properties.client
+      .operation('FVDisableDocument')
+      .input(pathOrUid)
+      .execute()
+      .then((doc) => {
+        resolve(doc);
+      })
+      .catch((error) => {
+        error.response.json().then(
+          (jsonError) => {
+            let errorMessage = jsonError.message.split(": ")[1];
+            errorMessage = "Error: " + errorMessage;
+            reject(errorMessage);
+          }
+        );
+      });
+    });            
+  }
+
+  /**
+  * Enable document
+  */
+  static enableDocument(pathOrUid) {
+
+    let properties = this.properties;
+    
+    return new Promise(
+      function(resolve, reject) {
+      properties.client
+      .operation('FVEnableDocument')
+      .input(pathOrUid)
+      .execute()
+      .then((doc) => {
+        resolve(doc);
+      })
+      .catch((error) => {
+        error.response.json().then(
+          (jsonError) => {
+            let errorMessage = jsonError.message.split(": ")[1];
+            errorMessage = "Error: " + errorMessage;
+            reject(errorMessage);
+          }
+        );
+      });
+    });            
+  }
+
+  /**
+  * Publish dialect
+  */
+  static publishDialect(pathOrUid) {
+
+    let properties = this.properties;
+    
+    return new Promise(
+      function(resolve, reject) {
+      properties.client
+      .operation('FVPublishDialect')
+      .input(pathOrUid)
+      .execute()
+      .then((doc) => {
+        resolve(doc);
+      })
+      .catch((error) => {
+        error.response.json().then(
+          (jsonError) => {
+            let errorMessage = jsonError.message.split(": ")[1];
+            errorMessage = "Error: " + errorMessage;
+            reject(errorMessage);
+          }
+        );
+      });
+    });            
+  }
+
+  /**
+  * Unpublish dialect
+  */
+  static unpublishDialect(pathOrUid) {
+
+    let properties = this.properties;
+    
+    return new Promise(
+      function(resolve, reject) {
+      properties.client
+      .operation('FVUnpublishDialect')
+      .input(pathOrUid)
+      .execute()
+      .then((doc) => {
+        resolve(doc);
+      })
+      .catch((error) => {
+        error.response.json().then(
+          (jsonError) => {
+            let errorMessage = jsonError.message.split(": ")[1];
+            errorMessage = "Error: " + errorMessage;
+            reject(errorMessage);
+          }
+        );
+      });
+    });            
+  }
+
+  /**
   * Create a document
   */
   static createDocument(parentDocPathOrId, docParams) {

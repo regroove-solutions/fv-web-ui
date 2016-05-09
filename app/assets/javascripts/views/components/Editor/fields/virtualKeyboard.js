@@ -7,13 +7,9 @@ function renderInput(locals) {
     locals.onChange(event.target.value);
   };
 
-  const triggerRealInputChange = function (event) {
-  	locals.onChange(document.getElementById('virtual-keyboard-helper-' + locals.attrs.name).value);
-  };
-
   return <div>
   	<input type="text" label={locals.label} name={locals.attrs.name} value={locals.value} onChange={onChange} style={{display: 'none'}} />
-  	<input type="text" id={'virtual-keyboard-helper-' + locals.attrs.name} value={locals.value} className="form-control" label={locals.label} onBlur={triggerRealInputChange} />
+  	<input type="text" id={'virtual-keyboard-helper-' + locals.attrs.name} value={locals.value} className="form-control" label={locals.label} onChange={onChange} onBlur={onChange} />
   </div>;
 }
 
