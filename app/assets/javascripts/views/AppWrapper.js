@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import provide from 'react-redux-provide';
 
 import AppFrontController from './AppFrontController';
@@ -77,18 +78,15 @@ export default class AppWrapper extends Component {
     this.props.connect();
     this.props.getUser();
 
-    // Init version 1.0
+    // Set KeymanWeb to manual mode -- no auto-attaching to inputs
     KeymanWeb.SetMode('manual');
 
     this.state = {
-      // kmw: tavultesoft.keymanweb // version 2.0
-      kmw: KeymanWeb // version 1.0
+      kmw: KeymanWeb
     };
   }
 
-
   KWControlChange() {
-    console.log('yeat?')
     KeymanWeb.SetActiveKeyboard(KWControl.value);
     //document.f.multilingual.focus();
   }
@@ -102,14 +100,14 @@ export default class AppWrapper extends Component {
     }
     else {
       KeymanWeb.ShowHelp(window.innerWidth - 500, getPosition().y + 200);
+      KeymanWeb.FocusLastActiveElement();
     }
+
   }
 
   componentDidMount() {
 
     setTimeout(function () {
-      
-      // Keymanweb v1.0
 
       const scriptKeymanWebDialect = document.createElement("script");
 
@@ -120,21 +118,8 @@ export default class AppWrapper extends Component {
       document.body.appendChild(scriptKeymanWebDialect);
 
       window.onscroll = function() {
-        //console.log(KeymanWeb.GetHelpPos(0,0));
         KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
       };
-
-      // Keymanweb v2.0
-
-      /*var _this = this;
-
-      (function(kmw) {
-        kmw.init();
-        kmw.addKeyboards('@eng');
-        kmw.addKeyboards('fv_dakelh_kmw');
-
-      })(tavultesoft.keymanweb);*/
-      
 
     }.bind(this), 0)
   }

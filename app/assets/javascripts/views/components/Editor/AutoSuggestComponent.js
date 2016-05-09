@@ -14,6 +14,8 @@ const theme = {
   suggestionFocused: 'active'
 };
 
+let KeymanWebChangePolling;
+
 @provide
 export default class AutoSuggestComponent extends Component {
   static propTypes = {
@@ -93,26 +95,25 @@ export default class AutoSuggestComponent extends Component {
       value: '',
       suggestions: [],
       isLoading: false,
-      selectObj: null,
-      virtualKeyboard: false,
-      virtualKeyboardId: 'virtual-keyboard-helper-' + props.locals.attrs.name
+      selectObj: null
     };
     
     this.onChange = this.onChange.bind(this);
     this.getSuggestionValue = this.getSuggestionValue.bind(this);
     this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
     this.renderSuggestion = this.renderSuggestion.bind(this);
-    this.triggerRealInputChange = this.triggerRealInputChange.bind(this);
-    this.toggleVirtualKeyboard = this.toggleVirtualKeyboard.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
-    
     if (newProps.value && newProps.value != this.state.value) {
       this.setState({
         value: newProps.value
       });
     }
+  }
+
+  componentWillUnmount() {
+    clearInterval(KeymanWebChangePolling);
   }
 
   loadSuggestions(value) {
@@ -185,46 +186,73 @@ export default class AutoSuggestComponent extends Component {
   componentDidMount() {
     setTimeout(function () {
 
-      // Disable KeymanWeb for autosuggest
-      if (this.context.kmw) {
-        this.context.kmw.DisableControl(ReactDOM.findDOMNode(this.refs["suggestion_widget"].input))
-      }
+      /**
+      * This is a workaround for Keymanweb modifying the input value directly and not triggering an onChange event.
+      * The virtual keyboard input will trigger a change on the actual suggest input via polling (see AppWrapper.js).
+      * KeymanWeb should be patched or replaced in the future eliminating the need for this code.
+      */
+      let suggestionWidgetDOM = this.refs["suggestion_widget"].input;
+
+      /**
+      * Stop polling for KeymanWeb value when element blurred
+      */
+      suggestionWidgetDOM.addEventListener("blur", function(event) {
+        clearInterval(KeymanWebChangePolling);
+        return true;
+      }.bind(this));
+
+      /**
+      * Begin polling for KeymanWeb value when element focused, if keyboard visible
+      */
+      suggestionWidgetDOM.addEventListener("focus", function(event) {
+
+        // Always clear previous interval before starting a new one
+        clearInterval(KeymanWebChangePolling);
+
+        // Only required if keyboard is visible
+        if (KeymanWeb.IsHelpVisible()) {
+
+          KeymanWebChangePolling = setInterval(function() {
+
+            // If keyboard closed, no need to keep polling
+            if (!KeymanWeb.IsHelpVisible()) {
+              clearInterval(KeymanWebChangePolling);
+              return;
+            }
+
+            let keymanWebValue = suggestionWidgetDOM.value;
+
+            // Update state value if values go out of sync, forcing an auto-suggest change
+            if (keymanWebValue != this.state.value) {
+
+              this.setState({value: keymanWebValue});
+              this.loadSuggestions(keymanWebValue);
+
+            }
+          }.bind(this), 1000);
+        }
+
+        return true;
+      }.bind(this));
 
     }.bind(this), 0);
   }
-
-  toggleVirtualKeyboard() {
-    this.setState({
-      virtualKeyboard: !this.state.virtualKeyboard
-    });
-
-    document.getElementById(this.state.virtualKeyboardId).focus();
-  }
-
-  triggerRealInputChange(event) {
-
-    let keymanWebValue = document.getElementById(this.state.virtualKeyboardId).value;
-
-    this.loadSuggestions(keymanWebValue);
-    this.onChange(event, { newValue: keymanWebValue, method: 'type'});
-
-    ReactDOM.findDOMNode(this.refs["suggestion_widget"].input).focus();
-  };
 
   render() {
 
     const { value, isLoading } = this.state;
     const inputProps = {
-      placeholder: "Start typing for suggestions...",
-      value,
-      onChange: this.onChange
+      'placeholder': "Start typing for suggestions...",
+      'value': value,
+      'onChange': this.onChange
     };
 
     const status = (this.getComputeType().isFetching ? 'Loading suggestions...' : '');
 
     return (
       <div className="row">
-        <div className="col-xs-7">
+        <div className="col-xs-12">
+
           <Autosuggest
             ref="suggestion_widget"
             theme={theme}
@@ -237,14 +265,8 @@ export default class AutoSuggestComponent extends Component {
 
           {status}
 
-          {/* KeymanWeb workaround */}
-          <input type="text" className="form-control" placeholder="Use the 'Reload' button to reload results with the virtual keyboard." style={{ maxWidth: '96%', position: 'absolute', top: '0px', display: (this.state.virtualKeyboard ? 'block' : 'none')}} id={this.state.virtualKeyboardId} className="form-control" label={this.props.locals.label} />
+        </div>
 
-        </div>
-        <div className="col-xs-5">
-          <input type="button" value={(this.state.virtualKeyboard ? 'Use Physical Keyboard' : 'Use Virtual Keyboard')} onClick={this.toggleVirtualKeyboard} />
-          <input type="button" value="Reload" style={{display: (this.state.virtualKeyboard ? 'inline' : 'none')}} onClick={this.triggerRealInputChange} />
-        </div>
       </div>
     );
   }
