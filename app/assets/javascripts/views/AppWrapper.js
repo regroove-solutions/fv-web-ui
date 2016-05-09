@@ -14,8 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 import AppFrontController from './AppFrontController';
 
@@ -25,8 +25,10 @@ import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
 import Navigation from 'views/components/Navigation';
+import FontIcon from 'material-ui/lib/font-icon';
 import Footer from 'views/components/Navigation/Footer';
-
+import Paper from 'material-ui/lib/paper';
+import FlatButton from 'material-ui/lib/flat-button';
 
 const getPosition = function getPosition() {
     var doc = document, w = window;
@@ -50,7 +52,8 @@ export default class AppWrapper extends Component {
 
   static propTypes = {
     connect: PropTypes.func.isRequired,
-    getUser: PropTypes.func.isRequired
+    getUser: PropTypes.func.isRequired,
+    computeDialectsAll: PropTypes.object.isRequired
   };
 
   static childContextTypes = {
@@ -82,17 +85,46 @@ export default class AppWrapper extends Component {
     KeymanWeb.SetMode('manual');
 
     this.state = {
-      kmw: KeymanWeb
+      kmw: KeymanWeb,
+      kmwSelectedKeyboard: null,
+      kmwLoadedKeyboards: []
     };
+
+    // Bind methods to 'this'
+    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  KWControlChange() {
-    KeymanWeb.SetActiveKeyboard(KWControl.value);
+  /**
+  * Load keymanweb keyboard dynamically
+  */ 
+  _KMWSwitchKeyboard(event) {
+
+    let index = event.nativeEvent.target.selectedIndex;
+    let newState = {
+      kmwSelectedKeyboard: event.target[index].value
+    };
+
+    if (event.nativeEvent.target[index].dataset.keyboardFile) {
+      const scriptKeymanWebDialect = document.createElement("script");
+
+      // Only load keyboard if it hasn't been loaded before
+      if (this.state.kmwLoadedKeyboards.indexOf(event.target[index].value) === -1) {
+        scriptKeymanWebDialect.src = event.target[index].dataset.keyboardFile;
+        scriptKeymanWebDialect.async = true;
+
+        document.body.appendChild(scriptKeymanWebDialect);
+
+        // Add keyboard to loaded keyboard array
+        newState['kmwLoadedKeyboards'] = this.state.kmwLoadedKeyboards.concat([event.target[index].value]);
+      }
+
+      this.setState(newState);
+    }
   }
 
-  KWHelpClick(event) {
+  _KMWToggleKeyboard(event) {
 
-    KeymanWeb.SetActiveKeyboard('Keyboard_Tsilhqotin_kmw');
+    KeymanWeb.SetActiveKeyboard(this.state.kmwSelectedKeyboard);
 
     if (KeymanWeb.IsHelpVisible()) {
       KeymanWeb.HideHelp();
@@ -105,33 +137,52 @@ export default class AppWrapper extends Component {
   }
 
   componentDidMount() {
-
-    setTimeout(function () {
-
-      const scriptKeymanWebDialect = document.createElement("script");
-
-      scriptKeymanWebDialect.src = "http://www.firstvoices.com/kmw/Tsilhqotin-Xeni-Gwetin_kmw.js";
-      scriptKeymanWebDialect.async = true;
-      scriptKeymanWebDialect.onload = this.keyboardLoaded;
-
-      document.body.appendChild(scriptKeymanWebDialect);
-
-      window.onscroll = function() {
-        KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
-      };
-
-    }.bind(this), 0)
+    window.onscroll = function() {
+      KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
+    };
   }
 
   render() {
+
+    let dialectsWithKeyboards;
+    let keyboardPicker;
+
+    if (selectn('response.entries', this.props.computeDialectsAll)) {
+
+      dialectsWithKeyboards = selectn('response.entries', this.props.computeDialectsAll).filter(function(dialect){
+        return selectn('properties.fvdialect:keymanweb.length', dialect) > 0;
+      });
+
+      if (dialectsWithKeyboards.length > 0) {
+        keyboardPicker = <Paper zDepth={1} id="kmw-switcher" style={{position: 'fixed', bottom: '0', right: '0', zIndex: '9999', padding: '5px 15px'}}>
+
+          Select Keyboard:
+
+          <select ref="kmw_keyboard_select" style={{marginLeft: '8px'}} id='KWControl' onChange={this._KMWSwitchKeyboard}>
+
+            <option>Select from list:</option>
+
+            {dialectsWithKeyboards.map(function(dialect){
+              let keyboards = selectn('properties.fvdialect:keymanweb', dialect);
+
+              return keyboards.map(function(keyboard) {
+                return <option value={keyboard['key']} data-keyboard-file={keyboard['jsfile']}>{keyboard['name']}</option>;
+              });
+            })}
+
+          </select>
+
+          <FlatButton style={{marginLeft: '8px'}} onTouchTap={this._KMWToggleKeyboard} label="Show" />
+
+        </Paper>;
+      }
+    }
+
     return <div>
       <Navigation />
       <div className="main">
         <AppFrontController />
-        <div id="test" style={{position: 'fixed', bottom: '0', right: '0', zIndex: '9999'}}>
-          <para>Keyboard: <select id='KWControl' onChange={this.KWControlChange}><option value="Keyboard_Tsilhqotin_kmw">TESTA</option></select>
-          <img src='form_help.jpg' onTouchTap={this.KWHelpClick} /></para>
-        </div>
+        {keyboardPicker}
       </div>
       <Footer />
     </div>;
