@@ -36,14 +36,9 @@ export default class DirectoryList extends Component {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
-
-    this.state = {
-      value: this.props.value
-    };
   }
 
   _handleChange(event, index, value) {
-    this.setState({value});
     this.props.onChange(value);
   }
 
@@ -63,7 +58,7 @@ export default class DirectoryList extends Component {
 
       return (
         <div>
-          <SelectField value={this.state.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
+          <SelectField value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
             {entries.map((entry) => 
               <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
             )}   
