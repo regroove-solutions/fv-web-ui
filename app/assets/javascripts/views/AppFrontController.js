@@ -1,6 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import Immutable from 'immutable';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+
 import classNames from 'classnames';
 
 import {Link} from 'provide-page';
@@ -58,89 +61,24 @@ const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit']
 export default class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    splitWindowPath: PropTypes.array.isRequired
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
     super(props, context);
 
-    this.matchPath = this.matchPath.bind(this);
+    this.state = this._getInitialState();
+
+    // Bind methods to 'this'
+    ['_matchPath', '_route'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  renderBreadcrumb() {
-    let splitPath = this.props.splitWindowPath;
-    let breadcrumb = splitPath.map(function(path, index) {
-      if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
-        // Last element (i.e. current page)
-        if (index == splitPath.length - 1) {
-          return <li key={index} className="active">{decodeURIComponent(path).replace('&amp;', '&')}</li>;
-        }
-        else {
-          return <li key={index}><Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></li>;
-        }
-      }
-    });
-    
-    return breadcrumb;
-  }
+  _getInitialState() {
 
-  renderWithBreadcrumb(reactElement) {
-
-    let areaWarning;
-
-    if (reactElement.props.routeParams.area == 'Workspaces')
-      areaWarning = <div className={classNames('alert', 'alert-info')} role="alert"><strong>Reminder</strong>: <span>You are currently within a <strong>Workspace</strong>. Some of this content may not be visible to the public.</span></div>;
-
-    return (
-      <div>
-        <ol className="breadcrumb"><li><Link href="/">Home</Link></li>{this.renderBreadcrumb()}</ol>
-        {areaWarning}
-        {reactElement}
-      </div>
-    )
-  }
-
-  matchPath(pathMatchArray) {
-
-    // Remove empties from path array
-    const currentPathArray = this.props.splitWindowPath.filter(function(e){ return e; });
-
-    if (pathMatchArray.length != currentPathArray.length) {
-      return { result: false, routeParams: {} };
-    }
-
-    let matchedRouteParams = {};
-
-    let matches = pathMatchArray.every(function(element, index) {
-      if (element instanceof RegExp) {
-        return element.test(currentPathArray[index]);
-      }
-      else if (element instanceof paramMatch)
-      {
-        if (element.hasOwnProperty('matcher')) {
-          let testMatch = element.matcher.test(currentPathArray[index])
-
-          if (testMatch) {
-            matchedRouteParams[element.id] = decodeURI(currentPathArray[index]);
-            return true;
-          }
-        }
-
-        return false;
-      }
-      else {
-        return element === currentPathArray[index]; 
-      }
-    });
-
-    return { result: matches, routeParams: matchedRouteParams };
-  }
-
-  render() {
-
-    let page = <div>404</div>;
-
-    let routes = [
+    const routes = Immutable.fromJS([
       {
         path: [],
         page: <PageHome />
@@ -163,7 +101,13 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
-        page: <PageExploreDialects />
+        page: <PageExploreDialects />,
+        redirects: [
+          {
+            condition: function(props) { return (!selectn("isConnected", props.computeLogin) && props.splitWindowPath[2] == 'Workspaces') },
+            target: '/explore/FV/sections/Data'
+          }
+        ]
       },
       {
         path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', 'search', ANYTHING_BUT_SLASH],
@@ -292,35 +236,162 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
         page: <PageDialectPhraseBooksCreate />
-      },
-    ];
+      }
+    ]);
 
-    for (let i = 0; i < routes.length; ++i) {
-      let matchTest = this.matchPath(routes[i].path);
+    return {
+      routes: routes,
+      matchedPage: null,
+      matchedRouteParams: []
+    };
+  }
 
-      if (matchTest.result) {
+  /**
+  * Conditionally route the parameters.
+  * This could normally go into the render method to keep things simple,
+  * however redirecting (i.e. updating state), cannot be done inside render.
+  */
+  _route(props) {
+
+    let matchedPage, matchedRouteParams;
+
+    const pathArray = props.splitWindowPath;
+
+    this.state.routes.forEach(function(value, key) {
+
+      let matchTest = this._matchPath(value.get('path'), pathArray);
+
+      if (matchTest.matched) {
 
         let routeParams = matchTest.routeParams;
-        
+
         // Extract common paths from URL
-        if (routes[i].hasOwnProperty('extractPaths') && routes[i].extractPaths) {
-          if (this.props.splitWindowPath.length >= 7)
-            routeParams['dialect_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 7).join('/'));
+        if (value.has('extractPaths') && value.get('extractPaths')) {
+          if (pathArray.length >= 7)
+            routeParams['dialect_path'] = decodeURI('/' + pathArray.slice(1, 7).join('/'));
 
-          if (this.props.splitWindowPath.length >= 6)
-            routeParams['language_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 6).join('/'));
+          if (pathArray.length >= 6)
+            routeParams['language_path'] = decodeURI('/' + pathArray.slice(1, 6).join('/'));
 
-          if (this.props.splitWindowPath.length >= 5)
-            routeParams['language_family_path'] = decodeURI('/' + this.props.splitWindowPath.slice(1, 5).join('/'));
+          if (pathArray.length >= 5)
+            routeParams['language_family_path'] = decodeURI('/' + pathArray.slice(1, 5).join('/'));
         }
 
-        page = this.renderWithBreadcrumb(React.cloneElement(routes[i].page, {routeParams: routeParams}));
+        matchedPage = value;
+        matchedRouteParams = routeParams;
 
-        break;
+        // Break out of forEach
+        return false;
       }
-    };
+    }.bind(this));
 
-    return (page);
+    // Redirect if required
+    if (matchedPage.has('redirects')) {
+      matchedPage.get('redirects').forEach(function(value, key) {
+        
+        let redirectCondition = value.get('condition');
+
+        if (value.get('condition')(props)) {
+          props.replaceWindowPath(value.get('target'));
+          return false;
+        }
+      }.bind(this));
+    }
+
+    this.setState({
+      matchedPage: matchedPage,
+      matchedRouteParams: matchedRouteParams
+    });
+  }
+
+  componentWillMount() {
+    this._route(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this._route(nextProps);
+  }
+
+  _renderBreadcrumb() {
+    let splitPath = this.props.splitWindowPath;
+    let breadcrumb = splitPath.map(function(path, index) {
+      if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
+        // Last element (i.e. current page)
+        if (index == splitPath.length - 1) {
+          return <li key={index} className="active">{decodeURIComponent(path).replace('&amp;', '&')}</li>;
+        }
+        else {
+          return <li key={index}><Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></li>;
+        }
+      }
+    });
+    
+    return breadcrumb;
+  }
+
+  _renderWithBreadcrumb(reactElement) {
+
+    let areaWarning;
+
+    if (reactElement.props.routeParams.area == 'Workspaces')
+      areaWarning = <div className={classNames('alert', 'alert-info')} role="alert"><strong>Reminder</strong>: <span>You are currently within a <strong>Workspace</strong>. Some of this content may not be visible to the public.</span></div>;
+
+    return (
+      <div>
+        <ol className="breadcrumb"><li><Link href="/">Home</Link></li>{this._renderBreadcrumb()}</ol>
+        {areaWarning}
+        {reactElement}
+      </div>
+    )
+  }
+
+  /**
+  * Tests to see if current URL matches route.
+  * Return object with matched boolean and route params returned
+  */
+  _matchPath(pathMatchArray, urlPath) {
+
+    // Remove empties from path array, return Immutable list
+    const currentPathArray = Immutable.fromJS(urlPath.filter(function(e){ return e; }));
+
+    if (pathMatchArray.size != currentPathArray.size) {
+      return { matched: false, routeParams: {} };
+    }
+
+    let matchedRouteParams = {};
+
+    let matched = pathMatchArray.every(function(value, key) {
+
+      if (value instanceof RegExp) {
+        return value.test(currentPathArray.get(key));
+      }
+      else if (value instanceof paramMatch)
+      {
+        if (value.hasOwnProperty('matcher')) {
+          let testMatch = value.matcher.test(currentPathArray.get(key))
+
+          if (testMatch) {
+            matchedRouteParams[value.id] = decodeURI(currentPathArray.get(key));
+            return true;
+          }
+        }
+
+        return false;
+      }
+      else {
+        return value === currentPathArray.get(key); 
+      }
+    });
+
+    return { matched: matched, routeParams: matchedRouteParams };
+  }
+
+  render() {
+    return (
+      this._renderWithBreadcrumb(
+        React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams})
+      )
+    );
   }
 }
 
