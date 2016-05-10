@@ -14,8 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Immutable from 'immutable';
 
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
 import {Divider, List, ListItem, LeftNav, AppBar} from 'material-ui/lib';
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
@@ -29,14 +31,91 @@ export default class AppLeftNav extends Component {
     toggleMenuAction: PropTypes.func.isRequired,
     computeToggleMenuAction: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired
+    pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired
   };
+
+
+/*
+new List([])
+        // Replace entry within state
+        return state.set(indexOfEntry, Map({
+          id: action.pathOrId,
+          isFetching: false,
+          success: true,
+          response: action.response
+        }));
+*/
 
   constructor(props, context) {
     super(props, context);
 
+    this.state = this._getInitialState();
+
     // Bind methods to 'this'
     ['_onNavigateRequest', '_onRequestChange'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  /**
+  * Initial state
+  */
+  _getInitialState() {
+
+    const routes = Immutable.fromJS([
+      {
+        id: 'get-started',
+        label: "Get Started",
+        path: "/get-started/"
+      },
+      {
+        id: 'explore',
+        label: 'Explore',
+        path: '/explore/FV/sections/Data/',
+      },
+      {
+        id: 'contribute',
+        label: "Contribute",
+        path: "/contribute/"
+      },
+      {
+        id: 'play',
+        label: "Play",
+        path: "/play/"
+      }
+    ]);
+
+    return {
+      routes: routes
+    };
+  }
+
+  componentWillReceiveProps(newProps) {
+    /**
+    * If the user is connected, display modified routes (splitting Explore path)
+    */
+    if (selectn("isConnected", this.props.computeLogin)) {
+
+      let nestedItems = [
+          <ListItem key="Workspaces" value="/explore/FV/Workspaces/Data/" secondaryText={<p>View work in progress or unpublished content.</p>} secondaryTextLines={2} primaryText="Workspace Dialects" />,
+          <ListItem key="sections" value="/explore/FV/sections/Data/" secondaryText={<p>View dialects as an end user would view them.</p>} secondaryTextLines={2} primaryText="Published Dialects" />
+      ];
+
+      let exploreEntry = this.state.routes.findEntry(function(value, key) {
+        return value.get('id') === 'explore';
+      });
+
+      let newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems);
+
+      let newState = this.state.routes.set(exploreEntry[0], newExploreEntry);
+
+      console.log(newState);
+
+      this.setState({routes: newState});
+
+    } else {
+      // If user logged out, revert to initial state
+      this.setState(this._getInitialState());
+    }
   }
 
   _onNavigateRequest(event, path) {
@@ -55,26 +134,6 @@ export default class AppLeftNav extends Component {
 
   render() {
 
-    // TODO: Externalize these
-    const routes = [
-      {
-        label: "Get Started",
-        path: "/get-started/"
-      },
-      {
-        label: "Explore",
-        path: "/explore/"
-      },
-      {
-        label: "Contribute",
-        path: "/contribute/"
-      },
-      {
-        label: "Play",
-        path: "/play/"
-      }
-    ];
-
     return (
       <LeftNav 
         docked={false}
@@ -89,11 +148,12 @@ export default class AppLeftNav extends Component {
               requestChange: this._onNavigateRequest
           }}>
 
-            {routes.map((d, i) => 
+            {this.state.routes.map((d, i) => 
                 <ListItem
-                  key={d.path}
-                  value={d.path}
-                  primaryText={d.label} />
+                  key={d.get('id')}
+                  value={d.get('path')}
+                  nestedItems={d.get('nestedItems')}
+                  primaryText={d.get('label')} />
             )}
 
           </SelectableList>

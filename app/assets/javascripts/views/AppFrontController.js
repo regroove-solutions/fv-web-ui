@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import {Link} from 'provide-page';
 
-import { PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
@@ -14,7 +14,10 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
-import { PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate, PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate, PageDialectContributorsCreate } from 'views/pages/create';
+import {
+  PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate,
+  PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
+  PageDialectContributorsCreate, PageDialectStoriesAndSongsBookEntryCreate } from 'views/pages/create';
 
 // To be used later views below:
 
@@ -55,8 +58,7 @@ const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit']
 export default class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    computeLogin: PropTypes.object.isRequired
+    splitWindowPath: PropTypes.array.isRequired
   };
 
   constructor(props, context) {
@@ -119,7 +121,7 @@ export default class AppFrontController extends Component {
           let testMatch = element.matcher.test(currentPathArray[index])
 
           if (testMatch) {
-            matchedRouteParams[element.id] = currentPathArray[index];
+            matchedRouteParams[element.id] = decodeURI(currentPathArray[index]);
             return true;
           }
         }
@@ -136,16 +138,12 @@ export default class AppFrontController extends Component {
 
   render() {
 
-    if (selectn("isConnected", this.props.computeLogin)) {
-      //fetchPath = 'Workspaces/';
-    }
-
     let page = <div>404</div>;
 
     let routes = [
       {
         path: [],
-        page: <div>Welcome home!!!</div>
+        page: <PageHome />
       },
       {
         path: ['get-started'],
@@ -164,8 +162,8 @@ export default class AppFrontController extends Component {
         page: <PageExploreArchive />
       },
       {
-        path: ['explore', 'FV', , 'Data', 'search'],
-        page: <PageSearch />
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
+        page: <PageExploreDialects />
       },
       {
         path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', 'search', ANYTHING_BUT_SLASH],
@@ -251,16 +249,40 @@ export default class AppFrontController extends Component {
         page: <PageDialectViewPhrase />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs' ],
-        page: <PageDialectLearnStoriesAndSongs />
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],
+        page: <PageDialectLearnStoriesAndSongs typeFilter="story" />
       },
       {
-        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs', 'create' ],
-        page: <PageDialectStoriesAndSongsCreate />
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
+        page: <PageDialectLearnStoriesAndSongs typeFilter="song" />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories-songs', ANYTHING_BUT_SLASH ],
-        page: <PageDialectViewBook />
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create' ],
+        page: <PageDialectStoriesAndSongsCreate typeFilter="story" />
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', 'create' ],
+        page: <PageDialectStoriesAndSongsCreate typeFilter="song" />
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        page: <PageDialectViewBook typeFilter="song" />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        page: <PageDialectViewBook typeFilter="story" />,
+        extractPaths: true
+      },
+      {
+        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
