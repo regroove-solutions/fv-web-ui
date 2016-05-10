@@ -104,7 +104,7 @@ export default class AppFrontController extends Component {
         page: <PageExploreDialects />,
         redirects: [
           {
-            condition: function(props) { return (!selectn("isConnected", props.computeLogin) && props.splitWindowPath[2] == 'Workspaces') },
+            condition: function(props) { return (selectn("isConnected", props.computeLogin) === false && props.splitWindowPath[2] == 'Workspaces') },
             target: '/explore/FV/sections/Data'
           }
         ]
