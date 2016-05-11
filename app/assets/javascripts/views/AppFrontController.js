@@ -59,11 +59,17 @@ const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
 
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit'];
 
+const WORKSPACE_TO_SECTION_REDIRECT = {
+  condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') },
+  target: function(params) { return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections'); }
+};
+
 @provide
 export default class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
+    windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired
@@ -104,39 +110,40 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
         page: <PageExploreDialects />,
-        redirects: [
-          {
-            condition: function(props) { return (selectn("isConnected", props.computeLogin) === false && props.splitWindowPath[2] == 'Workspaces') },
-            target: '/explore/FV/sections/Data'
-          }
-        ]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', ANYTHING_BUT_SLASH],
-        page: <PageSearch />
+        page: <PageSearch />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
-        page: <PageSearch />
+        page: <PageSearch />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
-        page: <PageSearch />
+        page: <PageSearch />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', new paramMatch('language_family', ANYTHING_BUT_SLASH)],
         page: <PageExploreFamily />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
         page: <PageExploreLanguage />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
         page: <PageExploreDialect />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit' ],
@@ -145,11 +152,13 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
         page: <PageDialectLearn />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
-        page: <PageDialectPlay />
+        page: <PageDialectPlay />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create' ],
@@ -157,16 +166,19 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', ANYTHING_BUT_SLASH ],
-        page: <PageDialectGallery />
+        page: <PageDialectGallery />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
-        page: <PageDialectReports />
+        page: <PageDialectReports />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
         page: <PageDialectLearnWords />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ],
@@ -175,7 +187,8 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', ANYTHING_BUT_SLASH ],
-        page: <PageDialectViewWord />
+        page: <PageDialectViewWord />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'edit', ANYTHING_BUT_SLASH ],
@@ -184,7 +197,8 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
         page: <PageDialectLearnPhrases />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ],
@@ -192,15 +206,18 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', ANYTHING_BUT_SLASH ],
-        page: <PageDialectViewPhrase />
+        page: <PageDialectViewPhrase />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],
-        page: <PageDialectLearnStoriesAndSongs typeFilter="story" />
+        page: <PageDialectLearnStoriesAndSongs typeFilter="story" />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
-        page: <PageDialectLearnStoriesAndSongs typeFilter="song" />
+        page: <PageDialectLearnStoriesAndSongs typeFilter="song" />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create' ],
@@ -213,22 +230,26 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewBook typeFilter="song" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewBook typeFilter="story" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
@@ -236,7 +257,7 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', new RegExp("(sections|Workspaces)"), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
         page: <PageDialectPhraseBooksCreate />
       }
     ]);
@@ -294,11 +315,9 @@ export default class AppFrontController extends Component {
       // Redirect if required
       if (matchedPage.has('redirects')) {
         matchedPage.get('redirects').forEach(function(value, key) {
-          
-          let redirectCondition = value.get('condition');
 
-          if (value.get('condition')(props)) {
-            props.replaceWindowPath(value.get('target'));
+          if (value.get('condition')({props: props})) {
+            props.replaceWindowPath(value.get('target')({props: props}));
             return false;
           }
         }.bind(this));
@@ -336,18 +355,31 @@ export default class AppFrontController extends Component {
     return breadcrumb;
   }
 
-  _renderWithBreadcrumb(reactElement) {
-
-    let areaWarning;
-
-    if (reactElement.props.routeParams.area == 'Workspaces')
-      areaWarning = <div className={classNames('alert', 'alert-info')} role="alert"><strong>Reminder</strong>: <span>You are currently within a <strong>Workspace</strong>. Some of this content may not be visible to the public.</span></div>;
+  _renderWithBreadcrumb(reactElement, props) {
 
     return (
       <div>
-        <ol className="breadcrumb"><li><Link href="/">Home</Link></li>{this._renderBreadcrumb()}</ol>
-        {areaWarning}
+
+        <div className="clearfix">
+
+          {(() => {
+
+            if (selectn("isConnected", props.computeLogin)) {
+
+              return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle"}}>
+                <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace Area</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Published Area</Link></li>
+              </ul>;
+
+            }
+
+          })()}
+
+          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb()}</ol>
+
+        </div>
+
         {reactElement}
+
       </div>
     )
   }
@@ -403,7 +435,8 @@ export default class AppFrontController extends Component {
       page = <div>404</div>;
     } else {
       page = this._renderWithBreadcrumb(
-          React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams})
+          React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams}),
+          this.props
       );
     }
 

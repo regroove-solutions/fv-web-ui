@@ -133,19 +133,13 @@ export default class Navigation extends Component {
 
   render() {
 
-    let LoginCont = <Login label="Sign in"/>;
-
-    /*if (this.props.computeLogin.newState === 'test') {
-      LoginCont = "Welcome " + this.props.computeLogin + "! ";
-    }*/
-
     return <div>
         <AppBar
           title={this.props.properties.title}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup>
-            {LoginCont}
+            <Login label="Sign in"/>
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
             <TextField ref="navigationSearchField" hintText={this.state.hintTextSearch} onBlur={() => this.setState({hintTextSearch: 'Search:'})} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />

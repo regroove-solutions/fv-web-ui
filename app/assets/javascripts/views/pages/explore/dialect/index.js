@@ -27,7 +27,6 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
-import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import Toggle from 'material-ui/lib/toggle';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
@@ -185,8 +184,7 @@ export default class ExploreDialect extends Component {
 
 
   _handleDialectSearchSubmit() {
-	  let queryParam = this.refs.dialectSearchField.getValue();	  
-	  console.log(queryParam);	  
+	  let queryParam = this.refs.dialectSearchField.getValue();	    
       // Clear out the input field
       //this.refs.dialectSearchField.setValue("");
 	  this.props.replaceWindowPath(this.props.windowPath + '/search/' + queryParam); 
@@ -206,15 +204,15 @@ export default class ExploreDialect extends Component {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-    /*if (computeDialect.isError) {
+    if (computeDialect.isError) {
       return <div>{computeDialect.error}</div>;
-    }*/
+    }
 
     if (computePublish.isFetching) {
         return <CircularProgress mode="indeterminate" size={5} />;
     }    
 
-    let portalBackgroundImagePath = "";
+    let portalBackgroundImagePath = "/assets/images/cover.png";
 
     if (selectn('contextParameters.portal.fv-portal:background_top_image', portal)) {
     	portalBackgroundImagePath = ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:background_top_image.path', portal);
@@ -222,8 +220,9 @@ export default class ExploreDialect extends Component {
     
     let portalBackgroundStyles = {
     	position: 'relative',
-    	minHeight: '155px',
+    	minHeight: '200px',
     	backgroundColor: 'transparent',
+      backgroundSize: 'cover',
     	backgroundImage: 'url("' + portalBackgroundImagePath + '")',
     	backgroundPosition: '0 0',
     }    
@@ -239,78 +238,100 @@ export default class ExploreDialect extends Component {
 
     return <div>
 
-            <h1>{dialect.get('dc:title')} Community Portal</h1>
+            <div className="page-header" style={{minHeight: '100px', marginTop: '15px'}}>
+              {(selectn('contextParameters.portal.fv-portal:logo', portal)) ? 
+                <img className="pull-left" style={{maxHeight: '100px'}} src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:logo', portal).path} /> : ''
+              }
+              <h1>{dialect.get('dc:title')} Community Portal</h1>
+              <div>
+                <span className={classNames('label', 'label-primary')}><strong>543</strong> Words</span> <span className={classNames('label', 'label-primary')}><strong>143</strong> Phrases</span> <span className={classNames('label', 'label-primary')}><strong>243</strong> Songs</span> <span className={classNames('label', 'label-primary')}><strong>43</strong> Stories</span> 
+              </div>
+            </div>
 
-            <Toolbar>
+            {(() => {
+              if (this.props.routeParams.area == 'Workspaces') {
+                
+                return <Toolbar>
 
-              <ToolbarGroup float="left">
+                  <ToolbarGroup float="right">
 
-                <DropDownMenu value={this.props.routeParams.area} onChange={this._onSwitchAreaRequest}>
-                  <MenuItem disabled={!dialectPublished} value='sections' primaryText="Published Version" />
-                  <MenuItem value='Workspaces' primaryText="Workspace Version" />
-                </DropDownMenu>
-              </ToolbarGroup>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
+                      <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                        <Toggle
+                          toggled={dialectEnabled || dialectPublished}
+                          onToggle={this._dialectActionsToggleEnabled}
+                          ref="enabled"
+                          disabled={dialectPublished}
+                          name="enabled"
+                          value="enabled"
+                          label="Enabled"/>
+                      </div>
+                    </AuthorizationFilter>
 
-              <ToolbarGroup float="right">
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
+                      <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                        <Toggle
+                          toggled={dialectPublished}
+                          onToggle={this._dialectActionsTogglePublished}
+                          disabled={!dialectEnabled && !dialectPublished}
+                          name="published"
+                          value="published"
+                          label="Published"/>
+                      </div>
+                    </AuthorizationFilter>
 
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
-                  <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                    <Toggle
-                      toggled={dialectEnabled || dialectPublished}
-                      onToggle={this._dialectActionsToggleEnabled}
-                      ref="enabled"
-                      disabled={dialectPublished}
-                      name="enabled"
-                      value="enabled"
-                      label="Enabled"/>
-                  </div>
-                </AuthorizationFilter>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
+                      <RaisedButton disabled={!dialectPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
+                    </AuthorizationFilter>
 
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
-                  <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                    <Toggle
-                      toggled={dialectPublished}
-                      onToggle={this._dialectActionsTogglePublished}
-                      disabled={!dialectEnabled && !dialectPublished}
-                      name="published"
-                      value="published"
-                      label="Published"/>
-                  </div>
-                </AuthorizationFilter>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
+                      <RaisedButton label="Edit Portal" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                    </AuthorizationFilter>
 
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
-                  <RaisedButton disabled={!dialectPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
-                </AuthorizationFilter>
+                    <ToolbarSeparator />
 
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
-                  <RaisedButton label="Edit Portal" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
-                </AuthorizationFilter>
+                    <IconMenu iconButtonElement={
+                      <IconButton tooltip="More Options" touch={true}>
+                        <NavigationExpandMoreIcon />
+                      </IconButton>
+                    }>
+                      <MenuItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
+                    </IconMenu>
+                  </ToolbarGroup>
 
-                <ToolbarSeparator />
-
-                <IconMenu iconButtonElement={
-                  <IconButton tooltip="More Options" touch={true}>
-                    <NavigationExpandMoreIcon />
-                  </IconButton>
-                }>
-                  <MenuItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
-                </IconMenu>
-              </ToolbarGroup>
-
-            </Toolbar>
+                </Toolbar>;
+              }
+            })()}
 
             <div style={portalBackgroundStyles}>
-
-            	{(selectn('contextParameters.portal.fv-portal:logo', portal)) ? 
-                	<img style={{float: 'left', maxWidth: '200px'}} src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:logo', portal).path} />
-                  : ''
-              }
             
               <h2 style={{float: 'left', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                 <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
                   <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
                 </AuthorizationFilter>
               </h2>
+
+              <div className="pull-right" style={{"width":"200px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px"}}>
+                <div>
+                  <strong>Name of Archive</strong>: 
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
+                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" entity={dialect} />
+                    </AuthorizationFilter>
+                  </div>
+
+                  <hr style={{margin: "5px 0"}} />
+
+                  <div>
+                    <strong>Country</strong><br/>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
+                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" entity={dialect} />
+                    </AuthorizationFilter>
+                  </div>
+
+                  <hr style={{margin: "5px 0"}} />
+
+                  <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
+              </div>
 
               <div>
                 {(selectn('contextParameters.portal.fv-portal:featured_audio', portal)) ? 
@@ -337,36 +358,8 @@ export default class ExploreDialect extends Component {
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-3', 'col-md-2')}>
-                <Paper style={{padding: '25px'}} zDepth={2}>
-
-                  <strong><span>First Words</span></strong><br />
-
-                  {(selectn('contextParameters.portal.fv-portal:featured_words', portal) || []).map((word, i) =>                     
-                  	<div key={i}>
-                  		<strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
-                  		{(word['fv:related_audio'][0]) ? 
-                  				<audio src={ConfGlobal.baseURL + word['fv:related_audio'][0].path} controls />
-      			    	    : ''}
-                  		<br />
-                  		<span>{word['fv-word:part_of_speech']}</span><br />
-                  		{word['fv:literal_translation'].map((wordTranslation, j) =>
-                  			<span key={j}>
-                  				{wordTranslation.language}<br />
-                  				{wordTranslation.translation}
-                  			</span>
-                  		)}
-                  		<br /><br />
-                  	</div>
-                  )}   
-                  
-                </Paper>
-
-              </div>
-
-              <div className={classNames('col-xs-6', 'col-md-8')}>
+              <div className={classNames('col-xs-9', 'col-md-10')}>
                 <div>
-                  <h1>Portal</h1>
                   <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
                     <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" entity={portal} />
                   </AuthorizationFilter>
@@ -375,40 +368,60 @@ export default class ExploreDialect extends Component {
 
               <div className={classNames('col-xs-3', 'col-md-2')}>
 
-                <Paper style={{padding: '15px'}} zDepth={2}>
+                {(() => {
 
-                  <div className="subheader">Status of our Langauge</div>
+                  const featuredWords = selectn('contextParameters.portal.fv-portal:featured_words', portal);
 
-                  <div>
-                    <strong>Name of Archive</strong><br/>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:title" entity={dialect} />
-                    </AuthorizationFilter>
-                  </div>
+                  if (featuredWords && featuredWords.length > 0) {
 
-                  <hr/>
+                      return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
 
-                  <div>
-                    <strong>Country</strong><br/>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:country" entity={dialect} />
-                    </AuthorizationFilter>
-                  </div>
+                            <strong><span>First Words</span></strong><br />
 
-                  <hr/>
+                            {(featuredWords || []).map((word, i) =>
+                              <div key={i}>
+                                <strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
+                                {(word['fv:related_audio'][0]) ? 
+                                    <audio src={ConfGlobal.baseURL + word['fv:related_audio'][0].path} controls />
+                                : ''}
+                                <br />
+                                <span>{word['fv-word:part_of_speech']}</span><br />
+                                {word['fv:literal_translation'].map((wordTranslation, j) =>
+                                  <span key={j}>
+                                    {wordTranslation.language}<br />
+                                    {wordTranslation.translation}
+                                  </span>
+                                )}
+                                <br /><br />
+                              </div>
+                            )} 
+                            
+                          </Paper>;
+                    }
 
-                  <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
+                  })()}
 
-                  <hr/>
+                  {(() => {
 
-                  <strong>Related Links</strong>
-                  {(selectn('contextParameters.portal.fv-portal:related_links', portal) || []).map((link, i) =>
-                  	<Link key={i} data={link} showDescription={false} />
-                  )}                      	
-                  
-                </Paper>
+                    const relatedLinks = selectn('contextParameters.portal.fv-portal:related_links', portal);
+
+                    if (relatedLinks && relatedLinks.length > 0) {
+
+                        return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
+
+                              <strong><span>Related Links</span></strong><br />
+
+                              {(relatedLinks || []).map((link, i) =>
+                                <Link key={i} data={link} showDescription={false} />
+                              )} 
+                              
+                            </Paper>;
+                      }
+
+                    })()}
 
               </div>
+
           </div>
         </div>;
   }

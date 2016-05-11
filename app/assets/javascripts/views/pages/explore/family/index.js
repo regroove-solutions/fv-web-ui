@@ -53,9 +53,21 @@ export default class ExploreFamily extends Component {
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
+  fetchData(newProps) {
+    this.props.fetchFamily(newProps.routeParams.language_family_path);
+    this.props.fetchLanguagesInPath(newProps.routeParams.language_family_path);
+  }
+
+  // Fetch data on initial render
   componentDidMount() {
-    this.props.fetchFamily(this.props.routeParams.language_family_path);
-    this.props.fetchLanguagesInPath(this.props.routeParams.language_family_path);
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(path) {

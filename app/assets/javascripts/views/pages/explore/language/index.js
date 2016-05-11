@@ -38,7 +38,8 @@ export default class ExploreLanguage extends Component {
     computeLanguage: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired
+    splitWindowPath: PropTypes.array.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   /*static contextTypes = {
@@ -52,11 +53,23 @@ export default class ExploreLanguage extends Component {
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  componentDidMount() {
-    let path = this.props.splitWindowPath.slice(1).join('/');
 
-    this.props.fetchLanguage('/' + path);
-    this.props.fetchDialectsInPath('/' + path);
+
+  fetchData(newProps) {
+    this.props.fetchLanguage(newProps.routeParams.language_path);
+    this.props.fetchDialectsInPath(newProps.routeParams.language_path);
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(path) {

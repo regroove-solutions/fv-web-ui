@@ -15,20 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
-import _ from 'underscore';
 import selectn from 'selectn';
-
-//import connectToStores from 'alt-utils/lib/connectToStores';
-
-// Configuration
-import ConfGlobal from 'conf/local.json';
-
-// Stores
-//import UserStore from 'stores/UserStore';
-//import ClientStore from 'stores/ClientStore';
-
-// Actions
-//import UserActions from 'actions/UserActions';
 
 // Components
 import Popover from 'material-ui/lib/popover/popover';
@@ -95,11 +82,13 @@ export default class Login extends Component {
       this.setState({loginAttempted: true});
       this.props.login(username, password);
     }
+
+    this._handleClose();
   }
 
   _handleLogout() {
 
-    this.setState({loginAttempted: false, open: false});
+    this.setState({loginAttempted: false});
     this.props.logout();
   }
 
