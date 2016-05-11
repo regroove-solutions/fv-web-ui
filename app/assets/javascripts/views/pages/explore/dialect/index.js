@@ -105,6 +105,7 @@ export default class ExploreDialect extends Component {
   }
 
   fetchData(newProps) {
+    console.log(newProps.routeParams.dialect_path);
     newProps.fetchDialect(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDirectory('fv_countries');
@@ -118,11 +119,11 @@ export default class ExploreDialect extends Component {
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
+      //this.fetchData(nextProps);
     }
 
     else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      this.fetchData(nextProps);
+      //this.fetchData(nextProps);
     }
   }
 

@@ -57,7 +57,7 @@ import NotFound from 'views/pages/not-found';*/
 const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
 const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit'];
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search'];
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') },
@@ -342,8 +342,11 @@ export default class AppFrontController extends Component {
     this._route(nextProps);
   }
 
-  _renderBreadcrumb() {
-    let splitPath = this.props.splitWindowPath;
+  _renderBreadcrumb(matchedPage) {
+    let props = this.props;
+    let splitPath = props.splitWindowPath;
+    let routes = this.state.routes;
+
     let breadcrumb = splitPath.map(function(path, index) {
       if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
         // Last element (i.e. current page)
@@ -351,15 +354,45 @@ export default class AppFrontController extends Component {
           return <li key={index} className="active">{decodeURIComponent(path).replace('&amp;', '&')}</li>;
         }
         else {
-          return <li key={index}><Link key={index} href={"/" + splitPath.slice(0, index + 1).join('/')}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></li>;
+
+          let hrefPath = "/" + splitPath.slice(0, index + 1).join('/');
+
+          /**
+          * Replace breadcrumb entry with redirect value. Solved some rendering issues. Needs more robust solution though.
+          */
+          routes.forEach(function(value, key) {
+
+            let matchTest = this._matchPath(value.get('path'), [ path ]);
+
+            if (matchTest.matched) {
+
+              // Redirect if required
+              if (value.has('redirects')) {
+                value.get('redirects').forEach(function(redirectValue, key) {
+
+                  if (redirectValue.get('condition')({props: props})) {
+                    hrefPath = redirectValue.get('target')({props: props});
+                    console.log(hrefPath);
+                    return false;
+                  }
+                }.bind(this));
+              }
+
+              // Break out of forEach
+              return false;
+            }
+
+          }.bind(this));
+
+          return <li key={index}><Link key={index} href={hrefPath}>{decodeURIComponent(path).replace('&amp;', '&')}</Link></li>;
         }
       }
-    });
+    }.bind(this));
     
     return breadcrumb;
   }
 
-  _renderWithBreadcrumb(reactElement, props) {
+  _renderWithBreadcrumb(reactElement, matchedPage, props) {
 
     return (
       <div>
@@ -378,7 +411,7 @@ export default class AppFrontController extends Component {
 
           })()}
 
-          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb()}</ol>
+          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb(matchedPage)}</ol>
 
         </div>
 
@@ -439,14 +472,15 @@ export default class AppFrontController extends Component {
       page = <div>404</div>;
     } else {
       page = this._renderWithBreadcrumb(
-          React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams}),
+          React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams }),
+          matchedPage,
           this.props
       );
     }
 
     return (
       <div>
-        <Navigation routeParams={this.state.matchedRouteParams} />
+        <Navigation routeParams={matchedRouteParams} />
         <div className="main">
           {page}
         </div>

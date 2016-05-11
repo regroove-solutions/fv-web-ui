@@ -44,10 +44,24 @@ export default class ExploreArchive extends Component {
   constructor(props, context){
     super(props, context);
 
-    this.props.fetchFamiliesInPath('/' + props.properties.domain + '/sections/');
-
     // Bind methods to 'this'
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  fetchData(newProps) {
+    this.props.fetchFamiliesInPath('/' + newProps.properties.domain + '/sections/');
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(path) {
