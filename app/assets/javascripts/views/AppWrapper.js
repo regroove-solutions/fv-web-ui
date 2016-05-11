@@ -24,7 +24,6 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
-import Navigation from 'views/components/Navigation';
 import FontIcon from 'material-ui/lib/font-icon';
 import Footer from 'views/components/Navigation/Footer';
 import Paper from 'material-ui/lib/paper';
@@ -179,12 +178,9 @@ export default class AppWrapper extends Component {
     }
 
     return <div>
-      <Navigation />
-      <div className="main">
         <AppFrontController />
         {keyboardPicker}
-      </div>
-      <Footer />
+        <Footer />
     </div>;
   }
 }

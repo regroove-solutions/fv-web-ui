@@ -35,18 +35,6 @@ export default class AppLeftNav extends Component {
     computeLogin: PropTypes.object.isRequired
   };
 
-
-/*
-new List([])
-        // Replace entry within state
-        return state.set(indexOfEntry, Map({
-          id: action.pathOrId,
-          isFetching: false,
-          success: true,
-          response: action.response
-        }));
-*/
-
   constructor(props, context) {
     super(props, context);
 
@@ -107,8 +95,6 @@ new List([])
       let newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems);
 
       let newState = this.state.routes.set(exploreEntry[0], newExploreEntry);
-
-      console.log(newState);
 
       this.setState({routes: newState});
 

@@ -45,11 +45,24 @@ export default class ExploreDialects extends Component {
   constructor(props, context){
     super(props, context);
 
-    this.props.fetchDialectsAll('/' + props.properties.domain + '/' + props.routeParams.area + '/Data');
-    //this.props.fetchFamiliesInPath('/' + props.properties.domain + '/sections/');
-
     // Bind methods to 'this'
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  fetchData(newProps) {
+    this.props.fetchDialectsAll('/' + newProps.properties.domain + '/' + newProps.routeParams.area);
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+      this.fetchData(nextProps);
+    }
   }
 
   _onNavigateRequest(path) {
@@ -64,7 +77,7 @@ export default class ExploreDialects extends Component {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
-    let families = selectn('response.entries', computeDialectsAll) || [];
+    let dialects = selectn('response.entries', computeDialectsAll) || [];
 
     return <div className="row">
             <div className="col-md-4 col-xs-12">
@@ -82,7 +95,7 @@ export default class ExploreDialects extends Component {
                     cellHeight={200}
                     style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
                     >
-                      {families.map((tile, i) => 
+                      {dialects.map((tile, i) => 
                         <GridTile
                           onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
                           key={tile.uid}
