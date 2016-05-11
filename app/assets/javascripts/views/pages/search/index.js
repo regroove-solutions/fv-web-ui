@@ -32,7 +32,7 @@ export default class Search extends React.Component {
 
   static propTypes = {
 	splitWindowPath: PropTypes.array.isRequired,
-	pushWindowPath: PropTypes.array.isRequired,	
+	pushWindowPath: PropTypes.func.isRequired,	
     querySearchResults: PropTypes.func.isRequired,
 	computeSearchResults: PropTypes.object.isRequired
   };	
@@ -41,21 +41,29 @@ export default class Search extends React.Component {
     super(props, context);
     
     this.state = {
-    	columns: [ 
-    	           { name: 'title', title: 'Document Title'},
-    	           { name: 'type', title: 'Document Type', 
+    	columns: [
+    	           { minWidth: 80, name: 'title', title: 'Title', render: function (v) {
+    	           		return (<span dangerouslySetInnerHTML={{__html: v}}></span>);
+    	           }},
+    	           { width: 60, name: 'type', title: 'Type', 
     	        	   render: function(v) {
     	        		   return v.replace("FV", "");
     	        	   }
     	           },
-    	           { name: 'path', title: 'Document Location',
+    	           { minWidth: 600, name: 'searchMatch', title: 'Match', render: function (v) {
+    	           		return (<span dangerouslySetInnerHTML={{__html: v}}></span>);
+    	           }},
+    	           /*{ name: 'path', title: 'Document Location',
     	        	   render: function(v) {
     	        		   return (v.includes("/Workspaces/") ? "Workspace" : "Section");
     	        	   }
-    	           },
-    	           { name: 'ancestry_family_title', title: 'Family'},
-    	           { name: 'ancestry_language_title', title: 'Language'},    	               	           
-    	           { name: 'ancestry_dialect_title', title: 'Dialect'}    	               	               	           
+    	           },*/
+    	           /*{ minWidth: 50, name: 'ancestry_family_title', title: 'Family'},
+    	           { minWidth: 50, name: 'ancestry_language_title', title: 'Language'},    	               	           
+    	           { minWidth: 50, name: 'ancestry_dialect_title', title: 'Dialect'}*/
+    	           { 
+    	           	   minWidth: 150, name: 'location', title: 'Location'
+    	           }
     	],
     	queryParam: "",
     	queryPath: "",
@@ -145,7 +153,7 @@ export default class Search extends React.Component {
 	  // Extract the query path
 	  let queryPath = path.split("/search")[0];
 
-	  console.log("queryPath:" + queryPath);	  
+	  //console.log("queryPath:" + queryPath);	  
 	  return queryPath;
   }
 
@@ -168,13 +176,49 @@ export default class Search extends React.Component {
   };
   
   render() {
-	  
+
 	const { computeSearchResults } = this.props;
 
-	if(computeSearchResults.isFetching) {
+	if (computeSearchResults.isFetching || !computeSearchResults.success) {
 		return <CircularProgress mode="indeterminate" size={3} />;
 	}	
-	  
+
+	let searchResults = Object.assign({}, computeSearchResults);
+
+	// Very basic search matching. Should be replace by more performant operation (i.e. returned from server directly).
+	if (computeSearchResults.success) {
+
+		let searchTerm = this.state.queryParam;
+
+		for (let i = 0; i < searchResults.response.entries.length; ++i) {
+
+		//computeSearchResults.response.entries.map(function(searchEntry) {
+			let searchTermMatches = [];
+			let match = "";
+			
+			if (searchResults.response.entries[i].properties['dc:title'].indexOf(searchTerm) !== -1) {
+				searchResults.response.entries[i]['title'] = searchResults.response.entries[i]['title'].replace(searchTerm, '<strong>' + searchTerm + '</strong>');
+			}
+
+			searchResults.response.entries[i].properties['fv:definitions'].map(function(definition) {
+				if (definition.translation.indexOf(searchTerm) !== -1) {
+					searchTermMatches.push('<strong>Definitions</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
+				}
+			});
+
+			searchResults.response.entries[i].properties['fv:literal_translation'].map(function(definition) {
+				if (definition.translation.indexOf(searchTerm) !== -1) {
+					searchTermMatches.push('<strong>Literal Translations</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
+				}
+			});
+
+    	    searchResults.response.entries[i]['location'] = searchResults.response.entries[i]['ancestry_family_title'] + " > " + searchResults.response.entries[i]['ancestry_language_title'] + " > " + searchResults.response.entries[i]['ancestry_dialect_title'];
+			searchResults.response.entries[i]['searchMatch'] = searchTermMatches.join('<br/>');
+		//});
+
+		}
+	}
+
     return <div>
     		<h1>Search</h1>
     		
@@ -198,7 +242,7 @@ export default class Search extends React.Component {
 		    <div className="col-xs-12">
 			    <DocumentListView
 			      ref="searchDocumentListView"
-			      data={this.props.computeSearchResults}
+			      data={searchResults}
 			      refetcher={this._handleRefetch}
 			      onSelectionChange={this._onEntryNavigateRequest}
 			      columns={this.state.columns}
