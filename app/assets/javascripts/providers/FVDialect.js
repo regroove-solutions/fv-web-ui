@@ -210,7 +210,7 @@ const reducers = {
       // Send modified document to UI without access REST end-point
       case FV_DIALECT_FETCH_SUCCESS:
       case FV_DIALECT_UPDATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        return Object.assign({}, { response: action.document, isFetching: false, success: true });
       break;
 
       // Send modified document to UI without access REST end-point

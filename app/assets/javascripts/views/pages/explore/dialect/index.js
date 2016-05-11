@@ -121,7 +121,7 @@ export default class ExploreDialect extends Component {
       this.fetchData(nextProps);
     }
 
-    if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
       this.fetchData(nextProps);
     }
   }
@@ -238,9 +238,9 @@ export default class ExploreDialect extends Component {
 
     return <div>
 
-            <div className="page-header" style={{minHeight: '100px', marginTop: '15px'}}>
+            <div className="page-header" style={{minHeight: '100px', marginTop: '10px'}}>
               {(selectn('contextParameters.portal.fv-portal:logo', portal)) ? 
-                <img className="pull-left" style={{maxHeight: '100px'}} src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:logo', portal).path} /> : ''
+                <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}} src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:logo', portal).path} /> : ''
               }
               <h1>{dialect.get('dc:title')} Community Portal</h1>
               <div>
@@ -253,7 +253,7 @@ export default class ExploreDialect extends Component {
                 
                 return <Toolbar>
 
-                  <ToolbarGroup float="right">
+                  <ToolbarGroup float="left">
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
@@ -280,6 +280,10 @@ export default class ExploreDialect extends Component {
                       </div>
                     </AuthorizationFilter>
 
+                  </ToolbarGroup>
+
+                  <ToolbarGroup float="right">
+
                     <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
                       <RaisedButton disabled={!dialectPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
                     </AuthorizationFilter>
@@ -305,10 +309,14 @@ export default class ExploreDialect extends Component {
 
             <div style={portalBackgroundStyles}>
             
-              <h2 style={{float: 'left', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+              <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                 <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
                   <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
                 </AuthorizationFilter>
+
+                {(selectn('contextParameters.portal.fv-portal:featured_audio', portal)) ? 
+                 <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:featured_audio', portal).path} controls />
+                : ''}
               </h2>
 
               <div className="pull-right" style={{"width":"200px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px"}}>
@@ -331,12 +339,6 @@ export default class ExploreDialect extends Component {
                   <hr style={{margin: "5px 0"}} />
 
                   <p><strong>Region</strong><br/>{dialect.get('fvdialect:region')}</p>
-              </div>
-
-              <div>
-                {(selectn('contextParameters.portal.fv-portal:featured_audio', portal)) ? 
-                 <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:featured_audio', portal).path} controls />
-                : ''}
               </div>
 
             </div>

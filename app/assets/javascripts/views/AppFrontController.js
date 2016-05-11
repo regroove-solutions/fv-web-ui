@@ -364,7 +364,7 @@ export default class AppFrontController extends Component {
 
           {(() => {
 
-            if (selectn("isConnected", props.computeLogin)) {
+            if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin)) {
 
               return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle"}}>
                 <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace Area</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Published Area</Link></li>

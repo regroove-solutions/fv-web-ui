@@ -100,9 +100,7 @@ export default class EditableComponent extends Component {
                       type={fieldFormStruct}
                       context={this.props.computeEntity.response}
                       options={fieldFormOptions} />
-                    <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
-                    </div>
                  </form>;
         }
       }
@@ -110,8 +108,8 @@ export default class EditableComponent extends Component {
 
     // Render regular field if not in edit mode
     return <div>
-              <div dangerouslySetInnerHTML={{__html: currentValue}}></div>
-              <IconButton iconClassName="material-icons" style={{display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
+              <span dangerouslySetInnerHTML={{__html: currentValue}}></span>
+              <IconButton iconClassName="material-icons" style={{verticalAlign: '-5px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
 
