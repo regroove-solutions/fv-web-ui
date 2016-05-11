@@ -53,6 +53,10 @@ const FV_BOOK_CREATE_START = "FV_BOOK_CREATE_START";
 const FV_BOOK_CREATE_SUCCESS = "FV_BOOK_CREATE_SUCCESS";
 const FV_BOOK_CREATE_ERROR = "FV_BOOK_CREATE_ERROR";
 
+const FV_BOOK_ENTRY_CREATE_START = "FV_BOOK_CREATE_START";
+const FV_BOOK_ENTRY_CREATE_SUCCESS = "FV_BOOK_CREATE_SUCCESS";
+const FV_BOOK_ENTRY_CREATE_ERROR = "FV_BOOK_CREATE_ERROR";
+
 const FV_BOOK_DELETE_START = "FV_BOOK_DELETE_START";
 const FV_BOOK_DELETE_SUCCESS = "FV_BOOK_DELETE_SUCCESS";
 const FV_BOOK_DELETE_ERROR = "FV_BOOK_DELETE_ERROR";
@@ -67,6 +71,20 @@ const createBook = function createBook(parentDoc, docParams) {
         dispatch( { type: FV_BOOK_CREATE_SUCCESS, document: response} );
       }).catch((error) => {
           dispatch( { type: FV_BOOK_CREATE_ERROR, error: error } )
+    });
+  }
+};
+
+const createBookEntry = function createBook(parentDoc, docParams) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_BOOK_ENTRY_CREATE_START, document: docParams } );
+
+    return DocumentOperations.createDocument(parentDoc, docParams)
+      .then((response) => {
+        dispatch( { type: FV_BOOK_ENTRY_CREATE_SUCCESS, document: response} );
+      }).catch((error) => {
+          dispatch( { type: FV_BOOK_ENTRY_CREATE_ERROR, error: error } )
     });
   }
 };
@@ -173,7 +191,7 @@ const fetchBook = function fetchBook(pathOrId) {
   }
 };
 
-const actions = { fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, fetchBooksAll, updateBook };
+const actions = { fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, createBookEntry, fetchBooksAll, updateBook };
 
 const reducers = {
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -291,6 +309,27 @@ const reducers = {
 
       // Send modified document to UI without access REST end-point
       case FV_BOOK_CREATE_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+  computeCreateBookEntry(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
+    switch (action.type) {
+      case FV_BOOK_ENTRY_CREATE_START:
+        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_BOOK_ENTRY_CREATE_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_BOOK_ENTRY_CREATE_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
       break;
 

@@ -53,6 +53,16 @@ const fields = {
     'fvbook:author' : t.list(t.String),
     'fvbook:type' : t.String
   }),
+  FVBookEntry: Object.assign({}, Dublincore, FVCore, {
+    'fv:definitions' : t.maybe(t.String), // make optional
+    'available_in_childrens_archive' : t.maybe(t.String),
+    'fv:literal_translation' : t.String,
+    'fvbookentry:dominant_language_text' : t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    })),
+    'fvbookentry:sort_map': t.Number
+  }),
   FVPortal : {
     'fv-portal:about': t.String,
     'fv-portal:greeting': t.String,

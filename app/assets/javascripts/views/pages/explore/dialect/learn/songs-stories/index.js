@@ -32,6 +32,8 @@ import CardHeader from 'material-ui/lib/card/card-header';
 import CardMedia from 'material-ui/lib/card/card-media';
 import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
+import DropDownMenu from 'material-ui/lib/DropDownMenu';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
@@ -56,18 +58,20 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     fetchDialect: PropTypes.func.isRequired,
     fetchBooksInPath: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    computeBooksInPath: PropTypes.object.isRequired
+    computeBooksInPath: PropTypes.object.isRequired,
+    typeFilter: PropTypes.string
   };
 
   constructor(props, context) {
     super(props, context);
 
     this.state = {
-      expandedCards: []
+      expandedCards: [],
+      typeFilter: props.typeFilter
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleRefetch', '_handleShowMoreDetails'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleRefetch', '_handleShowMoreDetails', '_handleFilterEntries'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -92,6 +96,12 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   _handleRefetch(dataGridProps, page, pageSize) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
     this.props.fetchBooksInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+  }
+
+  _handleFilterEntries(e, index, value) {
+    this.setState({
+      typeFilter: value
+    })
   }
 
   _handleShowMoreDetails(id) {
@@ -124,6 +134,12 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
 
     let books = selectn('response.entries', computeBooksInPath) || [];
 
+    if (books.length > 0 && this.state.typeFilter) {
+      books = books.filter(function(book) {
+        return selectn('properties.fvbook:type', book) == this.state.typeFilter;
+      }.bind(this));
+    }
+
     if (computeBooksInPath.isFetching) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
@@ -131,6 +147,12 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     return <div>
               <div className="row">
                 <div className="col-xs-8">
+                  <strong>Displaying: </strong>
+                  <DropDownMenu value={this.state.typeFilter} onChange={this._handleFilterEntries}>
+                    <MenuItem value={null} primaryText="All"/>
+                    <MenuItem value="song" primaryText="Only Songs"/>
+                    <MenuItem value="story" primaryText="Only Stories"/>
+                  </DropDownMenu>
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
                   <RaisedButton label="New Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
@@ -143,11 +165,9 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
 
                   {books.map((tile, tileKey) => 
 
-                    <div className="row" style={{marginBottom: '20px'}}>
+                    <div key={tileKey} className="row" style={{marginBottom: '20px'}}>
 
                       <div className="col-xs-12">
-
-                        <h2>{selectn('properties.fvbook:type', tile) || ''}</h2>
 
                         <Card key={tileKey}>
 
@@ -167,7 +187,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
 
                           <CardActions>
                             <FlatButton disabled={!selectn('properties.fvbook:introduction', tile)} label={((this.state.expandedCards.indexOf(tileKey) == -1) ? 'Show' : 'Hide') + ' Details'} onTouchTap={this._handleShowMoreDetails.bind(this, tileKey)}/>
-                            <FlatButton onTouchTap={this._onNavigateRequest.bind(this, '/explore' + tile.path.replace('Stories & Songs', 'learn/stories-songs'))} primary={true} label={'View ' + (selectn('properties.fvbook:type', tile) || 'Entry')} />
+                            <FlatButton onTouchTap={this._onNavigateRequest.bind(this, '/explore' + tile.path.replace('Stories & Songs', 'learn/' + (selectn('properties.fvbook:type', tile) == 'story' ? 'stories' : 'songs') ))} primary={true} label={'View ' + (selectn('properties.fvbook:type', tile) || 'Entry')} />
                           </CardActions>
 
                           <CardText style={{display: (this.state.expandedCards.indexOf(tileKey) == -1) ? 'none' : 'block'}}>

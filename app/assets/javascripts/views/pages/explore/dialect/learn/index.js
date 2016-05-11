@@ -23,6 +23,10 @@ import ProviderHelpers from 'common/ProviderHelpers';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import IconMenu from 'material-ui/lib/menus/icon-menu';
+import IconButton from 'material-ui/lib/icon-button';
+import MenuItem from 'material-ui/lib/menus/menu-item';
+import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 
 // Operations
 import DocumentOperations from 'operations/DocumentOperations';
@@ -122,8 +126,16 @@ export default class DialectLearn extends Component {
                 <div>
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.total', dialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.total', dialectStats) + ")"} secondary={true} /> 
                   <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.total', dialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.total', dialectStats) + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label={(selectn('response.stories.total', dialectStats) == undefined) ? "Stories (0)" : "Stories (" + selectn('response.stories.total', dialectStats) + ")"} secondary={true} /> 
-                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories-songs')} label={(selectn('response.songs.total', dialectStats) == undefined) ? "Songs (0)" : "Songs (" + selectn('response.songs.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={(selectn('response.stories.total', dialectStats) == undefined) ? "Stories (0)" : "Stories (" + selectn('response.stories.total', dialectStats) + ")"} secondary={true} /> 
+                  <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={(selectn('response.songs.total', dialectStats) == undefined) ? "Songs (0)" : "Songs (" + selectn('response.songs.total', dialectStats) + ")"} secondary={true} /> 
+
+                  <IconMenu iconButtonElement={
+                    <IconButton tooltip="Quick Create" touch={true}>
+                      <NavigationExpandMoreIcon />
+                    </IconButton>
+                  }>
+                    <MenuItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
+                  </IconMenu>
                 </div>
               </div>
             </div>

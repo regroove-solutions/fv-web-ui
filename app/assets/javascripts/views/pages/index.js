@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import {default as PageExploreArchive} from './explore/archive'
+import {default as PageExploreDialects} from './explore/archive/dialects'
 import {default as PageExploreFamily} from './explore/family'
 import {default as PageExploreLanguage} from './explore/language'
 import {default as PageExploreDialect} from './explore/dialect'
@@ -32,12 +33,15 @@ import {default as PageDialectViewWord} from './explore/dialect/learn/words/view
 import {default as PageDialectViewPhrase} from './explore/dialect/learn/phrases/view'
 import {default as PageDialectViewBook} from './explore/dialect/learn/songs-stories/view'
 
+import {default as PageHome} from './home'
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
 import {default as PagePlay} from './play'
 import {default as PageSearch} from './search'
 
 module.exports = {
+  PageHome,
+  PageExploreDialects,
   PageExploreArchive,
   PageExploreFamily,
   PageExploreLanguage,

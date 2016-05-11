@@ -66,7 +66,8 @@ export default class View extends Component {
     computeBook: PropTypes.object.isRequired,
     fetchBookEntriesInPath: PropTypes.func.isRequired,
     computeBookEntriesInPath: PropTypes.object.isRequired,
-    book: PropTypes.object
+    book: PropTypes.object,
+    routeParams: PropTypes.object
   };
 
   constructor(props, context){
@@ -84,15 +85,14 @@ export default class View extends Component {
 
   fetchData(newProps) {
 
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-    let entryPath = '/' + dialectPath + '/Stories & Songs/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
+    let entryPath = newProps.routeParams.dialect_path + '/Stories & Songs/' + newProps.routeParams.bookName;
 
     this.setState({
       bookPath: entryPath
     });
 
-    newProps.fetchBook('/' + entryPath);
-    newProps.fetchBookEntriesInPath('/' + entryPath, ' ORDER BY fvbookentry:sort_map');
+    newProps.fetchBook(entryPath);
+    newProps.fetchBookEntriesInPath(newProps.routeParams.dialect_path, ' ORDER BY fvbookentry:sort_map');
   }
 
   // Fetch data on initial render
@@ -108,7 +108,7 @@ export default class View extends Component {
 
     const { computeBook, computeBookEntriesInPath } = this.props;
 
-    let book = selectn('books[/' + this.state.bookPath + ']', computeBook);
+    let book = selectn('books[' + this.state.bookPath + ']', computeBook);
     
     let bookResponse = selectn('response', book);
     let bookEntriesResponse = selectn('response', computeBookEntriesInPath);
@@ -124,7 +124,7 @@ export default class View extends Component {
                 <div className="col-xs-8">
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <RaisedButton label="New Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                  <RaisedButton label="New Entry" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                 </div>
               </div>
               <div className="row">

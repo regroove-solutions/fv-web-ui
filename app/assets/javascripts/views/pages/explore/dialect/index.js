@@ -146,7 +146,7 @@ export default class ExploreDialect extends Component {
     this.props.publishDocument(this.props.routeParams.dialect_path, this.props.routeParams.language_path.replace('Workspaces', 'sections'));
 
     // Refetch
-    fetchData(this.props);
+    this.fetchData(this.props);
   }
 
   /**

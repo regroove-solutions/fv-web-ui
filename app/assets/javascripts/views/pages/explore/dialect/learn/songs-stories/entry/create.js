@@ -42,8 +42,11 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
-    createBook: PropTypes.func.isRequired,
-    computeCreateBook: PropTypes.object.isRequired
+    fetchBook: PropTypes.func.isRequired,
+    computeBook: PropTypes.object.isRequired,
+    createBookEntry: PropTypes.func.isRequired,
+    computeCreateBookEntry: PropTypes.object.isRequired,
+    routeParams: PropTypes.object
   };
 
   constructor(props, context){
@@ -51,7 +54,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     this.state = {
       formValue: null,
-      dialectPath: null
+      dialectPath: null,
+      parentBookPath: null
     };
 
     // Bind methods to 'this'
@@ -59,11 +63,16 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
-    this.setState({dialectPath: dialectPath});
+    let parentBookPath = newProps.routeParams.dialect_path + '/Stories & Songs/' + newProps.routeParams.parentBookName;
 
-    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchBook(parentBookPath);
+
+    this.setState({
+      dialectPath: newProps.routeParams.dialect_path,
+      parentBookPath: parentBookPath
+    });
   }
 
   // Fetch data on initial render
@@ -89,7 +98,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
         return true;
       break;
       
-      case (newProps.computeCreateBook.error != this.props.computeCreateBook.error):
+      case (selectn('books[' + this.state.parentBookPath + '].response', newProps.computeBook) != selectn('books[' + this.state.parentBookPath + '].response', this.props.computeBook)):
         return true;
       break;
     }
@@ -106,15 +115,13 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     // Prevent default behaviour
     e.preventDefault();
 
-    let formValue = this.refs["form_book_create"].getValue();
+    let formValue = this.refs["form_book_entry_create"].getValue();
 
-    //let properties = '';
     let properties = {};
     
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
-	        //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
 	    	  properties[key] = formValue[key];
 	  	  }
 	    }
@@ -126,8 +133,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     // Passed validation
     if (formValue) {
-  	  this.props.createBook('/' + this.state.dialectPath + '/Stories & Songs', {
-  	    type: 'FVBook',
+  	  this.props.createBookEntry(this.state.parentBookPath, {
+  	    type: 'FVBookEntry',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  });
@@ -137,30 +144,35 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
   render() {
 
-    const { computeDialect, computeCreateBook } = this.props;
+    const { computeBook, computeDialect/*, computeCreateBook*/ } = this.props;
 
     let dialect = computeDialect.response;
 
-    if (computeDialect.isFetching || !computeDialect.success) {
+    //let book = ProviderHelpers.getEntry(computeBook, this.state.parentBookPath);
+
+    let book = selectn('books[' + this.state.parentBookPath + ']', computeBook);
+    let bookResponse = selectn('response', book);
+
+    if (computeDialect.isFetching || (bookResponse && bookResponse.isFetching)) {
       return <CircularProgress mode="indeterminate" size={2} />;
     }
 
     return <div>
 
-            <h1>Add New Book to <i>{dialect.get('dc:title')}</i></h1>
+            <h1>Add New Entry to <i>{selectn('properties.dc:title', bookResponse)}</i> Book</h1>
             
-            {computeCreateBook.isError ? <div className="alert alert-danger" role="alert">{computeCreateBook.error}</div> : ''}
+            {/*{computeCreateBook.isError ? <div className="alert alert-danger" role="alert">{computeCreateBook.error}</div> : ''}*/}
             
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm}>
                   <t.form.Form
-                    ref="form_book_create"
-                    type={t.struct(selectn("FVBook", fields))}
+                    ref="form_book_entry_create"
+                    type={t.struct(selectn("FVBookEntry", fields))}
                     context={dialect}
                     value={this.state.formValue}
-                    options={selectn("FVBook", options)} />
+                    options={selectn("FVBookEntry", options)} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

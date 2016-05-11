@@ -352,7 +352,90 @@ const options = {
     },
     i18n: i18nExt
   },
-    
+  FVBookEntry: {
+    order: ['dc:title', 'fv:literal_translation', 'fvbookentry:dominant_language_text', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:source', 'fvbookentry:sort_map'],
+    fields: {
+      'dc:title': {
+        label: 'Book Entry Name'
+       },
+      'fv:literal_translation': {
+        label: 'Literal Translation',
+        item: {
+          fields: {
+            translation: {
+              label: 'Translation',
+              type: 'textarea'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
+        },
+        help: <i>Describe what the word translates to regradless of context.</i>
+      },
+      'fvbookentry:dominant_language_text': {
+        label: 'Dominant Language Text',
+        item: {
+          fields: {
+            translation: {
+              label: 'Translation',
+              type: 'textarea'
+            },
+            language: {
+              label: 'Language',
+              factory: SelectFactory,
+              attrs: {
+                directory: 'fv_language'
+              }
+            }
+          },
+          template: DefinitionsLayout
+        },
+        help: <i>Describe what the word translates to regradless of context.</i>
+      },
+      'fv:related_audio' : {
+        label: 'Related Audio',
+        item: {
+          factory: MediaFactory,
+          type: 'FVAudio'
+        }
+      },
+      'fv:related_pictures' : {
+        label: 'Related Pictures',
+        item: {
+          factory: MediaFactory,
+          type: 'FVPicture'
+        }
+      },
+      'fv:related_videos' : {
+        label: 'Related Videos',
+        item: {
+          factory: MediaFactory,
+          type: 'FVVideo'
+        }
+      },
+      'fv:source': {
+        label: 'Source',
+        help: <i>Contributor(s) who helped create this record.</i>,
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      },
+      'fvbookentry:sort_map': {
+        label: 'Order'
+      },
+      'fv:cultural_note' : {
+        label: 'Cultural Notes'
+      }
+    },
+    i18n: i18nExt
+  },
   FVGallery: {
     order: ['dc:title', 'dc:description', 'fv:related_pictures'],
     fields: {

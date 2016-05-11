@@ -43,7 +43,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     fetchDialect: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     createBook: PropTypes.func.isRequired,
-    computeCreateBook: PropTypes.object.isRequired
+    computeCreateBook: PropTypes.object.isRequired,
+    typeFilter: PropTypes.string
   };
 
   constructor(props, context){
