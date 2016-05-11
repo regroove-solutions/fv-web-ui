@@ -51,6 +51,11 @@ export default class AppLeftNav extends Component {
 
     const routes = Immutable.fromJS([
       {
+        id: 'home',
+        label: "Home",
+        path: "/"
+      },
+      {
         id: 'get-started',
         label: "Get Started",
         path: "/get-started/"

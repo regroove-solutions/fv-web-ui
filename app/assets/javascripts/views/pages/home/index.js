@@ -50,13 +50,16 @@ export default class PageHome extends Component {
       height: '600px',
       backgroundColor: 'transparent',
       backgroundSize: 'cover',
-      backgroundImage: 'url("http://localhost:3001/images/homepage.jpg")',
+      backgroundImage: 'url("/assets/images/homepage.jpg")',
       backgroundPosition: '0 0',
     }
 
-    return <div className="row">
-            <div className="jumbotron" style={homePageStyle}>
-            </div>
-          </div>;
+    return <div className="container-fluid">
+             <div className="row" style={homePageStyle}>
+              <div className="col-xs-12">
+                Testing
+              </div>
+             </div>
+           </div>;
   }
 }
