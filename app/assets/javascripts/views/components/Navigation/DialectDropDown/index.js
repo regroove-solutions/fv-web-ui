@@ -48,7 +48,9 @@ export default class DialectDropDown extends Component {
     computeDialectsAll: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired
+    pushWindowPath: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    routeParams: PropTypes.object
   };
 
   static contextTypes = {
@@ -63,6 +65,7 @@ export default class DialectDropDown extends Component {
 
     this.state = {
       open: false,
+      browseLabel: 'Dialects...'
     };
 
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -70,13 +73,21 @@ export default class DialectDropDown extends Component {
 
   fetchData(newProps) {
 
-    let fetchPath = 'sections/';
+    let fetchPath = selectn('routeParams.area', newProps);
 
-    if (selectn("isConnected", newProps.computeLogin)) {
-      fetchPath = 'Workspaces/';
+    if (!fetchPath) {
+      if (selectn("isConnected", newProps.computeLogin)) {
+        fetchPath = 'Workspaces';
+      } else {
+        fetchPath = 'sections';
+      }
     }
 
-    newProps.fetchDialectsAll('/' + newProps.properties.domain + '/' + fetchPath);
+    this.setState({
+      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...')
+    });
+
+    newProps.fetchDialectsAll('/' + newProps.properties.domain + '/' + fetchPath + '/');
   }
 
   // Fetch data on initial render
@@ -86,7 +97,10 @@ export default class DialectDropDown extends Component {
 
   // Refetch if logged in
   componentWillReceiveProps(nextProps) {
-    if (nextProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && nextProps.computeLogin.isConnected != undefined) {
+
+    const USER_LOG_IN_STATUS_CHANGED = (nextProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && nextProps.computeLogin.isConnected != undefined);
+
+    if (USER_LOG_IN_STATUS_CHANGED || nextProps.routeParams.area != this.props.routeParams.area) {
       this.fetchData(nextProps);
     }
   }
@@ -148,7 +162,7 @@ export default class DialectDropDown extends Component {
     if (selectn('response.entries.length', this.props.computeDialectsAll) > 0) {
 
       content = <div>
-        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label="Browse Dialects...">
+        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label={this.state.browseLabel}>
           <DropDownArrow />
         </RaisedButton>
 

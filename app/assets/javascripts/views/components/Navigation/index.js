@@ -47,7 +47,8 @@ export default class Navigation extends Component {
     splitWindowPath: PropTypes.array.isRequired,    
     toggleMenuAction: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired
+    computeLogin: PropTypes.object.isRequired,
+    routeParams: PropTypes.object
   };
 
   /*static childContextTypes = {
@@ -167,7 +168,7 @@ export default class Navigation extends Component {
         <Toolbar>
 
           <ToolbarGroup float="right">
-            <DialectDropDown />
+            <DialectDropDown routeParams={this.props.routeParams} />
           </ToolbarGroup>
 
         </Toolbar>

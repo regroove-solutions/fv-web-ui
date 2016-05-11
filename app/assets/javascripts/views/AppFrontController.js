@@ -8,6 +8,8 @@ import classNames from 'classnames';
 
 import {Link} from 'provide-page';
 
+import Navigation from 'views/components/Navigation';
+
 import { PageHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
@@ -110,15 +112,15 @@ export default class AppFrontController extends Component {
         ]
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', 'search', ANYTHING_BUT_SLASH],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', ANYTHING_BUT_SLASH],
         page: <PageSearch />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
         page: <PageSearch />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
         page: <PageSearch />
       },
       {
@@ -127,7 +129,7 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
         page: <PageExploreLanguage />,
         extractPaths: true
       },
@@ -146,7 +148,7 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
         page: <PageDialectPlay />
       },
       {
@@ -154,7 +156,7 @@ export default class AppFrontController extends Component {
         page: <PageDialectGalleryCreate />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', ANYTHING_BUT_SLASH ],
         page: <PageDialectGallery />
       },
       {
@@ -189,15 +191,15 @@ export default class AppFrontController extends Component {
         page: <PageDialectPhrasesCreate />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', ANYTHING_BUT_SLASH ],
         page: <PageDialectViewPhrase />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],
         page: <PageDialectLearnStoriesAndSongs typeFilter="story" />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
         page: <PageDialectLearnStoriesAndSongs typeFilter="song" />
       },
       {
@@ -209,22 +211,22 @@ export default class AppFrontController extends Component {
         page: <PageDialectStoriesAndSongsCreate typeFilter="song" />
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewBook typeFilter="song" />,
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" />,
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewBook typeFilter="story" />,
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', WORKSPACE_OR_SECTION, 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" />,
         extractPaths: true
       },
@@ -253,7 +255,8 @@ export default class AppFrontController extends Component {
   */
   _route(props) {
 
-    let matchedPage, matchedRouteParams;
+    let matchedPage = null
+    let matchedRouteParams = [];
 
     const pathArray = props.splitWindowPath;
 
@@ -285,23 +288,27 @@ export default class AppFrontController extends Component {
       }
     }.bind(this));
 
-    // Redirect if required
-    if (matchedPage.has('redirects')) {
-      matchedPage.get('redirects').forEach(function(value, key) {
-        
-        let redirectCondition = value.get('condition');
+    // Match found
+    if (matchedPage) {
 
-        if (value.get('condition')(props)) {
-          props.replaceWindowPath(value.get('target'));
-          return false;
-        }
-      }.bind(this));
+      // Redirect if required
+      if (matchedPage.has('redirects')) {
+        matchedPage.get('redirects').forEach(function(value, key) {
+          
+          let redirectCondition = value.get('condition');
+
+          if (value.get('condition')(props)) {
+            props.replaceWindowPath(value.get('target'));
+            return false;
+          }
+        }.bind(this));
+      }
+
+      this.setState({
+        matchedPage: matchedPage,
+        matchedRouteParams: matchedRouteParams
+      });
     }
-
-    this.setState({
-      matchedPage: matchedPage,
-      matchedRouteParams: matchedRouteParams
-    });
   }
 
   componentWillMount() {
@@ -387,10 +394,26 @@ export default class AppFrontController extends Component {
   }
 
   render() {
+
+    const { matchedPage, matchedRouteParams } = this.state;
+
+    let page;
+
+    if (!matchedPage) {
+      page = <div>404</div>;
+    } else {
+      page = this._renderWithBreadcrumb(
+          React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams})
+      );
+    }
+
     return (
-      this._renderWithBreadcrumb(
-        React.cloneElement(this.state.matchedPage.get('page').toJS(), {routeParams: this.state.matchedRouteParams})
-      )
+      <div>
+        <Navigation routeParams={this.state.matchedRouteParams} />
+        <div className="main">
+          {page}
+        </div>
+      </div>
     );
   }
 }
