@@ -105,7 +105,11 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore'],
-        page: <PageExploreArchive />
+        page: <PageExploreArchive />,
+        redirects: [{
+          condition: function(params) { return true; },
+          target: function(params) { return '/explore/FV/sections/Data/'; }
+        }]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
@@ -310,7 +314,7 @@ export default class AppFrontController extends Component {
     }.bind(this));
 
     // Match found
-    if (matchedPage) {
+    if (matchedPage !== null) {
 
       // Redirect if required
       if (matchedPage.has('redirects')) {
