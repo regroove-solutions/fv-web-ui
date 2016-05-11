@@ -339,10 +339,12 @@ export default class AppFrontController extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this._route(nextProps);
+    if (nextProps.windowPath != this.props.windowPath) {
+      this._route(nextProps);
+    }
   }
 
-  _renderBreadcrumb(matchedPage) {
+  _renderBreadcrumb(matchedPage, routeParams) {
     let props = this.props;
     let splitPath = props.splitWindowPath;
     let routes = this.state.routes;
@@ -372,7 +374,8 @@ export default class AppFrontController extends Component {
 
                   if (redirectValue.get('condition')({props: props})) {
                     hrefPath = redirectValue.get('target')({props: props});
-                    console.log(hrefPath);
+                    hrefPath = hrefPath.replace('sections', routeParams.area);
+
                     return false;
                   }
                 }.bind(this));
@@ -411,7 +414,7 @@ export default class AppFrontController extends Component {
 
           })()}
 
-          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb(matchedPage)}</ol>
+          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
 
         </div>
 
