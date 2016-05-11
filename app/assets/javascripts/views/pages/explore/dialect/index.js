@@ -309,15 +309,19 @@ export default class ExploreDialect extends Component {
 
             <div style={portalBackgroundStyles}>
             
-              <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
-                  <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
-                </AuthorizationFilter>
+              {(() => {
+                if (selectn('properties.fv-portal:greeting', portal) || selectn('contextParameters.portal.fv-portal:featured_audio', portal)) {
+                  return <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
+                      <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
+                    </AuthorizationFilter>
 
-                {(selectn('contextParameters.portal.fv-portal:featured_audio', portal)) ? 
-                 <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:featured_audio', portal).path} controls />
-                : ''}
-              </h2>
+                    {(selectn('contextParameters.portal.fv-portal:featured_audio', portal)) ? 
+                     <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('contextParameters.portal.fv-portal:featured_audio', portal).path} controls />
+                    : ''}
+                  </h2>;
+                }
+              })()}
 
               <div className="pull-right" style={{"width":"200px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px"}}>
                 <div>
