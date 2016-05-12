@@ -57,15 +57,15 @@ const fetchPortal = function fetchPortal(pathOrId) {
 const actions = { fetchPortal, updatePortal };
 
 const reducers = {
-  computePortal(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
+  computePortal(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, error: null }, action) {
     switch (action.type) {
       case FV_PORTAL_FETCH_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+        return Object.assign({}, state, { isFetching: true, success: false, isError:false, error: null });
       break;
 
       // Send modified document to UI without access REST end-point
       case FV_PORTAL_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, isError:false, error: null });
       break;
 
       // Send modified document to UI without access REST end-point
@@ -75,7 +75,7 @@ const reducers = {
       break;
 
       default: 
-        return Object.assign({}, state, { isFetching: false });
+        return Object.assign({}, state, { isFetching: false, isError:false, error: null });
       break;
     }
   },

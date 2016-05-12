@@ -105,7 +105,6 @@ export default class ExploreDialect extends Component {
   }
 
   fetchData(newProps) {
-    console.log(newProps.routeParams.dialect_path);
     newProps.fetchDialect(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDirectory('fv_countries');
@@ -118,12 +117,14 @@ export default class ExploreDialect extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
+    //console.log(JSON.stringify(nextProps, null, '\t'));
+
     if (nextProps.windowPath !== this.props.windowPath) {
-      //this.fetchData(nextProps);
+      this.fetchData(nextProps);
     }
 
     else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      //this.fetchData(nextProps);
+      this.fetchData(nextProps);
     }
   }
 
@@ -201,12 +202,12 @@ export default class ExploreDialect extends Component {
 
     //debug = <pre>{JSON.stringify(portal, null, 4)}</pre>;
 
-    if (computeDialect.isFetching || computePortal.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
+    if (computeDialect.isError && computePortal.isError) {
+      return <div>Dialect is not published</div>;
     }
 
-    if (computeDialect.isError) {
-      return <div>{computeDialect.error}</div>;
+    if (computeDialect.isFetching || computePortal.isFetching || !computeDialect.response || !computePortal.response) {
+      return <CircularProgress mode="indeterminate" size={5} />;
     }
 
     if (computePublish.isFetching) {
@@ -258,6 +259,7 @@ export default class ExploreDialect extends Component {
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+
                         <Toggle
                           toggled={dialectEnabled || dialectPublished}
                           onToggle={this._dialectActionsToggleEnabled}
@@ -271,6 +273,9 @@ export default class ExploreDialect extends Component {
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+
+                        {dialectPublished}
+
                         <Toggle
                           toggled={dialectPublished}
                           onToggle={this._dialectActionsTogglePublished}
@@ -311,7 +316,7 @@ export default class ExploreDialect extends Component {
             <div style={portalBackgroundStyles}>
             
               {(() => {
-                if (selectn('properties.fv-portal:greeting', portal) || selectn('contextParameters.portal.fv-portal:featured_audio', portal)) {
+                if (selectn("isConnected", this.props.computeLogin) || selectn('properties.fv-portal:greeting', portal) || selectn('contextParameters.portal.fv-portal:featured_audio', portal)) {
                   return <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                     <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
                       <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={portal} />
