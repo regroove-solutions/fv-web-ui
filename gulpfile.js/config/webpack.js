@@ -29,9 +29,7 @@ module.exports = function(env) {
       console: true
     },
 
-    plugins: [
-      new webpack.HotModuleReplacementPlugin()
-    ],
+    plugins: [],
 
     resolve: {
       alias: {
@@ -59,7 +57,6 @@ module.exports = function(env) {
       noParse: /node_modules\/json-schema\/lib\/validate\.js/
     }
   }
-
 
   if(env !== 'test') {
     // Karma doesn't need entry points or output settings
@@ -91,6 +88,10 @@ module.exports = function(env) {
   if(env === 'development') {
     webpackConfig.devtool = '#source-map'
     webpack.debug = true
+
+    webpackConfig.plugins.push(
+      new webpack.HotModuleReplacementPlugin()
+    );
 
     webpackConfig.devServer = {
       inline:true,
