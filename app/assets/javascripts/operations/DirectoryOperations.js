@@ -20,15 +20,6 @@ import Nuxeo from 'nuxeo';
 
 import BaseOperations from 'operations/BaseOperations';
 
-// Models
-import Words from 'models/Words';
-import LanguageFamily from 'models/LanguageFamily';
-import LanguageFamilies from 'models/LanguageFamilies';
-import Languages from 'models/Languages';
-import Language from 'models/Language';
-import Dialect from 'models/Dialect';
-import Dialects from 'models/Dialects';
-
 export default class DirectoryOperations extends BaseOperations {
 
   /*constructor(directoryType, directoryTypePlural, client, properties = []){
@@ -205,7 +196,7 @@ export default class DirectoryOperations extends BaseOperations {
 
       });
   }
-  getWordsByLangauge (client, language) {
+  /*getWordsByLangauge (client, language) {
     return new Promise(
         // The resolver function is called with the ability to resolve or
         // reject the promise
@@ -247,5 +238,5 @@ export default class DirectoryOperations extends BaseOperations {
 
           });
     });
-  }
+  }*/
 }

@@ -29,17 +29,27 @@ export default class DirectoryList extends Component {
     directory: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
+    fancy: PropTypes.bool,
     value: PropTypes.string
   };
+
+  static defaultProps = {
+    fancy: true
+  }
 
   constructor(props) {
     super(props);
 
     this._handleChange = this._handleChange.bind(this);
+    this._handleStandardSelectChange = this._handleStandardSelectChange.bind(this);
   }
 
   _handleChange(event, index, value) {
     this.props.onChange(value);
+  }
+
+  _handleStandardSelectChange(event) {
+    this.props.onChange(event.target.value);
   }
 
   componentDidMount() {
@@ -58,11 +68,23 @@ export default class DirectoryList extends Component {
 
       return (
         <div>
-          <SelectField value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
-            {entries.map((entry) => 
-              <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
-            )}   
-          </SelectField>
+          {
+            (this.props.fancy) ? 
+
+            <SelectField value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
+              {entries.map((entry) => 
+                <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
+              )}
+            </SelectField>
+
+            :
+
+            <select value={this.props.value} onChange={this._handleStandardSelectChange}>
+              {entries.map((entry) => 
+                <option key={entry.value} value={entry.value}>{entry.text}</option>
+              )}
+            </select>
+          }
         </div>
       );
     }

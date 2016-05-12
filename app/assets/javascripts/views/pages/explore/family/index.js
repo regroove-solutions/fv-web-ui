@@ -14,11 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
@@ -32,10 +35,10 @@ export default class ExploreFamily extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchLanguagesInPath: PropTypes.func.isRequired,
-    computeLanguagesInPath: PropTypes.object.isRequired,
-    fetchFamily: PropTypes.func.isRequired,
-    computeFamily: PropTypes.object.isRequired,
+    fetchLanguages: PropTypes.func.isRequired,
+    computeLanguages: PropTypes.object.isRequired,
+    fetchLanguageFamily: PropTypes.func.isRequired,
+    computeLanguageFamily: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -54,8 +57,8 @@ export default class ExploreFamily extends Component {
   }
 
   fetchData(newProps) {
-    this.props.fetchFamily(newProps.routeParams.language_family_path);
-    this.props.fetchLanguagesInPath(newProps.routeParams.language_family_path);
+    this.props.fetchLanguageFamily(newProps.routeParams.language_family_path);
+    this.props.fetchLanguages(newProps.routeParams.language_family_path);
   }
 
   // Fetch data on initial render
@@ -65,7 +68,7 @@ export default class ExploreFamily extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+    if (nextProps.routeParams.language_family_path != this.props.routeParams.language_family_path) {
       this.fetchData(nextProps);
     }
   }
@@ -76,43 +79,48 @@ export default class ExploreFamily extends Component {
 
   render() {
 
-    const { computeLanguagesInPath, computeFamily } = this.props;
+    const pathOrId = this.props.routeParams.language_family_path;
 
-    if (computeLanguagesInPath.isFetching || computeFamily.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': pathOrId,
+      'entity': this.props.computeLanguages
+    }, {
+      'id': pathOrId,
+      'entity': this.props.computeLanguageFamily
+    }])
 
-    let family = computeFamily.response;
+    const computeLanguages = ProviderHelpers.getEntry(this.props.computeLanguages, pathOrId);
+    const computeLanguageFamily = ProviderHelpers.getEntry(this.props.computeLanguageFamily, pathOrId);
 
-    let languages = selectn('response.entries', computeLanguagesInPath) || [];
-
-    return <div className="row">
-            <div className="col-md-4 col-xs-12">
-              <h1>{family.get('dc:title')}</h1>
-              <div>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-              </div>
-            </div>
-            <div className="col-md-8 col-xs-12">
-                <h2>Browse the following Languages:</h2>
-                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                  <GridList
-                    cols={2}
-                    cellHeight={200}
-                    style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                    >
-                      {languages.map((tile, i) => 
-                        <GridTile
-                          onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                          key={tile.uid}
-                          title={tile.title}
-                          subtitle={tile.description}
-                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
-                      )}
-                  </GridList>
+    return <PromiseWrapper computeEntities={computeEntities}>
+              <div className="row">
+                <div className="col-md-4 col-xs-12">
+                  <h1>{selectn('title', computeLanguageFamily)}</h1>
+                  <div>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                  </div>
+                </div>
+                <div className="col-md-8 col-xs-12">
+                    <h2>Browse the following Languages:</h2>
+                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                      <GridList
+                        cols={2}
+                        cellHeight={200}
+                        style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
+                        >
+                          {(selectn('response.entries', computeLanguages) || []).map((tile, i) => 
+                            <GridTile
+                              onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                              key={tile.uid}
+                              title={tile.title}
+                              subtitle={tile.description}
+                              ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                          )}
+                      </GridList>
+                    </div>
                 </div>
             </div>
-          </div>;
+          </PromiseWrapper>;
   }
 }

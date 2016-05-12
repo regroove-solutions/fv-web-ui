@@ -182,7 +182,7 @@ export default class Preview extends Component {
             body = <div>
               <strong>{selectn('title', pictureResponse)}</strong> 
               <span> {selectn('properties.dc:description', pictureResponse)}</span><br/>
-              <img src={selectn('properties.file:content.data', pictureResponse)} alt={selectn('title', pictureResponse)} />
+              <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse)} alt={selectn('title', pictureResponse)} />
             </div>;
           }
 

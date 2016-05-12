@@ -101,6 +101,66 @@
 
 // Components
 
+// Editable component
+
+form.editableComponentForm{
+  fieldset{
+
+    width: 72%;
+    margin-right: 5px;
+
+    display: inline;
+
+
+    div.form-group {
+      margin: 0;
+    }
+
+    label {
+      display: none;
+    }
+
+    input {
+      padding: 2px 4px;
+      height: inherit;
+    }
+
+    select{
+      width:100%;
+    }
+  }
+
+  button {
+    padding: 0px 4px;
+    margin-left: 2px;
+  }
+}
+
+.fv-portal-greeting{
+  form.editableComponentForm{
+
+    min-width: 400px;
+
+    fieldset{
+      width: 85%;
+    }
+  }
+}
+
+.fv-portal-about{
+  form.editableComponentForm{
+
+    fieldset{
+      width: 100%;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 10px 0;
+    }
+  }
+}
+
 .toolbar{
   padding:0!important;
 }

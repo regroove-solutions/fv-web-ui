@@ -10,7 +10,7 @@ import {Link} from 'provide-page';
 
 import Navigation from 'views/components/Navigation';
 
-import { PageHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageHome, PageTest, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
@@ -23,35 +23,6 @@ import {
   PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate,
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
   PageDialectContributorsCreate, PageDialectStoriesAndSongsBookEntryCreate } from 'views/pages/create';
-
-// To be used later views below:
-
-// Pages
-/*import Index from 'views/pages/index';
-import GetStarted from 'views/pages/get-started';
-
-// Pages: Explore
-import ExploreArchive from 'views/pages/explore/archive';
-import ExploreFamily from 'views/pages/explore/family';
-import ExploreLanguage from 'views/pages/explore/language';
-
-// Pages: Dialect Portal
-import ExploreDialect from 'views/pages/explore/dialect';
-
-import DialectLearnWords from 'views/pages/explore/dialect/learn/words';
-import DialectLearnPhrases from 'views/pages/explore/dialect/learn/phrases';
-import DialectLearnSongs from 'views/pages/explore/dialect/learn/songs';
-import DialectLearnStories from 'views/pages/explore/dialect/learn/stories';
-import DialectPlay from 'views/pages/explore/dialect/play';
-import DialectCommunitySlideshow from 'views/pages/explore/dialect/community-slideshow';
-import DialectArtGallery from 'views/pages/explore/dialect/art-gallery';
-
-// Pages: Dialect -> Word
-import ViewWord from 'views/pages/explore/dialect/learn/words/view';
-
-import Contribute from 'views/pages/contribute';
-import Play from 'views/pages/play';
-import NotFound from 'views/pages/not-found';*/
 
 // Regex helper
 const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
@@ -92,6 +63,10 @@ export default class AppFrontController extends Component {
         page: <PageHome />
       },
       {
+        path: ['test'],
+        page: <PageTest />
+      },
+      {
         path: ['get-started'],
         page: <PageGetStarted />
       },
@@ -105,11 +80,11 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore'],
-        page: <PageExploreArchive />,
+        page: <PageExploreArchive />/*,
         redirects: [{
           condition: function(params) { return true; },
           target: function(params) { return '/explore/FV/sections/Data/'; }
-        }]
+        }]*/
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
@@ -151,7 +126,8 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit' ],
-        page: <PageExploreDialectEdit />
+        page: <PageExploreDialectEdit />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
@@ -340,6 +316,10 @@ export default class AppFrontController extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath != this.props.windowPath) {
+      this._route(nextProps);
+    }
+
+    if (nextProps.computeLogin != this.props.computeLogin) {
       this._route(nextProps);
     }
   }

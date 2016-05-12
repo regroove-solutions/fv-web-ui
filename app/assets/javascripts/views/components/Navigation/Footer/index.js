@@ -41,10 +41,10 @@ export default class Footer extends React.Component {
               <div className="col-xs-12">
                 <div className="row">
                   <div className="col-xs-6">
-                    <img src="http://www.firstvoices.com/img/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-13 FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca
+                    {/*<img src="http://www.firstvoices.com/img/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-13 FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca*/}
                   </div>
                   <div className={classNames('text-right', 'col-xs-6')}>
-                    <img src="http://www.firstvoices.com/img/fv-logo-100x25.gif" alt="FirstVoices" />
+                    {/*<img src="http://www.firstvoices.com/img/fv-logo-100x25.gif" alt="FirstVoices" />*/}
                   </div>
                 </div>
               </div>

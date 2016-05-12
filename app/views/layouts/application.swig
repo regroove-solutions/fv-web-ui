@@ -11,12 +11,14 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-   <script type="text/javascript">
+    <script type="text/javascript">
       // Alloy editor configuration
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
 
-   </script>
+    </script>
+
     {% block head %}{% endblock %}
+
   </head>
   <body id="body">
 

@@ -37,7 +37,10 @@
       var KeymanWeb_DefaultKeyboardName = '(Select keyboard)';
 
 	</script>
-	<script type="text/javascript" src="http://www.firstvoices.com/kmw/keymanweb.js"></script>
+	{#
+		DISABLE FOR DEV 
+		<script type="text/javascript" src="http://www.firstvoices.com/kmw/keymanweb.js"></script>
+	#}
 
 	{# Keyman web version 2.0 #}
 	{#

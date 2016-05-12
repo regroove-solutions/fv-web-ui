@@ -18,6 +18,8 @@ import _ from 'underscore';
 import selectn from 'selectn';
 import provide from 'react-redux-provide';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 // Components
 import Divider from 'material-ui/lib/divider';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
@@ -44,8 +46,8 @@ export default class DialectDropDown extends Component {
 
   static propTypes = {
     navigateTo: PropTypes.func.isRequired,
-    fetchDialectsAll: PropTypes.func.isRequired,
-    computeDialectsAll: PropTypes.object.isRequired,
+    fetchDialects: PropTypes.func.isRequired,
+    computeDialects: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -65,7 +67,8 @@ export default class DialectDropDown extends Component {
 
     this.state = {
       open: false,
-      browseLabel: 'Dialects...'
+      browseLabel: 'Dialects...',
+      pathOrId: null
     };
 
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -83,11 +86,14 @@ export default class DialectDropDown extends Component {
       }
     }
 
+    const pathOrId = '/' + newProps.properties.domain + '/' + fetchPath;
+
     this.setState({
-      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...')
+      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...'),
+      pathOrId: pathOrId
     });
 
-    newProps.fetchDialectsAll('/' + newProps.properties.domain + '/' + fetchPath + '/');
+    newProps.fetchDialects(pathOrId);
   }
 
   // Fetch data on initial render
@@ -123,21 +129,15 @@ export default class DialectDropDown extends Component {
     });
   }
 
-  shouldComponentUpdate(newProps) {
-    return newProps.computeDialectsAll.success; 
-  }
-
   render() {
 
     let dropdownData;
 
-    // Create new operations object
-    const { computeDialectsAll } = this.props;
-    let dialects = selectn('response.entries', computeDialectsAll);
+    let dialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
-    if (dialects) {
+    if (selectn('success', dialects)) {
 
-      dropdownData = dialects.map(function( dialect ) {
+      dropdownData = dialects.response.entries.map(function( dialect ) {
 
         let dialectTitle = selectn('properties.dc:title', dialect);
         let dialectUid = dialect.uid;
@@ -159,7 +159,7 @@ export default class DialectDropDown extends Component {
 
     let content = "";
 
-    if (selectn('response.entries.length', this.props.computeDialectsAll) > 0) {
+    if (selectn('response.entries.length', dialects) > 0) {
 
       content = <div>
         <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label={this.state.browseLabel}>

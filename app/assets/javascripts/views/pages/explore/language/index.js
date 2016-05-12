@@ -14,11 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
@@ -32,8 +35,8 @@ export default class ExploreLanguage extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchDialectsInPath: PropTypes.func.isRequired,
-    computeDialectsInPath: PropTypes.object.isRequired,
+    fetchDialects: PropTypes.func.isRequired,
+    computeDialects: PropTypes.object.isRequired,
     fetchLanguage: PropTypes.func.isRequired,
     computeLanguage: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -53,11 +56,9 @@ export default class ExploreLanguage extends Component {
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-
-
   fetchData(newProps) {
     this.props.fetchLanguage(newProps.routeParams.language_path);
-    this.props.fetchDialectsInPath(newProps.routeParams.language_path);
+    this.props.fetchDialects(newProps.routeParams.language_path);
   }
 
   // Fetch data on initial render
@@ -78,43 +79,48 @@ export default class ExploreLanguage extends Component {
 
   render() {
 
-    const { computeDialectsInPath, computeLanguage } = this.props;
+    const pathOrId = this.props.routeParams.language_path;
 
-    if (computeDialectsInPath.isFetching || computeLanguage.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': pathOrId,
+      'entity': this.props.computeDialects
+    }, {
+      'id': pathOrId,
+      'entity': this.props.computeLanguage
+    }])
 
-    let language = computeLanguage.response;
+    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, pathOrId);
+    const computeLanguage = ProviderHelpers.getEntry(this.props.computeLanguage, pathOrId);
 
-    let dialects = selectn('response.entries', computeDialectsInPath) || [];
-
-    return <div className="row">
-            <div className="col-md-4 col-xs-12">
-              <h1>{language.get('dc:title')} Language</h1>
-              <div>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-              </div>
-            </div>
-            <div className="col-md-8 col-xs-12">
-                <h2>Browse the following Dialects:</h2>
-                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                  <GridList
-                    cols={2}
-                    cellHeight={200}
-                    style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                    >
-                      {dialects.map((tile, i) => 
-                        <GridTile
-                          onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                          key={tile.uid}
-                          title={tile.title}
-                          subtitle={tile.description}
-                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
-                      )}
-                  </GridList>
+    return <PromiseWrapper computeEntities={computeEntities}>
+              <div className="row">
+                <div className="col-md-4 col-xs-12">
+                  <h1>{selectn('title', computeLanguage)}</h1>
+                  <div>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                  </div>
+                </div>
+                <div className="col-md-8 col-xs-12">
+                    <h2>Browse the following Languages:</h2>
+                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                      <GridList
+                        cols={2}
+                        cellHeight={200}
+                        style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
+                        >
+                          {(selectn('response.entries', computeDialects) || []).map((tile, i) => 
+                            <GridTile
+                              onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                              key={tile.uid}
+                              title={tile.title}
+                              subtitle={tile.description}
+                              ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                          )}
+                      </GridList>
+                    </div>
                 </div>
             </div>
-          </div>;
+          </PromiseWrapper>;
   }
 }

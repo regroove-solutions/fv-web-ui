@@ -17,6 +17,8 @@ import React, { Component, PropTypes } from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import AppFrontController from './AppFrontController';
 
 // Components & Themes
@@ -52,7 +54,7 @@ export default class AppWrapper extends Component {
   static propTypes = {
     connect: PropTypes.func.isRequired,
     getUser: PropTypes.func.isRequired,
-    computeDialectsAll: PropTypes.object.isRequired
+    computeDialects: PropTypes.object.isRequired
   };
 
   static childContextTypes = {
@@ -80,11 +82,16 @@ export default class AppWrapper extends Component {
     this.props.connect();
     this.props.getUser();
 
-    // Set KeymanWeb to manual mode -- no auto-attaching to inputs
-    KeymanWeb.SetMode('manual');
+    let kmw = null;
+
+    if (typeof KeymanWeb !== 'undefined') {
+      // Set KeymanWeb to manual mode -- no auto-attaching to inputs
+      KeymanWeb.SetMode('manual');
+      kmw = KeymanWeb;
+    }
 
     this.state = {
-      kmw: KeymanWeb,
+      kmw: kmw,
       kmwSelectedKeyboard: null,
       kmwLoadedKeyboards: []
     };
@@ -137,7 +144,8 @@ export default class AppWrapper extends Component {
 
   componentDidMount() {
     window.onscroll = function() {
-      KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
+      if (typeof KeymanWeb !== 'undefined')
+        KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
     };
   }
 
@@ -146,9 +154,11 @@ export default class AppWrapper extends Component {
     let dialectsWithKeyboards;
     let keyboardPicker;
 
-    if (selectn('response.entries', this.props.computeDialectsAll)) {
+    const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/sections');
 
-      dialectsWithKeyboards = selectn('response.entries', this.props.computeDialectsAll).filter(function(dialect){
+    if (selectn('success', dialects)) {
+
+      dialectsWithKeyboards = dialects.response.entries.filter(function(dialect){
         return selectn('properties.fvdialect:keymanweb.length', dialect) > 0;
       });
 

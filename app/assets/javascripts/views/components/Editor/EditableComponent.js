@@ -3,6 +3,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
+import StatusBar from 'views/components/StatusBar';
+
 // Models
 import {Document} from 'nuxeo';
 
@@ -20,12 +22,14 @@ export default class EditableComponent extends Component {
     computeEntity: PropTypes.object.isRequired,
     updateEntity: PropTypes.func.isRequired,
     property: PropTypes.string.isRequired,
+    className: PropTypes.string,
     options: PropTypes.array,
     accessDenied: PropTypes.bool
   };
 
   static defaultProps = {
-    accessDenied: false
+    accessDenied: false,
+    className: ''
   };
 
   constructor(props, context) {
@@ -93,7 +97,7 @@ export default class EditableComponent extends Component {
           // Set default value to current value
           fieldFormValues[property] = currentValue;
 
-          return <form onSubmit={e => this._onRequestSaveField(e, property)}>
+          return <form className="editableComponentForm" onSubmit={e => this._onRequestSaveField(e, property)}>
                     <t.form.Form
                       ref={"form_" + property}
                       value={fieldFormValues}
@@ -109,7 +113,7 @@ export default class EditableComponent extends Component {
     // Render regular field if not in edit mode
     return <div>
               <span dangerouslySetInnerHTML={{__html: currentValue}}></span>
-              <IconButton iconClassName="material-icons" style={{verticalAlign: '-5px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
+              <IconButton iconClassName="material-icons" iconStyle={{fontSize: '20px'}} style={{verticalAlign: '-4px', padding: '0px 5px', height: '22px', width: '22px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
 
@@ -142,7 +146,7 @@ export default class EditableComponent extends Component {
     newDocument.set(formValue);
 
     // Save document
-    this.props.updateEntity(newDocument);
+    this.props.updateEntity(newDocument, null, '\'' + selectn('props.options.fields' + '.' + property + '.label', this.refs["form_" + property]) + '\' updated successfully!');
 
     this.setState({
       editModeEnabled: false,
@@ -157,6 +161,6 @@ export default class EditableComponent extends Component {
   }
 
   render() {
-      return (<div>{this._editableElement()}</div>);
+      return (<div className={this.props.className}>{this._editableElement()} <StatusBar message={selectn('message', this.props.computeEntity)} /> </div>);
   };
 }

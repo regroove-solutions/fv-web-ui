@@ -14,12 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
+
 import classNames from 'classnames';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
 import {Document} from 'nuxeo';
@@ -39,12 +44,13 @@ export default class ExploreDialectEdit extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
-    computePortalUpdate: PropTypes.object.isRequired
+    computePortal: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -59,10 +65,8 @@ export default class ExploreDialectEdit extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchPortal('/' + dialectPath + '/Portal');
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -72,7 +76,7 @@ export default class ExploreDialectEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
+    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
       this.fetchData(nextProps);
     }
   }
@@ -84,27 +88,23 @@ export default class ExploreDialectEdit extends Component {
   shouldComponentUpdate(newProps) {
 
     switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
+      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
         return true;
       break;
 
-      case (newProps.computePortal.response != this.props.computePortal.response):
+      case (newProps.computePortal != this.props.computePortal):
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
-      break;
-
-      case (newProps.computePortalUpdate.response != this.props.computePortalUpdate.response):
-        return false; // TODO: Change to true and handle submit
       break;
     }
 
     return false;
   }
 
-  _onRequestSaveForm(e) {
+  _onRequestSaveForm(portal, e) {
 
     // Prevent default behaviour
     e.preventDefault();
@@ -116,9 +116,9 @@ export default class ExploreDialectEdit extends Component {
 
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
-      let newDocument = new Document(this.props.computePortal.response, { 
-        'repository': this.props.computePortal.response._repository,
-        'nuxeo': this.props.computePortal.response._nuxeo
+      let newDocument = new Document(portal.response, { 
+        'repository': portal.response._repository,
+        'nuxeo': portal.response._nuxeo
       });
 
       // Set new value property on document
@@ -132,45 +132,90 @@ export default class ExploreDialectEdit extends Component {
 
   render() {
 
-    const { computeDialect, computePortal, computePortalUpdate } = this.props;
+    const portalPath = this.props.routeParams.dialect_path + '/Portal';
 
-    let dialect = computeDialect.response;
-    let portal = computePortal.response;
+    const computeEntities = Immutable.fromJS([{
+      'id': portalPath,
+      'entity': this.props.computePortal
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    if (computeDialect.isFetching || computePortal.isFetching || !computePortal.success || !computeDialect.success) {
-      return <CircularProgress mode="indeterminate" size={2} />;
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, portalPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    let initialValues = {};
+
+    // Set initial values
+    if (selectn('response', computeDialect2) && selectn('response', computePortal)) {
+      initialValues = Object.assign(selectn('response', computeDialect2), {initialValues: selectn("response.properties", computePortal)})
     }
 
-    return <div>
+    return <PromiseWrapper computeEntities={computeEntities}>
 
-            <h1>Edit {dialect.get('dc:title')} Community Portal</h1>
- 
-            <div className="row" style={{marginTop: '15px'}}>
+              <div className="form-horizontal">
 
-              <div className={classNames('col-xs-8', 'col-md-10')}>
-                <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_portal"
-                    type={t.struct(selectn("FVPortal", fields))}
-                    context={Object.assign(dialect, {initialValues: selectn("properties", portal)})}
-                    value={selectn("properties", portal)}
-                    options={selectn("FVPortal", options)} />
-                    <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button> 
+                <h1>Edit {selectn('response.title', computeDialect2)} Community Portal</h1>
+   
+                <div className="row" style={{marginTop: '15px'}}>
+
+                  <div className={classNames('col-xs-8', 'col-md-10')}>
+                    <form onSubmit={this._onRequestSaveForm.bind(this, computePortal)}>
+                      <t.form.Form
+                        ref="form_portal"
+                        type={t.struct(selectn("FVPortal", fields))}
+                        context={initialValues}
+                        value={selectn("response.properties", computePortal)}
+                        options={selectn("FVPortal", options)} />
+                        <div className="form-group">
+                          <button type="submit" className="btn btn-primary">Save</button> 
+                        </div>
+                    </form>
+                  </div>
+
+                  <div className={classNames('col-xs-4', 'col-md-2')}>
+
+                    <div style={{marginTop: '25px'}} className={classNames('panel', 'panel-primary')}>
+
+                      <div className="panel-heading">Metadata</div>
+
+                      <ul className="list-group">
+
+                        <li className="list-group-item">
+                          <span className={classNames('label', 'label-default')}>Last Modified</span><br/>
+                          {selectn("response.lastModified", computePortal)}
+                        </li>
+
+                        <li className="list-group-item">
+                          <span className={classNames('label', 'label-default')}>Last Contributor</span><br/>
+                          {selectn("response.properties.dc:lastContributor", computePortal)}
+                        </li>
+
+                        <li className="list-group-item">
+                          <span className={classNames('label', 'label-default')}>Date Created</span><br/>
+                          {selectn("response.properties.dc:created", computePortal)}
+                        </li>
+
+                        <li className="list-group-item">
+                          <span className={classNames('label', 'label-default')}>Contributors</span><br/>
+                          {(selectn("response.properties.dc:contributors", computePortal) || []).join(',')}
+                        </li>
+
+                        <li className="list-group-item">
+                          <span className={classNames('label', 'label-default')}>Version</span><br/>
+                          {selectn("response.properties.uid:major_version", computePortal)}.{selectn("response.properties.uid:minor_version", computePortal)} 
+                        </li>
+
+                      </ul>
+
                     </div>
-                </form>
+
+                  </div>
               </div>
 
-              <div className={classNames('col-xs-4', 'col-md-2')}>
+            </div>
 
-                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                  <div className="subheader">Metadata</div>
-
-                </Paper>
-
-              </div>
-          </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

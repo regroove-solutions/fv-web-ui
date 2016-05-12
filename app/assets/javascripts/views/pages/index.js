@@ -33,6 +33,7 @@ import {default as PageDialectViewWord} from './explore/dialect/learn/words/view
 import {default as PageDialectViewPhrase} from './explore/dialect/learn/phrases/view'
 import {default as PageDialectViewBook} from './explore/dialect/learn/songs-stories/view'
 
+import {default as PageTest} from './test.js'
 import {default as PageHome} from './home'
 import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
@@ -40,6 +41,7 @@ import {default as PagePlay} from './play'
 import {default as PageSearch} from './search'
 
 module.exports = {
+  PageTest,
   PageHome,
   PageExploreDialects,
   PageExploreArchive,

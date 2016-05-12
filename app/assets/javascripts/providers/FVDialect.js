@@ -1,5 +1,3 @@
-import Immutable, { List, Map } from 'immutable';
-
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
 
@@ -66,34 +64,6 @@ const FV_DIALECT_PUBLISH_ERROR = "FV_DIALECT_PUBLISH_ERROR";
 const FV_DIALECT_UNPUBLISH_START = "FV_DIALECT_UNPUBLISH_START";
 const FV_DIALECT_UNPUBLISH_SUCCESS = "FV_DIALECT_UNPUBLISH_SUCCESS";
 const FV_DIALECT_UNPUBLISH_ERROR = "FV_DIALECT_UNPUBLISH_ERROR";
-
-const updateDialect = function updateDialect(newDoc, field) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_DIALECT_UPDATE_START, document: newDoc, field: field } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-        dispatch( { type: FV_DIALECT_UPDATE_SUCCESS, document: response, field: field} );
-      }).catch((error) => {
-          dispatch( { type: FV_DIALECT_UPDATE_ERROR, error: error, field: field } )
-    });
-  }
-};
-
-const fetchDialectsAll = function fetchDialectsAll(path, type) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_DIALECT_FETCH_ALL_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVDialect', '', { headers: { 'X-NXenrichers.document': 'ancestry' } })
-    .then((response) => {
-      dispatch( { type: FV_DIALECT_FETCH_ALL_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_DIALECT_FETCH_ALL_ERROR, error: error } )
-    });
-  }
-};
 
 const fetchDialectsInPath = function fetchDialectsInPath(path, type) {
   return function (dispatch) {
@@ -175,7 +145,14 @@ const unpublishDialect = function unpublishDialect(pathOrId) {
   }
 };
 
-const actions = { fetchDialectsInPath, fetchDialect, publishDialect, unpublishDialect, fetchDialectsAll, updateDialect, fetchDialectStats };
+const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', {});
+const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions' } });
+const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+
+const actions = { fetchDialectsInPath, fetchDialect, updateDialect2, fetchDialect2, publishDialect, unpublishDialect, fetchDialects, fetchDialectStats };
+
+const computeDialectQuery = RESTReducers.computeQuery('dialects');
+const computeDialectFetch = RESTReducers.computeFetch('dialect2');
 
 const reducers = {
   computeDialectsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -225,26 +202,8 @@ const reducers = {
       break;
     }
   },
-  computeDialectsAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case FV_DIALECT_FETCH_ALL_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case FV_DIALECT_FETCH_ALL_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
-
-      case FV_DIALECT_FETCH_ALL_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
+  computeDialects: computeDialectQuery.computeDialects,
+  computeDialect2: computeDialectFetch.computeDialect2,
   computeDialectStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_DIALECT_FETCH_STATS_START:

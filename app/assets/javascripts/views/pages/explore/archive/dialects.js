@@ -14,8 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
@@ -32,8 +38,8 @@ export default class ExploreDialects extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchDialectsAll: PropTypes.func.isRequired,
-    computeDialectsAll: PropTypes.object.isRequired,
+    fetchDialects: PropTypes.func.isRequired,
+    computeDialects: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -45,12 +51,19 @@ export default class ExploreDialects extends Component {
   constructor(props, context){
     super(props, context);
 
+    this.state = {
+      pathOrId: null
+    };
+
     // Bind methods to 'this'
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    this.props.fetchDialectsAll('/' + newProps.properties.domain + '/' + newProps.routeParams.area);
+    const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
+
+    this.props.fetchDialects(pathOrId);
+    this.setState({pathOrId})
   }
 
   // Fetch data on initial render
@@ -60,7 +73,7 @@ export default class ExploreDialects extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+    if (nextProps.routeParams.area != this.props.routeParams.area) {
       this.fetchData(nextProps);
     }
   }
@@ -71,41 +84,42 @@ export default class ExploreDialects extends Component {
 
   render() {
 
-    const { computeDialectsAll } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.pathOrId,
+      'entity': this.props.computeDialects
+    }])
 
-    if (computeDialectsAll.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
-    let dialects = selectn('response.entries', computeDialectsAll) || [];
-
-    return <div className="row">
-            <div className="col-md-4 col-xs-12">
-              <h1>{this.props.properties.title} Archive</h1>
-              <div>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+    return <PromiseWrapper computeEntities={computeEntities}>
+             <div className="row">
+              <div className="col-md-4 col-xs-12">
+                <h1>{this.props.properties.title} Archive</h1>
+                <div>
+                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
+                </div>
+              </div>
+              <div className="col-md-8 col-xs-12">
+                  <h2>Browse the following Dialects:</h2>
+                  <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                    <GridList
+                      cols={2}
+                      cellHeight={200}
+                      style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
+                      >
+                        {(selectn('response.entries', computeDialects) || []).map((tile, i) => 
+                          <GridTile
+                            onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                            key={tile.uid}
+                            title={tile.title}
+                            subtitle={tile.description}
+                            ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                        )}
+                    </GridList>
+                  </div>
               </div>
             </div>
-            <div className="col-md-8 col-xs-12">
-                <h2>Browse the following Dialects:</h2>
-                <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                  <GridList
-                    cols={2}
-                    cellHeight={200}
-                    style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
-                    >
-                      {dialects.map((tile, i) => 
-                        <GridTile
-                          onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                          key={tile.uid}
-                          title={tile.title}
-                          subtitle={tile.description}
-                          ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
-                      )}
-                  </GridList>
-                </div>
-            </div>
-          </div>;
+          </PromiseWrapper>;
   }
 }

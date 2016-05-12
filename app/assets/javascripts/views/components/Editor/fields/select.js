@@ -10,7 +10,7 @@ function renderInput(locals) {
   };
 
   return <div>
-  	<DirectoryList label={locals.label} value={locals.value} onChange={onChange} directory={locals.attrs.directory} />
+  	<DirectoryList label={locals.label} value={locals.value} onChange={onChange} fancy={locals.attrs.fancy} directory={locals.attrs.directory} />
   </div>;
 }
 

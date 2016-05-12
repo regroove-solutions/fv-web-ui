@@ -539,6 +539,9 @@ const options = {
   
   FVPortal: {
     fields: {
+      'fv-portal:greeting': {
+        label: 'Portal Greeting'
+      },
       'fv-portal:about': {
         label: 'Portal Introduction',
         type: 'textarea',
@@ -546,9 +549,6 @@ const options = {
         attrs: {
           placeholder: 'Enter portal description here'
         }
-      },
-      'fv-portal:greeting': {
-        label: 'Portal Greeting'
       },
       'fv-portal:featured_audio' : {
         label: 'Featured Audio',
@@ -590,8 +590,13 @@ const options = {
         label: 'Country',
         factory: SelectFactory,
         attrs: {
+          fancy: false,
           directory: 'fv_countries'
         }
+      },
+      'fvdialect:region': {
+        label: 'Region',
+        type: 'text'
       },
       'fvdialect:contact_information': {
         label: 'Contact Information',

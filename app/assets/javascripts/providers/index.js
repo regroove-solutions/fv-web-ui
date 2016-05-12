@@ -1,4 +1,4 @@
-import {provide, unshiftMiddleware, createCombinedStore} from 'react-redux-provide';
+import {provide, unshiftMiddleware, createCombinedStore, unshiftEnhancer} from 'react-redux-provide';
 import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
 import createLoggerMiddleware from 'redux-logger';
 
@@ -26,17 +26,7 @@ import search from './search';
 
 const loggerMiddleware = createLoggerMiddleware();
 
-// Enable log for specific provider
-//unshiftMiddleware([connect], loggerMiddleware);
-
-//console.log(createCombinedStore({Editor, FVPortal}));
-
-/**
-* These providers will be exposed to each componenet that has the @provide decorator,
-* thus exposing their actions and reducers.
-*/
-export default {
-  page,
+const providers = { page,
   connect,
   navigation,
   Document,
@@ -56,5 +46,22 @@ export default {
   FVCharacter,
   FVGallery,
   reports,
-  search
-};
+  search };
+
+// Enable log for specific provider
+//unshiftMiddleware([connect], loggerMiddleware);
+
+//console.log(createCombinedStore({Editor, FVPortal}));
+
+/*if (process.env.NODE_ENV !== 'production' && window.devToolsExtension) {
+  unshiftEnhancer([FVPortal], window.devToolsExtension({
+    actionsBlacklist: ['@@INIT']
+  }));
+}*/
+
+
+/**
+* These providers will be exposed to each componenet that has the @provide decorator,
+* thus exposing their actions and reducers.
+*/
+export default providers;
