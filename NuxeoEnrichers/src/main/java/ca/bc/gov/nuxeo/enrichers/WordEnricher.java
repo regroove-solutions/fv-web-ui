@@ -6,12 +6,10 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
@@ -84,7 +82,7 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleJsonObject(sourceId, session);
 					if(sourceObj != null) {
 						sourceArray.add(sourceObj);
-					}	
+					}
 				}
 				jsonObj.put("sources", sourceArray);
 			}
@@ -106,39 +104,39 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					ObjectNode phraseObj = mapper.createObjectNode();
 					phraseObj.put("uid", phraseId);
 					phraseObj.put("path", phraseDoc.getPath().toString());
-												
+
 					// Construct JSON array node for fv:definitions
-					ArrayList<Object> definitionsList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "definitions");									
+					ArrayList<Object> definitionsList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "definitions");
 					ArrayNode definitionsJsonArray = mapper.createArrayNode();
 					for(Object definition : definitionsList) {
 						Map<String, Object> complexValue = (HashMap<String, Object>) definition;
 						String language = (String) complexValue.get("language");
 						String translation = (String) complexValue.get("translation");
-						
+
 						// Create JSON node and add it to the array
 						ObjectNode jsonNode = mapper.createObjectNode();
 						jsonNode.put("language", language);
-						jsonNode.put("translation", translation);	
+						jsonNode.put("translation", translation);
 						definitionsJsonArray.add(jsonNode);
 					}
-					phraseObj.put("fv:definitions", definitionsJsonArray);					
-					
+					phraseObj.put("fv:definitions", definitionsJsonArray);
+
 					// Construct JSON array node for fv:literal_translation
-					ArrayList<Object> literalTranslationList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "literal_translation");									
+					ArrayList<Object> literalTranslationList = (ArrayList<Object>)phraseDoc.getProperty("fvcore", "literal_translation");
 					ArrayNode literalTranslationJsonArray = mapper.createArrayNode();
 					for(Object literalTranslation : literalTranslationList) {
 						Map<String, Object> complexValue = (HashMap<String, Object>) literalTranslation;
 						String language = (String) complexValue.get("language");
 						String translation = (String) complexValue.get("translation");
-						
+
 						// Create JSON node and add it to the array
 						ObjectNode jsonNode = mapper.createObjectNode();
 						jsonNode.put("language", language);
-						jsonNode.put("translation", translation);	
+						jsonNode.put("translation", translation);
 						literalTranslationJsonArray.add(jsonNode);
 					}
 					phraseObj.put("fv:literal_translation", literalTranslationJsonArray);
-										
+
 					phraseObj.put("dc:title", phraseDoc.getTitle());
 					phraseArray.add(phraseObj);
 				}
@@ -156,6 +154,32 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					}
 				}
 				jsonObj.put("related_audio", audioJsonArray);
+			}
+
+			// Process "fv:related_pictures" values
+			String[] pictureIds = (String[]) doc.getProperty("fvcore", "related_pictures");
+			if (pictureIds != null) {
+				ArrayNode pictureJsonArray = mapper.createArrayNode();
+				for (String pictureId : pictureIds) {
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(pictureId, session);
+					if(binaryJsonObj != null) {
+						pictureJsonArray.add(binaryJsonObj);
+					}
+				}
+				jsonObj.put("related_pictures", pictureJsonArray);
+			}
+
+			// Process "fv:related_video" values
+			String[] videoIds = (String[]) doc.getProperty("fvcore", "related_video");
+			if (videoIds != null) {
+				ArrayNode videoJsonArray = mapper.createArrayNode();
+				for (String videoId : videoIds) {
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(videoId, session);
+					if(binaryJsonObj != null) {
+						videoJsonArray.add(binaryJsonObj);
+					}
+				}
+				jsonObj.put("related_video", videoJsonArray);
 			}
 		}
 
