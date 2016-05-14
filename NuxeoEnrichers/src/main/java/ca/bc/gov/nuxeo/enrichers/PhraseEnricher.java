@@ -43,7 +43,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 		// First create the parent document's Json object content
 		CoreSession session = doc.getCoreSession();
 
-		String documentType = (String) doc.getType();
+		String documentType = doc.getType();
 
 		/*
 		 * Properties for FVPhrase
@@ -72,6 +72,45 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 					}
 				}
 				jsonObj.put("sources", sourceArray);
+			}
+
+			// Process "fv:related_audio" values
+			String[] audioIds = (String[]) doc.getProperty("fvcore", "related_audio");
+			if (audioIds != null) {
+				ArrayNode audioJsonArray = mapper.createArrayNode();
+				for (String audioId : audioIds) {
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(audioId, session);
+					if(binaryJsonObj != null) {
+						audioJsonArray.add(binaryJsonObj);
+					}
+				}
+				jsonObj.put("related_audio", audioJsonArray);
+			}
+
+			// Process "fv:related_pictures" values
+			String[] pictureIds = (String[]) doc.getProperty("fvcore", "related_pictures");
+			if (pictureIds != null) {
+				ArrayNode pictureJsonArray = mapper.createArrayNode();
+				for (String pictureId : pictureIds) {
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(pictureId, session);
+					if(binaryJsonObj != null) {
+						pictureJsonArray.add(binaryJsonObj);
+					}
+				}
+				jsonObj.put("related_pictures", pictureJsonArray);
+			}
+
+			// Process "fv:related_video" values
+			String[] videoIds = (String[]) doc.getProperty("fvcore", "related_video");
+			if (videoIds != null) {
+				ArrayNode videoJsonArray = mapper.createArrayNode();
+				for (String videoId : videoIds) {
+					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(videoId, session);
+					if(binaryJsonObj != null) {
+						videoJsonArray.add(binaryJsonObj);
+					}
+				}
+				jsonObj.put("related_video", videoJsonArray);
 			}
 		}
 

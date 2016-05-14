@@ -24,37 +24,39 @@ public class EnricherUtils {
     private static final Log log = LogFactory.getLog(EnricherUtils.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
-    
+
 	/**
 	 *	Retrieve additional binary document properties for a given id, and return them in a JSON object.
 	 */
 	public static ObjectNode getBinaryPropertiesJsonObject(String binaryId, CoreSession session) {
-		
+
 		IdRef ref = new IdRef(binaryId);
 		DocumentModel binaryDoc = null;
 		ObjectNode binaryJsonObj = mapper.createObjectNode();
-		
+
 		try {
-			binaryDoc = session.getDocument(ref);				
+			binaryDoc = session.getDocument(ref);
 			// Retrieve binary details, including the path to the file
-			BinaryBlob fileObj = (BinaryBlob)binaryDoc.getProperty("file", "content");							
+			BinaryBlob fileObj = (BinaryBlob)binaryDoc.getProperty("file", "content");
 			String filename = fileObj.getFilename();
 			String mimeType = fileObj.getMimeType();
 			// TODO: not sure how to retrieve this value from the object, so build it manually for now
 			String binaryPath = "nxfile/default/" + binaryDoc.getId() + "/file:content/" + filename;
-			
+
 			// Build JSON node
 			binaryJsonObj.put("uid", binaryDoc.getId());
 			binaryJsonObj.put("name", filename);
 			binaryJsonObj.put("mime-type", mimeType);
 			binaryJsonObj.put("path", binaryPath);
 			binaryJsonObj.put("dc:title", (String)binaryDoc.getPropertyValue("dc:title"));
-			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));			
+			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));
 		} catch (DocumentNotFoundException de) {
     		log.warn("Could not retrieve binary document.", de);
 			return null;
-		}				
-		
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+
 		return binaryJsonObj;
 	}
 
@@ -62,28 +64,28 @@ public class EnricherUtils {
 	 *	Retrieve additional properties for a Link document with a given id, and return them in a JSON object.
 	 */
 	public static ObjectNode getLinkJsonObject(String binaryId, CoreSession session) {
-		
+
 		IdRef ref = new IdRef(binaryId);
 		DocumentModel linkDoc = null;
 		ObjectNode linkJsonObj = mapper.createObjectNode();
-		
+
 		try {
-			linkDoc = session.getDocument(ref);				
-			
+			linkDoc = session.getDocument(ref);
+
 			// Build JSON node
 			linkJsonObj.put("uid", linkDoc.getId());
 			linkJsonObj.put("title", linkDoc.getTitle());
-			linkJsonObj.put("description", (String)linkDoc.getPropertyValue("dc:description"));	
-			linkJsonObj.put("url", (String)linkDoc.getPropertyValue("fvlink:url"));							
-			
+			linkJsonObj.put("description", (String)linkDoc.getPropertyValue("dc:description"));
+			linkJsonObj.put("url", (String)linkDoc.getPropertyValue("fvlink:url"));
+
 			// If the link contains a file attachment, return the details
-			BinaryBlob fileObj = (BinaryBlob)linkDoc.getProperty("file", "content");							
+			BinaryBlob fileObj = (BinaryBlob)linkDoc.getProperty("file", "content");
 			if(fileObj != null) {
 				String filename = fileObj.getFilename();
 				String mimeType = fileObj.getMimeType();
 				// TODO: not sure how to retrieve this value from the object, so build it manually for now
 				String binaryPath = "nxfile/default/" + linkDoc.getId() + "/file:content/" + filename;
-				
+
 				// Build JSON node
 				linkJsonObj.put("uid", linkDoc.getId());
 				linkJsonObj.put("name", filename);
@@ -93,39 +95,39 @@ public class EnricherUtils {
 		} catch (DocumentNotFoundException de) {
     		log.warn("Could not retrieve link document.", de);
 			return null;
-		}				
-		
+		}
+
 		return linkJsonObj;
-	}	
-	
-	
+	}
+
+
 	/**
 	 *	Retrieve the document title for a given id, and return a JSON object containing it.
 	 */
 	public static ObjectNode getDocumentIdAndTitleJsonObject(String documentId, CoreSession session) {
-		
+
 		IdRef ref = new IdRef(documentId);
 		DocumentModel doc = null;
 		ObjectNode jsonObj = mapper.createObjectNode();
-		
+
 		try {
-			doc = session.getDocument(ref);							
+			doc = session.getDocument(ref);
 			// Build JSON node
 			jsonObj.put("uid", doc.getId());
-			jsonObj.put("dc:title", doc.getTitle());							
+			jsonObj.put("dc:title", doc.getTitle());
 		} catch (DocumentNotFoundException de) {
     		log.warn("Could not retrieve document.", de);
 			return null;
 		}
-		
+
 		return jsonObj;
 	}
-	
+
 	/**
 	 *	Return the part of speech label for a given part of speech id.
 	 */
 	public static String getPartOfSpeechLabel(String partOfSpeechId) {
-		
+
 		DirectoryService directoryService = Framework.getLocalService(DirectoryService.class);
 		Session directorySession = directoryService.open("parts_of_speech");
 		String partOfSpeechLabel = "";
@@ -144,7 +146,7 @@ public class EnricherUtils {
 			}
 		}
 		directorySession.close();
-		
+
 		return partOfSpeechLabel;
-	}	
+	}
 }

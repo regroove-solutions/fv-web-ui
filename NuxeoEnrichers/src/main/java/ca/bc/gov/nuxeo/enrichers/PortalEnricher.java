@@ -30,7 +30,7 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 	public static final String NAME = "portal";
 
     private static final Log log = LogFactory.getLog(PortalEnricher.class);
-	
+
 	public PortalEnricher() {
 		super(NAME);
 	}
@@ -53,15 +53,15 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 		// First create the parent document's Json object content
 		CoreSession session = doc.getCoreSession();
 
-		String documentType = (String) doc.getType();
+		String documentType = doc.getType();
 
 		/*
 		 * Properties for FVPortal
 		 */
 		if (documentType.equalsIgnoreCase("FVPortal")) {
-			
+
 			// Process "fv-portal:featured_words" values
-			String[] featuredWordsIds = (String[]) doc.getProperty("fv-portal", "featured_words");
+			String[] featuredWordsIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fv-portal", "featured_words") : (String[]) doc.getProperty("fvproxy", "proxied_words");
 			if (featuredWordsIds != null) {
 				ArrayNode featuredWordJsonArray = mapper.createArrayNode();
 				for (String featuredWordId : featuredWordsIds) {
@@ -74,12 +74,12 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					} catch (DocumentNotFoundException de) {
 						continue;
 					}
-					
+
 					ObjectNode featuredWordJsonObj = mapper.createObjectNode();
 					featuredWordJsonObj.put("uid", featuredWordId);
 					featuredWordJsonObj.put("dc:title", featuredWordDoc.getTitle());
 					featuredWordJsonObj.put("path", featuredWordDoc.getPathAsString());
-					
+
 					// Process "fv:literal translation" values
 					Object literalTranslationObj = featuredWordDoc.getProperty("fvcore", "literal_translation");
 					List<Object> literalTranslationList = (ArrayList<Object>) literalTranslationObj;
@@ -88,24 +88,24 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 						Map<String, Object> complexValue = (HashMap<String, Object>) literalTranslationListItem;
 						String language = (String) complexValue.get("language");
 						String translation = (String) complexValue.get("translation");
-						
+
 						// Create JSON node and add it to the array
 						ObjectNode literalTranslationJsonObj = mapper.createObjectNode();
 						literalTranslationJsonObj.put("language", language);
-						literalTranslationJsonObj.put("translation", translation);	
+						literalTranslationJsonObj.put("translation", translation);
 						literalTranslationJsonArray.add(literalTranslationJsonObj);
 					}
 					featuredWordJsonObj.put("fv:literal_translation", literalTranslationJsonArray);
-					
+
 					// Process "fv-word:part_of_speech" value
 					String partOfSpeechId = (String) featuredWordDoc.getProperty("fv-word",	"part_of_speech");
 					String partOfSpeechLabel = EnricherUtils.getPartOfSpeechLabel(partOfSpeechId);
 					featuredWordJsonObj.put("fv-word:part_of_speech", partOfSpeechLabel);
-					
+
 					// Process "fv:related_audio" values
 					String[] relatedAudioIds = (String[]) featuredWordDoc.getPropertyValue("fv:related_audio");
 					ArrayNode relatedAudioJsonArray = mapper.createArrayNode();
-					
+
 					// Retrieve additional properties from the referenced binaries, and add them to the JSON
 					for(String relatedAudioId : relatedAudioIds) {
 						ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(relatedAudioId, session);
@@ -114,14 +114,14 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 						}
 					}
 					featuredWordJsonObj.put("fv:related_audio", relatedAudioJsonArray);
-										
+
 					featuredWordJsonArray.add(featuredWordJsonObj);
 				}
 				jsonObj.put("fv-portal:featured_words", featuredWordJsonArray);
 			}
-			
+
 			// Process "fv-portal:featured_audio" value
-			String featuredAudioId = (String) doc.getProperty("fv-portal", "featured_audio");
+			String featuredAudioId = (!doc.isProxy()) ? (String) doc.getProperty("fv-portal", "featured_audio") : (String) doc.getProperty("fvproxy", "proxied_featured_audio");
 			if (featuredAudioId != null) {
 				// Retrieve additional properties from the referenced binaries, and add them to the JSON
 				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(featuredAudioId, session);
@@ -129,39 +129,39 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					jsonObj.put("fv-portal:featured_audio", binaryJsonObj);
 				}
 			}
-			
+
 			// Process "fv-portal:background_top_image" value
-			String backgroundTopImageId = (String) doc.getProperty("fv-portal", "background_top_image");
-			if (backgroundTopImageId != null) {				
+			String backgroundTopImageId = (!doc.isProxy()) ? (String) doc.getProperty("fv-portal", "background_top_image") : (String) doc.getProperty("fvproxy", "proxied_background_image");
+			if (backgroundTopImageId != null) {
 				// Retrieve additional properties from the referenced binaries, and add them to the JSON
 				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(backgroundTopImageId, session);
 				if(binaryJsonObj != null) {
 					jsonObj.put("fv-portal:background_top_image", binaryJsonObj);
 				}
-			}			
+			}
 
 			// Process "fv-portal:background_bottom_image" value
 			String backgroundBottomImageId = (String) doc.getProperty("fv-portal", "background_bottom_image");
-			if (backgroundBottomImageId != null) {				
+			if (backgroundBottomImageId != null) {
 				// Retrieve additional properties from the referenced binaries, and add them to the JSON
 				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(backgroundBottomImageId, session);
 				if(binaryJsonObj != null) {
 					jsonObj.put("fv-portal:background_bottom_image", binaryJsonObj);
 				}
-			}				
+			}
 
 			// Process "fv-portal:logo" value
-			String logoImageId = (String) doc.getProperty("fv-portal", "logo");
-			if (logoImageId != null) {				
+			String logoImageId = (!doc.isProxy()) ? (String) doc.getProperty("fv-portal", "logo") : (String) doc.getProperty("fvproxy", "proxied_logo");
+			if (logoImageId != null) {
 				// Retrieve additional properties from the referenced binaries, and add them to the JSON
 				ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(logoImageId, session);
 				if(binaryJsonObj != null) {
 					jsonObj.put("fv-portal:logo", binaryJsonObj);
 				}
 			}
-			
+
 			// Process "fv-portal:related_links" values
-			String[] relatedLinkIds = (String[]) doc.getProperty("fv-portal", "related_links");
+			String[] relatedLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fv-portal", "related_links") : (String[]) doc.getProperty("fvproxy", "proxied_related_links");
 			if (relatedLinkIds != null) {
 				ArrayNode relatedLinkJsonArray = mapper.createArrayNode();
 				for (String relatedId : relatedLinkIds) {
