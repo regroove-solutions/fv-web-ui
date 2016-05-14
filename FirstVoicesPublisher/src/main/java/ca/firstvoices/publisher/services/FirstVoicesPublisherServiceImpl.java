@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
@@ -172,7 +173,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             return input;
         }
 
-        input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
+		input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
@@ -280,7 +281,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
     }
 
     private boolean isAssetType(String type) {
-        return "FVWord".equals(type) || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type);
+        return "FVBookEntry".equals(type) || "FVBook".equals(type) || "FVPhrase".equals(type) || "FVWord".equals(type) || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type);
     }
 
     @Override
@@ -290,9 +291,109 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         if ("FVDialect".equals(doc.getType())) {
             return publishDialect(doc);
-        } else if (isAssetType(doc.getType())) {
+        }
+        else if ("FVPortal".equals(doc.getType())) {
+        	return publishPortalAssets(doc);
+        }
+        else if (isAssetType(doc.getType())) {
             return publishAsset(doc);
         }
         return null;
     }
+
+	@Override
+	public DocumentModel publishPortalAssets(DocumentModel portal) {
+        CoreSession session = portal.getCoreSession();
+
+        DocumentModel dialect = getDialect(portal);
+        if (dialect == null) {
+            throw new InvalidParameterException("Asset should be inside a dialect");
+        }
+        DocumentModelList proxies = session.getProxies(dialect.getRef(), null);
+        if (proxies.size() == 0) {
+            throw new InvalidParameterException("Dialect should be published");
+        }
+        DocumentModel dialectSection = proxies.get(0);
+        DocumentModel input = getPublication(session, portal.getRef());
+
+        // Portal should always be published at this point, skip if not
+        if (input == null) {
+            // Already published
+            return input;
+        }
+
+        Map<String, String> dependencies = new HashMap<String, String>();
+
+        // Portal
+        dependencies.put("fv-portal:featured_words", "fvproxy:proxied_words");
+        dependencies.put("fv-portal:background_top_image", "fvproxy:proxied_background_image");
+        dependencies.put("fv-portal:featured_audio", "fvproxy:proxied_featured_audio");
+        dependencies.put("fv-portal:logo", "fvproxy:proxied_logo");
+        dependencies.put("fv-portal:related_links", "fvproxy:proxied_related_links");
+
+        for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
+
+            String dependency = dependencyEntry.getKey();
+            // Check if input has schema
+            if (!input.hasSchema(dependency.split(":")[0])) {
+                continue;
+            }
+
+            String[] dependencyPropertyValue;
+
+            // Handle expection property values as arrays
+            if (dependencyEntry.getKey() == "fv-portal:featured_words" || dependencyEntry.getKey() == "fv-portal:related_links") {
+                dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
+            }
+            // Handle as string
+            else {
+            	dependencyPropertyValue = new String[1];
+            	String propertyValue = (String) input.getPropertyValue(dependency);
+
+            	if (propertyValue != null) {
+					dependencyPropertyValue[0] = propertyValue;
+				}
+            }
+
+            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0) {
+                continue;
+            }
+
+            // input is the document in the section
+            for (String relatedDocUUID : dependencyPropertyValue) {
+                IdRef dependencyRef = new IdRef(relatedDocUUID);
+                DocumentModel publishedDep = getPublication(session, dependencyRef);
+
+                try {
+                	// TODO: Bug? getProxies seems to return documents that don't exist anymore. Force check to see if doc exists.
+                	session.getDocument(publishedDep.getRef());
+                } catch (NullPointerException | DocumentNotFoundException e) {
+                	publishedDep = null;
+                }
+
+                // If dependency isn't published, needs publishing
+                if (publishedDep == null) {
+                    DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
+                    DocumentModel parentDependencySection;
+
+                    parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
+                    publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
+                }
+
+                // Handle exception property values as arrays
+                if (dependencyEntry.getKey() == "fv-portal:featured_words" || dependencyEntry.getKey() == "fv-portal:related_links") {
+                    String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
+                    String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
+                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+                	input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                }
+                // Handle as string
+                else {
+                	input.setPropertyValue(dependencyEntry.getValue(), publishedDep.getRef().toString());
+                }
+            }
+        }
+        session.saveDocument(input);
+        return input;
+	}
 }

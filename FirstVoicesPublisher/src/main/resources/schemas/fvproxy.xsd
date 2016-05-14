@@ -9,4 +9,11 @@
   <xs:element name="proxied_source" type="nxs:stringList"/>
   <xs:element name="proxied_phrases" type="nxs:stringList"/>
   <xs:element name="proxied_categories" type="nxs:stringList"/>
+  
+  <xs:element name="proxied_words" type="nxs:stringList"/>
+  <xs:element name="proxied_background_image" type="xs:string"/>
+  <xs:element name="proxied_featured_audio" type="xs:string"/>
+  <xs:element name="proxied_logo" type="xs:string"/>
+  <xs:element name="proxied_related_links" type="nxs:stringList"/>
+
 </xs:schema>

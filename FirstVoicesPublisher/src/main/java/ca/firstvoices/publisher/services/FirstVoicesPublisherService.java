@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package ca.firstvoices.publisher.services;
 
@@ -15,25 +15,31 @@ public interface FirstVoicesPublisherService {
      * @param dialect
      */
     public DocumentModel publishDialect(DocumentModel dialect);
-    
+
+    /**
+     * Publish or republish a portal's assets (arrays or strings)
+     * @param dialect
+     */
+    public DocumentModel publishPortalAssets(DocumentModel portal);
+
     /**
      * Unpublish a dialect, cleaning its parent if they have no more child
      * @param dialect
      */
     public void unpublishDialect(DocumentModel dialect);
-    
+
     /**
      * Publish an asset, publishing its related assets and adding proxies information
      * @param asset
      */
     public DocumentModel publishAsset(DocumentModel asset);
-    
+
     /**
      * Unpublish an asset, it wont clean the related assets
      * @param asset
      */
     public void unpublishAsset(DocumentModel asset);
-    
+
     /**
      * Will split depending on the document between unpublishAsset and unpublishDialect
      * @param doc to unpublish
