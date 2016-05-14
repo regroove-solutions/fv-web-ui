@@ -38,8 +38,8 @@ export default class Test extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -63,9 +63,9 @@ export default class Test extends Component {
 
   fetchData(newProps) {
 
-    const pathOrId = "/FV/sections/Data/TestFamily/TestLanguage/PopoDialect";
+    const pathOrId = "/FV/sections/Data/Wakashan/diidiitidq/diidiitidq/Portal";
 
-    this.props.fetchDialect2(pathOrId, 'PopoDialect', 'aaa', '444');
+    this.props.fetchPortal(pathOrId);
     this.setState({
       pathOrId: pathOrId
     });
@@ -99,7 +99,7 @@ export default class Test extends Component {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pathOrId,
-      'entity': this.props.computeDialect2
+      'entity': this.props.computePortal
     }])
 
 
@@ -120,7 +120,7 @@ export default class Test extends Component {
     return <div className="row">
             <pre>
               <PromiseWrapper computeEntities={computeEntities}>
-                {JSON.stringify(this.props.computeDialect2, null, '\t')}
+                {JSON.stringify(this.props.computePortal, null, '\t')}
               </PromiseWrapper>
             </pre>
           </div>;

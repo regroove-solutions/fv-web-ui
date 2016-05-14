@@ -135,9 +135,9 @@ export default class DialectDropDown extends Component {
 
     let dialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
-    if (selectn('success', dialects)) {
+    if (selectn('response.entries', dialects)) {
 
-      dropdownData = dialects.response.entries.map(function( dialect ) {
+      dropdownData = selectn('response.entries', dialects).map(function( dialect ) {
 
         let dialectTitle = selectn('properties.dc:title', dialect);
         let dialectUid = dialect.uid;

@@ -54,6 +54,7 @@ export default class AppWrapper extends Component {
   static propTypes = {
     connect: PropTypes.func.isRequired,
     getUser: PropTypes.func.isRequired,
+    fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired
   };
 
@@ -98,6 +99,15 @@ export default class AppWrapper extends Component {
 
     // Bind methods to 'this'
     ['_KMWSwitchKeyboard', '_KMWToggleKeyboard'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  fetchData(newProps) {
+    newProps.fetchDialects('/FV/Workspaces');
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
   }
 
   /**
@@ -154,7 +164,7 @@ export default class AppWrapper extends Component {
     let dialectsWithKeyboards;
     let keyboardPicker;
 
-    const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/sections');
+    const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/Workspaces');
 
     if (selectn('success', dialects)) {
 

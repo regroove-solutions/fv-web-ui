@@ -20,6 +20,8 @@ import Nuxeo from 'nuxeo';
 
 import BaseOperations from 'operations/BaseOperations';
 
+const TIMEOUT = 15000;
+
 export default class DirectoryOperations extends BaseOperations {
 
   /*constructor(directoryType, directoryTypePlural, client, properties = []){
@@ -59,7 +61,24 @@ export default class DirectoryOperations extends BaseOperations {
         .get(headers)
         .then((docs) => {
           resolve(docs);
-        }).catch((error) => { reject('Could not access server.'); });
+        }).catch((error) => {
+
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then(
+              (jsonError) => {
+                let errorMessage = jsonError.message.split(": ")[1];
+                errorMessage = "Error: " + errorMessage;
+                reject(errorMessage);
+              }
+            );
+          } else { 
+            return reject(error || 'Could not access server');
+          }
+        });
+
+        setTimeout(function() {
+            reject('Server timeout while executing getDocumentByPath2.');
+        }, TIMEOUT);
     });
   }
 

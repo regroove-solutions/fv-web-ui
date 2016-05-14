@@ -19,6 +19,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 import classNames from 'classnames';
 
+import CircularProgress from 'material-ui/lib/circular-progress';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 import IconButton from 'material-ui/lib/icon-button';
@@ -137,28 +138,30 @@ export default class SelectMediaComponent extends React.Component {
 
   render() {
 
-      var results;
-
-      switch (this.props.type) {
-        case 'FVAudio':
-          results = this.props.computeSharedAudios.response.entries || [];
-        break;
-
-        case 'FVPicture':
-          results = this.props.computeSharedPictures.response.entries || [];
-        break;
-
-        case 'FVVideo':
-          results = this.props.computeSharedVideos.response.entries || [];
-        break;
-      }
-
       const actions = [
         <FlatButton
           label="Cancel"
           secondary={true}
           onTouchTap={this._handleClose} />
       ];
+
+      var results, computeEntity;
+
+      switch (this.props.type) {
+        case 'FVAudio':
+          computeEntity = this.props.computeSharedAudios;
+        break;
+
+        case 'FVPicture':
+          computeEntity = this.props.computeSharedPictures;
+        break;
+
+        case 'FVVideo':
+          computeEntity = this.props.computeSharedVideos;
+        break;
+      }
+
+      results = computeEntity.response.entries || [];
 
       let fileTypeLabel = 'File';
       let fileTypeCellHeight = 210;
@@ -199,23 +202,25 @@ export default class SelectMediaComponent extends React.Component {
                   floatingLabelText="Quick Search" />
               </div>
               <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                <GridList
-                  cols={3}
-                  cellHeight={fileTypeCellHeight}
-                  style={gridListStyle}
-                  >
-                  {
-                    results.filter(tile => selectn('properties.file:content.data', tile)).map(tile => <GridTile
-                    key={tile.uid}
-                    onTouchTap={this._handleSelectElement.bind(this, tile)}
-                    title={tile.title}
-                    titlePosition={fileTypeTilePosition}
-                    subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
+                {(computeEntity.isFetching) ? <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={0.5} />Fetching results...</div> : 
+                  <GridList
+                    cols={3}
+                    cellHeight={fileTypeCellHeight}
+                    style={gridListStyle}
                     >
-                      {this._getMediaPreview(tile)}
-                    </GridTile>)
-                  }
-                </GridList>
+                    {
+                      results.filter(tile => selectn('properties.file:content.data', tile)).map(tile => <GridTile
+                      key={tile.uid}
+                      onTouchTap={this._handleSelectElement.bind(this, tile)}
+                      title={tile.title}
+                      titlePosition={fileTypeTilePosition}
+                      subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
+                      >
+                        {this._getMediaPreview(tile)}
+                      </GridTile>)
+                    }
+                  </GridList>
+                }
               </div>
             </div>
           </Dialog>

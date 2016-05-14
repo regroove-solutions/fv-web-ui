@@ -234,8 +234,8 @@ export default class ExploreDialect extends Component {
     return <PromiseWrapper computeEntities={computeEntities}>
 
             <div className="page-header" style={{minHeight: '100px', marginTop: '10px'}}>
-              {(selectn('response.contextParameters.portal.fv-portal:logo', computePortal)) ? 
-                <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}} src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:logo', computePortal).path} /> : ''
+              {(selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)) ? 
+                <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}} src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} /> : ''
               }
               <h1>{selectn('response.title', computeDialect2)} Community Portal</h1>
               <div>

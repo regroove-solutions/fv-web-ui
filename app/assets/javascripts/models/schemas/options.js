@@ -376,7 +376,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regradless of context.</i>
+        help: <i>Describe what the book entry translates to regradless of context.</i>
       },
       'fvbookentry:dominant_language_text': {
         label: 'Dominant Language Text',
@@ -396,7 +396,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regradless of context.</i>
+        help: <i>Describe what the book entry translates to regradless of context.</i>
       },
       'fv:related_audio' : {
         label: 'Related Audio',

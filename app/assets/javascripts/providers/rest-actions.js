@@ -61,7 +61,7 @@ export default {
 
 			    dispatch( { type: key + '_UPDATE_START', pathOrId: newDoc.path, message: (messageStart || 'Update started...') } );
 
-			    return DocumentOperations.updateDocument(newDoc)
+			    return DocumentOperations.updateDocument(newDoc, { headers: properties.headers })
 			      .then((response) => {
 			        dispatch( { type: key + '_UPDATE_SUCCESS', message: (messageSuccess || 'Document updated successfully!'), response: response, pathOrId: newDoc.path } )
 			      }).catch((error) => {

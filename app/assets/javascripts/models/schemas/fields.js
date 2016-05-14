@@ -55,7 +55,7 @@ const fields = {
   }),
   FVBookEntry: Object.assign({}, Dublincore, FVCore, {
     'fv:definitions' : t.maybe(t.String), // make optional
-    'available_in_childrens_archive' : t.maybe(t.String),
+    'fv:available_in_childrens_archive' : t.maybe(t.String),
     'fv:literal_translation' : t.String,
     'fvbookentry:dominant_language_text' : t.list(t.struct({
       'translation': t.String,

@@ -37,8 +37,22 @@ export default class DocumentOperations extends BaseOperations {
         .fetch(pathOrUid, headers)
         .then((doc) => {
           //resolve(normalize(response.entries[0], getSchemaForType(type))); // Normalize not nessary since return value is a Nuxeo.Document object.
+          console.log(doc);
           resolve(doc);
-        }).catch((error) => { reject('Could not access server.'); });
+        }).catch((error) => {
+
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then(
+              (jsonError) => {
+                let errorMessage = jsonError.message.split(": ")[1];
+                errorMessage = "Error: " + errorMessage;
+                reject(errorMessage);
+              }
+            );
+          } else { 
+            return reject(error || 'Could not access server');
+          }
+        });
     });
   }
 
@@ -65,16 +79,15 @@ export default class DocumentOperations extends BaseOperations {
   /**
   * Update a document 
   */
-  static updateDocument(doc) {
+  static updateDocument(doc, headers = {}) {
 
     let properties = this.properties;
 
     return new Promise(
       function(resolve, reject) {
-        doc.save()
+        doc.save(headers)
           .then((newDoc) => {
             if (newDoc) {
-              // resolve(normalize(response.entries[0], getSchemaForType(type)));
               resolve(newDoc);
             } else {
               reject('No ' + type +' found');

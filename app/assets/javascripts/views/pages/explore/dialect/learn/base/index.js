@@ -31,7 +31,7 @@ export default class PageDialectLearnBase extends Component {
     super(props, context);
   }
 
-  renderComplexArrayRow(dataItems, render) {
+  renderComplexArrayRow(dataItems = [], render) {
       let rows = [];
 
       dataItems.map(function(entry, i) {

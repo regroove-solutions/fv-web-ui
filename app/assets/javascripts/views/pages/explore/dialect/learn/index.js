@@ -14,12 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable from 'immutable';
+
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -27,10 +30,6 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import IconButton from 'material-ui/lib/icon-button';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-
-// Operations
-import DocumentOperations from 'operations/DocumentOperations';
-import DirectoryOperations from 'operations/DirectoryOperations';
 
 import EditableComponent from 'views/components/Editor/EditableComponent';
 import StatsPanel from 'views/components/Dashboard/StatsPanel';
@@ -49,11 +48,9 @@ export default class DialectLearn extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    updateDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    updateDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchDialectStats: PropTypes.func.isRequired,
     computeDialectStats: PropTypes.object.isRequired,
     fetchCharacters: PropTypes.func.isRequired,
@@ -81,8 +78,7 @@ export default class DialectLearn extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect(newProps.routeParams.dialect_path);
-    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchDialectStats(newProps.routeParams.dialect_path, ["words","phrases","songs","stories"]);
     newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
@@ -104,23 +100,34 @@ export default class DialectLearn extends Component {
   }  
   
   render() {
-    const { computeDialect, computePortal, computeDocument, computeDialectStats, computeCharacters } = this.props;      
-    
-    let dialect = computeDialect.response;
 
-    let portal = computePortal.response;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
+
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    //const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+
+
+
+
+    const { computePortal, computeDocument, computeDialectStats, computeCharacters } = this.props;      
+    
+    //let dialect = computeDialect2.response;
+
     let dialectStats = computeDialectStats;
     let characters = computeCharacters.response;
 
     let keyboardLinks = [];
 
-    if ( computeDialect.success && selectn('contextParameters.dialect.keyboards', dialect) ) {
-    	keyboardLinks = selectn('contextParameters.dialect.keyboards', dialect);
+    if ( selectn('response.success', computeDialect2) && selectn('response.contextParameters.dialect.keyboards', computeDialect2) ) {
+    	keyboardLinks = selectn('response.contextParameters.dialect.keyboards', computeDialect2);
     }
     
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
 
-    return <div>
+    return <PromiseWrapper computeEntities={computeEntities}>
             <div className="row">
               <div className="col-xs-12">
                 <div>
@@ -145,13 +152,13 @@ export default class DialectLearn extends Component {
               <div className={classNames('col-xs-12', 'col-md-8')}>
                 <h1>About our Language</h1>
 
-                <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
-                  <EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="dc:description" />
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
+                  <EditableComponent computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="dc:description" />
                 </AuthorizationFilter>
 
                 <div className="row">
                   <div className={classNames('col-xs-12', 'col-md-6')}>
-                    <h1>{(dialect) ? dialect.title : ''} Alphabet</h1>
+                    <h1>{selectn('response.title', computeDialect2)} Alphabet</h1>
                     {/* Display alphabet characters - move to separate component later */}
                     {(characters && characters.entries) ? characters.entries.map((char, i) => 
                   <div key={char.uid} className="col-xs-1">
@@ -177,8 +184,8 @@ export default class DialectLearn extends Component {
               <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-12')}>
                   <h1>Contact Information</h1>
-                  <AuthorizationFilter filter={{permission: 'Write', entity: dialect}} renderPartial={true}>
-                    <EditableComponent computeEntity={computeDialect} updateEntity={this.props.updateDialect} property="fvdialect:contact_information" />
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
+                    <EditableComponent computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="fvdialect:contact_information" />
                   </AuthorizationFilter>
                 </div>
               </div>
@@ -195,6 +202,6 @@ export default class DialectLearn extends Component {
                 : circularProgress}
               </div>
             </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

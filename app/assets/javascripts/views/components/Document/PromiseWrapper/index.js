@@ -52,7 +52,7 @@ export default class PromiseWrapper extends Component {
       let reducedOperation = ProviderHelpers.getEntry(computeEntity.get('entity'), computeEntity.get('id'));
 
       if (!reducedOperation || reducedOperation.isFetching) {
-        render = <div><CircularProgress mode="indeterminate" size={2} /> {selectn('message', reducedOperation)}</div>;
+        render = <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
         return false;
       }
 
@@ -68,7 +68,7 @@ export default class PromiseWrapper extends Component {
 
     });
 
-    return <div>{(!render) ? this.props.children : render} <StatusBar message={statusMessage} /></div>
+    return <div>{(!render) ? this.props.children : render} {/*<StatusBar message={statusMessage} />*/}</div>
   }
 
 }
