@@ -92,7 +92,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   fetchData(newProps) {
     newProps.fetchDialect(newProps.routeParams.dialect_path);
-    newProps.fetchWordsInPath(newProps.routeParams.dialect_path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    newProps.fetchWordsInPath(newProps.routeParams.dialect_path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
   // Fetch data on initial render
@@ -109,7 +109,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _handleRefetch(dataGridProps, page, pageSize) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXproperties': 'dublincore, fv-word, fvcore' });
   }
 
   _onNavigateRequest(path) {
@@ -131,7 +131,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     if (!dialect || dialect.isFetching || !computeWordsInPath || computeWordsInPath.isFetching) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
-
+console.log(computeWordsInPath);
     return <div>
               <div className="row">
                 <div className="col-xs-8">
