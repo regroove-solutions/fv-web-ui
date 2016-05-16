@@ -78,7 +78,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXproperties': 'dublincore, fvbook, fvcore' });
   }
 
   // Fetch data on initial render
@@ -95,7 +95,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
 
   _handleRefetch(dataGridProps, page, pageSize) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchBooksInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+    this.props.fetchBooksInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXproperties': 'dublincore, fvbook, fvcore' });
   }
 
   _handleFilterEntries(e, index, value) {
