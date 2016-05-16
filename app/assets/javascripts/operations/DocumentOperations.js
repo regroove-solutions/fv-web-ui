@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import _ from 'underscore';
+import selectn from 'selectn';
 
 import Nuxeo from 'nuxeo';
 
@@ -592,10 +593,8 @@ export default class DocumentOperations extends BaseOperations {
 	        		"SELECT * FROM Document" +
 	        		" WHERE (ecm:path STARTSWITH '" + queryPath + "'" + 
 	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
-	        		" AND ecm:primaryType IN (" + docTypes + ")" +
-	        		" AND (dc:title LIKE '%" + queryParam + "%'" +
-	        			" OR fv:definitions/*/translation LIKE '%" + queryParam + "%'" +
-	        			" OR fv:literal_translation/*/translation LIKE '%" + queryParam + "%')" +
+	        		" AND ecm:primaryType IN (" + docTypes + ")" +      		
+	        		" AND ecm:fulltext = '" + queryParam + "'" +        			        			        		
 	        		" ORDER BY dc:title ASC"
 	          	};
 	        	
@@ -611,9 +610,9 @@ export default class DocumentOperations extends BaseOperations {
 		         		// This is necessary for the datagrid to be able to access it
 		         		results.entries.map(
 		         			function(entry) {
-		         				entry['ancestry_family_title'] = entry.contextParameters.ancestry.family['dc:title'];
-		         				entry['ancestry_language_title'] = entry.contextParameters.ancestry.language['dc:title'];
-		         				entry['ancestry_dialect_title'] = entry.contextParameters.ancestry.dialect['dc:title'];	         		
+		         				entry['ancestry_family_title'] = selectn('dc:title', entry.contextParameters.ancestry.family);
+		         				entry['ancestry_language_title'] = selectn('dc:title', entry.contextParameters.ancestry.language);
+		         				entry['ancestry_dialect_title'] = selectn('dc:title', entry.contextParameters.ancestry.dialect);         		
 		         			}
 		         		);		         		
 		         		resolve(results);

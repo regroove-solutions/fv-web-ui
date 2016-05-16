@@ -35,7 +35,7 @@ export default class DirectoryList extends Component {
 
   static defaultProps = {
     fancy: true
-  }
+  };
 
   constructor(props) {
     super(props);
