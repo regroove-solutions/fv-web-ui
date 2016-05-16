@@ -15,7 +15,7 @@ limitations under the License.
 */
 export default {
   getEntry: function (wordResults, path) {
-    if (wordResults.isEmpty() || !path)
+    if (!wordResults || wordResults.isEmpty() || !path)
       return null;
 
     let result = wordResults.find(function(entry) {

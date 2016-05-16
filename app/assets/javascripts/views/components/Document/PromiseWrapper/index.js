@@ -30,7 +30,12 @@ import ProviderHelpers from 'common/ProviderHelpers';
 export default class PromiseWrapper extends Component {
 
   static propTypes = {
-    computeEntities: PropTypes.instanceOf(List)
+    computeEntities: PropTypes.instanceOf(List),
+    renderOnError: PropTypes.bool
+  };
+
+  static defaultProps = {
+    renderOnError: false
   };
 
   constructor(props, context){
@@ -57,7 +62,11 @@ export default class PromiseWrapper extends Component {
       }
 
       if (reducedOperation.isError && selectn('message', reducedOperation)) {
-        render = <div> <h1>404</h1></div>;
+        
+        if (!this.props.renderOnError) { 
+          render = <div> <h1>404</h1></div>;
+        }
+
         statusMessage = selectn('message', reducedOperation);
         return false;
       }
@@ -66,7 +75,7 @@ export default class PromiseWrapper extends Component {
         statusMessage = selectn('message', reducedOperation);
       }
 
-    });
+    }.bind(this));
 
     return <div>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
   }

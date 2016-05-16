@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
 import {Document} from 'nuxeo';
@@ -42,8 +43,9 @@ export default class PageDialectWordEdit extends Component {
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     updateWord: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
     word: PropTypes.object
   };
   
@@ -52,7 +54,7 @@ export default class PageDialectWordEdit extends Component {
 
     this.state = {
       word: null,
-      wordPath: null,
+      wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
       formValue: null
     };
 
@@ -61,16 +63,8 @@ export default class PageDialectWordEdit extends Component {
   }
 
   fetchData(newProps) {
-
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-    let wordPath = '/' + dialectPath + '/Dictionary/' + decodeURI(newProps.splitWindowPath[newProps.splitWindowPath.length - 1]);
-
-    this.setState({
-      wordPath: wordPath
-    });
-
-    newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchWord(wordPath);
+    newProps.fetchDialect2(this.props.routeParams.dialect_path);
+    newProps.fetchWord(this.state.wordPath);
   }
 
   // Fetch data on initial render
@@ -81,11 +75,20 @@ export default class PageDialectWordEdit extends Component {
   shouldComponentUpdate(newProps, newState) {
 
     switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
+
+      case (newProps.routeParams.word != this.props.routeParams.word):
         return true;
       break;
-      
-      case (newProps.computeWord != this.props.computeWord):
+
+      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
+        return true;
+      break;
+
+      case (ProviderHelpers.getEntry(newProps.computeWord, this.state.wordPath) != ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)):
+        return true;
+      break;
+
+      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
         return true;
       break;
     }
@@ -100,13 +103,10 @@ export default class PageDialectWordEdit extends Component {
 
     let formValue = this.refs["form_word"].getValue();
 
-    this.setState({ formValue: formValue});
-
-    let word = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
-
     // Passed validation
     if (formValue) {
-    	
+      let word = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
       let newDocument = new Document(word.response, { 
@@ -119,28 +119,29 @@ export default class PageDialectWordEdit extends Component {
 
       // Save document
       this.props.updateWord(newDocument);
-    }
 
+      this.setState({ formValue: formValue });
+    }
   }  
 
   render() {
 
-    const { computeDialect, computeWord } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.wordPath,
+      'entity': this.props.computeWord
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
-    let wordResponse = selectn('response', word);
+    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+console.log(this.state.formValue);
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-    let dialect = computeDialect.response;
+	    <h1>Edit {selectn("response.properties.dc:title", computeWord)} word</h1>
 
-    if (!word || word.isFetching || computeDialect.isFetching || !computeDialect.success) {
-        return <CircularProgress mode="indeterminate" size={5} />;
-    }
-
-    return <div>
-
-	    <h1>Edit {selectn("properties.dc:title", wordResponse)} word</h1>
-
-      {(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''}
+      {/*(word && word.isError) ? <div className="alert alert-danger" role="alert">{word.error}</div> : ''*/}
 	
 	    <div className="row" style={{marginTop: '15px'}}>
 	
@@ -149,8 +150,8 @@ export default class PageDialectWordEdit extends Component {
 	          <t.form.Form
 	            ref="form_word"
 	            type={t.struct(selectn("FVWord", fields))}
-	            context={dialect}
-              value={this.state.formValue || selectn("properties", wordResponse)}
+	            context={selectn("response", computeDialect2)}
+              value={this.state.formValue || selectn("response.properties", computeWord)}
 	            options={selectn("FVWord", options)} />
 	            <div className="form-group">
 	              <button type="submit" className="btn btn-primary">Save</button> 
@@ -168,6 +169,6 @@ export default class PageDialectWordEdit extends Component {
 	
 	      </div>
 	  </div>
-	</div>;
+	</PromiseWrapper>;
   }
 }
