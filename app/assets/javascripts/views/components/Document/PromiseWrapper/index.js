@@ -56,19 +56,19 @@ export default class PromiseWrapper extends Component {
         return false;
       }
 
-      if (reducedOperation.isError) {
+      if (reducedOperation.isError && selectn('message', reducedOperation)) {
         render = <div> <h1>404</h1></div>;
         statusMessage = selectn('message', reducedOperation);
         return false;
       }
 
-      if (reducedOperation.success) {
+      if (reducedOperation.success && selectn('message', reducedOperation)) {
         statusMessage = selectn('message', reducedOperation);
       }
 
     });
 
-    return <div>{(!render) ? this.props.children : render} {/*<StatusBar message={statusMessage} />*/}</div>
+    return <div>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
   }
 
 }
