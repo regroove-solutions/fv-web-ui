@@ -6,8 +6,9 @@ package ca.firstvoices.operations;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.map.ObjectMapper;
@@ -52,8 +53,9 @@ public class FVGenerateJsonStatistics {
     
     protected ObjectMapper mapper = new ObjectMapper();
 
-	protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:currentLifeCycleState <> 'deleted'";
-//	protected final String BASE_DOCS_QUERY = "SELECT * FROM Document WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:primaryType='%s'";
+	protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:path STARTSWITH '%s' AND ecm:currentLifeCycleState <> 'deleted'";
+	
+	private final List<String> allowedDocTypes = Arrays.asList("words", "phrases", "characters", "songs", "stories");
 	
     @OperationMethod
     public Blob run() {
@@ -70,8 +72,11 @@ public class FVGenerateJsonStatistics {
 		
 		// Generate statistics for each specified docType, and add them to the root JSON object
 		for(String docType : docTypes) {
-	    	ObjectNode jsonObj = generateDocumentStatsJson(docType);
-			rootJsonObj.put(docType, jsonObj);				
+			// Perform some validation on provided parameters
+			if(allowedDocTypes.contains(docType) && (dialectPath.startsWith("/FV/Workspaces/") || dialectPath.startsWith("/FV/sections/"))) {
+		    	ObjectNode jsonObj = generateDocumentStatsJson(docType);
+				rootJsonObj.put(docType, jsonObj);
+			}	
 		}			
         return new StringBlob(rootJsonObj.toString(), "application/json");    
     } 
@@ -94,146 +99,150 @@ public class FVGenerateJsonStatistics {
     	
     	ObjectNode documentJsonObj = mapper.createObjectNode();
     	
-    	// Build the base document query for the specified type
-    	String baseDocumentsQuery = getBaseDocumentsQuery(docType);
+    	// Build query for the specified document type
+    	String query = constructQuery(docType);
     	
-    	if(baseDocumentsQuery != null) {
-    	
-	    	// Add additional query parameters depending on path
-	    	if(dialectPath.contains("/Workspaces/")) {
-	    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
-	    	} 
-	    	else if(dialectPath.contains("/sections/")) {
-	    		baseDocumentsQuery = baseDocumentsQuery + " AND ecm:isProxy = 1";   		
-	    	}
-	   	    	
-	    	// Restrict the query to the specified dialect. Otherwise leave it empty
-	        String queryDialectRestriction = " AND ecm:path STARTSWITH '" + dialectPath + "'"; 		
+    	if(query != null) {
 	    	
 	        // Execute the query
-			IterableQueryResult totalDocsResult = session.queryAndFetch(baseDocumentsQuery + queryDialectRestriction + " ORDER BY dc:modified DESC", NXQL.NXQL);
-			documentJsonObj.put("total", totalDocsResult.size());	
-								
-			// Loop through each document in the result and generate statistics
-			for (Map<String, Serializable> docResult : totalDocsResult) {
-		        String value = (String) docResult.get("ecm:uuid");
-		        DocumentRef docRef = new IdRef(value);
-		        DocumentModel doc = session.getDocument(docRef);		      	        
-		    			    			        
-		    	// Count document states
-		        if(doc.getCurrentLifeCycleState().equals("New")) {
-		        	newDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Enabled")) {
-		        	enabledDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Disabled")) {
-		        	disabledDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Published")) {
-		        	publishedDocsCount++;
-		        }	        
-	        	Boolean isAvailableInChildrensArchive = (Boolean)doc.getProperty("fvcore", "available_in_childrens_archive");
-	        	if(isAvailableInChildrensArchive != null && isAvailableInChildrensArchive.booleanValue()) {
-	        		docsAvailableInChildrensArchiveCount++;
-		        }
-		        
-		        // Get current date
-		        GregorianCalendar today = new GregorianCalendar();            
-		        int currentMonth = today.get(GregorianCalendar.MONTH);            
-		        int currentDay = today.get(GregorianCalendar.DAY_OF_MONTH);
-		        int currentYear = today.get(GregorianCalendar.YEAR);
-		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
-		    	
-		    	// Count documents modified today
-		    	if(dateModified.get(GregorianCalendar.YEAR) == currentYear && dateModified.get(GregorianCalendar.MONTH) == currentMonth 
-		    			&& dateModified.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
-					docsModifiedTodayCount++;
-		    	}
-		    	
-		    	// Count documents created today
-		    	if(dateCreated.get(GregorianCalendar.YEAR) == currentYear && dateCreated.get(GregorianCalendar.MONTH) == currentMonth 
-		    			&& dateCreated.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
-					docsCreatedTodayCount++;
-		    	}
+			IterableQueryResult resultDocs = session.queryAndFetch(query + " ORDER BY dc:modified DESC", NXQL.NXQL);
+			
+			try {			
+				documentJsonObj.put("total", resultDocs.size());	
+									
+				// Loop through each document in the result and generate statistics
+				for (Map<String, Serializable> resultDoc : resultDocs) {
+			        String value = (String) resultDoc.get("ecm:uuid");
+			        DocumentRef docRef = new IdRef(value);
+			        DocumentModel doc = session.getDocument(docRef);		      	        
+			    			    			        
+			    	// Count document states
+			        if(doc.getCurrentLifeCycleState().equals("New")) {
+			        	newDocsCount++;
+			        }
+			        else if(doc.getCurrentLifeCycleState().equals("Enabled")) {
+			        	enabledDocsCount++;
+			        }
+			        else if(doc.getCurrentLifeCycleState().equals("Disabled")) {
+			        	disabledDocsCount++;
+			        }
+			        else if(doc.getCurrentLifeCycleState().equals("Published")) {
+			        	publishedDocsCount++;
+			        }	        
+		        	Boolean isAvailableInChildrensArchive = (Boolean)doc.getProperty("fvcore", "available_in_childrens_archive");
+		        	if(isAvailableInChildrensArchive != null && isAvailableInChildrensArchive.booleanValue()) {
+		        		docsAvailableInChildrensArchiveCount++;
+			        }
+			        
+			        // Get current date
+			        GregorianCalendar today = new GregorianCalendar();            
+			        int currentMonth = today.get(GregorianCalendar.MONTH);            
+			        int currentDay = today.get(GregorianCalendar.DAY_OF_MONTH);
+			        int currentYear = today.get(GregorianCalendar.YEAR);
+			    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+			    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
+			    	
+			    	// Count documents modified today
+			    	if(dateModified.get(GregorianCalendar.YEAR) == currentYear && dateModified.get(GregorianCalendar.MONTH) == currentMonth 
+			    			&& dateModified.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
+						docsModifiedTodayCount++;
+			    	}
+			    	
+			    	// Count documents created today
+			    	if(dateCreated.get(GregorianCalendar.YEAR) == currentYear && dateCreated.get(GregorianCalendar.MONTH) == currentMonth 
+			    			&& dateCreated.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
+						docsCreatedTodayCount++;
+			    	}
+		
+			    	// Count documents created within the last 7 days
+			    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
+			    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
+			    	if(dateCreated.after(sevenDaysAgo)) {
+						docsCreatedWithinSevenDaysCount++;
+			    	}		    	
+			    	
+			    	// Most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
+			    	if(recentlyModifiedJsonArray.size() < maxQueryResults) {
+				    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
+				    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+				    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+				    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+				    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+				    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+				    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
+				    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
+			        }		        
+		
+			    	// Current user most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
+			    	if(doc.getPropertyValue("dc:lastContributor").equals(principalName) && userRecentlyModifiedJsonArray.size() < maxQueryResults) {
+				    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+				    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+				    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+				    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+				    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+				    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+				    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+				    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
+			        }			        
+		    		    	
+					// Build JSON object
+					documentJsonObj.put("new", newDocsCount);
+					documentJsonObj.put("enabled", enabledDocsCount);
+					documentJsonObj.put("disabled", disabledDocsCount);
+					documentJsonObj.put("published", publishedDocsCount);
+					documentJsonObj.put("created_today", docsCreatedTodayCount);
+					documentJsonObj.put("modified_today", docsModifiedTodayCount);
+					documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
+					        
+				    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+				    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
+				    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
+				    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
 	
-		    	// Count documents created within the last 7 days
-		    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
-		    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
-		    	if(dateCreated.after(sevenDaysAgo)) {
-					docsCreatedWithinSevenDaysCount++;
-		    	}		    	
-		    	
-		    	// Most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
-		    	if(recentlyModifiedJsonArray.size() < maxQueryResults) {
-			    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
-			    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-			    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-			    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-			    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-			    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-			    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
-			    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
-		        }		        
-	
-		    	// Current user most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
-		    	if(doc.getPropertyValue("dc:lastContributor").equals(principalName) && userRecentlyModifiedJsonArray.size() < maxQueryResults) {
-			    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
-			    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-			    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-			    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-			    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-			    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-			    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
-			    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
-		        }			        
-	    		    	
-				// Build JSON object
-				documentJsonObj.put("new", newDocsCount);
-				documentJsonObj.put("enabled", enabledDocsCount);
-				documentJsonObj.put("disabled", disabledDocsCount);
-				documentJsonObj.put("published", publishedDocsCount);
-				documentJsonObj.put("created_today", docsCreatedTodayCount);
-				documentJsonObj.put("modified_today", docsModifiedTodayCount);
-				documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
-				        
-			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
-			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
-
-				documentJsonObj.put("available_in_childrens_archive", docsAvailableInChildrensArchiveCount);							    			
+					documentJsonObj.put("available_in_childrens_archive", docsAvailableInChildrensArchiveCount);							    			
+				}
 			}
-			// Close the IterableQueryResult - important
-			totalDocsResult.close();	        
+			finally {
+				// Close the IterableQueryResult - important
+				if(resultDocs != null) {
+					resultDocs.close();	
+				}	
+			}
     	}
     	return documentJsonObj;
     }   
     
-    // Build the base document query for a specified type
-    private String getBaseDocumentsQuery(String docType) {
+    // Build the query for a specified document type
+    private String constructQuery(String docType) {
     	
-    	String baseDocumentsQuery = null;
+    	String query = null;
+    	String proxyQueryParams = null;
+    	
+    	// Query parameters depending on path
+    	if(dialectPath.contains("/Workspaces/")) {
+    		proxyQueryParams = " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0";
+    	} 
+    	else if(dialectPath.contains("/sections/")) {
+    		proxyQueryParams = " AND ecm:isProxy = 1";   		
+    	}   	  	
     	
     	if(docType.equalsIgnoreCase("words")) {
-    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVWord");
+    		query = String.format(BASE_DOCS_QUERY, "FVWord", dialectPath) + proxyQueryParams;
     	}
     	else if(docType.equalsIgnoreCase("phrases")) {
-    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVPhrase");
+    		query = String.format(BASE_DOCS_QUERY, "FVPhrase", dialectPath) + proxyQueryParams;
     	}
     	else if(docType.equalsIgnoreCase("characters")) {
-    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVCharacter");
+    		query = String.format(BASE_DOCS_QUERY, "FVCharacter", dialectPath) + proxyQueryParams;
     	}    	
     	else if(docType.equalsIgnoreCase("songs")) {
-    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVBook");
-    		baseDocumentsQuery = baseDocumentsQuery + " AND fvbook:type = 'song'";
+    		query = String.format(BASE_DOCS_QUERY, "FVBook", dialectPath) + proxyQueryParams + " AND fvbook:type = 'song'";
     	}
     	else if(docType.equalsIgnoreCase("stories")) {
-    		baseDocumentsQuery = String.format(BASE_DOCS_QUERY, "FVBook");
-    		baseDocumentsQuery = baseDocumentsQuery + " AND fvbook:type = 'story'";
+    		query = String.format(BASE_DOCS_QUERY, "FVBook", dialectPath) + proxyQueryParams + " AND fvbook:type = 'story'";
     	}    	
-    	return baseDocumentsQuery;
+	    	
+    	return query;
     }
 
 }
