@@ -58,55 +58,13 @@ const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
 const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
-/*const createWord = function createWord(parentDoc, docParams) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_WORD_CREATE_START, document: docParams } );
-
-    return DocumentOperations.createDocument(parentDoc, docParams)
-      .then((response) => {
-        dispatch( { type: FV_WORD_CREATE_SUCCESS, document: response} );
-      }).catch((error) => {
-          dispatch( { type: FV_WORD_CREATE_ERROR, error: error } )
-    });
-  }
-};*/
-/*
-const updateWord = function updateWord(newDoc) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_WORD_UPDATE_START, pathOrId: newDoc.path } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-        dispatch( { type: FV_WORD_UPDATE_SUCCESS, response: response, pathOrId: newDoc.path } )
-      }).catch((error) => {
-          dispatch( { type: FV_WORD_UPDATE_ERROR, error: error, pathOrId: newDoc.path } )
-    });
-  }
-};
-
-const fetchWord = function fetchWord(pathOrId) {
-
-  return function (dispatch) {
-
-    dispatch( { type: FV_WORD_FETCH_START, pathOrId: pathOrId } );
-
-    return DocumentOperations.getDocument(pathOrId, 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } })
-    .then((response) => {
-      dispatch( { type: FV_WORD_FETCH_SUCCESS, response: response, pathOrId: pathOrId } )
-    }).catch((error) => {
-        dispatch( { type: FV_WORD_FETCH_ERROR, error: error, pathOrId: pathOrId } )
-    });
-  }
-};
-*/
-
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord');
 const updateWord = RESTActions.update('FV_WORD', 'FVWord');
+const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
 
-const computeWordFactory = RESTReducers.computeFetch('word');
+const computeWordFetchFactory = RESTReducers.computeFetch('word');
+const computeWordDeleteFactory = RESTReducers.computeDelete('delete_word');
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -150,7 +108,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
   }
 };
 
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, fetchWordsAll, updateWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -196,7 +154,8 @@ const reducers = {
       break;
     }
   },
-  computeWord: computeWordFactory.computeWord,
+  computeWord: computeWordFetchFactory.computeWord,
+  computeDeleteWord: computeWordDeleteFactory.computeDeleteWord,
   /*computeWord(state = new List([]), action) {
 
     // Find entry within state based on id

@@ -37,10 +37,6 @@ const FV_DIALECT_FETCH_START = "FV_DIALECT_FETCH_START";
 const FV_DIALECT_FETCH_SUCCESS = "FV_DIALECT_FETCH_SUCCESS";
 const FV_DIALECT_FETCH_ERROR = "FV_DIALECT_FETCH_ERROR";
 
-const FV_DIALECT_FETCH_STATS_START = "FV_DIALECT_FETCH_STATS_START";
-const FV_DIALECT_FETCH_STATS_SUCCESS = "FV_DIALECT_FETCH_STATS_SUCCESS";
-const FV_DIALECT_FETCH_STATS_ERROR = "FV_DIALECT_FETCH_STATS_ERROR";
-
 const FV_DIALECT_FETCH_ALL_START = "FV_DIALECT_FETCH_ALL_START";
 const FV_DIALECT_FETCH_ALL_SUCCESS = "FV_DIALECT_FETCH_ALL_SUCCESS";
 const FV_DIALECT_FETCH_ALL_ERROR = "FV_DIALECT_FETCH_ALL_ERROR";
@@ -79,13 +75,6 @@ const fetchDialectsInPath = function fetchDialectsInPath(path, type) {
   }
 };
 
-/*cosnt fetchDialectAndStats = function fetchDialectWithStats(path) {
-	  return dispatch => Promise.all([
-	    dispatch(fetchDialect(path)),
-        dispatch(fetchDialectStats())
-      ]);
-}*/
-
 const fetchDialect = function fetchDialect(pathOrId) {
   return function (dispatch) {
 
@@ -99,20 +88,6 @@ const fetchDialect = function fetchDialect(pathOrId) {
     });
 
   }
-};
-
-const fetchDialectStats = function fetchDialectStats(dialectPath, docTypes) {
-  return function (dispatch) {
-
-  dispatch( { type: FV_DIALECT_FETCH_STATS_START } );
-
-  return DocumentOperations.getDialectStats(dialectPath, docTypes)
-	.then((response) => {
-	  dispatch( { type: FV_DIALECT_FETCH_STATS_SUCCESS, document: response } )
-	  }).catch((error) => {
-	        dispatch( { type: FV_DIALECT_FETCH_STATS_ERROR, error: error } )
-	  });
-	}
 };
 
 const publishDialect = function publishDialect(pathOrId) {
@@ -145,14 +120,19 @@ const unpublishDialect = function unpublishDialect(pathOrId) {
   }
 };
 
-const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', {});
+const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions' } });
 const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions' } });
+const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {});
+
+
 const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+
 
 const actions = { fetchDialectsInPath, fetchDialect, updateDialect2, fetchDialect2, publishDialect, unpublishDialect, fetchDialects, fetchDialectStats };
 
 const computeDialectQuery = RESTReducers.computeQuery('dialects');
 const computeDialectFetch = RESTReducers.computeFetch('dialect2');
+const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats');
 
 const reducers = {
   computeDialectsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -204,25 +184,7 @@ const reducers = {
   },
   computeDialects: computeDialectQuery.computeDialects,
   computeDialect2: computeDialectFetch.computeDialect2,
-  computeDialectStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case FV_DIALECT_FETCH_STATS_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case FV_DIALECT_FETCH_STATS_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
-
-      case FV_DIALECT_FETCH_STATS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error});
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
+  computeDialectStats: computeDialectStatsOperation.computeDialectStats,
   computeDialectPublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_DIALECT_PUBLISH_START:

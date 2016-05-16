@@ -160,7 +160,7 @@ const fetchCategory = function fetchCategory(pathOrId) {
   }
 };
 */
-const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, breadcrumb' } });
 const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
 const computeCategoryFactory = RESTReducers.computeFetch('category');
 
