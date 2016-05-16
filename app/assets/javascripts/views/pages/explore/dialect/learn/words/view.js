@@ -252,15 +252,16 @@ export default class View extends Component {
 
                   <Dialog
                     title="Deleting word"
-                    actions={[<FlatButton
-        label="Cancel"
-        secondary={true}
-        onTouchTap={this._handleCancelDelete} />,
-      <FlatButton
-        label="Delete"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
+                    actions={[
+                    <FlatButton
+                    label="Cancel"
+                    secondary={true}
+                    onTouchTap={this._handleCancelDelete} />,
+                    <FlatButton
+                      label="Delete"
+                      primary={true}
+                      keyboardFocused={true}
+                      onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
                     modal={false}
                     open={this.state.deleteDialogOpen}
                     onRequestClose={this._handleCancelDelete}>

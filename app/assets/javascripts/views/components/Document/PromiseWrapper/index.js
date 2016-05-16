@@ -56,10 +56,10 @@ export default class PromiseWrapper extends Component {
 
       let reducedOperation = ProviderHelpers.getEntry(computeEntity.get('entity'), computeEntity.get('id'));
 
-      if (!reducedOperation || reducedOperation.isError && selectn('message', reducedOperation)) {
+      if (!reducedOperation || (reducedOperation.isError && selectn('message', reducedOperation))) {
         
         if (!this.props.renderOnError) { 
-          render = <div> <h1>404</h1></div>;
+          render = <div><h1>404</h1></div>;
         }
 
         statusMessage = selectn('message', reducedOperation);

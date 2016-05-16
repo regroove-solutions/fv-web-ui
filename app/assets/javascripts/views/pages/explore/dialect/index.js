@@ -25,6 +25,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageHeader from 'views/pages/explore/dialect/page-header';
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SearchBar from 'views/pages/explore/dialect/search-bar';
 
 // Views
@@ -32,9 +33,9 @@ import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RaisedButton from 'material-ui/lib/raised-button';
+import Toggle from 'material-ui/lib/toggle';
 import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
-import Toggle from 'material-ui/lib/toggle';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
@@ -90,13 +91,8 @@ export default class ExploreDialect extends Component {
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      enabledToggled: null,
-      publishedToggled: null
-    };
-
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_portalActionsPublish', '_dialectActionsToggleEnabled', '_dialectActionsTogglePublished'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_portalActionsPublish', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -147,37 +143,24 @@ export default class ExploreDialect extends Component {
   /**
   * Toggle dialect (enabled/disabled)
   */
-  _dialectActionsToggleEnabled(event, toggled) {
+  _enableToggleAction(toggled) {
     if (toggled) {
       this.props.enableDocument(this.props.routeParams.dialect_path);
-      this.setState({
-        enabledToggled: true
-      });
     } else {
       this.props.disableDocument(this.props.routeParams.dialect_path);
-      this.setState({
-        enabledToggled: false
-      });
     }
   }
 
   /**
   * Toggle published dialect
   */
-  _dialectActionsTogglePublished(event, toggled) {
+  _publishToggleAction(toggled) {
     if (toggled) {
       this.props.publishDialect(this.props.routeParams.dialect_path);
-      this.setState({
-        publishedToggled: true
-      });
     } else {
       this.props.unpublishDialect(this.props.routeParams.dialect_path);
-      this.setState({
-        publishedToggled: false
-      });
     }
   }
-
 
   _handleDialectSearchSubmit() {
 	  let queryParam = this.refs.dialectSearchField.getValue();	    
@@ -203,15 +186,6 @@ export default class ExploreDialect extends Component {
 
     const isSection = this.props.routeParams.area === 'sections';
 
-    let toolbarGroupItem = {
-      float: 'left',
-      margin: `${(this.context.muiTheme.toolbar.height - this.context.muiTheme.button.height) / 2}px ${this.context.muiTheme.baseTheme.spacing.desktopGutter}px`,
-      position: 'relative'
-    }
-
-    const dialectEnabled = (this.state.enabledToggled == null) ? (selectn('response.state', computeDialect2) == 'Enabled') : this.state.enabledToggled;
-    const dialectPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeDialect2) == 'Published') : this.state.publishedToggled;
-
     return <PromiseWrapper computeEntities={computeEntities}>
 
             <PageHeader title="Community Portal" portalLogo={selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} dialectName={selectn('response.title', computeDialect2)} />
@@ -219,67 +193,18 @@ export default class ExploreDialect extends Component {
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
                 
-                return <Toolbar>
-
-                  <ToolbarGroup float="left">
-
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} style={toolbarGroupItem}>
-                      <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                        <Toggle
-                          toggled={dialectEnabled || dialectPublished}
-                          onToggle={this._dialectActionsToggleEnabled}
-                          ref="enabled"
-                          disabled={dialectPublished}
-                          name="enabled"
-                          value="enabled"
-                          label="Enabled"/>
-                      </div>
-                    </AuthorizationFilter>
-
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} style={toolbarGroupItem}>
-                      <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-
-                        {dialectPublished}
-
-                        <Toggle
-                          toggled={dialectPublished}
-                          onToggle={this._dialectActionsTogglePublished}
-                          disabled={!dialectEnabled && !dialectPublished}
-                          name="published"
-                          value="published"
-                          label="Published"/>
-                      </div>
-                    </AuthorizationFilter>
-
-                  </ToolbarGroup>
-
-                  <ToolbarGroup float="right">
-
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} style={toolbarGroupItem}>
-                      <RaisedButton disabled={!dialectPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
-                    </AuthorizationFilter>
-
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} style={toolbarGroupItem}>
-                      <RaisedButton label="Edit Portal" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
-                    </AuthorizationFilter>
-
-                    <ToolbarSeparator />
-
-                    <IconMenu iconButtonElement={
-                      <IconButton tooltip="More Options" touch={true}>
-                        <NavigationExpandMoreIcon />
-                      </IconButton>
-                    }>
-                      <MenuItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
-                    </IconMenu>
-                  </ToolbarGroup>
-
-                </Toolbar>;
+                if (selectn('response', computeDialect2))
+                  return <PageToolbar
+                            handleNavigateRequest={this._onNavigateRequest}
+                            computeEntity={computeDialect2}
+                            publishToggleAction={this._publishToggleAction}
+                            enableToggleAction={this._enableToggleAction}
+                            {...this.props} />;
               }
             })()}
 
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
-			  {(() => {
+			        {(() => {
                 if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
                   return <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
