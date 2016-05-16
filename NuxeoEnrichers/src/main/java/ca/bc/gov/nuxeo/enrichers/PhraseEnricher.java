@@ -51,7 +51,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 		if (documentType.equalsIgnoreCase("FVPhrase")) {
 
 			// Process "fv-phrase:phrase_books" values
-			String[] phraseBookIds = (String[]) doc.getProperty("fv-phrase", "phrase_books");
+			String[] phraseBookIds = (!doc.isProxy()) ? (String []) doc.getProperty("fv-phrase", "phrase_books") : (String []) doc.getProperty("fvproxy", "proxied_categories");
 			ArrayNode phraseBookArray = mapper.createArrayNode();
 			for (String phraseBookId : phraseBookIds) {
 				ObjectNode phraseBookObj = EnricherUtils.getDocumentIdAndTitleJsonObject(phraseBookId, session);
@@ -62,7 +62,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			jsonObj.put("phrase_books", phraseBookArray);
 
 			// Process "fvcore:source" values
-			String[] sourceIds = (String[]) doc.getProperty("fvcore", "source");
+			String[] sourceIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "source") : (String []) doc.getProperty("fvproxy", "proxied_source");
 			if (sourceIds != null) {
 				ArrayNode sourceArray = mapper.createArrayNode();
 				for (String sourceId : sourceIds) {
@@ -75,7 +75,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			}
 
 			// Process "fv:related_audio" values
-			String[] audioIds = (String[]) doc.getProperty("fvcore", "related_audio");
+			String[] audioIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "related_audio") : (String []) doc.getProperty("fvproxy", "proxied_audio");
 			if (audioIds != null) {
 				ArrayNode audioJsonArray = mapper.createArrayNode();
 				for (String audioId : audioIds) {
@@ -88,7 +88,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			}
 
 			// Process "fv:related_pictures" values
-			String[] pictureIds = (String[]) doc.getProperty("fvcore", "related_pictures");
+			String[] pictureIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "related_pictures") : (String []) doc.getProperty("fvproxy", "proxied_pictures");
 			if (pictureIds != null) {
 				ArrayNode pictureJsonArray = mapper.createArrayNode();
 				for (String pictureId : pictureIds) {
@@ -101,7 +101,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			}
 
 			// Process "fv:related_video" values
-			String[] videoIds = (String[]) doc.getProperty("fvcore", "related_video");
+			String[] videoIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvcore", "related_videos") : (String[]) doc.getProperty("fvproxy", "proxied_videos");
 			if (videoIds != null) {
 				ArrayNode videoJsonArray = mapper.createArrayNode();
 				for (String videoId : videoIds) {
@@ -110,7 +110,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 						videoJsonArray.add(binaryJsonObj);
 					}
 				}
-				jsonObj.put("related_video", videoJsonArray);
+				jsonObj.put("related_videos", videoJsonArray);
 			}
 		}
 
