@@ -106,7 +106,7 @@ export default class ExploreArchive extends Component {
                             key={tile.uid}
                             title={tile.title}
                             subtitle={tile.description}
-                            ><img src="http://www.firstvoices.com/portal/tag1-1a.jpg" /></GridTile>
+                            ><img src="/assets/images/cover.png" /></GridTile>
                         )}
                     </GridList>
                   </div>
