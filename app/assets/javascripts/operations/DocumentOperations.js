@@ -36,8 +36,6 @@ export default class DocumentOperations extends BaseOperations {
         .repository()
         .fetch(pathOrUid, headers)
         .then((doc) => {
-          //resolve(normalize(response.entries[0], getSchemaForType(type))); // Normalize not nessary since return value is a Nuxeo.Document object.
-          console.log(doc);
           resolve(doc);
         }).catch((error) => {
 
@@ -101,6 +99,37 @@ export default class DocumentOperations extends BaseOperations {
               reject(errorMessage);
             }
           );
+        });
+    });
+  }
+
+  /**
+  * Deletes a single document
+  */
+  static deleteDocument(pathOrUid = "", type, headers = {}, params = {}) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .repository()
+        .delete(pathOrUid, headers)
+        .then((res) => {
+          resolve(res);
+        }).catch((error) => {
+
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then(
+              (jsonError) => {
+                let errorMessage = jsonError.message.split(": ")[1];
+                errorMessage = "Error: " + errorMessage;
+                reject(errorMessage);
+              }
+            );
+          } else { 
+            return reject(error || 'Could not access server');
+          }
         });
     });
   }
@@ -449,32 +478,46 @@ export default class DocumentOperations extends BaseOperations {
           }).catch((error) => { throw error });
     });
   }
-  
+
   /**
-   * 
-   * 
-   */
-   static getDialectStats(path, docTypes, headers = {}, params = {}) {
+  * Executes an operation on the server
+  */
+  static executeOperation(operationName, operationParams, headers = {}, params = {}) {
 
-     let properties = this.properties;
+    let sanitizeKeys = ['dialectPath'];
 
-     let cleanedDialectPath = StringHelpers.clean(path);
-     
-     return new Promise(
-       function(resolve, reject) {
-    	   properties.client
-    	   .operation('FVGenerateJsonStatistics')
-    	   .params({
-    	     dialectPath: cleanedDialectPath,
-    	     docTypes: docTypes
-    	   })
-    	   .execute(headers)
-    	   .then(function(stats) {
-    		   resolve(stats);
-    	   })
-    	   .catch((error) => { reject(error); });
-     });
-   }
+    let properties = this.properties;
+
+    for (let paramKey in operationParams) {
+      if (sanitizeKeys.indexOf(paramKey) !== -1) {
+        operationParams[paramKey] = StringHelpers.clean(operationParams[paramKey]);
+      }
+    }
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .operation(operationName)
+        .params(operationParams)
+        .execute(headers)
+        .then((response) => {
+          resolve(response);
+        }).catch((error) => {
+
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then(
+              (jsonError) => {
+                let errorMessage = jsonError.message.split(": ")[1];
+                errorMessage = "Error: " + errorMessage;
+                reject(errorMessage);
+              }
+            );
+          } else { 
+            return reject(error || 'Could not execute operation "' + operationName + '"');
+          }
+        });
+    });
+  }
    
    
    static getCharactersByDialect(path, headers = {}, params = {}) {

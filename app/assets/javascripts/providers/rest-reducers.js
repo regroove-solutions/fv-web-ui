@@ -140,5 +140,115 @@ export default {
 
         return state;
     }}
+  },
+  computeOperation: function computeOperation(key) {
+
+    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+
+        // Find entry within state based on id
+        let indexOfEntry = state.findIndex(function(item) {
+          return item.get("id") === action.pathOrId; 
+        });
+
+        switch (action.type) {
+          case UPPER_CASE_KEY(key) + '_EXECUTE_START':
+
+            return state.push(Map({
+              action: action.type,              
+              id: action.pathOrId,
+              message: action.message,
+              isFetching: true,
+              success: false
+            }));
+
+          break;
+
+          case UPPER_CASE_KEY(key) + '_EXECUTE_SUCCESS':
+            
+            // Replace entry within state
+            return state.set(indexOfEntry, Map({
+              action: action.type,
+              id: action.pathOrId,
+              isFetching: false,
+              success: true,
+              response: action.response,
+              message: action.message
+            }));
+
+          break;
+
+          case UPPER_CASE_KEY(key) + '_EXECUTE_ERROR':
+
+            // Add error message
+            return state.set(indexOfEntry, Map({
+              action: action.type,              
+              id: action.pathOrId,
+              isFetching: false,
+              isError: true,
+              success: false,
+              response: state.get(indexOfEntry).get('response'),
+              message: action.message
+            }));
+
+          break;
+        }
+
+        return state;
+    }}
+  },
+  computeDelete: function computeDelete(key) {
+
+    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+
+        // Find entry within state based on id
+        let indexOfEntry = state.findIndex(function(item) {
+          return item.get("id") === action.pathOrId; 
+        });
+
+        switch (action.type) {
+          case UPPER_CASE_KEY(key) + '_DELETE_START':
+
+            return state.push(Map({
+              action: action.type,              
+              id: action.pathOrId,
+              message: action.message,
+              isFetching: true,
+              success: false
+            }));
+
+          break;
+
+          case UPPER_CASE_KEY(key) + '_DELETE_SUCCESS':
+            
+            // Replace entry within state
+            return state.set(indexOfEntry, Map({
+              action: action.type,
+              id: action.pathOrId,
+              isFetching: false,
+              success: true,
+              response: action.response,
+              message: action.message
+            }));
+
+          break;
+
+          case UPPER_CASE_KEY(key) + '_DELETE_ERROR':
+
+            // Add error message
+            return state.set(indexOfEntry, Map({
+              action: action.type,              
+              id: action.pathOrId,
+              isFetching: false,
+              isError: true,
+              success: false,
+              response: state.get(indexOfEntry).get('response'),
+              message: action.message
+            }));
+
+          break;
+        }
+
+        return state;
+    }}
   }
 }
