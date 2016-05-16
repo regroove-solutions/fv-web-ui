@@ -246,7 +246,7 @@ export default class AddMediaComponent extends Component {
       }
 
       return (
-        <div>
+        <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this.handleOpen} />
           <Dialog
             title={"Create New " + fileTypeLabel + " in the " + this.props.dialect.get('dc:title') + " dialect."}

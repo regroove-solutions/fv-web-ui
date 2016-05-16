@@ -2,6 +2,9 @@ import React from 'react';
 import t from 'tcomb-form';
 import selectn from 'selectn';
 
+import FontIcon from 'material-ui/lib/font-icon';
+import FlatButton from 'material-ui/lib/flat-button';
+
 import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
 import Preview from 'views/components/Editor/Preview';
@@ -13,7 +16,7 @@ import Paper from 'material-ui/lib/paper';
 */
 function renderInput(locals) {
 
-  const onRequestEdit = function (event) {
+  const _onRequestEdit = function (event) {
     locals.onChange(null);
   }
 
@@ -30,16 +33,18 @@ function renderInput(locals) {
       locals.onChange(initialValue);
   };
 
-  let content = <Paper zDepth={1}>
+  let content = <Paper style={{maxWidth: '400px', textAlign: 'center'}} zDepth={2}>
       <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
-      <a onTouchTap={onRequestEdit}>Replace</a>
+      <FlatButton onTouchTap={_onRequestEdit} label="Replace Selection" labelPosition="after">
+        <FontIcon style={{verticalAlign: 'middle'}} className="material-icons">swap_horiz</FontIcon>
+      </FlatButton>
   </Paper>;
 
   if (!locals.value) {
     content = <div>
-                <AddMediaComponent type={locals.type} label="Upload" onComplete={onComplete} dialect={locals.context} />
-                <SelectMediaComponent type={locals.type} label="Browse" onComplete={onComplete} dialect={locals.context} />
-                <a onTouchTap={onCancel}>Cancel</a>
+                <AddMediaComponent type={locals.type} label="Upload New" onComplete={onComplete} dialect={locals.context} />
+                <SelectMediaComponent type={locals.type} label="Browse Existing" onComplete={onComplete} dialect={locals.context} />
+                {(selectn('context.initialValues.' + locals.attrs.name, locals)) ? <FlatButton onTouchTap={onCancel} label="Cancel" /> : ''}
               </div>;
   }
 

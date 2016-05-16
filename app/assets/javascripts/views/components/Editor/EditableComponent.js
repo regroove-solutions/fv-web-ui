@@ -164,3 +164,13 @@ export default class EditableComponent extends Component {
       return (<div className={this.props.className}>{this._editableElement()} <StatusBar message={selectn('message', this.props.computeEntity)} /> </div>);
   };
 }
+
+export class EditableComponentHelper extends Component {
+  render() {
+    if (this.props.isSection) {
+      return <div dangerouslySetInnerHTML={{__html: this.props.entity.get(this.props.property)}}></div>;
+    }
+
+    return <EditableComponent {...this.props} />;
+  }
+}

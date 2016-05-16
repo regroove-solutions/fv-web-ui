@@ -185,7 +185,7 @@ export default class SelectMediaComponent extends React.Component {
       }
 
       return (
-        <div>
+        <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
           <Dialog
             title={"Select existing " + fileTypeLabel + " from the " + this.props.dialect.get('dc:title') + " dialect:"}
