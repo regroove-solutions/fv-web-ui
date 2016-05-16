@@ -131,7 +131,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     if (!dialect || dialect.isFetching || !computeWordsInPath || computeWordsInPath.isFetching) {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
-console.log(computeWordsInPath);
+
     return <div>
               <div className="row">
                 <div className="col-xs-8">
