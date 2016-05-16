@@ -87,16 +87,18 @@ export default class ExploreDialectEdit extends Component {
 
   shouldComponentUpdate(newProps) {
 
+    const portalPath = this.props.routeParams.dialect_path + '/Portal';
+
     switch (true) {
       case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
         return true;
       break;
 
-      case (newProps.computePortal != this.props.computePortal):
+      case (ProviderHelpers.getEntry(newProps.computePortal, portalPath) != ProviderHelpers.getEntry(this.props.computePortal, portalPath)):
         return true;
       break;
 
-      case (newProps.computeDialect2 != this.props.computeDialect2):
+      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
         return true;
       break;
     }

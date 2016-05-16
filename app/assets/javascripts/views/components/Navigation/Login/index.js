@@ -104,7 +104,7 @@ export default class Login extends Component {
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
         return (
           <div style={{display: "inline-block", paddingRight: "10px"}}>
-            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>! <RaisedButton onTouchTap={this._handleLogout} label="Sign Out"/>
+            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>! <FlatButton onTouchTap={this._handleLogout} label="Sign Out"/>
           </div>
         );
     } else {

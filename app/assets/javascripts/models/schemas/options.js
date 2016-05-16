@@ -559,7 +559,10 @@ const options = {
         label: 'Featured Words',
         item: {
           factory: SelectSuggestFactory,
-          type: 'FVWord'
+          type: 'FVWord',
+          attrs: {
+            disableCreateNewButton: true
+          }
         }
       },
       'fv-portal:background_top_image' : {

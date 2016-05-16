@@ -26,6 +26,7 @@ import TextField from 'material-ui/lib/text-field';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -140,6 +141,8 @@ export default class Navigation extends Component {
 
           <ToolbarGroup>
             <Login label="Sign in"/>
+
+            <ToolbarSeparator style={{float: 'none', marginRight: '30px'}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
             <TextField ref="navigationSearchField" hintText={this.state.hintTextSearch} onBlur={() => this.setState({hintTextSearch: 'Search:'})} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />

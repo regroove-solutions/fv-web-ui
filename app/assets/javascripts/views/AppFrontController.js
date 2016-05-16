@@ -166,9 +166,10 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', new paramMatch('word', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewWord />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'edit', ANYTHING_BUT_SLASH ],

@@ -49,7 +49,7 @@ const providers = { page,
   search };
 
 // Enable log for specific provider
-unshiftMiddleware([FVWord], loggerMiddleware);
+//unshiftMiddleware([FVWord], loggerMiddleware);
 
 //console.log(createCombinedStore({Editor, FVPortal}));
 

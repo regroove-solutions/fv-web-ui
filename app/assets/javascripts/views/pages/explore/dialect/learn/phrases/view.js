@@ -74,8 +74,6 @@ export default class View extends Component {
       videoContent: [],
       audioContent: []
     };
-
-    this.handleTabActive = this.handleTabActive.bind(this);
   }
 
   fetchData(newProps) {
@@ -93,87 +91,6 @@ export default class View extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
-  }
-
-  handleTabActive(tab) {
-
-    if (this.state.children != undefined && this.state.children.length > 0) {
-      switch(tab.props.id) {
-        case 'pictures':
-          if (this.state.picturesContent.length == 0) {
-            var pictures = _.filter(this.state.children, function(child){ if (child.type == 'FVPicture') return child; })
-
-            if (pictures != undefined && pictures.length > 0) {
-              var tmpArray = [];
-
-              this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-
-              for (var i=0; i < pictures.length; i++) {
-                this.wordOperations.getMediaBlobById(pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(response){
-                  tmpArray.push(<div key={response.mediaId} className="col-xs-12">
-                    <img className="image" src={response.dataUri} alt=""/>
-                   </div>);
-
-                  this.setState({picturesContent: tmpArray});
-
-                }).bind(this));
-              }
-            }
-            else {
-              this.setState({picturesContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No photos are available. Please add some!</div>});
-            }
-          }
-        break;
-
-        case 'audio':
-          if (this.state.audioContent.length == 0) {
-            var audio = _.filter(this.state.children, function(child){ if (child.type == 'FVAudio') return child; })
-
-            if (audio != undefined && audio.length > 0) {
-              var tmpArray = [];
-
-              this.setState({audioContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-              for (var i =0; i < audio.length; i++) {
-                this.wordOperations.getMediaBlobById(audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(response){
-                  tmpArray.push(<audio key={response.mediaId} src={response.dataUri} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
-                  this.setState({audioContent: tmpArray});
-                }).bind(this));
-              }
-            }
-            else {
-              this.setState({audioContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No audio clips are available. Please add some!</div>});
-            }
-          }
-        break;
-
-        // TODO: http://stackoverflow.com/questions/16761927/aw-snap-when-data-uri-is-too-large
-        case 'video':
-          if (this.state.videoContent.length == 0) {
-            var video = _.filter(this.state.children, function(child){ if (child.type == 'FVVideo') return child; })
-
-            if (video != undefined && video.length > 0) {
-              var tmpArray = [];
-
-              this.setState({videoContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-              for (var i =0; i < video.length; i++) {
-
-              tmpArray.push(
-                  <video key="video" width="100%" height="auto" controls>
-                    <source src={video[i].properties['vid:transcodedVideos'][0].content.data} type="video/webm"/>
-                    <source src={video[i].properties['file:content'].data} type="video/mp4"/>
-                  </video>);
-
-              this.setState({videoContent: tmpArray});
-
-              }
-            }
-            else {
-              this.setState({videoContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No videos are available. Please add some!</div>});
-            }
-          }
-        break;
-      }
-    }
   }
 
   render() {
@@ -276,7 +193,7 @@ export default class View extends Component {
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab onActive={this.handleTabActive} label="Photos" id="pictures"> 
+                      <Tab label="Photos" id="pictures"> 
                         <div> 
                           <CardText>
                             <h2>Photos</h2> 
@@ -288,7 +205,7 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab> 
-                      <Tab label="Audio" onActive={this.handleTabActive} id="audio"> 
+                      <Tab label="Audio" id="audio"> 
                         <div> 
                           <CardText>
                             <h2>Audio</h2> 
@@ -296,7 +213,7 @@ export default class View extends Component {
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab label="Video" onActive={this.handleTabActive} id="video"> 
+                      <Tab label="Video" id="video"> 
                         <div> 
                           <CardText>
                             <h2>Video</h2> 

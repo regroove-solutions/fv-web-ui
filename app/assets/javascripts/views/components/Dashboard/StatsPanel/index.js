@@ -29,7 +29,7 @@ export default class StatsPanel extends Component {
   
   render() {
 	
-    let dataResponse = this.props.data.response;
+    let dataResponse = this.props.data;
     let docType = this.props.docType;	
     
     // If no documents of the specified type, don't display anything

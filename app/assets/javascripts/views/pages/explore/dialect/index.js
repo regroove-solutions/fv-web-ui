@@ -23,12 +23,16 @@ import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import Header from 'views/pages/explore/dialect/header';
+import PageHeader from 'views/pages/explore/dialect/page-header';
+import SearchBar from 'views/pages/explore/dialect/search-bar';
 
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
 import Toggle from 'material-ui/lib/toggle';
 
@@ -43,19 +47,9 @@ import Snackbar from 'material-ui/lib/snackbar';
 
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 
-import EditableComponent from 'views/components/Editor/EditableComponent';
+import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-
-class EditableComponentHelper extends Component {
-  render() {
-    if (this.props.isSection) {
-      return <div dangerouslySetInnerHTML={{__html: this.props.entity.get(this.props.property)}}></div>;
-    }
-
-    return <EditableComponent {...this.props} />;
-  }
-}
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -194,6 +188,8 @@ export default class ExploreDialect extends Component {
   
   render() {
 
+  	const { computeLogin, updatePortal, updateDialect2 } = this.props;
+
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
@@ -204,21 +200,6 @@ export default class ExploreDialect extends Component {
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-
-    let portalBackgroundImagePath = "/assets/images/cover.png";
-
-    if (selectn('response.contextParameters.portal.fv-portal:background_top_image', computePortal)) {
-      portalBackgroundImagePath = ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal);
-    }
-
-    const portalBackgroundStyles = {
-      position: 'relative',
-      minHeight: '200px',
-      backgroundColor: 'transparent',
-      backgroundSize: 'cover',
-      backgroundImage: 'url("' + portalBackgroundImagePath + '")',
-      backgroundPosition: '0 0',
-    }
 
     const isSection = this.props.routeParams.area === 'sections';
 
@@ -233,15 +214,7 @@ export default class ExploreDialect extends Component {
 
     return <PromiseWrapper computeEntities={computeEntities}>
 
-            <div className="page-header" style={{minHeight: '100px', marginTop: '10px'}}>
-              {(selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)) ? 
-                <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}} src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} /> : ''
-              }
-              <h1>{selectn('response.title', computeDialect2)} Community Portal</h1>
-              <div>
-                <span className={classNames('label', 'label-primary')}><strong>543</strong> Words</span> <span className={classNames('label', 'label-primary')}><strong>143</strong> Phrases</span> <span className={classNames('label', 'label-primary')}><strong>243</strong> Songs</span> <span className={classNames('label', 'label-primary')}><strong>43</strong> Stories</span> 
-              </div>
-            </div>
+            <PageHeader title="Community Portal" portalLogo={selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} dialectName={selectn('response.title', computeDialect2)} />
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
@@ -305,13 +278,12 @@ export default class ExploreDialect extends Component {
               }
             })()}
 
-            <div style={portalBackgroundStyles}>
-            
-              {(() => {
-                if (selectn("isConnected", this.props.computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
+            <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
+			  {(() => {
+                if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
                   return <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
+                      <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
                     </AuthorizationFilter>
 
                     {(selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) ? 
@@ -325,7 +297,7 @@ export default class ExploreDialect extends Component {
                 <div>
                   <strong>Name of Archive</strong>: 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="dc:title" entity={selectn('response', computeDialect2)} />
+                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:title" entity={selectn('response', computeDialect2)} />
                     </AuthorizationFilter>
                   </div>
 
@@ -334,7 +306,7 @@ export default class ExploreDialect extends Component {
                   <div>
                     <strong>Country</strong><br/>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="fvdialect:country" entity={selectn('response', computeDialect2)} />
+                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:country" entity={selectn('response', computeDialect2)} />
                     </AuthorizationFilter>
                   </div>
 
@@ -343,25 +315,24 @@ export default class ExploreDialect extends Component {
                   <div>
                     <strong>Region</strong><br/>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="fvdialect:region" entity={selectn('response', computeDialect2)} />
+                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:region" entity={selectn('response', computeDialect2)} />
                     </AuthorizationFilter>
                   </div>
 
               </div>
-
-            </div>
+            </Header>
 
             <Toolbar>
 
               <ToolbarGroup firstChild={true} float="left">
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Community Slideshow')} label="Community Slideshow" /> 
-                <RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Art Gallery')} label="Art Gallery" />
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Community Slideshow')} label="Community Slideshow" /> <ToolbarSeparator />
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Art Gallery')} label="Art Gallery" /> <ToolbarSeparator />             
+              </ToolbarGroup>
 
-                {/*<RaisedButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/search')} label="Search Within Dialect" /> */}
-                <TextField ref="dialectSearchField" hintText="Search dialect..." onEnterKeyDown={this._handleDialectSearchSubmit} />
-
+              <ToolbarGroup float="right">
+              	<SearchBar />
               </ToolbarGroup>
 
             </Toolbar>
@@ -371,7 +342,7 @@ export default class ExploreDialect extends Component {
               <div className={classNames('col-xs-9', 'col-md-10')}>
                 <div>
                   <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                    <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={this.props.updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
+                    <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
                   </AuthorizationFilter>
                 </div>
               </div>
