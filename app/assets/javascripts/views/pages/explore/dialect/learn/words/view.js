@@ -24,6 +24,11 @@ import _ from 'underscore';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import Preview from 'views/components/Editor/Preview';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
+import Dialog from 'material-ui/lib/dialog';
+
 import Avatar from 'material-ui/lib/avatar';
 import Card from 'material-ui/lib/card/card';
 import CardActions from 'material-ui/lib/card/card-actions';
@@ -61,6 +66,9 @@ export default class View extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
+    deleteWord: PropTypes.func.isRequired,
+    computeDeleteWord: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
     word: PropTypes.object
   };
 
@@ -69,30 +77,21 @@ export default class View extends Component {
 
     this.state = {
       word: null,
-      wordPath: null,
+      wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
       children: null,
       picturesContent: [],
       videoContent: [],
-      audioContent: []
+      audioContent: [],
+      deleteDialogOpen: false
     };
 
-    this.handleTabActive = this.handleTabActive.bind(this);
-
     // Bind methods to 'this'
-    ['_handleEditRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleEditRequest', '_handleDeleteRequest', '_handleCancelDelete', '_handleConfirmDelete'].forEach( (method => this[method] = this[method].bind(this)) );
 
   }
 
   fetchData(newProps) {
-
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-    let wordPath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
-
-    this.setState({
-      wordPath: wordPath
-    });
-
-    newProps.fetchWord(wordPath);
+    newProps.fetchWord(this.state.wordPath);
   }
 
   // Fetch data on initial render
@@ -112,116 +111,44 @@ export default class View extends Component {
     this._onNavigateRequest(this.props.windowPath.replace(wordName, 'edit/' + wordName));
   }
 
-  handleTabActive(tab) {
+  _handleDeleteRequest() {
+    this.setState({deleteDialogOpen: true});
+  }
 
-    if (this.state.children != undefined && this.state.children.length > 0) {
-      switch(tab.props.id) {
-        case 'pictures':
-        console.log(this.state);
-        console.log(this.props);
-          if (this.state.picturesContent.length == 0) {
-            var pictures = _.filter(this.state.children, function(child){ if (child.type == 'FVPicture') return child; })
+  _handleConfirmDelete(item, event) {
+    this.props.deleteWord(item.uid);
+    this.setState({deleteDialogOpen: false});
+  }
 
-            if (pictures != undefined && pictures.length > 0) {
-              var tmpArray = [];
-
-              this.setState({picturesContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-
-              for (var i=0; i < pictures.length; i++) {
-                this.wordOperations.getMediaBlobById(pictures[i].uid, pictures[i].properties['file:content']['mime-type']).then((function(response){
-                  tmpArray.push(<div key={response.mediaId} className="col-xs-12">
-                    <img className="image" src={response.dataUri} alt=""/>
-                   </div>);
-
-                  this.setState({picturesContent: tmpArray});
-
-                }).bind(this));
-              }
-            }
-            else {
-              this.setState({picturesContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No photos are available. Please add some!</div>});
-            }
-          }
-        break;
-
-        case 'audio':
-          if (this.state.audioContent.length == 0) {
-            var audio = _.filter(this.state.children, function(child){ if (child.type == 'FVAudio') return child; })
-
-            if (audio != undefined && audio.length > 0) {
-              var tmpArray = [];
-
-              this.setState({audioContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-              for (var i =0; i < audio.length; i++) {
-                this.wordOperations.getMediaBlobById(audio[i].uid, audio[i].properties['file:content']['mime-type']).then((function(response){
-                  tmpArray.push(<audio key={response.mediaId} src={response.dataUri} preload="auto" controls="controls">Your browser does not support the audio element.</audio>);
-                  this.setState({audioContent: tmpArray});
-                }).bind(this));
-              }
-            }
-            else {
-              this.setState({audioContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No audio clips are available. Please add some!</div>});
-            }
-          }
-        break;
-
-        // TODO: http://stackoverflow.com/questions/16761927/aw-snap-when-data-uri-is-too-large
-        case 'video':
-          if (this.state.videoContent.length == 0) {
-            var video = _.filter(this.state.children, function(child){ if (child.type == 'FVVideo') return child; })
-
-            if (video != undefined && video.length > 0) {
-              var tmpArray = [];
-
-              this.setState({videoContent: <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>});
-              for (var i =0; i < video.length; i++) {
-
-              tmpArray.push(
-                  <video key="video" width="100%" height="auto" controls>
-                    <source src={video[i].properties['vid:transcodedVideos'][0].content.data} type="video/webm"/>
-                    <source src={video[i].properties['file:content'].data} type="video/mp4"/>
-                  </video>);
-
-              this.setState({videoContent: tmpArray});
-
-              }
-            }
-            else {
-              this.setState({videoContent: <div className={classNames('alert', 'alert-warning', 'text-center')} role="alert">No videos are available. Please add some!</div>});
-            }
-          }
-        break;
-      }
-    }
+  _handleCancelDelete() {
+    this.setState({deleteDialogOpen: false});
   }
 
   render() {
 
-    const { computeWord } = this.props;
-
-    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
-    let wordResponse = selectn('response', word);
-
-    var tabItemStyles = {
+    const tabItemStyles = {
       userSelect: 'none'
     }
 
-    if (!wordResponse || !word || !word.success) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.wordPath,
+      'entity': this.props.computeWord
+    }])
+
+    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
 
     /**
     * Generate definitions body
     */
-    return <div>
+    return <PromiseWrapper computeEntities={computeEntities}>
             <div className="row">
               <div className="col-xs-12">
                 <div>
 
                   <Card>
                     <CardHeader
-                      title={selectn('title', wordResponse)}
-                      subtitle={(selectn('contextParameters.word.part_of_speech', wordResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.word.part_of_speech', wordResponse) : ""}
+                      title={selectn('response.title', computeWord)}
+                      subtitle={(selectn('response.contextParameters.word.part_of_speech', computeWord) !=null) ? "Part of Speech: " + selectn('response.contextParameters.word.part_of_speech', computeWord) : ""}
                       /*avatar="http://lorempixel.com/100/100/"*/ />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
@@ -231,24 +158,24 @@ export default class View extends Component {
 
                             <div className="col-xs-8">
 
-                              <h2>{selectn('title', wordResponse)}</h2>
+                              <h2>{selectn('response.title', computeWord)}</h2>
 
-                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', wordResponse)}</p>
+                              <p>Part of Speech: {selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
 
-                              <p>Pronunciation: {selectn('properties.fv-word:pronunciation', wordResponse)}</p>
+                              <p>Pronunciation: {selectn('response.properties.fv-word:pronunciation', computeWord)}</p>
 
-                              <SubView group={selectn('properties.fv:definitions', wordResponse)} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
                               </SubView>
 
-                              <SubView group={selectn('properties.fv:literal_translation', wordResponse)} groupByElement="language" groupValue="translation">
+                              <SubView group={selectn('response.properties.fv:literal_translation', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Literal Translations:</p>
                               </SubView>
 
 
                               <h3>Related Phrases:</h3>
 
-                              {(selectn('contextParameters.word.related_phrases', wordResponse) || []).map(function(phrase, key) {
+                              {(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
                                 let phraseItem = selectn('fv:definitions', phrase);
                                 
                                 return (
@@ -261,51 +188,68 @@ export default class View extends Component {
                             </div>
 
                             <div className="col-xs-4">
-                              <p>
-                                Categories: {(selectn('contextParameters.word.categories', wordResponse) || []).map(function(category, key) {
-                                  return (selectn('dc:title', category));
-                                })}
-                              </p>
-                              <Divider />
-                              <p>Cultural Note: {selectn('properties.fv-word:cultural_note', wordResponse)}</p>
-                              <Divider />
-                              <p>Reference: {selectn('properties.fv-word:reference', wordResponse)}</p>
-                              <Divider />
-                              <p>
-                                Sources: {(selectn('contextParameters.word.sources', wordResponse) || []).map(function(source, key) {
-                                  return (selectn('dc:title', source));
-                                })}
-                              </p>
+                              <div style={{marginTop: '25px'}} className={classNames('panel')}>
+
+                                <div className="panel-heading">Metadata</div>
+
+                                <ul>
+                                
+                                <li>
+                                  Categories: {(selectn('response.contextParameters.word.categories', computeWord) || []).map(function(category, key) {
+                                    return <Preview id={category.uid} type="FVCategory" />;
+                                  })}
+                                </li>
+
+                                <li>Cultural Note: {selectn('response.properties.fv-word:cultural_note', computeWord)}</li>
+                                <li>Reference: {selectn('response.properties.fv-word:reference', computeWord)}</li>
+                                <li>
+                                  Sources: {(selectn('response.contextParameters.word.sources', computeWord) || []).map(function(source, key) {
+                                    return <Preview expandedValue={source} type="FVContributor" />;
+                                  })}
+                                </li>
+
+                                </ul>
+
+                              </div>
+
                             </div>
 
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab onActive={this.handleTabActive} label="Photos" id="pictures"> 
+                      <Tab label="Photos" id="pictures"> 
                         <div> 
                           <CardText>
                             <h2>Photos</h2> 
                             <div className="row">
-                              {(selectn('properties.related_pictures', wordResponse) || []).map(function(picture, key) {
-                                return (picture);
+                              {(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
+                                return <Preview key={selectn('uid', picture)} expandedValue={picture} type="FVPicture" />;
                               })}
                             </div>
                           </CardText>
                         </div>
                       </Tab> 
-                      <Tab label="Audio" onActive={this.handleTabActive} id="audio"> 
+                      <Tab label="Audio" id="audio"> 
                         <div> 
                           <CardText>
                             <h2>Audio</h2> 
-                            <div className="row">{this.state.audioContent}</div>
+                            <div className="row">
+                              {(selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
+                                return <Preview key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
+                              })}
+                            </div>
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab label="Video" onActive={this.handleTabActive} id="video"> 
+                      <Tab label="Video" id="video"> 
                         <div> 
                           <CardText>
                             <h2>Video</h2> 
-                            <div className="row">{this.state.videoContent}</div>
+                            <div className="row">
+                              {(selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function(video, key) {
+                                return <Preview key={selectn('uid', video)} expandedValue={video} type="FVVideo" />;
+                              })}
+                            </div>
                           </CardText>
                         </div> 
                       </Tab> 
@@ -315,14 +259,32 @@ export default class View extends Component {
 
                   <Toolbar className="toolbar">
                     <ToolbarGroup key={0} float="right">
-                      <RaisedButton onTouchTap={this._handleEditRequest.bind(this, wordResponse)} secondary={true} label="Edit" />
+                      <RaisedButton onTouchTap={this._handleEditRequest.bind(this, selectn('response', computeWord))} secondary={true} label="Edit" />
+                      <RaisedButton onTouchTap={this._handleDeleteRequest} secondary={true} label="Delete" />
                     </ToolbarGroup>
                   </Toolbar>
+
+                  <Dialog
+                    title="Deleting word"
+                    actions={[<FlatButton
+        label="Cancel"
+        secondary={true}
+        onTouchTap={this._handleCancelDelete} />,
+      <FlatButton
+        label="Delete"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
+                    modal={false}
+                    open={this.state.deleteDialogOpen}
+                    onRequestClose={this._handleCancelDelete}>
+                    Are you sure you would like to delete the word <strong>{selectn('response.title', computeWord)}</strong>?
+                  </Dialog>
 
                 </div>
               </div>
             </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }
 
