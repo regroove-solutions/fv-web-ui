@@ -26,6 +26,9 @@ import ProviderHelpers from 'common/ProviderHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
+//import Header from 'views/pages/explore/dialect/header';
+//import PageHeader from 'views/pages/explore/dialect/page-header';
 
 import Dialog from 'material-ui/lib/dialog';
 
@@ -188,30 +191,7 @@ export default class View extends Component {
                             </div>
 
                             <div className="col-xs-4">
-                              <div style={{marginTop: '25px'}} className={classNames('panel')}>
-
-                                <div className="panel-heading">Metadata</div>
-
-                                <ul>
-                                
-                                <li>
-                                  Categories: {(selectn('response.contextParameters.word.categories', computeWord) || []).map(function(category, key) {
-                                    return <Preview id={category.uid} type="FVCategory" />;
-                                  })}
-                                </li>
-
-                                <li>Cultural Note: {selectn('response.properties.fv-word:cultural_note', computeWord)}</li>
-                                <li>Reference: {selectn('response.properties.fv-word:reference', computeWord)}</li>
-                                <li>
-                                  Sources: {(selectn('response.contextParameters.word.sources', computeWord) || []).map(function(source, key) {
-                                    return <Preview expandedValue={source} type="FVContributor" />;
-                                  })}
-                                </li>
-
-                                </ul>
-
-                              </div>
-
+                              {(selectn('response', computeWord)) ? <MetadataPanel computeEntity={computeWord} /> : ''}
                             </div>
 
                           </CardText>
@@ -225,6 +205,8 @@ export default class View extends Component {
                               {(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
                                 return <Preview key={selectn('uid', picture)} expandedValue={picture} type="FVPicture" />;
                               })}
+
+                              {(selectn('response.contextParameters.word.related_pictures.length', computeWord) === 0) ? <div className="col-xs-12">No photos are available yet.</div> : ''}
                             </div>
                           </CardText>
                         </div>
@@ -237,6 +219,8 @@ export default class View extends Component {
                               {(selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
                                 return <Preview key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
                               })}
+
+                              {(selectn('response.contextParameters.word.related_audio.length', computeWord) === 0) ? <div className="col-xs-12">No audio is available yet.</div> : ''}
                             </div>
                           </CardText>
                         </div> 
@@ -249,6 +233,8 @@ export default class View extends Component {
                               {(selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function(video, key) {
                                 return <Preview key={selectn('uid', video)} expandedValue={video} type="FVVideo" />;
                               })}
+
+                              {(selectn('response.contextParameters.word.related_videos.length', computeWord) === 0) ? <div className="col-xs-12">No videos are available yet.</div> : ''}
                             </div>
                           </CardText>
                         </div> 

@@ -136,7 +136,7 @@ export default class PageDialectWordEdit extends Component {
 
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-console.log(this.state.formValue);
+
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
 	    <h1>Edit {selectn("response.properties.dc:title", computeWord)} word</h1>

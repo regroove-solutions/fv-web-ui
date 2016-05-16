@@ -56,18 +56,18 @@ export default class PromiseWrapper extends Component {
 
       let reducedOperation = ProviderHelpers.getEntry(computeEntity.get('entity'), computeEntity.get('id'));
 
-      if (!reducedOperation || reducedOperation.isFetching) {
-        render = <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
-        return false;
-      }
-
-      if (reducedOperation.isError && selectn('message', reducedOperation)) {
+      if (!reducedOperation || reducedOperation.isError && selectn('message', reducedOperation)) {
         
         if (!this.props.renderOnError) { 
           render = <div> <h1>404</h1></div>;
         }
 
         statusMessage = selectn('message', reducedOperation);
+        return false;
+      }
+
+      if (reducedOperation.isFetching) {
+        render = <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
         return false;
       }
 

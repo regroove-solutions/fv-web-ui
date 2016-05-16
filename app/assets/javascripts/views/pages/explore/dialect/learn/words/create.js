@@ -14,12 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -40,8 +42,8 @@ export default class PageDialectWordsCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     createWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
@@ -60,7 +62,7 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -82,7 +84,7 @@ export default class PageDialectWordsCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2.response != this.props.computeDialect2.response):
         return true;
       break;
 
@@ -139,21 +141,22 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const { computeDialect, computeWord } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.wordPath,
+      'entity': this.props.computeWord
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    let word = ProviderHelpers.getEntry(computeWord, this.state.wordPath);
+    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    let dialect = computeDialect.response;
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-    if (computeDialect.isFetching || !computeDialect.success) {
-      return <CircularProgress mode="indeterminate" size={2} />;
-    }
-
-    return <div>
-
-            <h1>Add New Word to <i>{dialect.get('dc:title')}</i></h1>
+            <h1>Add New Word to <i>{selectn('response.title', computeDialect2)}</i></h1>
             
-            {(word && word.message && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''}
+            {/*(word && word.message && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''*/}
             
             <div className="row" style={{marginTop: '15px'}}>
 
@@ -162,7 +165,7 @@ export default class PageDialectWordsCreate extends Component {
                   <t.form.Form
                     ref="form_word_create"
                     type={t.struct(selectn("FVWord", fields))}
-                    context={dialect}
+                    context={selectn('response', computeDialect2)}
                     value={this.state.formValue}
                     options={selectn("FVWord", options)} />
                     <div className="form-group">
@@ -182,6 +185,6 @@ export default class PageDialectWordsCreate extends Component {
               </div>
           </div>
   
-        </div>;
+        </PromiseWrapper>;
   }
 }
