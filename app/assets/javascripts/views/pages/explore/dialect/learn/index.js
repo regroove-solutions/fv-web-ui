@@ -187,7 +187,7 @@ export default class DialectLearn extends Component {
                   <div className={classNames('col-xs-12', 'col-md-6')}>
 
                     {(() => {
-                      if (characters && characters.entries) {
+                      if (selectn('characters.entries.length', characters) > 0) {
                         return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
                           <h3>Our Alphabet</h3>
                           {characters.entries.map((char, i) =>
@@ -210,7 +210,7 @@ export default class DialectLearn extends Component {
 
                 <div className={classNames('col-xs-12', 'col-md-6')}>
                   {(() => {
-                    if (selectn('response.contextParameters.dialect.keyboards', computeDialect2)) {
+                    if (selectn('response.contextParameters.dialect.keyboards.length', computeDialect2) > 0) {
                       return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
                         <h3>Our Keyboards</h3>
                         {(selectn('response.contextParameters.dialect.keyboards', computeDialect2) || []).map((keyboardLink, i) =>
