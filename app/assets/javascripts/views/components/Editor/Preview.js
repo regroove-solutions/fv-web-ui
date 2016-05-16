@@ -17,10 +17,11 @@ import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ConfGlobal from 'conf/local.json';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
-import Paper from 'material-ui/lib/paper';
 
 @provide
 export default class Preview extends Component {
@@ -140,7 +141,7 @@ export default class Preview extends Component {
             categoryResponse = this.props.expandedValue;
           }
           else {
-            category = selectn('categories.' + this.props.id, this.props.computeCategory);
+            category = ProviderHelpers.getEntry(this.props.computeCategory, this.props.id);
             categoryResponse = selectn('response', category);
           }
 
@@ -148,7 +149,7 @@ export default class Preview extends Component {
 
             let breadcrumb = [];
 
-            selectn('contextParameters.breadcrumb.entries', categoryResponse).map(function(entry, i) {
+            (selectn('contextParameters.breadcrumb.entries', categoryResponse) || []).map(function(entry, i) {
               if (entry.type === 'FVCategory') {
 
                 let shared = '';
@@ -180,9 +181,9 @@ export default class Preview extends Component {
 
           if (pictureResponse && picture.success) {
             body = <div>
-              <strong>{selectn('title', pictureResponse)}</strong> 
-              <span> {selectn('properties.dc:description', pictureResponse)}</span><br/>
-              <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse)} alt={selectn('title', pictureResponse)} />
+              <strong>{selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}</strong> 
+              <span> {selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}</span><br/>
+              {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse)) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : ''}
             </div>;
           }
 
@@ -204,9 +205,9 @@ export default class Preview extends Component {
 
           if (audioResponse && audio.success) {
             body = <div>
-              <strong>{selectn('title', audioResponse)}</strong> 
-              <span> {selectn('properties.dc:description', audioResponse)}</span><br/>
-              <audio src={selectn('properties.file:content.data', audioResponse)} controls />
+              <strong>{selectn('title', audioResponse) || selectn('dc:title', audioResponse)}</strong> 
+              <span> {selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}</span><br/>
+              {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse)) ? <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls /> : ''}
             </div>;
           }
 
@@ -228,9 +229,9 @@ export default class Preview extends Component {
 
           if (videoResponse && video.success) {
             body = <div>
-              <strong>{selectn('title', videoResponse)}</strong> 
-              <span> {selectn('properties.dc:description', videoResponse)}</span><br/>
-              <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse)} controls />
+              <strong>{selectn('title', videoResponse) || selectn('dc:title', videoResponse)}</strong> 
+              <span> {selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)}</span><br/>
+              {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse)) ? <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : ''}
             </div>;
           }
 
@@ -246,14 +247,14 @@ export default class Preview extends Component {
             contributorResponse = this.props.expandedValue;
           }
           else {
-            contributor = selectn('contributors.' + this.props.id, this.props.computeContributor);
+            contributor = ProviderHelpers.getEntry(this.props.computeContributor, this.props.id);
             contributorResponse = selectn('response', contributor);
           }
 
           if (contributorResponse && contributor.success) {
             body = <div>
-              <strong>{selectn('title', contributorResponse)}</strong> 
-              <span> {selectn('properties.dc:description', contributorResponse)}</span><br/>
+              <strong>{selectn('title', contributorResponse) || selectn('dc:title', contributorResponse)}</strong> 
+              <span> {selectn('properties.dc:description', contributorResponse) || selectn('dc:description', contributorResponse)}</span>
             </div>;
           }
 
@@ -261,9 +262,9 @@ export default class Preview extends Component {
       }
 
       return (
-        <Paper style={previewStyles} zDepth={3}>
+        <div style={previewStyles}>
           {body}
-        </Paper>
+        </div>
       );
     }
 }
