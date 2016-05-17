@@ -53,10 +53,10 @@ export default class Gallery extends React.Component {
   
   render() {
 
-	  const { computeGallery } = this.props;
+	const { computeGallery } = this.props;
 	  	  
-	  if(computeGallery.isFetching || !computeGallery.success) {
-			return <CircularProgress mode="indeterminate" size={3} />;
+	if(computeGallery.isFetching || !computeGallery.success || computeGallery.response === undefined) {
+		return <CircularProgress mode="indeterminate" size={3} />;
 	}
 
 	const images = [];
@@ -69,6 +69,7 @@ export default class Gallery extends React.Component {
 		//console.log(images);			
 	});
 	
+	// Add some sample images for testing
 	images.push({ original: 'http://lorempixel.com/400/300/nature/1/', description: 'Optional description...' })
 	images.push({ original: 'http://lorempixel.com/1000/600/nature/2/', description: 'Optional description...' })
 	images.push({ original: 'http://lorempixel.com/1500/600/nature/3/', description: 'Optional description...' })
