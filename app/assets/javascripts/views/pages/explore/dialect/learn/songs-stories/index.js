@@ -59,14 +59,19 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect: PropTypes.func.isRequired,
     fetchBooksInPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired, 
     computeDialect: PropTypes.object.isRequired,
     computeBooksInPath: PropTypes.object.isRequired,
     deleteBook: PropTypes.func.isRequired,
     computeDeleteBook: PropTypes.object.isRequired,
     publishBook: PropTypes.func.isRequired,
+    askToPublishBook: PropTypes.func.isRequired,
     unpublishBook: PropTypes.func.isRequired,
+    askToUnpublishBook: PropTypes.func.isRequired,
     enableBook: PropTypes.func.isRequired,
+    askToEnableBook: PropTypes.func.isRequired,
     disableBook: PropTypes.func.isRequired,
+    askToDisableBook: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired,
     typePlural: PropTypes.string,
     typeFilter: PropTypes.string
@@ -88,7 +93,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
 
     newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,permissions', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
   }
 
   // Fetch data on initial render
@@ -111,23 +116,42 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   /**
   * Toggle dialect (enabled/disabled)
   */
-  _enableToggleAction(path, toggled) {
-
+  _enableToggleAction(toggled, workflow, path) {
     if (toggled) {
-      this.props.enableBook(path, null, null, "Book enabled!");
+      if (workflow) {
+        this.props.askToEnableBook(path, {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable book successfully submitted!", null);
+      }
+      else {
+        this.props.enableBook(path, null, null, "Book enabled!");
+      }
     } else {
-      this.props.disableBook(path, null, null, "Book disabled!");
+      if (workflow) {
+        this.props.askToDisableBook(path, {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable book successfully submitted!", null);
+      }
+      else {
+        this.props.disableBook(path, null, null, "Book disabled!");
+      }
     }
   }
 
   /**
   * Toggle published dialect
   */
-  _publishToggleAction(path, toggled) {
+  _publishToggleAction(toggled, workflow, path) {
     if (toggled) {
-      this.props.publishBook(path, null, null, "Book published successfully!");
+      if (workflow) {
+        this.props.askToPublishBook(path, {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish book successfully submitted!", null);
+      }
+      else {
+        this.props.publishBook(path, null, null, "Book published successfully!");
+      }
     } else {
-      this.props.unpublishBook(path, null, null, "Book unpublished successfully!");
+      if (workflow) {
+        this.props.askToUnpublishBook(path, {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish book successfully submitted!", null);
+      }
+      else {
+        this.props.unpublishBook(path, null, null, "Book unpublished successfully!");
+      }
     }
   }
 
@@ -166,7 +190,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
 
   render() {
 
-    const { computeDialect, computeBooksInPath } = this.props;
+    const { computeDialect, computeBooksInPath, computeLogin } = this.props;
 
     let dialect = computeDialect.response;
 
@@ -229,8 +253,10 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
                                           label="Book"
                                           handleNavigateRequest={this._onNavigateRequest.bind(this, '/explore' + selectn('path', tile).replace('Stories & Songs', 'learn/' + typePlural) + '/edit' )}
                                           computeEntity={{response: tile}}
-                                          publishToggleAction={this._publishToggleAction.bind(this, tile.path)}
-                                          enableToggleAction={this._enableToggleAction.bind(this, tile.path)}
+                                          computeLogin={computeLogin}
+                                          computePermissionEntity={computeDialect}
+                                          publishToggleAction={this._publishToggleAction}
+                                          enableToggleAction={this._enableToggleAction}
                                           {...this.props} />;
                             }
                           })()}

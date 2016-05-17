@@ -36,7 +36,7 @@ export default class PageToolbar extends Component {
   static propTypes = {
     computeEntity: PropTypes.object.isRequired,
     computePermissionEntity: PropTypes.object,
-    computeLogin: PropTypes.object,
+    computeLogin: PropTypes.object.isRequired,
     handleNavigateRequest: PropTypes.func.isRequired,
     publishToggleAction: PropTypes.func.isRequired,
     enableToggleAction: PropTypes.func.isRequired,
@@ -92,23 +92,23 @@ export default class PageToolbar extends Component {
   /**
   * Start a workflow
   */
-  _documentActionsStartWorkflow(workflow, event) {
+  _documentActionsStartWorkflow(workflow, path, event) {
 
     switch (workflow) {
       case 'enable':
-        this.props.enableToggleAction(true, true);
+        this.props.enableToggleAction(true, true, path);
       break;
 
       case 'disable':
-        this.props.enableToggleAction(false, true);
+        this.props.enableToggleAction(false, true, path);
       break;
 
       case 'publish':
-        this.props.publishToggleAction(true, true);
+        this.props.publishToggleAction(true, true, path);
       break;
 
       case 'unpublish':
-        this.props.publishToggleAction(false, true);
+        this.props.publishToggleAction(false, true, path);
       break;
     }
   }
@@ -143,18 +143,16 @@ export default class PageToolbar extends Component {
 
                               <span style={{paddingRight: '15px'}}>REQUEST: </span>
 
-                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' || selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
-                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' || selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
-                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
-                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable', selectn('response.path', computeEntity))} />
+                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable', selectn('response.path', computeEntity))} />
+                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish', selectn('response.path', computeEntity))} />
+                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish', selectn('response.path', computeEntity))} />
 
                             </div>
 
                           </AuthorizationFilter>;
                       }
                     })()}
-
-                    
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>

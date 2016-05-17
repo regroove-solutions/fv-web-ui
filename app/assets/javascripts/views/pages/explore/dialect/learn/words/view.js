@@ -81,6 +81,7 @@ export default class View extends Component {
     enableWord: PropTypes.func.isRequired,
     askToEnableWord: PropTypes.func.isRequired,
     disableWord: PropTypes.func.isRequired,
+    askToDisableWord: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -88,7 +89,6 @@ export default class View extends Component {
     super(props, context);
 
     this.state = {
-      wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
       deleteDialogOpen: false
     };
 
@@ -97,13 +97,36 @@ export default class View extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchWord(this.state.wordPath);
+    newProps.fetchWord(this._getWordPath(newProps));
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+
+    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.routeParams.word !== this.props.routeParams.word) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+      this.fetchData(nextProps);
+    }
   }
 
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+  }
+
+  _getWordPath(props = null) {
+
+    if (props == null) {
+      props = this.props;
+    }
+
+    return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word;
   }
 
   _onNavigateRequest(path) {
@@ -121,17 +144,17 @@ export default class View extends Component {
   _enableToggleAction(toggled, workflow) {
     if (toggled) {
       if (workflow) {
-        this.props.askToEnableWord(this.state.wordPath, {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable word successfully submitted!", null);
+        this.props.askToEnableWord(this._getWordPath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable word successfully submitted!", null);
       }
       else {
-        this.props.enableWord(this.state.wordPath, null, null, "Word enabled!");
+        this.props.enableWord(this._getWordPath(), null, null, "Word enabled!");
       }
     } else {
       if (workflow) {
-        this.props.askToDisableWord(this.state.wordPath, {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable word successfully submitted!", null);
+        this.props.askToDisableWord(this._getWordPath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable word successfully submitted!", null);
       }
       else {
-        this.props.disableWord(this.state.wordPath, null, null, "Word disabled!");
+        this.props.disableWord(this._getWordPath(), null, null, "Word disabled!");
       }
     }
   }
@@ -142,17 +165,17 @@ export default class View extends Component {
   _publishToggleAction(toggled, workflow) {
     if (toggled) {
       if (workflow) {
-        this.props.askToPublishWord(this.state.wordPath, {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish word successfully submitted!", null);
+        this.props.askToPublishWord(this._getWordPath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish word successfully submitted!", null);
       }
       else {
-        this.props.publishWord(this.state.wordPath, null, null, "Word published successfully!");
+        this.props.publishWord(this._getWordPath(), null, null, "Word published successfully!");
       }
     } else {
       if (workflow) {
-        this.props.askToUnpublishWord(this.state.wordPath, {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish word successfully submitted!", null);
+        this.props.askToUnpublishWord(this._getWordPath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish word successfully submitted!", null);
       }
       else {
-        this.props.unpublishWord(this.state.wordPath, null, null, "Word unpublished successfully!");
+        this.props.unpublishWord(this._getWordPath(), null, null, "Word unpublished successfully!");
       }
     }
   }
@@ -164,14 +187,14 @@ export default class View extends Component {
     }
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.wordPath,
+      'id': this._getWordPath(),
       'entity': this.props.computeWord
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     /**

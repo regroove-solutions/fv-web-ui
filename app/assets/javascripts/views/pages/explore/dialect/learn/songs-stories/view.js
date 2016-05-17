@@ -33,7 +33,7 @@ import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 const DEFAULT_LANGUAGE = 'english';
 
 /**
-* View word entry
+* View BookEntry entry
 */
 @provide
 export default class View extends Component {
@@ -43,18 +43,25 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired, 
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
     fetchBookEntries: PropTypes.func.isRequired,
     computeBookEntries: PropTypes.object.isRequired,
     deleteBookEntry: PropTypes.func.isRequired,
     publishBookEntry: PropTypes.func.isRequired,
+    askToPublishBookEntry: PropTypes.func.isRequired,
     unpublishBookEntry: PropTypes.func.isRequired,
+    askToUnpublishBookEntry: PropTypes.func.isRequired,
     enableBookEntry: PropTypes.func.isRequired,
+    askToEnableBookEntry: PropTypes.func.isRequired,
     disableBookEntry: PropTypes.func.isRequired,
+    askToDisableBookEntry: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired,
     book: PropTypes.object,
-    typePlural: PropTypes.string,
-    routeParams: PropTypes.object
+    typePlural: PropTypes.string
   };
 
   constructor(props, context){
@@ -62,7 +69,6 @@ export default class View extends Component {
 
     this.state = {
       book: null,
-      bookPath: null,
       children: null
     };
 
@@ -71,20 +77,23 @@ export default class View extends Component {
   }
 
   fetchData(newProps) {
-
-    let entryPath = newProps.routeParams.dialect_path + '/Stories & Songs/' + newProps.routeParams.bookName;
-
-    this.setState({
-      bookPath: entryPath
-    });
-
-    newProps.fetchBook(entryPath);
-    newProps.fetchBookEntries(entryPath);
+    newProps.fetchBook(this._getBookEntryPath(newProps));
+    newProps.fetchBookEntries(this._getBookEntryPath(newProps));
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+  }
+
+  _getBookEntryPath(props = null) {
+
+    if (props == null) {
+      props = this.props;
+    }
+
+    return props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName;
   }
 
   _onNavigateRequest(path) {
@@ -96,41 +105,65 @@ export default class View extends Component {
     this.setState({deleteDialogOpen: false});
   }
 
+
   /**
   * Toggle dialect (enabled/disabled)
   */
-  _enableToggleAction(path, toggled) {
-
+  _enableToggleAction(toggled, workflow, path) {
     if (toggled) {
-      this.props.enableBookEntry(path, null, null, "Book enabled!");
+      if (workflow) {
+        this.props.askToEnableBookEntry(path, {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable Book Entry successfully submitted!", null);
+      }
+      else {
+        this.props.enableBookEntry(path, null, null, "Book Entry enabled!");
+      }
     } else {
-      this.props.disableBookEntry(path, null, null, "Book disabled!");
+      if (workflow) {
+        this.props.askToDisableBookEntry(path, {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable Book Entry successfully submitted!", null);
+      }
+      else {
+        this.props.disableBookEntry(path, null, null, "Book Entry disabled!");
+      }
     }
   }
 
   /**
   * Toggle published dialect
   */
-  _publishToggleAction(path, toggled) {
+  _publishToggleAction(toggled, workflow, path) {
     if (toggled) {
-      this.props.publishBookEntry(path, null, null, "Book published successfully!");
+      if (workflow) {
+        this.props.askToPublishBookEntry(path, {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish Book Entry successfully submitted!", null);
+      }
+      else {
+        this.props.publishBookEntry(path, null, null, "Book Entry published successfully!");
+      }
     } else {
-      this.props.unpublishBookEntry(path, null, null, "Book unpublished successfully!");
+      if (workflow) {
+        this.props.askToUnpublishBookEntry(path, {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish Book Entry successfully submitted!", null);
+      }
+      else {
+        this.props.unpublishBookEntry(path, null, null, "Book Entry unpublished successfully!");
+      }
     }
   }
 
   render() {
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.bookPath,
+      'id': this._getBookEntryPath(),
       'entity': this.props.computeBook
     },{
-      'id': this.state.bookPath,
+      'id': this._getBookEntryPath(),
       'entity': this.props.computeBookEntries
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
     }])
 
-    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
-    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.state.bookPath);
+    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookEntryPath());
+    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this._getBookEntryPath());
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper computeEntities={computeEntities}>
               <div className="row">
@@ -160,11 +193,13 @@ export default class View extends Component {
 
                             if (tile)
                               return <PageToolbar
-                                        label="Book Entry"
+                                        label="Book Entry "
                                         handleNavigateRequest={this._onNavigateRequest.bind(this, '/explore' + selectn('path', tile).replace('Stories & Songs', 'learn/' + typePlural) + '/edit' )}
                                         computeEntity={{response: tile}}
-                                        publishToggleAction={this._publishToggleAction.bind(this, tile.path)}
-                                        enableToggleAction={this._enableToggleAction.bind(this, tile.path)}
+                                        computePermissionEntity={computeDialect2}
+                                        computeLogin={this.props.computeLogin}
+                                        publishToggleAction={this._publishToggleAction}
+                                        enableToggleAction={this._enableToggleAction}
                                         {...this.props} />;
                           }
                         })()}

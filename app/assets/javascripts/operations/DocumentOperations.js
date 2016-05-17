@@ -43,9 +43,7 @@ export default class DocumentOperations extends BaseOperations {
           if (error.hasOwnProperty('response')) {
             error.response.json().then(
               (jsonError) => {
-                let errorMessage = jsonError.message.split(": ")[1];
-                errorMessage = "Error: " + errorMessage;
-                reject(errorMessage);
+                reject(StringHelpers.extractErrorMessage(jsonError));
               }
             );
           } else { 
@@ -95,9 +93,7 @@ export default class DocumentOperations extends BaseOperations {
         .catch((error) => {
           error.response.json().then(
             (jsonError) => {
-              let errorMessage = jsonError.message.split(": ")[1];
-              errorMessage = "Error: " + errorMessage;
-              reject(errorMessage);
+                reject(StringHelpers.extractErrorMessage(jsonError));
             }
           );
         });
@@ -123,9 +119,7 @@ export default class DocumentOperations extends BaseOperations {
           if (error.hasOwnProperty('response')) {
             error.response.json().then(
               (jsonError) => {
-                let errorMessage = jsonError.message.split(": ")[1];
-                errorMessage = "Error: " + errorMessage;
-                reject(errorMessage);
+                reject(StringHelpers.extractErrorMessage(jsonError));
               }
             );
           } else { 
@@ -154,9 +148,7 @@ export default class DocumentOperations extends BaseOperations {
       .catch((error) => {
         error.response.json().then(
           (jsonError) => {
-            let errorMessage = jsonError.message.split(": ")[1];
-            errorMessage = "Error: " + errorMessage;
-            reject(errorMessage);
+            reject(StringHelpers.extractErrorMessage(jsonError));
           }
         );
       });
@@ -182,9 +174,7 @@ export default class DocumentOperations extends BaseOperations {
       .catch((error) => {
         error.response.json().then(
           (jsonError) => {
-            let errorMessage = jsonError.message.split(": ")[1];
-            errorMessage = "Error: " + errorMessage;
-            reject(errorMessage);
+            reject(StringHelpers.extractErrorMessage(jsonError));
           }
         );
       });
@@ -210,9 +200,7 @@ export default class DocumentOperations extends BaseOperations {
       .catch((error) => {
         error.response.json().then(
           (jsonError) => {
-            let errorMessage = jsonError.message.split(": ")[1];
-            errorMessage = "Error: " + errorMessage;
-            reject(errorMessage);
+            reject(StringHelpers.extractErrorMessage(jsonError));
           }
         );
       });
@@ -238,9 +226,7 @@ export default class DocumentOperations extends BaseOperations {
       .catch((error) => {
         error.response.json().then(
           (jsonError) => {
-            let errorMessage = jsonError.message.split(": ")[1];
-            errorMessage = "Error: " + errorMessage;
-            reject(errorMessage);
+            reject(StringHelpers.extractErrorMessage(jsonError));
           }
         );
       });
@@ -265,9 +251,7 @@ export default class DocumentOperations extends BaseOperations {
     	.catch((error) => {
         error.response.json().then(
           (jsonError) => {
-        	  let errorMessage = jsonError.message.split(": ")[1];
-        	  errorMessage = "Error: " + errorMessage;
-        	  reject(errorMessage);
+        	  reject(StringHelpers.extractErrorMessage(jsonError));
           }
         );
       });
@@ -509,9 +493,7 @@ export default class DocumentOperations extends BaseOperations {
           if (error.hasOwnProperty('response')) {
             error.response.json().then(
               (jsonError) => {
-                let errorMessage = jsonError.message.split(": ")[1];
-                errorMessage = "Error: " + errorMessage;
-                reject(errorMessage);
+                reject(StringHelpers.extractErrorMessage(jsonError));
               }
             );
           } else { 

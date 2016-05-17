@@ -45,7 +45,6 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
     createBookEntry: PropTypes.func.isRequired,
-    computeCreateBookEntry: PropTypes.object.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -144,7 +143,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
   render() {
 
-    const { computeBook, computeDialect/*, computeCreateBook*/ } = this.props;
+    const { computeBook, computeDialect } = this.props;
 
     let dialect = computeDialect.response;
 
@@ -160,8 +159,6 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     return <div>
 
             <h1>Add New Entry to <i>{selectn('properties.dc:title', bookResponse)}</i> Book</h1>
-            
-            {/*{computeCreateBook.isError ? <div className="alert alert-danger" role="alert">{computeCreateBook.error}</div> : ''}*/}
             
             <div className="row" style={{marginTop: '15px'}}>
 

@@ -36,25 +36,9 @@ const FV_WORDS_SHARED_FETCH_ERROR = "FV_WORDS_SHARED_FETCH_ERROR";
 /**
 * Single Word Actions
 */
-const FV_WORD_FETCH_START = "FV_WORD_FETCH_START";
-const FV_WORD_FETCH_SUCCESS = "FV_WORD_FETCH_SUCCESS";
-const FV_WORD_FETCH_ERROR = "FV_WORD_FETCH_ERROR";
-
 const FV_WORD_FETCH_ALL_START = "FV_WORD_FETCH_ALL_START";
 const FV_WORD_FETCH_ALL_SUCCESS = "FV_WORD_FETCH_ALL_SUCCESS";
 const FV_WORD_FETCH_ALL_ERROR = "FV_WORD_FETCH_ALL_ERROR";
-
-const FV_WORD_UPDATE_START = "FV_WORD_UPDATE_START";
-const FV_WORD_UPDATE_SUCCESS = "FV_WORD_UPDATE_SUCCESS";
-const FV_WORD_UPDATE_ERROR = "FV_WORD_UPDATE_ERROR";
-
-const FV_WORD_CREATE_START = "FV_WORD_CREATE_START";
-const FV_WORD_CREATE_SUCCESS = "FV_WORD_CREATE_SUCCESS";
-const FV_WORD_CREATE_ERROR = "FV_WORD_CREATE_ERROR";
-
-const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
-const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
-const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
@@ -117,7 +101,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
   }
 };
 
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {

@@ -68,13 +68,20 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired, 
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
     deletePhrase: PropTypes.func.isRequired,
     publishPhrase: PropTypes.func.isRequired,
+    askToPublishPhrase: PropTypes.func.isRequired,
     unpublishPhrase: PropTypes.func.isRequired,
+    askToUnpublishPhrase: PropTypes.func.isRequired,
     enablePhrase: PropTypes.func.isRequired,
+    askToEnablePhrase: PropTypes.func.isRequired,
     disablePhrase: PropTypes.func.isRequired,
+    askToDisablePhrase: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -82,7 +89,6 @@ export default class View extends Component {
     super(props, context);
 
     this.state = {
-      phrasePath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase,
       deleteDialogOpen: false
     };
 
@@ -91,12 +97,36 @@ export default class View extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchPhrase(this.state.phrasePath);
+    newProps.fetchPhrase(this._getPhrasePath(newProps));
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+
+    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.routeParams.phrase !== this.props.routeParams.phrase) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+      this.fetchData(nextProps);
+    }
   }
 
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+  }
+
+  _getPhrasePath(props = null) {
+
+    if (props == null) {
+      props = this.props;
+    }
+
+    return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase;
   }
 
   _onNavigateRequest(path) {
@@ -112,22 +142,41 @@ export default class View extends Component {
   * Toggle dialect (enabled/disabled)
   */
   _enableToggleAction(toggled) {
-
     if (toggled) {
-      this.props.enablePhrase(this.state.phrasePath, null, null, "Phrase enabled!");
+      if (workflow) {
+        this.props.askToEnablePhrase(this._getPhrasePath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable phrase successfully submitted!", null);
+      }
+      else {
+        this.props.enablePhrase(this._getPhrasePath(), null, null, "Phrase enabled!");
+      }
     } else {
-      this.props.disablePhrase(this.state.phrasePath, null, null, "Phrase disabled!");
+      if (workflow) {
+        this.props.askToDisablePhrase(this._getPhrasePath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable phrase successfully submitted!", null);
+      }
+      else {
+        this.props.disablePhrase(this._getPhrasePath(), null, null, "Phrase disabled!");
+      }
     }
   }
 
   /**
   * Toggle published dialect
   */
-  _publishToggleAction(toggled) {
+  _publishToggleAction(toggled, workflow) {
     if (toggled) {
-      this.props.publishPhrase(this.state.phrasePath, null, null, "Phrase published successfully!");
+      if (workflow) {
+        this.props.askToPublishPhrase(this._getPhrasePath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish phrase successfully submitted!", null);
+      }
+      else {
+        this.props.publishPhrase(this._getPhrasePath(), null, null, "Phrase published successfully!");
+      }
     } else {
-      this.props.unpublishPhrase(this.state.phrasePath, null, null, "Phrase unpublished successfully!");
+      if (workflow) {
+        this.props.askToUnpublishPhrase(this._getPhrasePath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish phrase successfully submitted!", null);
+      }
+      else {
+        this.props.unpublishPhrase(this._getPhrasePath(), null, null, "Phrase unpublished successfully!");
+      }
     }
   }
 
@@ -138,11 +187,15 @@ export default class View extends Component {
     }
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.phrasePath,
+      'id': this._getPhrasePath(),
       'entity': this.props.computePhrase
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
     }])
 
-    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
+    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath());
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     /**
     * Generate definitions body
@@ -157,6 +210,8 @@ export default class View extends Component {
                             label="Phrase"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computePhrase}
+                            computePermissionEntity={computeDialect2}
+                            computeLogin={this.props.computeLogin}
                             publishToggleAction={this._publishToggleAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props} />;

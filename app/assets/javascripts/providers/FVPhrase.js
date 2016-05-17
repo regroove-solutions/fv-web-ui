@@ -19,18 +19,6 @@ const FV_PHRASES_FETCH_START = "FV_PHRASES_FETCH_START";
 const FV_PHRASES_FETCH_SUCCESS = "FV_PHRASES_FETCH_SUCCESS";
 const FV_PHRASES_FETCH_ERROR = "FV_PHRASES_FETCH_ERROR";
 
-const FV_PHRASES_UPDATE_START = "FV_PHRASES_UPDATE_START";
-const FV_PHRASES_UPDATE_SUCCESS = "FV_PHRASES_UPDATE_SUCCESS";
-const FV_PHRASES_UPDATE_ERROR = "FV_PHRASES_UPDATE_ERROR";
-
-const FV_PHRASES_CREATE_START = "FV_PHRASES_CREATE_START";
-const FV_PHRASES_CREATE_SUCCESS = "FV_PHRASES_CREATE_SUCCESS";
-const FV_PHRASES_CREATE_ERROR = "FV_PHRASES_CREATE_ERROR";
-
-const FV_PHRASES_DELETE_START = "FV_PHRASES_DELETE_START";
-const FV_PHRASES_DELETE_SUCCESS = "FV_PHRASES_DELETE_SUCCESS";
-const FV_PHRASES_DELETE_ERROR = "FV_PHRASES_DELETE_ERROR";
-
 const FV_PHRASES_SHARED_FETCH_START = "FV_PHRASES_SHARED_FETCH_START";
 const FV_PHRASES_SHARED_FETCH_SUCCESS = "FV_PHRASES_SHARED_FETCH_SUCCESS";
 const FV_PHRASES_SHARED_FETCH_ERROR = "FV_PHRASES_SHARED_FETCH_ERROR";
@@ -91,15 +79,20 @@ const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', { headers: { 'X
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
 
 const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const askToPublishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const askToUnpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 
-const computePhraseDeleteFactory = RESTReducers.computeDelete('delete_phrase');
-
-const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase };
+const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase, askToPublishPhrase, askToUnpublishPhrase, askToEnablePhrase, askToDisablePhrase };
 
 const computePhraseFactory = RESTReducers.computeFetch('phrase');
+const computePhraseDeleteFactory = RESTReducers.computeDelete('delete_phrase');
+const computePhraseEnableOperationFactory = RESTReducers.computeOperation('phrase_enable_workflow');
+const computePhraseDisableOperationFactory = RESTReducers.computeOperation('phrase_disable_workflow');
 
 const reducers = {
   computeSharedPhrases(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -147,6 +140,8 @@ const reducers = {
   },
   computePhrase: computePhraseFactory.computePhrase, 
   computeDeletePhrase: computePhraseDeleteFactory.computeDeletePhrase,
+  computePhraseEnableWorkflow: computePhraseEnableOperationFactory.computePhraseEnableWorkflow,
+  computePhraseDisableWorkflow: computePhraseDisableOperationFactory.computePhraseDisableWorkflow,
   computePhrasesAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_PHRASE_FETCH_ALL_START:

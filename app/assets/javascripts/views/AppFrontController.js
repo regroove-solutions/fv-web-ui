@@ -80,11 +80,11 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore'],
-        page: <PageExploreArchive />/*,
+        page: <PageExploreArchive />,
         redirects: [{
           condition: function(params) { return true; },
           target: function(params) { return '/explore/FV/sections/Data/'; }
-        }]*/
+        }]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
@@ -213,12 +213,14 @@ export default class AppFrontController extends Component {
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create' ],
         page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural="stories" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', 'create' ],
         page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural="songs" />,
-        extractPaths: true
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
@@ -233,13 +235,13 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
         page: <PageDialectBookEntryEdit typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
@@ -257,13 +259,13 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
         page: <PageDialectBookEntryEdit typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]

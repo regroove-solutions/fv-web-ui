@@ -42,35 +42,39 @@ export default class AuthorizationFilter extends Component {
     } else if (filter.hasOwnProperty('role') && filter.hasOwnProperty('login')) {
 
       let acls = selectn('contextParameters.acls', filter.entity);
-      let combinedAces = Object.assign(acls[0].aces, acls[1].aces);
 
-      let filteredAceList = Immutable.fromJS(combinedAces).filter(function(entry) {
-        return entry.get('permission') == filter.role && entry.get('granted') && entry.get('status') == 'effective';
-      })
+      if (acls) {
+        let combinedAces = Object.assign(selectn('[0].aces', acls), selectn('[1].aces', acls));
 
+        let filteredAceList = Immutable.fromJS(combinedAces).filter(function(entry) {
+          return entry.get('permission') == filter.role && entry.get('granted') && entry.get('status') == 'effective';
+        })
 
-      let userHasRole = filteredAceList.findIndex(function(entry){
+        let userHasRole = filteredAceList.findIndex(function(entry){
 
-        let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login));
+          let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login));
 
-        if (!extendedUserGroups || extendedUserGroups.size === 0) {
-          return false;
-        }
+          if (!extendedUserGroups || extendedUserGroups.size === 0) {
+            return false;
+          }
 
-        let hasRole = extendedUserGroups.findIndex(function(extendedGroupEntry){
-            return entry.get('username') == extendedGroupEntry.get('name') || entry.get('username') == selectn('response.id', filter.login);
+          let hasRole = extendedUserGroups.findIndex(function(extendedGroupEntry){
+              return entry.get('username') == extendedGroupEntry.get('name') || entry.get('username') == selectn('response.id', filter.login);
+          });
+
+          return (hasRole === -1) ? false : true;
         });
 
-        return (hasRole === -1) ? false : true;
-      });
-
-      if (!currentUserEntityPermissions || userHasRole === -1) {
-        if (this.props.renderPartial) {
-         return React.cloneElement(children, { accessDenied: true });
+        if (!currentUserEntityPermissions || userHasRole === -1) {
+          if (this.props.renderPartial) {
+           return React.cloneElement(children, { accessDenied: true });
+          }
+          else {
+           return null;
+          }
         }
-        else {
-         return null;
-        }
+      } else {
+        return null;
       }
 
     } else {

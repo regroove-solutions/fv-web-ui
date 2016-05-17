@@ -66,9 +66,7 @@ export default class DirectoryOperations extends BaseOperations {
           if (error.hasOwnProperty('response')) {
             error.response.json().then(
               (jsonError) => {
-                let errorMessage = jsonError.message.split(": ")[1];
-                errorMessage = "Error: " + errorMessage;
-                reject(errorMessage);
+                reject(StringHelpers.extractErrorMessage(jsonError));
               }
             );
           } else { 
