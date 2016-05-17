@@ -45,4 +45,31 @@ export default class UserOperations extends BaseOperations {
     });
   }
 
+  static getUserTasks(params = {}) {
+    let properties = this.properties;
+
+	return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .operation('Task.GetAssigned')
+        .params(params)
+        .execute()        
+        .then((tasks) => {
+        	
+        	// Go through each task and do another request to figure out what document type each one is
+        	tasks.map(function(task, i) {
+        		properties.client.request('/id/' + task.docref)
+        		.get()
+        		.then((document) => {
+                    task["doctype"] = document.type;
+                    console.log("document.type");
+                }).catch((error) => { reject('Could not retrieve document.'); });
+        	})
+         	        	
+          console.log(tasks);
+          resolve(tasks);
+        }).catch((error) => { reject('Could not retrieve user tasks.'); });
+    });
+  }  
+  
 }

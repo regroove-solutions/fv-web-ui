@@ -61,6 +61,11 @@ export default class AppLeftNav extends Component {
         path: "/get-started/"
       },
       {
+    	id: 'tasks',
+        label: "Tasks",
+        path: "/tasks/"
+      },      
+      {
         id: 'explore',
         label: 'Explore',
         path: '/explore/FV/sections/Data/',
