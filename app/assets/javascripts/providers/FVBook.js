@@ -65,20 +65,6 @@ const FV_BOOK_DELETE_START = "FV_BOOK_DELETE_START";
 const FV_BOOK_DELETE_SUCCESS = "FV_BOOK_DELETE_SUCCESS";
 const FV_BOOK_DELETE_ERROR = "FV_BOOK_DELETE_ERROR";
 
-const createBookEntry = function createBook(parentDoc, docParams) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_BOOK_ENTRY_CREATE_START, document: docParams } );
-
-    return DocumentOperations.createDocument(parentDoc, docParams)
-      .then((response) => {
-        dispatch( { type: FV_BOOK_ENTRY_CREATE_SUCCESS, document: response} );
-      }).catch((error) => {
-          dispatch( { type: FV_BOOK_ENTRY_CREATE_ERROR, error: error } )
-    });
-  }
-};
-
 const fetchSharedBooks = function fetchSharedBooks(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
 
@@ -121,28 +107,43 @@ const fetchBooksInPath = function fetchBooksInPath(path, queryAppend, headers = 
   }
 };
 
-const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } });
 const deleteBook = RESTActions.delete('FV_BOOK', 'FVBook', {});
+
+const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+
+const fetchBookEntry = RESTActions.fetch('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const createBookEntry = RESTActions.create('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const updateBookEntry = RESTActions.update('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const deleteBookEntry = RESTActions.delete('FV_BOOK_ENTRY', 'FVBookEntry', {});
+
+const publishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const unpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const enableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const disableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry' } });
 
 const fetchBookEntries = RESTActions.query('FV_BOOK_ENTRIES', 'FVBookEntry', { queryAppend: ' ORDER BY fvbookentry:sort_map', headers: { 'X-NXenrichers.document': 'ancestry' } });
 
-const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
-
 const computeBookFetchFactory = RESTReducers.computeFetch('book');
-const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 
+const computeBookEntryFetchFactory = RESTReducers.computeFetch('book_entry');
+const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 
-const actions = { publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntries, fetchBook, createBook, deleteBook, createBookEntry, fetchBooksAll, updateBook };
+const actions = {
+                  fetchBook, updateBook, createBook, deleteBook, publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntries, fetchBooksAll,
+                  fetchBookEntry, updateBookEntry, createBookEntry, deleteBookEntry, publishBookEntry, unpublishBookEntry, enableBookEntry, disableBookEntry
+                };
 
 const reducers = {
   computeBook: computeBookFetchFactory.computeBook,
   computeDeleteBook: computeBookDeleteFactory.computeDeleteBook,
+  computeBookEntry: computeBookEntryFetchFactory.computeBookEntry,
   computeBookEntries: computeBookEntriesQueryFactory.computeBookEntries,
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {

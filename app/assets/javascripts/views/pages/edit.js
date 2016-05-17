@@ -20,10 +20,14 @@ limitations under the License.
 import {default as PageExploreDialectEdit} from './explore/dialect/edit'
 import {default as PageDialectWordEdit} from './explore/dialect/learn/words/edit'
 import {default as PageDialectPhraseEdit} from './explore/dialect/learn/phrases/edit'
+import {default as PageDialectBookEdit} from './explore/dialect/learn/songs-stories/edit'
+import {default as PageDialectBookEntryEdit} from './explore/dialect/learn/songs-stories/entry/edit'
 
 module.exports = {
   PageExploreDialectEdit,
   PageDialectWordEdit,
-  PageDialectPhraseEdit
+  PageDialectPhraseEdit,
+  PageDialectBookEdit,
+  PageDialectBookEntryEdit
 }
 

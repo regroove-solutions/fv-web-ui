@@ -35,6 +35,8 @@ import CardText from 'material-ui/lib/card/card-text';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
@@ -59,6 +61,14 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     fetchBooksInPath: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
     computeBooksInPath: PropTypes.object.isRequired,
+    deleteBook: PropTypes.func.isRequired,
+    computeDeleteBook: PropTypes.object.isRequired,
+    publishBook: PropTypes.func.isRequired,
+    unpublishBook: PropTypes.func.isRequired,
+    enableBook: PropTypes.func.isRequired,
+    disableBook: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    typePlural: PropTypes.string,
     typeFilter: PropTypes.string
   };
 
@@ -71,7 +81,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleRefetch', '_handleShowMoreDetails', '_handleFilterEntries'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_handleRefetch', '_handleShowMoreDetails', '_handleFilterEntries'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -90,6 +100,34 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
+    }
+  }
+
+  _handleConfirmDelete(item, event) {
+    this.props.deleteBook(item.uid);
+    this.setState({deleteDialogOpen: false});
+  }
+
+  /**
+  * Toggle dialect (enabled/disabled)
+  */
+  _enableToggleAction(path, toggled) {
+
+    if (toggled) {
+      this.props.enableBook(path, null, null, "Book enabled!");
+    } else {
+      this.props.disableBook(path, null, null, "Book disabled!");
+    }
+  }
+
+  /**
+  * Toggle published dialect
+  */
+  _publishToggleAction(path, toggled) {
+    if (toggled) {
+      this.props.publishBook(path, null, null, "Book published successfully!");
+    } else {
+      this.props.unpublishBook(path, null, null, "Book unpublished successfully!");
     }
   }
 
@@ -180,6 +218,22 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
                                 </span>;
                               }
                             })} />
+
+                          {(() => {
+                            if (this.props.routeParams.area == 'Workspaces') {
+
+                              const { typePlural } = this.props;
+
+                              if (tile)
+                                return <PageToolbar
+                                          label="Book"
+                                          handleNavigateRequest={this._onNavigateRequest.bind(this, '/explore' + selectn('path', tile).replace('Stories & Songs', 'learn/' + typePlural) + '/edit' )}
+                                          computeEntity={{response: tile}}
+                                          publishToggleAction={this._publishToggleAction.bind(this, tile.path)}
+                                          enableToggleAction={this._enableToggleAction.bind(this, tile.path)}
+                                          {...this.props} />;
+                            }
+                          })()}
 
                           <CardMedia style={{display: (!selectn('properties.fv:related_pictures[0]', tile) ? 'none' : 'block')}}>
                             <img style={{minWidth: 'inherit', width: 'inherit'}} src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_pictures[0]', tile) + '?inline=true'} />

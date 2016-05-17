@@ -28,6 +28,8 @@ import Paper from 'material-ui/lib/paper';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+
 const DEFAULT_LANGUAGE = 'english';
 
 /**
@@ -45,7 +47,13 @@ export default class View extends Component {
     computeBook: PropTypes.object.isRequired,
     fetchBookEntries: PropTypes.func.isRequired,
     computeBookEntries: PropTypes.object.isRequired,
+    deleteBookEntry: PropTypes.func.isRequired,
+    publishBookEntry: PropTypes.func.isRequired,
+    unpublishBookEntry: PropTypes.func.isRequired,
+    enableBookEntry: PropTypes.func.isRequired,
+    disableBookEntry: PropTypes.func.isRequired,
     book: PropTypes.object,
+    typePlural: PropTypes.string,
     routeParams: PropTypes.object
   };
 
@@ -59,7 +67,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -71,7 +79,7 @@ export default class View extends Component {
     });
 
     newProps.fetchBook(entryPath);
-    newProps.fetchBookEntries(newProps.routeParams.dialect_path);
+    newProps.fetchBookEntries(entryPath);
   }
 
   // Fetch data on initial render
@@ -83,18 +91,46 @@ export default class View extends Component {
     this.props.pushWindowPath(path);
   }
 
+  _handleConfirmDelete(item, event) {
+    this.props.deleteBookEntry(item.uid);
+    this.setState({deleteDialogOpen: false});
+  }
+
+  /**
+  * Toggle dialect (enabled/disabled)
+  */
+  _enableToggleAction(path, toggled) {
+
+    if (toggled) {
+      this.props.enableBookEntry(path, null, null, "Book enabled!");
+    } else {
+      this.props.disableBookEntry(path, null, null, "Book disabled!");
+    }
+  }
+
+  /**
+  * Toggle published dialect
+  */
+  _publishToggleAction(path, toggled) {
+    if (toggled) {
+      this.props.publishBookEntry(path, null, null, "Book published successfully!");
+    } else {
+      this.props.unpublishBookEntry(path, null, null, "Book unpublished successfully!");
+    }
+  }
+
   render() {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.bookPath,
       'entity': this.props.computeBook
     },{
-      'id': this.props.routeParams.dialect_path,
+      'id': this.state.bookPath,
       'entity': this.props.computeBookEntries
     }])
 
     const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
-    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.props.routeParams.dialect_path);
+    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.state.bookPath);
 
     return <PromiseWrapper computeEntities={computeEntities}>
               <div className="row">
@@ -117,17 +153,31 @@ export default class View extends Component {
 
                       	<Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
 
+                        {(() => {
+                          if (this.props.routeParams.area == 'Workspaces') {
+
+                            const { typePlural } = this.props;
+
+                            if (tile)
+                              return <PageToolbar
+                                        label="Book Entry"
+                                        handleNavigateRequest={this._onNavigateRequest.bind(this, '/explore' + selectn('path', tile).replace('Stories & Songs', 'learn/' + typePlural) + '/edit' )}
+                                        computeEntity={{response: tile}}
+                                        publishToggleAction={this._publishToggleAction.bind(this, tile.path)}
+                                        enableToggleAction={this._enableToggleAction.bind(this, tile.path)}
+                                        {...this.props} />;
+                          }
+                        })()}
+
 		                    <div className="row" style={{marginBottom: '20px'}}>
 
-		                      <div className="col-xs-2">
-		                      	{(() => {
-		                      		return (selectn('properties.fv:related_pictures[0]', tile)) ? <img className="pull-left" style={{maxWidth: '300px', width: 'auto'}} src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_pictures[0]', tile) + '?inline=true'} /> : ''
-		                      	})()}
-		                      </div>
-
-		                      <div className="col-xs-10">
+		                      <div className="col-xs-12">
 		                      	<p>
 		                      		
+                              {(() => {
+                                return (selectn('properties.fv:related_pictures[0]', tile)) ? <img className="pull-left" style={{maxWidth: '300px', width: 'auto', marginRight: '15px'}} src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_pictures[0]', tile) + '?inline=true'} /> : ''
+                              })()}
+
 		                      		{selectn('title', tile) || ''}<br/>
 
 							                {selectn('properties.fvbookentry:dominant_language_text', tile).map(function(translation, i) {
