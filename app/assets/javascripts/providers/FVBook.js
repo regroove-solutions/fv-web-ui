@@ -1,3 +1,6 @@
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -6,6 +9,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 import DocumentOperations from 'operations/DocumentOperations';
 
 const DISMISS_ERROR = 'DISMISS_ERROR';
+
 
 /**
 * Multiple Book Actions
@@ -61,20 +65,6 @@ const FV_BOOK_DELETE_START = "FV_BOOK_DELETE_START";
 const FV_BOOK_DELETE_SUCCESS = "FV_BOOK_DELETE_SUCCESS";
 const FV_BOOK_DELETE_ERROR = "FV_BOOK_DELETE_ERROR";
 
-const createBook = function createBook(parentDoc, docParams) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_BOOK_CREATE_START, document: docParams } );
-
-    return DocumentOperations.createDocument(parentDoc, docParams)
-      .then((response) => {
-        dispatch( { type: FV_BOOK_CREATE_SUCCESS, document: response} );
-      }).catch((error) => {
-          dispatch( { type: FV_BOOK_CREATE_ERROR, error: error } )
-    });
-  }
-};
-
 const createBookEntry = function createBook(parentDoc, docParams) {
   return function (dispatch) {
 
@@ -85,29 +75,6 @@ const createBookEntry = function createBook(parentDoc, docParams) {
         dispatch( { type: FV_BOOK_ENTRY_CREATE_SUCCESS, document: response} );
       }).catch((error) => {
           dispatch( { type: FV_BOOK_ENTRY_CREATE_ERROR, error: error } )
-    });
-  }
-};
-
-const updateBook = function updateBook(newDoc, field) {
-  return function (dispatch) {
-
-    let books = {};
-    books[newDoc.id] = {};
-
-    dispatch( { type: FV_BOOK_UPDATE_START, books: books, pathOrId: newDoc.id } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-
-        books[newDoc.id] = { response: response };
-
-        dispatch( { type: FV_BOOK_UPDATE_SUCCESS, books: books, pathOrId: newDoc.id} );
-      }).catch((error) => {
-
-          books[newDoc.id] = { error: error };
-
-          dispatch( { type: FV_BOOK_UPDATE_ERROR, books: books, pathOrId: newDoc.id } )
     });
   }
 };
@@ -168,32 +135,26 @@ const fetchBookEntriesInPath = function fetchBookEntriesInPath(path, queryAppend
   }
 };
 
-const fetchBook = function fetchBook(pathOrId) {
-  return function (dispatch) {
 
-    let books = {};
-    books[pathOrId] = {};
+const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const deleteBook = RESTActions.delete('FV_BOOK', 'FVBook', {});
 
-    dispatch( { type: FV_BOOK_FETCH_START, books: books, pathOrId: pathOrId } );
+const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
+const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 
-    return DocumentOperations.getDocument(pathOrId, 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry' } })
-    .then((response) => {
+const computeBookFetchFactory = RESTReducers.computeFetch('book');
+const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 
-      books[pathOrId] = { response: response };
 
-      dispatch( { type: FV_BOOK_FETCH_SUCCESS, books: books, pathOrId: pathOrId } )
-    }).catch((error) => {
-
-        books[pathOrId] = { error: error };
-
-        dispatch( { type: FV_BOOK_FETCH_ERROR, books: books, pathOrId: pathOrId } )
-    });
-  }
-};
-
-const actions = { fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, createBookEntry, fetchBooksAll, updateBook };
+const actions = { publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, deleteBook, createBookEntry, fetchBooksAll, updateBook };
 
 const reducers = {
+  computeBook: computeBookFetchFactory.computeBook,
+  computeDeleteBook: computeBookDeleteFactory.computeDeleteBook,
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {
       case FV_BOOKS_SHARED_FETCH_START:
@@ -258,44 +219,6 @@ const reducers = {
       break;
     }
   },
-  computeBook(state = { books: {} }, action) {
-    switch (action.type) {
-      case FV_BOOK_FETCH_START:
-      case FV_BOOK_UPDATE_START:
-
-        action.books[action.pathOrId].isFetching = true;
-        action.books[action.pathOrId].success = false;
-
-        return Object.assign({}, state, { books: Object.assign(state.books, action.books) });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_BOOK_FETCH_SUCCESS:
-      case FV_BOOK_UPDATE_SUCCESS:
-        
-        action.books[action.pathOrId].isFetching = false;
-        action.books[action.pathOrId].success = true;
-
-        return Object.assign({}, state, { books: Object.assign(state.books, action.books) });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_BOOK_FETCH_ERROR:
-      case FV_BOOK_UPDATE_ERROR:
-
-        action.books[action.pathOrId].isFetching = false;
-        action.books[action.pathOrId].success = false;
-        action.books[action.pathOrId].isError = true;
-        action.books[action.pathOrId].error = action.error;
-
-        return Object.assign({}, state, { books: Object.assign(state.books, action.books) });
-      break;
-
-      default: 
-        return Object.assign({}, state);
-      break;
-    }
-  },  
   computeCreateBook(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
     switch (action.type) {
       case FV_BOOK_CREATE_START:

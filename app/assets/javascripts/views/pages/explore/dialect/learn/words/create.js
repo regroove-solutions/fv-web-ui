@@ -25,12 +25,9 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
-import StatusBar from 'views/components/StatusBar';
 
 /**
 * Create word entry
@@ -58,7 +55,7 @@ export default class PageDialectWordsCreate extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -84,7 +81,7 @@ export default class PageDialectWordsCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect2.response != this.props.computeDialect2.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
 
@@ -94,10 +91,6 @@ export default class PageDialectWordsCreate extends Component {
     }
 
     return false;
-  }
-
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
   }
 
   _onRequestSaveForm(e) {
@@ -155,9 +148,7 @@ export default class PageDialectWordsCreate extends Component {
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
             <h1>Add New Word to <i>{selectn('response.title', computeDialect2)}</i></h1>
-            
-            {/*(word && word.message && word.action.includes('CREATE')) ? <StatusBar message={word.message} /> : ''*/}
-            
+
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -172,16 +163,6 @@ export default class PageDialectWordsCreate extends Component {
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
                 </form>
-              </div>
-
-              <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                  <div className="subheader">Metadata</div>
-
-                </Paper>
-
               </div>
           </div>
   

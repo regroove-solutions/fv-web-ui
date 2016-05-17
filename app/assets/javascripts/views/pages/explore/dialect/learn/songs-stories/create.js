@@ -14,18 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Snackbar from 'material-ui/lib/snackbar';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -40,10 +39,11 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     createBook: PropTypes.func.isRequired,
-    computeCreateBook: PropTypes.object.isRequired,
+    computeBook: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
     typeFilter: PropTypes.string
   };
 
@@ -56,15 +56,11 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    this.setState({dialectPath: dialectPath});
-
-    newProps.fetchDialect('/' + dialectPath);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -86,20 +82,16 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
       
-      case (newProps.computeCreateBook.error != this.props.computeCreateBook.error):
+      case (newProps.computeBook != this.props.computeBook):
         return true;
       break;
     }
 
     return false;
-  }
-
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
   }
 
   _onRequestSaveForm(e) {
@@ -127,31 +119,37 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-  	  this.props.createBook('/' + this.state.dialectPath + '/Stories & Songs', {
+      let now = Date.now();
+  	  this.props.createBook(this.props.routeParams.dialect_path + '/Stories & Songs', {
   	    type: 'FVBook',
   	    name: formValue['dc:title'],
   	    properties: properties
-  	  });
+  	  }, null, now);
+
+      this.setState({
+        bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + formValue['dc:title'] + '.' + now
+      });
     }
 
   }
 
   render() {
 
-    const { computeDialect, computeCreateBook } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.bookPath,
+      'entity': this.props.computeBook
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    let dialect = computeDialect.response;
+    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    if (computeDialect.isFetching || !computeDialect.success) {
-      return <CircularProgress mode="indeterminate" size={2} />;
-    }
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-    return <div>
+            <h1>Add New {this.props.typeFilter} Book to <i>{selectn('response.title', computeDialect2)}</i></h1>
 
-            <h1>Add New Book to <i>{dialect.get('dc:title')}</i></h1>
-            
-            {computeCreateBook.isError ? <div className="alert alert-danger" role="alert">{computeCreateBook.error}</div> : ''}
-            
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -159,8 +157,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
                   <t.form.Form
                     ref="form_book_create"
                     type={t.struct(selectn("FVBook", fields))}
-                    context={dialect}
-                    value={this.state.formValue}
+                    context={selectn('response', computeDialect2)}
+                    value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
                     options={selectn("FVBook", options)} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
@@ -168,16 +166,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
                 </form>
               </div>
 
-              <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                  <div className="subheader">Metadata</div>
-
-                </Paper>
-
-              </div>
           </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

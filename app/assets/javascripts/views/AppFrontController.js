@@ -184,7 +184,8 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ],
-        page: <PageDialectPhrasesCreate />
+        page: <PageDialectPhrasesCreate />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH) ],
@@ -209,11 +210,13 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create' ],
-        page: <PageDialectStoriesAndSongsCreate typeFilter="story" />
+        page: <PageDialectStoriesAndSongsCreate typeFilter="story" />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', 'create' ],
-        page: <PageDialectStoriesAndSongsCreate typeFilter="song" />
+        page: <PageDialectStoriesAndSongsCreate typeFilter="song" />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],

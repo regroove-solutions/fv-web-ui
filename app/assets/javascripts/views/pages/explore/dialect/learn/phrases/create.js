@@ -14,18 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import StatusBar from 'views/components/StatusBar';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -40,10 +39,11 @@ export default class PageDialectPhrasesCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     createPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
     onDocumentCreated: PropTypes.func
   };
 
@@ -57,17 +57,11 @@ export default class PageDialectPhrasesCreate extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    this.setState({dialectPath: dialectPath});
-    
-    if(!this.props.computeDialect.success) {
-    	newProps.fetchDialect('/' + dialectPath);
-    }	
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -89,7 +83,7 @@ export default class PageDialectPhrasesCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
       
@@ -99,10 +93,6 @@ export default class PageDialectPhrasesCreate extends Component {
     }
 
     return false;
-  }
-
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
   }
 
   _onRequestSaveForm(e) {
@@ -131,14 +121,14 @@ export default class PageDialectPhrasesCreate extends Component {
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createPhrase('/' + this.state.dialectPath + '/Dictionary', {
+  	  this.props.createPhrase(this.props.routeParams.dialect_path + '/Dictionary', {
   	    type: 'FVPhrase',
   	    name: formValue['dc:title'],
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        phrasePath: '/' + this.state.dialectPath + '/Dictionary/' + formValue['dc:title'] + '.' + now
+        phrasePath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
       });
     }
 
@@ -146,22 +136,21 @@ export default class PageDialectPhrasesCreate extends Component {
 
   render() {
 
-    const { computeDialect, computePhrase } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.phrasePath,
+      'entity': this.props.computePhrase
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    let phrase = ProviderHelpers.getEntry(computePhrase, this.state.phrasePath);
+    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    let dialect = computeDialect.response;
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-    if (computeDialect.isFetching || !computeDialect.success) {
-      return <CircularProgress mode="indeterminate" size={2} />;
-    }
-
-    return <div>
-
-            <h1>Add New Phrase to <i>{dialect.get('dc:title')}</i></h1>
-            
-            {(phrase && phrase.message && phrase.action.includes('CREATE')) ? <StatusBar message={phrase.message} /> : ''}
-            
+            <h1>Add New Phrase to <i>{selectn('response.title', computeDialect2)}</i></h1>
+ 
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -169,7 +158,7 @@ export default class PageDialectPhrasesCreate extends Component {
                   <t.form.Form
                     ref="form_phrase_create"
                     type={t.struct(selectn("FVPhrase", fields))}
-                    context={dialect}
+                    context={selectn('response', computeDialect2)}
                     value={this.state.formValue}
                     options={selectn("FVPhrase", options)} />
                     <div className="form-group">
@@ -178,16 +167,7 @@ export default class PageDialectPhrasesCreate extends Component {
                 </form>
               </div>
 
-              <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                  <div className="subheader">Metadata</div>
-
-                </Paper>
-
-              </div>
           </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

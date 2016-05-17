@@ -1,5 +1,3 @@
-import Immutable, { List, Map } from 'immutable';
-
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
 
@@ -161,77 +159,6 @@ const reducers = {
   },
   computeWord: computeWordFetchFactory.computeWord,
   computeDeleteWord: computeWordDeleteFactory.computeDeleteWord,
-  /*computeWord(state = new List([]), action) {
-
-    // Find entry within state based on id
-    let indexOfEntry = state.findIndex(function(item) {
-      return item.get("id") === action.pathOrId; 
-    });
-
-    switch (action.type) {
-      case FV_WORD_FETCH_START:
-      case FV_WORD_UPDATE_START:
-
-        return state.push(Map({
-          id: action.pathOrId,
-          isFetching: true,
-          success: false
-        }));
-
-      break;
-
-      case FV_WORD_FETCH_SUCCESS:
-      case FV_WORD_UPDATE_SUCCESS:
-
-        // Replace entry within state
-        return state.set(indexOfEntry, Map({
-          id: action.pathOrId,
-          isFetching: false,
-          success: true,
-          response: action.response
-        }));
-
-      break;
-
-      case FV_WORD_FETCH_ERROR:
-      case FV_WORD_UPDATE_ERROR:
-
-        // Add error message
-        return state.set(indexOfEntry, Map({
-          id: action.pathOrId,
-          isFetching: false,
-          isError: true,
-          success: false,
-          response: state.get(indexOfEntry).get('response'),
-          error: action.error
-        }));
-
-      break;
-    }
-
-    return state;
- },
- computeCreateWord(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
-   switch (action.type) {
-     case FV_WORD_CREATE_START:
-       return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
-     break;
- 
-     // Send modified document to UI without access REST end-point
-     case FV_WORD_CREATE_SUCCESS:
-       return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId, isError: false, error: null });
-     break;
- 
-     // Send modified document to UI without access REST end-point
-     case FV_WORD_CREATE_ERROR:
-       return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
-     break;
- 
-     default:
-       return Object.assign({}, state, { isFetching: false });
-     break;
-   }
- },*/
   computeWordsAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_WORD_FETCH_ALL_START:
