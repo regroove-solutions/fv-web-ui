@@ -71,9 +71,6 @@ export default class ExploreDialect extends Component {
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    publishDocument: PropTypes.func.isRequired,
-    computeDocumentDisable: PropTypes.object.isRequired,
-    computeDocumentEnable: PropTypes.object.isRequired,
     publishDialect: PropTypes.func.isRequired,
     unpublishDialect: PropTypes.func.isRequired,
     enableDialect: PropTypes.func.isRequired,
@@ -93,7 +90,7 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_portalActionsPublish', '_enableToggleAction', '_publishToggleAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -126,20 +123,6 @@ export default class ExploreDialect extends Component {
 
   _onSwitchAreaRequest(e, index, value) {
     this._onNavigateRequest(this.props.windowPath.replace((value == 'sections') ? 'Workspaces' : 'sections', value));
-  }
-
-  /**
-  * Publish the portal and dialect
-  */
-  _portalActionsPublish() {
-    // Publish the portal
-	  this.props.publishDocument(this.props.routeParams.dialect_path + '/Portal', this.props.routeParams.dialect_path.replace('Workspaces', 'sections'));
-
-    // Publish the dialect
-    this.props.publishDocument(this.props.routeParams.dialect_path, this.props.routeParams.language_path.replace('Workspaces', 'sections'));
-
-    // Refetch
-    this.fetchData(this.props);
   }
 
   /**
@@ -198,8 +181,6 @@ export default class ExploreDialect extends Component {
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     
     const isSection = this.props.routeParams.area === 'sections';
-
-console.log(computeDialect2);
 
     return <PromiseWrapper computeEntities={computeEntities}>
 

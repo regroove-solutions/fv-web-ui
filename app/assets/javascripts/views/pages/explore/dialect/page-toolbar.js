@@ -31,9 +31,6 @@ import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expan
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
-/**
-* Header for dialect pages
-*/
 export default class PageToolbar extends Component {
 
   static propTypes = {
@@ -57,13 +54,13 @@ export default class PageToolbar extends Component {
     };
 
     // Bind methods to 'this'
-    ['_dialectActionsToggleEnabled', '_dialectActionsTogglePublished'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_documentActionsToggleEnabled', '_documentActionsTogglePublished'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   /**
-  * Toggle dialect (enabled/disabled)
+  * Toggle document (enabled/disabled)
   */
-  _dialectActionsToggleEnabled(event, toggled) {
+  _documentActionsToggleEnabled(event, toggled) {
 
     this.setState({
       enabledToggled: toggled
@@ -73,9 +70,9 @@ export default class PageToolbar extends Component {
   }
 
   /**
-  * Toggle published dialect
+  * Toggle published document
   */
-  _dialectActionsTogglePublished(event, toggled) {
+  _documentActionsTogglePublished(event, toggled) {
     this.setState({
       publishedToggled: toggled
     });
@@ -93,8 +90,8 @@ export default class PageToolbar extends Component {
       position: 'relative'
     }
 
-    let dialectEnabled = (this.state.enabledToggled == null) ? (selectn('response.state', computeEntity) == 'Enabled') : this.state.enabledToggled;
-    let dialectPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeEntity) == 'Published') : this.state.publishedToggled;
+    let documentEnabled = (this.state.enabledToggled == null) ? (selectn('response.state', computeEntity) == 'Enabled') : this.state.enabledToggled;
+    let documentPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeEntity) == 'Published') : this.state.publishedToggled;
 
     return <Toolbar>
 
@@ -103,10 +100,10 @@ export default class PageToolbar extends Component {
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
                         <Toggle
-                          toggled={dialectEnabled || dialectPublished}
-                          onToggle={this._dialectActionsToggleEnabled}
+                          toggled={documentEnabled || documentPublished}
+                          onToggle={this._documentActionsToggleEnabled}
                           ref="enabled"
-                          disabled={dialectPublished}
+                          disabled={documentPublished}
                           name="enabled"
                           value="enabled"
                           label="Enabled"/>
@@ -116,9 +113,9 @@ export default class PageToolbar extends Component {
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
                         <Toggle
-                          toggled={dialectPublished}
-                          onToggle={this._dialectActionsTogglePublished}
-                          disabled={!dialectEnabled && !dialectPublished}
+                          toggled={documentPublished}
+                          onToggle={this._documentActionsTogglePublished}
+                          disabled={!documentEnabled && !documentPublished}
                           name="published"
                           value="published"
                           label="Published"/>
@@ -130,7 +127,7 @@ export default class PageToolbar extends Component {
                   <ToolbarGroup float="right">
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                      <RaisedButton disabled={!dialectPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
+                      <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>

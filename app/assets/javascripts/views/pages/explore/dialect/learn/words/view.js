@@ -71,6 +71,10 @@ export default class View extends Component {
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     deleteWord: PropTypes.func.isRequired,
+    publishWord: PropTypes.func.isRequired,
+    unpublishWord: PropTypes.func.isRequired,
+    enableWord: PropTypes.func.isRequired,
+    disableWord: PropTypes.func.isRequired,
     computeDeleteWord: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
     word: PropTypes.object
@@ -90,7 +94,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleEditRequest', '_handleDeleteRequest', '_handleCancelDelete', '_handleConfirmDelete'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleEditRequest', '_handleDeleteRequest', '_handleCancelDelete', '_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
 
   }
 
@@ -132,10 +136,11 @@ export default class View extends Component {
   * Toggle dialect (enabled/disabled)
   */
   _enableToggleAction(toggled) {
+
     if (toggled) {
-      this.props.enableDocument(this.props.routeParams.dialect_path);
+      this.props.enableWord(this.state.wordPath, null, null, "Word enabled!");
     } else {
-      this.props.disableDocument(this.props.routeParams.dialect_path);
+      this.props.disableWord(this.state.wordPath, null, null, "Word disabled!");
     }
   }
 
@@ -144,9 +149,9 @@ export default class View extends Component {
   */
   _publishToggleAction(toggled) {
     if (toggled) {
-      this.props.publishDialect('524bccd5-6b3e-459b-90b1-ebf0bca7fb55');
+      this.props.publishWord(this.state.wordPath, null, null, "Word published successfully!");
     } else {
-      this.props.unpublishDialect(this.props.routeParams.dialect_path);
+      this.props.unpublishWord(this.state.wordPath, null, null, "Word unpublished successfully!");
     }
   }
 
@@ -283,8 +288,7 @@ export default class View extends Component {
 
                   <Toolbar className="toolbar">
                     <ToolbarGroup key={0} float="right">
-                      <RaisedButton onTouchTap={this._handleEditRequest.bind(this, selectn('response', computeWord))} secondary={true} label="Edit" />
-                      <RaisedButton onTouchTap={this._handleDeleteRequest} secondary={true} label="Delete" />
+                      <RaisedButton onTouchTap={this._handleDeleteRequest} secondary={true} label="Delete Word" />
                     </ToolbarGroup>
                   </Toolbar>
 

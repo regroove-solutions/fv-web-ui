@@ -59,9 +59,14 @@ const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const createWord = RESTActions.create('FV_WORD', 'FVWord');
-const updateWord = RESTActions.update('FV_WORD', 'FVWord');
+const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const updateWord = RESTActions.update('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
+
+const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const unpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const enableWord = RESTActions.execute('FV_WORD_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const disableWord = RESTActions.execute('FV_WORD_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
 
 const computeWordFetchFactory = RESTReducers.computeFetch('word');
 const computeWordDeleteFactory = RESTReducers.computeDelete('delete_word');
@@ -108,7 +113,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
   }
 };
 
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, unpublishWord, enableWord, disableWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
