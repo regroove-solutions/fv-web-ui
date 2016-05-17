@@ -61,7 +61,7 @@ export default {
 
 			    dispatch( { type: key + '_EXECUTE_START', pathOrId: pathOrId, message: (messageStart || 'Fetch started...') } );
 
-			    	return DocumentOperations.executeOperation(pathOrId, operationName, operationParams, properties.queryAppend, { headers: properties.headers })
+			    	return DocumentOperations.executeOperation(pathOrId, operationName, operationParams, { headers: properties.headers })
 				    .then((response) => {
 				      dispatch( { type: key + '_EXECUTE_SUCCESS', message: messageSuccess, response: response, pathOrId: pathOrId } )
 				    }).catch((error) => {

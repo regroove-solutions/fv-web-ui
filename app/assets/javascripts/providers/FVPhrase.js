@@ -50,7 +50,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 
     dispatch( { type: FV_PHRASE_FETCH_ALL_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', '', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', '', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } })
     .then((response) => {
       dispatch( { type: FV_PHRASE_FETCH_ALL_SUCCESS, documents: response } )
     }).catch((error) => {
@@ -73,18 +73,18 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
   }
 };
 
-const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
-const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
-const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
+const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
+const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
 
-const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const askToPublishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
-const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const askToUnpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
-const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
-const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 
 const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase, askToPublishPhrase, askToUnpublishPhrase, askToEnablePhrase, askToDisablePhrase };

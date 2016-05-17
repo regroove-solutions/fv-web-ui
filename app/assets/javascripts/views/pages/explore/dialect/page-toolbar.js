@@ -184,7 +184,7 @@ export default class PageToolbar extends Component {
                   <ToolbarGroup float="right">
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                      <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
+                      <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this.props.publishToggleAction.bind(this, true, false)} />
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
