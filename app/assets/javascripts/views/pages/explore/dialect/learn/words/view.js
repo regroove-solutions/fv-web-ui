@@ -17,10 +17,7 @@ import React, {Component, PropTypes} from 'react';
 import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
-
 import selectn from 'selectn';
-
-import _ from 'underscore';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
@@ -28,6 +25,8 @@ import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
+
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
@@ -71,31 +70,24 @@ export default class View extends Component {
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     deleteWord: PropTypes.func.isRequired,
+    computeDeleteWord: PropTypes.object.isRequired,
     publishWord: PropTypes.func.isRequired,
     unpublishWord: PropTypes.func.isRequired,
     enableWord: PropTypes.func.isRequired,
     disableWord: PropTypes.func.isRequired,
-    computeDeleteWord: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    word: PropTypes.object
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
     this.state = {
-      word: null,
       wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
-      children: null,
-      picturesContent: [],
-      videoContent: [],
-      audioContent: [],
       deleteDialogOpen: false
     };
 
     // Bind methods to 'this'
-    ['_handleEditRequest', '_handleDeleteRequest', '_handleCancelDelete', '_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
-
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -111,24 +103,8 @@ export default class View extends Component {
     this.props.pushWindowPath(path);
   }
 
-  _handleEditRequest(item, event) {
-    // Get path name from path
-    let splitPath = item.path.split('/');
-    let wordName = splitPath[splitPath.length - 1];
-
-    this._onNavigateRequest(this.props.windowPath.replace(wordName, 'edit/' + wordName));
-  }
-
-  _handleDeleteRequest() {
-    this.setState({deleteDialogOpen: true});
-  }
-
   _handleConfirmDelete(item, event) {
     this.props.deleteWord(item.uid);
-    this.setState({deleteDialogOpen: false});
-  }
-
-  _handleCancelDelete() {
     this.setState({deleteDialogOpen: false});
   }
 
@@ -210,26 +186,31 @@ export default class View extends Component {
 
                               <p>Pronunciation: {selectn('response.properties.fv-word:pronunciation', computeWord)}</p>
 
-                              <SubView group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
+                              <SubViewTranslation group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
-                              </SubView>
+                              </SubViewTranslation>
 
-                              <SubView group={selectn('response.properties.fv:literal_translation', computeWord)} groupByElement="language" groupValue="translation">
+                              <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Literal Translations:</p>
-                              </SubView>
+                              </SubViewTranslation>
 
+                              {(() => {
+                                  if (selectn('response.contextParameters.word.related_phrases.length', computeWord)) {
+                                    return <div>
+                                      <h3>Related Phrases:</h3>
 
-                              <h3>Related Phrases:</h3>
-
-                              {(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
-                                let phraseItem = selectn('fv:definitions', phrase);
-                                
-                                return (
-                                <SubView key={key} group={phraseItem} groupByElement="language" groupValue="translation">
-                                  <p>{selectn('dc:title', phrase)}</p>
-                                </SubView>
-                                );
-                              })}
+                                      {(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
+                                        let phraseItem = selectn('fv:definitions', phrase);
+                                        
+                                        return (
+                                        <SubViewTranslation key={key} group={phraseItem} groupByElement="language" groupValue="translation">
+                                          <p>{selectn('dc:title', phrase)}</p>
+                                        </SubViewTranslation>
+                                        );
+                                      })}
+                                    </div>;
+                                  }
+                              })()}
 
                             </div>
 
@@ -288,7 +269,7 @@ export default class View extends Component {
 
                   <Toolbar className="toolbar">
                     <ToolbarGroup key={0} float="right">
-                      <RaisedButton onTouchTap={this._handleDeleteRequest} secondary={true} label="Delete Word" />
+                      <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Word" />
                     </ToolbarGroup>
                   </Toolbar>
 
@@ -298,7 +279,7 @@ export default class View extends Component {
                     <FlatButton
                     label="Cancel"
                     secondary={true}
-                    onTouchTap={this._handleCancelDelete} />,
+                    onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
                     <FlatButton
                       label="Delete"
                       primary={true}
@@ -314,72 +295,5 @@ export default class View extends Component {
               </div>
             </div>
         </PromiseWrapper>;
-  }
-}
-
-class SubView extends Component {
-
-  static containerStyles = {
-    borderWidth: '1px',
-    borderStyle: 'dashed',
-    borderColor: '#efefef',
-    margin: '10px 0',
-    padding: '10px'
-  };
-
-  static tabsStyles = {
-    tabItemContainerStyle: {
-      backgroundColor: 'transparent'
-    }
-  };
-
-  static tabStyles = {
-    headline: {
-      fontSize: 12,
-      color: '#000',
-      paddingTop: 2,
-      paddingBottom: 2,
-      marginBottom: 5,
-      textAlign: 'left'
-    }
-  };
-
-  constructor(props, context){
-    super(props, context);
-  }
-
-  render() {
-
-    const _this = this;
-
-    const grouped = _.groupBy(this.props.group, function(obj) {
-      return obj[_this.props.groupByElement];
-    });
-
-    if ( !grouped || _.isEmpty(grouped) )
-      return <div></div>;
-
-    return <div style={SubView.containerStyles}>
-      
-      <h3>{this.props.children}</h3>
-
-      <Tabs tabItemContainerStyle={SubView.tabsStyles.tabItemContainerStyle}>
-      {_.map(grouped, function(group, key) {
-
-        return <Tab style={SubView.tabStyles.headline} label={key} key={key}>
-
-        <ListUI>
-
-          {group.map(function(groupValue, key) {
-            return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
-          })}
-
-        </ListUI>
-
-        </Tab>;
-
-      })}
-      </Tabs>
-    </div>;
   }
 }

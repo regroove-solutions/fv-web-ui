@@ -38,62 +38,10 @@ const FV_PHRASES_SHARED_FETCH_ERROR = "FV_PHRASES_SHARED_FETCH_ERROR";
 /**
 * Single Phrase Actions
 */
-const FV_PHRASE_FETCH_START = "FV_PHRASE_FETCH_START";
-const FV_PHRASE_FETCH_SUCCESS = "FV_PHRASE_FETCH_SUCCESS";
-const FV_PHRASE_FETCH_ERROR = "FV_PHRASE_FETCH_ERROR";
 
 const FV_PHRASE_FETCH_ALL_START = "FV_PHRASE_FETCH_ALL_START";
 const FV_PHRASE_FETCH_ALL_SUCCESS = "FV_PHRASE_FETCH_ALL_SUCCESS";
 const FV_PHRASE_FETCH_ALL_ERROR = "FV_PHRASE_FETCH_ALL_ERROR";
-
-const FV_PHRASE_UPDATE_START = "FV_PHRASE_UPDATE_START";
-const FV_PHRASE_UPDATE_SUCCESS = "FV_PHRASE_UPDATE_SUCCESS";
-const FV_PHRASE_UPDATE_ERROR = "FV_PHRASE_UPDATE_ERROR";
-
-const FV_PHRASE_CREATE_START = "FV_PHRASE_CREATE_START";
-const FV_PHRASE_CREATE_SUCCESS = "FV_PHRASE_CREATE_SUCCESS";
-const FV_PHRASE_CREATE_ERROR = "FV_PHRASE_CREATE_ERROR";
-
-const FV_PHRASE_DELETE_START = "FV_PHRASE_DELETE_START";
-const FV_PHRASE_DELETE_SUCCESS = "FV_PHRASE_DELETE_SUCCESS";
-const FV_PHRASE_DELETE_ERROR = "FV_PHRASE_DELETE_ERROR";
-
-/*const createPhrase = function createPhrase(parentDoc, docParams) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_PHRASE_CREATE_START, document: docParams } );
-
-    return DocumentOperations.createDocument(parentDoc, docParams)
-      .then((response) => {
-        dispatch( { type: FV_PHRASE_CREATE_SUCCESS, document: response} );
-      }).catch((error) => {
-          dispatch( { type: FV_PHRASE_CREATE_ERROR, error: error } )
-    });
-  }
-};*/
-
-const updatePhrase = function updatePhrase(newDoc, field) {
-  return function (dispatch) {
-
-    let phrases = {};
-    phrases[newDoc.id] = {};
-
-    dispatch( { type: FV_PHRASE_UPDATE_START, phrases: phrases, pathOrId: newDoc.id } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-
-        phrases[newDoc.id] = { response: response };
-
-        dispatch( { type: FV_PHRASE_UPDATE_SUCCESS, phrases: phrases, pathOrId: newDoc.id} );
-      }).catch((error) => {
-
-          phrases[newDoc.id] = { error: error };
-
-          dispatch( { type: FV_PHRASE_UPDATE_ERROR, phrases: phrases, pathOrId: newDoc.id } )
-    });
-  }
-};
 
 const fetchSharedPhrases = function fetchSharedPhrases(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -137,24 +85,19 @@ const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, header
   }
 };
 
-/*const fetchPhrase = function fetchPhrase(pathOrId) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_PHRASE_FETCH_START, pathOrId: pathOrId } );
-
-    return DocumentOperations.getDocument(pathOrId, 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } })
-    .then((response) => {
-      dispatch( { type: FV_PHRASE_FETCH_SUCCESS, response: response, pathOrId: pathOrId } )
-    }).catch((error) => {
-        dispatch( { type: FV_PHRASE_FETCH_ERROR, error: error, pathOrId: pathOrId } )
-    });
-  }
-};*/
-
 const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
-const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase');
+const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
 
-const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase };
+const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase' } });
+
+const computePhraseDeleteFactory = RESTReducers.computeDelete('delete_phrase');
+
+const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase };
 
 const computePhraseFactory = RESTReducers.computeFetch('phrase');
 
@@ -202,78 +145,8 @@ const reducers = {
       break;
     }
   },
-  /*computePhrase(state = new List([]), action) {
-
-    // Find entry within state based on id
-    let indexOfEntry = state.findIndex(function(item) {
-      return item.get("id") === action.pathOrId; 
-    });
-
-    switch (action.type) {
-      case FV_PHRASE_FETCH_START:
-      case FV_PHRASE_UPDATE_START:
-
-        return state.push(Map({
-          id: action.pathOrId,
-          isFetching: true,
-          success: false
-        }));
-
-      break;
-
-      case FV_PHRASE_FETCH_SUCCESS:
-      case FV_PHRASE_UPDATE_ERROR:
-
-        // Replace entry within state
-        return state.set(indexOfEntry, Map({
-          id: action.pathOrId,
-          isFetching: false,
-          success: true,
-          response: action.response
-        }));
-
-      break;
-
-      case FV_PHRASE_FETCH_ERROR:
-      case FV_PHRASE_UPDATE_ERROR:
-
-        // Add error message
-        return state.set(indexOfEntry, Map({
-          id: action.pathOrId,
-          isFetching: false,
-          isError: true,
-          success: false,
-          response: state.get(indexOfEntry).get('response'),
-          error: action.error
-        }));
-
-      break;
-    }
-
-    return state;
- },*/
- computePhrase: computePhraseFactory.computePhrase, 
- /* computeCreatePhrase(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
-    switch (action.type) {
-      case FV_PHRASE_CREATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false, pathOrId: action.pathOrId });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_PHRASE_CREATE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true, pathOrId: action.pathOrId });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_PHRASE_CREATE_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, pathOrId: action.pathOrId });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },*/
+  computePhrase: computePhraseFactory.computePhrase, 
+  computeDeletePhrase: computePhraseDeleteFactory.computeDeletePhrase,
   computePhrasesAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_PHRASE_FETCH_ALL_START:

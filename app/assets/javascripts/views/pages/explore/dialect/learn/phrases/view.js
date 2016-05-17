@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
@@ -21,7 +22,16 @@ import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import _ from 'underscore';
+import Preview from 'views/components/Editor/Preview';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
+
+//import Header from 'views/pages/explore/dialect/header';
+//import PageHeader from 'views/pages/explore/dialect/page-header';
+
+import Dialog from 'material-ui/lib/dialog';
 
 import Avatar from 'material-ui/lib/avatar';
 import Card from 'material-ui/lib/card/card';
@@ -33,7 +43,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
 import Divider from 'material-ui/lib/divider';
 
-import List from 'material-ui/lib/lists/list';
+import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -60,32 +70,28 @@ export default class View extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
-    phrase: PropTypes.object
+    deletePhrase: PropTypes.func.isRequired,
+    publishPhrase: PropTypes.func.isRequired,
+    unpublishPhrase: PropTypes.func.isRequired,
+    enablePhrase: PropTypes.func.isRequired,
+    disablePhrase: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
     this.state = {
-      phrase: null,
-      phrasePath: null,
-      children: null,
-      picturesContent: [],
-      videoContent: [],
-      audioContent: []
+      phrasePath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase,
+      deleteDialogOpen: false
     };
+
+    // Bind methods to 'this'
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-    let phrasePath = '/' + dialectPath + '/Dictionary/' + newProps.splitWindowPath[newProps.splitWindowPath.length - 1];
-
-    this.setState({
-      phrasePath: phrasePath
-    });
-
-    newProps.fetchPhrase(phrasePath);
+    newProps.fetchPhrase(this.state.phrasePath);
   }
 
   // Fetch data on initial render
@@ -93,33 +99,77 @@ export default class View extends Component {
     this.fetchData(this.props);
   }
 
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
+  }
+
+  _handleConfirmDelete(item, event) {
+    this.props.deletePhrase(item.uid);
+    this.setState({deleteDialogOpen: false});
+  }
+
+  /**
+  * Toggle dialect (enabled/disabled)
+  */
+  _enableToggleAction(toggled) {
+
+    if (toggled) {
+      this.props.enablePhrase(this.state.phrasePath, null, null, "Phrase enabled!");
+    } else {
+      this.props.disablePhrase(this.state.phrasePath, null, null, "Phrase disabled!");
+    }
+  }
+
+  /**
+  * Toggle published dialect
+  */
+  _publishToggleAction(toggled) {
+    if (toggled) {
+      this.props.publishPhrase(this.state.phrasePath, null, null, "Phrase published successfully!");
+    } else {
+      this.props.unpublishPhrase(this.state.phrasePath, null, null, "Phrase unpublished successfully!");
+    }
+  }
+
   render() {
 
-    const { computePhrase } = this.props;
-
-    let phrase = ProviderHelpers.getEntry(computePhrase, this.state.phrasePath);
-    let phraseResponse = selectn('response', phrase);
-
-    var tabItemStyles = {
+    const tabItemStyles = {
       userSelect: 'none'
     }
 
-    if (!phraseResponse || !phrase || !phrase.success) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.phrasePath,
+      'entity': this.props.computePhrase
+    }])
+
+    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
 
     /**
     * Generate definitions body
     */
-    return <div>
+    return <PromiseWrapper computeEntities={computeEntities}>
+
+            {(() => {
+              if (this.props.routeParams.area == 'Workspaces') {
+                
+                if (selectn('response', computePhrase))
+                  return <PageToolbar
+                            label="Phrase"
+                            handleNavigateRequest={this._onNavigateRequest}
+                            computeEntity={computePhrase}
+                            publishToggleAction={this._publishToggleAction}
+                            enableToggleAction={this._enableToggleAction}
+                            {...this.props} />;
+              }
+            })()}
+
             <div className="row">
               <div className="col-xs-12">
                 <div>
 
                   <Card>
                     <CardHeader
-                      title={selectn('title', phraseResponse)}
-                      subtitle={(selectn('contextParameters.word.part_of_speech', phraseResponse) !=null) ? "Part of Speech: " + selectn('contextParameters.phrase.part_of_speech', phraseResponse) : ""}
+                      title={selectn('response.title', computePhrase)}
                       /*avatar="http://lorempixel.com/100/100/"*/ />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}> 
@@ -129,65 +179,20 @@ export default class View extends Component {
 
                             <div className="col-xs-8">
 
-                              <h2>{selectn('title', phraseResponse)}</h2>
+                              <h2>{selectn('response.title', computePhrase)}</h2>
 
-                              <p>Part of Speech: {selectn('contextParameters.word.part_of_speech', phraseResponse)}</p>
-
-                              <p>Pronunciation: {selectn('properties.fv-word:pronunciation', phraseResponse)}</p>
-
-                              <SubView group={selectn('properties.fv:definitions', phraseResponse)} groupByElement="language" groupValue="translation">
+                              <SubViewTranslation group={selectn('response.properties.fv:definitions', computePhrase)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
-                              </SubView>
+                              </SubViewTranslation>
 
-                              <SubView group={selectn('properties.fv:literal_translation', phraseResponse)} groupByElement="language" groupValue="translation">
+                              <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computePhrase)} groupByElement="language" groupValue="translation">
                                 <p>Literal Translations:</p>
-                              </SubView>
-
-
-                              <h3>Related Phrases:</h3>
-
-                              {(selectn('contextParameters.phrase.related_phrases', phraseResponse) || []).map(function(phrase, key) {
-                                let translation = selectn('fv:literal_translation', phrase);
-
-                                // TODO: Fix hack... Use JSON marshalling on server
-                                var re = /{/gi;
-                                var re2 = /=/gi;
-                                var re3 = /,\s/gi;
-                                var re4 = /}/gi;
-
-                                var str = selectn('fv:literal_translation', phrase);
-                                var newstr = str.replace(re, '{\"');
-                                newstr = newstr.replace(re2, '\":\"');
-                                newstr = newstr.replace(re3, '\",\"');
-                                newstr = newstr.replace(re4, '\"}');
-
-                                var phraseItem = JSON.parse(newstr);
-
-                                return (
-                                <SubView key={key} group={phraseItem} groupByElement="language" groupValue="translation">
-                                  <p>{selectn('dc:title', phrase)}</p>
-                                </SubView>
-                                );
-                              })}
+                              </SubViewTranslation>
 
                             </div>
 
                             <div className="col-xs-4">
-                              <p>
-                                Categories: {(selectn('contextParameters.phrase.categories', phraseResponse) || []).map(function(category, key) {
-                                  return (selectn('dc:title', category));
-                                })}
-                              </p>
-                              <Divider />
-                              <p>Cultural Note: {selectn('properties.fv-phrase:cultural_note', phraseResponse)}</p>
-                              <Divider />
-                              <p>Reference: {selectn('properties.fv-phrase:reference', phraseResponse)}</p>
-                              <Divider />
-                              <p>
-                                Sources: {(selectn('contextParameters.phrase.sources', phraseResponse) || []).map(function(source, key) {
-                                  return (selectn('dc:title', source));
-                                })}
-                              </p>
+                              {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
                             </div>
 
                           </CardText>
@@ -198,9 +203,11 @@ export default class View extends Component {
                           <CardText>
                             <h2>Photos</h2> 
                             <div className="row">
-                              {(selectn('contextParameters.phrase.related_pictures', phraseResponse) || []).map(function(picture, key) {
-                                return (picture);
+                              {(selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
+                                return <Preview key={selectn('uid', picture)} expandedValue={picture} type="FVPicture" />;
                               })}
+
+                              {(selectn('response.contextParameters.phrase.related_pictures.length', computePhrase) === 0) ? <div className="col-xs-12">No photos are available yet.</div> : ''}
                             </div>
                           </CardText>
                         </div>
@@ -209,7 +216,13 @@ export default class View extends Component {
                         <div> 
                           <CardText>
                             <h2>Audio</h2> 
-                            <div className="row">{this.state.audioContent}</div>
+                            <div className="row">
+                              {(selectn('response.contextParameters.phrase.related_audio', computePhrase) || []).map(function(audio, key) {
+                                return <Preview key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
+                              })}
+
+                              {(selectn('response.contextParameters.phrase.related_audio.length', computePhrase) === 0) ? <div className="col-xs-12">No audio is available yet.</div> : ''}
+                            </div>
                           </CardText>
                         </div> 
                       </Tab> 
@@ -217,7 +230,13 @@ export default class View extends Component {
                         <div> 
                           <CardText>
                             <h2>Video</h2> 
-                            <div className="row">{this.state.videoContent}</div>
+                            <div className="row">
+                              {(selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
+                                return <Preview key={selectn('uid', video)} expandedValue={video} type="FVVideo" />;
+                              })}
+
+                              {(selectn('response.contextParameters.phrase.related_videos.length', computePhrase) === 0) ? <div className="col-xs-12">No videos are available yet.</div> : ''}
+                            </div>
                           </CardText>
                         </div> 
                       </Tab> 
@@ -227,82 +246,31 @@ export default class View extends Component {
 
                   <Toolbar className="toolbar">
                     <ToolbarGroup key={0} float="right">
-                      <FontIcon className={classNames('glyphicon', 'glyphicon-pencil')} onTouchTap={this.handleEditTouchTap} />
-                      <ToolbarSeparator/>
-                      <RaisedButton onTouchTap={this.handleAddMedia} label="Add Media" primary={true} />
+                      <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Phrase" />
                     </ToolbarGroup>
                   </Toolbar>
+
+                  <Dialog
+                    title="Deleting phrase"
+                    actions={[
+                    <FlatButton
+                    label="Cancel"
+                    secondary={true}
+                    onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
+                    <FlatButton
+                      label="Delete"
+                      primary={true}
+                      keyboardFocused={true}
+                      onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computePhrase))} />]}
+                    modal={false}
+                    open={this.state.deleteDialogOpen}
+                    onRequestClose={this._handleCancelDelete}>
+                    Are you sure you would like to delete the phrase <strong>{selectn('response.title', computePhrase)}</strong>?
+                  </Dialog>
 
                 </div>
               </div>
             </div>
-        </div>;
-  }
-}
-
-class SubView extends Component {
-
-  static containerStyles = {
-    borderWidth: '1px',
-    borderStyle: 'dashed',
-    borderColor: '#efefef',
-    margin: '10px 0',
-    padding: '10px'
-  };
-
-  static tabsStyles = {
-    tabItemContainerStyle: {
-      backgroundColor: 'transparent'
-    }
-  };
-
-  static tabStyles = {
-    headline: {
-      fontSize: 12,
-      color: '#000',
-      paddingTop: 2,
-      paddingBottom: 2,
-      marginBottom: 5,
-      textAlign: 'left'
-    }
-  };
-
-  constructor(props, context){
-    super(props, context);
-  }
-
-  render() {
-
-    const _this = this;
-
-    const grouped = _.groupBy(this.props.group, function(obj) {
-      return obj[_this.props.groupByElement];
-    });
-
-    if ( !grouped || _.isEmpty(grouped) )
-      return <div></div>;
-
-    return <div style={SubView.containerStyles}>
-      
-      <h3>{this.props.children}</h3>
-
-      <Tabs tabItemContainerStyle={SubView.tabsStyles.tabItemContainerStyle}>
-      {_.map(grouped, function(group, key) {
-
-        return <Tab style={SubView.tabStyles.headline} label={key} key={key}>
-
-        <List>
-
-          {group.map(function(groupValue, key) {
-            return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
-          })}
-
-        </List>
-
-        </Tab>;
-
-      })}
-      </Tabs>
-    </div>;
+        </PromiseWrapper>;
   }
 }

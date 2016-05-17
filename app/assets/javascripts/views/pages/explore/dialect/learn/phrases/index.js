@@ -82,7 +82,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
   fetchData(newProps) {
     newProps.fetchDialect(newProps.routeParams.dialect_path);
-    newProps.fetchPhrasesInPath(newProps.routeParams.dialect_path + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
+    newProps.fetchPhrasesInPath(newProps.routeParams.dialect_path + '/Dictionary/', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
   }
 
   // Fetch data on initial render
@@ -99,7 +99,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
   _handleRefetch(dataGridProps, page, pageSize) {
     let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchPhrasesInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
+    this.props.fetchPhrasesInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry,phrase', 'X-NXproperties': 'dublincore, fv-phrase, fvcore' });
   }
 
   _onNavigateRequest(path) {

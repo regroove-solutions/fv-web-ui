@@ -18,7 +18,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch } from 'views/pages';
 
-import { PageExploreDialectEdit, PageDialectWordEdit } from 'views/pages/edit';
+import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectPhraseEdit } from 'views/pages/edit';
 import {
   PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate,
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
@@ -187,9 +187,15 @@ export default class AppFrontController extends Component {
         page: <PageDialectPhrasesCreate />
       },
       {
-        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', ANYTHING_BUT_SLASH ],
+        path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH) ],
         page: <PageDialectViewPhrase />,
+        extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: ['explore', 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH), 'edit' ],
+        page: <PageDialectPhraseEdit />,
+        extractPaths: true
       },
       {
         path: ['explore', 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],

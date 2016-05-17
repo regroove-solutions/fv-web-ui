@@ -35,26 +35,26 @@ import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
 @provide
-export default class PageDialectWordEdit extends Component {
+export default class PageDialectPhraseEdit extends Component {
   
   static propTypes = {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    updateWord: PropTypes.func.isRequired,
+    fetchPhrase: PropTypes.func.isRequired,
+    computePhrase: PropTypes.object.isRequired,
+    updatePhrase: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
-    word: PropTypes.object
+    phrase: PropTypes.object
   };
   
   constructor(props, context){
     super(props, context);
 
     this.state = {
-      word: null,
-      wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
+      phrase: null,
+      phrasePath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase,
       formValue: null
     };
 
@@ -64,7 +64,7 @@ export default class PageDialectWordEdit extends Component {
 
   fetchData(newProps) {
     newProps.fetchDialect2(this.props.routeParams.dialect_path);
-    newProps.fetchWord(this.state.wordPath);
+    newProps.fetchPhrase(this.state.phrasePath);
   }
 
   // Fetch data on initial render
@@ -76,7 +76,7 @@ export default class PageDialectWordEdit extends Component {
 
     switch (true) {
 
-      case (newProps.routeParams.word != this.props.routeParams.word):
+      case (newProps.routeParams.phrase != this.props.routeParams.phrase):
         return true;
       break;
 
@@ -84,7 +84,7 @@ export default class PageDialectWordEdit extends Component {
         return true;
       break;
 
-      case (ProviderHelpers.getEntry(newProps.computeWord, this.state.wordPath) != ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)):
+      case (ProviderHelpers.getEntry(newProps.computePhrase, this.state.phrasePath) != ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath)):
         return true;
       break;
 
@@ -101,24 +101,24 @@ export default class PageDialectWordEdit extends Component {
     // Prevent default behaviour
     e.preventDefault();
 
-    let formValue = this.refs["form_word"].getValue();
+    let formValue = this.refs["form_phrase"].getValue();
 
     // Passed validation
     if (formValue) {
-      let word = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+      let phrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
 
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
-      let newDocument = new Document(word.response, { 
-        'repository': word.response._repository,
-        'nuxeo': word.response._nuxeo
+      let newDocument = new Document(phrase.response, { 
+        'repository': phrase.response._repository,
+        'nuxeo': phrase.response._nuxeo
       });
 
       // Set new value property on document
       newDocument.set(formValue);
 
       // Save document
-      this.props.updateWord(newDocument);
+      this.props.updatePhrase(newDocument);
 
       this.setState({ formValue: formValue });
     }
@@ -127,30 +127,30 @@ export default class PageDialectWordEdit extends Component {
   render() {
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.wordPath,
-      'entity': this.props.computeWord
+      'id': this.state.phrasePath,
+      'entity': this.props.computePhrase
     }, {
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-	    <h1>Edit {selectn("response.properties.dc:title", computeWord)} word</h1>
+	    <h1>Edit {selectn("response.properties.dc:title", computePhrase)} phrase</h1>
 
 	    <div className="row" style={{marginTop: '15px'}}>
 	
 	      <div className={classNames('col-xs-8', 'col-md-10')}>
 	        <form onSubmit={this._onRequestSaveForm}>
 	          <t.form.Form
-	            ref="form_word"
-	            type={t.struct(selectn("FVWord", fields))}
+	            ref="form_phrase"
+	            type={t.struct(selectn("FVPhrase", fields))}
 	            context={selectn("response", computeDialect2)}
-              value={this.state.formValue || selectn("response.properties", computeWord)}
-	            options={selectn("FVWord", options)} />
+              value={this.state.formValue || selectn("response.properties", computePhrase)}
+	            options={selectn("FVPhrase", options)} />
 	            <div className="form-group">
 	              <button type="submit" className="btn btn-primary">Save</button> 
 	            </div>
