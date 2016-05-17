@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -21,33 +22,11 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
-import _ from 'underscore';
-
-import Avatar from 'material-ui/lib/avatar';
-import Card from 'material-ui/lib/card/card';
 import Paper from 'material-ui/lib/paper';
-import CardActions from 'material-ui/lib/card/card-actions';
-import CardHeader from 'material-ui/lib/card/card-header';
-import CardMedia from 'material-ui/lib/card/card-media';
-import CardTitle from 'material-ui/lib/card/card-title';
-import FlatButton from 'material-ui/lib/flat-button';
-import CardText from 'material-ui/lib/card/card-text';
-import Divider from 'material-ui/lib/divider';
 
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
-
-import Tabs from 'material-ui/lib/tabs/tabs';
-import Tab from 'material-ui/lib/tabs/tab';
-
-import CircularProgress from 'material-ui/lib/circular-progress';
 
 const DEFAULT_LANGUAGE = 'english';
 
@@ -64,8 +43,8 @@ export default class View extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
-    fetchBookEntriesInPath: PropTypes.func.isRequired,
-    computeBookEntriesInPath: PropTypes.object.isRequired,
+    fetchBookEntries: PropTypes.func.isRequired,
+    computeBookEntries: PropTypes.object.isRequired,
     book: PropTypes.object,
     routeParams: PropTypes.object
   };
@@ -92,7 +71,7 @@ export default class View extends Component {
     });
 
     newProps.fetchBook(entryPath);
-    newProps.fetchBookEntriesInPath(newProps.routeParams.dialect_path, ' ORDER BY fvbookentry:sort_map');
+    newProps.fetchBookEntries(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -106,20 +85,18 @@ export default class View extends Component {
 
   render() {
 
-    const { computeBook, computeBookEntriesInPath } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.bookPath,
+      'entity': this.props.computeBook
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeBookEntries
+    }])
 
-    let book = selectn('books[' + this.state.bookPath + ']', computeBook);
-    
-    let bookResponse = selectn('response', book);
-    let bookEntriesResponse = selectn('response', computeBookEntriesInPath);
+    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
+    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.props.routeParams.dialect_path);
 
-    if (!book || !book.success || !computeBookEntriesInPath || !computeBookEntriesInPath.success) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
-
-    let pages = selectn('entries', bookEntriesResponse) || [];
-
-    return <div>
+    return <PromiseWrapper computeEntities={computeEntities}>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
@@ -130,9 +107,9 @@ export default class View extends Component {
               <div className="row">
                 <div className="col-xs-12">
 
-                  <h1>{selectn('title', bookResponse)}</h1>
+                  <h1>{selectn('response.title', computeBook)}</h1>
 
-                  {pages.map((tile, tileKey) => 
+                  {(selectn('response.entries', computeBookEntries) || []).map((tile, tileKey) => 
 
                     <div className="row" style={{marginBottom: '20px'}}>
 
@@ -152,20 +129,22 @@ export default class View extends Component {
 		                      	<p>
 		                      		
 		                      		{selectn('title', tile) || ''}<br/>
-									{selectn('properties.fvbookentry:dominant_language_text', tile).map(function(translation, i) {
+
+							                {selectn('properties.fvbookentry:dominant_language_text', tile).map(function(translation, i) {
 		                              if (translation.language == DEFAULT_LANGUAGE) {
 		                                return <span key={i}>
 		                                  {translation.translation}
 		                                </span>;
 		                              }
-		                            })}
-									{selectn('properties.fv:literal_translation', tile).map(function(translation, i) {
+	                            })}
+
+							                {selectn('properties.fv:literal_translation', tile).map(function(translation, i) {
 		                              if (translation.language == DEFAULT_LANGUAGE) {
 		                                return <span key={i}>
 		                                  {translation.translation}
 		                                </span>;
 		                              }
-		                            })}
+	                            })}
 
 			                      	{(() => {
 			                      		return (selectn('properties.fv:related_audio[0]', tile)) ? <audio src={ConfGlobal.baseURL + 'nxfile/default/' + selectn('properties.fv:related_audio[0]', tile) + '?inline=true'} controls /> : ''
@@ -183,6 +162,6 @@ export default class View extends Component {
 
                 </div>
               </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

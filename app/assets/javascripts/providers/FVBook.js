@@ -121,25 +121,12 @@ const fetchBooksInPath = function fetchBooksInPath(path, queryAppend, headers = 
   }
 };
 
-const fetchBookEntriesInPath = function fetchBookEntriesInPath(path, queryAppend, headers = {}, params = {}) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_BOOK_ENTRIES_FETCH_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVBookEntry', queryAppend, {headers: headers}, params)
-    .then((response) => {
-      dispatch( { type: FV_BOOK_ENTRIES_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_BOOK_ENTRIES_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
-
 const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 const deleteBook = RESTActions.delete('FV_BOOK', 'FVBook', {});
+
+const fetchBookEntries = RESTActions.query('FV_BOOK_ENTRIES', 'FVBookEntry', { queryAppend: ' ORDER BY fvbookentry:sort_map', headers: { 'X-NXenrichers.document': 'ancestry' } });
 
 const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
@@ -147,14 +134,16 @@ const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { h
 const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,book' } });
 
 const computeBookFetchFactory = RESTReducers.computeFetch('book');
+const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 
 
-const actions = { publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntriesInPath, fetchBook, createBook, deleteBook, createBookEntry, fetchBooksAll, updateBook };
+const actions = { publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntries, fetchBook, createBook, deleteBook, createBookEntry, fetchBooksAll, updateBook };
 
 const reducers = {
   computeBook: computeBookFetchFactory.computeBook,
   computeDeleteBook: computeBookDeleteFactory.computeDeleteBook,
+  computeBookEntries: computeBookEntriesQueryFactory.computeBookEntries,
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {
       case FV_BOOKS_SHARED_FETCH_START:
