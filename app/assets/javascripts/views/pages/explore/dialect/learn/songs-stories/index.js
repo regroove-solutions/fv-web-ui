@@ -22,6 +22,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -57,6 +58,8 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    fetchDocument: PropTypes.func.isRequired,
+    computeDocument: PropTypes.object.isRequired, 
     fetchDialect: PropTypes.func.isRequired,
     fetchBooksInPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired, 
@@ -90,10 +93,9 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath);
-
-    newProps.fetchDialect('/' + dialectPath);
-    newProps.fetchBooksInPath('/' + dialectPath, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,permissions', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
+    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Stories & Songs');
+    newProps.fetchBooksInPath(newProps.routeParams.dialect_path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,permissions', 'X-NXproperties': 'dublincore, fvbook, fvcore' });
   }
 
   // Fetch data on initial render
@@ -206,6 +208,8 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
+    const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Stories & Songs');
+
     return <div>
               <div className="row">
                 <div className="col-xs-8">
@@ -217,7 +221,9 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
                   </DropDownMenu>
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <RaisedButton label="New Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDocument)}}>
+                    <RaisedButton label="Create Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                  </AuthorizationFilter>
                 </div>
               </div>
               <div className="row">

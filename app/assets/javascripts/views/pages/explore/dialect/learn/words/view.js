@@ -30,6 +30,8 @@ import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-t
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
 import Dialog from 'material-ui/lib/dialog';
 
 import Avatar from 'material-ui/lib/avatar';
@@ -322,29 +324,31 @@ export default class View extends Component {
 
                   </Card>
 
-                  <Toolbar className="toolbar">
-                    <ToolbarGroup key={0} float="right">
-                      <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Word" />
-                    </ToolbarGroup>
-                  </Toolbar>
+                  <AuthorizationFilter filter={{permission: 'Delete', entity: selectn('response', computeWord)}}>
+                    <Toolbar className="toolbar">
+                      <ToolbarGroup key={0} float="right">
+                        <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Word" />
+                      </ToolbarGroup>
+                    </Toolbar>
 
-                  <Dialog
-                    title="Deleting word"
-                    actions={[
-                    <FlatButton
-                    label="Cancel"
-                    secondary={true}
-                    onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
-                    <FlatButton
-                      label="Delete"
-                      primary={true}
-                      keyboardFocused={true}
-                      onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
-                    modal={false}
-                    open={this.state.deleteDialogOpen}
-                    onRequestClose={this._handleCancelDelete}>
-                    Are you sure you would like to delete the word <strong>{selectn('response.title', computeWord)}</strong>?
-                  </Dialog>
+                    <Dialog
+                      title="Deleting word"
+                      actions={[
+                      <FlatButton
+                      label="Cancel"
+                      secondary={true}
+                      onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
+                      <FlatButton
+                        label="Delete"
+                        primary={true}
+                        keyboardFocused={true}
+                        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
+                      modal={false}
+                      open={this.state.deleteDialogOpen}
+                      onRequestClose={this._handleCancelDelete}>
+                      Are you sure you would like to delete the word <strong>{selectn('response.title', computeWord)}</strong>?
+                    </Dialog>
+                  </AuthorizationFilter>
 
                 </div>
               </div>
