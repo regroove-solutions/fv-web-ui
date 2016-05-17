@@ -39,6 +39,7 @@ import {default as PageGetStarted} from './get-started'
 import {default as PageContribute} from './contribute'
 import {default as PagePlay} from './play'
 import {default as PageSearch} from './search'
+import {default as PageTasks} from './tasks'
 
 module.exports = {
   PageTest,
@@ -61,6 +62,7 @@ module.exports = {
   PageDialectGallery,
   PageDialectReports,
   PagePlay,
-  PageSearch
+  PageSearch,
+  PageTasks
 }
 

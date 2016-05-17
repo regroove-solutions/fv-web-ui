@@ -23,6 +23,7 @@ import connect from './connect';
 import navigation from './navigation'
 import reports from './reports';
 import search from './search';
+import tasks from './tasks';
 
 const loggerMiddleware = createLoggerMiddleware();
 
@@ -46,7 +47,8 @@ const providers = { page,
   FVCharacter,
   FVGallery,
   reports,
-  search };
+  search,
+  tasks };
 
 // Enable log for specific provider
 //unshiftMiddleware([FVWord], loggerMiddleware);
