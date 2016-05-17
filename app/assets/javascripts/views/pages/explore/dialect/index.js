@@ -72,13 +72,12 @@ export default class ExploreDialect extends Component {
     updatePortal: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     publishDocument: PropTypes.func.isRequired,
-    disableDocument: PropTypes.func.isRequired,
     computeDocumentDisable: PropTypes.object.isRequired,
-    enableDocument: PropTypes.func.isRequired,
     computeDocumentEnable: PropTypes.object.isRequired,
     publishDialect: PropTypes.func.isRequired,
-    computeDialectPublish: PropTypes.object.isRequired,
     unpublishDialect: PropTypes.func.isRequired,
+    enableDialect: PropTypes.func.isRequired,
+    disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
@@ -145,9 +144,9 @@ export default class ExploreDialect extends Component {
   */
   _enableToggleAction(toggled) {
     if (toggled) {
-      this.props.enableDocument(this.props.routeParams.dialect_path);
+      this.props.enableDialect(this.props.routeParams.dialect_path, null, null, "Dialect enabled!");
     } else {
-      this.props.disableDocument(this.props.routeParams.dialect_path);
+      this.props.disableDialect(this.props.routeParams.dialect_path, null, null, "Dialect disabled!");
     }
   }
 
@@ -156,9 +155,9 @@ export default class ExploreDialect extends Component {
   */
   _publishToggleAction(toggled) {
     if (toggled) {
-      this.props.publishDialect(this.props.routeParams.dialect_path);
+      this.props.publishDialect(this.props.routeParams.dialect_path, null, null, "Dialect published successfully!");
     } else {
-      this.props.unpublishDialect(this.props.routeParams.dialect_path);
+      this.props.unpublishDialect(this.props.routeParams.dialect_path, null, null, "Dialect unpublished successfully!");
     }
   }
 
@@ -186,6 +185,8 @@ export default class ExploreDialect extends Component {
 
     const isSection = this.props.routeParams.area === 'sections';
 
+console.log(computeDialect2);
+
     return <PromiseWrapper computeEntities={computeEntities}>
 
             <PageHeader title="Community Portal" portalLogo={selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} dialectName={selectn('response.title', computeDialect2)} />
@@ -195,6 +196,7 @@ export default class ExploreDialect extends Component {
                 
                 if (selectn('response', computeDialect2))
                   return <PageToolbar
+                            label="Portal"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computeDialect2}
                             publishToggleAction={this._publishToggleAction}
@@ -331,4 +333,4 @@ export default class ExploreDialect extends Component {
           </div>
         </PromiseWrapper>;
   }
-}
+};

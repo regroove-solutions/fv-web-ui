@@ -27,6 +27,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
@@ -127,6 +128,28 @@ export default class View extends Component {
     this.setState({deleteDialogOpen: false});
   }
 
+  /**
+  * Toggle dialect (enabled/disabled)
+  */
+  _enableToggleAction(toggled) {
+    if (toggled) {
+      this.props.enableDocument(this.props.routeParams.dialect_path);
+    } else {
+      this.props.disableDocument(this.props.routeParams.dialect_path);
+    }
+  }
+
+  /**
+  * Toggle published dialect
+  */
+  _publishToggleAction(toggled) {
+    if (toggled) {
+      this.props.publishDialect('524bccd5-6b3e-459b-90b1-ebf0bca7fb55');
+    } else {
+      this.props.unpublishDialect(this.props.routeParams.dialect_path);
+    }
+  }
+
   render() {
 
     const tabItemStyles = {
@@ -144,6 +167,21 @@ export default class View extends Component {
     * Generate definitions body
     */
     return <PromiseWrapper computeEntities={computeEntities}>
+
+            {(() => {
+              if (this.props.routeParams.area == 'Workspaces') {
+                
+                if (selectn('response', computeWord))
+                  return <PageToolbar
+                            label="Word"
+                            handleNavigateRequest={this._onNavigateRequest}
+                            computeEntity={computeWord}
+                            publishToggleAction={this._publishToggleAction}
+                            enableToggleAction={this._enableToggleAction}
+                            {...this.props} />;
+              }
+            })()}
+
             <div className="row">
               <div className="col-xs-12">
                 <div>

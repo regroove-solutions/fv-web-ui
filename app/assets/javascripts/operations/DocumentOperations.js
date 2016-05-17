@@ -483,7 +483,7 @@ export default class DocumentOperations extends BaseOperations {
   /**
   * Executes an operation on the server
   */
-  static executeOperation(operationName, operationParams, headers = {}, params = {}) {
+  static executeOperation(input, operationName, operationParams, headers = {}, params = {}) {
 
     let sanitizeKeys = ['dialectPath'];
 
@@ -499,6 +499,7 @@ export default class DocumentOperations extends BaseOperations {
       function(resolve, reject) {
         properties.client
         .operation(operationName)
+        .input(input)
         .params(operationParams)
         .execute(headers)
         .then((response) => {

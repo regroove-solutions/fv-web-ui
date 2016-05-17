@@ -40,7 +40,8 @@ export default class PageToolbar extends Component {
     computeEntity: PropTypes.object.isRequired,
     handleNavigateRequest: PropTypes.func.isRequired,
     publishToggleAction: PropTypes.func.isRequired,
-    enableToggleAction: PropTypes.func.isRequired
+    enableToggleAction: PropTypes.func.isRequired,
+    label: PropTypes.string
   };
 
   static contextTypes = {
@@ -68,7 +69,7 @@ export default class PageToolbar extends Component {
       enabledToggled: toggled
     });
 
-    this.props.enableToggleAction(this.props.routeParams.dialect_path);
+    this.props.enableToggleAction(toggled);
   }
 
   /**
@@ -133,7 +134,7 @@ export default class PageToolbar extends Component {
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                      <RaisedButton label="Edit Portal" style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                      <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
                     </AuthorizationFilter>
 
                     <ToolbarSeparator />

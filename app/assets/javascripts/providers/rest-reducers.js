@@ -38,6 +38,10 @@ export default {
           case UPPER_CASE_KEY(key) + '_FETCH_START':
           case UPPER_CASE_KEY(key) + '_UPDATE_START':
           case UPPER_CASE_KEY(key) + '_CREATE_START':
+          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_START':
+          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_START':
+          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_START':
+          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_START':
 
             return state.push(Map({
               action: action.type,            	
@@ -52,6 +56,10 @@ export default {
           case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
           case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
           case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_SUCCESS':
+          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_SUCCESS':
         	  
             // Replace entry within state
             return state.set(indexOfEntry, Map({
@@ -68,6 +76,10 @@ export default {
           case UPPER_CASE_KEY(key) + '_FETCH_ERROR':
           case UPPER_CASE_KEY(key) + '_UPDATE_ERROR':
           case UPPER_CASE_KEY(key) + '_CREATE_ERROR':
+          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_ERROR':
+          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_ERROR':
+          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_ERROR':
+          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_ERROR':
 
             // Add error message
             return state.set(indexOfEntry, Map({
