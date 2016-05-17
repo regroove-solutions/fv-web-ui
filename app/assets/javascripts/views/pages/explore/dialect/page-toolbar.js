@@ -35,10 +35,18 @@ export default class PageToolbar extends Component {
 
   static propTypes = {
     computeEntity: PropTypes.object.isRequired,
+    computePermissionEntity: PropTypes.object,
+    computeLogin: PropTypes.object,
     handleNavigateRequest: PropTypes.func.isRequired,
     publishToggleAction: PropTypes.func.isRequired,
     enableToggleAction: PropTypes.func.isRequired,
+    disableWorkflowActions: PropTypes.bool,
+    children: PropTypes.node,
     label: PropTypes.string
+  };
+
+  static defaultProps = {
+    disableWorkflowActions: false
   };
 
   static contextTypes = {
@@ -54,7 +62,7 @@ export default class PageToolbar extends Component {
     };
 
     // Bind methods to 'this'
-    ['_documentActionsToggleEnabled', '_documentActionsTogglePublished'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_documentActionsToggleEnabled', '_documentActionsTogglePublished', '_documentActionsStartWorkflow'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   /**
@@ -66,23 +74,48 @@ export default class PageToolbar extends Component {
       enabledToggled: toggled
     });
 
-    this.props.enableToggleAction(toggled);
+    this.props.enableToggleAction(toggled, false);
   }
 
   /**
   * Toggle published document
   */
   _documentActionsTogglePublished(event, toggled) {
+    
     this.setState({
       publishedToggled: toggled
     });
 
-    this.props.publishToggleAction(toggled);
+    this.props.publishToggleAction(toggled, false);
+  }
+
+  /**
+  * Start a workflow
+  */
+  _documentActionsStartWorkflow(workflow, event) {
+
+    switch (workflow) {
+      case 'enable':
+        this.props.enableToggleAction(true, true);
+      break;
+
+      case 'disable':
+        this.props.enableToggleAction(false, true);
+      break;
+
+      case 'publish':
+        this.props.publishToggleAction(true, true);
+      break;
+
+      case 'unpublish':
+        this.props.publishToggleAction(false, true);
+      break;
+    }
   }
 
   render() {
 
-    const { computeEntity } = this.props;
+    const { computeEntity, computePermissionEntity, computeLogin } = this.props;
 
     let toolbarGroupItem = {
       float: 'left',
@@ -93,11 +126,37 @@ export default class PageToolbar extends Component {
     let documentEnabled = (this.state.enabledToggled == null) ? (selectn('response.state', computeEntity) == 'Enabled') : this.state.enabledToggled;
     let documentPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeEntity) == 'Published') : this.state.publishedToggled;
 
+    const permissionEntity = (selectn('response', computePermissionEntity)) ? computePermissionEntity : computeEntity;
+
     return <Toolbar>
 
                   <ToolbarGroup float="left">
 
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                    {this.props.children}
+
+                    {(() => {
+                      if (!this.props.disableWorkflowActions) {
+
+                          return <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
+
+                            <div>
+
+                              <span style={{paddingRight: '15px'}}>REQUEST: </span>
+
+                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' || selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
+                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' || selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
+                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
+                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+
+                            </div>
+
+                          </AuthorizationFilter>;
+                      }
+                    })()}
+
+                    
+
+                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
                         <Toggle
                           toggled={documentEnabled || documentPublished}
@@ -110,7 +169,7 @@ export default class PageToolbar extends Component {
                       </div>
                     </AuthorizationFilter>
 
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                       <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
                         <Toggle
                           toggled={documentPublished}
@@ -126,7 +185,7 @@ export default class PageToolbar extends Component {
 
                   <ToolbarGroup float="right">
 
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                       <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._portalActionsPublish} />
                     </AuthorizationFilter>
 

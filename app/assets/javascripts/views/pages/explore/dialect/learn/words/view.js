@@ -67,13 +67,19 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired, 
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     deleteWord: PropTypes.func.isRequired,
     computeDeleteWord: PropTypes.object.isRequired,
     publishWord: PropTypes.func.isRequired,
+    askToPublishWord: PropTypes.func.isRequired,
     unpublishWord: PropTypes.func.isRequired,
+    askToUnpublishWord: PropTypes.func.isRequired,
     enableWord: PropTypes.func.isRequired,
+    askToEnableWord: PropTypes.func.isRequired,
     disableWord: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -92,6 +98,7 @@ export default class View extends Component {
 
   fetchData(newProps) {
     newProps.fetchWord(this.state.wordPath);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -111,23 +118,42 @@ export default class View extends Component {
   /**
   * Toggle dialect (enabled/disabled)
   */
-  _enableToggleAction(toggled) {
-
+  _enableToggleAction(toggled, workflow) {
     if (toggled) {
-      this.props.enableWord(this.state.wordPath, null, null, "Word enabled!");
+      if (workflow) {
+        this.props.askToEnableWord(this.state.wordPath, {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable word successfully submitted!", null);
+      }
+      else {
+        this.props.enableWord(this.state.wordPath, null, null, "Word enabled!");
+      }
     } else {
-      this.props.disableWord(this.state.wordPath, null, null, "Word disabled!");
+      if (workflow) {
+        this.props.askToDisableWord(this.state.wordPath, {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable word successfully submitted!", null);
+      }
+      else {
+        this.props.disableWord(this.state.wordPath, null, null, "Word disabled!");
+      }
     }
   }
 
   /**
   * Toggle published dialect
   */
-  _publishToggleAction(toggled) {
+  _publishToggleAction(toggled, workflow) {
     if (toggled) {
-      this.props.publishWord(this.state.wordPath, null, null, "Word published successfully!");
+      if (workflow) {
+        this.props.askToPublishWord(this.state.wordPath, {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish word successfully submitted!", null);
+      }
+      else {
+        this.props.publishWord(this.state.wordPath, null, null, "Word published successfully!");
+      }
     } else {
-      this.props.unpublishWord(this.state.wordPath, null, null, "Word unpublished successfully!");
+      if (workflow) {
+        this.props.askToUnpublishWord(this.state.wordPath, {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish word successfully submitted!", null);
+      }
+      else {
+        this.props.unpublishWord(this.state.wordPath, null, null, "Word unpublished successfully!");
+      }
     }
   }
 
@@ -140,9 +166,13 @@ export default class View extends Component {
     const computeEntities = Immutable.fromJS([{
       'id': this.state.wordPath,
       'entity': this.props.computeWord
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
     }])
 
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     /**
     * Generate definitions body
@@ -157,9 +187,11 @@ export default class View extends Component {
                             label="Word"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computeWord}
+                            computePermissionEntity={computeDialect2}
+                            computeLogin={this.props.computeLogin}
                             publishToggleAction={this._publishToggleAction}
                             enableToggleAction={this._enableToggleAction}
-                            {...this.props} />;
+                            {...this.props}></PageToolbar>;
               }
             })()}
 

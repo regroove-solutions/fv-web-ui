@@ -56,18 +56,24 @@ const FV_WORD_DELETE_START = "FV_WORD_DELETE_START";
 const FV_WORD_DELETE_SUCCESS = "FV_WORD_DELETE_SUCCESS";
 const FV_WORD_DELETE_ERROR = "FV_WORD_DELETE_ERROR";
 
-const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const updateWord = RESTActions.update('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const updateWord = RESTActions.update('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
 
-const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const unpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const enableWord = RESTActions.execute('FV_WORD_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
-const disableWord = RESTActions.execute('FV_WORD_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word' } });
+const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const askToPublishWord = RESTActions.execute('FV_WORD_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const unpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const askToUnpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const enableWord = RESTActions.execute('FV_WORD_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const askToEnableWord = RESTActions.execute('FV_WORD_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const disableWord = RESTActions.execute('FV_WORD_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const askToDisableWord = RESTActions.execute('FV_WORD_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 
 const computeWordFetchFactory = RESTReducers.computeFetch('word');
 const computeWordDeleteFactory = RESTReducers.computeDelete('delete_word');
+const computeWordEnableOperationFactory = RESTReducers.computeOperation('word_enable_workflow');
+const computeWordDisableOperationFactory = RESTReducers.computeOperation('word_disable_workflow');
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -111,7 +117,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
   }
 };
 
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, unpublishWord, enableWord, disableWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -159,6 +165,8 @@ const reducers = {
   },
   computeWord: computeWordFetchFactory.computeWord,
   computeDeleteWord: computeWordDeleteFactory.computeDeleteWord,
+  computeWordEnableWorkflow: computeWordEnableOperationFactory.computeWordEnableWorkflow,
+  computeWordDisableWorkflow: computeWordDisableOperationFactory.computeWordDisableWorkflow,
   computeWordsAll(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
       case FV_WORD_FETCH_ALL_START:

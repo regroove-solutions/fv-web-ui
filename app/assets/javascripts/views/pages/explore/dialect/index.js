@@ -194,6 +194,7 @@ export default class ExploreDialect extends Component {
                             label="Portal"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computeDialect2}
+                            disableWorkflowActions={true}
                             publishToggleAction={this._publishToggleAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props} />;

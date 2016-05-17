@@ -27,6 +27,18 @@ export default {
 
     return null;
   },
+  /*hasExtendedGroup: function (extendedGroups, group) {
+
+    if (extendedGroups && extendedGroups.size > 0) {
+      if (extendedGroups.findIndex(function(entry) { return (entry.get('name') === group) }) === -1) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
+    return false;
+  },*/
   getDialectPathFromURLArray: function (url) {
   	return decodeURI(url.slice(1, 7).join('/'));
   }
