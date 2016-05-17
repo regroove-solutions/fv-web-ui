@@ -74,16 +74,26 @@ export default class DialogCreateForm extends React.Component {
 	if(!this.props.fieldAttributes.disableCreateNewButton || this.props.fieldAttributes.disableCreateNewButton === false) {
 		createNewButton = <RaisedButton label={createNewButtonLabel} onTouchTap={this.handleOpen} />;
 	}
-		
+
+    const actions = [
+        <FlatButton
+	      label="Cancel"
+	      secondary={true}
+	      onTouchTap={this.handleClose} />
+	];	
+	
     return (		
       <div>
+      	
       	{createNewButton}
-        <Dialog
+        
+      	<Dialog
           open={this.state.open}
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}	
-        >  
-        {createForm}
+          actions={actions}>  
+        
+          {createForm}
 
         </Dialog>
 

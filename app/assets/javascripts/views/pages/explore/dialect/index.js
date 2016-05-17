@@ -36,7 +36,7 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import Toggle from 'material-ui/lib/toggle';
 import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
-
+import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import IconButton from 'material-ui/lib/icon-button';
@@ -80,7 +80,9 @@ export default class ExploreDialect extends Component {
     disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired,
+    fetchGalleriesInPath: PropTypes.func.isRequired,
+    computeGalleriesInPath: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -91,12 +93,13 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_portalActionsPublish', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_portalActionsPublish', '_enableToggleAction', '_publishToggleAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal', 'Fetching community portal.', null, 'Problem fetching community portal it may be unpublished or offline.');
+    newProps.fetchGalleriesInPath(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -168,9 +171,17 @@ export default class ExploreDialect extends Component {
 	  this.props.replaceWindowPath(this.props.windowPath + '/search/' + queryParam); 
   }   
   
+  _handleGalleryDropDownChange(event, key, payload) {
+	  //console.log(payload);
+	  if(payload !== "dropDownLabel") {
+		  this.props.pushWindowPath(payload); 		  
+	  }
+  }
+
+  
   render() {
 
-  	const { computeLogin, updatePortal, updateDialect2 } = this.props;
+  	const { computeLogin, updatePortal, updateDialect2, computeGalleriesInPath} = this.props;
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
@@ -178,11 +189,14 @@ export default class ExploreDialect extends Component {
     },{
       'id': this.props.routeParams.dialect_path + '/Portal',
       'entity': this.props.computePortal
+    },{
+      'id': this.props.routeParams.dialect_path + '/Portal/Galleries',
+      'entity': this.props.computeGalleriesInPath
     }])
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-
+    
     const isSection = this.props.routeParams.area === 'sections';
 
 console.log(computeDialect2);
@@ -254,8 +268,14 @@ console.log(computeDialect2);
               <ToolbarGroup firstChild={true} float="left">
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Community Slideshow')} label="Community Slideshow" /> <ToolbarSeparator />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery/Art Gallery')} label="Art Gallery" /> <ToolbarSeparator />             
+                <DropDownMenu value="dropDownLabel" onChange={this._handleGalleryDropDownChange}>
+                  <MenuItem value="dropDownLabel" primaryText="Image Galleries" />    
+                  {(selectn('response.entries', computeGalleriesInPath) || []).map((gallery, i) =>
+                  	<MenuItem key={i} value={this.props.windowPath + "/gallery/" + gallery.title} primaryText={gallery.title} />  
+                  )}                   
+                  <MenuItem value={this.props.windowPath + "/gallery/create"} primaryText="Create New Gallery" />
+                </DropDownMenu>                
+                
               </ToolbarGroup>
 
               <ToolbarGroup float="right">

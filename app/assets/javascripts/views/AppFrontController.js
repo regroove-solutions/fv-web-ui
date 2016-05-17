@@ -28,7 +28,7 @@ import {
 const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
 const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search'];
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search', 'gallery'];
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') },
