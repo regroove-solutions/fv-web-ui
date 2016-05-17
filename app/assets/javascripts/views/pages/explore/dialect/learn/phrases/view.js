@@ -28,6 +28,8 @@ import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
@@ -299,29 +301,31 @@ export default class View extends Component {
 
                   </Card>
 
-                  <Toolbar className="toolbar">
-                    <ToolbarGroup key={0} float="right">
-                      <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Phrase" />
-                    </ToolbarGroup>
-                  </Toolbar>
+                  <AuthorizationFilter filter={{permission: 'Delete', entity: selectn('response', computePhrase)}}>
+                    <Toolbar className="toolbar">
+                      <ToolbarGroup key={0} float="right">
+                        <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Phrase" />
+                      </ToolbarGroup>
+                    </Toolbar>
 
-                  <Dialog
-                    title="Deleting phrase"
-                    actions={[
-                    <FlatButton
-                    label="Cancel"
-                    secondary={true}
-                    onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
-                    <FlatButton
-                      label="Delete"
-                      primary={true}
-                      keyboardFocused={true}
-                      onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computePhrase))} />]}
-                    modal={false}
-                    open={this.state.deleteDialogOpen}
-                    onRequestClose={this._handleCancelDelete}>
-                    Are you sure you would like to delete the phrase <strong>{selectn('response.title', computePhrase)}</strong>?
-                  </Dialog>
+                    <Dialog
+                      title="Deleting phrase"
+                      actions={[
+                      <FlatButton
+                      label="Cancel"
+                      secondary={true}
+                      onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
+                      <FlatButton
+                        label="Delete"
+                        primary={true}
+                        keyboardFocused={true}
+                        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computePhrase))} />]}
+                      modal={false}
+                      open={this.state.deleteDialogOpen}
+                      onRequestClose={this._handleCancelDelete}>
+                      Are you sure you would like to delete the phrase <strong>{selectn('response.title', computePhrase)}</strong>?
+                    </Dialog>
+                  </AuthorizationFilter>
 
                 </div>
               </div>

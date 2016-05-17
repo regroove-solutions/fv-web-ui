@@ -19,7 +19,7 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
-
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -42,6 +42,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    fetchDocument: PropTypes.func.isRequired,
+    computeDocument: PropTypes.object.isRequired, 
     fetchDialect: PropTypes.func.isRequired,
     fetchPhrasesInPath: PropTypes.func.isRequired,
     computeDialect: PropTypes.object.isRequired,
@@ -122,12 +124,16 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       return <CircularProgress mode="indeterminate" size={5} />;
     }
 
+    const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
+
     return <div>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <RaisedButton label="New Phrase" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDocument)}}>
+                    <RaisedButton label="Create New Phrase" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />
+                  </AuthorizationFilter>
                 </div>
               </div>
               <div className="row">

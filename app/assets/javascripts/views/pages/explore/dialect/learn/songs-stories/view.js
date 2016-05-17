@@ -21,6 +21,7 @@ import selectn from 'selectn';
 
 import ConfGlobal from 'conf/local.json';
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
@@ -170,7 +171,9 @@ export default class View extends Component {
                 <div className="col-xs-8">
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <RaisedButton label="New Entry" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeBook)}}>
+                    <RaisedButton label="Create New Book Entry" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                  </AuthorizationFilter>
                 </div>
               </div>
               <div className="row">
