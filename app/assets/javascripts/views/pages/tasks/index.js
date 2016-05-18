@@ -18,6 +18,8 @@ import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 
+
+import RaisedButton from 'material-ui/lib/raised-button';
 import {Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/lib/table';
 
 @provide
@@ -25,13 +27,31 @@ export default class Tasks extends React.Component {
 
 	static propTypes = {
 		fetchUserTasks: PropTypes.func.isRequired,
-		computeUserTasks: PropTypes.object.isRequired
+		computeUserTasks: PropTypes.object.isRequired,
+	    approveDocument: PropTypes.func.isRequired,
+	    rejectDocument: PropTypes.func.isRequired	
 	};	
 
 	constructor(props, context) {
 		super(props, context);
+	    
+		   // Bind methods to 'this'
+	    ['handleButtonTouchTap'].forEach( (method => this[method] = this[method].bind(this)) ); 		
 	}
 
+	handleButtonTouchTap(state) {
+		console.log(state);
+		switch(state) {
+			case 'approve':
+				this.props.approveDocument();
+			break;
+			
+			case 'reject':
+				this.props.rejectDocument();
+			break;
+		}
+	}	
+	
 	fetchData(newProps) {	  
 		newProps.fetchUserTasks();
 	}
@@ -41,6 +61,9 @@ export default class Tasks extends React.Component {
 		this.fetchData(this.props);
 	}   
 
+
+
+	
 	render() {
 		
 		const { computeUserTasks } = this.props;
@@ -55,28 +78,27 @@ export default class Tasks extends React.Component {
 				let documentPath = task.documentLink.replace("nxpath/default/", "explore/");
 				documentPath = documentPath.split("@")[0];
 				
-				console.log(task.doctype);
-				
-				switch(task.doctype) {
-					case("FVWord"):
-						documentPath = documentPath.replace("/Dictionary/", "/learn/words/");
-					break;
-					
-				}
-				
-				//documentPath = documentPath.replace("nxpath/default/", "explore/");
-				//documentPath = documentPath.replace("/Dictionary/", "/learn/words/");
-				//documentPath = documentPath.split("@")[0];
+//				console.log(task.doctype);				
+//				switch(task.doctype) {
+//					case("FVWord"):
+//						documentPath = documentPath.replace("/Dictionary/", "/learn/words/");
+//					break;
+//					
+//				}
 								
 			    let tableRow = <TableRow key={i}>
 							        <TableRowColumn><a href={documentPath}>{task.documentTitle}</a></TableRowColumn>
-							        <TableRowColumn>{task.name}</TableRowColumn>
+							        <TableRowColumn>
+							        	<span>{task.name}</span>
+							        	<RaisedButton label="Approve" secondary={true} onTouchTap={this.handleButtonTouchTap.bind(this, 'approve')} />
+							        	<RaisedButton label="Reject" secondary={true} onTouchTap={this.handleButtonTouchTap.bind(this, 'reject')} />
+							        	</TableRowColumn>
 							        <TableRowColumn>{task.dueDate}</TableRowColumn>
 							   </TableRow>;
 				
 				userTasks.push(tableRow);
 				
-			})
+			}.bind(this))
 		}	
 		
 		return <div>

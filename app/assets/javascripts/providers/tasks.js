@@ -1,5 +1,5 @@
-//import RESTActions from './rest-actions'
-//import RESTReducers from './rest-reducers'
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
 
 //Middleware
 import thunk from 'redux-thunk';
@@ -25,7 +25,13 @@ const fetchUserTasks = function fetchUserTasks() {
 	  }
 };
 
-const actions = { fetchUserTasks };
+const approveDocument = RESTActions.execute('FV_DOCUMENT_APPROVE', 'WorkflowTask.Complete', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' }, params: { 'status': 'validate'} });
+const rejectDocument = RESTActions.execute('FV_DOCUMENT_REJECT', 'WorkflowTask.Complete', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' }, params: { 'status': 'reject'} });
+
+const computeApproveDocumentOperationFactory = RESTReducers.computeOperation('document_approve');
+const computeRejectDocumentOperationFactory = RESTReducers.computeOperation('document_reject');
+
+const actions = { fetchUserTasks, approveDocument, rejectDocument };
 
 const reducers = {
 	computeUserTasks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
