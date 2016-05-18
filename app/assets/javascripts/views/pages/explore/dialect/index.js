@@ -78,8 +78,8 @@ export default class ExploreDialect extends Component {
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
-    fetchGalleriesInPath: PropTypes.func.isRequired,
-    computeGalleriesInPath: PropTypes.object.isRequired
+    fetchGalleryEntries: PropTypes.func.isRequired,
+    computeGalleryEntries: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -96,7 +96,7 @@ export default class ExploreDialect extends Component {
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal', 'Fetching community portal.', null, 'Problem fetching community portal it may be unpublished or offline.');
-    newProps.fetchGalleriesInPath(newProps.routeParams.dialect_path + '/Portal');
+    newProps.fetchGalleryEntries(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -164,7 +164,7 @@ export default class ExploreDialect extends Component {
   
   render() {
 
-  	const { computeLogin, updatePortal, updateDialect2, computeGalleriesInPath} = this.props;
+  	const { computeLogin, updatePortal, updateDialect2} = this.props;
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
@@ -173,13 +173,14 @@ export default class ExploreDialect extends Component {
       'id': this.props.routeParams.dialect_path + '/Portal',
       'entity': this.props.computePortal
     },{
-      'id': this.props.routeParams.dialect_path + '/Portal/Galleries',
-      'entity': this.props.computeGalleriesInPath
+      'id': this.props.routeParams.dialect_path + '/Portal',
+      'entity': this.props.computeGalleryEntries
     }])
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    
+    const computeGalleryEntries = ProviderHelpers.getEntry(this.props.computeGalleryEntries, this.props.routeParams.dialect_path + '/Portal');
+
     const isSection = this.props.routeParams.area === 'sections';
 
     return <PromiseWrapper computeEntities={computeEntities}>
@@ -252,7 +253,7 @@ export default class ExploreDialect extends Component {
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
                 <DropDownMenu value="dropDownLabel" onChange={this._handleGalleryDropDownChange}>
                   <MenuItem value="dropDownLabel" primaryText="Image Galleries" />    
-                  {(selectn('response.entries', computeGalleriesInPath) || []).map((gallery, i) =>
+                  {(selectn('response.entries', computeGalleryEntries) || []).map((gallery, i) =>
                   	<MenuItem key={i} value={this.props.windowPath + "/gallery/" + gallery.title} primaryText={gallery.title} />  
                   )}                   
                   <MenuItem value={this.props.windowPath + "/gallery/create"} primaryText="Create New Gallery" />

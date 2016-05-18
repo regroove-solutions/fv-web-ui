@@ -1,3 +1,6 @@
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -32,20 +35,6 @@ const fetchGallery = function fetchGallery(pathOrId) {
   }
 };
 
-const fetchGalleriesInPath = function fetchGalleriesInPath(path, queryAppend, headers = {}, params = {}) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_GALLERIES_FETCH_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVGallery', queryAppend, {headers: { 'X-NXenrichers.document': 'gallery'} }, params)
-    .then((response) => {
-      dispatch( { type: FV_GALLERIES_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_GALLERIES_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
 const createGallery = function createGallery(parentDoc, docParams) {
   return function (dispatch) {
 
@@ -60,7 +49,11 @@ const createGallery = function createGallery(parentDoc, docParams) {
   }
 };
 
-const actions = { fetchGallery, fetchGalleriesInPath, createGallery };
+const fetchGalleryEntries = RESTActions.query('FV_GALLERY_ENTRIES', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
+
+const actions = { fetchGallery, fetchGalleryEntries, createGallery };
+
+const computeGalleryEntriesQueryFactory = RESTReducers.computeQuery('gallery_entries');
 
 const reducers = {
 
@@ -83,27 +76,7 @@ const reducers = {
       break;
     }
   },
-  computeGalleriesInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
-    switch (action.type) {
-      case FV_GALLERIES_FETCH_START:
-        return Object.assign({}, state, { isFetching: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_GALLERIES_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_GALLERIES_FETCH_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },  
+  computeGalleryEntries: computeGalleryEntriesQueryFactory.computeGalleryEntries,
   computeCreateGallery(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
 	    switch (action.type) {
 	      case FV_GALLERY_CREATE_START:
