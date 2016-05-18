@@ -183,7 +183,7 @@ export default class Preview extends Component {
             body = <div>
               <strong>{selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}</strong> 
               <span> {selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}</span><br/>
-              {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse)) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : ''}
+              {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : ''}
             </div>;
           }
 
@@ -207,7 +207,7 @@ export default class Preview extends Component {
             body = <div>
               <strong>{selectn('title', audioResponse) || selectn('dc:title', audioResponse)}</strong> 
               <span> {selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}</span><br/>
-              {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse)) ? <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls /> : ''}
+              {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls /> : ''}
             </div>;
           }
 
@@ -231,7 +231,7 @@ export default class Preview extends Component {
             body = <div>
               <strong>{selectn('title', videoResponse) || selectn('dc:title', videoResponse)}</strong> 
               <span> {selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)}</span><br/>
-              {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse)) ? <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : ''}
+              {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : ''}
             </div>;
           }
 

@@ -5,6 +5,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import Autosuggest from 'react-autosuggest';
 
+import RefreshIndicator from 'material-ui/lib/refresh-indicator';
+
 const theme = {
   container: 'autosuggest dropdown',
   containerOpen: 'dropdown open',
@@ -15,6 +17,8 @@ const theme = {
 };
 
 let KeymanWebChangePolling;
+
+let suggestionThrottle;
 
 @provide
 export default class AutoSuggestComponent extends Component {
@@ -119,13 +123,12 @@ export default class AutoSuggestComponent extends Component {
   loadSuggestions(value) {
     this.setState({ isLoading: true });
 
-    var timeout;
-
-    if (timeout) {
-        clearTimeout(timeout);
+    if (suggestionThrottle) {
+        clearTimeout(suggestionThrottle);
+        this.setState({ isLoading: false });
     }
 
-    timeout = setTimeout(function() {
+    suggestionThrottle = setTimeout(function() {
       switch (this.props.type) {
         case 'FVAudio':
           this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
@@ -247,7 +250,7 @@ export default class AutoSuggestComponent extends Component {
       'onChange': this.onChange
     };
 
-    const status = (this.getComputeType().isFetching ? 'Loading suggestions...' : '');
+    const status = (isLoading) ? 'loading' : 'ready';
 
     return (
       <div className="row">
@@ -263,7 +266,7 @@ export default class AutoSuggestComponent extends Component {
             renderSuggestion={this.renderSuggestion}
             inputProps={inputProps} />
 
-          {status}
+          <RefreshIndicator size={40} left={80} top={5} status={status} />
 
         </div>
 
