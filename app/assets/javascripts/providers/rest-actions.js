@@ -41,12 +41,12 @@ export default {
 		}
 	},
 	query: function(key, type, properties = {}) {
-		return function fetch(pathOrId, messageStart = null, messageSuccess = null, messageError = null) {
+		return function query(pathOrId, queryAppend, messageStart = null, messageSuccess = null, messageError = null) {
 			return function (dispatch) {
 
 			    dispatch( { type: key + '_QUERY_START', pathOrId: pathOrId, message: (messageStart || 'Fetch started...') } );
 
-			    	return DirectoryOperations.getDocumentByPath2(pathOrId, type, properties.queryAppend, { headers: properties.headers })
+			    	return DirectoryOperations.getDocumentByPath2(pathOrId, type, properties.queryAppend || queryAppend, { headers: properties.headers })
 				    .then((response) => {
 				      dispatch( { type: key + '_QUERY_SUCCESS', message: messageSuccess, response: response, pathOrId: pathOrId } )
 				    }).catch((error) => {

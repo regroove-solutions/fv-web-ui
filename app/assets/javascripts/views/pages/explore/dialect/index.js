@@ -78,8 +78,8 @@ export default class ExploreDialect extends Component {
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
-    fetchGalleryEntries: PropTypes.func.isRequired,
-    computeGalleryEntries: PropTypes.object.isRequired
+    fetchGalleries: PropTypes.func.isRequired,
+    computeGalleries: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -96,7 +96,7 @@ export default class ExploreDialect extends Component {
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal', 'Fetching community portal.', null, 'Problem fetching community portal it may be unpublished or offline.');
-    newProps.fetchGalleryEntries(newProps.routeParams.dialect_path + '/Portal');
+    newProps.fetchGalleries(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -174,12 +174,12 @@ export default class ExploreDialect extends Component {
       'entity': this.props.computePortal
     },{
       'id': this.props.routeParams.dialect_path + '/Portal',
-      'entity': this.props.computeGalleryEntries
+      'entity': this.props.computeGalleries
     }])
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    const computeGalleryEntries = ProviderHelpers.getEntry(this.props.computeGalleryEntries, this.props.routeParams.dialect_path + '/Portal');
+    const computeGalleries = ProviderHelpers.getEntry(this.props.computeGalleries, this.props.routeParams.dialect_path + '/Portal');
 
     const isSection = this.props.routeParams.area === 'sections';
 
@@ -253,7 +253,7 @@ export default class ExploreDialect extends Component {
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
                 <DropDownMenu value="dropDownLabel" onChange={this._handleGalleryDropDownChange}>
                   <MenuItem value="dropDownLabel" primaryText="Image Galleries" />    
-                  {(selectn('response.entries', computeGalleryEntries) || []).map((gallery, i) =>
+                  {(selectn('response.entries', computeGalleries) || []).map((gallery, i) =>
                   	<MenuItem key={i} value={this.props.windowPath + "/gallery/" + gallery.title} primaryText={gallery.title} />  
                   )}                   
                   <MenuItem value={this.props.windowPath + "/gallery/create"} primaryText="Create New Gallery" />

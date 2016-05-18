@@ -41,6 +41,7 @@ const FV_WORD_FETCH_ALL_SUCCESS = "FV_WORD_FETCH_ALL_SUCCESS";
 const FV_WORD_FETCH_ALL_ERROR = "FV_WORD_FETCH_ALL_ERROR";
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
+const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const updateWord = RESTActions.update('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
@@ -58,6 +59,8 @@ const computeWordFetchFactory = RESTReducers.computeFetch('word');
 const computeWordDeleteFactory = RESTReducers.computeDelete('delete_word');
 const computeWordEnableOperationFactory = RESTReducers.computeOperation('word_enable_workflow');
 const computeWordDisableOperationFactory = RESTReducers.computeOperation('word_disable_workflow');
+
+const computeWordsQueryFactory = RESTReducers.computeQuery('words');
 
 const fetchSharedWords = function fetchSharedWords(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -101,7 +104,7 @@ const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = 
   }
 };
 
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
+const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, fetchWords, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -148,6 +151,7 @@ const reducers = {
     }
   },
   computeWord: computeWordFetchFactory.computeWord,
+  computeWords: computeWordsQueryFactory.computeWords,
   computeDeleteWord: computeWordDeleteFactory.computeDeleteWord,
   computeWordEnableWorkflow: computeWordEnableOperationFactory.computeWordEnableWorkflow,
   computeWordDisableWorkflow: computeWordDisableOperationFactory.computeWordDisableWorkflow,

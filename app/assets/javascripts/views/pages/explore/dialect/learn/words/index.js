@@ -14,9 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -44,10 +47,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDocument: PropTypes.func.isRequired,
     computeDocument: PropTypes.object.isRequired, 
-    fetchDialect: PropTypes.func.isRequired,
-    fetchWordsInPath: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
-    computeWordsInPath: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    fetchWords: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    computeWords: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -93,9 +96,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-    newProps.fetchWordsInPath(newProps.routeParams.dialect_path, '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    newProps.fetchWords(newProps.routeParams.dialect_path + '/Dictionary', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE);
   }
 
   // Fetch data on initial render
@@ -111,8 +114,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   _handleRefetch(dataGridProps, page, pageSize) {
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchWordsInPath('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize, { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' });
+    this.props.fetchWords(this.props.routeParams.dialect_path + '/Dictionary', '&currentPageIndex=' + page + '&pageSize=' + pageSize);
   }
 
   _onNavigateRequest(path) {
@@ -127,17 +129,19 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   render() {
 
-    const { computeDialect, computeWordsInPath } = this.props;
-
-    let dialect = computeDialect.response;
-
-    if (!dialect || dialect.isFetching || !computeWordsInPath || computeWordsInPath.isFetching) {
-      return <CircularProgress mode="indeterminate" size={5} />;
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': this.props.routeParams.dialect_path + '/Dictionary',
+      'entity': this.props.computeWords
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    return <div>
+    return <div computeEntities={computeEntities}>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
@@ -149,15 +153,22 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               </div>
               <div className="row">
                 <div className="col-xs-12">
-                  <h1>{dialect.get('dc:title')} Words</h1>
-                  <DocumentListView
-                    objectDescriptions="words" 
-                    data={this.props.computeWordsInPath}
-                    refetcher={this._handleRefetch}
-                    onSelectionChange={this._onEntryNavigateRequest}
-                    columns={this.state.columns}
-                    className="browseDataGrid" 
-                    dialect={dialect} />
+                  <h1>{selectn('response.title', computeDialect2)} Words</h1>
+
+                  {(() => {
+                    if (selectn('response.entries', computeWords)) {
+
+                        return <DocumentListView
+                                  objectDescriptions="words" 
+                                  data={computeWords}
+                                  refetcher={this._handleRefetch}
+                                  onSelectionChange={this._onEntryNavigateRequest}
+                                  columns={this.state.columns}
+                                  className="browseDataGrid" 
+                                  dialect={selectn('response', computeDialect2)} />;
+                    }
+                  })()}
+
                 </div>
               </div>
         </div>;

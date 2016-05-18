@@ -12,10 +12,6 @@ const FV_GALLERY_FETCH_START = "FV_GALLERY_FETCH_START";
 const FV_GALLERY_FETCH_SUCCESS = "FV_GALLERY_FETCH_SUCCESS";
 const FV_GALLERY_FETCH_ERROR = "FV_GALLERY_FETCH_ERROR";
 
-const FV_GALLERIES_FETCH_START = "FV_GALLERY_FETCH_START";
-const FV_GALLERIES_FETCH_SUCCESS = "FV_GALLERY_FETCH_SUCCESS";
-const FV_GALLERIES_FETCH_ERROR = "FV_GALLERY_FETCH_ERROR";
-
 const FV_GALLERY_CREATE_START = "FV_GALLERY_CREATE_START";
 const FV_GALLERY_CREATE_SUCCESS = "FV_GALLERY_CREATE_SUCCESS";
 const FV_GALLERY_CREATE_ERROR = "FV_GALLERY_CREATE_ERROR";
@@ -49,11 +45,11 @@ const createGallery = function createGallery(parentDoc, docParams) {
   }
 };
 
-const fetchGalleryEntries = RESTActions.query('FV_GALLERY_ENTRIES', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
+const fetchGalleries = RESTActions.query('FV_GALLERIES', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
 
-const actions = { fetchGallery, fetchGalleryEntries, createGallery };
+const actions = { fetchGallery, fetchGalleries, createGallery };
 
-const computeGalleryEntriesQueryFactory = RESTReducers.computeQuery('gallery_entries');
+const computeGalleryEntriesQueryFactory = RESTReducers.computeQuery('galleries');
 
 const reducers = {
 
@@ -76,7 +72,7 @@ const reducers = {
       break;
     }
   },
-  computeGalleryEntries: computeGalleryEntriesQueryFactory.computeGalleryEntries,
+  computeGalleries: computeGalleryEntriesQueryFactory.computeGalleries,
   computeCreateGallery(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
 	    switch (action.type) {
 	      case FV_GALLERY_CREATE_START:
