@@ -44,8 +44,13 @@ export default class PageDialectPhrasesCreate extends Component {
     createPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
+    embedded: PropTypes.bool,
     onDocumentCreated: PropTypes.func
   };
+
+  static defaultProps = {
+    embedded: false
+  }
 
   constructor(props, context){
     super(props, context);
@@ -131,8 +136,11 @@ export default class PageDialectPhrasesCreate extends Component {
       this.setState({
         phrasePath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
       });
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      if (!this.props.embedded)
+        window.scrollTo(0, 0);
     }
-
   }
 
   render() {

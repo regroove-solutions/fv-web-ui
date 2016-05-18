@@ -45,8 +45,13 @@ export default class PageDialectCategoryCreate extends Component {
     computeDialect: PropTypes.object.isRequired,
     createCategory: PropTypes.func.isRequired,
     computeCategory: PropTypes.object.isRequired,
+    embedded: PropTypes.bool,
     onDocumentCreated: PropTypes.func    
   };
+
+  static defaultProps = {
+    embedded: false
+  }
 
   constructor(props, context){
     super(props, context);
@@ -146,7 +151,10 @@ export default class PageDialectCategoryCreate extends Component {
       this.setState({
         categoryPath: parentPathOrId + "/" + formValue['dc:title'] + '.' + now
       });
-
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      if (!this.props.embedded)
+        window.scrollTo(0, 0);
     }
   }  
   

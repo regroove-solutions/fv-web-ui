@@ -128,8 +128,10 @@ export default class ExploreDialectEdit extends Component {
 
       // Save document
       this.props.updatePortal(newDocument);
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0);
     }
-
   }
 
   render() {

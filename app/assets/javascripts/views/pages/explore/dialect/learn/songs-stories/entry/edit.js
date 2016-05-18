@@ -121,6 +121,8 @@ export default class PageDialectBookEdit extends Component {
       this.props.updateBookEntry(newDocument);
 
       this.setState({ formValue: formValue });
+    } else {
+      window.scrollTo(0, 0);
     }
   }  
 

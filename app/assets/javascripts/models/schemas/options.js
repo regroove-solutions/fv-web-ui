@@ -41,6 +41,12 @@ const DefinitionsLayout = function (locals) {
   );
 };
 
+t.String.getValidationErrorMessage = (value, path, context) => {
+  if (!value) {
+    return 'Value in field ' + context.options.label + ' cannot be empty.';
+  }
+};
+
 const options = {
   FVWord: {
     order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive'],
@@ -612,6 +618,3 @@ const options = {
 };
 
 export default options;
-
-// Sample usage with tcomb
-//const PortalOptions = selectn('FVPortal', options);

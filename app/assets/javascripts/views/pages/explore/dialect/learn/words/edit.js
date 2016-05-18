@@ -121,6 +121,9 @@ export default class PageDialectWordEdit extends Component {
       this.props.updateWord(newDocument);
 
       this.setState({ formValue: formValue });
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0);
     }
   }  
 

@@ -126,6 +126,9 @@ export default class PageDialectGalleryCreate extends Component {
   	    name: formValue['dc:title'],
   	    properties: properties
   	  });
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0);
     }
 
   }

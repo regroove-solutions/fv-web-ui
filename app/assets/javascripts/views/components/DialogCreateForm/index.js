@@ -47,23 +47,23 @@ export default class DialogCreateForm extends React.Component {
 	let createNewButtonLabel = "";
 	switch(this.props.fieldAttributes.type) {
 		case "FVPhrase":
-			createForm = <PageDialectPhrasesCreate routeParams={{dialect_path: this.props.context.path}} onDocumentCreated={this._onDocumentCreated} />;
+			createForm = <PageDialectPhrasesCreate embedded={true} routeParams={{dialect_path: this.props.context.path}} onDocumentCreated={this._onDocumentCreated} />;
 			createNewButtonLabel = "Create New Phrase";
 		break;
 			
 		case "FVCategory":
 			if(this.props.fieldAttributes.page_provider.folder == "Phrase Books") {
-				createForm = <PageDialectPhraseBooksCreate onDocumentCreated={this._onDocumentCreated} />;
+				createForm = <PageDialectPhraseBooksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
 				createNewButtonLabel = "Create New Phrase Book";
 			}
 			else if(this.props.fieldAttributes.page_provider.folder == "Categories") {
-				createForm = <PageDialectCategoryCreate onDocumentCreated={this._onDocumentCreated} />;				
+				createForm = <PageDialectCategoryCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;				
 				createNewButtonLabel = "Create New Category";
 			}
 		break;
 			
 		case "FVContributor":
-			createForm = <PageDialectContributorsCreate onDocumentCreated={this._onDocumentCreated} />;
+			createForm = <PageDialectContributorsCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
 			createNewButtonLabel = "Create New Contributor";
 		break;				
 	}  

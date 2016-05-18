@@ -45,8 +45,13 @@ export default class PageDialectContributorsCreate extends Component {
     computeDialect: PropTypes.object.isRequired,
     createContributor: PropTypes.func.isRequired,
     computeContributor: PropTypes.object.isRequired,
+    embedded: PropTypes.bool,
     onDocumentCreated: PropTypes.func    
   };
+
+  static defaultProps = {
+    embedded: false
+  }
 
   constructor(props, context){
     super(props, context);
@@ -114,13 +119,13 @@ export default class PageDialectContributorsCreate extends Component {
 
     let properties = {};
 	
-	for (let key in formValue) {
-	  if (formValue.hasOwnProperty(key) && key) {
-	    if (formValue[key] && formValue[key] != '') {
-	  	  properties[key] = formValue[key];
-	    }
-	  }
-	}
+  	for (let key in formValue) {
+  	  if (formValue.hasOwnProperty(key) && key) {
+  	    if (formValue[key] && formValue[key] != '') {
+  	  	  properties[key] = formValue[key];
+  	    }
+  	  }
+  	}
 
     this.setState({
       formValue: properties
@@ -138,7 +143,10 @@ export default class PageDialectContributorsCreate extends Component {
       this.setState({
         contributorPath: '/' + this.state.dialectPath + '/Contributors/' + formValue['dc:title'] + '.' + now
       });
-
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      if (!this.props.embedded)
+        window.scrollTo(0, 0);
     }
   }  
   

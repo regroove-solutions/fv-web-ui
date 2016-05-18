@@ -137,6 +137,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
   	    name: formValue['dc:title'],
   	    properties: properties
   	  });
+    } else {
+      window.scrollTo(0, 0);
     }
 
   }

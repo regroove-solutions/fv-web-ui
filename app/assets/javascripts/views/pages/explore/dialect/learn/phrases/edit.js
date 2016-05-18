@@ -121,6 +121,9 @@ export default class PageDialectPhraseEdit extends Component {
       this.props.updatePhrase(newDocument);
 
       this.setState({ formValue: formValue });
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0);
     }
   }  
 

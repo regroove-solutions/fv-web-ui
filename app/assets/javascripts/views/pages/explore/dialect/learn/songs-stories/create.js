@@ -129,6 +129,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       this.setState({
         bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + formValue['dc:title'] + '.' + now
       });
+    } else {
+      window.scrollTo(0, 0);
     }
 
   }

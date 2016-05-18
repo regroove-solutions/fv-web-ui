@@ -128,6 +128,9 @@ export default class PageDialectWordsCreate extends Component {
       this.setState({
         wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
       });
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0);
     }
 
   }
@@ -163,8 +166,10 @@ export default class PageDialectWordsCreate extends Component {
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
                 </form>
+
               </div>
-          </div>
+
+            </div>
   
         </PromiseWrapper>;
   }
