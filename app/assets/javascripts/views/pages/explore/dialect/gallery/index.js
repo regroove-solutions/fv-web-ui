@@ -14,11 +14,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
+import classNames from 'classnames';
 import ImageGallery from 'react-image-gallery';
 import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
-import CircularProgress from 'material-ui/lib/circular-progress';
 import ConfGlobal from 'conf/local.json';
+
+import RaisedButton from 'material-ui/lib/raised-button';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 //Stylesheet
 import '!style!css!react-image-gallery/build/image-gallery.css';
@@ -27,13 +38,20 @@ import '!style!css!react-image-gallery/build/image-gallery.css';
 export default class Gallery extends React.Component {
 
   static propTypes = {
-	  splitWindowPath: PropTypes.array.isRequired,	  
+	  splitWindowPath: PropTypes.array.isRequired,
+	  windowPath: PropTypes.string.isRequired,
+	  pushWindowPath: PropTypes.func.isRequired,
       fetchGallery: PropTypes.func.isRequired,
-      computeGallery: PropTypes.object.isRequired
+      computeGallery: PropTypes.object.isRequired,
+      routeParams: PropTypes.object.isRequired
   };		
 	
   constructor(props, context){
     super(props, context);
+
+    this.state = {
+      galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
+    };
   }
 
   handleImageLoad(event) {
@@ -41,9 +59,11 @@ export default class Gallery extends React.Component {
   }
  
   fetchData(newProps) {
-	  let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');	  
-	  let galleryName = this.props.splitWindowPath.pop();
-	  newProps.fetchGallery("/" + path + "/Portal/" + galleryName);  
+	  newProps.fetchGallery(this.props.routeParams.dialect_path + "/Portal/" + this.props.routeParams.galleryName);  
+  }
+
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
   }
 
   // Fetch data on initial render
@@ -53,30 +73,36 @@ export default class Gallery extends React.Component {
   
   render() {
 
-	const { computeGallery } = this.props;
-	  	  
-	if(computeGallery.isFetching || !computeGallery.success || computeGallery.response === undefined) {
-		return <CircularProgress mode="indeterminate" size={3} />;
-	}
-
 	const images = [];
-			
-	let gallery = computeGallery.response;
 
-	gallery.contextParameters.gallery.related_pictures.map(function(picture) { 
+    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+
+	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) { 
 		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
-		images.push(image);
-		//console.log(images);			
+		images.push(image);		
 	});
-	
-	// Add some sample images for testing
-	images.push({ original: 'http://lorempixel.com/400/300/nature/1/', description: 'Optional description...' })
- 
-    return <div>
+
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.galleryPath,
+      'entity': this.props.computeGallery
+    }])
+
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+	          <div className="row">
+	            <div className="col-xs-8">
+	            </div>
+	            <div className={classNames('col-xs-4', 'text-right')}>
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeGallery)}}>
+                    <RaisedButton label="Edit Gallery" onTouchTap={this._onNavigateRequest.bind(this, 'edit')} primary={true} />
+                  </AuthorizationFilter>
+	            </div>
+	          </div>
+
             <div className="row">
+
               <div className="col-xs-12">
-                <h1>{gallery.title}</h1>
-                <p>{gallery.properties['dc:description']}</p>
+                <h1>{selectn('response.title', computeGallery)}</h1>
+                <p>{selectn('response.properties.dc:description', computeGallery)}</p>
                 <div className="col-xs-4 col-xs-offset-4">
 	           	 <ImageGallery
 	              ref={i => this._imageGallery = i}
@@ -88,6 +114,6 @@ export default class Gallery extends React.Component {
 	           	 </div>
 	           </div>
             </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

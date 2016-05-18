@@ -125,7 +125,6 @@ export default class AutoSuggestComponent extends Component {
 
     if (suggestionThrottle) {
         clearTimeout(suggestionThrottle);
-        this.setState({ isLoading: false });
     }
 
     suggestionThrottle = setTimeout(function() {
@@ -250,24 +249,26 @@ export default class AutoSuggestComponent extends Component {
       'onChange': this.onChange
     };
 
-    const status = (isLoading) ? 'loading' : 'ready';
+    const status = (this.getComputeType().isFetching) ? 'loading' : 'ready';
 
     return (
       <div className="row">
-        <div className="col-xs-12">
+        <div className="col-xs-10">
 
-          <Autosuggest
-            ref="suggestion_widget"
-            theme={theme}
-            suggestions={this.getComputeType().response.entries || []}
-            shouldRenderSuggestions={this.shouldRenderSuggestions}
-            onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
-            getSuggestionValue={this.getSuggestionValue}
-            renderSuggestion={this.renderSuggestion}
-            inputProps={inputProps} />
+            <Autosuggest
+              ref="suggestion_widget"
+              theme={theme}
+              suggestions={this.getComputeType().response.entries || []}
+              shouldRenderSuggestions={this.shouldRenderSuggestions}
+              onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
+              getSuggestionValue={this.getSuggestionValue}
+              renderSuggestion={this.renderSuggestion}
+              inputProps={inputProps} />
 
-          <RefreshIndicator size={40} left={80} top={5} status={status} />
+        </div>
 
+        <div className="col-xs-2">
+          <RefreshIndicator size={40} left={20} top={0} status={status} />
         </div>
 
       </div>

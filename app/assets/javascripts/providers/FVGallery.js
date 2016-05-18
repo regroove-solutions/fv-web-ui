@@ -16,7 +16,7 @@ const FV_GALLERY_CREATE_START = "FV_GALLERY_CREATE_START";
 const FV_GALLERY_CREATE_SUCCESS = "FV_GALLERY_CREATE_SUCCESS";
 const FV_GALLERY_CREATE_ERROR = "FV_GALLERY_CREATE_ERROR";
 
-const fetchGallery = function fetchGallery(pathOrId) {
+/*const fetchGallery = function fetchGallery(pathOrId) {
   return function (dispatch) {
 
     dispatch( { type: FV_GALLERY_FETCH_START } );
@@ -29,7 +29,7 @@ const fetchGallery = function fetchGallery(pathOrId) {
         dispatch( { type: FV_GALLERY_FETCH_ERROR, error: error } )
     });
   }
-};
+};*/
 
 const createGallery = function createGallery(parentDoc, docParams) {
   return function (dispatch) {
@@ -45,33 +45,18 @@ const createGallery = function createGallery(parentDoc, docParams) {
   }
 };
 
+const fetchGallery = RESTActions.fetch('FV_GALLERY', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
+const updateGallery = RESTActions.update('FV_GALLERY', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
+
 const fetchGalleries = RESTActions.query('FV_GALLERIES', 'FVGallery', { headers: { 'X-NXenrichers.document': 'gallery,permissions' } });
 
-const actions = { fetchGallery, fetchGalleries, createGallery };
+const actions = { fetchGallery, updateGallery, fetchGalleries, createGallery };
 
+const computeGalleryFetchFactory = RESTReducers.computeFetch('gallery');
 const computeGalleryEntriesQueryFactory = RESTReducers.computeQuery('galleries');
 
 const reducers = {
-
-  computeGallery(state = { isFetching: false, success: false }, action) {
-    switch (action.type) {
-      case FV_GALLERY_FETCH_START:
-    	  return Object.assign({}, state, { isFetching: true });
-      break;
-
-      case FV_GALLERY_FETCH_SUCCESS:
-    	  return Object.assign({}, state, { response: action.response, isFetching: false, success: true });
-      break;
-
-      case FV_GALLERY_FETCH_ERROR:
-    	  return Object.assign({}, state, { isFetching: false, isError: true, error: action.error});
-      break;
-
-      default: 
-        return Object.assign({}, state);
-      break;
-    }
-  },
+  computeGallery: computeGalleryFetchFactory.computeGallery,
   computeGalleries: computeGalleryEntriesQueryFactory.computeGalleries,
   computeCreateGallery(state = { isFetching: false, response: {get: function() { return ''; }}, success: false, pathOrId: null }, action) {
 	    switch (action.type) {

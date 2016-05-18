@@ -18,6 +18,7 @@ limitations under the License.
 //import {default as PageExploreFamily} from './explore/family'
 //import {default as PageExploreLanguage} from './explore/language'
 import {default as PageExploreDialectEdit} from './explore/dialect/edit'
+import {default as PageDialectGalleryEdit} from './explore/dialect/gallery/edit'
 import {default as PageDialectWordEdit} from './explore/dialect/learn/words/edit'
 import {default as PageDialectPhraseEdit} from './explore/dialect/learn/phrases/edit'
 import {default as PageDialectBookEdit} from './explore/dialect/learn/songs-stories/edit'
@@ -28,6 +29,7 @@ module.exports = {
   PageDialectWordEdit,
   PageDialectPhraseEdit,
   PageDialectBookEdit,
-  PageDialectBookEntryEdit
+  PageDialectBookEntryEdit,
+  PageDialectGalleryEdit
 }
 
