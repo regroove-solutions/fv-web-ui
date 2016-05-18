@@ -17,11 +17,11 @@ function renderInput(locals) {
   };
 
   let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
-console.log(locals.context);
+
   if (!locals.value) {
     content = <div>
                 <AutoSuggestComponent locals={locals} type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
-                <DialogCreateForm onChange={onChange} fieldAttributes={locals.attrs} />
+                <DialogCreateForm context={locals.context} onChange={onChange} fieldAttributes={locals.attrs} />
               </div>;
   }
 

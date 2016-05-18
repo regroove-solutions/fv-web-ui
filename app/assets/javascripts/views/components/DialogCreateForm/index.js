@@ -37,7 +37,6 @@ export default class DialogCreateForm extends React.Component {
   }  
   
   _onDocumentCreated(document) {
-	  console.log("_onDocumentCreated()");
 	  if(document) {
 		  this.props.onChange(event, document);
 	  }
@@ -48,7 +47,7 @@ export default class DialogCreateForm extends React.Component {
 	let createNewButtonLabel = "";
 	switch(this.props.fieldAttributes.type) {
 		case "FVPhrase":
-			createForm = <PageDialectPhrasesCreate onDocumentCreated={this._onDocumentCreated} />;
+			createForm = <PageDialectPhrasesCreate routeParams={{dialect_path: this.props.context.path}} onDocumentCreated={this._onDocumentCreated} />;
 			createNewButtonLabel = "Create New Phrase";
 		break;
 			

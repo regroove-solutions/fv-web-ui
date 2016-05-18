@@ -61,7 +61,8 @@ export default class PageDialectPhrasesCreate extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    if (!selectn('response', ProviderHelpers.getEntry(newProps.computeDialect2, newProps.routeParams.dialect_path)))
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
