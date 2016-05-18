@@ -99,13 +99,21 @@ export default class AppLeftNav extends Component {
 
       let newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems);
 
-      // Insert Tasks after explore
       let newState = this.state.routes.set(exploreEntry[0], newExploreEntry);
-      newState = newState.insert(exploreEntry[0], new Map({
-      id: 'tasks',
-        label: "Tasks",
-        path: "/tasks/"
-      }));
+
+      // Insert Tasks after explore
+      let currentTasksEntry = newState.findEntry(function(value, key) {
+        return value.get('id') === 'tasks';
+      });
+
+      if (currentTasksEntry == null) {
+        newState = newState.insert(exploreEntry[0], new Map({
+
+        id: 'tasks',
+          label: "Tasks",
+          path: "/tasks/"
+        }));
+      }
 
       this.setState({routes: newState});
 
