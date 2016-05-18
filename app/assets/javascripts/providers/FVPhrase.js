@@ -15,10 +15,6 @@ const DISMISS_ERROR = 'DISMISS_ERROR';
 /**
 * Multiple Phrase Actions
 */
-const FV_PHRASES_FETCH_START = "FV_PHRASES_FETCH_START";
-const FV_PHRASES_FETCH_SUCCESS = "FV_PHRASES_FETCH_SUCCESS";
-const FV_PHRASES_FETCH_ERROR = "FV_PHRASES_FETCH_ERROR";
-
 const FV_PHRASES_SHARED_FETCH_START = "FV_PHRASES_SHARED_FETCH_START";
 const FV_PHRASES_SHARED_FETCH_SUCCESS = "FV_PHRASES_SHARED_FETCH_SUCCESS";
 const FV_PHRASES_SHARED_FETCH_ERROR = "FV_PHRASES_SHARED_FETCH_ERROR";
@@ -26,7 +22,6 @@ const FV_PHRASES_SHARED_FETCH_ERROR = "FV_PHRASES_SHARED_FETCH_ERROR";
 /**
 * Single Phrase Actions
 */
-
 const FV_PHRASE_FETCH_ALL_START = "FV_PHRASE_FETCH_ALL_START";
 const FV_PHRASE_FETCH_ALL_SUCCESS = "FV_PHRASE_FETCH_ALL_SUCCESS";
 const FV_PHRASE_FETCH_ALL_ERROR = "FV_PHRASE_FETCH_ALL_ERROR";
@@ -59,21 +54,8 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
   }
 };
 
-const fetchPhrasesInPath = function fetchPhrasesInPath(path, queryAppend, headers = {}, params = {}) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_PHRASES_FETCH_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', queryAppend, {headers: headers}, params)
-    .then((response) => {
-      dispatch( { type: FV_PHRASES_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_PHRASES_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
 const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
+const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
@@ -87,12 +69,14 @@ const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Cont
 const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,phrase,permissions' } });
 const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 
-const actions = { fetchSharedPhrases, fetchPhrasesInPath, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase, askToPublishPhrase, askToUnpublishPhrase, askToEnablePhrase, askToDisablePhrase };
+const actions = { fetchSharedPhrases, fetchPhrases, fetchPhrase, createPhrase, fetchPhrasesAll, updatePhrase, deletePhrase, publishPhrase, unpublishPhrase, enablePhrase, disablePhrase, askToPublishPhrase, askToUnpublishPhrase, askToEnablePhrase, askToDisablePhrase };
 
 const computePhraseFactory = RESTReducers.computeFetch('phrase');
 const computePhraseDeleteFactory = RESTReducers.computeDelete('delete_phrase');
 const computePhraseEnableOperationFactory = RESTReducers.computeOperation('phrase_enable_workflow');
 const computePhraseDisableOperationFactory = RESTReducers.computeOperation('phrase_disable_workflow');
+
+const computePhrasesQueryFactory = RESTReducers.computeQuery('phrases');
 
 const reducers = {
   computeSharedPhrases(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -116,29 +100,8 @@ const reducers = {
       break;
     }
   },
-  computePhrasesInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
-    switch (action.type) {
-      case FV_PHRASES_FETCH_START:
-        return Object.assign({}, state, { isFetching: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_PHRASES_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_PHRASES_FETCH_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
   computePhrase: computePhraseFactory.computePhrase, 
+  computePhrases: computePhrasesQueryFactory.computePhrases,
   computeDeletePhrase: computePhraseDeleteFactory.computeDeletePhrase,
   computePhraseEnableWorkflow: computePhraseEnableOperationFactory.computePhraseEnableWorkflow,
   computePhraseDisableWorkflow: computePhraseDisableOperationFactory.computePhraseDisableWorkflow,

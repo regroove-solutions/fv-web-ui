@@ -90,21 +90,7 @@ const fetchWordsAll = function fetchWordsAll(path, type) {
   }
 };
 
-const fetchWordsInPath = function fetchWordsInPath(path, queryAppend, headers = {}, params = {}) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_WORDS_FETCH_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVWord', queryAppend, {headers: headers}, params)
-    .then((response) => {
-      dispatch( { type: FV_WORDS_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_WORDS_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
-const actions = { fetchSharedWords, fetchWordsInPath, fetchWord, fetchWords, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
+const actions = { fetchSharedWords, fetchWord, fetchWords, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -120,28 +106,6 @@ const reducers = {
 
       // Send modified document to UI without access REST end-point
       case FV_WORDS_SHARED_FETCH_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
-  computeWordsInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
-    switch (action.type) {
-      case FV_WORDS_FETCH_START:
-        return Object.assign({}, state, { isFetching: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_WORDS_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_WORDS_FETCH_ERROR:
-      case DISMISS_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;
 
