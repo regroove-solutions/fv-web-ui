@@ -103,11 +103,13 @@ public class FVGenerateJsonStatistics {
     	String query = constructQuery(docType);
     	
     	if(query != null) {
-	    	
-	        // Execute the query
-			IterableQueryResult resultDocs = session.queryAndFetch(query + " ORDER BY dc:modified DESC", NXQL.NXQL);
+    		
+    		IterableQueryResult resultDocs = null;
 			
-			try {			
+			try {					
+		        // Execute the query
+				resultDocs = session.queryAndFetch(query + " ORDER BY dc:modified DESC", NXQL.NXQL);				
+				
 				documentJsonObj.put("total", resultDocs.size());	
 									
 				// Loop through each document in the result and generate statistics
