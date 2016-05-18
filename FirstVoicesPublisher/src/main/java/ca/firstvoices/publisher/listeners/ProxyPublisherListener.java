@@ -13,6 +13,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_TRANSITION;
+import static org.nuxeo.ecm.core.api.LifeCycleConstants.TRANSTION_EVENT_OPTION_FROM;
 
 import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
@@ -26,7 +27,8 @@ public class ProxyPublisherListener implements EventListener {
 
     protected FirstVoicesPublisherService service = Framework.getService(FirstVoicesPublisherService.class);
 
-    public void handleEvent(Event event) {
+    @Override
+	public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;
@@ -36,9 +38,15 @@ public class ProxyPublisherListener implements EventListener {
             return;
         }
         String transition = (String) ctx.getProperties().get(TRANSTION_EVENT_OPTION_TRANSITION);
+        String transitionFrom = (String) ctx.getProperties().get(TRANSTION_EVENT_OPTION_FROM);
+
         // Publish or unpublish depending on the transition, the service filter depending on the document
         if ("Publish".equals(transition)) {
-            service.publish(doc);
+        	if ("Republish".equals(transitionFrom)) {
+        		service.republish(doc);
+        	} else {
+        		service.publish(doc);
+        	}
         } else if ("Unpublish".equals(transition) || "Disable".equals(transition)){
             service.unpublish(doc);
         }

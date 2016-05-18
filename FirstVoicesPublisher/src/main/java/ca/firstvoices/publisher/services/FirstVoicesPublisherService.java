@@ -51,4 +51,6 @@ public interface FirstVoicesPublisherService {
      * @param doc to publish
      */
     public DocumentModel publish(DocumentModel doc);
+
+	public DocumentModel republish(DocumentModel doc);
 }

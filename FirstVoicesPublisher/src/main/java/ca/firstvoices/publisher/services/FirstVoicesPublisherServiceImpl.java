@@ -249,6 +249,97 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         return input;
     }
 
+    public DocumentModel republishAsset(DocumentModel asset) {
+        CoreSession session = asset.getCoreSession();
+
+        DocumentModel dialect = getDialect(asset);
+        if (dialect == null) {
+            throw new InvalidParameterException("Asset should be inside a dialect");
+        }
+        DocumentModelList proxies = session.getProxies(dialect.getRef(), null);
+        if (proxies.size() == 0) {
+            throw new InvalidParameterException("Dialect should be published");
+        }
+        DocumentModel dialectSection = proxies.get(0);
+        DocumentModel input = getPublication(session, asset.getRef());
+
+        // Always publish changes
+    	input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
+
+        Map<String, String> dependencies = new HashMap<String, String>();
+
+        dependencies.put("fvcore:related_audio", "fvproxy:proxied_audio");
+        dependencies.put("fvcore:related_pictures", "fvproxy:proxied_pictures");
+        dependencies.put("fvcore:related_videos", "fvproxy:proxied_videos");
+        dependencies.put("fvcore:source", "fvproxy:proxied_source");
+        dependencies.put("fv-word:categories", "fvproxy:proxied_categories");
+        dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
+
+        for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
+
+            String dependency = dependencyEntry.getKey();
+            // Check if input has schema
+            if (!asset.hasSchema(dependency.split(":")[0])) {
+                continue;
+            }
+
+            // Publish dependency
+            // String documentPath = input.getPathAsString();
+            String[] dependencyPropertyValue = (String[]) asset.getPropertyValue(dependency);
+
+            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0) {
+                continue;
+            }
+
+            input.setPropertyValue(dependencyEntry.getValue(), null);
+
+            // input is the document in the section
+            for (String relatedDocUUID : dependencyPropertyValue) {
+                IdRef dependencyRef = new IdRef(relatedDocUUID);
+                DocumentModel publishedDep = getPublication(session, dependencyRef);
+
+                // If dependency published, no need to republish
+                if (publishedDep == null) {
+                    DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
+                    DocumentModel parentDependencySection;
+                    if ("FVCategory".equals(dependencyDocModel.getType())) {
+                        // Specific behavior
+                        // Get all parents
+                        DocumentModelList parents = new DocumentModelListImpl();
+                        parents.add(dependencyDocModel);
+                        DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
+                        while (parent != null && "FVCategory".equals(parent.getType())) {
+                            parents.add(parent);
+                            parent = session.getDocument(parent.getParentRef());
+                        }
+                        Object[] docs = parents.toArray();
+                        for (int i = docs.length - 1; i >= 0; i--) {
+                            parentDependencySection = getPublication(session, ((DocumentModel) docs[i]).getRef());
+                            if (parentDependencySection == null) {
+                                parentDependencySection = getPublication(session,
+                                        ((DocumentModel) docs[i]).getParentRef());
+                                parentDependencySection = publishDocument(session, ((DocumentModel) docs[i]), parentDependencySection);
+                            }
+                            if (i == 0) {
+                                publishedDep = parentDependencySection;
+                            }
+                        }
+                    } else {
+                        parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
+                        publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
+                    }
+                }
+
+                String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
+                String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
+                updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+                input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+            }
+        }
+        session.saveDocument(input);
+        return input;
+    }
+
     @Override
     public void unpublishAsset(DocumentModel asset) {
         DocumentModel proxy = getPublication(asset.getCoreSession(), asset.getRef());
@@ -297,6 +388,18 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         else if (isAssetType(doc.getType())) {
             return publishAsset(doc);
+        }
+        return null;
+    }
+
+    @Override
+    public DocumentModel republish(DocumentModel doc) {
+        if (doc == null) {
+            return null;
+        }
+
+        if (isAssetType(doc.getType())) {
+            return republishAsset(doc);
         }
         return null;
     }
