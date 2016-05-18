@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
-import Immutable from 'immutable';
+import Immutable, { Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -59,12 +59,7 @@ export default class AppLeftNav extends Component {
         id: 'get-started',
         label: "Get Started",
         path: "/get-started/"
-      },
-      {
-    	id: 'tasks',
-        label: "Tasks",
-        path: "/tasks/"
-      },      
+      },     
       {
         id: 'explore',
         label: 'Explore',
@@ -104,7 +99,13 @@ export default class AppLeftNav extends Component {
 
       let newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems);
 
+      // Insert Tasks after explore
       let newState = this.state.routes.set(exploreEntry[0], newExploreEntry);
+      newState = newState.insert(exploreEntry[0], new Map({
+      id: 'tasks',
+        label: "Tasks",
+        path: "/tasks/"
+      }));
 
       this.setState({routes: newState});
 
