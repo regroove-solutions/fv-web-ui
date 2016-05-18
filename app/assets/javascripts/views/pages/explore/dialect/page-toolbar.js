@@ -62,7 +62,14 @@ export default class PageToolbar extends Component {
     };
 
     // Bind methods to 'this'
-    ['_documentActionsToggleEnabled', '_documentActionsTogglePublished', '_documentActionsStartWorkflow'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_documentActionsToggleEnabled', '_documentActionsTogglePublished', '_documentActionsStartWorkflow', '_publishChanges'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  /**
+  * Publish changes directly
+  */
+  _publishChanges() {
+    this.props.publishToggleAction(true, false, selectn('response.path', this.props.computeEntity));
   }
 
   /**
@@ -74,7 +81,7 @@ export default class PageToolbar extends Component {
       enabledToggled: toggled
     });
 
-    this.props.enableToggleAction(toggled, false);
+    this.props.enableToggleAction(toggled, false, selectn('response.path', this.props.computeEntity));
   }
 
   /**
@@ -86,13 +93,15 @@ export default class PageToolbar extends Component {
       publishedToggled: toggled
     });
 
-    this.props.publishToggleAction(toggled, false);
+    this.props.publishToggleAction(toggled, false, selectn('response.path', this.props.computeEntity));
   }
 
   /**
   * Start a workflow
   */
-  _documentActionsStartWorkflow(workflow, path, event) {
+  _documentActionsStartWorkflow(workflow, event) {
+
+    const path = selectn('response.path', this.props.computeEntity);
 
     switch (workflow) {
       case 'enable':
@@ -143,10 +152,10 @@ export default class PageToolbar extends Component {
 
                               <span style={{paddingRight: '15px'}}>REQUEST: </span>
 
-                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable', selectn('response.path', computeEntity))} />
-                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable', selectn('response.path', computeEntity))} />
-                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish', selectn('response.path', computeEntity))} />
-                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish', selectn('response.path', computeEntity))} />
+                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
+                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
+                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
+                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
 
                             </div>
 
@@ -184,7 +193,7 @@ export default class PageToolbar extends Component {
                   <ToolbarGroup float="right">
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                      <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this.props.publishToggleAction.bind(this, true, false)} />
+                      <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
