@@ -1,6 +1,5 @@
 var path            = require('path')
 var webpack         = require('webpack')
-var StatsPlugin     = require('stats-webpack-plugin');
 var webpackManifest = require('../lib/webpackManifest')
 
 var config          = require('./')
@@ -29,9 +28,7 @@ module.exports = function(env) {
       console: true
     },
 
-    plugins: [
-      new webpack.HotModuleReplacementPlugin()
-    ],
+    plugins: [],
 
     resolve: {
       alias: {
@@ -65,11 +62,7 @@ module.exports = function(env) {
     // Karma doesn't need entry points or output settings
 
     webpackConfig.entry= {
-      app: [
-        'webpack-dev-server/client?http://0.0.0.0:' + port, // WebpackDevServer host and port
-        'webpack/hot/only-dev-server', // "only" prevents reload on syntax errors
-        './app.js'
-      ]
+      app: ['./app.js']
     }
 
     webpackConfig.output= {
@@ -97,6 +90,11 @@ module.exports = function(env) {
       host: '0.0.0.0',
       port: port
     };
+
+    webpackConfig.entry['app'].push('webpack-dev-server/client?http://0.0.0.0:' + port);
+    webpackConfig.entry['app'].push('webpack/hot/only-dev-server');
+
+    webpackConfig.plugins.push(new webpack.HotModuleReplacementPlugin())
   }
 
   if(env === 'production') {
@@ -109,10 +107,6 @@ module.exports = function(env) {
       }),
       new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin(),
-      /*new StatsPlugin('stats.json', {
-        chunkModules: true,
-        exclude: [/node_modules[\\\/]react/]
-      }),*/
       new webpack.NoErrorsPlugin()
     )
   }
