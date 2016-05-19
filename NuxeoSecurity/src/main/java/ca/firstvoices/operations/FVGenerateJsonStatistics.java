@@ -152,8 +152,8 @@ public class FVGenerateJsonStatistics {
 		    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
 		    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
 		    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
-		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-		    	recentlyCreatedJsonObj.put("dc:modified", dateModified.getTime().toString());
+		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
+		    	recentlyCreatedJsonObj.put("dc:created", dateCreated.getTime().toString());
 		    	recentlyCreatedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
 		    	recentlyCreatedJsonArray.add(recentlyCreatedJsonObj);			
 			}
