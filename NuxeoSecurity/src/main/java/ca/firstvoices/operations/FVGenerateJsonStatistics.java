@@ -94,6 +94,7 @@ public class FVGenerateJsonStatistics {
 		int docsCreatedWithinSevenDaysCount = 0;				
 		
 		ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
+		ArrayNode recentlyCreatedJsonArray = mapper.createArrayNode();		
 		ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();	    	
     	
     	ObjectNode documentJsonObj = mapper.createObjectNode();
@@ -103,97 +104,99 @@ public class FVGenerateJsonStatistics {
     	
     	if(query != null) {
     		
-			DocumentModelList resultDocs = session.query(query + " ORDER BY dc:modified DESC", null, 0, 0, true);			
-			documentJsonObj.put("total", resultDocs.totalSize());	
-								
-			// Loop through each document in the result and generate statistics
-			for (DocumentModel doc : resultDocs) {			      	        
-		    			    			        
-		    	// Count document states
-		        if(doc.getCurrentLifeCycleState().equals("New")) {
-		        	newDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Enabled")) {
-		        	enabledDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Disabled")) {
-		        	disabledDocsCount++;
-		        }
-		        else if(doc.getCurrentLifeCycleState().equals("Published")) {
-		        	publishedDocsCount++;
-		        }	        
-	        	Boolean isAvailableInChildrensArchive = (Boolean)doc.getProperty("fvcore", "available_in_childrens_archive");
-	        	if(isAvailableInChildrensArchive != null && isAvailableInChildrensArchive.booleanValue()) {
-	        		docsAvailableInChildrensArchiveCount++;
-		        }
-		        
-		        // Get current date
-		        GregorianCalendar today = new GregorianCalendar();            
-		        int currentMonth = today.get(GregorianCalendar.MONTH);            
-		        int currentDay = today.get(GregorianCalendar.DAY_OF_MONTH);
-		        int currentYear = today.get(GregorianCalendar.YEAR);
-		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
-		    	
-		    	// Count documents modified today
-		    	if(dateModified.get(GregorianCalendar.YEAR) == currentYear && dateModified.get(GregorianCalendar.MONTH) == currentMonth 
-		    			&& dateModified.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
-					docsModifiedTodayCount++;
-		    	}
-		    	
-		    	// Count documents created today
-		    	if(dateCreated.get(GregorianCalendar.YEAR) == currentYear && dateCreated.get(GregorianCalendar.MONTH) == currentMonth 
-		    			&& dateCreated.get(GregorianCalendar.DAY_OF_MONTH) == currentDay) {
-					docsCreatedTodayCount++;
-		    	}
-	
-		    	// Count documents created within the last 7 days
-		    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
-		    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
-		    	if(dateCreated.after(sevenDaysAgo)) {
-					docsCreatedWithinSevenDaysCount++;
-		    	}		    	
-		    	
-		    	// Most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
-		    	if(recentlyModifiedJsonArray.size() < maxQueryResults) {
-			    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
-			    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-			    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-			    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-			    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-			    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-			    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));	        
-			    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);
-		        }		        
-	
-		    	// Current user most recently modified documents - current query is sorted by modified date, so newest docs are at the beginning
-		    	if(doc.getPropertyValue("dc:lastContributor").equals(principalName) && userRecentlyModifiedJsonArray.size() < maxQueryResults) {
-			    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
-			    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-			    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-			    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-			    	//GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-			    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-			    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
-			    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);
-		        }			        
-	    		    	
-				// Build JSON object
-				documentJsonObj.put("new", newDocsCount);
-				documentJsonObj.put("enabled", enabledDocsCount);
-				documentJsonObj.put("disabled", disabledDocsCount);
-				documentJsonObj.put("published", publishedDocsCount);
-				documentJsonObj.put("created_today", docsCreatedTodayCount);
-				documentJsonObj.put("modified_today", docsModifiedTodayCount);
-				documentJsonObj.put("created_within_7_days", docsCreatedWithinSevenDaysCount);
-				        
-			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);
-			    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);					
-			    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
+    		// Total docs
+			DocumentModelList resultDocs = session.query(query, null, 1, 0, true);			
+			documentJsonObj.put("total", resultDocs.totalSize());				
+			
+			// Docs in 'New' state
+			DocumentModelList newDocs = session.query(query + " AND ecm:currentLifeCycleState='New'", null, 1, 0, true);			
+			documentJsonObj.put("new", newDocs.totalSize());			
+			
+			// Docs in 'Enabled' state
+			DocumentModelList enabledDocs = session.query(query + " AND ecm:currentLifeCycleState='Enabled'", null, 1, 0, true);			
+			documentJsonObj.put("enabled", enabledDocs.totalSize());			
 
-				documentJsonObj.put("available_in_childrens_archive", docsAvailableInChildrensArchiveCount);							    			
+			// Docs in 'Published' state
+			DocumentModelList publishedDocs = session.query(query + " AND ecm:currentLifeCycleState='Published'", null, 1, 0, true);			
+			documentJsonObj.put("published", publishedDocs.totalSize());			
+
+			// Docs in 'Disabled' state
+			DocumentModelList disabledDocs = session.query(query + " AND ecm:currentLifeCycleState='Disabled'", null, 1, 0, true);			
+			documentJsonObj.put("disabled", disabledDocs.totalSize());				
+			
+	        // Get current date
+	        GregorianCalendar today = new GregorianCalendar(); 
+	        int currentYear = today.get(GregorianCalendar.YEAR);
+	        int currentMonth = today.get(GregorianCalendar.MONTH) + 1;            
+	        int currentDay = today.get(GregorianCalendar.DAY_OF_MONTH);
+	    	String todayDateString = currentYear + "-" + (currentMonth<10?("0"+currentMonth):(currentMonth)) + "-" + currentDay;
+	    	
+	    	// Count documents created today
+	    	String createdTodayQuery = query + " AND dc:created >= DATE '" + todayDateString + "'";
+			DocumentModelList createdTodayDocs = session.query(createdTodayQuery, null, 1, 0, true);			
+			documentJsonObj.put("created_today", createdTodayDocs.totalSize());				
+
+	    	// Count documents modified today
+	    	String modifiedTodayQuery = query + " AND dc:modified >= DATE '" + todayDateString + "'";
+			DocumentModelList modifiedTodayDocs = session.query(modifiedTodayQuery, null, 1, 0, true);			
+			documentJsonObj.put("modified_today", modifiedTodayDocs.totalSize());					
+			
+	    	// Count documents created within the last 7 days
+	    	GregorianCalendar sevenDaysAgo = new GregorianCalendar();
+	    	sevenDaysAgo.add(GregorianCalendar.DAY_OF_MONTH, -7); 
+	        int sevenDaysAgoYear = sevenDaysAgo.get(GregorianCalendar.YEAR);
+	        int sevenDaysAgoMonth = sevenDaysAgo.get(GregorianCalendar.MONTH) + 1;            
+	        int sevenDaysAgoDay = sevenDaysAgo.get(GregorianCalendar.DAY_OF_MONTH);
+	    	String sevenDaysAgoDateString = sevenDaysAgoYear + "-" + (sevenDaysAgoMonth<10?("0"+sevenDaysAgoMonth):(sevenDaysAgoMonth)) + "-" + sevenDaysAgoDay;
+	    	String createdWithinSevenDaysQuery = query + " AND dc:created >= DATE '" + sevenDaysAgoDateString + "'";
+			DocumentModelList createdWithin7DaysDocs = session.query(createdWithinSevenDaysQuery, null, 1, 0, true);			
+			documentJsonObj.put("created_within_7_days", createdWithin7DaysDocs.totalSize());				
+
+	    	// Count available in childrens archive
+			DocumentModelList childrensArchiveDocs = session.query(query + " AND fv:available_in_childrens_archive=1", null, 1, 0, true);			
+			documentJsonObj.put("available_in_childrens_archive", childrensArchiveDocs.totalSize());			
+
+			// List of most recently created docs
+			DocumentModelList recentlyCreatedDocs = session.query(query + " ORDER BY dc:created DESC", null, maxQueryResults, 0, true);			
+			for (DocumentModel doc : recentlyCreatedDocs) {
+		    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
+		    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
+		    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
+		    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
+		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+		    	recentlyCreatedJsonObj.put("dc:modified", dateModified.getTime().toString());
+		    	recentlyCreatedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+		    	recentlyCreatedJsonArray.add(recentlyCreatedJsonObj);			
 			}
+		    documentJsonObj.put("most_recently_created", recentlyCreatedJsonArray);			
+			
+			// List of most recently modified docs
+			DocumentModelList recentlyModifiedDocs = session.query(query + " ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
+			for (DocumentModel doc : recentlyModifiedDocs) {
+		    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
+		    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+		    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+		    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+		    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+		    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+		    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);			
+			}
+		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);			
+
+			// List of user most recently modified docs		    
+			DocumentModelList userMostRecentlyModifiedDocs = session.query(query + " AND dc:lastContributor='" + principalName + "' ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
+			for (DocumentModel doc : userMostRecentlyModifiedDocs) {
+		    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+		    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+		    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+		    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+		    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+		    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+		    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);			
+			}
+		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
     	}
     	return documentJsonObj;
     }   
