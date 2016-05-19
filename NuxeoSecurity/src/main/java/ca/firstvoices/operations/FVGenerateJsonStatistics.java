@@ -81,18 +81,7 @@ public class FVGenerateJsonStatistics {
     } 
     
     private ObjectNode generateDocumentStatsJson(String docType) {
-		
-    	int newDocsCount = 0;
-		int enabledDocsCount = 0;
-		int disabledDocsCount = 0;
-		int publishedDocsCount = 0;
-
-		int docsAvailableInChildrensArchiveCount = 0;
-		
-		int docsModifiedTodayCount = 0;
-		int docsCreatedTodayCount = 0;			
-		int docsCreatedWithinSevenDaysCount = 0;				
-		
+				
 		ArrayNode recentlyModifiedJsonArray = mapper.createArrayNode();		
 		ArrayNode recentlyCreatedJsonArray = mapper.createArrayNode();		
 		ArrayNode userRecentlyModifiedJsonArray = mapper.createArrayNode();	    	
