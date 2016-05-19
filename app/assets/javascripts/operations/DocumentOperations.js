@@ -13,7 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import _ from 'underscore';
 import selectn from 'selectn';
 
 import Nuxeo from 'nuxeo';
@@ -346,44 +345,6 @@ export default class DocumentOperations extends BaseOperations {
                 resolve(new documentType(response.entries[0]));
               } else {
                 reject('No ' + documentType.prototype.entityTypeName +' found');
-              }
-          }).catch((error) => { throw error });
-    });
-  }
-
-  /**
-  * Get a related media by document
-  */
-  getMediaByDocument(document, headers = null, params = null) {
-    // Expose fields to promise
-    let client = this.client;
-    let selectDefault = this.selectDefault;
-
-    return new Promise(
-        // The resolver function is called with the ability to resolve or
-        // reject the promise
-        function(resolve, reject) {
-
-          var related_media = document.get("fv:related_audio").concat(document.get("fv:related_pictures"), document.get("fv:related_video"));
-          related_media = _.map(_.compact(related_media), function(value){ return "'" + value + "'"; }).join();
-
-          let defaultParams = {
-            query: 
-              "SELECT * FROM Document WHERE (ecm:uuid IN (" + related_media + ") AND (ecm:primaryType = 'FVAudio' OR ecm:primaryType = 'FVVideo' OR ecm:primaryType = 'FVPicture') AND  " + selectDefault + ")"
-          };
-
-          let defaultHeaders = {};
-
-          params = Object.assign(defaultParams, params);
-          headers = Object.assign(defaultHeaders, headers);
-
-          client.operation('Document.Query')
-            .params(params)
-            .execute(headers).then((response) => {           
-              if (response.entries.length > 0) {
-                resolve(response.entries);
-              } else {
-                reject('No media found');
               }
           }).catch((error) => { throw error });
     });
