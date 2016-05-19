@@ -2,6 +2,8 @@ var path            = require('path')
 var webpack         = require('webpack')
 var webpackManifest = require('../lib/webpackManifest')
 
+var HappyPack = require('happypack');
+
 var config          = require('./')
 
 module.exports = function(env) {
@@ -28,7 +30,13 @@ module.exports = function(env) {
       console: true
     },
 
-    plugins: [],
+    plugins: [
+     new HappyPack({
+        id: 'js',
+        loaders: [ 'babel-loader' ],
+        threads: 4
+      })
+    ],
 
     resolve: {
       alias: {
@@ -44,7 +52,12 @@ module.exports = function(env) {
 
     module: {
       loaders: [
-        { test: /\.js$/, loaders: ['react-hot', 'babel'], include: absJSSourceDirectory },
+        {
+          test: /\.js$/,
+          loaders: ['happypack/loader?id=js'],
+          exclude: path.resolve(__dirname, "node_modules"),
+          include: absJSSourceDirectory
+        },
         //{ test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
         { test: /\.less$/, loader: "style!css!less" },
         { test: /\.json$/, loader: "json" },
