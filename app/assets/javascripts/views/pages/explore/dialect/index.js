@@ -71,8 +71,8 @@ export default class ExploreDialect extends Component {
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    publishDialect: PropTypes.func.isRequired,
-    unpublishDialect: PropTypes.func.isRequired,
+    publishPortal: PropTypes.func.isRequired,
+    unpublishPortal: PropTypes.func.isRequired,
     enableDialect: PropTypes.func.isRequired,
     disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
@@ -141,9 +141,9 @@ export default class ExploreDialect extends Component {
   */
   _publishToggleAction(toggled) {
     if (toggled) {
-      this.props.publishDialect(this.props.routeParams.dialect_path, null, null, "Dialect published successfully!");
+      this.props.publishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Dialect published successfully!");
     } else {
-      this.props.unpublishDialect(this.props.routeParams.dialect_path, null, null, "Dialect unpublished successfully!");
+      this.props.unpublishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Dialect unpublished successfully!");
     }
   }
 
