@@ -127,11 +127,21 @@ const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 const computeBookEntryFetchFactory = RESTReducers.computeFetch('book_entry');
 const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 
+const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const computeRecentlyModifiedStoriesQuery = RESTReducers.computeQuery('modified_stories');
+const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const computeRecentlyCreatedStoriesQuery = RESTReducers.computeQuery('created_stories');
+
+const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const computeRecentlyModifiedSongsQuery = RESTReducers.computeQuery('modified_songs');
+const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const computeRecentlyCreatedSongsQuery = RESTReducers.computeQuery('created_songs');
+
 const actions = {
                   fetchBook, updateBook, createBook, deleteBook, publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntries, fetchBooksAll,
                   askToPublishBook, askToUnpublishBook, askToEnableBook, askToDisableBook,
                   fetchBookEntry, updateBookEntry, createBookEntry, deleteBookEntry, publishBookEntry, unpublishBookEntry, enableBookEntry, disableBookEntry,
-                  askToPublishBookEntry, askToUnpublishBookEntry, askToEnableBookEntry, askToDisableBookEntry
+                  askToPublishBookEntry, askToUnpublishBookEntry, askToEnableBookEntry, askToDisableBookEntry, queryModifiedStories, queryCreatedStories, queryModifiedSongs, queryCreatedSongs
                 };
 
 const reducers = {
@@ -222,7 +232,11 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }
+  },
+  computeModifiedStories: computeRecentlyModifiedStoriesQuery.computeModifiedStories, 
+  computeCreatedStories: computeRecentlyCreatedStoriesQuery.computeCreatedStories,
+  computeModifiedSongs: computeRecentlyModifiedSongsQuery.computeModifiedSongs, 
+  computeCreatedSongs: computeRecentlyCreatedSongsQuery.computeCreatedSongs  
 };
 
 const middleware = [thunk];

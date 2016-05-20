@@ -38,6 +38,8 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import IconButton from 'material-ui/lib/icon-button';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
+import Tabs from 'material-ui/lib/tabs/tabs';
+import Tab from 'material-ui/lib/tabs/tab';
 
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 
@@ -81,7 +83,15 @@ export default class DialectLearn extends Component {
     queryUserModifiedPhrases: PropTypes.func.isRequired,
     computeUserModifiedPhrases: PropTypes.object.isRequired,
     queryUserCreatedPhrases: PropTypes.func.isRequired,
-    computeUserCreatedPhrases: PropTypes.object.isRequired,    
+    computeUserCreatedPhrases: PropTypes.object.isRequired,
+    queryModifiedStories: PropTypes.func.isRequired,
+    computeModifiedStories: PropTypes.object.isRequired,
+    queryCreatedStories: PropTypes.func.isRequired,
+    computeCreatedStories: PropTypes.object.isRequired,    
+    queryModifiedSongs: PropTypes.func.isRequired,
+    computeModifiedSongs: PropTypes.object.isRequired,
+    queryCreatedSongs: PropTypes.func.isRequired,
+    computeCreatedSongs: PropTypes.object.isRequired,   
     
     fetchCharacters: PropTypes.func.isRequired,
     computeCharacters: PropTypes.object.isRequired,
@@ -122,6 +132,11 @@ export default class DialectLearn extends Component {
     newProps.queryCreatedPhrases(newProps.routeParams.dialect_path);
     newProps.queryUserModifiedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
     newProps.queryUserCreatedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));    
+
+    newProps.queryModifiedStories(newProps.routeParams.dialect_path);
+    newProps.queryCreatedStories(newProps.routeParams.dialect_path);    
+    newProps.queryModifiedSongs(newProps.routeParams.dialect_path);
+    newProps.queryCreatedSongs(newProps.routeParams.dialect_path);  
     
     newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
@@ -195,6 +210,10 @@ export default class DialectLearn extends Component {
     const computeCreatedWords = ProviderHelpers.getEntry(this.props.computeCreatedWords, this.props.routeParams.dialect_path);
     const computeModifiedPhrases = ProviderHelpers.getEntry(this.props.computeModifiedPhrases, this.props.routeParams.dialect_path);
     const computeCreatedPhrases = ProviderHelpers.getEntry(this.props.computeCreatedPhrases, this.props.routeParams.dialect_path);
+    const computeModifiedStories = ProviderHelpers.getEntry(this.props.computeModifiedStories, this.props.routeParams.dialect_path);
+    const computeCreatedStories = ProviderHelpers.getEntry(this.props.computeCreatedStories, this.props.routeParams.dialect_path);
+    const computeModifiedSongs = ProviderHelpers.getEntry(this.props.computeModifiedSongs, this.props.routeParams.dialect_path);
+    const computeCreatedSongs = ProviderHelpers.getEntry(this.props.computeCreatedSongs, this.props.routeParams.dialect_path);    
     //const computeUserModifiedWords = ProviderHelpers.getEntry(this.props.computeUserModifiedWords, this.props.routeParams.dialect_path);
 
     
@@ -295,133 +314,204 @@ export default class DialectLearn extends Component {
 
               <div className={classNames('col-xs-12', 'col-md-4')}>
 
-                <div>
-
-                <h4>Dashboard</h4>
-
-                {(selectn('response', computeDialectStats)) ? 
-                	<div>
-		                <StatsPanel data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
-		                <StatsPanel data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
-		                <StatsPanel data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
-		                <StatsPanel data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
-	                </div>
-                : circularProgress}
-
-                {(selectn('response', computeModifiedWords)) ?                
-                	<div>
-	                	<p><strong>Most Recently Modified Words:</strong></p>
-	                	<ul>
-	        			{(selectn('response', computeModifiedWords)).entries.map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:modified'])} <br />
-		        				by {document.properties['dc:lastContributor']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                
-
-                {(selectn('response', computeCreatedWords)) ?                
-                	<div>
-	                	<p><strong>Most Recently Created Words:</strong></p>
-	                	<ul>
-	        			{(selectn('response', computeCreatedWords)).entries.map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:created'])} <br />
-		        				by {document.properties['dc:creator']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                  
-                
-                {(selectn('response.entries', computeUserModifiedWords)) ?                
-                   	<div>
-	                	<p><strong>My Most Recently Modified Words:</strong></p>
-	                	<ul>
-	        			{(selectn('response.entries', computeUserModifiedWords)).map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:modified'])} <br />
-		        				by {document.properties['dc:lastContributor']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                   
-
-                {(selectn('response.entries', computeUserCreatedWords)) ?                
-                   	<div>
-	                	<p><strong>My Most Recently Created Words:</strong></p>
-	                	<ul>
-	        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:created'])} <br />
-		        				by {document.properties['dc:creator']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                 
-                
-                {(selectn('response', computeModifiedPhrases)) ?                
-                	<div>
-	                	<p><strong>Most Recently Modified Phrases:</strong></p>
-	                	<ul>
-	        			{(selectn('response', computeModifiedPhrases)).entries.map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:modified'])} <br />
-		        				by {document.properties['dc:lastContributor']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                
-
-                {(selectn('response', computeCreatedPhrases)) ?                
-                	<div>
-	                	<p><strong>Most Recently Created Phrases:</strong></p>
-	                	<ul>
-	        			{(selectn('response', computeCreatedPhrases)).entries.map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:created'])} <br />
-		        				by {document.properties['dc:creator']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                  
-
-                {(selectn('response.entries', computeUserModifiedPhrases)) ?                
-                   	<div>
-	                	<p><strong>My Most Recently Modified Phrases:</strong></p>
-	                	<ul>
-	        			{(selectn('response.entries', computeUserModifiedPhrases)).map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:modified'])} <br />
-		        				by {document.properties['dc:lastContributor']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                   
-
-                {(selectn('response.entries', computeUserCreatedPhrases)) ?                
-                   	<div>
-	                	<p><strong>My Most Recently Created Phrases:</strong></p>
-	                	<ul>
-	        			{(selectn('response.entries', computeUserCreatedPhrases)).map((document, i) => 
-	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
-		        				{this._formatDate(document.properties['dc:created'])} <br />
-		        				by {document.properties['dc:creator']}
-	        				</li>
-	        	    	)}
-	        			</ul>
-        			</div>
-                : circularProgress}                 
-                                
-                </div>
-                
+	          <Tabs> 
+	              <Tab label="Recent Activity" id="recentActivity"> 	              
+	              	<Tabs>
+	              		<Tab label="Words" id="recentActivityWords">
+	              			{(selectn('response', computeModifiedWords)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Modified Words:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeModifiedWords)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                
+		
+			                {(selectn('response', computeCreatedWords)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Created Words:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeCreatedWords)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                  
+			                
+			                {(selectn('response.entries', computeUserModifiedWords)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Modified Words:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserModifiedWords)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                   
+		
+			                {(selectn('response.entries', computeUserCreatedWords)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Created Words:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress} 	              			              		
+	              		</Tab>
+	              		
+	              		<Tab label="Phrases" id="recentActivityPhrases">
+			                {(selectn('response', computeModifiedPhrases)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Modified Phrases:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeModifiedPhrases)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                
+		
+			                {(selectn('response', computeCreatedPhrases)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Created Phrases:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeCreatedPhrases)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                  
+		
+			                {(selectn('response.entries', computeUserModifiedPhrases)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Modified Phrases:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserModifiedPhrases)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                   
+		
+			                {(selectn('response.entries', computeUserCreatedPhrases)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Created Phrases:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserCreatedPhrases)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}  	              		           		
+	              		</Tab>
+	              		
+	              		<Tab label="Songs" id="recentActivitySongs">
+              				{(selectn('response', computeModifiedSongs)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Modified Songs:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeModifiedSongs)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                
+		
+			                {(selectn('response', computeCreatedSongs)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Created Songs:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeCreatedSongs)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}  	              		
+	              		</Tab>
+	              		
+	              		<Tab label="Stories" id="recentActivityStories">
+	              			{(selectn('response', computeModifiedStories)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Modified Stories:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeModifiedStories)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                
+		
+			                {(selectn('response', computeCreatedStories)) ?                
+			                	<div>
+				                	<p><strong>Most Recently Created Stories:</strong></p>
+				                	<ul>
+				        			{(selectn('response', computeCreatedStories)).entries.map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}   	              		
+			           </Tab>	              		
+	              	</Tabs>	                	                
+	              </Tab> 
+	              
+	              <Tab label="Statistics" id="statistics"> 	              
+	                  <Tabs>
+	              		<Tab label="Words" id="statisticsWords">
+	              			{(selectn('response', computeDialectStats)) ? 
+		    		        	<StatsPanel data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
+			                : circularProgress}	              		
+	              		</Tab>              		
+	              		
+	              		<Tab label="Phrases" id="statisticsPhrases">
+	          				{(selectn('response', computeDialectStats)) ? 
+		    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
+			                : circularProgress}		              		
+	              		</Tab>
+	              		
+	              		<Tab label="Songs" id="statisticsSongs">
+	          				{(selectn('response', computeDialectStats)) ? 
+		    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
+			                : circularProgress}		              		
+	              		</Tab>
+	              		
+	              		<Tab label="Stories" id="statisticsStories">
+	          				{(selectn('response', computeDialectStats)) ? 
+	          					<StatsPanel data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
+			                : circularProgress}		              		
+	              		</Tab>
+	              	</Tabs>	
+	              </Tab>	
+              	</Tabs>		              
+	              
                 <div>
 
 
