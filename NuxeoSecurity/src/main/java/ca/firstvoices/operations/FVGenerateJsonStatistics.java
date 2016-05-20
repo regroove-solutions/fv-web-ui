@@ -144,48 +144,48 @@ public class FVGenerateJsonStatistics {
 	    	// Count available in childrens archive
 			DocumentModelList childrensArchiveDocs = session.query(query + " AND fv:available_in_childrens_archive=1", null, 1, 0, true);			
 			documentJsonObj.put("available_in_childrens_archive", childrensArchiveDocs.totalSize());			
-
-			// List of most recently created docs
-			DocumentModelList recentlyCreatedDocs = session.query(query + " ORDER BY dc:created DESC", null, maxQueryResults, 0, true);			
-			for (DocumentModel doc : recentlyCreatedDocs) {
-		    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
-		    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
-		    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
-		    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
-		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
-		    	recentlyCreatedJsonObj.put("dc:created", dateCreated.getTime().toString());
-		    	recentlyCreatedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
-		    	recentlyCreatedJsonArray.add(recentlyCreatedJsonObj);			
-			}
-		    documentJsonObj.put("most_recently_created", recentlyCreatedJsonArray);			
-			
-			// List of most recently modified docs
-			DocumentModelList recentlyModifiedDocs = session.query(query + " ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
-			for (DocumentModel doc : recentlyModifiedDocs) {
-		    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
-		    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-		    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-		    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-		    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-		    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
-		    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);			
-			}
-		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);			
-
-			// List of user most recently modified docs		    
-			DocumentModelList userMostRecentlyModifiedDocs = session.query(query + " AND dc:lastContributor='" + principalName + "' ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
-			for (DocumentModel doc : userMostRecentlyModifiedDocs) {
-		    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
-		    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
-		    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
-		    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
-		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
-		    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
-		    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
-		    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);			
-			}
-		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
+//
+//			// List of most recently created docs
+//			DocumentModelList recentlyCreatedDocs = session.query(query + " ORDER BY dc:created DESC", null, maxQueryResults, 0, true);			
+//			for (DocumentModel doc : recentlyCreatedDocs) {
+//		    	ObjectNode recentlyCreatedJsonObj = mapper.createObjectNode();
+//		    	recentlyCreatedJsonObj.put("ecm:uuid", doc.getId());
+//		    	recentlyCreatedJsonObj.put("dc:title", doc.getTitle());
+//		    	recentlyCreatedJsonObj.put("ecm:path", doc.getPathAsString());
+//		    	GregorianCalendar dateCreated = (GregorianCalendar)doc.getPropertyValue("dc:created");
+//		    	recentlyCreatedJsonObj.put("dc:created", dateCreated.getTime().toString());
+//		    	recentlyCreatedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+//		    	recentlyCreatedJsonArray.add(recentlyCreatedJsonObj);			
+//			}
+//		    documentJsonObj.put("most_recently_created", recentlyCreatedJsonArray);			
+//			
+//			// List of most recently modified docs
+//			DocumentModelList recentlyModifiedDocs = session.query(query + " ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
+//			for (DocumentModel doc : recentlyModifiedDocs) {
+//		    	ObjectNode recentlyModifiedJsonObj = mapper.createObjectNode();
+//		    	recentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+//		    	recentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+//		    	recentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+//		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+//		    	recentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+//		    	recentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+//		    	recentlyModifiedJsonArray.add(recentlyModifiedJsonObj);			
+//			}
+//		    documentJsonObj.put("most_recently_modified", recentlyModifiedJsonArray);			
+//
+//			// List of user most recently modified docs		    
+//			DocumentModelList userMostRecentlyModifiedDocs = session.query(query + " AND dc:lastContributor='" + principalName + "' ORDER BY dc:modified DESC", null, maxQueryResults, 0, true);			
+//			for (DocumentModel doc : userMostRecentlyModifiedDocs) {
+//		    	ObjectNode userRecentlyModifiedJsonObj = mapper.createObjectNode();
+//		    	userRecentlyModifiedJsonObj.put("ecm:uuid", doc.getId());
+//		    	userRecentlyModifiedJsonObj.put("dc:title", doc.getTitle());
+//		    	userRecentlyModifiedJsonObj.put("ecm:path", doc.getPathAsString());
+//		    	GregorianCalendar dateModified = (GregorianCalendar)doc.getPropertyValue("dc:modified");
+//		    	userRecentlyModifiedJsonObj.put("dc:modified", dateModified.getTime().toString());
+//		    	userRecentlyModifiedJsonObj.put("dc:lastContributor", (String)doc.getPropertyValue("dc:lastContributor"));     
+//		    	userRecentlyModifiedJsonArray.add(userRecentlyModifiedJsonObj);			
+//			}
+//		    documentJsonObj.put("user_most_recently_modified", userRecentlyModifiedJsonArray);	
     	}
     	return documentJsonObj;
     }   
