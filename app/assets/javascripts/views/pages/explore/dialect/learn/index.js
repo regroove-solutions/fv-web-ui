@@ -390,7 +390,7 @@ export default class DialectLearn extends Component {
                    	<div>
 	                	<p><strong>My Most Recently Created Phrases:</strong></p>
 	                	<ul>
-	        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
+	        			{(selectn('response.entries', computeUserCreatedPhrases)).map((document, i) => 
 	        				<li key={document['uid']}>{document['title']} <br />
 		        				{this._formatDate(document.properties['dc:created'])} <br />
 		        				by {document.properties['dc:creator']}
