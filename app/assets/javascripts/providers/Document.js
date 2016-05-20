@@ -86,7 +86,7 @@ const enableDocument = function enableDocument(pathOrId) {
   }
 };
 
-const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,acls' } });
 
 const computeDocumentFetchFactory = RESTReducers.computeFetch('document');
 

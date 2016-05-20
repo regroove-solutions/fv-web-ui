@@ -221,7 +221,7 @@ export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBas
                   </DropDownMenu>
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDocument)}}>
+                  <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDocument), login: this.props.computeLogin}}>
                     <RaisedButton label="Create Song/Story Book" onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                   </AuthorizationFilter>
                 </div>

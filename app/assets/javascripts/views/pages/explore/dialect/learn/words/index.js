@@ -47,6 +47,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDocument: PropTypes.func.isRequired,
     computeDocument: PropTypes.object.isRequired, 
+    computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
     fetchWords: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
@@ -146,7 +147,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 <div className="col-xs-8">
                 </div>
                 <div className={classNames('col-xs-4', 'text-right')}>
-                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDocument)}}>
+                  <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDocument), login: this.props.computeLogin}}>
                     <RaisedButton label="Create New Word" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />
                   </AuthorizationFilter>
                 </div>

@@ -19,6 +19,21 @@ export default class AuthorizationFilter extends Component {
 
   constructor(props, context) {
 	  super(props, context);
+
+    // Bind methods to 'this'
+    ['_renderHelper'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  /**
+  * Renders partial view or nothing at all, depending on a flag
+  */
+  _renderHelper() {
+      if (this.props.renderPartial) {
+       return React.cloneElement(this.props.children, { accessDenied: true });
+      }
+      else {
+       return null;
+      }
   }
 
   render() {
@@ -32,12 +47,7 @@ export default class AuthorizationFilter extends Component {
 
     if (filter.hasOwnProperty('permission')) {
       if (!currentUserEntityPermissions || currentUserEntityPermissions.indexOf(filter.permission) === -1) {
-        if (this.props.renderPartial) {
-      	 return React.cloneElement(children, { accessDenied: true });
-        }
-        else {
-         return null;
-        }
+        return this._renderHelper();
       }
     } else if (filter.hasOwnProperty('role') && filter.hasOwnProperty('login')) {
 
@@ -45,19 +55,21 @@ export default class AuthorizationFilter extends Component {
 
       if (acls) {
         let combinedAces = Object.assign(selectn('[0].aces', acls), selectn('[1].aces', acls));
+        let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login));
 
+        if (!extendedUserGroups || extendedUserGroups.size === 0) {
+          return this._renderHelper();
+        }
+
+        // Get the ACEs that match the required permissions
         let filteredAceList = Immutable.fromJS(combinedAces).filter(function(entry) {
-          return entry.get('permission') == filter.role && entry.get('granted') && entry.get('status') == 'effective';
+          return filter.role.indexOf(entry.get('permission')) !== -1 && entry.get('granted') && entry.get('status') == 'effective';
         })
 
-        let userHasRole = filteredAceList.findIndex(function(entry){
+        // Test ACEs against user's roles
+        let userHasRole = filteredAceList.findIndex(function(entry) {
 
-          let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login));
-
-          if (!extendedUserGroups || extendedUserGroups.size === 0) {
-            return false;
-          }
-
+          // Test each group/username against ACE
           let hasRole = extendedUserGroups.findIndex(function(extendedGroupEntry){
               return entry.get('username') == extendedGroupEntry.get('name') || entry.get('username') == selectn('response.id', filter.login);
           });
@@ -66,12 +78,7 @@ export default class AuthorizationFilter extends Component {
         });
 
         if (!currentUserEntityPermissions || userHasRole === -1) {
-          if (this.props.renderPartial) {
-           return React.cloneElement(children, { accessDenied: true });
-          }
-          else {
-           return null;
-          }
+          return this._renderHelper();
         }
       } else {
         return null;
