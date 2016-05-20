@@ -6,3 +6,4 @@ Desktop.ini
 node_modules
 app/assets/stylesheets/generated
 app/assets/javascripts/configuration/local.json
+.happypack
