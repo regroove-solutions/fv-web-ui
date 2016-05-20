@@ -156,6 +156,26 @@ export default class DialectLearn extends Component {
 	  const timeString = date.slice(11, 19);
 	  return dateString + " " + timeString;
   }
+
+  // Convert Nuxeo paths to webui links
+  _formatLink(path, docType) {
+	  path = "/explore" + path;
+	  
+	  switch(docType) {
+	  	case "FVWord":
+	  		path = path.replace("/Dictionary/", "/learn/words/")
+	  		return path;
+	  	break;
+	  	
+	  	case "FVPhrase":
+	  		path = path.replace("/Dictionary/", "/learn/phrases/")
+	  		return path;
+	  	break;
+	  	
+	  	default:
+	  		return path;
+	  }
+  }  
   
   render() {
 
@@ -293,7 +313,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>Most Recently Modified Words:</strong></p>
 	                	<ul>
 	        			{(selectn('response', computeModifiedWords)).entries.map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:modified'])} <br />
 		        				by {document.properties['dc:lastContributor']}
 	        				</li>
@@ -307,7 +327,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>Most Recently Created Words:</strong></p>
 	                	<ul>
 	        			{(selectn('response', computeCreatedWords)).entries.map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:created'])} <br />
 		        				by {document.properties['dc:creator']}
 	        				</li>
@@ -321,7 +341,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>My Most Recently Modified Words:</strong></p>
 	                	<ul>
 	        			{(selectn('response.entries', computeUserModifiedWords)).map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:modified'])} <br />
 		        				by {document.properties['dc:lastContributor']}
 	        				</li>
@@ -335,7 +355,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>My Most Recently Created Words:</strong></p>
 	                	<ul>
 	        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVWord")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:created'])} <br />
 		        				by {document.properties['dc:creator']}
 	        				</li>
@@ -349,7 +369,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>Most Recently Modified Phrases:</strong></p>
 	                	<ul>
 	        			{(selectn('response', computeModifiedPhrases)).entries.map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:modified'])} <br />
 		        				by {document.properties['dc:lastContributor']}
 	        				</li>
@@ -363,7 +383,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>Most Recently Created Phrases:</strong></p>
 	                	<ul>
 	        			{(selectn('response', computeCreatedPhrases)).entries.map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:created'])} <br />
 		        				by {document.properties['dc:creator']}
 	        				</li>
@@ -377,7 +397,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>My Most Recently Modified Phrases:</strong></p>
 	                	<ul>
 	        			{(selectn('response.entries', computeUserModifiedPhrases)).map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:modified'])} <br />
 		        				by {document.properties['dc:lastContributor']}
 	        				</li>
@@ -391,7 +411,7 @@ export default class DialectLearn extends Component {
 	                	<p><strong>My Most Recently Created Phrases:</strong></p>
 	                	<ul>
 	        			{(selectn('response.entries', computeUserCreatedPhrases)).map((document, i) => 
-	        				<li key={document['uid']}>{document['title']} <br />
+	        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVPhrase")}>{document['title']}</a> <br />
 		        				{this._formatDate(document.properties['dc:created'])} <br />
 		        				by {document.properties['dc:creator']}
 	        				</li>
