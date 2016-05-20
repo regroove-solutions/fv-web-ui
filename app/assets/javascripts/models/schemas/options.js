@@ -67,6 +67,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -87,6 +88,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -190,6 +192,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -271,6 +274,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -298,6 +302,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -376,6 +381,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -396,6 +402,7 @@ const options = {
               label: 'Language',
               factory: SelectFactory,
               attrs: {
+                defaultValue: 'english',
                 directory: 'fv_language'
               }
             }
@@ -601,6 +608,14 @@ const options = {
         attrs: {
           fancy: false,
           directory: 'fv_countries'
+        }
+      },
+      'fvdialect:dominant_language': {
+        label: 'Dominant Language',
+        factory: SelectFactory,
+        attrs: {
+          fancy: false,
+          directory: 'fv_language'
         }
       },
       'fvdialect:region': {

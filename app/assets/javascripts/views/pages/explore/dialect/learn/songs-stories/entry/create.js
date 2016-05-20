@@ -145,6 +145,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
   render() {
 
+    let FVBookEntryOptions = Object.assign({}, selectn("FVBookEntry", options));
+
     const { computeBook, computeDialect } = this.props;
 
     let dialect = computeDialect.response;
@@ -156,6 +158,18 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     if (computeDialect.isFetching || (bookResponse && bookResponse.isFetching)) {
       return <CircularProgress mode="indeterminate" size={2} />;
+    }
+
+    // Set default value on form
+    if (selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect)) {
+
+      if (selectn("fields.fv:literal_translation.item.fields.language.attrs", FVBookEntryOptions)) {
+        FVBookEntryOptions['fields']['fv:literal_translation']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect);
+      }
+
+      if (selectn("fields.fvbookentry:dominant_language_text.item.fields.language.attrs", FVBookEntryOptions)) {
+        FVBookEntryOptions['fields']['fvbookentry:dominant_language_text']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect);
+      }
     }
 
     return <div>
@@ -171,7 +185,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
                     type={t.struct(selectn("FVBookEntry", fields))}
                     context={dialect}
                     value={this.state.formValue}
-                    options={selectn("FVBookEntry", options)} />
+                    options={FVBookEntryOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

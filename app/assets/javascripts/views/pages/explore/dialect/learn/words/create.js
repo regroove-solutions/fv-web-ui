@@ -137,6 +137,8 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
+    let FVWordOptions = Object.assign({}, selectn("FVWord", options));
+
     const computeEntities = Immutable.fromJS([{
       'id': this.state.wordPath,
       'entity': this.props.computeWord
@@ -147,6 +149,11 @@ export default class PageDialectWordsCreate extends Component {
 
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    // Set default value on form
+    if (selectn("fields.fv:definitions.item.fields.language.attrs", FVWordOptions) && selectn('response.properties.fvdialect:dominant_language', computeDialect2)) {
+      FVWordOptions['fields']['fv:definitions']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', computeDialect2);
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
@@ -161,7 +168,7 @@ export default class PageDialectWordsCreate extends Component {
                     type={t.struct(selectn("FVWord", fields))}
                     context={selectn('response', computeDialect2)}
                     value={this.state.formValue}
-                    options={selectn("FVWord", options)} />
+                    options={FVWordOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

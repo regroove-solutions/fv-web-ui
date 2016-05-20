@@ -137,6 +137,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
   render() {
 
+    let FVBookOptions = Object.assign({}, selectn("FVBook", options));
+
     const computeEntities = Immutable.fromJS([{
       'id': this.state.bookPath,
       'entity': this.props.computeBook
@@ -147,6 +149,17 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    // Set default value on form
+    if (selectn('response.properties.fvdialect:dominant_language', computeDialect2)) {
+      if (selectn("fields.fvbook:title_literal_translation.item.fields.language.attrs", FVBookOptions)) {
+        FVBookOptions['fields']['fvbook:title_literal_translation']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', computeDialect2);
+      }
+
+      if (selectn("fields.fvbook:introduction_literal_translation.item.fields.language.attrs", FVBookOptions)) {
+        FVBookOptions['fields']['fvbook:introduction_literal_translation']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', computeDialect2);
+      }
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
@@ -161,7 +174,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
                     type={t.struct(selectn("FVBook", fields))}
                     context={selectn('response', computeDialect2)}
                     value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
-                    options={selectn("FVBook", options)} />
+                    options={FVBookOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
