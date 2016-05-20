@@ -40,6 +40,14 @@ const FV_WORD_FETCH_ALL_START = "FV_WORD_FETCH_ALL_START";
 const FV_WORD_FETCH_ALL_SUCCESS = "FV_WORD_FETCH_ALL_SUCCESS";
 const FV_WORD_FETCH_ALL_ERROR = "FV_WORD_FETCH_ALL_ERROR";
 
+const FV_WORDS_USER_MODIFIED_QUERY_START = "FV_WORDS_USER_MODIFIED_QUERY_START";
+const FV_WORDS_USER_MODIFIED_QUERY_SUCCESS = "FV_WORDS_USER_MODIFIED_QUERY_SUCCESS";
+const FV_WORDS_USER_MODIFIED_QUERY_ERROR = "FV_WORDS_USER_MODIFIED_QUERY_ERROR";
+
+const FV_WORDS_USER_CREATED_QUERY_START = "FV_WORDS_USER_CREATED_QUERY_START";
+const FV_WORDS_USER_CREATED_QUERY_SUCCESS = "FV_WORDS_USER_CREATED_QUERY_SUCCESS";
+const FV_WORDS_USER_CREATED_QUERY_ERROR = "FV_WORDS_USER_CREATED_QUERY_ERROR";
+
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
@@ -90,7 +98,41 @@ const fetchWordsAll = function fetchWordsAll(path, type) {
   }
 };
 
-const actions = { fetchSharedWords, fetchWord, fetchWords, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord };
+const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
+const computeRecentlyModifiedWordsQuery = RESTReducers.computeQuery('modified_words');
+
+const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
+const computeRecentlyCreatedWordsQuery = RESTReducers.computeQuery('created_words');
+
+const queryUserModifiedWords = function queryUserModifiedWords(pathOrId, user) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_WORDS_USER_MODIFIED_QUERY_START } );
+
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
+    .then((response) => {
+      dispatch( { type: FV_WORDS_USER_MODIFIED_QUERY_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_WORDS_USER_MODIFIED_QUERY_ERROR, error: error } )
+    });
+  }
+};
+
+const queryUserCreatedWords = function queryUserCreatedWords(pathOrId, user) {
+  return function (dispatch) {
+
+    dispatch( { type: FV_WORDS_USER_CREATED_QUERY_START } );
+
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
+    .then((response) => {
+      dispatch( { type: FV_WORDS_USER_CREATED_QUERY_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: FV_WORDS_USER_CREATED_QUERY_ERROR, error: error } )
+    });
+  }
+};
+
+const actions = { fetchSharedWords, fetchWord, fetchWords, createWord, deleteWord, fetchWordsAll, updateWord, publishWord, askToPublishWord, unpublishWord, askToUnpublishWord, enableWord, askToEnableWord, disableWord, askToDisableWord, queryModifiedWords, queryCreatedWords, queryUserModifiedWords, queryUserCreatedWords };
 
 const reducers = {
   computeSharedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -138,8 +180,57 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }
+  },
+  
+  computeModifiedWords: computeRecentlyModifiedWordsQuery.computeModifiedWords, 
+  computeCreatedWords: computeRecentlyCreatedWordsQuery.computeCreatedWords, 
+  computeUserModifiedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
+    switch (action.type) {
+      case FV_WORDS_USER_MODIFIED_QUERY_START:
+        return Object.assign({}, state, { isFetching: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_USER_MODIFIED_QUERY_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_USER_MODIFIED_QUERY_ERROR:
+      case DISMISS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  },
+  computeUserCreatedWords(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
+    switch (action.type) {
+      case FV_WORDS_USER_CREATED_QUERY_START:
+        return Object.assign({}, state, { isFetching: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_USER_CREATED_QUERY_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case FV_WORDS_USER_CREATED_QUERY_ERROR:
+      case DISMISS_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
+      break;
+    }
+  }  
 };
+
+
 
 const middleware = [thunk];
 

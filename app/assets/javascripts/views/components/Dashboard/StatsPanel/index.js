@@ -42,13 +42,6 @@ export default class StatsPanel extends Component {
     return (
 		<div className={classNames('col-xs-12', 'col-md-6')}>
     		<h3>{this.props.headerText}: {dataResponse[docType].total}</h3>
-    		{/*
-    		<p><strong>Total:</strong> {dataResponse[docType].total}</p>
-    		<p><strong>New:</strong> {dataResponse[docType].new}</p>
-    		<p><strong>Enabled:</strong> {dataResponse[docType].enabled}</p>
-    		<p><strong>Published:</strong> {dataResponse[docType].published}</p> 
-    		<p><strong>Disabled:</strong> {dataResponse[docType].disabled}</p> 
-    		*/}
     		<Doughnut data={lifecycleStateDoughnutData} />
     		
         	{lifecycleStateDoughnutData.map((slice, i) =>
@@ -58,27 +51,7 @@ export default class StatsPanel extends Component {
     		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
     		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p> 
     		<p><strong>Created Within Last 7 Days:</strong> {dataResponse[docType].created_within_7_days}</p>                         
-
     		<p><strong>Available In Childrens Archive:</strong> {dataResponse[docType].available_in_childrens_archive}</p>     		
-    		
-    		<p><strong>Most Recently Modified:</strong></p>
-    		<ul>
-    			{(dataResponse[docType].most_recently_modified) ? dataResponse[docType].most_recently_modified.map((document, i) => 
-    				<li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
-    	    			<br />{document['dc:modified']} by {document['dc:lastContributor']}
-    	    		</li>
-    	    	)	
-    			: ''}
-    		</ul>
-    		<p><strong>My Most Recently Modified:</strong></p>
-    		<ul>
-				{(dataResponse[docType].user_most_recently_modified) ? dataResponse[docType].user_most_recently_modified.map((document, i) => 
-					<li key={document['ecm:uuid']}><a href={'/explore' + document['ecm:path']}>{document['dc:title']}</a> 
-		    			<br />{document['dc:modified']} by {document['dc:lastContributor']}
-		    		</li>
-		    	)	
-				: ''}
-			</ul>       
 		</div>
     );
   }
