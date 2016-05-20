@@ -92,6 +92,14 @@ export default class DialectLearn extends Component {
     computeModifiedSongs: PropTypes.object.isRequired,
     queryCreatedSongs: PropTypes.func.isRequired,
     computeCreatedSongs: PropTypes.object.isRequired,   
+    queryUserModifiedStories: PropTypes.func.isRequired,
+    computeUserModifiedStories: PropTypes.object.isRequired,
+    queryUserCreatedStories: PropTypes.func.isRequired,
+    computeUserCreatedStories: PropTypes.object.isRequired,
+    queryUserModifiedSongs: PropTypes.func.isRequired,
+    computeUserModifiedSongs: PropTypes.object.isRequired,
+    queryUserCreatedSongs: PropTypes.func.isRequired,
+    computeUserCreatedSongs: PropTypes.object.isRequired,    
     
     fetchCharacters: PropTypes.func.isRequired,
     computeCharacters: PropTypes.object.isRequired,
@@ -134,9 +142,14 @@ export default class DialectLearn extends Component {
     newProps.queryUserCreatedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));    
 
     newProps.queryModifiedStories(newProps.routeParams.dialect_path);
-    newProps.queryCreatedStories(newProps.routeParams.dialect_path);    
+    newProps.queryCreatedStories(newProps.routeParams.dialect_path);
+    newProps.queryUserModifiedStories(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
+    newProps.queryUserCreatedStories(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));    
+    
     newProps.queryModifiedSongs(newProps.routeParams.dialect_path);
     newProps.queryCreatedSongs(newProps.routeParams.dialect_path);  
+    newProps.queryUserModifiedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
+    newProps.queryUserCreatedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin)); 
     
     newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
@@ -153,11 +166,14 @@ export default class DialectLearn extends Component {
     }
     
     if(selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {
-    	//this.fetchData(nextProps);
     	nextProps.queryUserModifiedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
     	nextProps.queryUserCreatedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
     	nextProps.queryUserModifiedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-    	nextProps.queryUserCreatedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));      	
+    	nextProps.queryUserCreatedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin)); 
+        nextProps.queryUserModifiedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        nextProps.queryUserCreatedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));  
+        nextProps.queryUserModifiedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        nextProps.queryUserCreatedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));     	
     }        
   }
 
@@ -219,7 +235,8 @@ export default class DialectLearn extends Component {
     
     const isSection = this.props.routeParams.area === 'sections';
 
-    const { updatePortal, computeLogin, computeDocument, computeCharacters, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, computeUserCreatedPhrases } = this.props;      
+    const { updatePortal, computeLogin, computeDocument, computeCharacters, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
+    	computeUserCreatedPhrases, computeUserModifiedStories, computeUserCreatedStories, computeUserModifiedSongs, computeUserCreatedSongs} = this.props;      
     //let dialect = computeDialect2.response;
 
     let characters = computeCharacters.response;
@@ -450,7 +467,34 @@ export default class DialectLearn extends Component {
 				        	    	)}
 				        			</ul>
 			        			</div>
-			                : circularProgress}  	              		
+			                : circularProgress}  
+			                
+			                {(selectn('response.entries', computeUserModifiedSongs)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Modified Songs:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserModifiedSongs)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                   
+		
+			                {(selectn('response.entries', computeUserCreatedSongs)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Created Songs:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserCreatedSongs)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress} 			                
+			                
 	              		</Tab>
 	              		
 	              		<Tab label="Stories" id="recentActivityStories">
@@ -478,7 +522,34 @@ export default class DialectLearn extends Component {
 				        	    	)}
 				        			</ul>
 			        			</div>
-			                : circularProgress}   	              		
+			                : circularProgress}
+			                
+			                {(selectn('response.entries', computeUserModifiedStories)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Modified Stories:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserModifiedStories)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}                   
+		
+			                {(selectn('response.entries', computeUserCreatedStories)) ?                
+			                   	<div>
+				                	<p><strong>My Most Recently Created Stories:</strong></p>
+				                	<ul>
+				        			{(selectn('response.entries', computeUserCreatedStories)).map((document, i) => 
+				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "FVBook")}>{document['title']}</a> <br />
+					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
+				        				</li>
+				        	    	)}
+				        			</ul>
+			        			</div>
+			                : circularProgress}			                
+			                
 			           </Tab>	              		
 	              	</Tabs>	                	                
 	              </Tab> 
