@@ -65,6 +65,24 @@ export default class DialectLearn extends Component {
     fetchPortal: PropTypes.func.isRequired,
     fetchDialectStats: PropTypes.func.isRequired,
     computeDialectStats: PropTypes.object.isRequired,
+    
+    queryModifiedWords: PropTypes.func.isRequired,
+    computeModifiedWords: PropTypes.object.isRequired,
+    queryCreatedWords: PropTypes.func.isRequired,
+    computeCreatedWords: PropTypes.object.isRequired,     
+    queryUserModifiedWords: PropTypes.func.isRequired,
+    computeUserModifiedWords: PropTypes.object.isRequired,
+    queryUserCreatedWords: PropTypes.func.isRequired,
+    computeUserCreatedWords: PropTypes.object.isRequired,
+    queryModifiedPhrases: PropTypes.func.isRequired,
+    computeModifiedPhrases: PropTypes.object.isRequired,
+    queryCreatedPhrases: PropTypes.func.isRequired,
+    computeCreatedPhrases: PropTypes.object.isRequired,
+    queryUserModifiedPhrases: PropTypes.func.isRequired,
+    computeUserModifiedPhrases: PropTypes.object.isRequired,
+    queryUserCreatedPhrases: PropTypes.func.isRequired,
+    computeUserCreatedPhrases: PropTypes.object.isRequired,    
+    
     fetchCharacters: PropTypes.func.isRequired,
     computeCharacters: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
@@ -94,6 +112,17 @@ export default class DialectLearn extends Component {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDialectStats(newProps.routeParams.dialect_path, {'dialectPath': newProps.routeParams.dialect_path, 'docTypes': ["words","phrases","songs","stories"]});
+
+    newProps.queryModifiedWords(newProps.routeParams.dialect_path);
+    newProps.queryCreatedWords(newProps.routeParams.dialect_path);    
+    newProps.queryUserModifiedWords(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
+    newProps.queryUserCreatedWords(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
+
+    newProps.queryModifiedPhrases(newProps.routeParams.dialect_path);
+    newProps.queryCreatedPhrases(newProps.routeParams.dialect_path);
+    newProps.queryUserModifiedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
+    newProps.queryUserCreatedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));    
+    
     newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
 
@@ -107,11 +136,26 @@ export default class DialectLearn extends Component {
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
     }
+    
+    if(selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {
+    	//this.fetchData(nextProps);
+    	nextProps.queryUserModifiedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+    	nextProps.queryUserCreatedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+    	nextProps.queryUserModifiedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+    	nextProps.queryUserCreatedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));      	
+    }        
   }
 
   _onCharAudioTouchTap(charAudioId) {
 	  document.getElementById(charAudioId).play();
   }  
+  
+  // Convert timestamps in the format "2016-05-19T16:56:27.43Z" to "2016-05-19 16:56:27"
+  _formatDate(date) {
+	  const dateString = date.slice(0, 10);
+	  const timeString = date.slice(11, 19);
+	  return dateString + " " + timeString;
+  }
   
   render() {
 
@@ -126,12 +170,17 @@ export default class DialectLearn extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.routeParams.dialect_path);
+    
+    const computeModifiedWords = ProviderHelpers.getEntry(this.props.computeModifiedWords, this.props.routeParams.dialect_path);
+    const computeCreatedWords = ProviderHelpers.getEntry(this.props.computeCreatedWords, this.props.routeParams.dialect_path);
+    const computeModifiedPhrases = ProviderHelpers.getEntry(this.props.computeModifiedPhrases, this.props.routeParams.dialect_path);
+    const computeCreatedPhrases = ProviderHelpers.getEntry(this.props.computeCreatedPhrases, this.props.routeParams.dialect_path);
+    //const computeUserModifiedWords = ProviderHelpers.getEntry(this.props.computeUserModifiedWords, this.props.routeParams.dialect_path);
 
-
+    
     const isSection = this.props.routeParams.area === 'sections';
 
-    const { updatePortal, computeLogin, computeDocument, computeCharacters } = this.props;      
-    
+    const { updatePortal, computeLogin, computeDocument, computeCharacters, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, computeUserCreatedPhrases } = this.props;      
     //let dialect = computeDialect2.response;
 
     let characters = computeCharacters.response;
@@ -239,8 +288,120 @@ export default class DialectLearn extends Component {
 	                </div>
                 : circularProgress}
 
-                </div>
+                {(selectn('response', computeModifiedWords)) ?                
+                	<div>
+	                	<p><strong>Most Recently Modified Words:</strong></p>
+	                	<ul>
+	        			{(selectn('response', computeModifiedWords)).entries.map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:modified'])} <br />
+		        				by {document.properties['dc:lastContributor']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                
 
+                {(selectn('response', computeCreatedWords)) ?                
+                	<div>
+	                	<p><strong>Most Recently Created Words:</strong></p>
+	                	<ul>
+	        			{(selectn('response', computeCreatedWords)).entries.map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:created'])} <br />
+		        				by {document.properties['dc:creator']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                  
+                
+                {(selectn('response.entries', computeUserModifiedWords)) ?                
+                   	<div>
+	                	<p><strong>My Most Recently Modified Words:</strong></p>
+	                	<ul>
+	        			{(selectn('response.entries', computeUserModifiedWords)).map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:modified'])} <br />
+		        				by {document.properties['dc:lastContributor']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                   
+
+                {(selectn('response.entries', computeUserCreatedWords)) ?                
+                   	<div>
+	                	<p><strong>My Most Recently Created Words:</strong></p>
+	                	<ul>
+	        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:created'])} <br />
+		        				by {document.properties['dc:creator']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                 
+                
+                {(selectn('response', computeModifiedPhrases)) ?                
+                	<div>
+	                	<p><strong>Most Recently Modified Phrases:</strong></p>
+	                	<ul>
+	        			{(selectn('response', computeModifiedPhrases)).entries.map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:modified'])} <br />
+		        				by {document.properties['dc:lastContributor']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                
+
+                {(selectn('response', computeCreatedPhrases)) ?                
+                	<div>
+	                	<p><strong>Most Recently Created Phrases:</strong></p>
+	                	<ul>
+	        			{(selectn('response', computeCreatedPhrases)).entries.map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:created'])} <br />
+		        				by {document.properties['dc:creator']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                  
+
+                {(selectn('response.entries', computeUserModifiedPhrases)) ?                
+                   	<div>
+	                	<p><strong>My Most Recently Modified Phrases:</strong></p>
+	                	<ul>
+	        			{(selectn('response.entries', computeUserModifiedPhrases)).map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:modified'])} <br />
+		        				by {document.properties['dc:lastContributor']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                   
+
+                {(selectn('response.entries', computeUserCreatedPhrases)) ?                
+                   	<div>
+	                	<p><strong>My Most Recently Created Phrases:</strong></p>
+	                	<ul>
+	        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
+	        				<li key={document['uid']}>{document['title']} <br />
+		        				{this._formatDate(document.properties['dc:created'])} <br />
+		        				by {document.properties['dc:creator']}
+	        				</li>
+	        	    	)}
+	        			</ul>
+        			</div>
+                : circularProgress}                 
+                                
+                </div>
+                
                 <div>
 
 
