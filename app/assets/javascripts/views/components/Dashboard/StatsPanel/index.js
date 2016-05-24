@@ -40,18 +40,25 @@ export default class StatsPanel extends Component {
 	let lifecycleStateDoughnutData = this._generateLifecycleStateDoughnutData(dataResponse, docType);
 
     return (
-		<div className={classNames('col-xs-12', 'col-md-6')}>
-    		<h3>{this.props.headerText}: {dataResponse[docType].total}</h3>
-    		<Doughnut data={lifecycleStateDoughnutData} />
+		<div>
+			<div className={'row'} style={{margin: '0 0 15px 0'}}>
+	    		<h3>{this.props.headerText}: {dataResponse[docType].total}</h3>
+	    		<div className={'col-lg-8'}>
+	    			<Doughnut data={lifecycleStateDoughnutData} />
+	    		</div>
+	    		<div className={'col-lg-4'}>
+		        	{lifecycleStateDoughnutData.map((slice, i) =>
+		  		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
+			    	)}	
+	    		</div>
+    		</div>
     		
-        	{lifecycleStateDoughnutData.map((slice, i) =>
-  		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
-	    	)}	                                  	
-    		
-    		<p><strong>Created Today:</strong> {dataResponse[docType].created_today}</p>                         
-    		<p><strong>Modified Today:</strong> {dataResponse[docType].modified_today}</p> 
-    		<p><strong>Created Within Last 7 Days:</strong> {dataResponse[docType].created_within_7_days}</p>                         
-    		<p><strong>Available In Childrens Archive:</strong> {dataResponse[docType].available_in_childrens_archive}</p>     		
+    		<ul>
+	    		<li><strong>Created Today: </strong>{dataResponse[docType].created_today}</li>                         
+	    		<li><strong>Modified Today: </strong>{dataResponse[docType].modified_today}</li> 
+	    		<li><strong>Created Within Last 7 Days: </strong>{dataResponse[docType].created_within_7_days}</li>                         
+	    		<li><strong>Available In Childrens Archive: </strong>{dataResponse[docType].available_in_childrens_archive}</li>    
+    		</ul>
 		</div>
     );
   }

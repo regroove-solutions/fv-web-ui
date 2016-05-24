@@ -143,21 +143,21 @@ const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 const computeBookEntryFetchFactory = RESTReducers.computeFetch('book_entry');
 const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 
-const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
 const computeRecentlyModifiedStoriesQuery = RESTReducers.computeQuery('modified_stories');
-const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
 const computeRecentlyCreatedStoriesQuery = RESTReducers.computeQuery('created_stories');
 
-const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
 const computeRecentlyModifiedSongsQuery = RESTReducers.computeQuery('modified_songs');
-const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
 const computeRecentlyCreatedSongsQuery = RESTReducers.computeQuery('created_songs');
 const queryUserModifiedStories = function queryUserModifiedStories(pathOrId, user) {
   return function (dispatch) {
 
     dispatch( { type: FV_STORIES_USER_MODIFIED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_STORIES_USER_MODIFIED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -171,7 +171,7 @@ const queryUserCreatedStories = function queryUserCreatedStories(pathOrId, user)
 
     dispatch( { type: FV_STORIES_USER_CREATED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_STORIES_USER_CREATED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -185,7 +185,7 @@ const queryUserModifiedSongs = function queryUserModifiedSongs(pathOrId, user) {
 
     dispatch( { type: FV_SONGS_USER_MODIFIED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_SONGS_USER_MODIFIED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -199,7 +199,7 @@ const queryUserCreatedSongs = function queryUserCreatedSongs(pathOrId, user) {
 
     dispatch( { type: FV_SONGS_USER_CREATED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_SONGS_USER_CREATED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {

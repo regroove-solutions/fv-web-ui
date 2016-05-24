@@ -98,10 +98,10 @@ const fetchWordsAll = function fetchWordsAll(path, type) {
   }
 };
 
-const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:modified&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
+const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
 const computeRecentlyModifiedWordsQuery = RESTReducers.computeQuery('modified_words');
 
-const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:created&sortOrder=DESC&maxResults=5', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
+const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', { queryAppend: '&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'word,ancestry,permissions' } });
 const computeRecentlyCreatedWordsQuery = RESTReducers.computeQuery('created_words');
 
 const queryUserModifiedWords = function queryUserModifiedWords(pathOrId, user) {
@@ -109,7 +109,7 @@ const queryUserModifiedWords = function queryUserModifiedWords(pathOrId, user) {
 
     dispatch( { type: FV_WORDS_USER_MODIFIED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_WORDS_USER_MODIFIED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -123,7 +123,7 @@ const queryUserCreatedWords = function queryUserCreatedWords(pathOrId, user) {
 
     dispatch( { type: FV_WORDS_USER_CREATED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=5', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'word,ancestry,permissions' })
     .then((response) => {
       dispatch( { type: FV_WORDS_USER_CREATED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {

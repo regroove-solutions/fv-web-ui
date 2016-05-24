@@ -44,6 +44,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 
 import StatsPanel from 'views/components/Dashboard/StatsPanel';
+import RecentActivityList from 'views/components/Dashboard/RecentActivityList';
 import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
@@ -179,40 +180,7 @@ export default class DialectLearn extends Component {
 
   _onCharAudioTouchTap(charAudioId) {
 	  document.getElementById(charAudioId).play();
-  }  
-  
-  // Convert timestamps in the format "2016-05-19T16:56:27.43Z" to "2016-05-19 16:56:27"
-  _formatDate(date) {
-	  const dateString = date.slice(0, 10);
-	  const timeString = date.slice(11, 19);
-	  return dateString + " " + timeString;
-  }
-
-  // Convert Nuxeo paths to webui links
-  _formatLink(path, docType) {
-	  
-	  switch(docType) {
-	  	case "word":
-	  		path = path.replace("/Dictionary/", "/learn/words/");
-	  		return "/explore" + path;
-	  	break;
-	  	
-	  	case "phrase":
-	  		path = path.replace("/Dictionary/", "/learn/phrases/");
-	  		return "/explore" + path;
-	  	break;
-
-	  	case "song":
-	  		path = path.replace("/Stories & Songs/", "/learn/songs/");
-	  		return "/explore" + path;
-	  	break;
-	  		
-	  	case "story":
-	  		path = path.replace("/Stories & Songs/", "/learn/stories/");
-	  		return "/explore" + path;
-	  	break;	  			  		
-	  }
-  }  
+  }   
   
   render() {
 
@@ -274,8 +242,8 @@ export default class DialectLearn extends Component {
               <ToolbarGroup firstChild={true} float="left">
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={(selectn('response.words.total', computeDialectStats) == undefined) ? "Words (0)" : "Words (" + selectn('response.words.total', computeDialectStats) + ")"} /> <ToolbarSeparator />
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={(selectn('response.phrases.total', computeDialectStats) == undefined) ? "Phrases (0)" : "Phrases (" + selectn('response.phrases.total', computeDialectStats) + ")"} /> <ToolbarSeparator />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={(selectn('response.stories.total', computeDialectStats) == undefined) ? "Stories (0)" : "Stories (" + selectn('response.stories.total', computeDialectStats) + ")"} /> <ToolbarSeparator />
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={(selectn('response.songs.total', computeDialectStats) == undefined) ? "Songs (0)" : "Songs (" + selectn('response.songs.total', computeDialectStats) + ")"} /> <ToolbarSeparator />             
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={(selectn('response.stories.total', computeDialectStats) == undefined) ? "Stories (0)" : "Stories (" + selectn('response.stories.total', computeDialectStats) + ")"} /> <ToolbarSeparator />
               </ToolbarGroup>
 
               <ToolbarGroup float="right">
@@ -336,226 +304,46 @@ export default class DialectLearn extends Component {
               </div>
 
               <div className={classNames('col-xs-12', 'col-md-4')}>
-
+              
+              <h2>Dashboard</h2>
+              
 	          <Tabs> 
 	              <Tab label="Recent Activity" id="recentActivity"> 	              
 	              	<Tabs>
 	              		<Tab label="Words" id="recentActivityWords">
-	              			{(selectn('response', computeModifiedWords)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Modified Words:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeModifiedWords)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "word")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                
-		
-			                {(selectn('response', computeCreatedWords)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Created Words:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeCreatedWords)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "word")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                  
-			                
-			                {(selectn('response.entries', computeUserModifiedWords)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Modified Words:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserModifiedWords)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "word")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                   
-		
-			                {(selectn('response.entries', computeUserCreatedWords)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Created Words:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserCreatedWords)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "word")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress} 	              			              		
+	              			<Paper style={{padding: '15px'}} zDepth={2}>
+		              			<RecentActivityList data={selectn('response', computeModifiedWords)} title="Most Recently Modified Words" docType="word" />
+		              			<RecentActivityList data={selectn('response', computeCreatedWords)} title="Most Recently Created Words" docType="word" />
+		              			<RecentActivityList data={selectn('response', computeUserModifiedWords)} title="My Most Recently Modified Words" docType="word" />
+		              			<RecentActivityList data={selectn('response', computeUserCreatedWords)} title="My Most Recently Created Words" docType="word" />	      
+	              			</Paper>
 	              		</Tab>
 	              		
-	              		<Tab label="Phrases" id="recentActivityPhrases">
-			                {(selectn('response', computeModifiedPhrases)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Modified Phrases:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeModifiedPhrases)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "phrase")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                
-		
-			                {(selectn('response', computeCreatedPhrases)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Created Phrases:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeCreatedPhrases)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "phrase")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                  
-		
-			                {(selectn('response.entries', computeUserModifiedPhrases)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Modified Phrases:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserModifiedPhrases)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "phrase")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                   
-		
-			                {(selectn('response.entries', computeUserCreatedPhrases)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Created Phrases:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserCreatedPhrases)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "phrase")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}  	              		           		
+	              		<Tab label="Phrases" id="recentActivityPhrases">	              		
+	              			<Paper style={{padding: '15px'}} zDepth={2}>
+		              			<RecentActivityList data={selectn('response', computeModifiedPhrases)} title="Most Recently Modified Phrases" docType="phrase" />
+		              			<RecentActivityList data={selectn('response', computeCreatedPhrases)} title="Most Recently Created Phrases" docType="phrase" />
+		              			<RecentActivityList data={selectn('response', computeUserModifiedPhrases)} title="My Most Recently Modified Phrases" docType="phrase" />
+		              			<RecentActivityList data={selectn('response', computeUserCreatedPhrases)} title="My Most Recently Created Phrases" docType="phrase" />	      
+		          			</Paper>	              			              		           		
 	              		</Tab>
 	              		
 	              		<Tab label="Songs" id="recentActivitySongs">
-              				{(selectn('response', computeModifiedSongs)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Modified Songs:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeModifiedSongs)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "song")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                
-		
-			                {(selectn('response', computeCreatedSongs)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Created Songs:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeCreatedSongs)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "song")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}  
-			                
-			                {(selectn('response.entries', computeUserModifiedSongs)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Modified Songs:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserModifiedSongs)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "song")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                   
-		
-			                {(selectn('response.entries', computeUserCreatedSongs)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Created Songs:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserCreatedSongs)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "song")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress} 			                
-			                
+	              			<Paper style={{padding: '15px'}} zDepth={2}>
+		              			<RecentActivityList data={selectn('response', computeModifiedSongs)} title="Most Recently Modified Songs" docType="song" />
+		              			<RecentActivityList data={selectn('response', computeCreatedSongs)} title="Most Recently Created Songs" docType="song" />
+		              			<RecentActivityList data={selectn('response', computeUserModifiedSongs)} title="My Most Recently Modified Songs" docType="song" />
+		              			<RecentActivityList data={selectn('response', computeUserCreatedSongs)} title="My Most Recently Created Songs" docType="song" />	      
+		          			</Paper> 		                			                
 	              		</Tab>
 	              		
 	              		<Tab label="Stories" id="recentActivityStories">
-	              			{(selectn('response', computeModifiedStories)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Modified Stories:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeModifiedStories)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "story")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                
-		
-			                {(selectn('response', computeCreatedStories)) ?                
-			                	<div>
-				                	<p><strong>Most Recently Created Stories:</strong></p>
-				                	<ul>
-				        			{(selectn('response', computeCreatedStories)).entries.map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "story")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}
-			                
-			                {(selectn('response.entries', computeUserModifiedStories)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Modified Stories:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserModifiedStories)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "story")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:modified'])} by {document.properties['dc:lastContributor']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}                   
-		
-			                {(selectn('response.entries', computeUserCreatedStories)) ?                
-			                   	<div>
-				                	<p><strong>My Most Recently Created Stories:</strong></p>
-				                	<ul>
-				        			{(selectn('response.entries', computeUserCreatedStories)).map((document, i) => 
-				        				<li key={document['uid']}><a href={this._formatLink(document['path'], "story")}>{document['title']}</a> <br />
-					        				{this._formatDate(document.properties['dc:created'])} by {document.properties['dc:creator']}
-				        				</li>
-				        	    	)}
-				        			</ul>
-			        			</div>
-			                : circularProgress}			                
-			                
+	              			<Paper style={{padding: '15px'}} zDepth={2}>
+		              			<RecentActivityList data={selectn('response', computeModifiedStories)} title="Most Recently Modified Stories" docType="stories" />
+		              			<RecentActivityList data={selectn('response', computeCreatedStories)} title="Most Recently Created Stories" docType="stories" />
+		              			<RecentActivityList data={selectn('response', computeUserModifiedStories)} title="My Most Recently Modified Stories" docType="stories" />
+		              			<RecentActivityList data={selectn('response', computeUserCreatedStories)} title="My Most Recently Created Stories" docType="stories" />	      
+		          			</Paper> 		                			                
 			           </Tab>	              		
 	              	</Tabs>	                	                
 	              </Tab> 
@@ -563,27 +351,35 @@ export default class DialectLearn extends Component {
 	              <Tab label="Statistics" id="statistics"> 	              
 	                  <Tabs>
 	              		<Tab label="Words" id="statisticsWords">
-	              			{(selectn('response', computeDialectStats)) ? 
-		    		        	<StatsPanel data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
-			                : circularProgress}	              		
+              				<Paper style={{padding: '15px'}} zDepth={2}>
+		              			{(selectn('response', computeDialectStats)) ? 
+			    		        	<StatsPanel data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
+				                : circularProgress}	
+	              			</Paper>
 	              		</Tab>              		
 	              		
 	              		<Tab label="Phrases" id="statisticsPhrases">
-	          				{(selectn('response', computeDialectStats)) ? 
-		    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
-			                : circularProgress}		              		
+              				<Paper style={{padding: '15px'}} zDepth={2}>	              		
+		          				{(selectn('response', computeDialectStats)) ? 
+			    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
+				                : circularProgress}	
+	          				</Paper>
 	              		</Tab>
 	              		
 	              		<Tab label="Songs" id="statisticsSongs">
-	          				{(selectn('response', computeDialectStats)) ? 
-		    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
-			                : circularProgress}		              		
+              				<Paper style={{padding: '15px'}} zDepth={2}>
+		          				{(selectn('response', computeDialectStats)) ? 
+			    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
+				                : circularProgress}	
+	          				</Paper>
 	              		</Tab>
 	              		
 	              		<Tab label="Stories" id="statisticsStories">
-	          				{(selectn('response', computeDialectStats)) ? 
-	          					<StatsPanel data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
-			                : circularProgress}		              		
+              				<Paper style={{padding: '15px'}} zDepth={2}>	              		
+		          				{(selectn('response', computeDialectStats)) ? 
+		          					<StatsPanel data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
+				                : circularProgress}	
+	          				</Paper>
 	              		</Tab>
 	              	</Tabs>	
 	              </Tab>	
