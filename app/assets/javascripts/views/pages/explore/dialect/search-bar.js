@@ -23,6 +23,9 @@ import provide from 'react-redux-provide';
 import TextField from 'material-ui/lib/text-field';
 import IconButton from 'material-ui/lib/icon-button';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
+
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -31,7 +34,8 @@ export default class SearchBar extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired
+    pushWindowPath: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.array.isRequired
   };
 
   /*static contextTypes = {
@@ -46,8 +50,9 @@ export default class SearchBar extends Component {
   }
 
   _handleDialectSearchSubmit() {
-    let queryParam = this.refs.dialectSearchField.getValue();     
-    this.props.pushWindowPath(this.props.windowPath + '/search/' + queryParam); 
+    let queryParam = this.refs.dialectSearchField.getValue();         
+	let dialectPath = ProviderHelpers.getDialectPathFromURLArray(this.props.splitWindowPath);
+    this.props.pushWindowPath("/explore/" + dialectPath + '/search/' + queryParam); 
   }
 
   render() {
