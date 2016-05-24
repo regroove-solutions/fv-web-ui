@@ -41,9 +41,9 @@ export default class PageHeader extends Component {
     return  <div className="page-header" style={{minHeight: '100px', marginTop: '10px'}}>
               {(portalLogo) ? <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}} src={ConfGlobal.baseURL + portalLogo} /> : ''}
               <h1 style={{fontSize: "2em"}}>{dialectName} {title}</h1>
-              <div>
+              {/*<div>
                 <span className={classNames('label', 'label-primary')}><strong>543</strong> Words</span> <span className={classNames('label', 'label-primary')}><strong>143</strong> Phrases</span> <span className={classNames('label', 'label-primary')}><strong>243</strong> Songs</span> <span className={classNames('label', 'label-primary')}><strong>43</strong> Stories</span> 
-              </div>
+              </div>*/}
             </div>;
   }
 }
