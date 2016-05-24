@@ -75,7 +75,7 @@ export default class Navigation extends Component {
     super(props, context);
 
     this.state = {
-      hintTextSearch: "Search:"
+      hintTextSearch: "Search site:"
     };
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
