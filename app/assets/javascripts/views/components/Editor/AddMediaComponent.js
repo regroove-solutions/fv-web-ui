@@ -19,6 +19,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 import classNames from 'classnames';
 
+import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import {
@@ -73,7 +75,11 @@ export default class AddMediaComponent extends Component {
     var schema = t.struct({
       'title': t.String,
       'description': t.String,
-      'file': t.form.File
+      'file': t.form.File,
+      'fvm:shared': t.Boolean,
+      'fvm:child_focused': t.Boolean,
+      'fvm:recorder': t.list(t.String),
+      'fvm:source': t.list(t.String)
     });
 
     this.state = {
@@ -87,6 +93,26 @@ export default class AddMediaComponent extends Component {
           'file': {
             label: 'File',
             type: 'file'
+          },
+          'fvm:shared': {
+            label: 'Share across dialects?'
+          },
+          'fvm:child_focused': {
+            label: 'Child focused'
+          },
+          'fvm:source': {
+            label: 'Source',
+            item: {
+              factory: SelectSuggestFactory,
+              type: 'FVContributor'
+            }
+          },
+          'fvm:recorder': {
+            label: 'Recorder',
+            item: {
+              factory: SelectSuggestFactory,
+              type: 'FVContributor'
+            }
           }
         },
         config: {
@@ -103,35 +129,22 @@ export default class AddMediaComponent extends Component {
     this.setState({value});
   }
 
-  /*componentWillReceiveProps(nextProps) {
-    if (nextProps.computeCreateAudio.success && !this.props.computeCreateAudio.success) {
-      //this.props.onComplete({"entity-type":"document","repository":"default","uid":"f3396e8e-9172-493c-9024-ab0042721ba3","path":"/FV/Workspaces/Data/TestFamily/TestLanguage/TestDialect/Resources/Ghetto Gospel.1462339518787","type":"FVAudio","state":"New","parentRef":"c663470b-9fe0-4d44-aaed-4bb3b070fad1","isCheckedOut":true,"changeToken":"1462339520039","title":"Ghetto Gospel","lastModified":"2016-05-04T05:25:20.03Z","properties":{"uid:uid":null,"uid:major_version":0,"uid:minor_version":0,"fvm:source":[],"fvm:child_focused":false,"fvm:origin":null,"fvm:recorder":[],"fvm:shared":false,"thumb:thumbnail":{"name":null,"mime-type":null,"encoding":null,"digestAlgorithm":"MD5","digest":"6e65473898a2498d47be0d4e4032474b","length":"374995","data":"http://localhost:8081/nuxeo/nxfile/default/f3396e8e-9172-493c-9024-ab0042721ba3/thumbnail:thumb:thumbnail"},"file:filename":null,"file:content":{"name":"04 2Pac Feat. Elton John - Ghetto Gospel.mp3","mime-type":"audio/mp3","encoding":null,"digestAlgorithm":"MD5","digest":"1dff258931e06f28c0b889e29795906d","length":"6092853","data":"http://localhost:8081/nuxeo/nxfile/default/f3396e8e-9172-493c-9024-ab0042721ba3/file:content/04%202Pac%20Feat.%20Elton%20John%20-%20Ghetto%20Gospel.mp3"},"common:size":6092853,"common:icon-expanded":null,"common:icon":"/icons/application.png","fva:language":"eb7fe8e5-9553-4cf7-a5db-a91cd9e56282","fva:dialect":"d8ea2ce2-552d-4484-a543-ea17f73e6cc2","fva:family":"816f6612-dc55-4141-bef6-053ff288bc65","dc:description":"Testing","dc:language":null,"dc:coverage":null,"dc:valid":null,"dc:creator":"Administrator","dc:modified":"2016-05-04T05:25:20.03Z","dc:lastContributor":"Administrator","dc:rights":null,"dc:expired":null,"dc:format":null,"dc:created":"2016-05-04T05:25:18.78Z","dc:title":"Ghetto Gospel","dc:issued":null,"dc:nature":null,"dc:subjects":[],"dc:contributors":["Administrator"],"dc:source":null,"dc:publisher":null,"fvl:import_id":null,"fvl:assigned_usr_id":null,"fvl:change_date":null,"fvl:status_id":null,"aud:duration":null},"facets":["Versionable","Publishable","Commentable","Thumbnail","Audio"]});
-      this.setState({open: false});
-    }
-    else if (nextProps.computeCreatePicture.success && !this.props.computeCreatePicture.success) {
-      this.props.onComplete(nextProps.computeCreatePicture.response);
-      this.setState({open: false});
-    }
-  }*/
-
   _save(e) {
 
     e.preventDefault();
 
     this.setState({'uploading': true});
 
-    var value = this.refs['form_media'].getValue();
-
-    var self = this;
+    let formValue = this.refs['form_media'].getValue();
 
     // If validation passed
-    if (value) {
+    if (formValue) {
 
       let file;
       let fd = new FormData();
 
-      for (let k in value) {
-        let v = value[k];
+      for (let k in formValue) {
+        let v = formValue[k];
         if (t.form.File.is(v)) {
           fd.append(k, v, v.name);
           file = v;
@@ -142,13 +155,24 @@ export default class AddMediaComponent extends Component {
 
       if (file) {
 
+        let properties = {};
+        
+        for (let key in formValue) {
+          if (formValue.hasOwnProperty(key) && key && key != 'file') {
+            if (formValue[key] && formValue[key] != '') {
+              //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+              properties[key] = formValue[key];
+            }
+          }
+        }
+
         let timestamp = Date.now();
         let ResourcesPath = this.props.dialect.path + '/Resources';
 
         let docParams = {
               type: this.props.type,
-              name: value.title,
-              properties: 'dc:title=' + value.title + ' \ndc:description=' + value.description
+              name: formValue.title,
+              properties: properties
         };
 
         switch (this.props.type) {
@@ -183,7 +207,7 @@ export default class AddMediaComponent extends Component {
         }
 
         this.setState({
-          pathOrId: this.props.dialect.path + '/Resources/' + value.title + '.' + timestamp
+          pathOrId: this.props.dialect.path + '/Resources/' + formValue.title + '.' + timestamp
         })
       }
    }
@@ -227,6 +251,7 @@ export default class AddMediaComponent extends Component {
                 options={this.state.options}
                 type={this.state.schema} 
                 value={this.state.value}
+                context={this.props.dialect}
                 onChange={this._change} />
                 <button type="submit" className={classNames('btn', 'btn-primary')}>Upload Media</button>
             </form>;
@@ -252,6 +277,7 @@ export default class AddMediaComponent extends Component {
             title={"Create New " + fileTypeLabel + " in the " + this.props.dialect.get('dc:title') + " dialect."}
             actions={actions}
             modal={true}
+            autoScrollBodyContent={true}
             open={this.state.open}>
             <div className="form-horizontal">
               {this.state.typeError}
