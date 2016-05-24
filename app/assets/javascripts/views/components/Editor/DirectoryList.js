@@ -52,6 +52,13 @@ export default class DirectoryList extends Component {
     this.props.onChange(event.target.value);
   }
 
+  componentWillReceiveProps(nextProps) {
+    // Ensure value is in sync -- relevant for setting default value dynamically
+    if (nextProps.value != undefined) {
+      this.props.onChange(nextProps.value);
+    }
+  }
+
   componentDidMount() {
     this.props.fetchDirectory(this.props.directory);
   }
