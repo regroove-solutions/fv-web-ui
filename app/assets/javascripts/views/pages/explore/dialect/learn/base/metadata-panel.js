@@ -134,6 +134,16 @@ export default class MetadataPanel extends Component {
 
             <li className="list-group-item">
 
+              <strong className="list-group-item-heading">Status</strong>
+              
+              <div className="list-group-item-text">
+                {selectn("response.state", computeEntity)}
+              </div>
+
+            </li>
+
+            <li className="list-group-item">
+
               <strong className="list-group-item-heading">Version</strong>
               
               <div className="list-group-item-text">
