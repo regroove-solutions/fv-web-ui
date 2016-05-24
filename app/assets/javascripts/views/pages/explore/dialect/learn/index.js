@@ -43,7 +43,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 
-import StatsPanel from 'views/components/Dashboard/StatsPanel';
+import Statistics from 'views/components/Dashboard/Statistics';
 import RecentActivityList from 'views/components/Dashboard/RecentActivityList';
 import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -353,7 +353,7 @@ export default class DialectLearn extends Component {
 	              		<Tab label="Words" id="statisticsWords">
               				<Paper style={{padding: '15px'}} zDepth={2}>
 		              			{(selectn('response', computeDialectStats)) ? 
-			    		        	<StatsPanel data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
+			    		        	<Statistics data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
 				                : circularProgress}	
 	              			</Paper>
 	              		</Tab>              		
@@ -361,7 +361,7 @@ export default class DialectLearn extends Component {
 	              		<Tab label="Phrases" id="statisticsPhrases">
               				<Paper style={{padding: '15px'}} zDepth={2}>	              		
 		          				{(selectn('response', computeDialectStats)) ? 
-			    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
+			    		            <Statistics data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
 				                : circularProgress}	
 	          				</Paper>
 	              		</Tab>
@@ -369,7 +369,7 @@ export default class DialectLearn extends Component {
 	              		<Tab label="Songs" id="statisticsSongs">
               				<Paper style={{padding: '15px'}} zDepth={2}>
 		          				{(selectn('response', computeDialectStats)) ? 
-			    		            <StatsPanel data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
+			    		            <Statistics data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
 				                : circularProgress}	
 	          				</Paper>
 	              		</Tab>
@@ -377,7 +377,7 @@ export default class DialectLearn extends Component {
 	              		<Tab label="Stories" id="statisticsStories">
               				<Paper style={{padding: '15px'}} zDepth={2}>	              		
 		          				{(selectn('response', computeDialectStats)) ? 
-		          					<StatsPanel data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
+		          					<Statistics data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
 				                : circularProgress}	
 	          				</Paper>
 	              		</Tab>

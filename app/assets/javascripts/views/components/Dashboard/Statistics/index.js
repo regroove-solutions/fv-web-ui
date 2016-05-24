@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Doughnut from 'react-chartjs/lib/doughnut';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-export default class StatsPanel extends Component {
+export default class Statistics extends Component {
 
   constructor(props, context) {
     super(props, context);
