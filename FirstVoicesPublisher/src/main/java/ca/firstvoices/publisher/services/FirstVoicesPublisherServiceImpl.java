@@ -400,7 +400,10 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
         if (isAssetType(doc.getType())) {
             return republishAsset(doc);
+        } else if ("FVPortal".equals(doc.getType())) {
+        	return publishPortalAssets(doc);
         }
+
         return null;
     }
 
@@ -420,10 +423,13 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         DocumentModel input = getPublication(session, portal.getRef());
 
         // Portal should always be published at this point, skip if not
-        if (input == null) {
+        //if (input == null) {
             // Already published
-            return input;
-        }
+        //    return input;
+        //}
+
+        // Publish changes
+        session.publishDocument(portal, dialectSection, true);
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
