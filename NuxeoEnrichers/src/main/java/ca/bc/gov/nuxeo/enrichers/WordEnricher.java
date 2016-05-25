@@ -17,6 +17,7 @@ import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
@@ -103,7 +104,7 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					// Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
 					try {
 						phraseDoc = session.getDocument(ref);
-					} catch (DocumentNotFoundException de) {
+					} catch (DocumentNotFoundException | DocumentSecurityException de) {
 						continue;
 					}
 
