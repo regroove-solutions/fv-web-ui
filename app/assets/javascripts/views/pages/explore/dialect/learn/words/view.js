@@ -19,6 +19,8 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ConfGlobal from 'conf/local.json';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import Preview from 'views/components/Editor/Preview';
@@ -26,6 +28,8 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
+
+import ImageGallery from 'react-image-gallery';
 
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
@@ -57,6 +61,8 @@ import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
+
+import '!style!css!react-image-gallery/build/image-gallery.css';
 
 /**
 * View word entry
@@ -199,6 +205,15 @@ export default class View extends Component {
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
+    // Generate photos
+
+    let photos = [];
+
+    (selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
+      let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
+      photos.push(image);
+    })
+
     /**
     * Generate definitions body
     */
@@ -243,6 +258,18 @@ export default class View extends Component {
 
                               <p>Pronunciation: {selectn('response.properties.fv-word:pronunciation', computeWord)}</p>
 
+                              <h3>Audio</h3>
+
+                              <div>
+
+                                {(selectn('response.contextParameters.word.related_audio.length', computeWord) === 0) ? <span>No audio is available yet.</span> : ''}
+
+                                {(selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
+                                  return <Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
+                                })}
+
+                              </div>
+
                               <SubViewTranslation group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
                               </SubViewTranslation>
@@ -272,41 +299,35 @@ export default class View extends Component {
                             </div>
 
                             <div className="col-xs-4">
+
+                              {
+                                (photos.length === 0) ?
+                                '' :
+                                
+                                <div>
+                                  <h2>Photos</h2> 
+
+                                  {
+                                    (photos.length === 1) ? 
+                                    <Preview key={selectn('uid', selectn('response.contextParameters.word.related_pictures', computeWord)[0])} expandedValue={selectn('response.contextParameters.word.related_pictures', computeWord)[0]} type="FVPicture" /> :
+                                    <ImageGallery
+                                    ref={i => this._imageGallery = i}
+                                    items={photos}
+                                    slideInterval={2000}
+                                    showThumbnails={false}
+                                    showBullets={true} />
+                                  }
+
+                                </div>
+                              }
+
                               {(selectn('response', computeWord)) ? <MetadataPanel computeEntity={computeWord} /> : ''}
                             </div>
 
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab label="Photos" id="pictures"> 
-                        <div> 
-                          <CardText>
-                            <h2>Photos</h2> 
-                            <div className="row">
-                              {(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
-                                return <Preview key={selectn('uid', picture)} expandedValue={picture} type="FVPicture" />;
-                              })}
-
-                              {(selectn('response.contextParameters.word.related_pictures.length', computeWord) === 0) ? <div className="col-xs-12">No photos are available yet.</div> : ''}
-                            </div>
-                          </CardText>
-                        </div>
-                      </Tab> 
-                      <Tab label="Audio" id="audio"> 
-                        <div> 
-                          <CardText>
-                            <h2>Audio</h2> 
-                            <div className="row">
-                              {(selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
-                                return <Preview key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
-                              })}
-
-                              {(selectn('response.contextParameters.word.related_audio.length', computeWord) === 0) ? <div className="col-xs-12">No audio is available yet.</div> : ''}
-                            </div>
-                          </CardText>
-                        </div> 
-                      </Tab> 
-                      <Tab label="Video" id="video"> 
+                      <Tab label="Related Video" id="video"> 
                         <div> 
                           <CardText>
                             <h2>Video</h2> 

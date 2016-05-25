@@ -43,7 +43,12 @@ export default class Preview extends Component {
     computeContributor: PropTypes.object.isRequired,
     id: PropTypes.string,
     type: PropTypes.string.isRequired,
-    expandedValue: PropTypes.object
+    expandedValue: PropTypes.object,
+    styles: PropTypes.object
+  };
+
+  static defaultProps = {
+    styles: {}
   };
 
   constructor(props) {
@@ -88,9 +93,9 @@ export default class Preview extends Component {
 
   render() {
 
-      let previewStyles = {
+      let previewStyles = Object.assign({
         padding: '10px'
-      }
+      }, this.props.styles);
 
       let body = <CircularProgress mode="indeterminate" size={1} />;
 
