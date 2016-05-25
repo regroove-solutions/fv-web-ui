@@ -20,6 +20,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
 
+import Colors from 'material-ui/lib/styles/colors';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -29,8 +31,10 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
+import Checkbox from 'material-ui/lib/checkbox';
 import TextField from 'material-ui/lib/text-field';
 import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
@@ -59,11 +63,14 @@ export default class ExploreDialects extends Component {
 
     this.state = {
       pathOrId: null,
-      filteredList: null
+      filteredList: null,
+      filteredByText: false,
+      filteredByRole: false,
+      searchTerm: null
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleSearchSubmit', '_handleSearchReset'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleSearchSubmit', '_handleSearchReset', '_handleMyDialectsChange', '_handleSearchFieldChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -89,6 +96,10 @@ export default class ExploreDialects extends Component {
     this.props.pushWindowPath('/explore' + path);
   }
 
+  _handleSearchFieldChange(event) {
+    this.setState({searchTerm: event.target.value});
+  }
+
   _handleSearchSubmit() {
     let newQueryParam = this.refs.searchTextField.getValue();
 
@@ -105,8 +116,24 @@ export default class ExploreDialects extends Component {
     }
   }
 
+  _handleMyDialectsChange(event, checked) {
+    let computeDialectsEntry = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
+
+    let entries = this.state.filteredList || selectn('response.entries', computeDialectsEntry);
+
+    if (checked && entries.length > 0) {
+      let filteredList = new List(entries).filter(function(dialect) {
+        return ProviderHelpers.isActiveRole(selectn('contextParameters.dialect.roles', dialect));
+      });
+
+      this.setState({filteredList: filteredList.toJS(), filteredByRole: true});
+    } else {
+      this.setState({filteredList: null, filteredByRole: false});
+    }
+  }
+
   _handleSearchReset() {
-    this.setState({filteredList: null});
+    this.setState({filteredList: null, searchTerm: ''});
   }
 
   render() {
@@ -136,9 +163,6 @@ export default class ExploreDialects extends Component {
 
                 </div>
 
-
-
-
                 <div className="row">
 
                   <div className="col-xs-12">
@@ -149,17 +173,20 @@ export default class ExploreDialects extends Component {
                       <div className="panel-body">
                         <div className="row">
                           <div className="col-xs-6">          
-                                <TextField ref="searchTextField" onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} fullWidth={true} />                   
+                            <TextField ref="searchTextField" value={this.state.searchTerm} onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} fullWidth={true} />                   
                           </div>
                           <div className="col-xs-5">                
                             <RaisedButton onTouchTap={this._handleSearchReset} label="Reset" primary={true} /> <RaisedButton onTouchTap={this._handleSearchSubmit} label="Filter" primary={true} /> 
                           </div> 
                         </div> 
+                        <div className="row">
+                          <div className="col-xs-12">          
+                            <Checkbox checked={this.state.filteredByRole} onCheck={this._handleMyDialectsChange} label="Show only dialects I can contribute to or are a member of." />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-
-                  
 
                 </div>
 
@@ -172,14 +199,27 @@ export default class ExploreDialects extends Component {
                       cellHeight={200}
                       style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
                       >
-                        {(this.state.filteredList || selectn('response.entries', computeDialects) || []).map((tile, i) => 
-                          <GridTile
+                        {(this.state.filteredList || selectn('response.entries', computeDialects) || []).map(function (tile, i) { 
+
+                          // Switch roles
+                          let dialectRoles = selectn('contextParameters.dialect.roles', tile);
+                          let roleDesc = '';
+                          let actionIcon = null;
+
+                          if ( ProviderHelpers.isActiveRole(dialectRoles) ) {
+                            actionIcon = <ActionGrade style={{margin: '0 15px'}} color={Colors.amber200} />;
+                            roleDesc = " ROLE(S): " + dialectRoles.join(", ")
+                          }
+
+                          return <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
                             key={tile.uid}
                             title={tile.title}
-                            subtitle={tile.description}
+                            actionPosition="right"
+                            actionIcon={actionIcon}
+                            subtitle={(tile.description || '') + roleDesc}
                             ><img src="/assets/images/cover.png" /></GridTile>
-                        )}
+                        }.bind(this))}
                     </GridList>
                   </div>
               </div>

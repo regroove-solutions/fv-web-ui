@@ -33,6 +33,7 @@ import Avatar from 'material-ui/lib/avatar';
 import Popover from 'material-ui/lib/popover/popover';
 
 import RaisedButton from 'material-ui/lib/raised-button';
+import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 import DropDownArrow from 'material-ui/lib/svg-icons/navigation/arrow-drop-down';
 import DefaultRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme'
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -98,7 +99,8 @@ export default class DialectDropDown extends Component {
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.props);
+    // No need to fetch on initial render because login status will change first
+    //this.fetchData(this.props);
   }
 
   // Refetch if logged in
@@ -143,8 +145,14 @@ export default class DialectDropDown extends Component {
         let dialectUid = dialect.uid;
         let parentLanguage = selectn('contextParameters.ancestry.language.dc:title', dialect);
 
+        let rightIcon = null;
+
+        if ( ProviderHelpers.isActiveRole(selectn('contextParameters.dialect.roles', dialect)) ) {
+          rightIcon = <ActionGrade />;
+        }
+
         if (parentLanguage) {
-          return (<ListItem value={dialect.path} key={dialectUid} language={parentLanguage} primaryText={dialectTitle} />);
+          return (<ListItem value={dialect.path} key={dialectUid} rightIcon={rightIcon} language={parentLanguage} primaryText={dialectTitle} />);
         }
       });
 
@@ -173,7 +181,7 @@ export default class DialectDropDown extends Component {
           anchorOrigin={{'horizontal':'left','vertical':'bottom'}}
           targetOrigin={{'horizontal':'middle','vertical':'bottom'}}>
           <SelectableList
-            style={{maxHeight: '550px'}}
+            style={{maxHeight: '550px', minWidth:'300px'}}
             valueLink={{
               value: location.pathname,
               requestChange: this._onNavigateRequest
