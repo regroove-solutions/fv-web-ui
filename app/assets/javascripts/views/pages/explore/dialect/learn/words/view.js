@@ -31,6 +31,8 @@ import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-t
 
 import ImageGallery from 'react-image-gallery';
 
+import {Link} from 'provide-page';
+
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
@@ -288,7 +290,7 @@ export default class View extends Component {
                                         
                                         return (
                                         <SubViewTranslation key={key} group={phraseItem} groupByElement="language" groupValue="translation">
-                                          <p>{selectn('dc:title', phrase)}</p>
+                                          <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
                                         </SubViewTranslation>
                                         );
                                       })}
