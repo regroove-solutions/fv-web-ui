@@ -16,6 +16,7 @@ limitations under the License.
 
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
+import selectn from 'selectn';
 
 import provide from 'react-redux-provide';
 
@@ -28,12 +29,14 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 
+import Badge from 'material-ui/lib/badge';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import RaisedButton from 'material-ui/lib/raised-button';
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
+import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications';
 
 import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
@@ -47,8 +50,10 @@ export default class Navigation extends Component {
     replaceWindowPath: PropTypes.func.isRequired,    
     splitWindowPath: PropTypes.array.isRequired,    
     toggleMenuAction: PropTypes.func.isRequired,
+    fetchUserTasks: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
+    computeUserTasks: PropTypes.object.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -85,6 +90,12 @@ export default class Navigation extends Component {
     //this._test = this._test.bind(this);
   }
 
+  componentWillReceiveProps(newProps) {
+    if (newProps.computeLogin != this.props.computeLogin) {
+      this.props.fetchUserTasks();
+    }
+  }
+
   _handleMenuToggle (event) {
     //console.log(event);
 
@@ -94,6 +105,10 @@ export default class Navigation extends Component {
     /*this.setState({
       leftNavOpen: !this.state.leftNavOpen,
     });*/
+  }
+
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
   }
 
   handleChangeRequestLeftNav(open) {
@@ -134,6 +149,8 @@ export default class Navigation extends Component {
 
   render() {
 
+    const userTaskCount = selectn('response', this.props.computeUserTasks).length || 0;
+
     return <div>
         <AppBar
           title={this.props.properties.title}
@@ -142,12 +159,25 @@ export default class Navigation extends Component {
           <ToolbarGroup>
             <Login label="Sign in"/>
 
-            <ToolbarSeparator style={{float: 'none', marginRight: '30px'}} />
+            <ToolbarSeparator style={{float: 'none', marginLeft: 0, marginRight: 0}} />
+
+            <Badge
+              badgeContent={userTaskCount}
+              style={{paddingTop: 0, top: '8px', left: '-10px'}}
+              badgeStyle={{top: 12, right: 12}}
+              primary={true}
+            >
+              <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false} tooltip="Active Tasks">
+                <NotificationsIcon />
+              </IconButton>
+            </Badge>
+
+            <ToolbarSeparator style={{float: 'none', marginRight: '30px', marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
             <TextField ref="navigationSearchField" hintText={this.state.hintTextSearch} onBlur={() => this.setState({hintTextSearch: 'Search:'})} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />
-            
-            <IconMenu
+
+            {/*<IconMenu
                 iconButtonElement={
                   <IconButton><MoreVertIcon /></IconButton>
                 }
@@ -157,7 +187,7 @@ export default class Navigation extends Component {
                 <MenuItem primaryText="Refresh" />
                 <MenuItem primaryText="Help" />
                 <MenuItem primaryText="Sign out" />
-            </IconMenu>
+            </IconMenu>*/}
           </ToolbarGroup>
 
         </AppBar>
@@ -171,7 +201,6 @@ export default class Navigation extends Component {
         </Toolbar>
 
         <AppLeftNav
-          test="me1!"
           menu={{main: true}}
           open={false}
           //onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
