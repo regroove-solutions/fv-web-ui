@@ -20,6 +20,8 @@ import selectn from 'selectn';
 
 import provide from 'react-redux-provide';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 // Components
 import AppBar from 'material-ui/lib/app-bar';
 
@@ -92,7 +94,7 @@ export default class Navigation extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.computeLogin != this.props.computeLogin) {
-      this.props.fetchUserTasks();
+      this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin));
     }
   }
 
@@ -149,7 +151,9 @@ export default class Navigation extends Component {
 
   render() {
 
-    const userTaskCount = selectn('response', this.props.computeUserTasks).length || 0;
+    const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, selectn('response.id', this.props.computeLogin));
+
+    const userTaskCount = selectn('response.length', computeUserTasks) || 0;
 
     return <div>
         <AppBar

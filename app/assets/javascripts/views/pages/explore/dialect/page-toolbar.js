@@ -14,10 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
 
 import classNames from 'classnames';
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
+
+import provide from 'react-redux-provide';
+
+import ProviderHelpers from 'common/ProviderHelpers';
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
@@ -31,9 +36,13 @@ import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expan
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
+@provide
 export default class PageToolbar extends Component {
 
   static propTypes = {
+    windowPath: PropTypes.string.isRequired,
+    fetchTasks: PropTypes.func.isRequired,
+    computeTasks: PropTypes.object.isRequired,
     computeEntity: PropTypes.object.isRequired,
     computePermissionEntity: PropTypes.object,
     computeLogin: PropTypes.object.isRequired,
@@ -58,7 +67,11 @@ export default class PageToolbar extends Component {
 
     this.state = {
       enabledToggled: null,
-      publishedToggled: null
+      publishedToggled: null,
+      enableActions: 0,
+      disableActions: 0,
+      publishActions: 0,
+      unpublishActions: 0
     };
 
     // Bind methods to 'this'
@@ -106,25 +119,38 @@ export default class PageToolbar extends Component {
     switch (workflow) {
       case 'enable':
         this.props.enableToggleAction(true, true, path);
+        this.setState({enableActions: this.state.enableActions + 1});
       break;
 
       case 'disable':
         this.props.enableToggleAction(false, true, path);
+        this.setState({disableActions: this.state.disableActions + 1});
       break;
 
       case 'publish':
         this.props.publishToggleAction(true, true, path);
+        this.setState({publishActions: this.state.publishActions + 1});
       break;
 
       case 'unpublish':
         this.props.publishToggleAction(false, true, path);
+        this.setState({unpublishActions: this.state.unpublishActions + 1});
       break;
     }
+  }
+
+  componentDidMount() {
+    this.props.fetchTasks(selectn('response.uid', this.props.computeEntity));
   }
 
   render() {
 
     const { computeEntity, computePermissionEntity, computeLogin } = this.props;
+
+    let enableTasks = [];
+    let disableTasks = [];
+    let publishTasks = [];
+    let unpublishTasks = [];
 
     let toolbarGroupItem = {
       float: 'left',
@@ -136,6 +162,35 @@ export default class PageToolbar extends Component {
     let documentPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeEntity) == 'Published') : this.state.publishedToggled;
 
     const permissionEntity = (selectn('response', computePermissionEntity)) ? computePermissionEntity : computeEntity;
+
+
+    // Compute related tasks
+    const computeTasks = ProviderHelpers.getEntry(this.props.computeTasks, selectn('response.uid', this.props.computeEntity));
+
+    if (selectn('response.entries', computeTasks)) {
+
+      let taskList = new List(selectn('response.entries', computeTasks));
+
+      taskList.forEach(function(value, key) {
+        switch (selectn('properties.nt:type', value)) {
+          case 'Task2300':
+            enableTasks.push(value);
+          break;
+
+          case 'Task297b':
+            disableTasks.push(value);
+          break;
+
+          case 'Task6b8':
+            publishTasks.push(value);
+          break;
+
+          case 'Task11b1':
+            unpublishTasks.push(value);
+          break;
+        }
+      });
+    }
 
     return <Toolbar>
 
@@ -152,10 +207,10 @@ export default class PageToolbar extends Component {
 
                               <span style={{paddingRight: '15px'}}>REQUEST: </span>
 
-                              <RaisedButton label="Enable" disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
-                              <RaisedButton label="Disable" disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
-                              <RaisedButton label="Publish" disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
-                              <RaisedButton label="Unpublish" disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+                              <RaisedButton label={"Enable (" + (enableTasks.length + this.state.enableActions ) + ")"} disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
+                              <RaisedButton label={"Disable (" + (disableTasks.length + this.state.disableActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
+                              <RaisedButton label={"Publish (" + (publishTasks.length + this.state.publishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
+                              <RaisedButton label={"Unpublish (" + (unpublishTasks.length + this.state.unpublishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
 
                             </div>
 

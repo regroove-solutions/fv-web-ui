@@ -57,7 +57,7 @@ export default class UserOperations extends BaseOperations {
         .then((tasks) => {
         	
         	// Go through each task and do another request to figure out what document type each one is
-        	tasks.map(function(task, i) {
+        	/*tasks.map(function(task, i) {
         		properties.client.request('/id/' + task.docref)
         		.get()
         		.then((document) => {
@@ -66,7 +66,7 @@ export default class UserOperations extends BaseOperations {
                 }).catch((error) => { reject('Could not retrieve document.'); });
         	})
          	        	
-          console.log(tasks);
+          console.log(tasks);*/
           resolve(tasks);
         }).catch((error) => { reject('Could not retrieve user tasks.'); });
     });
