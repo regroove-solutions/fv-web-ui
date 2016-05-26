@@ -48,6 +48,7 @@ export default class PageToolbar extends Component {
     computeLogin: PropTypes.object.isRequired,
     handleNavigateRequest: PropTypes.func.isRequired,
     publishToggleAction: PropTypes.func.isRequired,
+    publishChangesAction: PropTypes.func,
     enableToggleAction: PropTypes.func.isRequired,
     disableWorkflowActions: PropTypes.bool,
     children: PropTypes.node,
@@ -55,7 +56,8 @@ export default class PageToolbar extends Component {
   };
 
   static defaultProps = {
-    disableWorkflowActions: false
+    disableWorkflowActions: false,
+    publishChangesAction: null
   };
 
   static contextTypes = {
@@ -82,7 +84,11 @@ export default class PageToolbar extends Component {
   * Publish changes directly
   */
   _publishChanges() {
-    this.props.publishToggleAction(true, false, selectn('response.path', this.props.computeEntity));
+    if (this.props.publishChangesAction == null) {
+      this.props.publishToggleAction(true, false, selectn('response.path', this.props.computeEntity));
+    } else {
+      this.props.publishChangesAction();
+    }
   }
 
   /**

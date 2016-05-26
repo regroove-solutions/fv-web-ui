@@ -73,6 +73,8 @@ export default class ExploreDialect extends Component {
     computeLogin: PropTypes.object.isRequired,
     publishPortal: PropTypes.func.isRequired,
     unpublishPortal: PropTypes.func.isRequired,
+    publishDialect: PropTypes.func.isRequired,
+    unpublishDialect: PropTypes.func.isRequired,
     enableDialect: PropTypes.func.isRequired,
     disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
@@ -90,7 +92,7 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_publishChangesAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -139,11 +141,18 @@ export default class ExploreDialect extends Component {
   /**
   * Toggle published dialect
   */
+  _publishChangesAction() {
+      this.props.publishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Portal published successfully!");
+  } 
+
+  /**
+  * Toggle published dialect
+  */
   _publishToggleAction(toggled) {
     if (toggled) {
-      this.props.publishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Dialect published successfully!");
+      this.props.publishDialect(this.props.routeParams.dialect_path, null, null, "Dialect published successfully!");
     } else {
-      this.props.unpublishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Dialect unpublished successfully!");
+      this.props.unpublishDialect(this.props.routeParams.dialect_path, null, null, "Dialect unpublished successfully!");
     }
   }
 
@@ -197,6 +206,7 @@ export default class ExploreDialect extends Component {
                             computeEntity={computeDialect2}
                             disableWorkflowActions={true}
                             publishToggleAction={this._publishToggleAction}
+                            publishChangesAction={this._publishChangesAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props} />;
               }
