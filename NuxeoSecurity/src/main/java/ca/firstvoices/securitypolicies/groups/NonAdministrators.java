@@ -40,7 +40,7 @@ public class NonAdministrators  extends AbstractSecurityPolicy {
         }
 
         // Only apply to remove, and if not published document.
-        if (!doc.isProxy() && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
+        if (!doc.isProxy() && !"WriteLifeCycle".equals(permission) && Arrays.asList(resolvedPermissions).contains(SecurityConstants.REMOVE)) {
 
             if (restrictedDocumentTypes.isEmpty()) {
             	restrictedDocumentTypes.add("FVLanguageFamily");
