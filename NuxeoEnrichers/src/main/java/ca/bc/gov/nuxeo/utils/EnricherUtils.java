@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.directory.Session;
@@ -50,7 +51,7 @@ public class EnricherUtils {
 			binaryJsonObj.put("path", binaryPath);
 			binaryJsonObj.put("dc:title", (String)binaryDoc.getPropertyValue("dc:title"));
 			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));
-		} catch (DocumentNotFoundException de) {
+		} catch (DocumentNotFoundException | DocumentSecurityException de) {
     		log.warn("Could not retrieve binary document.", de);
 			return null;
 		} catch (Exception e) {
@@ -92,7 +93,7 @@ public class EnricherUtils {
 				linkJsonObj.put("mime-type", mimeType);
 				linkJsonObj.put("path", binaryPath);
 			}
-		} catch (DocumentNotFoundException de) {
+		} catch (DocumentNotFoundException | DocumentSecurityException de) {
     		log.warn("Could not retrieve link document.", de);
 			return null;
 		}
@@ -115,7 +116,7 @@ public class EnricherUtils {
 			// Build JSON node
 			jsonObj.put("uid", doc.getId());
 			jsonObj.put("dc:title", doc.getTitle());
-		} catch (DocumentNotFoundException de) {
+		} catch (DocumentNotFoundException | DocumentSecurityException de) {
     		log.warn("Could not retrieve document.", de);
 			return null;
 		}
