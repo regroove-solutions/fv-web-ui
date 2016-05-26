@@ -103,7 +103,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
