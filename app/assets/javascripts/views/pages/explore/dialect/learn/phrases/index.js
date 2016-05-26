@@ -133,7 +133,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <div renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
@@ -158,6 +158,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
                 </div>
               </div>
-        </PromiseWrapper>;
+        </div>;
   }
 }

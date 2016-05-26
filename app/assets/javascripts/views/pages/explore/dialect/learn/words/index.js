@@ -142,7 +142,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
                 <div className="col-xs-8">
                 </div>

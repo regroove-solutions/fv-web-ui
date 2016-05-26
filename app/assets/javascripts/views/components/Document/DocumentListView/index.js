@@ -15,6 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
+import selectn from 'selectn';
 import DataGrid from 'react-datagrid';
 
 import ClearFix from 'material-ui/lib/clearfix';
@@ -81,8 +82,8 @@ export default class DocumentListView extends Component {
         <ClearFix>
         <DataGrid
           idProperty="uid"
-          dataSource={this.props.data.response.entries}
-          dataSourceCount={this.props.data.response.totalSize}
+          dataSource={selectn('response.entries', this.props.data)}
+          dataSourceCount={selectn('response.totalSize', this.props.data)}
           columns={this.props.columns}
           rowHeight="55"
           style={DataGridStyles}
