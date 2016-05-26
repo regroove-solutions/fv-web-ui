@@ -95,7 +95,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regradless of context.</i>
+        help: <i>Describe what the word translates to regardless of context.</i>
       },
       'fv-word:part_of_speech' : {
         label: 'Part of Speech',
@@ -281,7 +281,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regradless of context.</i>
+        help: <i>Describe what the word translates to regardless of context.</i>
       },
       'fvbook:introduction': {
         label: 'Book Introduction',
@@ -309,7 +309,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regradless of context.</i>
+        help: <i>Describe what the word translates to regardless of context.</i>
       },
       'fvbook:type': {
         label: 'Type',
@@ -388,7 +388,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the book entry translates to regradless of context.</i>
+        help: <i>Describe what the book entry translates to regardless of context.</i>
       },
       'fvbookentry:dominant_language_text': {
         label: 'Dominant Language Text',
@@ -409,7 +409,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the book entry translates to regradless of context.</i>
+        help: <i>Describe what the book entry translates to regardless of context.</i>
       },
       'fv:related_audio' : {
         label: 'Related Audio',
