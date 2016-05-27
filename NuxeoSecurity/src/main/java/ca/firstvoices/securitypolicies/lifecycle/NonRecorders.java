@@ -30,15 +30,20 @@ public class NonRecorders extends AbstractSecurityPolicy {
         }
 
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
-        // Users who aren't at least recorders should be denied access documents with New or Disabled state
-        if (!additionalPrincipalsList.contains("recorders") && !additionalPrincipalsList.contains("language_administrators")) {
-        	String docLifeCycle = doc.getLifeCycleState();
-            if (docLifeCycle != null) {
-            	if(docLifeCycle.equals("New") || docLifeCycle.equals("Disabled")) {
-            		return Access.DENY;
-            	}
+
+        // Security policy should only apply to non-proxied documents
+        if (!doc.isProxy()) {
+            // Users who aren't at least recorders should be denied access documents with New or Disabled state
+            if (!additionalPrincipalsList.contains("recorders") && !additionalPrincipalsList.contains("language_administrators")) {
+            	String docLifeCycle = doc.getLifeCycleState();
+                if (docLifeCycle != null) {
+                	if(docLifeCycle.equals("New") || docLifeCycle.equals("Disabled")) {
+                		return Access.DENY;
+                	}
+                }
             }
         }
+
         return Access.UNKNOWN;
     }
 
