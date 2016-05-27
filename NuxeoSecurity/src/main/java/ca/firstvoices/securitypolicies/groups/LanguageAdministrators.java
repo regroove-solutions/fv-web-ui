@@ -39,6 +39,13 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         String parentType = doc.getParent().getType().getName();
 
         // Publishing permissions
+
+        // Allow ADD_CHILDREN on section root (for when hierarchy needs to be created from scratch)
+        if ( "/FV/sections/Data".equals(doc.getPath()) && SecurityConstants.ADD_CHILDREN.equals(permission) ) {
+        	return Access.GRANT;
+        }
+
+        // Proxy documents
         if ( doc.isProxy() ) {
 
         	// TODO: Restrict language administrators from publishing to someone else's FVDialect
@@ -47,14 +54,15 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
                     return Access.DENY;
                 }
         	}*/
-        	// TODO: Restrict this to THEIR language
-        	// Allow publication to language
-        	if ("FVLanguage".equals(docType)) {
-        		return Access.GRANT;
-        	}
 
         	// Allow WriteSecurity on dialect so permissions can be assigned when publishing
         	if ("FVDialect".equals(docType) && SecurityConstants.WRITE_SECURITY.equals(permission)) {
+        		return Access.GRANT;
+        	}
+
+        	// TODO: Restrict this to THEIR language
+        	// Allow ADD_CHILDREN on Families, Languages and section root (for when hierarchy needs to be created from scratch)
+        	if ("FVLanguage".equals(docType) || "FVLanguageFamily".equals(docType) && SecurityConstants.ADD_CHILDREN.equals(permission)) {
         		return Access.GRANT;
         	}
         }
