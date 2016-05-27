@@ -240,8 +240,16 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                     continue;
                 }
                 String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
-                String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
-                updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+
+                String[] updatedProperty = new String[1];
+
+                if (property != null) {
+                    updatedProperty = Arrays.copyOf(property, property.length + 1);
+                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+                } else {
+                	updatedProperty[0] = publishedDep.getRef().toString();
+                }
+
                 input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
             }
         }
@@ -331,8 +339,16 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
 
                 String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
-                String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
-                updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+
+                String[] updatedProperty = new String[1];
+
+                if (property != null) {
+                    updatedProperty = Arrays.copyOf(property, property.length + 1);
+                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+                } else {
+                	updatedProperty[0] = publishedDep.getRef().toString();
+                }
+
                 input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
             }
         }
