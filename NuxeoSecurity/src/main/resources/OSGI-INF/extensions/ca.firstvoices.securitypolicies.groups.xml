@@ -3,7 +3,6 @@
   <extension target="org.nuxeo.ecm.core.security.SecurityService" point="policies">
 
     <policy name="languagerecorders" class="ca.firstvoices.securitypolicies.groups.LanguageRecorders" order="100" />
-    <policy name="nonadministrators" class="ca.firstvoices.securitypolicies.groups.NonAdministrators" order="110" />
     <policy name="languageadministrators" class="ca.firstvoices.securitypolicies.groups.LanguageAdministrators" order="120" />
 
   </extension>

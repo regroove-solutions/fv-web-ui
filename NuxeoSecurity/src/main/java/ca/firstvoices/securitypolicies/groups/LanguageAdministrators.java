@@ -36,15 +36,41 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         }
 
         String docType = doc.getType().getName();
+        String parentType = doc.getParent().getType().getName();
 
-        // Restrict language administrators from publishing to someone else's FVDialect
-        if ( doc.isProxy() && "FVDialect".equals(docType) ) {
+        // Publishing permissions
 
-        	// Check if language administrator can do everything on the section. If not, deny.
-            if ( !Access.GRANT.equals(mergedAcp.getAccess(additionalPrincipals, new String[]{SecurityConstants.EVERYTHING})) ) {
-                return Access.DENY;
-            }
+        // Allow ADD_CHILDREN on section root (for when hierarchy needs to be created from scratch)
+        if ( "/FV/sections/Data".equals(doc.getPath()) && SecurityConstants.ADD_CHILDREN.equals(permission) ) {
+        	return Access.GRANT;
         }
+
+        // Proxy documents
+        if ( doc.isProxy() ) {
+
+        	// TODO: Restrict language administrators from publishing to someone else's FVDialect
+        	/*if ( "FVDialect".equals(docType) ) {
+                if ( !Access.GRANT.equals(mergedAcp.getAccess(additionalPrincipals, new String[]{SecurityConstants.EVERYTHING})) ) {
+                    return Access.DENY;
+                }
+        	}*/
+
+        	// Allow WriteSecurity on dialect so permissions can be assigned when publishing
+        	if ("FVDialect".equals(docType) && SecurityConstants.WRITE_SECURITY.equals(permission)) {
+        		return Access.GRANT;
+        	}
+
+        	// TODO: Restrict this to THEIR language
+        	// Allow ADD_CHILDREN on Families, Languages and section root (for when hierarchy needs to be created from scratch)
+        	if ("FVLanguage".equals(docType) || "FVLanguageFamily".equals(docType) && SecurityConstants.ADD_CHILDREN.equals(permission)) {
+        		return Access.GRANT;
+        	}
+        }
+
+        // Restrict deletion of FVDialect children (but not unpublishing)
+        if (doc.getParent() != null && "FVDialect".equals(parentType) && "Remove".equals(permission)) {
+        	return Access.DENY;
+		}
 
         return Access.UNKNOWN;
     }
