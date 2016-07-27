@@ -65,6 +65,10 @@ public class EnricherUtils {
 	 */
 	public static ObjectNode getLinkJsonObject(String binaryId, CoreSession session) {
 
+		if (binaryId == null) {
+			return null;
+		}
+
 		IdRef ref = new IdRef(binaryId);
 		DocumentModel linkDoc = null;
 		ObjectNode linkJsonObj = mapper.createObjectNode();
