@@ -98,6 +98,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-directory-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.core</groupId>
+      <artifactId>nuxeo-core-io</artifactId>
+    </dependency>
   </dependencies>
   <repositories>
     <repository>
@@ -131,27 +135,27 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
- 	<!-- Hotfix Repositories For Nuxeo Customers Only -->
-	<repository>
-	    <id>hotfix-releases</id>
-	    <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-releases</url>
-	    <releases>
-	      <enabled>true</enabled>
-	    </releases>
-	    <snapshots>
-	      <enabled>false</enabled>
-	    </snapshots>
-	</repository>
-	<repository>
-	    <id>hotfix-snapshots</id>
-	    <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
-	    <releases>
-	      <enabled>false</enabled>
-	    </releases>
-	    <snapshots>
-	      <updatePolicy>always</updatePolicy>
-	      <enabled>true</enabled>
-	    </snapshots>
-	</repository>
+    <!-- Hotfix Repositories For Nuxeo Customers Only -->
+    <repository>
+      <id>hotfix-releases</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>hotfix-snapshots</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
 </project>
