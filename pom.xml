@@ -2,6 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
+    <fv.studio.version>0.0.10</fv.studio.version>
+    <fv.plugin.version>1.0.1-SNAPSHOT</fv.plugin.version>
+  </properties>
+
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
@@ -9,24 +16,40 @@
   </parent>
 
   <groupId>ca.firstvoices</groupId>
-  <artifactId>nuxeo.modules.parent</artifactId>
+  <artifactId>firstvoices-modules-parent</artifactId>
   <name>First Voices Project Parent</name>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
-
-  <properties>
-    <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
-    <fv.studio.version>0.0.10</fv.studio.version>
-  </properties>
+  <version>1.0.1-SNAPSHOT</version>
 
   <modules>
+    <module>FirstVoices-marketplace</module>
     <module>FirstVoicesPublisher</module>
-    <module>NuxeoEnrichers</module>
-    <module>NuxeoSecurity</module>
+    <module>FirstVoicesEnrichers</module>
+    <module>FirstVoicesSecurity</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FirstVoicesPublisher</artifactId>
+        <version>${fv.plugin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FirstVoicesEnrichers</artifactId>
+        <version>${fv.plugin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FirstVoicesSecurity</artifactId>
+        <version>${fv.plugin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FirstVoices-marketplace</artifactId>
+        <version>${fv.plugin.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution-cap</artifactId>
