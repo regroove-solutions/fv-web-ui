@@ -1,14 +1,13 @@
 <component name="ca.firstvoices.auth.contrib">
 	<!-- Open the login URL for unauthenticated requests -->
-	<!-- 
-	<extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+
+	<!-- <extension point="openUrl" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
 	    <openUrl name="GuestInit">
 	        <grantPattern>(.*)/automation.*</grantPattern>
+	        <grantPattern>(.*)/api/v.*</grantPattern>
 	    </openUrl>
   	</extension>
-	-->
-	<require>org.nuxeo.ecm.platform.ui.web.auth.defaultConfig</require>
-	
+
 	<extension
 	    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
 	    point="authenticators">
@@ -21,32 +20,28 @@
 	      <parameter name="ExcludeBAHeader_Token">X-No-Basic-Header</parameter>
 	    </parameters>
 	  </authenticationPlugin>
-	</extension>
+	</extension>-->
 	
 	<extension
 	    target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService"
 	    point="specificChains">
 	
-    <specificAuthenticationChain name="Automation">
+    <specificAuthenticationChain name="Automation" handlePrompt="false">
 
       <urlPatterns>
         <url>(.*)/automation.*</url>
       </urlPatterns>
       <replacementChain>
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>AUTOMATION_BASIC_AUTH</plugin>
-        <plugin>TOKEN_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>
 
-    <specificAuthenticationChain name="RestAPI">
+    <specificAuthenticationChain name="RestAPI" handlePrompt="false">
       <urlPatterns>
         <url>(.*)/api/v.*</url>
       </urlPatterns>
       <replacementChain>
         <plugin>ANONYMOUS_AUTH</plugin>
-        <plugin>AUTOMATION_BASIC_AUTH</plugin>
-        <plugin>TOKEN_AUTH</plugin>
       </replacementChain>
     </specificAuthenticationChain>]
     
