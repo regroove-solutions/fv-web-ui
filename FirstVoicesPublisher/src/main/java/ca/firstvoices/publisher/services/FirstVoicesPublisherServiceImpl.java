@@ -196,7 +196,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             // String documentPath = input.getPathAsString();
             String[] dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
 
-            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0) {
+            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
                 continue;
             }
 
@@ -295,7 +295,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             // String documentPath = input.getPathAsString();
             String[] dependencyPropertyValue = (String[]) asset.getPropertyValue(dependency);
 
-            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0) {
+            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
                 continue;
             }
 
@@ -480,7 +480,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 				}
             }
 
-            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0) {
+            if ( dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
                 continue;
             }
 
