@@ -41,8 +41,10 @@ export default {
   },*/
   isActiveRole: function(roles) {
 
-    if (roles.indexOf("Record") !== -1 || roles.indexOf("Approve") !== -1 || roles.indexOf("Manage") !== -1 || roles.indexOf("Member") !== -1) {
-      return true;
+    if (roles && roles.length > 0) {
+      if (roles.indexOf("Record") !== -1 || roles.indexOf("Approve") !== -1 || roles.indexOf("Manage") !== -1 || roles.indexOf("Member") !== -1) {
+        return true;
+      }
     }
 
     return false;

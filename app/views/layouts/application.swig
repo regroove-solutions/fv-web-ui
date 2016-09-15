@@ -14,7 +14,6 @@
     <script type="text/javascript">
       // Alloy editor configuration
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
-
     </script>
 
     {% block head %}{% endblock %}

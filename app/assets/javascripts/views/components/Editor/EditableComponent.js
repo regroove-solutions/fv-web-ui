@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
+import DOMPurify from 'dompurify';
 
 import StatusBar from 'views/components/StatusBar';
 
@@ -112,7 +113,7 @@ export default class EditableComponent extends Component {
 
     // Render regular field if not in edit mode
     return <div>
-              <span dangerouslySetInnerHTML={{__html: currentValue}}></span>
+              <span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(currentValue)}}></span>
               <IconButton iconClassName="material-icons" iconStyle={{fontSize: '20px'}} style={{verticalAlign: '-4px', padding: '0px 5px', height: '22px', width: '22px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
@@ -168,7 +169,7 @@ export default class EditableComponent extends Component {
 export class EditableComponentHelper extends Component {
   render() {
     if (this.props.isSection) {
-      return <div dangerouslySetInnerHTML={{__html: this.props.entity.get(this.props.property)}}></div>;
+      return <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.entity.get(this.props.property))}}></div>;
     }
 
     return <EditableComponent {...this.props} />;
