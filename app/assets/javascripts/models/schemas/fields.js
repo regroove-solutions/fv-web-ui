@@ -66,7 +66,7 @@ const fields = {
   FVPortal : {
     'fv-portal:greeting': t.String,
     'fv-portal:about': t.String,
-    'fv-portal:featured_audio' : t.String,
+    'fv-portal:featured_audio' : t.maybe(t.String),
     'fv-portal:featured_words' : t.list(t.String),
     'fv-portal:background_top_image' : t.String,
     'fv-portal:logo' : t.String

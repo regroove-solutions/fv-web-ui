@@ -131,6 +131,7 @@ export default class DialectLearn extends Component {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDialectStats(newProps.routeParams.dialect_path, {'dialectPath': newProps.routeParams.dialect_path, 'docTypes': ["words","phrases","songs","stories"]});
+    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
 
     newProps.queryModifiedWords(newProps.routeParams.dialect_path);
     newProps.queryCreatedWords(newProps.routeParams.dialect_path);    
@@ -151,8 +152,6 @@ export default class DialectLearn extends Component {
     newProps.queryCreatedSongs(newProps.routeParams.dialect_path);  
     newProps.queryUserModifiedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
     newProps.queryUserCreatedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin)); 
-    
-    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
   }
 
   // Fetch data on initial render
@@ -195,7 +194,9 @@ export default class DialectLearn extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.routeParams.dialect_path);
-    
+    const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');    
+
+
     const computeModifiedWords = ProviderHelpers.getEntry(this.props.computeModifiedWords, this.props.routeParams.dialect_path);
     const computeCreatedWords = ProviderHelpers.getEntry(this.props.computeCreatedWords, this.props.routeParams.dialect_path);
     const computeModifiedPhrases = ProviderHelpers.getEntry(this.props.computeModifiedPhrases, this.props.routeParams.dialect_path);
@@ -209,11 +210,9 @@ export default class DialectLearn extends Component {
     
     const isSection = this.props.routeParams.area === 'sections';
 
-    const { updatePortal, computeLogin, computeDocument, computeCharacters, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
-    	computeUserCreatedPhrases, computeUserModifiedStories, computeUserCreatedStories, computeUserModifiedSongs, computeUserCreatedSongs} = this.props;      
+    const { updatePortal, computeLogin, computeDocument, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
+    	computeUserCreatedPhrases, computeUserModifiedStories, computeUserCreatedStories, computeUserModifiedSongs, computeUserCreatedSongs} = this.props;
     //let dialect = computeDialect2.response;
-
-    let characters = computeCharacters.response;
 
     let circularProgress = <CircularProgress mode="indeterminate" size={3} />;
 
@@ -266,23 +265,25 @@ export default class DialectLearn extends Component {
                   <div className={classNames('col-xs-12', 'col-md-6')}>
 
                     {(() => {
-                      if (selectn('characters.entries.length', characters) > 0) {
-                        return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
+
+                      const characters = selectn('response.entries', computeCharacters);
+
+                      if (characters && characters.length > 0) {
+                          return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
                           <h3>Our Alphabet</h3>
-                          {characters.entries.map((char, i) =>
-                            <div key={char.uid} className="col-xs-1">
-                              <a href={'/explore' + char.path}>{char.title}</a>
-                              <br />
-                              {(char.contextParameters.character.related_audio[0]) ? 
+                          {selectn('response.entries', computeCharacters).map((char, i) =>
+                            <Paper key={char.uid} style={{maxWidth: '30px', padding: '2px'}}>
+                              {char.title} {(char.contextParameters.character.related_audio[0]) ? 
                                 <span>
                                 <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
                                   <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
                                 </span>
                               : ''}           
-                            </div>
+                            </Paper>
                           )}
-                        </Paper>;
-                      }
+                          </Paper>;
+                        }
+
                     })()}
 
                   </div>
