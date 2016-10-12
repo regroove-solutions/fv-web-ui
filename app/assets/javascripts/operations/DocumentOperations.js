@@ -538,7 +538,7 @@ export default class DocumentOperations extends BaseOperations {
 	        		" WHERE (ecm:path STARTSWITH '" + queryPath + "'" + 
 	        		" AND ecm:currentLifeCycleState <> 'deleted')" +
 	        		" AND ecm:primaryType IN (" + docTypes + ")" +      		
-	        		" AND ecm:fulltext = '" + queryParam + "'" +        			        			        		
+	        		" AND ecm:fulltext = '*" + queryParam + "*'" +        			        			        		
 	        		" ORDER BY dc:title ASC"
 	          	};
 	        	

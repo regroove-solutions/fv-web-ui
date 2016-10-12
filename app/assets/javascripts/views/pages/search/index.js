@@ -50,9 +50,9 @@ export default class Search extends React.Component {
     	        		   return v.replace("FV", "");
     	        	   }
     	           },
-//    	           { minWidth: 600, name: 'searchMatch', title: 'Match', render: function (v) {
-//    	           		return (<span dangerouslySetInnerHTML={{__html: v}}></span>);
-//    	           }},
+    	           { minWidth: 600, name: 'searchMatch', title: 'Match', render: function (v) {
+    	           		return (<span dangerouslySetInnerHTML={{__html: v}}></span>);
+    	           }},
     	           /*{ name: 'path', title: 'Document Location',
     	        	   render: function(v) {
     	        		   return (v.includes("/Workspaces/") ? "Workspace" : "Section");
@@ -188,33 +188,33 @@ export default class Search extends React.Component {
 	// Very basic search matching. Should be replace by more performant operation (i.e. returned from server directly).
 	if (computeSearchResults.success) {
 
-//		let searchTerm = this.state.queryParam;
+		let searchTerm = this.state.queryParam;
 //
 		for (let i = 0; i < searchResults.response.entries.length; ++i) {
-//
-//		//computeSearchResults.response.entries.map(function(searchEntry) {
-//			let searchTermMatches = [];
-//			let match = "";
-//			
-//			if (searchResults.response.entries[i].properties['dc:title'].indexOf(searchTerm) !== -1) {
-//				searchResults.response.entries[i]['title'] = searchResults.response.entries[i]['title'].replace(searchTerm, '<strong>' + searchTerm + '</strong>');
-//			}
-//
-//			searchResults.response.entries[i].properties['fv:definitions'].map(function(definition) {
-//				if (definition.translation.indexOf(searchTerm) !== -1) {
-//					searchTermMatches.push('<strong>Definitions</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
-//				}
-//			});
-//
-//			searchResults.response.entries[i].properties['fv:literal_translation'].map(function(definition) {
-//				if (definition.translation.indexOf(searchTerm) !== -1) {
-//					searchTermMatches.push('<strong>Literal Translations</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
-//				}
-//			});
-//
+
+		computeSearchResults.response.entries.map(function(searchEntry) {
+			let searchTermMatches = [];
+			let match = "";
+			
+			if (searchResults.response.entries[i].properties['dc:title'].indexOf(searchTerm) !== -1) {
+				searchResults.response.entries[i]['title'] = searchResults.response.entries[i]['title'].replace(searchTerm, '<strong>' + searchTerm + '</strong>');
+			}
+
+			searchResults.response.entries[i].properties['fv:definitions'].map(function(definition) {
+				if (definition.translation.indexOf(searchTerm) !== -1) {
+					searchTermMatches.push('<strong>Definitions</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
+				}
+			});
+
+			searchResults.response.entries[i].properties['fv:literal_translation'].map(function(definition) {
+				if (definition.translation.indexOf(searchTerm) !== -1) {
+					searchTermMatches.push('<strong>Literal Translations</strong>: ' + definition.translation.replace(searchTerm, '<strong>' + searchTerm + '</strong>'));
+				}
+			});
+
     	    searchResults.response.entries[i]['location'] = searchResults.response.entries[i]['ancestry_family_title'] + " > " + searchResults.response.entries[i]['ancestry_language_title'] + " > " + searchResults.response.entries[i]['ancestry_dialect_title'];
-//			searchResults.response.entries[i]['searchMatch'] = searchTermMatches.join('<br/>');
-		//});
+			searchResults.response.entries[i]['searchMatch'] = searchTermMatches.join('<br/>');
+		});
 
 		}
 	}
