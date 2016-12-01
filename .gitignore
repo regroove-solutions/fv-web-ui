@@ -2,4 +2,5 @@ target/
 bin/
 .settings/
 .classpath
+.DS_Store
 **/.project

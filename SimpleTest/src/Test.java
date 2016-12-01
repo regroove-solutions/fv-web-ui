@@ -1,7 +1,10 @@
+import java.io.InputStream;
+
 import org.nuxeo.client.api.*;
 import org.nuxeo.client.api.objects.Document;
 import org.nuxeo.client.api.objects.Documents;
 import org.nuxeo.client.api.objects.Operation;
+import org.nuxeo.client.api.objects.blob.Blob;
 import org.nuxeo.client.internals.spi.NuxeoClientException;
 
 /**
@@ -17,7 +20,7 @@ import org.nuxeo.client.internals.spi.NuxeoClientException;
 public class Test {
 
 	public static void main(String[] argv) {
-		
+
 
 		NuxeoClient client = new NuxeoClient("http://localhost:8080/nuxeo/", "Administrator", "Administrator");
 
@@ -25,21 +28,29 @@ public class Test {
 
 			try {
 				Operation operation = client
-						.schemas("dublincore", "common")
+						.schemas("dublincore", "common", "file")
 						.automation("Repository.Query")
 						.param("query", "SELECT * FROM Document WHERE ecm:currentLifeCycleState"
 								+ " <> 'deleted' AND ecm:path STARTSWITH "
 								+ "'/default-domain/workspaces/assets'");
-				Documents result = (Documents) operation.execute();		
-				
+				Documents result = (Documents) operation.execute();
+
 				if (result != null) {
 					for (Document doc : result.getDocuments()) {
 						System.out.println(doc.getPath());
+						System.out.println(doc.getId());
 						System.out.println("Title:" + doc.getPropertyValue("dc:title"));
 						System.out.println("***");
+
+						Blob resultBlob = client.automation().input(doc).execute("Document.GetBlob");
+
+						System.out.println(resultBlob.getMimeType());
+						System.out.println(resultBlob.getFileName());
+
+						InputStream in = resultBlob.getStream();
 					}
 				}
-				
+
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -47,6 +58,6 @@ public class Test {
 		}
 		catch (NuxeoClientException e) {
 			e.printStackTrace();
-		}			
+		}
 	}
 }
