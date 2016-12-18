@@ -40,5 +40,3 @@ export default class StatusBar extends React.Component {
 	return <div></div>;
   }
 }
-
-export default StatusBar;
