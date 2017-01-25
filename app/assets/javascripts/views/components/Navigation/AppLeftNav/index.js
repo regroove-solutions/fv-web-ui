@@ -66,6 +66,11 @@ export default class AppLeftNav extends Component {
         path: '/explore/FV/sections/Data/',
       },
       {
+        id: 'kids',
+        label: 'Kids',
+        path: '/kids',
+      },
+      {
         id: 'contribute',
         label: "Contribute",
         path: "/contribute/"

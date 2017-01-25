@@ -23,9 +23,10 @@ import AppFrontController from './AppFrontController';
 
 // Components & Themes
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
-import ThemeDecorator from 'material-ui/lib/styles/theme-decorator';
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
+import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
+
 import FontIcon from 'material-ui/lib/font-icon';
 import Footer from 'views/components/Navigation/Footer';
 import Paper from 'material-ui/lib/paper';
@@ -47,7 +48,6 @@ const getPosition = function getPosition() {
     return {x:x, y:y};
 };
 
-@ThemeDecorator(ThemeManager.getMuiTheme(FirstVoicesTheme))
 @provide
 export default class AppWrapper extends Component {
 
@@ -55,7 +55,10 @@ export default class AppWrapper extends Component {
     connect: PropTypes.func.isRequired,
     getUser: PropTypes.func.isRequired,
     fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired
+    computeDialects: PropTypes.object.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    changeTheme: PropTypes.func.isRequired,
+    properties: PropTypes.object.isRequired
   };
 
   static childContextTypes = {
@@ -67,9 +70,8 @@ export default class AppWrapper extends Component {
   * Pass essential context to all children
   */
   getChildContext() {
-
     let newContext = {
-      muiTheme: ThemeManager.getMuiTheme(FirstVoicesTheme),
+      muiTheme: this.props.properties.theme.palette,
       kmw: this.state.kmw
     };
 
@@ -98,7 +100,7 @@ export default class AppWrapper extends Component {
     };
 
     // Bind methods to 'this'
-    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', 'changeTheme'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -152,11 +154,25 @@ export default class AppWrapper extends Component {
 
   }
 
+  // Force update of theme if out of sync
+  // This is a fix that may be unecessary in future versions of Material-UI, React, Reat-redux-provide
+  componentWillReceiveProps(nextProps){
+    if (nextProps.properties.theme.id != this.props.properties.theme.id) {
+        nextProps.changeTheme(nextProps.properties.theme.id);
+    }
+  }
+
   componentDidMount() {
     window.onscroll = function() {
       if (typeof KeymanWeb !== 'undefined')
         KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
     };
+  }
+
+  // Changing a theme manually...
+  changeTheme(event) {
+    let index = event.nativeEvent.target.selectedIndex;
+    this.props.changeTheme(event.target[index].value);
   }
 
   render() {
@@ -200,6 +216,12 @@ export default class AppWrapper extends Component {
     return <div>
         <AppFrontController />
         {keyboardPicker}
+
+        <select onChange={this.changeTheme}>
+            <option value="default">Default</option>
+            <option value="kids">Kids</option>
+        </select>
+        
         <Footer />
     </div>;
   }

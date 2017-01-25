@@ -1,10 +1,17 @@
 // Middleware
 import createLoggerMiddleware from 'redux-logger';
+
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+
+import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
+import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
+
 const loggerMiddleware = createLoggerMiddleware();
 
 // Action constants
 const TOGGLE_MENU = 'TOGGLE_MENU';
 const NAVIGATE_PAGE = 'NAVIGATE_PAGE';
+const CHANGE_THEME = 'CHANGE_THEME';
 
 /**
 * Actions: Represent that something happened, triggered by component or other action
@@ -18,6 +25,20 @@ const actions = {
   // Request to toggle side-menu
   toggleMenuAction() {
     return { type: TOGGLE_MENU };
+  },
+  
+  // Change theme
+  changeTheme(id) {
+
+    let theme = ThemeManager.getMuiTheme(FirstVoicesTheme);
+
+    switch (id) {
+      case 'kids':
+        theme = ThemeManager.getMuiTheme(FirstVoicesKidsTheme);
+      break;
+    }
+
+    return { type: CHANGE_THEME, theme: {palette: theme, id: id } }
   }
 }
 
@@ -37,8 +58,17 @@ const reducers = {
     return state;
   },
 
-  properties(state = null) {
-    return state;
+  properties(state = null, action) {
+    switch (action.type) {
+      case CHANGE_THEME:
+      	return {
+      		...state,
+      		theme: action.theme
+      	};
+
+      default:
+        return state;
+    }
   },
 
   computeToggleMenuAction(state = {menuVisible: false}, action) {

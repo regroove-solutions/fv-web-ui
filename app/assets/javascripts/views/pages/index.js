@@ -41,6 +41,9 @@ import {default as PagePlay} from './play'
 import {default as PageSearch} from './search'
 import {default as PageTasks} from './tasks'
 
+// KIDS
+import {default as PageKidsHome} from './kids/home'
+
 module.exports = {
   PageTest,
   PageHome,
@@ -63,6 +66,9 @@ module.exports = {
   PageDialectReports,
   PagePlay,
   PageSearch,
-  PageTasks
+  PageTasks,
+  
+  // KIDS
+  PageKidsHome
 }
 

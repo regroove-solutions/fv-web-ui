@@ -17,6 +17,10 @@ import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+
+import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
+
 import ConfGlobal from 'conf/local.json';
 
 // Providers provide reducers and actions
@@ -41,7 +45,11 @@ const context = {
   providedState: {
     properties: {
       title: ConfGlobal.title,
-      domain: ConfGlobal.domain
+      domain: ConfGlobal.domain,
+      theme: {
+        palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
+        id: 'default'
+      }
     }
   }
 };
