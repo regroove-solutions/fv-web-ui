@@ -161,10 +161,12 @@ const fetchCategory = function fetchCategory(pathOrId) {
 };
 */
 const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, breadcrumb' } });
+const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, children'} });
 const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
 const computeCategoryFactory = RESTReducers.computeFetch('category');
+const computeCategoriesFactory = RESTReducers.computeQuery('categories');
 
-const actions = { fetchSharedCategories, fetchCategoriesInPath, fetchCategory, createCategory, fetchCategoriesAll, updateCategory };
+const actions = { fetchSharedCategories, fetchCategoriesInPath, fetchCategories, fetchCategory, createCategory, fetchCategoriesAll, updateCategory };
 
 const reducers = {
   computeSharedCategories(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -210,7 +212,8 @@ const reducers = {
       break;
     }
   },
-  computeCategory: computeCategoryFactory.computeCategory, 
+  computeCategory: computeCategoryFactory.computeCategory,
+  computeCategories: computeCategoriesFactory.computeCategories, 
 /*  
   computeCategory(state = { categories: {} }, action) {
     switch (action.type) {

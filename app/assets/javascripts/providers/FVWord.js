@@ -49,7 +49,7 @@ const FV_WORDS_USER_CREATED_QUERY_SUCCESS = "FV_WORDS_USER_CREATED_QUERY_SUCCESS
 const FV_WORDS_USER_CREATED_QUERY_ERROR = "FV_WORDS_USER_CREATED_QUERY_ERROR";
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
-const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore' } });
+const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word', 'X-NXproperties': 'dublincore, fv-word, fvcore, fvproxy' } });
 const createWord = RESTActions.create('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const updateWord = RESTActions.update('FV_WORD', 'FVWord', { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } });
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
