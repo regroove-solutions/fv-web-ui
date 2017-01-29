@@ -98,7 +98,10 @@ export default class DocumentListView extends Component {
           style={DataGridStyles}
           selected={GRID_PROPERTIES.SELECTED_ID}
           onSelectionChange={this._handleSelectionChange}
+          onColumnOrderChange={this.props.onColumnOrderChange}
+          onSortChange={this.props.onSortChange}
           pagination={true}
+          sortInfo={this.props.sortInfo}
           page={GRID_PROPERTIES.PAGE}
           pageSize={GRID_PROPERTIES.PAGE_SIZE}
           onPageChange={this._onPageChange}

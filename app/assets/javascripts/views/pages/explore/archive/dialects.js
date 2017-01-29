@@ -20,19 +20,17 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
 
+import ConfGlobal from 'conf/local.json';
+
 import Colors from 'material-ui/lib/styles/colors';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import PortalList from 'views/components/Browsing/portal-list'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations';
-
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
-import CircularProgress from 'material-ui/lib/circular-progress';
 
 import Checkbox from 'material-ui/lib/checkbox';
 import TextField from 'material-ui/lib/text-field';
@@ -50,6 +48,8 @@ export default class ExploreDialects extends Component {
     properties: PropTypes.object.isRequired,
     fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired,
+    fetchPortals: PropTypes.func.isRequired,
+    computePortals: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -76,7 +76,7 @@ export default class ExploreDialects extends Component {
   fetchData(newProps) {
     const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
 
-    this.props.fetchDialects(pathOrId);
+    this.props.fetchPortals(pathOrId);
     this.setState({pathOrId})
   }
 
@@ -103,13 +103,13 @@ export default class ExploreDialects extends Component {
   _handleSearchSubmit() {
     let newQueryParam = this.refs.searchTextField.getValue();
 
-    let computeDialectsEntry = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
+    let computePortalsEntry = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
 
-    let entries = selectn('response.entries', computeDialectsEntry);
+    let entries = selectn('response.entries', computePortalsEntry);
 
     if (newQueryParam != "" && entries.length > 0) {
       let filteredList = new List(entries).filter(function(dialect) {
-        return selectn('properties.dc:title', dialect).search(new RegExp(newQueryParam, "i")) !== -1;
+        return selectn('contextParameters.ancestry.dialect.dc:title', dialect).search(new RegExp(newQueryParam, "i")) !== -1;
       });
 
       this.setState({filteredList: filteredList.toJS()});
@@ -117,9 +117,9 @@ export default class ExploreDialects extends Component {
   }
 
   _handleMyDialectsChange(event, checked) {
-    let computeDialectsEntry = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
+    let computePortalsEntry = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
 
-    let entries = this.state.filteredList || selectn('response.entries', computeDialectsEntry);
+    let entries = this.state.filteredList || selectn('response.entries', computePortalsEntry);
 
     if (checked && entries.length > 0) {
       let filteredList = new List(entries).filter(function(dialect) {
@@ -140,10 +140,10 @@ export default class ExploreDialects extends Component {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pathOrId,
-      'entity': this.props.computeDialects
+      'entity': this.props.computePortals
     }])
 
-    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
+    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
 
     return <PromiseWrapper computeEntities={computeEntities}>
              <div className="row">
@@ -193,35 +193,9 @@ export default class ExploreDialects extends Component {
               </div>
               <div className="col-md-8 col-xs-12">
                   <h2>Browse the following Dialects:</h2>
-                  <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                    <GridList
-                      cols={2}
-                      cellHeight={200}
-                      style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
-                      >
-                        {(this.state.filteredList || selectn('response.entries', computeDialects) || []).map(function (tile, i) { 
-
-                          // Switch roles
-                          let dialectRoles = selectn('contextParameters.dialect.roles', tile);
-                          let roleDesc = '';
-                          let actionIcon = null;
-
-                          if ( ProviderHelpers.isActiveRole(dialectRoles) ) {
-                            actionIcon = <ActionGrade style={{margin: '0 15px'}} color={Colors.amber200} />;
-                            roleDesc = " ROLE(S): " + dialectRoles.join(", ")
-                          }
-
-                          return <GridTile
-                            onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                            key={tile.uid}
-                            title={tile.title}
-                            actionPosition="right"
-                            actionIcon={actionIcon}
-                            subtitle={(tile.description || '') + roleDesc}
-                            ><img src="/assets/images/cover.png" /></GridTile>
-                        }.bind(this))}
-                    </GridList>
-                  </div>
+                  <PortalList
+                    action={this._onNavigateRequest}
+                    tiles={this.state.filteredList || selectn('response.entries', computePortals) || []} />
               </div>
             </div>
           </PromiseWrapper>;

@@ -40,6 +40,10 @@ export default class PromiseWrapper extends Component {
 
   constructor(props, context){
     super(props, context);
+
+    this.state = {
+      typeError: false
+    }
   }
 
   render () {
@@ -76,6 +80,14 @@ export default class PromiseWrapper extends Component {
       }
 
     }.bind(this));
+
+    // Catch type errors
+    if (statusMessage && statusMessage instanceof TypeError) {
+      console.error(statusMessage);
+      statusMessage = statusMessage.message;
+      render = <div>An unexpected error has occured.</div>;
+      return false;
+    }
 
     return <div>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
   }
