@@ -55,3 +55,9 @@ const context = {
 };
 
 render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'));
+
+/*window.addEventListener("unhandledrejection", function(err, promise) { 
+// handle error here, for example log   
+});*/
+
+// TODO: https://gist.github.com/Aldredcz/4d63b0a9049b00f54439f8780be7f0d8
