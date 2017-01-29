@@ -40,7 +40,6 @@ export default {
     return false;
   },*/
   isActiveRole: function(roles) {
-
     if (roles && roles.length > 0) {
       if (roles.indexOf("Record") !== -1 || roles.indexOf("Approve") !== -1 || roles.indexOf("Manage") !== -1 || roles.indexOf("Member") !== -1) {
         return true;
@@ -51,5 +50,29 @@ export default {
   },
   getDialectPathFromURLArray: function (url) {
   	return decodeURI(url.slice(1, 7).join('/'));
+  },
+  switchWorkspaceSectionKeys: function (workspaceKey, area) {
+    const proxiesKeys = [
+      {
+        workspace: 'fv-word:categories',
+        section: 'fvproxy:proxied_categories'
+      },
+      {
+        workspace: 'fv-phrase:phrase_books',
+        section: 'fvproxy:proxied_phrase_books'
+      }
+    ];
+
+    let row = proxiesKeys.find(function (mapping) { 
+      return mapping.workspace === workspaceKey;
+    })
+
+    if (row){
+      if (area == 'sections') {
+        return row.section;
+      } else {
+        return row.workspace;
+      }
+    }
   }
 }

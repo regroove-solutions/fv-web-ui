@@ -29,16 +29,22 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
-
-const DEFAULT_PAGE = 0;
-const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_LANGUAGE = 'english';
+import FacetFilterList from 'views/components/Browsing/facet-filter-list';
 
 /**
 * Learn words
 */
 @provide
 export default class PageDialectLearnWords extends PageDialectLearnBase {
+  
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'fv-word:categories'],
+    DEFAULT_PAGE: 0,
+    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc'
+  }
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -50,9 +56,17 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
     fetchWords: PropTypes.func.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
+    computeCategories: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+
+    DISABLED_SORT_COLS: PropTypes.array,
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_COL: PropTypes.string,
+    DEFAULT_SORT_TYPE: PropTypes.string
   };
 
   constructor(props, context) {
@@ -63,22 +77,23 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         { name: 'title', title: 'Word', render: function(v, data, cellProps){
           //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
           return v;
-        }},
-        { name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
+        }, sortName: 'dc:title'},
+        /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
             return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
               if (entry.language == DEFAULT_LANGUAGE && i < 2) {
                 return <li key={i}>{entry.translation}</li>;
               }
             });
-          }.bind(this)
-        },
+          }.bind(this), sortName: 'fv:definitions/0/translation'
+        },*/
         { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
             return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
+              if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
                 return <li key={i}>{entry.translation}</li>;
               }
-            });
-          }.bind(this)
+            }.bind(this));
+          }.bind(this),
+          sortName: 'fv:literal_translation/0/translation'
         },
         { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
         { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
@@ -87,45 +102,42 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             });
           }.bind(this)
         },
-        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } },
-        { name: 'state', title: 'State' }
-      ]
+        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } }
+      ],
+      sortInfo: {
+        uiSortOrder: [], 
+        currentSortCols: this.props.DEFAULT_SORT_COL,
+        currentSortType: this.props.DEFAULT_SORT_TYPE
+      },
+      filterInfo: {
+        currentCategoryFilterIds: [],
+        currentAppliedFilter: {
+          categories: ''
+        }
+      }
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_handleFacetSelected', '_resetColumns'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-    newProps.fetchWords(newProps.routeParams.dialect_path + '/Dictionary', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE);
+
+    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children');
+
+    this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
-  }
-
-  _handleRefetch(dataGridProps, page, pageSize) {
-    this.props.fetchWords(this.props.routeParams.dialect_path + '/Dictionary', '&currentPageIndex=' + page + '&pageSize=' + pageSize);
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
-  }
-
-  _onEntryNavigateRequest(item) {
-    // Get path name from path
-    let splitPath = item.path.split('/');
-    this.props.pushWindowPath(this.props.windowPath + '/' + splitPath[splitPath.length - 1]);
+  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    Object.values(this.state.filterInfo.currentAppliedFilter).join('') + 
+    '&currentPageIndex=' + pageIndex + 
+    '&pageSize=' + pageSize + 
+    '&sortOrder=' + sortOrder +
+    '&sortBy=' + sortBy
+    );
   }
 
   render() {
@@ -136,11 +148,15 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
+    },{
+      'id': '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
+      'entity': this.props.computeCategories
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children');
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
@@ -153,7 +169,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 </div>
               </div>
               <div className="row">
-                <div className="col-xs-12">
+                <div className="col-xs-12 col-md-3">
+                  <FacetFilterList
+                    title='Categories'
+                    facetField='fv-word:categories'
+                    onFacetSelected={this._handleFacetSelected}
+                    facets={selectn('response.entries', computeCategories) || []} />
+                </div>
+                <div className="col-xs-12 col-md-9">
                   <h1>{selectn('response.title', computeDialect2)} Words</h1>
 
                   {(() => {
@@ -163,8 +186,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                                   objectDescriptions="words" 
                                   data={computeWords}
                                   refetcher={this._handleRefetch}
+                                  onSortChange={this._handleSortChange}
                                   onSelectionChange={this._onEntryNavigateRequest}
+                                  onColumnOrderChange={this._handleColumnOrderChange}
                                   columns={this.state.columns}
+                                  sortInfo={this.state.sortInfo.uiSortOrder}
                                   className="browseDataGrid" 
                                   dialect={selectn('response', computeDialect2)} />;
                     }

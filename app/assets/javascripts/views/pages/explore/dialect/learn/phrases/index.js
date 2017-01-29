@@ -29,16 +29,22 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
-
-const DEFAULT_PAGE = 0;
-const DEFAULT_PAGE_SIZE = 10;
-const DEFAULT_LANGUAGE = 'english';
+import FacetFilterList from 'views/components/Browsing/facet-filter-list';
 
 /**
 * Learn phrases
 */
 @provide
 export default class PageDialectLearnPhrases extends PageDialectLearnBase {
+
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books'],
+    DEFAULT_PAGE: 0,
+    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc'
+  }
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -50,9 +56,17 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
     fetchPhrases: PropTypes.func.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     computePhrases: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
+    computeCategories: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+
+    DISABLED_SORT_COLS: PropTypes.array,
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_COL: PropTypes.string,
+    DEFAULT_SORT_TYPE: PropTypes.string
   };
 
   constructor(props, context) {
@@ -63,60 +77,58 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         { name: 'title', title: 'Phrase', render: function(v, data, cellProps){
           //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
           return v;
-        }},
+        }, sortName: 'dc:title'},
         { name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
             return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
+              if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
                 return <li key={i}>{entry.translation}</li>;
               }
-            });
-          }.bind(this)
+            }.bind(this));
+          }.bind(this),
+          sortName: 'fv:definitions/0/translation'
         },
-        { name: 'fv-phrase:phrase_books', title: 'Categories', render: function(v, data, cellProps) {
+        { name: 'fv-phrase:phrase_books', title: 'Phrase Books', render: function(v, data, cellProps) {
             return this.renderComplexArrayRow(selectn('contextParameters.phrase.phrase_books', data), function (entry, i) {
                 return <li key={i}>{selectn('dc:title', entry)}</li>;
             });
           }.bind(this)
         },
         { name: 'state', title: 'State' }
-      ]
+      ],
+      sortInfo: {
+        uiSortOrder: [], 
+        currentSortCols: this.props.DEFAULT_SORT_COL,
+        currentSortType: this.props.DEFAULT_SORT_TYPE
+      },
+      filterInfo: {
+        currentCategoryFilterIds: [],
+        currentAppliedFilter: {
+          categories: ''
+        }
+      }
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_handleFacetSelected', '_resetColumns'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-    newProps.fetchPhrases(newProps.routeParams.dialect_path + '/Dictionary', '&currentPageIndex=' + DEFAULT_PAGE + '&pageSize=' + DEFAULT_PAGE_SIZE);
+
+    newProps.fetchCategories('/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children');
+
+    this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
-  }
-
-  _handleRefetch(dataGridProps, page, pageSize) {
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
-    this.props.fetchPhrases('/' + path, '&currentPageIndex=' + page + '&pageSize=' + pageSize);
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
-  }
-
-  _onEntryNavigateRequest(item) {
-    // Get path name from path
-    let splitPath = item.path.split('/');
-    this.props.pushWindowPath(this.props.windowPath + '/' + splitPath[splitPath.length - 1]);
+  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
+    Object.values(this.state.filterInfo.currentAppliedFilter).join('') + 
+    '&currentPageIndex=' + pageIndex + 
+    '&pageSize=' + pageSize + 
+    '&sortOrder=' + sortOrder +
+    '&sortBy=' + sortBy
+    );
   }
 
   render() {
@@ -127,13 +139,17 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
+    },{
+      'id': '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children',
+      'entity': this.props.computeCategories
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computePhraseBooks = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children');
 
-    return <div renderOnError={true} computeEntities={computeEntities}>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
                 <div className="col-xs-8">
                 </div>
@@ -144,20 +160,35 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 </div>
               </div>
               <div className="row">
-                <div className="col-xs-12">
+                <div className="col-xs-12 col-md-3">
+                  <FacetFilterList
+                    title='Categories'
+                    facetField='fv-phrase:phrase_books'
+                    onFacetSelected={this._handleFacetSelected}
+                    facets={selectn('response.entries', computePhraseBooks) || []} />
+                </div>
+                <div className="col-xs-12 col-md-9">
                   <h1>{selectn('response.title', computeDialect2)} Phrases</h1>
 
-                  <DocumentListView
-                    objectDescriptions="phrases" 
-                    data={computePhrases}
-                    refetcher={this._handleRefetch}
-                    onSelectionChange={this._onEntryNavigateRequest}
-                    columns={this.state.columns}
-                    className="browseDataGrid" 
-                    dialect={selectn('response', computeDialect2)} />;
+                  {(() => {
+                    if (selectn('response.entries', computePhrases)) {
+
+                      return <DocumentListView
+                        objectDescriptions="phrases" 
+                        data={computePhrases}
+                        refetcher={this._handleRefetch}
+                        onSortChange={this._handleSortChange}
+                        onSelectionChange={this._onEntryNavigateRequest}
+                        onColumnOrderChange={this._handleColumnOrderChange}
+                        columns={this.state.columns}
+                        sortInfo={this.state.sortInfo.uiSortOrder}
+                        className="browseDataGrid" 
+                        dialect={selectn('response', computeDialect2)} />;
+                    }
+                  })()}
 
                 </div>
               </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }
