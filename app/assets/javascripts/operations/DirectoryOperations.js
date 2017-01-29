@@ -52,10 +52,17 @@ export default class DirectoryOperations extends BaseOperations {
     // Escape single quotes
     path = StringHelpers.clean(path);
 
+    let requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
+
+    // Switch between direct REST access and controlled mode
+    if (path.indexOf('/api') === 0) {
+      requestBody = path.replace('/api/v1', '');
+    }
+
     return new Promise(
       function(resolve, reject) {
         properties.client.request(
-          '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend,
+          requestBody,
           params
         )
         .get(headers)
