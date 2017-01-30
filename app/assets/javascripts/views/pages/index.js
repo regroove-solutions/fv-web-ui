@@ -14,35 +14,40 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import {default as PageExploreArchive} from './explore/archive'
-import {default as PageExploreDialects} from './explore/archive/dialects'
-import {default as PageExploreFamily} from './explore/family'
-import {default as PageExploreLanguage} from './explore/language'
-import {default as PageExploreDialect} from './explore/dialect'
+import PageExploreArchive from './explore/archive'
+import PageExploreDialects from './explore/archive/dialects'
+import PageExploreFamily from './explore/family'
+import PageExploreLanguage from './explore/language'
+import PageExploreDialect from './explore/dialect'
 
-import {default as PageDialectLearn} from './explore/dialect/learn'
-import {default as PageDialectPlay} from './explore/dialect/play'
-import {default as PageDialectGallery} from './explore/dialect/gallery'
-import {default as PageDialectReports} from './explore/dialect/reports'
+import PageDialectLearn from './explore/dialect/learn'
+import PageDialectPlay from './explore/dialect/play'
 
-import {default as PageDialectLearnWords} from './explore/dialect/learn/words'
-import {default as PageDialectLearnPhrases} from './explore/dialect/learn/phrases'
-import {default as PageDialectLearnStoriesAndSongs} from './explore/dialect/learn/songs-stories'
+import PageJigsawGame from './explore/dialect/play/jigsaw'
+import PageWordSearch from './explore/dialect/play/wordsearch'
+import PageColouringBook from './explore/dialect/play/colouringbook'
 
-import {default as PageDialectViewWord} from './explore/dialect/learn/words/view'
-import {default as PageDialectViewPhrase} from './explore/dialect/learn/phrases/view'
-import {default as PageDialectViewBook} from './explore/dialect/learn/songs-stories/view'
+import PageDialectGallery from './explore/dialect/gallery'
+import PageDialectReports from './explore/dialect/reports'
 
-import {default as PageTest} from './test.js'
-import {default as PageHome} from './home'
-import {default as PageGetStarted} from './get-started'
-import {default as PageContribute} from './contribute'
-import {default as PagePlay} from './play'
-import {default as PageSearch} from './search'
-import {default as PageTasks} from './tasks'
+import PageDialectLearnWords from './explore/dialect/learn/words'
+import PageDialectLearnPhrases from './explore/dialect/learn/phrases'
+import PageDialectLearnStoriesAndSongs from './explore/dialect/learn/songs-stories'
+
+import PageDialectViewWord from './explore/dialect/learn/words/view'
+import PageDialectViewPhrase from './explore/dialect/learn/phrases/view'
+import PageDialectViewBook from './explore/dialect/learn/songs-stories/view'
+
+import PageTest from './test.js'
+import PageHome from './home'
+import PageGetStarted from './get-started'
+import PageContribute from './contribute'
+import PagePlay from './play'
+import PageSearch from './search'
+import PageTasks from './tasks'
 
 // KIDS
-import {default as PageKidsHome} from './kids/home'
+import PageKidsHome from './kids/home'
 
 module.exports = {
   PageTest,
@@ -67,7 +72,12 @@ module.exports = {
   PagePlay,
   PageSearch,
   PageTasks,
-  
+
+  //GAMES
+  PageJigsawGame,
+  PageColouringBook,
+  PageWordSearch,
+
   // KIDS
   PageKidsHome
 }

@@ -19,7 +19,7 @@ import React, {Component} from 'react';
 /**
 * Play games
 */
-export default class Play extends Component {
+export default class WordSearch extends Component {
 
   constructor(props, context){
     super(props, context);
@@ -29,8 +29,7 @@ export default class Play extends Component {
     return <div>
             <div className="row">
               <div className="col-xs-12">
-                <h1>Games</h1>
-                Game browser.
+                <h1>WordSearch</h1>
               </div>
             </div>
         </div>;

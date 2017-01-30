@@ -11,7 +11,7 @@ import {Link} from 'provide-page';
 import Navigation from 'views/components/Navigation';
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports } from 'views/pages';
+import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 'views/pages';
 
@@ -102,7 +102,7 @@ export default class AppFrontController extends Component {
       {
         path: ['tasks'],
         page: <PageTasks />
-      },      
+      },
       {
         path: [KIDS_OR_DEFAULT],
         page: <PageExploreArchive />,
@@ -163,6 +163,21 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
         page: <PageDialectPlay />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'jigsaw' ],
+        page: <PageJigsawGame />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordsearch' ],
+        page: <PageWordSearch />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'colouringbook' ],
+        page: <PageColouringBook />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
@@ -451,7 +466,7 @@ export default class AppFrontController extends Component {
         }
       }
     }.bind(this));
-    
+
     return breadcrumb;
   }
 
@@ -518,7 +533,7 @@ export default class AppFrontController extends Component {
         return false;
       }
       else {
-        return value === currentPathArray.get(key); 
+        return value === currentPathArray.get(key);
       }
     });
 
