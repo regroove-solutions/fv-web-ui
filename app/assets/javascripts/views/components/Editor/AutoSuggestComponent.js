@@ -104,8 +104,9 @@ export default class AutoSuggestComponent extends Component {
     
     this.onChange = this.onChange.bind(this);
     this.getSuggestionValue = this.getSuggestionValue.bind(this);
-    this.onSuggestionsUpdateRequested = this.onSuggestionsUpdateRequested.bind(this);
+    this.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
     this.renderSuggestion = this.renderSuggestion.bind(this);
+    this.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
   }
 
   componentWillReceiveProps(newProps) {
@@ -154,10 +155,14 @@ export default class AutoSuggestComponent extends Component {
     });
   }
 
-  onSuggestionsUpdateRequested({ value, reason }) {
-
-    if (reason === 'type')
+  onSuggestionsFetchRequested({ value }) {
       this.loadSuggestions(value);
+  }
+
+  onSuggestionsClearRequested() {
+    this.setState({
+      suggestions: []
+    });
   }
 
 
@@ -260,7 +265,8 @@ export default class AutoSuggestComponent extends Component {
               theme={theme}
               suggestions={this.getComputeType().response.entries || []}
               shouldRenderSuggestions={this.shouldRenderSuggestions}
-              onSuggestionsUpdateRequested={this.onSuggestionsUpdateRequested}
+              onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+              onSuggestionsClearRequested={this.onSuggestionsClearRequested}
               getSuggestionValue={this.getSuggestionValue}
               renderSuggestion={this.renderSuggestion}
               inputProps={inputProps} />
