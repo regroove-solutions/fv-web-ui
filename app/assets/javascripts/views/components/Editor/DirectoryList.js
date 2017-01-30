@@ -78,7 +78,7 @@ export default class DirectoryList extends Component {
           {
             (this.props.fancy) ? 
 
-            <SelectField value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
+            <SelectField maxHeight={300} autoWidth={true} value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
               {entries.map((entry) => 
                 <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
               )}
