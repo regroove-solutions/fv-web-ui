@@ -7,8 +7,13 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.templates.factorie
- s.xml,OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml,OSGI
- -INF/extensions/ca.firstvoices.publisher.services.xml,OSGI-INF/extens
- ions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml
+Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.templates.factories.xml,
+ OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml,
+ OSGI-INF/extensions/ca.firstvoices.nativeorder.operations.xml,
+ OSGI-INF/extensions/ca.firstvoices.publisher.services.xml,
+ OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml,
+ OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml,
+ OSGI-INF/extensions/ca.firstvoices.nativeorder.listeners.xml,
+ OSGI-INF/extensions/ca.firstvoices.nativeorder.operations.xml,
+ OSGI-INF/extensions/ca.firstvoices.nativeorder.actions.xml
 
