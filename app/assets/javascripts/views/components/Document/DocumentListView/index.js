@@ -34,9 +34,7 @@ export default class DocumentListView extends Component {
     super(props, context);
 
     this.state = {
-      selectedId: null,
-      page: 1,
-      pageSize: 10
+      selectedId: null
     };
 
     // Bind methods to 'this'
@@ -55,23 +53,27 @@ export default class DocumentListView extends Component {
     this.setState({
       page: page
     });
-    this.props.refetcher(this.props, (page - 1), this.state.pageSize);
+    this.props.refetcher(this.props, (page - 1), this.props.pageSize);
   }
 
   _onPageSizeChange(pageSize, props) {
 
-    if (pageSize > this.state.pageSize){
-        this.setState({
-          page: Math.min(this.state.page, Math.ceil(this.props.data.response.totalSize / pageSize))
-        });
+    let newPage = this.props.page;
+
+    if (pageSize > this.props.pageSize){
+        newPage = Math.min(this.props.page, Math.ceil(this.props.data.response.totalSize / pageSize));
     }
 
-    this.setState({
-      pageSize: pageSize
-    });
-
     // Refresh data
-    this.props.refetcher(this.props, (this.state.page - 1), pageSize);
+    this.props.refetcher(this.props, (this.props.page - 1), pageSize);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data != this.props.data) {
+      this.setState({
+        page: 1
+      });
+    }
   }
   
   render() {
@@ -97,8 +99,8 @@ export default class DocumentListView extends Component {
           onSortChange={this.props.onSortChange}
           pagination={true}
           sortInfo={this.props.sortInfo}
-          page={this.state.page}
-          pageSize={this.state.pageSize}
+          page={this.props.page}
+          pageSize={this.props.pageSize}
           onPageChange={this._onPageChange}
           onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}

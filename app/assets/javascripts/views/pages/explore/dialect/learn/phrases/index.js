@@ -105,6 +105,10 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         currentAppliedFilter: {
           categories: ''
         }
+      },
+      pageInfo: {
+        page: this.props.DEFAULT_PAGE,
+        pageSize: this.props.DEFAULT_PAGE_SIZE
       }
     };
 
@@ -180,6 +184,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                         onSortChange={this._handleSortChange}
                         onSelectionChange={this._onEntryNavigateRequest}
                         onColumnOrderChange={this._handleColumnOrderChange}
+                        page={this.state.pageInfo.page}
+                        pageSize={this.state.pageInfo.pageSize}
                         columns={this.state.columns}
                         sortInfo={this.state.sortInfo.uiSortOrder}
                         className="browseDataGrid" 

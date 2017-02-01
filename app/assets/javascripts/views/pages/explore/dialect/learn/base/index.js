@@ -49,6 +49,7 @@ export default class PageDialectLearnBase extends Component {
 
     if (nextProps.routeParams.area !== this.props.routeParams.area) {
       this._resetColumns(nextProps);
+      this._resetPagination(nextProps);
     }
   }
 
@@ -63,6 +64,14 @@ export default class PageDialectLearnBase extends Component {
   }  
 
   _handleRefetch(dataGridProps, page, pageSize) {
+
+    this.setState({
+      pageInfo: {
+        page: page + 1,
+        pageSize: pageSize
+      }
+    });
+
     this._fetchListViewData(this.props, page, pageSize, this.state.sortInfo.currentSortType, this.state.sortInfo.currentSortCols);
   }
 
@@ -172,5 +181,14 @@ export default class PageDialectLearnBase extends Component {
     } else {
       this.state.columns.push({ name: 'state', title: 'State' });
     }
+  }
+
+  _resetPagination(props) {
+    this.setState({
+      pageInfo: {
+        page: props.DEFAULT_PAGE,
+        pageSize: props.DEFAULT_PAGE_SIZE
+      }
+    })
   }
 }

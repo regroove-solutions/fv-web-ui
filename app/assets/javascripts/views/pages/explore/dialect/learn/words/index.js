@@ -114,6 +114,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         currentAppliedFilter: {
           categories: ''
         }
+      },
+      pageInfo: {
+        page: this.props.DEFAULT_PAGE,
+        pageSize: this.props.DEFAULT_PAGE_SIZE
       }
     };
 
@@ -188,6 +192,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                                   refetcher={this._handleRefetch}
                                   onSortChange={this._handleSortChange}
                                   onSelectionChange={this._onEntryNavigateRequest}
+                                  page={this.state.pageInfo.page}
+                                  pageSize={this.state.pageInfo.pageSize}
                                   onColumnOrderChange={this._handleColumnOrderChange}
                                   columns={this.state.columns}
                                   sortInfo={this.state.sortInfo.uiSortOrder}
