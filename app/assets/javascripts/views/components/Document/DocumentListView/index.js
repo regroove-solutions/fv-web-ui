@@ -28,55 +28,50 @@ import Paper from 'material-ui/lib/paper';
 // Stylesheet
 import '!style!css!react-datagrid/dist/index.min.css';
 
-/**
-* Set some initial values
-*/
-
-var GRID_PROPERTIES  = {
-	SELECTED_ID: null, 
-	PAGE: 1,
-  PAGE_SIZE: 10
-};
-
-const GRID_PROPERTIES_DEFAULT = Object.assign({}, GRID_PROPERTIES);;
-
 export default class DocumentListView extends Component {
 
   constructor(props, context) {
     super(props, context);
 
+    this.state = {
+      selectedId: null,
+      page: 1,
+      pageSize: 10
+    };
+
     // Bind methods to 'this'
-    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', 'resetGrid'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _handleSelectionChange(newSelectedId, data){
-    GRID_PROPERTIES.SELECTED_ID = newSelectedId;
+    this.setState({
+      selectedId: newSelectedId
+    });
     this.props.onSelectionChange(data);
   }
 
   _onPageChange(page) {
-    GRID_PROPERTIES.PAGE = page;
-    this.props.refetcher(this.props, (GRID_PROPERTIES.PAGE - 1), GRID_PROPERTIES.PAGE_SIZE);
+
+    this.setState({
+      page: page
+    });
+    this.props.refetcher(this.props, (page - 1), this.state.pageSize);
   }
 
   _onPageSizeChange(pageSize, props) {
 
-    if (pageSize > GRID_PROPERTIES.PAGE_SIZE){
-        GRID_PROPERTIES.PAGE = Math.min(GRID_PROPERTIES.PAGE, Math.ceil(this.props.data.response.totalSize / pageSize));
+    if (pageSize > this.state.pageSize){
+        this.setState({
+          page: Math.min(this.state.page, Math.ceil(this.props.data.response.totalSize / pageSize))
+        });
     }
 
-    GRID_PROPERTIES.PAGE_SIZE = pageSize;
+    this.setState({
+      pageSize: pageSize
+    });
 
     // Refresh data
-    this.props.refetcher(this.props, (GRID_PROPERTIES.PAGE - 1), GRID_PROPERTIES.PAGE_SIZE);
-  }
-  
-  resetGrid() {
-	  GRID_PROPERTIES = GRID_PROPERTIES_DEFAULT;
-  }
-
-  componentWillUnmount() {
-    this.resetGrid();
+    this.props.refetcher(this.props, (this.state.page - 1), pageSize);
   }
   
   render() {
@@ -96,14 +91,14 @@ export default class DocumentListView extends Component {
           columns={this.props.columns}
           rowHeight="55"
           style={DataGridStyles}
-          selected={GRID_PROPERTIES.SELECTED_ID}
+          selected={this.state.selectedId}
           onSelectionChange={this._handleSelectionChange}
           onColumnOrderChange={this.props.onColumnOrderChange}
           onSortChange={this.props.onSortChange}
           pagination={true}
           sortInfo={this.props.sortInfo}
-          page={GRID_PROPERTIES.PAGE}
-          pageSize={GRID_PROPERTIES.PAGE_SIZE}
+          page={this.state.page}
+          pageSize={this.state.pageSize}
           onPageChange={this._onPageChange}
           onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}
