@@ -42,7 +42,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     DEFAULT_PAGE: 0,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_COL: 'fv:custom_order',
     DEFAULT_SORT_TYPE: 'asc'
   }
 
@@ -77,7 +77,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         { name: 'title', title: 'Word', render: function(v, data, cellProps){
           //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
           return v;
-        }, sortName: 'dc:title'},
+        }, sortName: 'fv:custom_order'},
         /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
             return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
               if (entry.language == DEFAULT_LANGUAGE && i < 2) {
