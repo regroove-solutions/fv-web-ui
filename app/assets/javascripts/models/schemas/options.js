@@ -124,7 +124,8 @@ const options = {
             page_provider: {
               name: 'category_suggestion',
               folder: 'Categories'
-            }
+            },
+            hideCreate: true
           }
         }
       },

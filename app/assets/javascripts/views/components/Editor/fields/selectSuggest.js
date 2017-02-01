@@ -21,7 +21,7 @@ function renderInput(locals) {
   if (!locals.value) {
     content = <div>
                 <AutoSuggestComponent locals={locals} type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
-                <DialogCreateForm context={locals.context} onChange={onChange} fieldAttributes={locals.attrs} />
+                {(locals.attrs.hideCreate) ? '' : <DialogCreateForm context={locals.context} onChange={onChange} fieldAttributes={locals.attrs} />}
               </div>;
   }
 
