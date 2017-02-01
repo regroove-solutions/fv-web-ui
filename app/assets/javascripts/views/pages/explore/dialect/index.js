@@ -74,6 +74,7 @@ export default class ExploreDialect extends Component {
     publishPortal: PropTypes.func.isRequired,
     unpublishPortal: PropTypes.func.isRequired,
     publishDialect: PropTypes.func.isRequired,
+    publishDialectOnly: PropTypes.func.isRequired,
     unpublishDialect: PropTypes.func.isRequired,
     enableDialect: PropTypes.func.isRequired,
     disableDialect: PropTypes.func.isRequired,
@@ -143,6 +144,7 @@ export default class ExploreDialect extends Component {
   */
   _publishChangesAction() {
       this.props.publishPortal(this.props.routeParams.dialect_path + '/Portal', null, null, "Portal published successfully!");
+      this.props.publishDialectOnly(this.props.routeParams.dialect_path, { target: this.props.routeParams.language_path.replace('Workspaces', 'sections')}, null, null);
   } 
 
   /**

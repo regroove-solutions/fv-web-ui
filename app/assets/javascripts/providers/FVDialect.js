@@ -81,11 +81,12 @@ const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', { headers: {
 const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {});
 const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
+const publishDialectOnly = RESTActions.execute('FV_DIALECT2_PUBLISH', 'Document.PublishToSection', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const unpublishDialect = RESTActions.execute('FV_DIALECT2_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const enableDialect = RESTActions.execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 
-const actions = { fetchDialect, updateDialect2, fetchDialect2, publishDialect, unpublishDialect, fetchDialects, fetchDialectStats, enableDialect, disableDialect };
+const actions = { fetchDialect, updateDialect2, fetchDialect2, publishDialect, publishDialectOnly, unpublishDialect, fetchDialects, fetchDialectStats, enableDialect, disableDialect };
 
 const computeDialectQuery = RESTReducers.computeQuery('dialects');
 const computeDialectFetch = RESTReducers.computeFetch('dialect2');

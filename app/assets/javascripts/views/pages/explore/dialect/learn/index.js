@@ -25,6 +25,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageHeader from 'views/pages/explore/dialect/page-header';
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SearchBar from 'views/pages/explore/dialect/search-bar';
 
 import Paper from 'material-ui/lib/paper';
@@ -66,6 +67,7 @@ export default class DialectLearn extends Component {
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
+    publishDialectOnly: PropTypes.func.isRequired,
     fetchDialectStats: PropTypes.func.isRequired,
     computeDialectStats: PropTypes.object.isRequired,
     
@@ -115,7 +117,7 @@ export default class DialectLearn extends Component {
     //this._handleWordsDataRequest = this._handleWordsDataRequest.bind(this);
     
     // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _onNavigateRequest(path) {
@@ -177,6 +179,13 @@ export default class DialectLearn extends Component {
     }        
   }
 
+  /**
+  * Toggle published dialect
+  */
+  _publishChangesAction() {
+      this.props.publishDialectOnly(this.props.routeParams.dialect_path, { target: this.props.routeParams.language_path.replace('Workspaces', 'sections')}, null, "Portal published successfully!");
+  } 
+
   _onCharAudioTouchTap(charAudioId) {
 	  document.getElementById(charAudioId).play();
   }   
@@ -210,7 +219,7 @@ export default class DialectLearn extends Component {
     
     const isSection = this.props.routeParams.area === 'sections';
 
-    const { updatePortal, computeLogin, computeDocument, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
+    const { updatePortal, updateDialect2, computeLogin, computeDocument, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
     	computeUserCreatedPhrases, computeUserModifiedStories, computeUserCreatedStories, computeUserModifiedSongs, computeUserCreatedSongs} = this.props;
     //let dialect = computeDialect2.response;
 
@@ -219,6 +228,19 @@ export default class DialectLearn extends Component {
     return <PromiseWrapper computeEntities={computeEntities}>
 
             <PageHeader title="Language Area" portalLogo={selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} dialectName={selectn('response.title', computeDialect2)} />
+
+            {(() => {
+              if (this.props.routeParams.area == 'Workspaces') {
+                
+                if (selectn('response', computeDialect2))
+                  return <PageToolbar
+                            label="Language Portal"
+                            computeEntity={computeDialect2}
+                            disableWorkflowActions={true}
+                            publishChangesAction={this._publishChangesAction}
+                            {...this.props} />;
+              }
+            })()}
 
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
               {(() => {
@@ -257,7 +279,7 @@ export default class DialectLearn extends Component {
                 <h1>About our Language</h1>
 
                 <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                  <EditableComponent computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="dc:description" />
+                  <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:description" entity={selectn('response', computeDialect2)} />
                 </AuthorizationFilter>
 
                 <div className="row" style={{marginTop: '15px'}}>
@@ -392,7 +414,7 @@ export default class DialectLearn extends Component {
                   <h4>Contact Information</h4>
 
                   <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                    <EditableComponent computeEntity={computeDialect2} updateEntity={this.props.updateDialect2} property="fvdialect:contact_information" />
+                    <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:contact_information" entity={selectn('response', computeDialect2)} />
                   </AuthorizationFilter>
 
                 </div>
