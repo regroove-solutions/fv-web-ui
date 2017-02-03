@@ -92,8 +92,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 return <li key={i}>{selectn('dc:title', entry)}</li>;
             });
           }.bind(this)
-        },
-        { name: 'state', title: 'State' }
+        }
       ],
       sortInfo: {
         uiSortOrder: [], 
