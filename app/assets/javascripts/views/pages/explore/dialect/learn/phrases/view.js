@@ -26,12 +26,11 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
+import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-
-import ImageGallery from 'react-image-gallery';
 
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
@@ -100,7 +99,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -205,14 +204,20 @@ export default class View extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     // Generate photos
-
     let photos = [];
 
     (selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
-      let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
+      let image = { original: ConfGlobal.baseURL + picture.path, thumbnail: ConfGlobal.baseURL + picture.path, description: picture['dc:description'], key: key, id: picture.uid, object: picture };
       photos.push(image);
     })
 
+    // Generate videos
+    let videos = [];
+
+    (selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
+      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: ConfGlobal.baseURL + video.path, description: video['dc:description'], key: key, id: video.uid, object: video };
+      videos.push(vid);
+    })
     /**
     * Generate definitions body
     */
@@ -276,43 +281,20 @@ export default class View extends Component {
 
                             <div className="col-xs-4">
 
-                              {
-                                (photos.length === 0) ?
-                                '' :
-                                
-                                <div>
-                                  <h2>Photos</h2> 
+                              <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
+                              <MediaPanel label="Video(s)" type="FVVideo" items={videos} />
 
-                                  {
-                                    (photos.length === 1) ? 
-                                    <Preview key={selectn('uid', selectn('response.contextParameters.phrase.related_pictures', computePhrase)[0])} expandedValue={selectn('response.contextParameters.phrase.related_pictures', computePhrase)[0]} type="FVPicture" /> :
-                                    <ImageGallery
-                                    ref={i => this._imageGallery = i}
-                                    items={photos}
-                                    slideInterval={2000}
-                                    showThumbnails={false}
-                                    showBullets={true} />
-                                  }
-
-                                </div>
-                              }
-
-                              {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
                             </div>
 
                           </CardText>
                         </div> 
                       </Tab> 
-                      <Tab label="Related Videos" id="video"> 
+                      <Tab label="Metadata" id="metadata">
                         <div> 
                           <CardText>
-                            <h2>Video</h2> 
+                            <h2>Metadata</h2> 
                             <div className="row">
-                              {(selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
-                                return <Preview key={selectn('uid', video)} expandedValue={video} type="FVVideo" />;
-                              })}
-
-                              {(selectn('response.contextParameters.phrase.related_videos.length', computePhrase) === 0) ? <div className="col-xs-12">No videos are available yet.</div> : ''}
+                              {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
                             </div>
                           </CardText>
                         </div> 

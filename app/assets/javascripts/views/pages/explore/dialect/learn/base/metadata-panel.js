@@ -19,9 +19,10 @@ import classNames from 'classnames';
 import selectn from 'selectn';
 
 import Preview from 'views/components/Editor/Preview';
+import MetadataList from 'views/components/Browsing/metadata-list';
 
 /**
-* Metadata panel for view
+* Metadata panel for word or phrase views.
 */
 export default class MetadataPanel extends Component {
 
@@ -37,125 +38,86 @@ export default class MetadataPanel extends Component {
 
     const { computeEntity } = this.props;
 
+    let metadata = [];
+
+    /**
+     * Categories
+     */
+    let categories = [];
+      
+    {(selectn('response.contextParameters.word.categories', computeEntity) || []).map(function(category, key) {
+      categories.push(<div key={key}>{selectn('dc:title', category)}</div>);
+    })};
+    
+    metadata.push({
+      label: 'Categories',
+      value: categories
+    });
+
+    /**
+     * Cultural notes
+     */
+    let cultural_notes = [];
+    
+    {(selectn('response.properties.fv:cultural_note', computeEntity) || []).map(function(cultural_note, key) {
+      cultural_notes.push(<div key={key}>{cultural_note}</div>);
+    })};
+    
+    metadata.push({
+      label: 'Cultural Notes',
+      value: cultural_notes
+    });
+
+    /**
+     * Reference
+     */
+    metadata.push({
+      label: 'Reference',
+      value: selectn('response.properties.fv:reference', computeEntity)
+    });
+
+    /**
+     * Sources
+     */
+    let sources = [];
+    
+    {(selectn('response.contextParameters.word.sources', computeEntity) || []).map(function(source, key) {
+      sources.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+    })};
+    
+    metadata.push({
+      label: 'Sources',
+      value: sources
+    });
+
+    /**
+     * Date created
+     */
+    metadata.push({
+      label: 'Date Created',
+      value: selectn("response.properties.dc:created", computeEntity)
+    });
+
+    /**
+     * Status
+     */
+    metadata.push({
+      label: 'Status',
+      value: selectn("response.state", computeEntity)
+    });
+
+    /**
+     * Version
+     */
+    metadata.push({
+      label: 'Version',
+      value: selectn("response.properties.uid:major_version", computeEntity) + '.' + selectn("response.properties.uid:minor_version", computeEntity)
+    });
+
     return  <div>
-      <div style={{marginTop: '25px'}} className={classNames('panel', 'panel-default')}>
-
-        <div className="panel-heading">Metadata</div>
-
-          <ul className="list-group">
-
-            {(() => {
-              
-              if (selectn('response.contextParameters.word.categories.length', computeEntity) > 0) {
-
-              return <li className="list-group-item">
-
-                <strong className="list-group-item-heading">Categories</strong>
-
-                <div className="list-group-item-text">
-                {(selectn('response.contextParameters.word.categories', computeEntity) || []).map(function(category, key) {
-                  return <div>{selectn('dc:title', category)}</div>;
-                })}
-                </div>
-
-              </li>;
-
-              }
-
-            })()}
-
-            {(() => {
-              
-              if (selectn('response.properties.fv:cultural_note.length', computeEntity) > 0) {
-
-              return <li className="list-group-item">
-
-              <strong className="list-group-item-heading">Cultural Notes</strong>
-              
-              <div className="list-group-item-text">
-                {(selectn('response.properties.fv:cultural_note', computeEntity) || []).map(function(cultural_note, key) {
-                  return <div>{cultural_note}</div>;
-                })}
+              <div style={{margin: '15px', width: '80%'}} className={classNames('panel', 'panel-default')}>
+                  <MetadataList metadata={metadata} style={{overflow: 'auto', maxHeight: '100%'}} />
               </div>
-
-              </li>;
-
-              }
-
-            })()}
-
-            {(() => {
-              
-              if (selectn('response.properties.fv:reference', computeEntity)) {
-
-              return <li className="list-group-item">
-
-                <strong className="list-group-item-heading">Reference</strong>
-
-                <div className="list-group-item-text">
-                  {selectn('response.properties.fv:reference', computeEntity)}
-                </div>
-
-              </li>;
-
-              }
-
-            })()}
-
-            {(() => {
-              
-              if (selectn('response.contextParameters.word.sources.length', computeEntity) > 0) {
-
-              return <li className="list-group-item">
-
-                <strong className="list-group-item-heading">Sources</strong>
-                
-                <div className="list-group-item-text">
-                  {(selectn('response.contextParameters.word.sources', computeEntity) || []).map(function(source, key) {
-                    return <Preview expandedValue={source} key={key} type="FVContributor" />;
-                  })}
-                </div>
-
-              </li>;
-
-              }
-
-            })()}
-
-            <li className="list-group-item">
-
-              <strong className="list-group-item-heading">Date Created</strong>
-              
-              <div className="list-group-item-text">
-                {selectn("response.properties.dc:created", computeEntity)}
-              </div>
-
-            </li>
-
-            <li className="list-group-item">
-
-              <strong className="list-group-item-heading">Status</strong>
-              
-              <div className="list-group-item-text">
-                {selectn("response.state", computeEntity)}
-              </div>
-
-            </li>
-
-            <li className="list-group-item">
-
-              <strong className="list-group-item-heading">Version</strong>
-              
-              <div className="list-group-item-text">
-                {selectn("response.properties.uid:major_version", computeEntity)}.{selectn("response.properties.uid:minor_version", computeEntity)} 
-              </div>
-
-            </li>
-
-          </ul>
-
-      </div>
-
-    </div>;
+            </div>;
   }
 }
