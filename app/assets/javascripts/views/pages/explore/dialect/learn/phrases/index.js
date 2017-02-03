@@ -163,14 +163,14 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 </div>
               </div>
               <div className="row">
-                <div className="col-xs-12 col-md-3">
+                <div className={classNames('col-xs-12', 'col-md-3', (!selectn('response.entries', computePhraseBooks)) ? 'hidden': null)}>
                   <FacetFilterList
                     title='Categories'
                     facetField='fv-phrase:phrase_books'
                     onFacetSelected={this._handleFacetSelected}
                     facets={selectn('response.entries', computePhraseBooks) || []} />
                 </div>
-                <div className="col-xs-12 col-md-9">
+                <div className={classNames('col-xs-12', (!selectn('response.entries', computePhraseBooks)) ? 'col-md-12': 'col-md-9')}>
                   <h1>{selectn('response.title', computeDialect2)} Phrases</h1>
 
                   {(() => {
