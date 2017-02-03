@@ -28,7 +28,7 @@ export default {
   extractErrorMessage: function (jsonError) {
     let errorMessage = jsonError.message;
 
-    if (jsonError.message.indexOf(": ") !== -1) {
+    if (jsonError.message != null && jsonError.message.indexOf(": ") !== -1) {
       errorMessage = jsonError.message.split(": ")[1];
       errorMessage = "Error: " + errorMessage;
     }
