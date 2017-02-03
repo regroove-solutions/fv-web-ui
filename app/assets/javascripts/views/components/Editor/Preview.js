@@ -21,7 +21,118 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import MetadataList from 'views/components/Browsing/metadata-list';
+
+import Avatar from 'material-ui/lib/avatar';
+import Card from 'material-ui/lib/card/card';
+import CardActions from 'material-ui/lib/card/card-actions';
+import CardHeader from 'material-ui/lib/card/card-header';
+import CardMedia from 'material-ui/lib/card/card-media';
+import CardTitle from 'material-ui/lib/card/card-title';
+import FlatButton from 'material-ui/lib/flat-button';
+import CardText from 'material-ui/lib/card/card-text';
+import Divider from 'material-ui/lib/divider';
+
 import CircularProgress from 'material-ui/lib/circular-progress';
+
+const MEDIA_COPYRIGHT_NOTICE = <small>&copy; This database is protected by copyright laws and is owned by the First Peoples’ Cultural Foundation. All materials on this site are protected by copyright laws and are owned by the individual Indigenous language communities who created the archival content. Language and multimedia data available on this site is intended for private, non-commercial use by individuals. Any commercial use of the language data or multimedia data in whole or in part, directly or indirectly, is specifically forbidden except with the prior written authority of the owner of the copyright.</small>;
+
+const sufixes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+
+const getBytes = (bytes) => {
+  const i = Math.floor(Math.log() / Math.log(1024));
+  return !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + " " + sufixes[i];
+};
+
+const Bytes = ({ bytes }) => (<span>{ getBytes(bytes) }</span>);
+
+Bytes.propTypes = {
+  bytes: React.PropTypes.number,
+};
+
+const GetMetaData = function (type, response) {
+
+  let metadata = [];
+
+  /**
+   * Recorders
+   */
+  let recorders = [];
+  
+  {(selectn('contextParameters.' + type + '.recorders', response) || []).map(function(source, key) {
+    recorders.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+  })};
+
+  metadata.push({
+    label: 'Recorder(s)',
+    value: recorders
+  });
+
+  /**
+   * Contributors
+   */
+  let contributors = [];
+  
+  {(selectn('contextParameters.' + type + '.sources', response) || []).map(function(source, key) {
+    sources.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+  })};
+
+  metadata.push({
+    label: 'Contributor(s)',
+    value: contributors
+  });
+
+  /**
+   * Origin
+   */
+  metadata.push({
+    label: 'Original Associated Word/Phrase',
+    value: selectn("properties.fvm:origin", response)
+  });
+
+  /**
+   * Child Focused
+   */
+  metadata.push({
+    label: 'Child Focused',
+    value: (selectn("properties.fvm:child_focused", response)) ? 'Yes' : 'No'
+  });
+
+  /**
+   * Shared
+   */
+  metadata.push({
+    label: 'Shared',
+    value: (selectn("properties.fvm:shared", response)) ? 'Yes' : 'No'
+  });
+
+  /**
+   * Direct Link
+   */
+  metadata.push({
+    label: 'Direct Link',
+    value: <input type="textbox" style={{width: '100%'}} value={selectn("properties.file:content.data", response)} />
+  });
+
+  /**
+   * File size
+   */
+  metadata.push({
+    label: 'Size',
+    value: <Bytes>{selectn("properties.file:content.length", response)}</Bytes>
+  });
+
+  /**
+   * Date created
+   */
+  metadata.push({
+    label: 'Date Created',
+    value: selectn("properties.dc:created", response)
+  });
+
+  return metadata;
+};
+
 
 @provide
 export default class Preview extends Component {
@@ -53,6 +164,10 @@ export default class Preview extends Component {
 
   constructor(props) {
     super(props);
+
+    // Bind methods to 'this'
+    ['_handleExpandChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    
   }
 
   componentDidMount() {
@@ -91,7 +206,16 @@ export default class Preview extends Component {
     }
   }
 
+  /**
+   * Request additional media info when expanded.
+   */
+  _handleExpandChange(id, fetchFunc, event, expanded) {
+    fetchFunc(id);
+  }
+
   render() {
+
+      let handleExpandChange = () => {};
 
       let previewStyles = Object.assign({
         padding: '10px'
@@ -175,21 +299,37 @@ export default class Preview extends Component {
           let picture = {};
           let pictureResponse;
 
-          if (this.props.expandedValue) {
+          let remotePicture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id || this.props.expandedValue.uid);
+
+          if (this.props.expandedValue && !selectn('success', remotePicture)) {
             picture.success = true;
             pictureResponse = this.props.expandedValue;
+            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchPicture);
           }
           else {
-            picture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id);
+            picture = remotePicture;
             pictureResponse = selectn('response', picture);
           }
 
           if (pictureResponse && picture.success) {
-            body = <div>
-              <strong>{selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}</strong> 
-              <span> {selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}</span><br/>
-              {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : ''}
-            </div>;
+
+            body =   <Card onExpandChange={handleExpandChange}>
+                      <CardMedia>
+                        {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : null}
+                      </CardMedia>
+                      <CardHeader
+                        title={selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}
+                        titleStyle={{lineHeight: 'initial'}}
+                        subtitle={selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}
+                        subtitleStyle={{lineHeight: 'initial'}}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
+                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('picture', pictureResponse)} />
+                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                      </CardText>
+                    </Card>;
           }
 
         break;
@@ -198,22 +338,41 @@ export default class Preview extends Component {
 
           let audio = {};
           let audioResponse;
+          let audioTag = '';
 
-          if (this.props.expandedValue) {
+          let remoteAudio = ProviderHelpers.getEntry(this.props.computeAudio, this.props.id || this.props.expandedValue.uid);
+
+          if (this.props.expandedValue && !selectn('success', remoteAudio)) {
             audio.success = true;
             audioResponse = this.props.expandedValue;
+            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchPicture);
           }
           else {
-            audio = ProviderHelpers.getEntry(this.props.computeAudio, this.props.id);
+            audio = remoteAudio;
             audioResponse = selectn('response', audio);
           }
 
           if (audioResponse && audio.success) {
-            body = <div>
-              <strong>{selectn('title', audioResponse) || selectn('dc:title', audioResponse)}</strong> 
-              <span> {selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}</span><br/>
-              {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls /> : ''}
-            </div>;
+
+            audioTag = <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls />;
+
+            body =   <Card onExpandChange={handleExpandChange}>
+                     <CardHeader
+                        title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
+                        titleStyle={{lineHeight: 'initial'}}
+                        subtitle={selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}
+                        subtitleStyle={{lineHeight: 'initial'}}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                      />
+                      <CardMedia>
+                        {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? audioTag : null}
+                      </CardMedia>
+                      <CardText expandable={true}>
+                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('audio', audioResponse)} />
+                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                      </CardText>
+                    </Card>;
           }
 
         break;
@@ -223,21 +382,37 @@ export default class Preview extends Component {
           let video = {};
           let videoResponse;
 
-          if (this.props.expandedValue) {
+          let remoteVideo = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id || this.props.expandedValue.uid);
+
+          if (this.props.expandedValue && !selectn('success', remoteVideo)) {
             video.success = true;
             videoResponse = this.props.expandedValue;
+            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchVideo);
           }
           else {
-            video = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id);
+            video = remoteVideo;
             videoResponse = selectn('response', video);
           }
 
           if (videoResponse && video.success) {
-            body = <div>
-              <strong>{selectn('title', videoResponse) || selectn('dc:title', videoResponse)}</strong> 
-              <span> {selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)}</span><br/>
-              {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? <video width="320" height="240" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : ''}
-            </div>;
+
+            body =   <Card onExpandChange={handleExpandChange}>
+                      <CardMedia>
+                        {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? <video width="100%" height="auto" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : null}
+                      </CardMedia>
+                      <CardHeader
+                        title={selectn('title', videoResponse) || selectn('dc:title', videoResponse)}
+                        titleStyle={{lineHeight: 'initial'}}
+                        subtitle={selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)}
+                        subtitleStyle={{lineHeight: 'initial'}}
+                        actAsExpander={true}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
+                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('video', videoResponse)} />
+                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                      </CardText>
+                    </Card>;
           }
 
         break;
