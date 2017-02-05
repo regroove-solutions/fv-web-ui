@@ -29,8 +29,8 @@ import providers from './providers/index';
 // Views
 import AppWrapper from 'views/AppWrapper';
 
-require('!style!css!normalize.css');
-require('!style!css!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css');
+require('!style-loader!css-loader!normalize.css');
+require('!style-loader!css-loader!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css');
 
 require('bootstrap/less/bootstrap');
 require("styles/main");
@@ -56,8 +56,8 @@ const context = {
 
 render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'));
 
-/*window.addEventListener("unhandledrejection", function(err, promise) { 
-// handle error here, for example log   
+/*window.addEventListener("unhandledrejection", function(err, promise) {
+// handle error here, for example log
 });*/
 
 // TODO: https://gist.github.com/Aldredcz/4d63b0a9049b00f54439f8780be7f0d8

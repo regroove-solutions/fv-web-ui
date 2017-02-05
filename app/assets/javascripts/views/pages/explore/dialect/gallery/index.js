@@ -32,7 +32,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 //Stylesheet
-import '!style!css!react-image-gallery/build/image-gallery.css';
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 @provide
 export default class Gallery extends React.Component {
@@ -44,8 +44,8 @@ export default class Gallery extends React.Component {
       fetchGallery: PropTypes.func.isRequired,
       computeGallery: PropTypes.object.isRequired,
       routeParams: PropTypes.object.isRequired
-  };		
-	
+  };
+
   constructor(props, context){
     super(props, context);
 
@@ -57,9 +57,9 @@ export default class Gallery extends React.Component {
   handleImageLoad(event) {
     console.log('Image loaded ', event.target)
   }
- 
+
   fetchData(newProps) {
-	  newProps.fetchGallery(this.props.routeParams.dialect_path + "/Portal/" + this.props.routeParams.galleryName);  
+	  newProps.fetchGallery(this.props.routeParams.dialect_path + "/Portal/" + this.props.routeParams.galleryName);
   }
 
   _onNavigateRequest(path) {
@@ -69,17 +69,17 @@ export default class Gallery extends React.Component {
   // Fetch data on initial render
   componentDidMount() {
 	  this.fetchData(this.props);
-  } 
-  
+  }
+
   render() {
 
 	const images = [];
 
     const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
 
-	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) { 
+	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
 		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
-		images.push(image);		
+		images.push(image);
 	});
 
     const computeEntities = Immutable.fromJS([{
@@ -110,7 +110,7 @@ export default class Gallery extends React.Component {
 	           	  slideInterval={2000}
 	              handleImageLoad={this.handleImageLoad}
 	              showThumbnails={false}
-	              showBullets={true} />                
+	              showBullets={true} />
 	           	 </div>
 	           </div>
             </div>

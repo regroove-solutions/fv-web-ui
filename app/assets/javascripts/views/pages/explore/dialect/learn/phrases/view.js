@@ -61,7 +61,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-import '!style!css!react-image-gallery/build/image-gallery.css';
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 /**
 * View phrase entry
@@ -74,7 +74,7 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
+    computeLogin: PropTypes.object.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     fetchPhrase: PropTypes.func.isRequired,
@@ -225,7 +225,7 @@ export default class View extends Component {
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
-                
+
                 if (selectn('response', computePhrase))
                   return <PageToolbar
                             label="Phrase"
@@ -248,9 +248,9 @@ export default class View extends Component {
                       title={selectn('response.title', computePhrase)}
                       /*avatar="http://lorempixel.com/100/100/"*/ />
 
-                    <Tabs tabItemContainerStyle={tabItemStyles}> 
-                      <Tab label="Definition" > 
-                        <div> 
+                    <Tabs tabItemContainerStyle={tabItemStyles}>
+                      <Tab label="Definition" >
+                        <div>
                           <CardText>
 
                             <div className="col-xs-8">
@@ -287,19 +287,19 @@ export default class View extends Component {
                             </div>
 
                           </CardText>
-                        </div> 
-                      </Tab> 
+                        </div>
+                      </Tab>
                       <Tab label="Metadata" id="metadata">
-                        <div> 
+                        <div>
                           <CardText>
-                            <h2>Metadata</h2> 
+                            <h2>Metadata</h2>
                             <div className="row">
                               {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
                             </div>
                           </CardText>
-                        </div> 
-                      </Tab> 
-                    </Tabs> 
+                        </div>
+                      </Tab>
+                    </Tabs>
 
                   </Card>
 
