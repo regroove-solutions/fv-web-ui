@@ -64,7 +64,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-import '!style!css!react-image-gallery/build/image-gallery.css';
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 /**
 * View word entry

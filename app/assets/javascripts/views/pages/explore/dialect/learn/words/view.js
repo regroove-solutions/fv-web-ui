@@ -63,7 +63,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-import '!style!css!react-image-gallery/build/image-gallery.css';
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 /**
 * View word entry
@@ -76,7 +76,7 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
+    computeLogin: PropTypes.object.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     fetchWord: PropTypes.func.isRequired,
@@ -229,7 +229,7 @@ export default class View extends Component {
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
-                
+
                 if (selectn('response', computeWord))
                   return <PageToolbar
                             label="Word"
@@ -253,9 +253,9 @@ export default class View extends Component {
                       subtitle={(selectn('response.contextParameters.word.part_of_speech', computeWord) !=null) ? "Part of Speech: " + selectn('response.contextParameters.word.part_of_speech', computeWord) : ""}
                       /*avatar="http://lorempixel.com/100/100/"*/ />
 
-                    <Tabs tabItemContainerStyle={tabItemStyles}> 
-                      <Tab label="Definition" > 
-                        <div> 
+                    <Tabs tabItemContainerStyle={tabItemStyles}>
+                      <Tab label="Definition" >
+                        <div>
                           <CardText>
 
                             <div className="col-xs-8">
@@ -293,7 +293,7 @@ export default class View extends Component {
 
                                       {(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
                                         let phraseItem = selectn('fv:definitions', phrase);
-                                        
+
                                         return (
                                         <SubViewTranslation key={key} group={phraseItem} groupByElement="language" groupValue="translation">
                                           <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
@@ -314,19 +314,19 @@ export default class View extends Component {
                             </div>
 
                           </CardText>
-                        </div> 
-                      </Tab> 
+                        </div>
+                      </Tab>
                       <Tab label="Metadata" id="metadata">
-                        <div> 
+                        <div>
                           <CardText>
-                            <h2>Metadata</h2> 
+                            <h2>Metadata</h2>
                             <div className="row">
                               {(selectn('response', computeWord)) ? <MetadataPanel computeEntity={computeWord} /> : ''}
                             </div>
                           </CardText>
-                        </div> 
-                      </Tab> 
-                    </Tabs> 
+                        </div>
+                      </Tab>
+                    </Tabs>
 
                   </Card>
 

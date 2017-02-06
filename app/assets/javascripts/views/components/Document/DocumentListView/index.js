@@ -26,7 +26,7 @@ import Paper from 'material-ui/lib/paper';
 //injectTapEventPlugin();
 
 // Stylesheet
-import '!style!css!react-datagrid/dist/index.min.css';
+import '!style-loader!css-loader!react-datagrid/dist/index.min.css';
 
 export default class DocumentListView extends Component {
 
@@ -75,7 +75,7 @@ export default class DocumentListView extends Component {
       });
     }
   }
-  
+
   render() {
 
     // Styles
