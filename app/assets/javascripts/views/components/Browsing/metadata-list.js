@@ -44,7 +44,7 @@ export default class MetadataList extends Component {
 
                 let value = selectn("value", item);
 
-                if (value && value.length > 0) {
+                if ((value && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
                   return <li className="list-group-item" key={key}>
 
                   <strong className="list-group-item-heading">{selectn("label", item)}</strong>

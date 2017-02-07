@@ -157,7 +157,7 @@ const fetchAudioStats = function fetchAudioStats(dialectId) {
 	}
 };
 
-const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry, media' } });
 const createAudio = RESTActions.create('FV_AUDIO', 'FVAudio');
 
 const actions = { fetchSharedAudios, createAudio, fetchAudio, updateAudio, fetchAudioStats };

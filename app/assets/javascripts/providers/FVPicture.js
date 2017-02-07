@@ -161,7 +161,7 @@ const fetchPictureStats = function fetchPictureStats(dialectId) {
 	}
 };
 
-const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', { headers: { 'X-NXenrichers.document': 'ancestry, media' } });
 const createPicture = RESTActions.create('FV_PICTURE', 'FVPicture');
 
 const actions = { fetchSharedPictures, createPicture, fetchPicture, updatePicture, fetchPictureStats };

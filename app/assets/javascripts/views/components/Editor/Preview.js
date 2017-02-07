@@ -20,6 +20,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import MetadataList from 'views/components/Browsing/metadata-list';
 
@@ -37,19 +38,6 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 const MEDIA_COPYRIGHT_NOTICE = <small>&copy; This database is protected by copyright laws and is owned by the First Peoples’ Cultural Foundation. All materials on this site are protected by copyright laws and are owned by the individual Indigenous language communities who created the archival content. Language and multimedia data available on this site is intended for private, non-commercial use by individuals. Any commercial use of the language data or multimedia data in whole or in part, directly or indirectly, is specifically forbidden except with the prior written authority of the owner of the copyright.</small>;
 
-const sufixes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-const getBytes = (bytes) => {
-  const i = Math.floor(Math.log() / Math.log(1024));
-  return !bytes && '0 Bytes' || (bytes / Math.pow(1024, i)).toFixed(2) + " " + sufixes[i];
-};
-
-const Bytes = ({ bytes }) => (<span>{ getBytes(bytes) }</span>);
-
-Bytes.propTypes = {
-  bytes: React.PropTypes.number,
-};
-
 const GetMetaData = function (type, response) {
 
   let metadata = [];
@@ -59,8 +47,8 @@ const GetMetaData = function (type, response) {
    */
   let recorders = [];
   
-  {(selectn('contextParameters.' + type + '.recorders', response) || []).map(function(source, key) {
-    recorders.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+  {(selectn('contextParameters.media.recorders', response) || []).map(function(recorder, key) {
+    recorders.push(<Preview expandedValue={recorder} key={key} type="FVContributor" />);
   })};
 
   metadata.push({
@@ -73,8 +61,8 @@ const GetMetaData = function (type, response) {
    */
   let contributors = [];
   
-  {(selectn('contextParameters.' + type + '.sources', response) || []).map(function(source, key) {
-    sources.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+  {(selectn('contextParameters.media.sources', response) || []).map(function(contributor, key) {
+    contributors.push(<Preview expandedValue={contributor} key={key} type="FVContributor" />);
   })};
 
   metadata.push({
@@ -87,7 +75,7 @@ const GetMetaData = function (type, response) {
    */
   metadata.push({
     label: 'Original Associated Word/Phrase',
-    value: selectn("properties.fvm:origin", response)
+    value: selectn("contextParameters.media.origin.dc:title", response) + ' (Path: ' + selectn("contextParameters.media.origin.path", response) + ')'
   });
 
   /**
@@ -119,7 +107,7 @@ const GetMetaData = function (type, response) {
    */
   metadata.push({
     label: 'Size',
-    value: <Bytes>{selectn("properties.file:content.length", response)}</Bytes>
+    value: StringHelpers.getReadableFileSize(selectn("properties.file:content.length", response))
   });
 
   /**
@@ -327,7 +315,7 @@ export default class Preview extends Component {
                       />
                       <CardText expandable={true}>
                         <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('picture', pictureResponse)} />
-                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;
           }
@@ -345,7 +333,7 @@ export default class Preview extends Component {
           if (this.props.expandedValue && !selectn('success', remoteAudio)) {
             audio.success = true;
             audioResponse = this.props.expandedValue;
-            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchPicture);
+            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchAudio);
           }
           else {
             audio = remoteAudio;
@@ -370,7 +358,7 @@ export default class Preview extends Component {
                       </CardMedia>
                       <CardText expandable={true}>
                         <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('audio', audioResponse)} />
-                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;
           }
@@ -410,7 +398,7 @@ export default class Preview extends Component {
                       />
                       <CardText expandable={true}>
                         <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('video', videoResponse)} />
-                        <p>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;
           }

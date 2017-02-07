@@ -158,7 +158,7 @@ const fetchVideoStats = function fetchVideoStats(dialectId) {
 	}
 };
 
-const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', { headers: { 'X-NXenrichers.document': 'ancestry, media' } });
 const createVideo = RESTActions.create('FV_VIDEO', 'FVVideo');
 
 const actions = { fetchSharedVideos, createVideo, fetchVideo, updateVideo, fetchVideoStats };
