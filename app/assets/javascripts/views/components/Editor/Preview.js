@@ -73,10 +73,12 @@ const GetMetaData = function (type, response) {
   /**
    * Origin
    */
-  metadata.push({
-    label: 'Original Associated Word/Phrase',
-    value: selectn("contextParameters.media.origin.dc:title", response) + ' (Path: ' + selectn("contextParameters.media.origin.path", response) + ')'
-  });
+  if (selectn("contextParameters.media.origin", response)) {
+    metadata.push({
+      label: 'Original Associated Word/Phrase',
+      value: selectn("contextParameters.media.origin.dc:title", response) + ' (Path: ' + selectn("contextParameters.media.origin.path", response) + ')'
+    });
+  }
 
   /**
    * Child Focused
