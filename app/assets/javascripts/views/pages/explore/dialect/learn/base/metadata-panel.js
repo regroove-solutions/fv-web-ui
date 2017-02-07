@@ -54,6 +54,21 @@ export default class MetadataPanel extends Component {
       value: categories
     });
 
+
+    /**
+     * Phrase books
+     */
+    let phrase_books = [];
+      
+    {(selectn('response.contextParameters.phrase.phrase_books', computeEntity) || []).map(function(phrase_book, key) {
+      phrase_books.push(<div key={key}>{selectn('dc:title', phrase_book)}</div>);
+    })};
+    
+    metadata.push({
+      label: 'Phrase Books',
+      value: phrase_books
+    });
+
     /**
      * Cultural notes
      */
