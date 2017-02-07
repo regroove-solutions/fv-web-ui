@@ -129,6 +129,8 @@ export default class PageDialectWordEdit extends Component {
 
   render() {
 
+    let context;
+
     const computeEntities = Immutable.fromJS([{
       'id': this.state.wordPath,
       'entity': this.props.computeWord
@@ -139,6 +141,11 @@ export default class PageDialectWordEdit extends Component {
 
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    // Additional context (in order to store origin)
+    if (selectn("response", computeDialect2)) {
+      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computeWord) } });
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
@@ -151,7 +158,7 @@ export default class PageDialectWordEdit extends Component {
 	          <t.form.Form
 	            ref="form_word"
 	            type={t.struct(selectn("FVWord", fields))}
-	            context={selectn("response", computeDialect2)}
+	            context={context}
               value={this.state.formValue || selectn("response.properties", computeWord)}
 	            options={selectn("FVWord", options)} />
 	            <div className="form-group">

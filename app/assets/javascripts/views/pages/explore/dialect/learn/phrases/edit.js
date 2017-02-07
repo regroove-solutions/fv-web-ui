@@ -129,6 +129,8 @@ export default class PageDialectPhraseEdit extends Component {
 
   render() {
 
+    let context;
+
     const computeEntities = Immutable.fromJS([{
       'id': this.state.phrasePath,
       'entity': this.props.computePhrase
@@ -139,6 +141,11 @@ export default class PageDialectPhraseEdit extends Component {
 
     const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    // Additional context (in order to store origin)
+    if (selectn("response", computeDialect2)) {
+      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computePhrase) } });
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
@@ -151,7 +158,7 @@ export default class PageDialectPhraseEdit extends Component {
 	          <t.form.Form
 	            ref="form_phrase"
 	            type={t.struct(selectn("FVPhrase", fields))}
-	            context={selectn("response", computeDialect2)}
+	            context={context}
               value={this.state.formValue || selectn("response.properties", computePhrase)}
 	            options={selectn("FVPhrase", options)} />
 	            <div className="form-group">
