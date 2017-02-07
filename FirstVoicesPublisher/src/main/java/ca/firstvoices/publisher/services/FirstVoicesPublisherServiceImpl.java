@@ -15,12 +15,12 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 
 import ca.firstvoices.services.AbstractService;
+import ca.firstvoices.publisher.utils.PublisherUtils;
 
 /**
  * @author loopingz
@@ -146,7 +146,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
     }
 
-    private DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section) {
+    @Override
+    public DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section) {
         DocumentModel proxy = session.publishDocument(doc, section, true);
         if ("fv-lifecycle".equals(doc.getLifeCyclePolicy()) && !"Published".equals(doc.getCurrentLifeCycleState())) {
             doc.followTransition("Publish");
@@ -168,7 +169,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         DocumentModel dialectSection = proxies.get(0);
         DocumentModel input = getPublication(session, asset.getRef());
-        if (input != null) {
+        if (input != null && input.getCurrentLifeCycleState().equals("Published")) {
             // Already published
             return input;
         }
@@ -177,12 +178,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
-        dependencies.put("fvcore:related_audio", "fvproxy:proxied_audio");
-        dependencies.put("fvcore:related_pictures", "fvproxy:proxied_pictures");
-        dependencies.put("fvcore:related_videos", "fvproxy:proxied_videos");
-        dependencies.put("fvcore:source", "fvproxy:proxied_source");
-        dependencies.put("fv-word:categories", "fvproxy:proxied_categories");
-        dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
+        dependencies = PublisherUtils.addAssetDependencies(asset);
 
         for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
 
@@ -194,9 +190,19 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
             // Publish dependency
             // String documentPath = input.getPathAsString();
-            String[] dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
 
-            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
+            String[] dependencyPropertyValue;
+
+            // Handle exception property value as string
+            if (dependency == "fvmedia:origin") {
+                dependencyPropertyValue = PublisherUtils.extractDependencyPropertyValueAsString(input, dependency);
+            }
+            // Handle as array
+            else {
+                dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
+            }
+
+            if (PublisherUtils.dependencyIsEmpty(dependencyPropertyValue)) {
                 continue;
             }
 
@@ -205,32 +211,18 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 IdRef dependencyRef = new IdRef(relatedDocUUID);
                 DocumentModel publishedDep = getPublication(session, dependencyRef);
 
-                // If dependency published, no need to republish
+                // If dependency isn't published, need to publish
                 if (publishedDep == null) {
+
+                    // Origin shouldn't be automatically published
+                    if (dependencyEntry.getKey() == "fvmedia:origin") {
+                        continue;
+                    }
+
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
-                        // Specific behavior
-                        // Get all parents
-                        DocumentModelList parents = new DocumentModelListImpl();
-                        parents.add(dependencyDocModel);
-                        DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
-                        while (parent != null && "FVCategory".equals(parent.getType())) {
-                            parents.add(parent);
-                            parent = session.getDocument(parent.getParentRef());
-                        }
-                        Object[] docs = parents.toArray();
-                        for (int i = docs.length - 1; i >= 0; i--) {
-                            parentDependencySection = getPublication(session, ((DocumentModel) docs[i]).getRef());
-                            if (parentDependencySection == null) {
-                                parentDependencySection = getPublication(session,
-                                        ((DocumentModel) docs[i]).getParentRef());
-                                parentDependencySection = publishDocument(session, ((DocumentModel) docs[i]), parentDependencySection);
-                            }
-                            if (i == 0) {
-                                publishedDep = parentDependencySection;
-                            }
-                        }
+                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
                         publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
@@ -239,18 +231,16 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 if (publishedDep == null) {
                     continue;
                 }
-                String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
 
-                String[] updatedProperty = new String[1];
-
-                if (property != null) {
-                    updatedProperty = Arrays.copyOf(property, property.length + 1);
-                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
-                } else {
-                	updatedProperty[0] = publishedDep.getRef().toString();
+                // Handle exception property values as string
+                if (dependencyEntry.getKey() == "fvmedia:origin") {
+                    input.setPropertyValue(dependencyEntry.getValue(), publishedDep.getRef().toString());
                 }
-
-                input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                // Handle as array
+                else {
+                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray((String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
+                    input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                }
             }
         }
         session.saveDocument(input);
@@ -276,12 +266,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
-        dependencies.put("fvcore:related_audio", "fvproxy:proxied_audio");
-        dependencies.put("fvcore:related_pictures", "fvproxy:proxied_pictures");
-        dependencies.put("fvcore:related_videos", "fvproxy:proxied_videos");
-        dependencies.put("fvcore:source", "fvproxy:proxied_source");
-        dependencies.put("fv-word:categories", "fvproxy:proxied_categories");
-        dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
+        dependencies = PublisherUtils.addAssetDependencies(asset);
 
         for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
 
@@ -293,9 +278,19 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
             // Publish dependency
             // String documentPath = input.getPathAsString();
-            String[] dependencyPropertyValue = (String[]) asset.getPropertyValue(dependency);
 
-            if (dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
+            String[] dependencyPropertyValue;
+
+            // Handle exception property value as string
+            if (dependency == "fvmedia:origin") {
+                dependencyPropertyValue = PublisherUtils.extractDependencyPropertyValueAsString(input, dependency);
+            }
+            // Handle as array
+            else {
+                dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
+            }
+
+            if (PublisherUtils.dependencyIsEmpty(dependencyPropertyValue)) {
                 continue;
             }
 
@@ -306,50 +301,33 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 IdRef dependencyRef = new IdRef(relatedDocUUID);
                 DocumentModel publishedDep = getPublication(session, dependencyRef);
 
-                // If dependency published, no need to republish
+                // If dependency isn't published, need to publish
                 if (publishedDep == null) {
+
+                    // Origin shouldn't be automatically published
+                    if (dependencyEntry.getKey() == "fvmedia:origin") {
+                        continue;
+                    }
+
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
-                        // Specific behavior
-                        // Get all parents
-                        DocumentModelList parents = new DocumentModelListImpl();
-                        parents.add(dependencyDocModel);
-                        DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
-                        while (parent != null && "FVCategory".equals(parent.getType())) {
-                            parents.add(parent);
-                            parent = session.getDocument(parent.getParentRef());
-                        }
-                        Object[] docs = parents.toArray();
-                        for (int i = docs.length - 1; i >= 0; i--) {
-                            parentDependencySection = getPublication(session, ((DocumentModel) docs[i]).getRef());
-                            if (parentDependencySection == null) {
-                                parentDependencySection = getPublication(session,
-                                        ((DocumentModel) docs[i]).getParentRef());
-                                parentDependencySection = publishDocument(session, ((DocumentModel) docs[i]), parentDependencySection);
-                            }
-                            if (i == 0) {
-                                publishedDep = parentDependencySection;
-                            }
-                        }
+                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
                         publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
                     }
                 }
 
-                String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
-
-                String[] updatedProperty = new String[1];
-
-                if (property != null) {
-                    updatedProperty = Arrays.copyOf(property, property.length + 1);
-                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
-                } else {
-                	updatedProperty[0] = publishedDep.getRef().toString();
+                // Handle exception property values as string
+                if (dependencyEntry.getKey() == "fvmedia:origin") {
+                    input.setPropertyValue(dependencyEntry.getValue(), publishedDep.getRef().toString());
                 }
-
-                input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                // Handle as array
+                else {
+                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray((String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
+                    input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                }
             }
         }
         session.saveDocument(input);
@@ -365,7 +343,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         asset.getCoreSession().removeDocument(proxy.getRef());
     }
 
-    protected DocumentModel getPublication(CoreSession session, DocumentRef docRef) {
+    @Override
+    public DocumentModel getPublication(CoreSession session, DocumentRef docRef) {
         DocumentModelList sections = session.getProxies(docRef, null);
 
         if (!sections.isEmpty()) {
@@ -472,15 +451,10 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             }
             // Handle as string
             else {
-            	dependencyPropertyValue = new String[1];
-            	String propertyValue = (String) input.getPropertyValue(dependency);
-
-            	if (propertyValue != null) {
-					dependencyPropertyValue[0] = propertyValue;
-				}
+                dependencyPropertyValue = PublisherUtils.extractDependencyPropertyValueAsString(input, dependency);
             }
 
-            if ( dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null) ) {
+            if (PublisherUtils.dependencyIsEmpty(dependencyPropertyValue)) {
                 continue;
             }
 

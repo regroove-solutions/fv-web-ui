@@ -3,7 +3,9 @@
  */
 package ca.firstvoices.publisher.services;
 
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 
 /**
  * @author loopingz
@@ -53,4 +55,8 @@ public interface FirstVoicesPublisherService {
     public DocumentModel publish(DocumentModel doc);
 
 	public DocumentModel republish(DocumentModel doc);
+
+	public DocumentModel getPublication(CoreSession session, DocumentRef docRef);
+
+    public DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section);
 }

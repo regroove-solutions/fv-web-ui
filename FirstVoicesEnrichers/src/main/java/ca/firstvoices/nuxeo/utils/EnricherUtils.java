@@ -2,11 +2,13 @@ package ca.firstvoices.nuxeo.utils;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -25,6 +27,16 @@ public class EnricherUtils {
     private static final Log log = LogFactory.getLog(EnricherUtils.class);
 
     private static ObjectMapper mapper = new ObjectMapper();
+
+    private static String getThumbnailURL(DocumentModel doc, String xpath, String filename) {
+        String blobUrl = Framework.getProperty("nuxeo.url");
+        blobUrl += "/nxfile/";
+        blobUrl += doc.getRepositoryName() + "/";
+        blobUrl += doc.getId() + "/";
+        blobUrl += xpath + "/";
+        blobUrl += filename + "jpg";
+        return blobUrl;
+    }
 
 	/**
 	 *	Retrieve additional binary document properties for a given id, and return them in a JSON object.
@@ -51,6 +63,31 @@ public class EnricherUtils {
 			binaryJsonObj.put("path", binaryPath);
 			binaryJsonObj.put("dc:title", (String)binaryDoc.getPropertyValue("dc:title"));
 			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));
+
+            // Get thumbnails
+			if (binaryDoc.getType().equals("FVPicture") || binaryDoc.getType().equals("FVVideo")) {
+                ArrayNode thumbnailsJsonArray = mapper.createArrayNode();
+
+                List<HashMap<String, Object>> views = (List<HashMap<String, Object>>) binaryDoc.getPropertyValue("picture:views");
+
+                int i = 0;
+
+                for (HashMap<String, Object> view : views) {
+                    ObjectNode viewObj = mapper.createObjectNode();
+
+                    BinaryBlob content = (BinaryBlob) view.get("content");
+
+                    viewObj.put("title", (String) view.get("title"));
+                    viewObj.put("width", ((Long) view.get("width")).toString());
+                    viewObj.put("height", ((Long) view.get("height")).toString());
+                    viewObj.put("url", getThumbnailURL(binaryDoc, "picture:views/" + i + "/content", content.getFilename()));
+
+                    thumbnailsJsonArray.add(viewObj);
+                    ++i;
+                }
+
+                binaryJsonObj.put("views", thumbnailsJsonArray);
+			}
 		} catch (DocumentNotFoundException | DocumentSecurityException de) {
     		log.warn("Could not retrieve binary document.", de);
 			return null;
@@ -109,7 +146,7 @@ public class EnricherUtils {
 	/**
 	 *	Retrieve the document title for a given id, and return a JSON object containing it.
 	 */
-	public static ObjectNode getDocumentIdAndTitleJsonObject(String documentId, CoreSession session) {
+	public static ObjectNode getDocumentIdAndTitleAndPathJsonObject(String documentId, CoreSession session) {
 
 		IdRef ref = new IdRef(documentId);
 		DocumentModel doc = null;
@@ -120,6 +157,7 @@ public class EnricherUtils {
 			// Build JSON node
 			jsonObj.put("uid", doc.getId());
 			jsonObj.put("dc:title", doc.getTitle());
+			jsonObj.put("path", doc.getPathAsString());
 		} catch (DocumentNotFoundException | DocumentSecurityException de) {
     		log.warn("Could not retrieve document.", de);
 			return null;

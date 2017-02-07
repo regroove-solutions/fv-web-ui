@@ -69,7 +69,7 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 					continue;
 				}
 
-				ObjectNode categoryObj = EnricherUtils.getDocumentIdAndTitleJsonObject(categoryId, session);
+				ObjectNode categoryObj = EnricherUtils.getDocumentIdAndTitleAndPathJsonObject(categoryId, session);
 				if(categoryObj != null) {
 					categoryArray.add(categoryObj);
 				}
@@ -82,11 +82,11 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 			jsonObj.put("part_of_speech", partOfSpeechLabel);
 
 			// Process "fvcore:source" values
-			String[] sourceIds = (String[]) doc.getProperty("fvcore", "source");
+			String[] sourceIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "source") : (String []) doc.getProperty("fvproxy", "proxied_source");
 			if (sourceIds != null) {
 				ArrayNode sourceArray = mapper.createArrayNode();
 				for (String sourceId : sourceIds) {
-					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleJsonObject(sourceId, session);
+					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleAndPathJsonObject(sourceId, session);
 					if(sourceObj != null) {
 						sourceArray.add(sourceObj);
 					}

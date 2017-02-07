@@ -54,7 +54,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			String[] phraseBookIds = (!doc.isProxy()) ? (String []) doc.getProperty("fv-phrase", "phrase_books") : (String []) doc.getProperty("fvproxy", "proxied_categories");
 			ArrayNode phraseBookArray = mapper.createArrayNode();
 			for (String phraseBookId : phraseBookIds) {
-				ObjectNode phraseBookObj = EnricherUtils.getDocumentIdAndTitleJsonObject(phraseBookId, session);
+				ObjectNode phraseBookObj = EnricherUtils.getDocumentIdAndTitleAndPathJsonObject(phraseBookId, session);
 				if(phraseBookObj != null) {
 					phraseBookArray.add(phraseBookObj);
 				}
@@ -66,7 +66,7 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
 			if (sourceIds != null) {
 				ArrayNode sourceArray = mapper.createArrayNode();
 				for (String sourceId : sourceIds) {
-					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleJsonObject(sourceId, session);
+					ObjectNode sourceObj = EnricherUtils.getDocumentIdAndTitleAndPathJsonObject(sourceId, session);
 					if(sourceObj != null) {
 						sourceArray.add(sourceObj);
 					}
