@@ -172,7 +172,7 @@ export default class AddMediaComponent extends Component {
         let docParams = {
               type: this.props.type,
               name: formValue.title,
-              properties: Object.assign(properties, { 'fvm:origin': this.props.dialect.otherContext.parentId})
+              properties: Object.assign(properties, (selectn('otherContext.parentId', this.props.dialect)) ? { 'fvm:origin': selectn('otherContext.parentId', this.props.dialect)} : {})
         };
 
         switch (this.props.type) {
