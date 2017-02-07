@@ -51,6 +51,7 @@ export default class MediaPanel extends Component {
                     
                         <Preview
                         key={selectn('uid', items[0].object)}
+                        styles={{padding: '0px'}}
                         expandedValue={items[0].object}
                         type={type} />  :
 
@@ -62,6 +63,7 @@ export default class MediaPanel extends Component {
                         //console.log(item);
                         return <div className='image-gallery-image'>
                             <Preview
+                            styles={{padding: '0px'}}
                             key={selectn('id', item)}
                             expandedValue={items[selectn('key', item)].object}
                             type={type} />

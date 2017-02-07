@@ -217,7 +217,7 @@ export default class View extends Component {
     let photos = [];
 
     (selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
-      let image = { original: ConfGlobal.baseURL + picture.path, thumbnail: ConfGlobal.baseURL + picture.path, description: picture['dc:description'], key: key, id: picture.uid, object: picture };
+      let image = { original: selectn('views[2].url', picture), thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'), description: picture['dc:description'], key: key, id: picture.uid, object: picture };
       photos.push(image);
     })
 
@@ -225,7 +225,7 @@ export default class View extends Component {
     let videos = [];
 
     (selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function(video, key) {
-      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: ConfGlobal.baseURL + video.path, description: video['dc:description'], key: key, id: video.uid, object: video };
+      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'), description: video['dc:description'], key: key, id: video.uid, object: video };
       videos.push(vid);
     })
 
@@ -259,7 +259,7 @@ export default class View extends Component {
                     <CardHeader
                       title={selectn('response.title', computeWord)}
                       subtitle={(selectn('response.contextParameters.word.part_of_speech', computeWord) !=null) ? "Part of Speech: " + selectn('response.contextParameters.word.part_of_speech', computeWord) : ""}
-                      /*avatar="http://lorempixel.com/100/100/"*/ />
+                      avatar={selectn('response.contextParameters.word.related_pictures[0].views[0].url', computeWord)} />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}>
                       <Tab label="Definition" >

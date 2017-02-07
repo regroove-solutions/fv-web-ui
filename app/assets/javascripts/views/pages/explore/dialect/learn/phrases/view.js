@@ -214,17 +214,18 @@ export default class View extends Component {
     let photos = [];
 
     (selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
-      let image = { original: ConfGlobal.baseURL + picture.path, thumbnail: ConfGlobal.baseURL + picture.path, description: picture['dc:description'], key: key, id: picture.uid, object: picture };
+      let image = { original: selectn('views[2].url', picture), thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'), description: picture['dc:description'], key: key, id: picture.uid, object: picture };
       photos.push(image);
     })
 
     // Generate videos
     let videos = [];
 
-    (selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
-      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: ConfGlobal.baseURL + video.path, description: video['dc:description'], key: key, id: video.uid, object: video };
+    (selectn('response.contextParameters.word.related_videos', computePhrase) || []).map(function(video, key) {
+      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'), description: video['dc:description'], key: key, id: video.uid, object: video };
       videos.push(vid);
     })
+
     /**
     * Generate definitions body
     */
@@ -254,7 +255,7 @@ export default class View extends Component {
                   <Card>
                     <CardHeader
                       title={selectn('response.title', computePhrase)}
-                      /*avatar="http://lorempixel.com/100/100/"*/ />
+                      avatar={selectn('response.contextParameters.phrase.related_pictures[0].views[0].url', computePhrase)} />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}>
                       <Tab label="Definition" >
