@@ -99,7 +99,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -186,6 +186,13 @@ export default class View extends Component {
     }
   }
 
+  /**
+  * Publish changes
+  */
+  _publishChangesAction() {
+    this.props.publishPhrase(this._getPhrasePath(), null, null, "Phrase published successfully!");
+  } 
+
   render() {
 
     const tabItemStyles = {
@@ -234,6 +241,7 @@ export default class View extends Component {
                             computePermissionEntity={computeDialect2}
                             computeLogin={this.props.computeLogin}
                             publishToggleAction={this._publishToggleAction}
+                            publishChangesAction={this._publishChangesAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props} />;
               }
