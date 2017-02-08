@@ -322,3 +322,39 @@ audio,video{
     }
   }
 }
+
+
+.flex-container {
+  margin: auto;
+  max-width: 1200px;
+
+    .responsive-image {
+      max-width: 100%;
+    }
+
+    .cell {
+      margin:1rem;
+
+      img {
+        display: block;
+      }
+    }
+
+    @media screen and (min-width: 600px) {
+      .grid {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+      }
+      .cell {
+        width: calc(48% - 2rem);
+      }
+    }
+
+    @media screen and (min-width: 1000px) {
+      .cell {
+        width: calc(33.3333% - 2rem);
+      }
+    }
+
+}

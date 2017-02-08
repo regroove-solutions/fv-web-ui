@@ -3066,6 +3066,14 @@ gulp-changed@~0.4.1:
     gulp-util "^3.0.0"
     through2 "^0.5.1"
 
+gulp-clean@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/gulp-clean/-/gulp-clean-0.3.2.tgz#a347d473acea40182f935587a451941671928102"
+  dependencies:
+    gulp-util "^2.2.14"
+    rimraf "^2.2.8"
+    through2 "^0.4.2"
+
 gulp-filesize@0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/gulp-filesize/-/gulp-filesize-0.0.6.tgz#dd677a4f0e9af7efe20008682be4c78f409c556b"
@@ -3281,7 +3289,7 @@ gulp-uglify@~1.0.2:
     through2 "^2.0.0"
     vinyl "^0.5.0"
 
-gulp-util@^2.2.0, gulp-util@~2.2.0, gulp-util@~2.2.12, gulp-util@~2.2.14:
+gulp-util@^2.2.0, gulp-util@^2.2.14, gulp-util@~2.2.0, gulp-util@~2.2.12, gulp-util@~2.2.14:
   version "2.2.20"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-2.2.20.tgz#d7146e5728910bd8f047a6b0b1e549bc22dbd64c"
   dependencies:
@@ -6686,7 +6694,7 @@ tfunk@^3.0.1:
     readable-stream ">=1.0.33-1 <1.1.0-0"
     xtend ">=4.0.0 <4.1.0-0"
 
-through2@^0.4.0:
+through2@^0.4.0, through2@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.4.2.tgz#dbf5866031151ec8352bb6c4db64a2292a840b9b"
   dependencies:
