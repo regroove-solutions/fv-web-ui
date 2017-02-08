@@ -1,3 +1,4 @@
+
 /*
 Copyright 2016 First People's Cultural Council
 
@@ -30,7 +31,19 @@ export default class Play extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <h1>Games</h1>
-                Game browser.
+                <div className="flex-container">
+                  <div className="grid">
+                    <div className="cell">
+                      <a href="./play/jigsaw"><img src="/assets/games/jigsaw/assets/images/preview.png" className="responsive-image"/></a>
+                    </div>
+                   <div className="cell">
+                      <a href="./play/colouringbook"><img src="/assets/games/colouring-book/assets/images/preview.png" className="responsive-image"/></a>
+                    </div>
+                    <div className="cell">
+                      <a href="./play/worsearch"><img src="/assets/games/wordsearch/assets/images/preview.png" className="responsive-image"/></a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
         </div>;
