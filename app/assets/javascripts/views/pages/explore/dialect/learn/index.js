@@ -133,7 +133,7 @@ export default class DialectLearn extends Component {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDialectStats(newProps.routeParams.dialect_path, {'dialectPath': newProps.routeParams.dialect_path, 'docTypes': ["words","phrases","songs","stories"]});
-    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet');
+    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet', '&sortOrder=asc&sortBy=fvcharacter:alphabet_order');
 
     newProps.queryModifiedWords(newProps.routeParams.dialect_path);
     newProps.queryCreatedWords(newProps.routeParams.dialect_path);    

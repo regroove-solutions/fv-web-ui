@@ -161,7 +161,7 @@ export default class PageDialectLearnBase extends Component {
         rows.push(render(entry, i));
       });
 
-      if (dataItems.length >= 2) {
+      if (dataItems.length > 2) {
         rows.push(<li key='more'>...</li>);
       }
 

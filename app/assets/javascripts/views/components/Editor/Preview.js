@@ -145,11 +145,15 @@ export default class Preview extends Component {
     id: PropTypes.string,
     type: PropTypes.string.isRequired,
     expandedValue: PropTypes.object,
-    styles: PropTypes.object
+    styles: PropTypes.object,
+    tagStyles: PropTypes.object,
+    minimal: PropTypes.bool
   };
 
   static defaultProps = {
-    styles: {}
+    styles: {},
+    tagStyles: {},
+    minimal: false
   };
 
   constructor(props) {
@@ -344,25 +348,30 @@ export default class Preview extends Component {
 
           if (audioResponse && audio.success) {
 
-            audioTag = <audio src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls />;
+            audioTag = <audio style={this.props.tagStyles} src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))} alt={selectn('title', audioResponse)} controls />;
 
-            body =   <Card onExpandChange={handleExpandChange}>
-                     <CardHeader
-                        title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
-                        titleStyle={{lineHeight: 'initial'}}
-                        subtitle={selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}
-                        subtitleStyle={{lineHeight: 'initial'}}
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                      />
-                      <CardMedia>
-                        {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? audioTag : null}
-                      </CardMedia>
-                      <CardText expandable={true}>
-                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('audio', audioResponse)} />
-                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
-                      </CardText>
-                    </Card>;
+            if (this.props.minimal) {
+              body = audioTag;
+            }
+            else {
+              body =   <Card onExpandChange={handleExpandChange}>
+                      <CardHeader
+                          title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
+                          titleStyle={{lineHeight: 'initial'}}
+                          subtitle={selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}
+                          subtitleStyle={{lineHeight: 'initial'}}
+                          actAsExpander={true}
+                          showExpandableButton={true}
+                        />
+                        <CardMedia>
+                          {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? audioTag : null}
+                        </CardMedia>
+                        <CardText expandable={true}>
+                          <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('audio', audioResponse)} />
+                          <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        </CardText>
+                      </Card>;
+            }
           }
 
         break;

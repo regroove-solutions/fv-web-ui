@@ -13,6 +13,7 @@ import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchi
 
 import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
+import { PageDialectLearnAlphabet } from 'views/pages';
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook } from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks } from 'views/pages';
@@ -157,6 +158,12 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
         page: <PageDialectLearn />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet' ],
+        page: <PageDialectLearnAlphabet />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
