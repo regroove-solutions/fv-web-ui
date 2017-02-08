@@ -31,18 +31,20 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import DocumentListView from 'views/components/Document/DocumentListView';
 import FacetFilterList from 'views/components/Browsing/facet-filter-list';
 
+import Preview from 'views/components/Editor/Preview';
+
 /**
 * Learn words
 */
 @provide
-export default class PageDialectLearnWords extends PageDialectLearnBase {
+export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
   
   static defaultProps = {
-    DISABLED_SORT_COLS: ['state', 'fv-word:categories'],
+    DISABLED_SORT_COLS: ['state', 'related_audio'],
     DEFAULT_PAGE: 0,
-    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
     DEFAULT_SORT_TYPE: 'asc'
   }
 
@@ -55,11 +57,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     computeDocument: PropTypes.object.isRequired, 
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
-    fetchWords: PropTypes.func.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
+    fetchCharacters: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    computeCategories: PropTypes.object.isRequired,
+    computeCharacters: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
 
     DISABLED_SORT_COLS: PropTypes.array,
@@ -74,50 +74,30 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     this.state = {
       columns : [
-        { name: 'title', title: 'Word', render: function(v, data, cellProps){
-          //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
+        { name: 'title', title: 'Character', render: function(v, data, cellProps){
           return v;
-        }, sortName: 'fv:custom_order'},
-        /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-            return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
-            });
-          }.bind(this), sortName: 'fv:definitions/0/translation'
-        },*/
-        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
-            return this.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
+        }, sortName: 'fvcharacter:alphabet_order'},
+        { name: 'fvcharacter:upper_case_character', title: 'Uppercase Character', render: function(v, data, cellProps){
+          return selectn('properties.' + cellProps.name, data);
+        }, sortName: 'fvcharacter:alphabet_order'},
+        { name: 'related_words', title: 'Related Words', render: function(v, data, cellProps) {
+            return this.renderComplexArrayRow(selectn('contextParameters.character.' + cellProps.name, data), function (entry, i) {
+                return <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>;
             }.bind(this));
           }.bind(this),
           sortName: 'fv:literal_translation/0/translation'
         },
-        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
-        { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
-            return this.renderComplexArrayRow(selectn('contextParameters.word.categories', data), function (entry, i) {
-                return <li key={i}>{selectn('dc:title', entry)}</li>;
-            });
+        { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
+            let firstAudio = selectn('contextParameters.character.' + cellProps.name + '[0]', data);
+            if (firstAudio)
+              return <Preview minimal={true} tagStyles={{width: '300px', maxWidth:'100%'}} key={selectn('uid', firstAudio)} expandedValue={firstAudio} type="FVAudio" />;
           }.bind(this)
-        },
-        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } }
+        }
       ],
       sortInfo: {
         uiSortOrder: [], 
         currentSortCols: this.props.DEFAULT_SORT_COL,
         currentSortType: this.props.DEFAULT_SORT_TYPE
-      },
-      filterInfo: {
-        currentCategoryFilterIds: [],
-        currentAppliedFilter: {
-          categories: ''
-        }
-      },
-      pageInfo: {
-        page: this.props.DEFAULT_PAGE,
-        pageSize: this.props.DEFAULT_PAGE_SIZE
       }
     };
 
@@ -129,40 +109,30 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
 
-    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children');
-
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    Object.values(this.state.filterInfo.currentAppliedFilter).join('') + 
-    '&currentPageIndex=' + pageIndex + 
-    '&pageSize=' + pageSize + 
-    '&sortOrder=' + sortOrder +
-    '&sortBy=' + sortBy
-    );
+    props.fetchCharacters(props.routeParams.dialect_path + '/Alphabet',
+    '&currentPageIndex=0' + 
+    '&pageSize=100' + 
+    '&sortOrder=' + sortOrder + 
+    '&sortBy=' + sortBy);
   }
 
   render() {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path + '/Dictionary',
-      'entity': this.props.computeWords
+      'entity': this.props.computeCharacters
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
-    },{
-      'id': '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
-      'entity': this.props.computeCategories
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
-    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+    const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children');
-
-    let computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0;
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
@@ -175,27 +145,19 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 </div>
               </div>
               <div className="row">
-                <div className={classNames('col-xs-12', 'col-md-3', (computeCategoriesSize == 0) ? 'hidden': null)}>
-                  <FacetFilterList
-                    title='Categories'
-                    facetField='fv-word:categories'
-                    onFacetSelected={this._handleFacetSelected}
-                    facets={selectn('response.entries', computeCategories) || []} />
-                </div>
-                <div className={classNames('col-xs-12', (computeCategoriesSize == 0) ? 'col-md-12': 'col-md-9')}>
-                  <h1>{selectn('response.title', computeDialect2)} Words</h1>
+
+                <div className={classNames('col-xs-12')}>
+                  <h1>{selectn('response.title', computeDialect2)} Alphabet</h1>
 
                   {(() => {
-                    if (selectn('response.entries', computeWords)) {
+                    if (selectn('response.entries', computeCharacters)) {
 
                         return <DocumentListView
-                                  objectDescriptions="words" 
-                                  data={computeWords}
+                                  objectDescriptions="characters" 
+                                  data={computeCharacters}
                                   refetcher={this._handleRefetch}
                                   onSortChange={this._handleSortChange}
                                   onSelectionChange={this._onEntryNavigateRequest}
-                                  page={this.state.pageInfo.page}
-                                  pageSize={this.state.pageInfo.pageSize}
                                   onColumnOrderChange={this._handleColumnOrderChange}
                                   columns={this.state.columns}
                                   sortInfo={this.state.sortInfo.uiSortOrder}
