@@ -1,11 +1,12 @@
 var gulp = require('gulp');
-var del = require('del');
+
 var config = require('../config');
 var htmlConfig = require('../config/html');
+var clean = require('gulp-clean');
 
-gulp.task('clean', function (cb) {
-  del([
-    config.publicAssets,
-    htmlConfig.dest
-  ], cb);
-});
+/**
+ * @author Charlie
+ */
+gulp.task('clean', function(){
+  return gulp.src([config.publicAssets, htmlConfig.dest], {read:false}).pipe(clean());
+})
