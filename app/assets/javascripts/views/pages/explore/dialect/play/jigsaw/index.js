@@ -13,23 +13,96 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component} from 'react';
-
+import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
+import JigsawGame from 'games/jigsaw'
 
 /**
 * Play games
 */
 export default class Jigsaw extends Component {
 
-  constructor(props, context){
+  /**
+   * Constructor
+   */
+  constructor(props, context) {
     super(props, context);
+    this.gameContainer = null;
   }
 
+  /**
+   * componentDidMount
+   */
+  componentDidMount () {
+
+    //Setup default asset paths
+    const defaultAssetsPath = '/assets/games/jigsaw/assets';
+    const defaultLibsPath = `${defaultAssetsPath}/libs`;
+    const defaultImagesPath = `${defaultAssetsPath}/images`;
+
+    //Default game config
+    /**
+     * @todo Setup image paths based on dialect
+     */
+    let gameConfig = {
+
+        libs:{
+            bitmapJigsawScript:`${defaultLibsPath}/BitmapDataJigsawCut.js`        
+        },
+
+        images:{
+            preloaderLoading:`${defaultImagesPath}/loading.png`,
+            preloaderLogo:`${defaultImagesPath}/logo.png`,
+            backgroundImage:`${defaultImagesPath}/wood.jpg`,
+            youWin:`${defaultImagesPath}/well-done.png`,
+            thumb1:`${defaultImagesPath}/thumb1.png`,
+            thumb2:`${defaultImagesPath}/thumb2.png`,
+            thumb3:`${defaultImagesPath}/thumb3.png`,
+            thumb4:`${defaultImagesPath}/thumb4.png`,
+            cornerTopLeft:`${defaultImagesPath}/corner1a.png`,
+            cornerTopRight:`${defaultImagesPath}/corner1b.png`,
+            cornerBottomLeft:`${defaultImagesPath}/corner1c.png`,
+            cornerBottomRight:`${defaultImagesPath}/corner1d.png`,
+            picture1:`${defaultImagesPath}/picture1.jpg`,
+            picture2:`${defaultImagesPath}/picture2.jpg`,
+            picture3:`${defaultImagesPath}/picture3.jpg`,
+            picture4:`${defaultImagesPath}/picture4.jpg`
+        }
+
+    };
+
+    /**
+     * Create the game, with container and game config
+     */
+    const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+    JigsawGame.init(gameContainerNode, gameConfig);
+  }
+
+  /**
+   * Component Will Unmount
+   * Cleanup the game / assets for memory management
+   */
+  componentWillUnmount () {
+      JigsawGame.destroy();
+  }
+
+
+  /**
+   * Render
+   */
   render() {
+
+    //Setup game styles
+    const gameContainerStyles = {
+      maxWidth:800,
+      margin:'auto'
+    }
+
     return <div>
             <div className="row">
               <div className="col-xs-12">
                 <h1>Jigsaw</h1>
+                <div style={gameContainerStyles}  ref={(el)=>{this.gameContainer = el}} ></div>
               </div>
             </div>
         </div>;

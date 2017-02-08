@@ -6,6 +6,7 @@ config.sourceDirectory = "./app";
 config.assetsDirectory = "/assets";
 config.javascriptDirectory = "/javascripts";
 config.stylesheetsDirectory = "/stylesheets";
+config.gamesDirectory = "/games";
 
 config.publicAssets    = config.publicDirectory + config.assetsDirectory;
 config.sourceAssets    = config.sourceDirectory + config.assetsDirectory;
