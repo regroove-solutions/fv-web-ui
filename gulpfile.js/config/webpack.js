@@ -5,6 +5,12 @@ var webpackManifest = require('../lib/webpackManifest')
 var HappyPack       = require('happypack');
 var config          = require('./')
 
+// Phaser webpack config , requried by fv-games
+const phaserModule = path.resolve('./node_modules/phaser-ce/')
+const phaser = path.join(phaserModule, 'build/custom/phaser-split.js')
+const pixi = path.join(phaserModule, 'build/custom/pixi.js')
+const p2 = path.join(phaserModule, 'build/custom/p2.js')
+
 
 module.exports = function(env) {
 
@@ -12,12 +18,14 @@ module.exports = function(env) {
 
   var jsSourceDirectory = config.sourceAssets + config.javascriptDirectory + '/';
   var stylesSourceDirectory = config.sourceAssets + config.stylesheetsDirectory + '/';
+  var gamesSourceDirectory = config.sourceAssets + config.gamesDirectory + '/';
 
   var jsPublicDirectory = config.publicAssets + config.javascriptDirectory + '/';
 
   var absPublicDirectory = path.resolve(config.publicDirectory)
   var absJSSourceDirectory = path.resolve(jsSourceDirectory)
   var absJSPublicDirectory = path.resolve(jsPublicDirectory)
+  var absGamesDirectory = path.resolve()
 
   var webpackConfig = {
 
@@ -45,7 +53,11 @@ module.exports = function(env) {
         views: path.resolve(jsSourceDirectory + 'views/'),
         conf: path.resolve(jsSourceDirectory + 'configuration/'),
         operations: path.resolve(jsSourceDirectory + 'operations/'),
-        common: path.resolve(jsSourceDirectory + 'common/')
+        common: path.resolve(jsSourceDirectory + 'common/'),
+        games:path.resolve(gamesSourceDirectory),
+        phaser:phaser,
+        pixi:pixi,
+        p2:p2
       },
       extensions: ['.js', '.less']
     },
@@ -84,8 +96,28 @@ module.exports = function(env) {
         },
         {
           test: require.resolve("react"), use: "expose-loader?React"
+        },
+        {
+          test:/pixi\.js/,
+          use:{
+              loader:'expose-loader',
+              query:'PIXI'
+          }
+        },
+        {
+          test:/phaser-split\.js$/,
+          use:{
+              loader:'expose-loader',
+              query:'Phaser'
+          }
+        },
+        {
+          test:/p2\.js/,
+          use:{
+              loader:'expose-loader',
+              query:'p2'
+          }
         }
-
       ],
       noParse:
         [
@@ -101,7 +133,8 @@ module.exports = function(env) {
     // Karma doesn't need entry points or output settings
 
     webpackConfig.entry= {
-      app: ['./app.js']
+      app: ['./app.js'],
+      shared:['pixi', 'p2', 'phaser']
     }
 
     webpackConfig.output= {
