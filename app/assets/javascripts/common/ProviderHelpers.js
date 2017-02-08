@@ -59,7 +59,7 @@ export default {
       },
       {
         workspace: 'fv-phrase:phrase_books',
-        section: 'fvproxy:proxied_phrase_books'
+        section: 'fvproxy:proxied_categories'
       }
     ];
 
