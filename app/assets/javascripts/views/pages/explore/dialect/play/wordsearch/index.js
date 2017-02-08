@@ -13,23 +13,91 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component} from 'react';
-
+import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
+import WordsearchGame from 'games/wordsearch'
 
 /**
 * Play games
 */
-export default class WordSearch extends Component {
+export default class Wordsearch extends Component {
 
-  constructor(props, context){
+  /**
+   * Constructor
+   */
+  constructor(props, context) {
     super(props, context);
+    this.gameContainer = null;
   }
 
+  /**
+   * componentDidMount
+   */
+  componentDidMount () {
+
+    //Setup default asset paths
+    const defaultAssetsPath = '/assets/games/wordsearch/assets';
+    const defaultLibsPath = `${defaultAssetsPath}/libs`;
+    const defaultImagesPath = `${defaultAssetsPath}/images`;
+
+    //Default game config
+    /**
+     * @todo Setup image paths based on dialect
+     */
+
+    let gameConfig = {
+
+        libs:{
+            wordFindScript:`${defaultLibsPath}/wordfind.js`        
+        },
+
+        images:{
+            preloaderLoading:`${defaultImagesPath}/loading.png`,
+            preloaderLogo:`${defaultImagesPath}/logo.png`,
+            azoFontImage:`${defaultImagesPath}/azo.png`,
+            azoFontXml:`${defaultImagesPath}/azo.xml`,  
+            letters:`${defaultImagesPath}/`
+        },
+
+        words:['atari', 'firstvoices', 'canada', 'vancouver', 'spectrum', 'charlie',
+                        'forest', 'fire', 'earth', 'coleco', 'retro', 'superfamicom',
+                        'nes', 'sonic', 'mario', 'masterchief', 'msx', 'gameboy', 'jaguar']
+
+    };
+
+
+    /**
+     * Create the game, with container and game config
+     */
+    const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+    WordsearchGame.init(gameContainerNode, gameConfig);
+  }
+
+  /**
+   * Component Will Unmount
+   * Cleanup the game / assets for memory management
+   */
+  componentWillUnmount () {
+      WordsearchGame.destroy();
+  }
+
+
+  /**
+   * Render
+   */
   render() {
+
+    //Setup game styles
+    const gameContainerStyles = {
+      maxWidth:800,
+      margin:'auto'
+    }
+
     return <div>
             <div className="row">
               <div className="col-xs-12">
-                <h1>WordSearch</h1>
+                <h1>Word Search</h1>
+                <div style={gameContainerStyles}  ref={(el)=>{this.gameContainer = el}} ></div>
               </div>
             </div>
         </div>;
