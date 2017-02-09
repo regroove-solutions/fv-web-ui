@@ -21,7 +21,6 @@ import PageExploreLanguage from './explore/language'
 import PageExploreDialect from './explore/dialect'
 
 import PageDialectLearn from './explore/dialect/learn'
-import PageDialectLearnAlphabet from './explore/dialect/learn/alphabet'
 
 import PageDialectPlay from './explore/dialect/play'
 
@@ -39,6 +38,8 @@ import PageDialectLearnStoriesAndSongs from './explore/dialect/learn/songs-stori
 import PageDialectViewWord from './explore/dialect/learn/words/view'
 import PageDialectViewPhrase from './explore/dialect/learn/phrases/view'
 import PageDialectViewBook from './explore/dialect/learn/songs-stories/view'
+import PageDialectViewAlphabet from './explore/dialect/learn/alphabet/'
+import PageDialectViewCharacter from './explore/dialect/learn/alphabet/view'
 
 import PageTest from './test.js'
 import PageHome from './home'
@@ -62,13 +63,14 @@ module.exports = {
   PageGetStarted,
   PageContribute,
   PageDialectLearn,
-  PageDialectLearnAlphabet,
   PageDialectLearnWords,
   PageDialectLearnPhrases,
   PageDialectLearnStoriesAndSongs,
   PageDialectViewWord,
   PageDialectViewPhrase,
   PageDialectViewBook,
+  PageDialectViewAlphabet,
+  PageDialectViewCharacter,
   PageDialectPlay,
   PageDialectGallery,
   PageDialectReports,
