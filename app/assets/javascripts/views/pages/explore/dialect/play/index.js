@@ -40,7 +40,7 @@ export default class Play extends Component {
                       <a href="./play/colouringbook"><img src="/assets/games/colouring-book/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell">
-                      <a href="./play/worsearch"><img src="/assets/games/wordsearch/assets/images/preview.png" className="responsive-image"/></a>
+                      <a href="./play/wordsearch"><img src="/assets/games/wordsearch/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                   </div>
                 </div>
