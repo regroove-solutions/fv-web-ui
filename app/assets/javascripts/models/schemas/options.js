@@ -592,6 +592,7 @@ const options = {
     },
     i18n: i18nExt
   },
+
   FVDialect: {
     fields: {
       'dc:title': {
@@ -630,7 +631,42 @@ const options = {
       }
     },
     i18n: i18nExt
-  }
+  },
+
+  FVCharacter: {
+    fields: {
+      'dc:title': {
+        label: 'Character',
+        disabled: true
+       },
+      'fvcharacter:upper_case_character': {
+        label: 'Upper Case',
+        disabled: true
+       },
+      'fvcharacter:alphabet_order': {
+        label: 'Sort Order',
+        disabled: true
+       },
+      'fv:related_audio' : {
+        label: 'Related Audio',
+        item: {
+          factory: MediaFactory,
+          type: 'FVAudio'
+        }
+      },
+      'fvcharacter:related_words' : {
+        label: 'Featured Words',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVWord',
+          attrs: {
+            disableCreateNewButton: true
+          }
+        }
+      }
+    },
+    i18n: i18nExt
+  },
 };
 
 export default options;

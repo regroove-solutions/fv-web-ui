@@ -14,15 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-//import {default as PageExploreArchive} from './explore/archive'
-//import {default as PageExploreFamily} from './explore/family'
-//import {default as PageExploreLanguage} from './explore/language'
-import {default as PageExploreDialectEdit} from './explore/dialect/edit'
-import {default as PageDialectGalleryEdit} from './explore/dialect/gallery/edit'
-import {default as PageDialectWordEdit} from './explore/dialect/learn/words/edit'
-import {default as PageDialectPhraseEdit} from './explore/dialect/learn/phrases/edit'
-import {default as PageDialectBookEdit} from './explore/dialect/learn/songs-stories/edit'
-import {default as PageDialectBookEntryEdit} from './explore/dialect/learn/songs-stories/entry/edit'
+//import PageExploreArchive from './explore/archive'
+//import PageExploreFamily from './explore/family'
+//import PageExploreLanguage from './explore/language'
+import PageExploreDialectEdit from './explore/dialect/edit'
+import PageDialectGalleryEdit from './explore/dialect/gallery/edit'
+import PageDialectWordEdit from './explore/dialect/learn/words/edit'
+import PageDialectPhraseEdit from './explore/dialect/learn/phrases/edit'
+import PageDialectBookEdit from './explore/dialect/learn/songs-stories/edit'
+import PageDialectBookEntryEdit from './explore/dialect/learn/songs-stories/entry/edit'
+import PageDialectAlphabetCharacterEdit from './explore/dialect/learn/alphabet/edit'
 
 module.exports = {
   PageExploreDialectEdit,
@@ -30,6 +31,7 @@ module.exports = {
   PageDialectPhraseEdit,
   PageDialectBookEdit,
   PageDialectBookEntryEdit,
+  PageDialectAlphabetCharacterEdit,
   PageDialectGalleryEdit
 }
 

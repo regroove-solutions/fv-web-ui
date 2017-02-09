@@ -84,6 +84,13 @@ const fields = {
     'fvdialect:dominant_language' : t.String,
     'fvdialect:region' : t.String,
     'fvdialect:contact_information' : t.String
+  }),
+  FVCharacter: Object.assign({}, {
+    'dc:title': t.String,
+    'fvcharacter:upper_case_character': t.String,
+    'fvcharacter:alphabet_order': t.Number,
+    'fvcharacter:related_words' : t.list(t.String),
+    'fv:related_audio' : t.list(t.String)
   })
 }
 

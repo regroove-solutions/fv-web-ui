@@ -61,8 +61,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
-import CircularProgress from 'material-ui/lib/circular-progress';
-
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view';
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
 
@@ -79,21 +77,12 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    publishCharacter: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     fetchCharacter: PropTypes.func.isRequired,
     computeCharacter: PropTypes.object.isRequired,
-    deleteWord: PropTypes.func.isRequired,
-    computeDeleteWord: PropTypes.object.isRequired,
-    publishWord: PropTypes.func.isRequired,
-    askToPublishWord: PropTypes.func.isRequired,
-    unpublishWord: PropTypes.func.isRequired,
-    askToUnpublishWord: PropTypes.func.isRequired,
-    enableWord: PropTypes.func.isRequired,
-    askToEnableWord: PropTypes.func.isRequired,
-    disableWord: PropTypes.func.isRequired,
-    askToDisableWord: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -154,7 +143,7 @@ export default class View extends Component {
   * Publish changes
   */
   _publishChangesAction() {
-    this.props.publishWord(this._getCharacterPath(), null, null, "Word published successfully!");
+    this.props.publishCharacter(this._getCharacterPath(), null, null, "Character published successfully!");
   } 
 
   render() {
