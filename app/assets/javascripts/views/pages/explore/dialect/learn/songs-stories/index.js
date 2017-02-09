@@ -51,7 +51,7 @@ const DEFAULT_LANGUAGE = 'english';
 * Learn songs
 */
 @provide
-export default class PageDialectLearnStoriesAndSongs extends PageDialectLearnBase {
+export default class PageDialectLearnStoriesAndSongs extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
