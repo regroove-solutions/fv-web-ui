@@ -367,7 +367,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
     }
 
     private boolean isAssetType(String type) {
-        return "FVBookEntry".equals(type) || "FVBook".equals(type) || "FVPhrase".equals(type) || "FVWord".equals(type) || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type);
+        return "FVBookEntry".equals(type) || "FVBook".equals(type) || "FVPhrase".equals(type) || "FVWord".equals(type) || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type) || "FVCharacter".equals(type);
     }
 
     @Override
