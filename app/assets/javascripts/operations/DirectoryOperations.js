@@ -51,6 +51,9 @@ export default class DirectoryOperations extends BaseOperations {
 
     // Escape single quotes
     path = StringHelpers.clean(path);
+    
+    // Replace Percent Sign
+    queryAppend = queryAppend.replace("%", "%25");
 
     let requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
 

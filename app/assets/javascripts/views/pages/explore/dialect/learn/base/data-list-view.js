@@ -61,12 +61,6 @@ export default class DataListView extends Component {
     this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
   }
 
-  _onEntryNavigateRequest(item) {
-    // Get path name from path
-    let splitPath = item.path.split('/');
-    this.props.pushWindowPath(this.props.windowPath + '/' + splitPath[splitPath.length - 1]);
-  }  
-
   _handleRefetch(dataGridProps, page, pageSize) {
 
     this.setState({

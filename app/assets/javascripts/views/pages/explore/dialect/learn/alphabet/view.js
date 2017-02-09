@@ -263,25 +263,25 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Words Starting with " + this.props.routeParams.character} id="find_words">
+                      <Tab label={"Words Starting with " + selectn('response.title', computeCharacter)} id="find_words">
                         <div>
                           <CardText>
-                            <h2>Words Starting with <strong>{this.props.routeParams.character}</strong></h2>
+                            <h2>Words Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <WordListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ this.props.routeParams.character +'%\''}}}
+                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ selectn('response.title', computeCharacter) +'%\''}}}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Phrases Starting with " + this.props.routeParams.character} id="find_phrases">
+                      <Tab label={"Phrases Starting with " + selectn('response.title', computeCharacter)} id="find_phrases">
                         <div>
                           <CardText>
-                            <h2>Phrases Starting with <strong>{this.props.routeParams.character}</strong></h2>
+                            <h2>Phrases Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <PhraseListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ this.props.routeParams.character +'%\''}}}
+                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ selectn('response.title', computeCharacter) +'%\''}}}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>

@@ -295,7 +295,7 @@ export default class DialectLearn extends Component {
                           <h3>Our Alphabet</h3>
                           {selectn('response.entries', computeCharacters).map((char, i) =>
                             <Paper key={char.uid} style={{textAlign: 'center', margin: '5px', padding: '5px 10px', display: 'inline-block'}}>
-                              <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet/' + char.title)} label={char.title} style={{minWidth: 'inherit'}} />
+                              <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet/' + char.path.split('/')[char.path.split('/').length-1])} label={char.title} style={{minWidth: 'inherit'}} />
                               {(char.contextParameters.character.related_audio[0]) ? 
                                 <span>
                                 <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />

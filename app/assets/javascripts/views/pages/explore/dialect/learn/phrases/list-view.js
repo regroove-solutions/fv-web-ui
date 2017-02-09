@@ -109,6 +109,10 @@ export default class ListView extends DataListView {
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
+  _onEntryNavigateRequest(item) {
+    this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/phrases'));
+  }  
+
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
     props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
     (selectn('filter.currentAppliedFilter', this.props) ? Object.values(this.props.filter.currentAppliedFilter).join('') : '') + 
