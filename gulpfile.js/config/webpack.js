@@ -121,8 +121,8 @@ module.exports = function(env) {
       ],
       noParse:
         [
-          /node_modules\/json-schema\/lib\/validate\.js/,
-          /node_modules\/alloyeditor\/dist\/alloy-editor\/alloy-editor-no-react\.js/
+          /node_modules\/json-schema\/lib\/validate\.js///,
+          ///node_modules\/alloyeditor\/dist\/alloy-editor\/alloy-editor-no-react\.js/
         ]
 
     }
