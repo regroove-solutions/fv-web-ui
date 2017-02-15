@@ -49,7 +49,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
     _doFilter(filters) {
 
-        // Filter a fixed list
+        // Filter a fixed list (i.e. all items sent to component)
         if (this.props.fixedList) {
             let filteredList = new List(this.props.items).filter(function(item) {
 
@@ -69,11 +69,32 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
             this.props.fixedListFetcher(filteredList);
         }
-        // Filter a remote list
+        // Filter a remote list (i.e. partial list sent to component)
         else {
+                let preparedFilters = {};
+
+                // Test each of the filters against item
+                for (let filterKey in filters) {
+
+                    let filterOptions = selectn([this.props.filterOptionsKey, 'fields', filterKey], options);
+
+                    // Add options to returned filter object
+
+                    // Filter not prepared
+                    if (!filters[filterKey].hasOwnProperty('appliedFilters')) {
+                        preparedFilters[filterKey] = {
+                            appliedFilters: filters[filterKey],
+                            filterOptions: filterOptions
+                        }
+                    } else {
+                        preparedFilters[filterKey] = filters[filterKey];
+                    }
+
+                }
+
             this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
                 currentPageIndex: 0,
-                filters: filters
+                filters: preparedFilters
             }));
         }
     }
