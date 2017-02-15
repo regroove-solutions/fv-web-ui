@@ -20,10 +20,6 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
 
-import ConfGlobal from 'conf/local.json';
-
-import Colors from 'material-ui/lib/styles/colors';
-
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PortalList from 'views/components/Browsing/portal-list'
@@ -38,6 +34,11 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import SelectField from 'material-ui/lib/select-field';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import withPagination from 'views/hoc/grid-list/with-pagination';
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+const FilteredPortalList = withFilter(PortalList);
+
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -46,8 +47,6 @@ export default class ExploreDialects extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired,
     fetchPortals: PropTypes.func.isRequired,
     computePortals: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -63,14 +62,11 @@ export default class ExploreDialects extends Component {
 
     this.state = {
       pathOrId: null,
-      filteredList: null,
-      filteredByText: false,
-      filteredByRole: false,
-      searchTerm: null
+      filteredList: null
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleSearchSubmit', '_handleSearchReset', '_handleMyDialectsChange', '_handleSearchFieldChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -78,6 +74,12 @@ export default class ExploreDialects extends Component {
 
     this.props.fetchPortals(pathOrId);
     this.setState({pathOrId})
+  }
+
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
   }
 
   // Fetch data on initial render
@@ -96,46 +98,6 @@ export default class ExploreDialects extends Component {
     this.props.pushWindowPath('/explore' + path);
   }
 
-  _handleSearchFieldChange(event) {
-    this.setState({searchTerm: event.target.value});
-  }
-
-  _handleSearchSubmit() {
-    let newQueryParam = this.refs.searchTextField.getValue();
-
-    let computePortalsEntry = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
-
-    let entries = selectn('response.entries', computePortalsEntry);
-
-    if (newQueryParam != "" && entries.length > 0) {
-      let filteredList = new List(entries).filter(function(dialect) {
-        return selectn('contextParameters.ancestry.dialect.dc:title', dialect).search(new RegExp(newQueryParam, "i")) !== -1;
-      });
-
-      this.setState({filteredList: filteredList.toJS()});
-    }
-  }
-
-  _handleMyDialectsChange(event, checked) {
-    let computePortalsEntry = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
-
-    let entries = this.state.filteredList || selectn('response.entries', computePortalsEntry);
-
-    if (checked && entries.length > 0) {
-      let filteredList = new List(entries).filter(function(dialect) {
-        return ProviderHelpers.isActiveRole(selectn('contextParameters.dialect.roles', dialect));
-      });
-
-      this.setState({filteredList: filteredList.toJS(), filteredByRole: true});
-    } else {
-      this.setState({filteredList: null, filteredByRole: false});
-    }
-  }
-
-  _handleSearchReset() {
-    this.setState({filteredList: null, searchTerm: ''});
-  }
-
   render() {
 
     const computeEntities = Immutable.fromJS([{
@@ -147,55 +109,19 @@ export default class ExploreDialects extends Component {
 
     return <PromiseWrapper computeEntities={computeEntities}>
              <div className="row">
-              <div className="col-md-4 col-xs-12">
+              <div className="col-xs-12">
+                  <h1>{this.props.properties.title} Archive</h1>
 
-                <div className="row">
+                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
 
-                  <div className="col-xs-12">
-
-                    <h1>{this.props.properties.title} Archive</h1>
-                    <div>
-                      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                    </div>
-
-                  </div>
-
-                </div>
-
-                <div className="row">
-
-                  <div className="col-xs-12">
-                    <div className={classNames('panel', 'panel-default')}>
-                      <div className="panel-heading">
-                        Filter dialects:
-                      </div>
-                      <div className="panel-body">
-                        <div className="row">
-                          <div className="col-xs-6">          
-                            <TextField ref="searchTextField" value={this.state.searchTerm} onEnterKeyDown={this._handleSearchSubmit} onChange={this._handleSearchFieldChange} fullWidth={true} />                   
-                          </div>
-                          <div className="col-xs-5">                
-                            <RaisedButton onTouchTap={this._handleSearchReset} label="Reset" primary={true} /> <RaisedButton onTouchTap={this._handleSearchSubmit} label="Filter" primary={true} /> 
-                          </div> 
-                        </div> 
-                        <div className="row">
-                          <div className="col-xs-12">          
-                            <Checkbox checked={this.state.filteredByRole} onCheck={this._handleMyDialectsChange} label="Show only dialects I can contribute to or are a member of." />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-
-              </div>
-              <div className="col-md-8 col-xs-12">
-                  <h2>Browse the following Dialects:</h2>
-                  <PortalList
+                  <FilteredPortalList
                     action={this._onNavigateRequest}
-                    tiles={this.state.filteredList || selectn('response.entries', computePortals) || []} />
+                    filterOptionsKey='Portals'
+                    fixedList={true}
+                    fixedListFetcher={this.fixedListFetcher}
+                    filteredItems={this.state.filteredList}
+                    metadata={selectn('response', computePortals)}
+                    items={selectn('response.entries', computePortals) || []} />
               </div>
             </div>
           </PromiseWrapper>;

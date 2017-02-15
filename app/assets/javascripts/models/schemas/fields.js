@@ -1,28 +1,7 @@
 import t from 'tcomb-form';
 
-const Dublincore = {
-    'dc:title': t.String,
-    'dc:description': t.maybe(t.String)
-};
-
-const FVCore = {
-    'fv:definitions' : t.list(t.struct({
-      'translation': t.String,
-      'language': t.String
-    })),
-    'fv:literal_translation' : t.list(t.struct({
-      'translation': t.String,
-      'language': t.String
-    })),
-    'fv:related_pictures' : t.list(t.String),
-    'fv:related_videos' : t.list(t.String),
-    'fv:related_audio' : t.list(t.String),
-    'fv:cultural_note' : t.list(t.String),
-    'fv:available_in_childrens_archive' : t.Boolean,
-    'fv:custom_order' : t.maybe(t.String),
-    'fv:reference' : t.maybe(t.String),
-    'fv:source' : t.list(t.String)
-};
+import Dublincore from 'models/schemas/Dublincore';
+import FVCore from 'models/schemas/FVCore';
 
 const fields = {
   FVAudio: {

@@ -23,11 +23,10 @@ import Colors from 'material-ui/lib/styles/colors';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 
-import ProviderHelpers from 'common/ProviderHelpers';
+const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
 
-export default class PortalList extends Component {
+export default class MediaList extends Component {
 
   static propTypes = {
     items: PropTypes.oneOfType([
@@ -38,53 +37,77 @@ export default class PortalList extends Component {
       PropTypes.array,
       PropTypes.instanceOf(List)
     ]),
+    type: PropTypes.string,
     action: PropTypes.func,
-    cols: PropTypes.number
+    cols: PropTypes.number,
+    cellHeight: PropTypes.number,
+    style: PropTypes.object
   };
 
   static defaultProps = {
-    cols: 3
+    cols: 3,
+    cellHeight: 210,
+    style: null
   }
 
   constructor(props, context){
     super(props, context);
   }
 
+  _getMediaPreview(tile) {
+    switch (selectn('type', tile)) {
+      case 'FVAudio':
+        return <audio style={{height: '98px'}} src={tile.properties['file:content'].data} preload="none" controls />
+      break;
+
+      case 'FVPicture':
+    		return <img src={tile.properties['picture:views'][1].content.data} />;
+      break;
+
+      case 'FVVideo':
+        return <video height={190} src={tile.properties['file:content'].data} preload="none" controls />
+      break;
+    }
+
+    return '';
+  }
+
   render() {
 
+    let fileTypeCellHeight = this.props.cellHeight;
+    let fileTypeTilePosition = 'bottom';
     let items = this.props.filteredItems || this.props.items;
+
+    switch (this.props.type) {
+      case 'FVAudio':
+        fileTypeCellHeight = 100;
+        fileTypeTilePosition = 'top';
+      break;
+
+      case 'FVVideo':
+        fileTypeTilePosition = 'top';
+      break;
+    }
+
+    if (selectn('length', items) == 0) {
+      return <div>No results found.</div>;
+    }
 
     return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                     <GridList
                       cols={this.props.cols}
-                      cellHeight={146}
-                      style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
+                      cellHeight={this.props.cellHeight}
+                      style={Object.assign(defaultStyle, this.props.style)}
                       >
                         {(items).map(function (tile, i) { 
 
-                          // Switch roles
-                          let dialectRoles = selectn('contextParameters.portal.roles', tile);
-                          //let roleDesc = '';
-                          let actionIcon = null;
-
-                          if ( ProviderHelpers.isActiveRole(dialectRoles) ) {
-                            actionIcon = <ActionGrade style={{margin: '0 15px'}} color={Colors.amber200} />;
-                            //roleDesc = " ROLE(S): " + dialectRoles.join(", ")
-                          }
-
-                          // Dialect title
-                          let title = selectn('contextParameters.ancestry.dialect.dc:title', tile);
-                          let logoPath = selectn('contextParameters.portal.fv-portal:logo.path', tile);
-                          let portalLogo = logoPath ? (ConfGlobal.baseURL + logoPath) : '/assets/images/cover.png';
-
                           return <GridTile
-                            onTouchTap={this.props.action.bind(this, tile.path.replace('/Portal', ''))}
+                            onTouchTap={this.props.action.bind(this, tile)}
                             key={tile.uid}
-                            title={title}
-                            actionPosition="right"
-                            actionIcon={actionIcon}
-                            subtitle={(tile.description || '')}
-                            ><img src={portalLogo} alt={title + ' Logo'} /></GridTile>
+                            title={tile.title}
+                            titlePosition={fileTypeTilePosition}
+                            subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
+                            >{this._getMediaPreview(tile)}</GridTile>
                         }.bind(this))}
                     </GridList>
                   </div>;

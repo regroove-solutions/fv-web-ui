@@ -19,21 +19,19 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 import classNames from 'classnames';
 
-import CircularProgress from 'material-ui/lib/circular-progress';
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import IconButton from 'material-ui/lib/icon-button';
+import QueryString from 'query-string';
 
-import TextField from 'material-ui/lib/text-field';
+import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 
-import {
-      Card, CardHeader, CardMedia, CardTitle, CardActions, CardText, Avatar, FlatButton,
-      Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator, DropDownMenu, DropDownIcon, FontIcon, RaisedButton,
-      Tabs, Tab,
-      Dialog
-    } from 'material-ui';
+import MediaList from 'views/components/Browsing/media-list';
+import withPagination from 'views/hoc/grid-list/with-pagination';
+import withFilter from 'views/hoc/grid-list/with-filter';
 
-const gridListStyle = {width: 840, height: 500, overflowY: 'auto', marginBottom: 10};
+const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
+
+const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': '', 'dialect': '' } };
+
+const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
 
 @provide
 export default class SelectMediaComponent extends React.Component {
@@ -63,21 +61,6 @@ export default class SelectMediaComponent extends React.Component {
     this.setState({open: false});
   }
 
-  _handleSearchChange(event) {
-
-    var timeout;
-
-    if (timeout) {
-        clearTimeout(timeout);
-    }
-
-    var target = event.target;  
-
-    timeout = setTimeout(function() {
-        this.fetchData(target.value);
-    }.bind(this), 750);
-  }
-
   _handleSelectElement(value) {
     this.props.onComplete(value);
   }
@@ -86,54 +69,43 @@ export default class SelectMediaComponent extends React.Component {
     super(props);
 
     // Bind methods to 'this'
-    ['_handleOpen', '_handleClose', '_handleSearchChange', '_handleSelectElement', '_getMediaPreview'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach( (method => this[method] = this[method].bind(this)) );
 
     this.state = {
-      open: false
+      open: false,
+      fetcherParams: DefaultFetcherParams
     };
   }
 
-  fetchData(value = '') {
-    if (this.props.dialect) {
+  fetchData(fetcherParams) {
 
-      switch(this.props.type) {
-        case 'FVPicture':
-          this.props.fetchSharedPictures('all_shared_pictures', 'currentPageIndex=1&pageSize=1000&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-        break;
+    let preparedParams = {
+      currentPageIndex: fetcherParams.currentPageIndex,
+      pageSize: fetcherParams.pageSize,
+      queryParams: [fetcherParams.filters['properties.dc:title'], this.props.dialect.uid]
+    };
 
-        case 'FVAudio':
-          this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=1000&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-        break;
-
-        case 'FVVideo':
-          this.props.fetchSharedVideos('all_shared_videos', 'currentPageIndex=1&pageSize=1000&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
-        break;
-      }
-    }
-  }
-
-  componentDidMount() {
-    this.fetchData();
-  }
-
-  _getMediaPreview(tile) {
-    switch (this.props.type) {
-      case 'FVAudio':
-        return <audio style={{height: '98px'}} src={tile.properties['file:content'].data} preload="none" controls />
+    switch(this.props.type) {
+      case 'FVPicture':
+        this.props.fetchSharedPictures('all_shared_pictures', QueryString.stringify(preparedParams), {});
       break;
 
-      case 'FVPicture':
-    	if(tile.properties['picture:views'][1]) {  
-    		return <img src={tile.properties['picture:views'][1].content.data} />;
-    	}
+      case 'FVAudio':
+        this.props.fetchSharedAudios('all_shared_audio', QueryString.stringify(preparedParams), {});
       break;
 
       case 'FVVideo':
-        return <video height={190} src={tile.properties['file:content'].data} preload="none" controls />
+        this.props.fetchSharedVideos('all_shared_videos', QueryString.stringify(preparedParams), {});
       break;
     }
 
-    return '';
+    this.setState({
+      fetcherParams: fetcherParams
+    });
+  }
+
+  componentDidMount() {
+    this.fetchData(this.state.fetcherParams);
   }
 
   render() {
@@ -145,18 +117,21 @@ export default class SelectMediaComponent extends React.Component {
           onTouchTap={this._handleClose} />
       ];
 
-      var results, computeEntity;
+      var results, computeEntity, filterOptionsKey;
 
       switch (this.props.type) {
         case 'FVAudio':
+          filterOptionsKey = 'SharedAudio';
           computeEntity = this.props.computeSharedAudios;
         break;
 
         case 'FVPicture':
+          filterOptionsKey = 'SharedPictures';
           computeEntity = this.props.computeSharedPictures;
         break;
 
         case 'FVVideo':
+          filterOptionsKey = 'SharedVideos';
           computeEntity = this.props.computeSharedVideos;
         break;
       }
@@ -191,38 +166,20 @@ export default class SelectMediaComponent extends React.Component {
             title={"Select existing " + fileTypeLabel + " from the " + this.props.dialect.get('dc:title') + " dialect:"}
             actions={actions}
             modal={true}
+            contentStyle={{width: '80%', height: '80vh', maxWidth: '100%'}}
             open={this.state.open}>
 
-            <div className="form-horizontal">
-              <div>
-                <TextField
-                  fullWidth={true} 
-                  onChange={this._handleSearchChange}
-                  hintText="Begin typing search value to filter list..."
-                  floatingLabelText="Quick Search" />
-              </div>
-              <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                {(computeEntity.isFetching) ? <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={0.5} />Fetching results...</div> : 
-                  <GridList
-                    cols={3}
-                    cellHeight={fileTypeCellHeight}
-                    style={gridListStyle}
-                    >
-                    {
-                      results.filter(tile => selectn('properties.file:content.data', tile)).map(tile => <GridTile
-                      key={tile.uid}
-                      onTouchTap={this._handleSelectElement.bind(this, tile)}
-                      title={tile.title}
-                      titlePosition={fileTypeTilePosition}
-                      subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
-                      >
-                        {this._getMediaPreview(tile)}
-                      </GridTile>)
-                    }
-                  </GridList>
-                }
-              </div>
-            </div>
+              <FilteredPaginatedMediaList
+                style={{overflowY: 'auto', maxHeight: '50vh'}}
+                cols={5}
+                cellHeight={150}
+                filterOptionsKey={filterOptionsKey}
+                action={this._handleSelectElement}
+                fetcher={this.fetchData}
+                fetcherParams={this.state.fetcherParams}
+                metadata={selectn('response', computeEntity)}
+                items={selectn('response.entries', computeEntity) || []} />
+
           </Dialog>
         </div>
       );

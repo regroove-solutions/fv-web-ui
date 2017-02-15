@@ -18,6 +18,7 @@ import Immutable, { List, Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+import QueryString from 'query-string';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
@@ -30,6 +31,36 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import {RaisedButton} from 'material-ui';
+
+import MediaList from 'views/components/Browsing/media-list';
+import withPagination from 'views/hoc/grid-list/with-pagination';
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+
+
+
+
+const DefaultFetcherParams = { filters: {'properties.dc:title': '', 'dialect': '78086057-9c34-48f7-995f-9dc3b313231b' } };
+
+
+
+const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -41,7 +72,9 @@ export default class Test extends Component {
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired,
+    fetchSharedPictures: PropTypes.func.isRequired,
+    computeSharedPictures: PropTypes.object.isRequired
   };
 
   /*static contextTypes = {
@@ -57,23 +90,44 @@ export default class Test extends Component {
 */
 
     this.state = {
+      filteredList: null,
+      fetcherParams: Object.assign({
+        currentPageIndex: 0,
+        pageSize: 10
+      }, DefaultFetcherParams),
       pathOrId: null
     }
+
+    this.fetchData = this.fetchData.bind(this);
+    this.fixedListFetcher = this.fixedListFetcher.bind(this);
   }
 
-  fetchData(newProps) {
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
+  }
+
+  fetchData(fetcherParams) {
 
     const pathOrId = "/FV/sections/Data/Wakashan/diidiitidq/diidiitidq/Portal";
 
-    this.props.fetchPortal(pathOrId);
+    let preparedParams = {
+      currentPageIndex: fetcherParams.currentPageIndex,
+      pageSize: fetcherParams.pageSize,
+      queryParams: [fetcherParams.filters['properties.dc:title'], fetcherParams.filters['dialect']]
+    };
+
+    this.props.fetchSharedPictures('all_shared_pictures', QueryString.stringify(preparedParams), {});
     this.setState({
+      fetcherParams: fetcherParams,
       pathOrId: pathOrId
     });
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.props);
+    this.fetchData(this.state.fetcherParams);
   }
 
   // Refetch data on URL change
@@ -92,6 +146,10 @@ export default class Test extends Component {
     return true;
   }*/
 
+  _onNavigateRequest() {
+
+  }
+
   render() {
 
     //let computeEntities = new List();
@@ -99,7 +157,7 @@ export default class Test extends Component {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pathOrId,
-      'entity': this.props.computePortal
+      'entity': this.props.computeSharedPictures
     }])
 
 
@@ -118,10 +176,22 @@ export default class Test extends Component {
     let portalResponse = selectn('response', portalOperation);*/
 
     return <div className="row">
+
+            <FilteredPaginatedMediaList
+              cols={5}
+              action={this._onNavigateRequest}
+              fetcher={this.fetchData}
+              fetcherParams={this.state.fetcherParams}
+              metadata={selectn('response', this.props.computeSharedPictures)}
+              items={selectn('response.entries', this.props.computeSharedPictures) || []}
+            />
+                  {/*<MediaList
+                    action={this._onNavigateRequest}
+                    tiles={this.state.filteredList || selectn('response.entries', this.props.computeSharedPictures) || []} />*/}
             <pre>
-              <PromiseWrapper computeEntities={computeEntities}>
+              {/*<PromiseWrapper computeEntities={computeEntities}>
                 {JSON.stringify(this.props.computePortal, null, '\t')}
-              </PromiseWrapper>
+              </PromiseWrapper>*/}
             </pre>
           </div>;
   }
