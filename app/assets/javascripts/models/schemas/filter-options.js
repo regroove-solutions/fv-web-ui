@@ -1,7 +1,6 @@
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
-import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
 
 const options = {
   Portals: {
