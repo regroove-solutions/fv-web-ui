@@ -61,7 +61,7 @@ export default class MediaList extends Component {
       break;
 
       case 'FVPicture':
-    		return <img src={tile.properties['picture:views'][1].content.data} />;
+    		return <img src={selectn('picture:views[1].content.data', tile.properties) || selectn('file:content.data', tile.properties)} />;
       break;
 
       case 'FVVideo':
