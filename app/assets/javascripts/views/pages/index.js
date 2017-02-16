@@ -21,7 +21,7 @@ import PageExploreLanguage from './explore/language'
 import PageExploreDialect from './explore/dialect'
 
 import PageDialectLearn from './explore/dialect/learn'
-
+import PageDialectMedia from './explore/dialect/media'
 import PageDialectPlay from './explore/dialect/play'
 
 import PageJigsawGame from './explore/dialect/play/jigsaw'
@@ -63,6 +63,7 @@ module.exports = {
   PageGetStarted,
   PageContribute,
   PageDialectLearn,
+  PageDialectMedia,
   PageDialectLearnWords,
   PageDialectLearnPhrases,
   PageDialectLearnStoriesAndSongs,

@@ -16,6 +16,7 @@ import FVCategory from './FVCategory';
 import FVAudio from './FVAudio';
 import FVPicture from './FVPicture';
 import FVVideo from './FVVideo';
+import FVResources from './FVResources';
 import FVCharacter from './FVCharacter';
 import FVGallery from './FVGallery';
 
@@ -39,6 +40,7 @@ const providers = { page,
   FVAudio,
   FVVideo,
   FVPicture,
+  FVResources,
   FVWord,
   FVPhrase,
   FVBook,

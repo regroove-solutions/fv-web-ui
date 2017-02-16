@@ -285,12 +285,13 @@ export default class PageToolbar extends Component {
 
                     {(() => {
                       if (this.props.handleNavigateRequest) {
-                        return <IconMenu iconButtonElement={
-                                <IconButton tooltip="More Options" touch={true}>
+                        return <IconMenu anchorOrigin={{horizontal: 'right', vertical: 'top'}} targetOrigin={{horizontal: 'right', vertical: 'top'}} iconButtonElement={
+                                <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true}>
                                   <NavigationExpandMoreIcon />
                                 </IconButton>
                               }>
                                 <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
+                                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} primaryText="Media Browser" />
                               </IconMenu>;
                       }
                     })()}

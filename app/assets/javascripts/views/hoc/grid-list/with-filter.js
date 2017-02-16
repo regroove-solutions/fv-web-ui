@@ -41,7 +41,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
         this.state = {
             options: options,
-            formValue: null
+            formValue: props.formValues
         };
 
         ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -81,9 +81,9 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                     // Add options to returned filter object
 
                     // Filter not prepared
-                    if (!filters[filterKey].hasOwnProperty('appliedFilters')) {
+                    if (!filters[filterKey].hasOwnProperty('appliedFilter')) {
                         preparedFilters[filterKey] = {
-                            appliedFilters: filters[filterKey],
+                            appliedFilter: filters[filterKey],
                             filterOptions: filterOptions
                         }
                     } else {
@@ -100,6 +100,16 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
     }
 
     _onReset(event) {
+
+        // Reset all controlled inputs
+        let inputs = selectn('refs.input.refs', this.refs["filter_form"]);
+
+        for (let inputKey in inputs) {
+            if (typeof inputs[inputKey].reset === 'function') {
+                inputs[inputKey].reset();
+            }
+        }
+
         this.setState({
             formValue: null
         });
@@ -117,16 +127,28 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         // Prevent default behaviour
         e.preventDefault();
 
-        let formValue = this.refs["filter_form"].getValue();
+        let form = this.refs["filter_form"];
+        let formValue = form.getValue();
 
         let properties = {};
 
             for (let key in formValue) {
-            if (formValue.hasOwnProperty(key) && key) {
-                if (formValue[key] && formValue[key] != '') {
-                    properties[key] = formValue[key];
+
+                // Treat valued checkboxes differently. Always have value, so skip if unchecked.
+                // getComponent does not work with input names that have '.' in them. Access directly.
+                //let valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
+                let valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
+                if (valuedCheckbox) {
+                    if (!valuedCheckbox.checked) {
+                        continue;
+                    }
                 }
-            }
+
+                if (formValue.hasOwnProperty(key) && key) {
+                    if (formValue[key] && formValue[key] != '') {
+                        properties[key] = formValue[key];
+                    }
+                }
             }
 
         if (formValue && Object.keys(properties).length != 0) {
@@ -135,6 +157,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
             });
 
             this._doFilter(properties);
+        } else {
+            this._onReset(null);
         }
     }
 

@@ -90,7 +90,16 @@ export default class MediaList extends Component {
     }
 
     if (selectn('length', items) == 0) {
-      return <div>No results found.</div>;
+      return <div style={{margin: '20px 0'}}>No results found.</div>;
+    }
+
+    // If action is not defined
+    let action;
+
+    if (this.props.hasOwnProperty('action') && typeof this.props.action === "function") {
+      action = this.props.action;
+    } else {
+      action = () => {};
     }
 
     return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
@@ -102,7 +111,7 @@ export default class MediaList extends Component {
                         {(items).map(function (tile, i) { 
 
                           return <GridTile
-                            onTouchTap={this.props.action.bind(this, tile)}
+                            onTouchTap={action.bind(this, tile)}
                             key={tile.uid}
                             title={tile.title}
                             titlePosition={fileTypeTilePosition}

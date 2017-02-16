@@ -29,7 +29,7 @@ import withFilter from 'views/hoc/grid-list/with-filter';
 
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
-const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': {appliedFilters: ''}, 'dialect': {appliedFilters: ''} } };
+const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': {appliedFilter: ''}, 'dialect': {appliedFilter: ''} } };
 
 const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
 
@@ -82,7 +82,7 @@ export default class SelectMediaComponent extends React.Component {
     let preparedParams = {
       currentPageIndex: fetcherParams.currentPageIndex,
       pageSize: fetcherParams.pageSize,
-      queryParams: [fetcherParams.filters['properties.dc:title'].appliedFilters, this.props.dialect.uid]
+      queryParams: [fetcherParams.filters['properties.dc:title'].appliedFilter, this.props.dialect.uid]
     };
 
     switch(this.props.type) {

@@ -11,7 +11,7 @@ import {Link} from 'provide-page';
 import Navigation from 'views/components/Navigation';
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
+import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
@@ -158,6 +158,12 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
         page: <PageDialectLearn />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media' ],
+        page: <PageDialectMedia />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },

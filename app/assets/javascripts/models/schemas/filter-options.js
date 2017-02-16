@@ -1,6 +1,8 @@
 import t from 'tcomb-form';
+import ValuedCheckboxFactory from 'views/components/Editor/fields/valued-checkbox';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+
 
 const options = {
   Portals: {
@@ -44,6 +46,37 @@ const options = {
     fields: {
       'properties.dc:title': {
         label: 'Name'
+      }
+    }
+  },
+  Resources: {
+    fields: {
+      'properties.dc:title': {
+        label: 'Name/Description',
+        nxql: ' (dc:title LIKE \'%${value}%\' OR dc:description LIKE \'%${value}%\')'
+      },
+      'properties.type': {
+        label: 'Resource Type',
+        factory: t.form.Select,
+        nxql: ' ecm:primaryType ILIKE \'${value}\''
+      },
+      'common:size': {
+        label: 'Greater than (MB)',
+        nxql: ' common:size > ${value} * 1024 * 1024'
+      },
+      'dc:contributors': {
+        label: 'My Uploads/Contributions',
+        nxql: ' dc:contributors IN (\'${value}\')',
+        //type: 'checkbox',
+        factory: ValuedCheckboxFactory
+      },
+      'fvm:child_focused': {
+        label: 'Child Focused',
+        nxql: ' fvm:child_focused = ${value}'
+      },
+      'fvm:shared': {
+        label: 'Shared',
+        nxql: ' fvm:shared = ${value}'
       }
     }
   }
