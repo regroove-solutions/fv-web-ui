@@ -74,5 +74,22 @@ export default {
         return row.workspace;
       }
     }
+  },
+  filtersToNXQL: function (filterArray) {
+
+    let nxqlFilterString = '';
+
+    for (let appliedFilterKey in filterArray) {
+        let ak = Object.assign({}, filterArray[appliedFilterKey]);
+        if (ak && ak.hasOwnProperty('filterOptions') && ak.filterOptions && ak.filterOptions.hasOwnProperty('nxql')) {
+            
+            if (ak.appliedFilter === true) (ak.appliedFilter = 1);
+            if (ak.appliedFilter === false) (ak.appliedFilter = 0);
+
+            nxqlFilterString += ' AND ' + ak.filterOptions.nxql.replace(/\$\{value\}/g, ak.appliedFilter);
+        }
+    }
+
+    return (!nxqlFilterString || nxqlFilterString.length == 0) ? '' : nxqlFilterString;
   }
 }
