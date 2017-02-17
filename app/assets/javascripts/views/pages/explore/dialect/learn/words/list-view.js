@@ -133,7 +133,7 @@ export default class ListView extends DataListView {
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    (selectn('filter.currentAppliedFilter', this.props) ? Object.values(this.props.filter.currentAppliedFilter).join('') : '') + 
+    (selectn('filter.currentAppliedFilter', props) ? Object.values(props.filter.currentAppliedFilter).join('') : '') + 
     '&currentPageIndex=' + pageIndex + 
     '&pageSize=' + pageSize + 
     '&sortOrder=' + sortOrder +
