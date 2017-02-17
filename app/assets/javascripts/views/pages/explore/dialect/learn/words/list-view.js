@@ -141,12 +141,6 @@ export default class ListView extends DataListView {
     );
   }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this._resetColumns(this.props);
-    this.fetchData(this.props);
-  }
-
   render() {
 
     const computeEntities = Immutable.fromJS([{
