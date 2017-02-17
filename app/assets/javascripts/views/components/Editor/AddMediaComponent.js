@@ -23,6 +23,9 @@ import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import fields from 'models/schemas/fields';
+import options from 'models/schemas/options';
+
 import {
       Card, CardHeader, CardMedia, CardTitle, CardActions, CardText, Avatar, FlatButton,
       Toolbar, ToolbarGroup, ToolbarTitle, ToolbarSeparator, DropDownMenu, DropDownIcon, FontIcon, RaisedButton,
@@ -72,56 +75,11 @@ export default class AddMediaComponent extends Component {
     this.handleClose = this.handleClose.bind(this);
     this._handleSelectElement = this._handleSelectElement.bind(this);
 
-    var schema = t.struct({
-      'title': t.String,
-      'description': t.String,
-      'file': t.form.File,
-      'fvm:shared': t.Boolean,
-      'fvm:child_focused': t.Boolean,
-      'fvm:recorder': t.list(t.String),
-      'fvm:source': t.list(t.String)
-    });
-
     this.state = {
       typeError: '',
       uploading: false,
       open: false,
-      schema: schema,
-      pathOrId: null,
-      options: {
-        fields: {
-          'file': {
-            label: 'File',
-            type: 'file'
-          },
-          'fvm:shared': {
-            label: 'Share across dialects?'
-          },
-          'fvm:child_focused': {
-            label: 'Child focused'
-          },
-          'fvm:source': {
-            label: 'Source',
-            item: {
-              factory: SelectSuggestFactory,
-              type: 'FVContributor'
-            }
-          },
-          'fvm:recorder': {
-            label: 'Recorder',
-            item: {
-              factory: SelectSuggestFactory,
-              type: 'FVContributor'
-            }
-          }
-        },
-        config: {
-          horizontal: {
-            md: [3, 9],
-            sm: [6, 6]
-          }
-        }
-      }
+      pathOrId: null
     };
   }
 
@@ -171,7 +129,7 @@ export default class AddMediaComponent extends Component {
 
         let docParams = {
               type: this.props.type,
-              name: formValue.title,
+              name: formValue['dc:title'],
               properties: Object.assign(properties, (selectn('otherContext.parentId', this.props.dialect)) ? { 'fvm:origin': selectn('otherContext.parentId', this.props.dialect)} : {})
         };
 
@@ -207,7 +165,7 @@ export default class AddMediaComponent extends Component {
         }
 
         this.setState({
-          pathOrId: this.props.dialect.path + '/Resources/' + formValue.title + '.' + timestamp
+          pathOrId: this.props.dialect.path + '/Resources/' + formValue['dc:title'] + '.' + timestamp
         })
       }
    }
@@ -244,18 +202,18 @@ export default class AddMediaComponent extends Component {
         break;
       }
 
-      if (this.state.schema != undefined){
+      //if (this.state.schema != undefined){
        form = <form onSubmit={this._save} id="myForm" encType="multipart/form-data">
               <t.form.Form
                 ref="form_media"
-                options={this.state.options}
-                type={this.state.schema} 
+                options={selectn("FVResource", options)}
+                type={t.struct(selectn(this.props.type, fields))} 
                 value={this.state.value}
                 context={this.props.dialect}
                 onChange={this._change} />
                 <button type="submit" className={classNames('btn', 'btn-primary')}>Upload Media</button>
             </form>;
-      }
+      //}
 
       if (computeCreate && computeCreate.isFetching) {
         uploadText = <div className={classNames('alert', 'alert-info')} role="alert">Uploading... Please be patient...</div>
