@@ -53,7 +53,7 @@ const options = {
     fields: {
       'properties.dc:title': {
         label: 'Name/Description',
-        nxql: ' (dc:title LIKE \'%${value}%\' OR dc:description LIKE \'%${value}%\')'
+        nxql: ' (dc:title ILIKE \'%${value}%\' OR dc:description ILIKE \'%${value}%\')'
       },
       'properties.type': {
         label: 'Resource Type',
@@ -67,8 +67,11 @@ const options = {
       'dc:contributors': {
         label: 'My Uploads/Contributions',
         nxql: ' dc:contributors IN (\'${value}\')',
-        //type: 'checkbox',
         factory: ValuedCheckboxFactory
+      },
+      'fvm:origin': {
+        label: 'Attached to a Word/Phrase',
+        nxql: ' (fvm:origin IS NOT NULL AND fvm:origin <> \'\')'
       },
       'fvm:child_focused': {
         label: 'Child Focused',

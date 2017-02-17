@@ -26,8 +26,7 @@ const fields = {
     'contextParameters.portal.roles': Roles
   }),
   SharedPictures: {
-    'properties.dc:title': t.String,
-    'common:size': MaxMB
+    'properties.dc:title': t.String
   },
   SharedAudio: {
     'properties.dc:title': t.String
@@ -41,6 +40,7 @@ const fields = {
     'common:size': MaxMB,
     'dc:contributors': t.String,
     'fvm:child_focused': t.Boolean,
+    'fvm:origin': t.Boolean,
     'fvm:shared': t.Boolean
   })
 }
