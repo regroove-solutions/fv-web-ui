@@ -1,5 +1,6 @@
 {
 	"title": "First Voices",
 	"domain": "FV",
+	"baseWebUIURL": "https://fv.nuxeocloud.com/",
 	"baseURL": "https://fv.nuxeocloud.com/nuxeo/"
 }
