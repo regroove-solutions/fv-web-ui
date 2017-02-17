@@ -52,7 +52,7 @@ export default class DataListView extends Component {
       this._resetPagination(nextProps);
     }
 
-    if (Object.values(this.props.filter.currentAppliedFilter).join('') !== Object.values(nextProps.filter.currentAppliedFilter).join('')) {
+    if (selectn('filter.currentAppliedFilter', this.props) && Object.values(this.props.filter.currentAppliedFilter).join('') !== Object.values(nextProps.filter.currentAppliedFilter).join('')) {
         this._fetchListViewData(nextProps, nextProps.DEFAULT_PAGE, nextProps.DEFAULT_PAGE_SIZE, nextProps.DEFAULT_SORT_TYPE, nextProps.DEFAULT_SORT_COL);
     }
   }
