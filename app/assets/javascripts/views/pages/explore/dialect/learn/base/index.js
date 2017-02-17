@@ -53,30 +53,27 @@ export default class PageDialectLearnBase extends Component {
 
   _handleFacetSelected(facetField, categoryId, event, checked) {
 
-    let filterInfo = this.state.filterInfo;
-    let categoryFilter = '';
+    let currentCategoryFilterIds = this.state.filterInfo.currentCategoryFilterIds.slice();
 
-    this.setState({});
+    let categoryFilter = '';
 
     // Adding filter
     if (checked) {
-      filterInfo.currentCategoryFilterIds.push(categoryId);
+      currentCategoryFilterIds.push(categoryId);
     }
     // Removing filter
     else {
-      filterInfo.currentCategoryFilterIds.splice(filterInfo.currentCategoryFilterIds.indexOf(categoryId), 1);
+      currentCategoryFilterIds.splice(currentCategoryFilterIds.indexOf(categoryId), 1);
     }
 
     // Category filter 
-    if (filterInfo.currentCategoryFilterIds.length > 0) {
-      categoryFilter = ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area) + '/* IN ("' + filterInfo.currentCategoryFilterIds.join('","') + '")';
+    if (currentCategoryFilterIds.length > 0) {
+      categoryFilter = ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area) + '/* IN ("' + currentCategoryFilterIds.join('","') + '")';
     }
 
-    // Update applied filter state
-    filterInfo.currentAppliedFilter.categories = categoryFilter;
-
-    filterInfo = Object.assign({}, filterInfo)
-
-    this.setState({filterInfo});
+    this.setState({filterInfo: {
+      currentCategoryFilterIds: currentCategoryFilterIds,
+      currentAppliedFilter: categoryFilter
+    }});
   }
 }
