@@ -19,6 +19,7 @@ limitations under the License.
 //import PageExploreLanguage from './explore/language'
 import PageExploreDialectEdit from './explore/dialect/edit'
 import PageDialectGalleryEdit from './explore/dialect/gallery/edit'
+import PageDialectEditMedia from './explore/dialect/media/edit'
 import PageDialectWordEdit from './explore/dialect/learn/words/edit'
 import PageDialectPhraseEdit from './explore/dialect/learn/phrases/edit'
 import PageDialectBookEdit from './explore/dialect/learn/songs-stories/edit'
@@ -28,6 +29,7 @@ import PageDialectAlphabetCharacterEdit from './explore/dialect/learn/alphabet/e
 module.exports = {
   PageExploreDialectEdit,
   PageDialectWordEdit,
+  PageDialectEditMedia,
   PageDialectPhraseEdit,
   PageDialectBookEdit,
   PageDialectBookEntryEdit,

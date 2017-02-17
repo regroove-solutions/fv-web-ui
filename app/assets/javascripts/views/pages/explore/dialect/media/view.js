@@ -1,0 +1,347 @@
+/*
+Copyright 2016 First People's Cultural Council
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
+import classNames from 'classnames';
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
+import ConfGlobal from 'conf/local.json';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import Preview from 'views/components/Editor/Preview';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel';
+import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
+import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
+
+import {Link} from 'provide-page';
+
+//import Header from 'views/pages/explore/dialect/header';
+//import PageHeader from 'views/pages/explore/dialect/page-header';
+
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
+import Dialog from 'material-ui/lib/dialog';
+
+import Avatar from 'material-ui/lib/avatar';
+import Card from 'material-ui/lib/card/card';
+import CardActions from 'material-ui/lib/card/card-actions';
+import CardHeader from 'material-ui/lib/card/card-header';
+import CardMedia from 'material-ui/lib/card/card-media';
+import CardTitle from 'material-ui/lib/card/card-title';
+import FlatButton from 'material-ui/lib/flat-button';
+import CardText from 'material-ui/lib/card/card-text';
+import Divider from 'material-ui/lib/divider';
+
+import ListUI from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
+
+import Toolbar from 'material-ui/lib/toolbar/toolbar';
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
+import FontIcon from 'material-ui/lib/font-icon';
+import RaisedButton from 'material-ui/lib/raised-button';
+
+import Tabs from 'material-ui/lib/tabs/tabs';
+import Tab from 'material-ui/lib/tabs/tab';
+
+import CircularProgress from 'material-ui/lib/circular-progress';
+
+import ResourceListView from 'views/pages/explore/dialect/learn/words/list-view';
+import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
+
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+
+/**
+* View word entry
+*/
+@provide
+export default class View extends Component {
+
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    fetchResource: PropTypes.func.isRequired,
+    computeResource: PropTypes.object.isRequired,
+    publishResource: PropTypes.func.isRequired,
+    askToPublishResource: PropTypes.func.isRequired,
+    unpublishResource: PropTypes.func.isRequired,
+    askToUnpublishResource: PropTypes.func.isRequired,
+    enableResource: PropTypes.func.isRequired,
+    askToEnableResource: PropTypes.func.isRequired,
+    disableResource: PropTypes.func.isRequired,
+    askToDisableResource: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired
+  };
+
+  constructor(props, context){
+    super(props, context);
+
+    this.state = {
+      showThumbnailDialog: null
+    };
+
+    // Bind methods to 'this'
+    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  fetchData(newProps) {
+    newProps.fetchResource(this._getMediaPath(newProps));
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+
+    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.routeParams.media !== this.props.routeParams.media) {
+      this.fetchData(nextProps);
+    }
+    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+      this.fetchData(nextProps);
+    }
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
+
+  _getMediaPath(props = null) {
+
+    if (props == null) {
+      props = this.props;
+    }
+
+    return props.routeParams.dialect_path + '/Resources/' + props.routeParams.media;
+  }
+
+  _getMediaRelatedField(type) {
+    switch (type) {
+      case 'FVAudio':
+        return 'fv:related_audio';
+      break;
+
+      case 'FVVideo':
+        return 'fv:related_videos';
+      break;
+
+      case 'FVPicture':
+        return 'fv:related_pictures';
+      break;
+    }
+  }
+
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
+  }
+
+  _handleConfirmDelete(item, event) {
+    this.props.deleteResource(item.uid);
+    this.setState({deleteDialogOpen: false});
+  }
+
+  /**
+  * Toggle dialect (enabled/disabled)
+  */
+  _enableToggleAction(toggled, workflow) {
+    if (toggled) {
+      if (workflow) {
+        this.props.askToEnableResource(this._getMediaPath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable resource successfully submitted!", null);
+      }
+      else {
+        this.props.enableResource(this._getMediaPath(), null, null, "Resource enabled!");
+      }
+    } else {
+      if (workflow) {
+        this.props.askToDisableResource(this._getMediaPath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable resource successfully submitted!", null);
+      }
+      else {
+        this.props.disableResource(this._getMediaPath(), null, null, "Resource disabled!");
+      }
+    }
+  }
+
+  /**
+  * Toggle published dialect
+  */
+  _publishToggleAction(toggled, workflow) {
+    if (toggled) {
+      if (workflow) {
+        this.props.askToPublishResource(this._getMediaPath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish resource successfully submitted!", null);
+      }
+      else {
+        this.props.publishResource(this._getMediaPath(), null, null, "Resource published successfully!");
+      }
+    } else {
+      if (workflow) {
+        this.props.askToUnpublishResource(this._getMediaPath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish resource successfully submitted!", null);
+      }
+      else {
+        this.props.unpublishResource(this._getMediaPath(), null, null, "Resource unpublished successfully!");
+      }
+    }
+  }
+
+  /**
+  * Publish changes
+  */
+  _publishChangesAction() {
+    this.props.publishResource(this._getMediaPath(), null, null, "Resource published successfully!");
+  } 
+
+  render() {
+
+    const tabItemStyles = {
+      userSelect: 'none'
+    }
+
+    const computeEntities = Immutable.fromJS([{
+      'id': this._getMediaPath(),
+      'entity': this.props.computeResource
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
+
+    const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath());
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    /**
+    * Generate definitions body
+    */
+    return <PromiseWrapper computeEntities={computeEntities}>
+
+            {(() => {
+              if (this.props.routeParams.area == 'Workspaces') {
+
+                if (selectn('response', computeResource))
+                  return <PageToolbar
+                            label="Media"
+                            handleNavigateRequest={this._onNavigateRequest}
+                            computeEntity={computeResource}
+                            computePermissionEntity={computeDialect2}
+                            computeLogin={this.props.computeLogin}
+                            publishToggleAction={this._publishToggleAction}
+                            publishChangesAction={this._publishChangesAction}
+                            enableToggleAction={this._enableToggleAction}
+                            {...this.props}></PageToolbar>;
+              }
+            })()}
+
+            <div className="row">
+              <div className="col-xs-12">
+                <div>
+
+                  <Card>
+
+                    <Tabs tabItemContainerStyle={tabItemStyles}>
+                      <Tab label="Overview" >
+                        <div>
+                          <CardText>
+
+                            <div className="col-xs-8">
+
+                              <Preview initiallyExpanded={true} metadataListStyles={{maxHeight: 'initial'}} expandedValue={selectn('response', computeResource)} type={selectn('response.type', computeResource)} />
+
+                            </div>
+
+                            <div className="col-xs-4">
+
+                              {(() => {
+
+                                const thumbnails = selectn('response.properties.picture:views', computeResource) || [];
+
+                                if (thumbnails && thumbnails.length > 0) {
+                                  <div>
+                                    <ListUI subheader="Available Renditions">
+
+                                      {(thumbnails).map(function(thumbnail, key) {
+
+                                        return <ListItem
+                                                  onTouchTap={() => this.setState({showThumbnailDialog: thumbnail})}
+                                                  key={thumbnail.content.digest}
+                                                  primaryText={thumbnail.title}
+                                                  secondaryText={<p><span style={{color: '#000'}}>{thumbnail.description}</span> -- ({thumbnail.width + 'x' + thumbnail.height})</p>} />;
+                                      }.bind(this))}
+
+                                    </ListUI>
+
+                                    <Dialog
+                                        contentStyle={{textAlign: 'center', height: '500px', maxHeight: '500px'}}
+                                        autoScrollBodyContent={true}
+                                        title={selectn('title', this.state.showThumbnailDialog)}
+                                        actions={[<FlatButton label="Close" secondary={true} onTouchTap={() => this.setState({showThumbnailDialog: null})} />]}
+                                        modal={false}
+                                        open={(this.state.showThumbnailDialog === null) ? false : true}
+                                        onRequestClose={() => this.setState({showThumbnailDialog: null})}>
+                                        <p><img src={selectn('content.data', this.state.showThumbnailDialog)} alt={selectn('title', this.state.showThumbnailDialog)} style={{maxHeight: '500px'}} /></p>
+                                        <p><input readOnly type="text" value={selectn('content.data', this.state.showThumbnailDialog)} style={{width: '100%', padding: '5px'}} /></p>
+                                    </Dialog>
+                                  </div>
+                                  }
+
+                              })()}
+
+                            </div>
+
+                          </CardText>
+                        </div>
+                      </Tab>
+                      <Tab label={"Linked Resources"} id="find_words">
+                        <div>
+                          <CardText>
+                            <h2>Resources Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
+                            <div className="row">
+                              <ResourceListView
+                                filter={{currentAppliedFilter: {startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''}}}
+                                routeParams={this.props.routeParams} />
+                            </div>
+                          </CardText>
+                        </div>
+                      </Tab>
+                      <Tab label={"Linked Phrases"} id="find_phrases">
+                        <div>
+                          <CardText>
+                            <h2>Phrases Featuring with <strong>{selectn('response.title', computeResource)}</strong></h2>
+                            <div className="row">
+                              <PhraseListView
+                                filter={{currentAppliedFilter: {startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''}}}
+                                routeParams={this.props.routeParams} />
+                            </div>
+                          </CardText>
+                        </div>
+                      </Tab>
+                    </Tabs>
+
+                  </Card>
+
+                </div>
+              </div>
+            </div>
+        </PromiseWrapper>;
+  }
+}

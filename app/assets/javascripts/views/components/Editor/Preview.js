@@ -101,7 +101,10 @@ const GetMetaData = function (type, response) {
    */
   metadata.push({
     label: 'Direct Link',
-    value: <input type="textbox" style={{width: '100%'}} value={selectn("properties.file:content.data", response)} />
+    value: <span>
+            <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}} value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} /> 
+            &nbsp; <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}>GO</a>
+            </span>
   });
 
   /**
@@ -110,6 +113,14 @@ const GetMetaData = function (type, response) {
   metadata.push({
     label: 'Size',
     value: StringHelpers.getReadableFileSize(selectn("properties.file:content.length", response))
+  });
+
+  /**
+   * Status
+   */
+  metadata.push({
+    label: 'Status',
+    value: selectn("state", response)
   });
 
   /**
@@ -147,13 +158,16 @@ export default class Preview extends Component {
     expandedValue: PropTypes.object,
     styles: PropTypes.object,
     tagStyles: PropTypes.object,
-    minimal: PropTypes.bool
+    metadataListStyles: PropTypes.object,
+    minimal: PropTypes.bool,
+    initiallyExpanded: PropTypes.bool,
   };
 
   static defaultProps = {
     styles: {},
     tagStyles: {},
-    minimal: false
+    minimal: false,
+    initiallyExpanded: false
   };
 
   constructor(props) {
@@ -307,7 +321,7 @@ export default class Preview extends Component {
 
           if (pictureResponse && picture.success) {
 
-            body =   <Card onExpandChange={handleExpandChange}>
+            body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardMedia>
                         {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : null}
                       </CardMedia>
@@ -320,7 +334,7 @@ export default class Preview extends Component {
                         showExpandableButton={true}
                       />
                       <CardText expandable={true}>
-                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('picture', pictureResponse)} />
+                        <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('picture', pictureResponse)} />
                         <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;
@@ -354,7 +368,7 @@ export default class Preview extends Component {
               body = audioTag;
             }
             else {
-              body =   <Card onExpandChange={handleExpandChange}>
+              body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardHeader
                           title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
                           titleStyle={{lineHeight: 'initial'}}
@@ -367,7 +381,7 @@ export default class Preview extends Component {
                           {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? audioTag : null}
                         </CardMedia>
                         <CardText expandable={true}>
-                          <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('audio', audioResponse)} />
+                          <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('audio', audioResponse)} />
                           <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                         </CardText>
                       </Card>;
@@ -395,7 +409,7 @@ export default class Preview extends Component {
 
           if (videoResponse && video.success) {
 
-            body =   <Card onExpandChange={handleExpandChange}>
+            body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardMedia>
                         {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? <video width="100%" height="auto" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : null}
                       </CardMedia>
@@ -408,7 +422,7 @@ export default class Preview extends Component {
                         showExpandableButton={true}
                       />
                       <CardText expandable={true}>
-                        <MetadataList style={{lineHeight: 'initial'}} metadata={GetMetaData('video', videoResponse)} />
+                        <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('video', videoResponse)} />
                         <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;

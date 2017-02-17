@@ -90,22 +90,22 @@ export default class DialectMedia extends Component {
     ['_onNavigateRequest', 'fetchData'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  _onNavigateRequest(path) {
-    const destination = this.props.navigateTo(path);
+  _onNavigateRequest(media) {
+    const pathArray = selectn('path', media).split('/');
+    const name = pathArray[pathArray.length-1];
     const newPathArray = this.props.splitWindowPath.slice();
-
-    newPathArray.push(destination.path);
+    newPathArray.push(name);
 
     this.props.pushWindowPath('/' + newPathArray.join('/'));
   }
 
-  fetchData(fetcherParams) {
+  fetchData(fetcherParams, props = this.props) {
 
     this.setState({
       fetcherParams: fetcherParams
     });
  
-    this.props.fetchResources(this.props.routeParams.dialect_path + '/Resources',
+    props.fetchResources(props.routeParams.dialect_path + '/Resources',
     ProviderHelpers.filtersToNXQL(fetcherParams.filters) + 
     '&currentPageIndex=' + fetcherParams.currentPageIndex + 
     '&pageSize=' + fetcherParams.pageSize
@@ -119,10 +119,10 @@ export default class DialectMedia extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps, nextState) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
       nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal');
-      this.fetchData(nextState.fetcherParams);
+      this.fetchData(DefaultFetcherParams, nextProps);
     }    
   }
   
@@ -153,8 +153,9 @@ export default class DialectMedia extends Component {
                     cellHeight={150}
                     formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
                     filterOptionsKey="Resources"
-                    action={this._handleSelectElement}
+                    action={this._onNavigateRequest}
                     fetcher={this.fetchData}
+                    area={this.props.routeParams.area}
                     fetcherParams={this.state.fetcherParams}
                     metadata={selectn('response', computeResources)}
                     items={selectn('response.entries', computeResources) || []} />

@@ -667,6 +667,51 @@ const options = {
     },
     i18n: i18nExt
   },
+
+  FVResource: {
+    order: ['dc:title', 'dc:description', 'file', 'fvm:shared', 'fvm:child_focused', 'fvm:source', 'fvm:recorder'],
+    fields: {
+      'dc:title': {
+        label: 'Name',
+        type: 'text'
+      },
+      'dc:description': {
+        label: 'Description',
+        type: 'textarea'
+      },
+      'file': {
+        label: 'File',
+        type: 'file'
+      },
+      'fvm:shared': {
+        label: 'Share across dialects?'
+      },
+      'fvm:child_focused': {
+        label: 'Child focused'
+      },
+      'fvm:source': {
+        label: 'Source',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      },
+      'fvm:recorder': {
+        label: 'Recorder',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVContributor'
+        }
+      }
+    },
+    config: {
+      horizontal: {
+        md: [3, 9],
+        sm: [6, 6]
+      }
+    },
+    i18n: i18nExt
+  }
 };
 
 export default options;

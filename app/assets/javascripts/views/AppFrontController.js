@@ -13,12 +13,12 @@ import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchi
 
 import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
-import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter } from 'views/pages';
+import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks } from 'views/pages';
 
-import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
+import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
   PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate,
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
@@ -166,6 +166,17 @@ export default class AppFrontController extends Component {
         page: <PageDialectMedia />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH) ],
+        page: <PageDialectViewMedia />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH), 'edit' ],
+        page: <PageDialectEditMedia />,
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet'],

@@ -8,6 +8,8 @@ import t from 'tcomb-form';
 import fields from 'models/schemas/filter-fields';
 import options from 'models/schemas/filter-options';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import { RaisedButton } from 'material-ui';
 
 const defaultFilterFunc = function (propertyToSearch, filterValue) {
@@ -33,7 +35,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         fixedListFetcher: PropTypes.func,
         fetcherParams: PropTypes.object,
         filterOptionsKey: PropTypes.string.isRequired,
-        metadata: PropTypes.object
+        metadata: PropTypes.object,
+        area: PropTypes.string
     }
 
     constructor(props, context){
@@ -122,6 +125,12 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.area != this.props.area) {
+            this._onReset();
+        }
+    }
+
     _onFilterSaveForm(e) {
 
         // Prevent default behaviour
@@ -164,7 +173,21 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
     render() {
 
-    let options = Object.assign({}, selectn(this.props.filterOptionsKey, this.state.options));
+    let options = Map(selectn(this.props.filterOptionsKey, this.state.options));
+
+    // Replace proxied properties where necessary
+    if (this.props.area) {
+        
+        let fields = Map(options.get('fields')).map(function(field) {
+            if (field.hasOwnProperty('nxql')) {
+                field.nxql = ProviderHelpers.replaceAllWorkspaceSectionKeys(field.nxql, this.props.area);
+            }
+
+            return field;
+        }.bind(this));
+
+        options = options.set('fields', fields);
+    }
 
       return(
           <div>
@@ -178,7 +201,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                         <form onSubmit={this._onFilterSaveForm}>
 
                         <div className="panel-heading">
-                            Filter List
+                            Filter Items
                         </div>
 
                         <div className="panel-body">
@@ -188,8 +211,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                                         ref="filter_form"
                                         type={t.struct(selectn(this.props.filterOptionsKey, fields))}
                                         value={this.state.formValue}
-                                        options={options} />      
-                                 <RaisedButton
+                                        options={options.toJS()} />      
+                                    <RaisedButton
                                         onTouchTap={this._onReset}
                                         label="Reset"
                                         primary={true} /> &nbsp;

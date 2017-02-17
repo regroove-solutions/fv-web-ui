@@ -13,6 +13,34 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+const proxiesKeys = [
+  {
+    workspace: 'fv-word:categories',
+    section: 'fvproxy:proxied_categories'
+  },
+  {
+    workspace: 'fv-phrase:phrase_books',
+    section: 'fvproxy:proxied_categories'
+  },
+  {
+    workspace: 'fvm:origin',
+    section: 'fvproxy:proxied_origin'
+  },
+  {
+    workspace: 'fv:related_pictures',
+    section: 'fvproxy:proxied_pictures'
+  },
+  {
+    workspace: 'fv:related_videos',
+    section: 'fvproxy:proxied_videos'
+  },
+  {
+    workspace: 'fv:related_audio',
+    section: 'fvproxy:proxied_audio'
+  }
+];
+
 export default {
   getEntry: function (wordResults, path) {
     if (!wordResults || wordResults.isEmpty() || !path)
@@ -52,16 +80,6 @@ export default {
   	return decodeURI(url.slice(1, 7).join('/'));
   },
   switchWorkspaceSectionKeys: function (workspaceKey, area) {
-    const proxiesKeys = [
-      {
-        workspace: 'fv-word:categories',
-        section: 'fvproxy:proxied_categories'
-      },
-      {
-        workspace: 'fv-phrase:phrase_books',
-        section: 'fvproxy:proxied_categories'
-      }
-    ];
 
     let row = proxiesKeys.find(function (mapping) { 
       return mapping.workspace === workspaceKey;
@@ -74,6 +92,17 @@ export default {
         return row.workspace;
       }
     }
+  },
+  replaceAllWorkspaceSectionKeys: function (string, area) {
+
+    let searchKey = (area == 'sections') ? 'workspace' : 'section';
+    let replaceKey = (area == 'sections') ? 'section' : 'workspace';
+
+    for (let proxyKey in proxiesKeys) {
+      string = string.replace(new RegExp(proxiesKeys[proxyKey][searchKey],'g'), proxiesKeys[proxyKey][replaceKey]);
+    }
+
+    return string;
   },
   filtersToNXQL: function (filterArray) {
 
