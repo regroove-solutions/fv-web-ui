@@ -82,6 +82,18 @@ export default class ListView extends DataListView {
           }.bind(this),
           sortName: 'fv:definitions/0/translation'
         },
+        { name: 'related_pictures', width: 72, textAlign: 'center', title: 'Picture', render: function(v, data, cellProps) {
+            let firstPicture = selectn('contextParameters.phrase.' + cellProps.name + '[0]', data);
+            if (firstPicture)
+              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={selectn('views[0].url', firstPicture)} />;
+          }.bind(this)
+        },
+        { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
+            let firstAudio = selectn('contextParameters.phrase.' + cellProps.name + '[0]', data);
+            if (firstAudio)
+              return <Preview minimal={true} tagStyles={{width: '300px', maxWidth:'100%'}} key={selectn('uid', firstAudio)} expandedValue={firstAudio} type="FVAudio" />;
+          }.bind(this)
+        },
         { name: 'fv-phrase:phrase_books', title: 'Phrase Books', render: function(v, data, cellProps) {
             return UIHelpers.renderComplexArrayRow(selectn('contextParameters.phrase.phrase_books', data), function (entry, i) {
                 return <li key={i}>{selectn('dc:title', entry)}</li>;

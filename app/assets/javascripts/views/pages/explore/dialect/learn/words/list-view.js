@@ -83,6 +83,12 @@ export default class ListView extends DataListView {
             });
           }.bind(this), sortName: 'fv:definitions/0/translation'
         },*/
+        { name: 'related_pictures', width: 72, textAlign: 'center', title: 'Picture', render: function(v, data, cellProps) {
+            let firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
+            if (firstPicture)
+              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={selectn('views[0].url', firstPicture)} />;
+          }.bind(this)
+        },
         { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
             let firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
             if (firstAudio)
