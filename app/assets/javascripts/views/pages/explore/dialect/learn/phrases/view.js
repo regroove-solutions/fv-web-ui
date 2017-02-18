@@ -63,6 +63,10 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
+import withActions from 'views/hoc/view/with-actions';
+
+const DetailsViewWithActions = withActions(PromiseWrapper);
+
 /**
 * View phrase entry
 */
@@ -99,7 +103,7 @@ export default class View extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -139,60 +143,6 @@ export default class View extends Component {
     this.props.pushWindowPath(path);
   }
 
-  _handleConfirmDelete(item, event) {
-    this.props.deletePhrase(item.uid);
-    this.setState({deleteDialogOpen: false});
-  }
-
-  /**
-  * Toggle dialect (enabled/disabled)
-  */
-  _enableToggleAction(toggled) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToEnablePhrase(this._getPhrasePath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable phrase successfully submitted!", null);
-      }
-      else {
-        this.props.enablePhrase(this._getPhrasePath(), null, null, "Phrase enabled!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToDisablePhrase(this._getPhrasePath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable phrase successfully submitted!", null);
-      }
-      else {
-        this.props.disablePhrase(this._getPhrasePath(), null, null, "Phrase disabled!");
-      }
-    }
-  }
-
-  /**
-  * Toggle published dialect
-  */
-  _publishToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToPublishPhrase(this._getPhrasePath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish phrase successfully submitted!", null);
-      }
-      else {
-        this.props.publishPhrase(this._getPhrasePath(), null, null, "Phrase published successfully!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToUnpublishPhrase(this._getPhrasePath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish phrase successfully submitted!", null);
-      }
-      else {
-        this.props.unpublishPhrase(this._getPhrasePath(), null, null, "Phrase unpublished successfully!");
-      }
-    }
-  }
-
-  /**
-  * Publish changes
-  */
-  _publishChangesAction() {
-    this.props.publishPhrase(this._getPhrasePath(), null, null, "Phrase published successfully!");
-  } 
-
   render() {
 
     const tabItemStyles = {
@@ -210,137 +160,138 @@ export default class View extends Component {
     const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    // Generate photos
+    // Photos
     let photos = [];
+    let photosThumbnails = [];
 
     (selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
       let image = { original: selectn('views[2].url', picture), thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'), description: picture['dc:description'], key: key, id: picture.uid, object: picture };
       photos.push(image);
+      photosThumbnails.push(<img key={picture.uid} src={(selectn('views[0].url', picture) || '/assets/images/cover.png')} alt={selectn('title', picture)} style={{margin: '15px', maxWidth: '150px'}} />);
     })
 
-    // Generate videos
+    // Videos
     let videos = [];
+    let videoThumbnails = [];
 
-    (selectn('response.contextParameters.word.related_videos', computePhrase) || []).map(function(video, key) {
+    (selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
       let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'), description: video['dc:description'], key: key, id: video.uid, object: video };
       videos.push(vid);
+      videoThumbnails.push(<video key={video.uid} src={ConfGlobal.baseURL + video.path} controls style={{margin: '15px', maxWidth: '150px'}} />);
     })
+
+    // Audio
+    let audios = [];
+
+    (selectn('response.contextParameters.phrase.related_audio', computePhrase) || []).map(function(audio, key) {
+      audios.push(<Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
+    })
+
+    let tabs = [];
+
+    if (photos.length > 0) {
+      tabs.push(<Tab key="pictures" label="Pictures" >
+        <div style={{maxHeight: '400px'}}>
+          {photosThumbnails}
+        </div>
+      </Tab>);
+    }
+
+    if (videos.length > 0) {
+      tabs.push(<Tab key="videos" label="Videos" >
+        <div>
+          {videoThumbnails}
+        </div>
+      </Tab>);
+    }
+
+    if (audios.length > 0) {
+      tabs.push(<Tab key="audio" label="Audio" >
+        <div>
+          {audios}
+        </div>
+      </Tab>);
+    }
 
     /**
     * Generate definitions body
     */
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <DetailsViewWithActions
+              labels={{single: "phrase"}}
+              itemPath={this._getPhrasePath()}
+              publishAction={this.props.publishPhrase}
+              unpublishAction={this.props.unpublishPhrase}
+              askToPublishAction={this.props.askToPublishPhrase}
+              askToUnpublishAction={this.props.askToUnpublishPhrase}
+              enableAction={this.props.enablePhrase}
+              askToEnableAction={this.props.askToEnablePhrase}
+              disableAction={this.props.disablePhrase}
+              askToDisableAction={this.props.askToDisablePhrase}
+              deleteAction={this.props.deletePhrase}
+              onNavigateRequest={this._onNavigateRequest}
+              computeItem={computePhrase}
+              computeDialect2={computeDialect2}
+              tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
-            {(() => {
-              if (this.props.routeParams.area == 'Workspaces') {
+              <div className="row">
+                <div className="col-xs-12">
+                  <div>
 
-                if (selectn('response', computePhrase))
-                  return <PageToolbar
-                            label="Phrase"
-                            handleNavigateRequest={this._onNavigateRequest}
-                            computeEntity={computePhrase}
-                            computePermissionEntity={computeDialect2}
-                            computeLogin={this.props.computeLogin}
-                            publishToggleAction={this._publishToggleAction}
-                            publishChangesAction={this._publishChangesAction}
-                            enableToggleAction={this._enableToggleAction}
-                            {...this.props} />;
-              }
-            })()}
+                    <Card>
+                      <CardHeader
+                        title={selectn('response.title', computePhrase)}
+                        avatar={selectn('response.contextParameters.phrase.related_pictures[0].views[0].url', computePhrase)} />
 
-            <div className="row">
-              <div className="col-xs-12">
-                <div>
+                      <Tabs tabItemContainerStyle={tabItemStyles}>
+                        <Tab label="Definition" >
+                          <div>
+                            <CardText>
 
-                  <Card>
-                    <CardHeader
-                      title={selectn('response.title', computePhrase)}
-                      avatar={selectn('response.contextParameters.phrase.related_pictures[0].views[0].url', computePhrase)} />
+                              <div className="col-xs-8">
 
-                    <Tabs tabItemContainerStyle={tabItemStyles}>
-                      <Tab label="Definition" >
-                        <div>
-                          <CardText>
+                                <h2>{selectn('response.title', computePhrase)}</h2>
 
-                            <div className="col-xs-8">
+                                <h3>Audio</h3>
 
-                              <h2>{selectn('response.title', computePhrase)}</h2>
+                                <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
 
-                              <h3>Audio</h3>
+                                <SubViewTranslation group={selectn('response.properties.fv:definitions', computePhrase)} groupByElement="language" groupValue="translation">
+                                  <p>Definitions:</p>
+                                </SubViewTranslation>
 
-                              <div>
-
-                                {(selectn('response.contextParameters.phrase.related_audio.length', computePhrase) === 0) ? <span>No audio is available yet.</span> : ''}
-
-                                {(selectn('response.contextParameters.phrase.related_audio', computePhrase) || []).map(function(audio, key) {
-                                  return <Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
-                                })}
+                                <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computePhrase)} groupByElement="language" groupValue="translation">
+                                  <p>Literal Translations:</p>
+                                </SubViewTranslation>
 
                               </div>
 
-                              <SubViewTranslation group={selectn('response.properties.fv:definitions', computePhrase)} groupByElement="language" groupValue="translation">
-                                <p>Definitions:</p>
-                              </SubViewTranslation>
+                              <div className="col-xs-4">
 
-                              <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computePhrase)} groupByElement="language" groupValue="translation">
-                                <p>Literal Translations:</p>
-                              </SubViewTranslation>
+                                <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
+                                <MediaPanel label="Video(s)" type="FVVideo" items={videos} />
 
-                            </div>
+                              </div>
 
-                            <div className="col-xs-4">
+                            </CardText>
+                          </div>
+                        </Tab>
+                        <Tab label="Metadata" id="metadata">
+                          <div>
+                            <CardText>
+                              <h2>Metadata</h2>
+                              <div className="row">
+                                {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
+                              </div>
+                            </CardText>
+                          </div>
+                        </Tab>
+                      </Tabs>
 
-                              <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
-                              <MediaPanel label="Video(s)" type="FVVideo" items={videos} />
+                    </Card>
 
-                            </div>
-
-                          </CardText>
-                        </div>
-                      </Tab>
-                      <Tab label="Metadata" id="metadata">
-                        <div>
-                          <CardText>
-                            <h2>Metadata</h2>
-                            <div className="row">
-                              {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
-                            </div>
-                          </CardText>
-                        </div>
-                      </Tab>
-                    </Tabs>
-
-                  </Card>
-
-                  <AuthorizationFilter filter={{permission: 'Delete', entity: selectn('response', computePhrase)}}>
-                    <Toolbar className="toolbar">
-                      <ToolbarGroup key={0} float="right">
-                        <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Phrase" />
-                      </ToolbarGroup>
-                    </Toolbar>
-
-                    <Dialog
-                      title="Deleting phrase"
-                      actions={[
-                      <FlatButton
-                      label="Cancel"
-                      secondary={true}
-                      onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
-                      <FlatButton
-                        label="Delete"
-                        primary={true}
-                        keyboardFocused={true}
-                        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computePhrase))} />]}
-                      modal={false}
-                      open={this.state.deleteDialogOpen}
-                      onRequestClose={this._handleCancelDelete}>
-                      Are you sure you would like to delete the phrase <strong>{selectn('response.title', computePhrase)}</strong>?
-                    </Dialog>
-                  </AuthorizationFilter>
-
+                  </div>
                 </div>
               </div>
-            </div>
-        </PromiseWrapper>;
+        </DetailsViewWithActions>;
   }
 }

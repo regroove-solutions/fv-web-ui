@@ -67,10 +67,12 @@ export default class SubViewTranslation extends Component {
     if ( !grouped || _.isEmpty(grouped) )
       return <div></div>;
 
-    return <div style={SubViewTranslation.containerStyles}>
-      
-      <h3>{this.props.children}</h3>
+    return <div className="row" style={SubViewTranslation.containerStyles}>
+      <div className="col-md-4">
+        <h3>{this.props.children}</h3>
+      </div>
 
+      <div className="col-md-8">
       <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
       {_.map(grouped, function(group, key) {
 
@@ -88,6 +90,7 @@ export default class SubViewTranslation extends Component {
 
       })}
       </Tabs>
+      </div>
     </div>;
   }
 }

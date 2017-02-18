@@ -27,6 +27,7 @@ import UIHelpers from 'common/UIHelpers';
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view';
+import Preview from 'views/components/Editor/Preview';
 
 /**
 * List view for phrases

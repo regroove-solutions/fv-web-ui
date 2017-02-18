@@ -69,8 +69,6 @@ export default class PageToolbar extends Component {
     super(props, context);
 
     this.state = {
-      enabledToggled: null,
-      publishedToggled: null,
       enableActions: 0,
       disableActions: 0,
       publishActions: 0,
@@ -96,11 +94,6 @@ export default class PageToolbar extends Component {
   * Toggle document (enabled/disabled)
   */
   _documentActionsToggleEnabled(event, toggled) {
-
-    this.setState({
-      enabledToggled: toggled
-    });
-
     this.props.enableToggleAction(toggled, false, selectn('response.path', this.props.computeEntity));
   }
 
@@ -108,11 +101,6 @@ export default class PageToolbar extends Component {
   * Toggle published document
   */
   _documentActionsTogglePublished(event, toggled) {
-    
-    this.setState({
-      publishedToggled: toggled
-    });
-
     this.props.publishToggleAction(toggled, false, selectn('response.path', this.props.computeEntity));
   }
 
@@ -165,11 +153,10 @@ export default class PageToolbar extends Component {
       position: 'relative'
     }
 
-    let documentEnabled = (this.state.enabledToggled == null) ? (selectn('response.state', computeEntity) == 'Enabled') : this.state.enabledToggled;
-    let documentPublished = (this.state.publishedToggled == null) ? (selectn('response.state', computeEntity) == 'Published') : this.state.publishedToggled;
+    let documentEnabled = (selectn('response.state', computeEntity) == 'Enabled');
+    let documentPublished = (selectn('response.state', computeEntity) == 'Published');
 
     const permissionEntity = (selectn('response', computePermissionEntity)) ? computePermissionEntity : computeEntity;
-
 
     // Compute related tasks
     const computeTasks = ProviderHelpers.getEntry(this.props.computeTasks, selectn('response.uid', this.props.computeEntity));

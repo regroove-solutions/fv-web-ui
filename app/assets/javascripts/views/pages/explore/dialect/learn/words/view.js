@@ -35,13 +35,7 @@ import {Link} from 'provide-page';
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-
-import Dialog from 'material-ui/lib/dialog';
-
-import Avatar from 'material-ui/lib/avatar';
 import Card from 'material-ui/lib/card/card';
-import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardMedia from 'material-ui/lib/card/card-media';
 import CardTitle from 'material-ui/lib/card/card-title';
@@ -52,18 +46,17 @@ import Divider from 'material-ui/lib/divider';
 import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
-import CircularProgress from 'material-ui/lib/circular-progress';
-
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+
+import withActions from 'views/hoc/view/with-actions';
+
+const DetailsViewWithActions = withActions(PromiseWrapper);
 
 /**
 * View word entry
@@ -97,12 +90,7 @@ export default class View extends Component {
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      deleteDialogOpen: false
-    };
-
-    // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -142,60 +130,6 @@ export default class View extends Component {
     this.props.pushWindowPath(path);
   }
 
-  _handleConfirmDelete(item, event) {
-    this.props.deleteWord(item.uid);
-    this.setState({deleteDialogOpen: false});
-  }
-
-  /**
-  * Toggle dialect (enabled/disabled)
-  */
-  _enableToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToEnableWord(this._getWordPath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable word successfully submitted!", null);
-      }
-      else {
-        this.props.enableWord(this._getWordPath(), null, null, "Word enabled!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToDisableWord(this._getWordPath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable word successfully submitted!", null);
-      }
-      else {
-        this.props.disableWord(this._getWordPath(), null, null, "Word disabled!");
-      }
-    }
-  }
-
-  /**
-  * Toggle published dialect
-  */
-  _publishToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToPublishWord(this._getWordPath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish word successfully submitted!", null);
-      }
-      else {
-        this.props.publishWord(this._getWordPath(), null, null, "Word published successfully!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToUnpublishWord(this._getWordPath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish word successfully submitted!", null);
-      }
-      else {
-        this.props.unpublishWord(this._getWordPath(), null, null, "Word unpublished successfully!");
-      }
-    }
-  }
-
-  /**
-  * Publish changes
-  */
-  _publishChangesAction() {
-    this.props.publishWord(this._getWordPath(), null, null, "Word published successfully!");
-  } 
-
   render() {
 
     const tabItemStyles = {
@@ -213,43 +147,96 @@ export default class View extends Component {
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    // Generate photos
+    // Photos
     let photos = [];
+    let photosThumbnails = [];
 
     (selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
       let image = { original: selectn('views[2].url', picture), thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'), description: picture['dc:description'], key: key, id: picture.uid, object: picture };
       photos.push(image);
+      photosThumbnails.push(<img key={picture.uid} src={(selectn('views[0].url', picture) || '/assets/images/cover.png')} alt={selectn('title', picture)} style={{margin: '15px', maxWidth: '150px'}} />);
     })
 
-    // Generate videos
+    // Videos
     let videos = [];
+    let videoThumbnails = [];
 
     (selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function(video, key) {
       let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'), description: video['dc:description'], key: key, id: video.uid, object: video };
       videos.push(vid);
+      videoThumbnails.push(<video key={video.uid} src={ConfGlobal.baseURL + video.path} controls style={{margin: '15px', maxWidth: '150px'}} />);
     })
+
+    // Audio
+    let audios = [];
+
+    (selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
+      audios.push(<Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
+    })
+
+    // Phrases
+    let phrases = [];
+
+    (selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
+      phrases.push(<SubViewTranslation key={key} group={selectn('fv:definitions', phrase)} groupByElement="language" groupValue="translation">
+        <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
+      </SubViewTranslation>);
+    })
+
+
+    let tabs = [];
+
+    if (photos.length > 0) {
+      tabs.push(<Tab key="pictures" label="Pictures" >
+        <div style={{maxHeight: '400px'}}>
+          {photosThumbnails}
+        </div>
+      </Tab>);
+    }
+
+    if (videos.length > 0) {
+      tabs.push(<Tab key="videos" label="Videos" >
+        <div>
+          {videoThumbnails}
+        </div>
+      </Tab>);
+    }
+
+    if (audios.length > 0) {
+      tabs.push(<Tab key="audio" label="Audio" >
+        <div>
+          {audios}
+        </div>
+      </Tab>);
+    }
+
+    if (phrases.length > 0) {
+      tabs.push(<Tab key="phrases" label="Phrases" >
+        <div>
+          {phrases}
+        </div>
+      </Tab>);
+    }
 
     /**
     * Generate definitions body
     */
-    return <PromiseWrapper computeEntities={computeEntities}>
-
-            {(() => {
-              if (this.props.routeParams.area == 'Workspaces') {
-
-                if (selectn('response', computeWord))
-                  return <PageToolbar
-                            label="Word"
-                            handleNavigateRequest={this._onNavigateRequest}
-                            computeEntity={computeWord}
-                            computePermissionEntity={computeDialect2}
-                            computeLogin={this.props.computeLogin}
-                            publishToggleAction={this._publishToggleAction}
-                            publishChangesAction={this._publishChangesAction}
-                            enableToggleAction={this._enableToggleAction}
-                            {...this.props}></PageToolbar>;
-              }
-            })()}
+    return <DetailsViewWithActions
+              labels={{single: "word"}}
+              itemPath={this._getWordPath()}
+              publishAction={this.props.publishWord}
+              unpublishAction={this.props.unpublishWord}
+              askToPublishAction={this.props.askToPublishWord}
+              askToUnpublishAction={this.props.askToUnpublishWord}
+              enableAction={this.props.enableWord}
+              askToEnableAction={this.props.askToEnableWord}
+              disableAction={this.props.disableWord}
+              askToDisableAction={this.props.askToDisableWord}
+              deleteAction={this.props.deleteWord}
+              onNavigateRequest={this._onNavigateRequest}
+              computeItem={computeWord}
+              computeDialect2={computeDialect2}
+              tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
             <div className="row">
               <div className="col-xs-12">
@@ -276,15 +263,7 @@ export default class View extends Component {
 
                               <h3>Audio</h3>
 
-                              <div>
-
-                                {(selectn('response.contextParameters.word.related_audio.length', computeWord) === 0) ? <span>No audio is available yet.</span> : ''}
-
-                                {(selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
-                                  return <Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />;
-                                })}
-
-                              </div>
+                              <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
 
                               <SubViewTranslation group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
                                 <p>Definitions:</p>
@@ -295,19 +274,10 @@ export default class View extends Component {
                               </SubViewTranslation>
 
                               {(() => {
-                                  if (selectn('response.contextParameters.word.related_phrases.length', computeWord)) {
+                                  if (phrases.length > 0) {
                                     return <div>
                                       <h3>Related Phrases:</h3>
-
-                                      {(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
-                                        let phraseItem = selectn('fv:definitions', phrase);
-
-                                        return (
-                                        <SubViewTranslation key={key} group={phraseItem} groupByElement="language" groupValue="translation">
-                                          <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
-                                        </SubViewTranslation>
-                                        );
-                                      })}
+                                      {phrases}
                                     </div>;
                                   }
                               })()}
@@ -338,35 +308,9 @@ export default class View extends Component {
 
                   </Card>
 
-                  <AuthorizationFilter filter={{permission: 'Delete', entity: selectn('response', computeWord)}}>
-                    <Toolbar className="toolbar">
-                      <ToolbarGroup key={0} float="right">
-                        <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label="Delete Word" />
-                      </ToolbarGroup>
-                    </Toolbar>
-
-                    <Dialog
-                      title="Deleting word"
-                      actions={[
-                      <FlatButton
-                      label="Cancel"
-                      secondary={true}
-                      onTouchTap={() => this.setState({deleteDialogOpen: false})} />,
-                      <FlatButton
-                        label="Delete"
-                        primary={true}
-                        keyboardFocused={true}
-                        onTouchTap={this._handleConfirmDelete.bind(this, selectn('response', computeWord))} />]}
-                      modal={false}
-                      open={this.state.deleteDialogOpen}
-                      onRequestClose={this._handleCancelDelete}>
-                      Are you sure you would like to delete the word <strong>{selectn('response.title', computeWord)}</strong>?
-                    </Dialog>
-                  </AuthorizationFilter>
-
                 </div>
               </div>
             </div>
-        </PromiseWrapper>;
+        </DetailsViewWithActions>;
   }
 }

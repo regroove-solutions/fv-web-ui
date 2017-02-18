@@ -276,7 +276,7 @@ export default class View extends Component {
                                 const thumbnails = selectn('response.properties.picture:views', computeResource) || [];
 
                                 if (thumbnails && thumbnails.length > 0) {
-                                  <div>
+                                  return <div>
                                     <ListUI subheader="Available Renditions">
 
                                       {(thumbnails).map(function(thumbnail, key) {
@@ -301,7 +301,7 @@ export default class View extends Component {
                                         <p><img src={selectn('content.data', this.state.showThumbnailDialog)} alt={selectn('title', this.state.showThumbnailDialog)} style={{maxHeight: '500px'}} /></p>
                                         <p><input readOnly type="text" value={selectn('content.data', this.state.showThumbnailDialog)} style={{width: '100%', padding: '5px'}} /></p>
                                     </Dialog>
-                                  </div>
+                                  </div>;
                                   }
 
                               })()}
