@@ -175,6 +175,8 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 			}
 		}
 
+        jsonObj.put("roles", EnricherUtils.getRolesAssociatedWithDialect(session.getDocument(doc.getParentRef()), session));
+
 		return jsonObj;
 	}
 }
