@@ -45,7 +45,7 @@ public class ComputeNativeOrderListener implements EventListener {
         }
 
         // Handle language assets (Words and Phrases)
-        if (doc.getType().equals("FVWord") || doc.getType().equals("FVPhrase")) {
+        if ((doc.getType().equals("FVWord") || doc.getType().equals("FVPhrase")) && !doc.isProxy()) {
 
             // When modifying, only recompute if dc:title has changed.
             // If custom order modified, change is via service - so skip.
