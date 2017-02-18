@@ -16,6 +16,9 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.security.ACE;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -191,5 +194,39 @@ public class EnricherUtils {
 		directorySession.close();
 
 		return partOfSpeechLabel;
+	}
+
+	/**
+	 * Returns the roles associated directly with the dialect
+	 */
+	public static ArrayNode getRolesAssociatedWithDialect(DocumentModel doc, CoreSession session) {
+        ArrayNode roles = mapper.createArrayNode();
+
+        // Show has permission
+        if (session.hasPermission(doc.getRef(), "Record")) {
+            roles.add("Record");
+        }
+
+        if (session.hasPermission(doc.getRef(), "Approve")) {
+            roles.add("Approve");
+        }
+
+        if (session.hasPermission(doc.getRef(), SecurityConstants.EVERYTHING)) {
+            roles.add("Manage");
+        }
+
+        // Test explicitly for members
+        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+
+        for (ACE ace : doc.getACP().getACL("local").getACEs()){
+            if (SecurityConstants.READ.equals(ace.getPermission())) {
+                if (principal.isMemberOf(ace.getUsername())) {
+                    roles.add("Member");
+                    break;
+                }
+            }
+        }
+
+        return roles;
 	}
 }

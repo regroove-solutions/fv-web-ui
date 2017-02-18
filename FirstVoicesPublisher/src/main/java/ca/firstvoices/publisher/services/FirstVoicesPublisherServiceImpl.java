@@ -299,15 +299,22 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             // input is the document in the section
             for (String relatedDocUUID : dependencyPropertyValue) {
                 IdRef dependencyRef = new IdRef(relatedDocUUID);
-                DocumentModel publishedDep = getPublication(session, dependencyRef);
+
+                // Origin shouldn't be automatically published
+                if (dependencyEntry.getKey() == "fvmedia:origin") {
+                    continue;
+                }
+
+                DocumentModel publishedDep = null;
+
+                try {
+                    publishedDep = getPublication(session, dependencyRef);
+                } catch (DocumentNotFoundException e) {
+                    // Continue. Considered null.
+                }
 
                 // If dependency isn't published, need to publish
                 if (publishedDep == null) {
-
-                    // Origin shouldn't be automatically published
-                    if (dependencyEntry.getKey() == "fvmedia:origin") {
-                        continue;
-                    }
 
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
                     DocumentModel parentDependencySection;
