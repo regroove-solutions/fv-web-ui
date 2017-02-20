@@ -58,8 +58,10 @@ export default class Wordsearch extends Component {
             azoFontXml:`${defaultImagesPath}/azo.xml`,  
             letters:`${defaultImagesPath}/`
         },
+        
+        letters:'abcdefghijklmnopqrstuvwxyzᐊᔨᓇᓀᐤ',
 
-        words:['atari', 'firstvoices', 'canada', 'vancouver', 'spectrum', 'charlie',
+        words:['atari', 'ᐊᔨᓇᓀᐤ', 'canada', 'vancouver', 'spectrum', 'charlie',
                         'forest', 'fire', 'earth', 'coleco', 'retro', 'superfamicom',
                         'nes', 'sonic', 'mario', 'masterchief', 'msx', 'gameboy', 'jaguar']
 
