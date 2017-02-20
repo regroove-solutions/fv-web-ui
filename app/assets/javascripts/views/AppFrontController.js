@@ -201,17 +201,20 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'jigsaw' ],
         page: <PageJigsawGame />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordsearch' ],
         page: <PageWordSearch />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'colouringbook' ],
         page: <PageColouringBook />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create' ],

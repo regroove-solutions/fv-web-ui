@@ -13,95 +13,82 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component} from 'react'
-import ReactDOM from 'react-dom'
-import WordsearchGame from 'games/wordsearch'
+import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
+import Immutable, { List, Map } from 'immutable';
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import Game from 'views/pages/explore/dialect/play/wordsearch/wrapper'
 
 /**
 * Play games
 */
+@provide
 export default class Wordsearch extends Component {
+
+  static propTypes = {
+    fetchCharacters: PropTypes.func.isRequired,
+    computeCharacters: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
+  }
 
   /**
    * Constructor
    */
   constructor(props, context) {
     super(props, context);
-    this.gameContainer = null;
   }
 
   /**
    * componentDidMount
    */
   componentDidMount () {
-
-    //Setup default asset paths
-    const defaultAssetsPath = '/assets/games/wordsearch/assets';
-    const defaultLibsPath = `${defaultAssetsPath}/libs`;
-    const defaultImagesPath = `${defaultAssetsPath}/images`;
-
-    //Default game config
-    /**
-     * @todo Setup image paths based on dialect
-     */
-
-    let gameConfig = {
-
-        libs:{
-            wordFindScript:`${defaultLibsPath}/wordfind.js`        
-        },
-
-        images:{
-            preloaderLoading:`${defaultImagesPath}/loading.png`,
-            preloaderLogo:`${defaultImagesPath}/logo.png`,
-            azoFontImage:`${defaultImagesPath}/azo.png`,
-            azoFontXml:`${defaultImagesPath}/azo.xml`,  
-            letters:`${defaultImagesPath}/`
-        },
-        
-        letters:'abcdefghijklmnopqrstuvwxyzᐊᔨᓇᓀᐤ',
-
-        words:['atari', 'ᐊᔨᓇᓀᐤ', 'canada', 'vancouver', 'spectrum', 'charlie',
-                        'forest', 'fire', 'earth', 'coleco', 'retro', 'superfamicom',
-                        'nes', 'sonic', 'mario', 'masterchief', 'msx', 'gameboy', 'jaguar']
-
-    };
-
-
-    /**
-     * Create the game, with container and game config
-     */
-    const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-    WordsearchGame.init(gameContainerNode, gameConfig);
+    // Fetch fetch data
+    this.fetchData(this.props);
   }
 
   /**
-   * Component Will Unmount
-   * Cleanup the game / assets for memory management
+   * Fetch list of characters
    */
-  componentWillUnmount () {
-      WordsearchGame.destroy();
+  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    props.fetchCharacters(props.routeParams.dialect_path + '/Alphabet',
+    '&currentPageIndex=0' + 
+    '&pageSize=100' + 
+    '&sortOrder=asc' + 
+    '&sortBy=fvcharacter:alphabet_order');
   }
-
 
   /**
    * Render
    */
   render() {
 
-    //Setup game styles
-    const gameContainerStyles = {
-      maxWidth:800,
-      margin:'auto'
-    }
+    const computeEntities = Immutable.fromJS([{
+      'id': this.props.routeParams.dialect_path + '/Alphabet',
+      'entity': this.props.computeCharacters
+    }])
 
-    return <div>
+    const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
+    
+    //let alphabet_string = 'ᐊᐁᐃᐅᐧᐤᐸᐯᐱᐳᑊᐦᑕᑌᑎᑐᐟᑲᑫᑭᑯᐠᒐᒉᒋᒍᐨᒪᒣᒥᒧᒼᓇᓀᓂᓄᐣᓴᓭᓯᓱᐢᔭᔦᔨᔪᐩ';
+
+    const alphabet_string = (selectn('response.entries', computeCharacters) || []).map(function(char) {
+      return selectn('properties.dc:title', char);
+    }).join('');
+
+    console.log(alphabet_string);
+
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
               <div className="col-xs-12">
                 <h1>Word Search</h1>
-                <div style={gameContainerStyles}  ref={(el)=>{this.gameContainer = el}} ></div>
+                <Game characters={alphabet_string} />
               </div>
             </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }
