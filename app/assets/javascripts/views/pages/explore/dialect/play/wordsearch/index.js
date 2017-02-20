@@ -33,6 +33,8 @@ export default class Wordsearch extends Component {
   static propTypes = {
     fetchCharacters: PropTypes.func.isRequired,
     computeCharacters: PropTypes.object.isRequired,
+    fetchWords: PropTypes.func.isRequired,
+    computeWords: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   }
 
@@ -60,6 +62,9 @@ export default class Wordsearch extends Component {
     '&pageSize=100' + 
     '&sortOrder=asc' + 
     '&sortBy=fvcharacter:alphabet_order');
+
+    // TODO: Add filters to word query.
+    props.fetchWords(props.routeParams.dialect_path + '/Dictionary', '&pageSize=19');
   }
 
   /**
@@ -67,26 +72,43 @@ export default class Wordsearch extends Component {
    */
   render() {
 
+    let game = '';
+
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path + '/Alphabet',
       'entity': this.props.computeCharacters
+    },
+    {
+      'id': this.props.routeParams.dialect_path + '/Dictionary',
+      'entity': this.props.computeWords
     }])
 
     const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
-    
-    //let alphabet_string = 'ᐊᐁᐃᐅᐧᐤᐸᐯᐱᐳᑊᐦᑕᑌᑎᑐᐟᑲᑫᑭᑯᐠᒐᒉᒋᒍᐨᒪᒣᒥᒧᒼᓇᓀᓂᓄᐣᓴᓭᓯᓱᐢᔭᔦᔨᔪᐩ';
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
 
     const alphabet_string = (selectn('response.entries', computeCharacters) || []).map(function(char) {
       return selectn('properties.dc:title', char);
     }).join('');
 
+    const word_array = (selectn('response.entries', computeWords) || []).map(function(word) {
+      return selectn('properties.dc:title', word);
+    });
+
+    const word_obj_array = selectn('response.entries', computeWords);
+
     console.log(alphabet_string);
+    console.log(word_array);
+    console.log(word_obj_array);
+
+    if (alphabet_string.length > 0 && word_array.length > 0) {
+      game = <Game characters={alphabet_string} words={word_array} />;
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
               <div className="col-xs-12">
                 <h1>Word Search</h1>
-                <Game characters={alphabet_string} />
+                {game}
               </div>
             </div>
         </PromiseWrapper>;

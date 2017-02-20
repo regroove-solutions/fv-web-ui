@@ -23,7 +23,8 @@ import WordsearchGame from 'games/wordsearch';
 export default class Game extends Component {
 
   static propTypes = {
-    characters: PropTypes.string.isRequired
+    characters: PropTypes.string.isRequired,
+    words: PropTypes.array.isRequired
   }
 
   /**
@@ -65,9 +66,7 @@ export default class Game extends Component {
         
         letters: this.props.characters,
 
-        words:['atari', 'ᐊᔨᓇᓀᐤ', 'canada', 'vancouver', 'spectrum', 'charlie',
-                        'forest', 'fire', 'earth', 'coleco', 'retro', 'superfamicom',
-                        'nes', 'sonic', 'mario', 'masterchief', 'msx', 'gameboy', 'jaguar']
+        words: this.props.words
 
     };
 
