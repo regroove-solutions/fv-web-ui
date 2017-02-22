@@ -36,12 +36,14 @@ const fields = {
   FVBookEntry: Object.assign({}, Dublincore, FVCore, {
     'fv:definitions' : t.maybe(t.String), // make optional
     'fv:available_in_childrens_archive' : t.maybe(t.String),
-    'fv:literal_translation' : t.String,
+    'fv:literal_translation' : t.maybe(t.list(t.struct({
+      'translation': t.String,
+      'language': t.String
+    }))),
     'fvbookentry:dominant_language_text' : t.list(t.struct({
       'translation': t.String,
       'language': t.String
-    })),
-    'fvbookentry:sort_map': t.Number
+    }))
   }),
   FVPortal : {
     'fv-portal:greeting': t.String,

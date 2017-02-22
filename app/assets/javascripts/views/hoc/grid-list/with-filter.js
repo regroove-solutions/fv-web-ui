@@ -12,6 +12,9 @@ import ProviderHelpers from 'common/ProviderHelpers';
 
 import { RaisedButton } from 'material-ui';
 
+/**
+ * Return 'true' if value was found, 'false' otherwise.
+ */
 const defaultFilterFunc = function (propertyToSearch, filterValue) {
 
     if (!propertyToSearch)
@@ -35,6 +38,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         fixedListFetcher: PropTypes.func,
         fetcherParams: PropTypes.object,
         filterOptionsKey: PropTypes.string.isRequired,
+        applyDefaultFormValues: PropTypes.bool,
         metadata: PropTypes.object,
         area: PropTypes.string
     }
@@ -44,33 +48,44 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
         this.state = {
             options: options,
-            formValue: props.formValues
+            formValue: props.formValues,
+            defaultFormValue: props.formValues
         };
 
         ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
     }
 
-    _doFilter(filters) {
+    componentDidMount() {
+        if (this.props.applyDefaultFormValues) {
+            this._onFilterSaveForm(null);
+        }
+    }
+
+    _doFilter(filters, props = this.props) {
 
         // Filter a fixed list (i.e. all items sent to component)
         if (this.props.fixedList) {
-            let filteredList = new List(this.props.items).filter(function(item) {
+            let filteredList = new List(props.items).filter(function(item) {
 
                 // Test each of the filters against item
                 for (let filterKey in filters) {
 
-                    let filterOptions = selectn([this.props.filterOptionsKey, 'fields', filterKey], options);
+                    let filterOptions = selectn([props.filterOptionsKey, 'fields', filterKey], options);
                     let filterFunc = (filterOptions && filterOptions.hasOwnProperty('filterFunc')) ? filterOptions.filterFunc : defaultFilterFunc;
 
                     let filterValue = filters[filterKey];
                     let propertyToSearch = selectn(filterKey, item);
 
-                    return filterFunc(propertyToSearch, filterValue);
+                    if (!filterFunc(propertyToSearch, filterValue)) {
+                        return false;
+                    }
                 }
+
+                return true;
 
             }.bind(this));
 
-            this.props.fixedListFetcher(filteredList);
+            props.fixedListFetcher(filteredList);
         }
         // Filter a remote list (i.e. partial list sent to component)
         else {
@@ -102,7 +117,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
     }
 
-    _onReset(event) {
+    _onReset(event, props = this.props) {
 
         // Reset all controlled inputs
         let inputs = selectn('refs.input.refs', this.refs["filter_form"]);
@@ -114,27 +129,39 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
 
         this.setState({
-            formValue: null
+            formValue: this.state.defaultFormValue || null
         });
 
-        if (this.props.fixedList) {
-            this.props.fixedListFetcher(this.props.items);
+        if (props.fixedList) {
+            if (this.state.defaultFormValue) {
+                this._doFilter(this.state.defaultFormValue, props);
+            }
+            else {
+                props.fixedListFetcher(props.items);
+            }
         }
         else {
-            this._doFilter(DefaultFetcherParams.filters);
+            this._doFilter(DefaultFetcherParams.filters, props);
         }
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.area != this.props.area) {
-            this._onReset();
+            this._onReset(null, nextProps);
+        }
+
+        // Items may change in a fixed list (e.g. deleted, added)
+        if (this.props.fixedList && nextProps.items != this.props.items) {
+            this._onReset(null, nextProps);
         }
     }
 
     _onFilterSaveForm(e) {
 
         // Prevent default behaviour
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
 
         let form = this.refs["filter_form"];
         let formValue = form.getValue();

@@ -14,17 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
 import fields from 'models/schemas/fields';
@@ -40,11 +41,12 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
     createBookEntry: PropTypes.func.isRequired,
+    computeBookEntry: PropTypes.object.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -54,7 +56,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     this.state = {
       formValue: null,
       dialectPath: null,
-      parentBookPath: null
+      parentBookPath: null,
+      bookEntryPath: null
     };
 
     // Bind methods to 'this'
@@ -65,7 +68,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     let parentBookPath = newProps.routeParams.dialect_path + '/Stories & Songs/' + newProps.routeParams.parentBookName;
 
-    newProps.fetchDialect(newProps.routeParams.dialect_path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchBook(parentBookPath);
 
     this.setState({
@@ -93,11 +96,15 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
       
-      case (selectn('books[' + this.state.parentBookPath + '].response', newProps.computeBook) != selectn('books[' + this.state.parentBookPath + '].response', this.props.computeBook)):
+      case (newProps.computeBook != this.props.computeBook):
+        return true;
+      break;
+
+      case (newProps.computeBookEntry != this.props.computeBookEntry):
         return true;
       break;
     }
@@ -132,11 +139,16 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     // Passed validation
     if (formValue) {
+      let now = Date.now();
   	  this.props.createBookEntry(this.state.parentBookPath, {
   	    type: 'FVBookEntry',
   	    name: formValue['dc:title'],
   	    properties: properties
-  	  });
+  	  }, null, now);
+
+      this.setState({
+        bookEntryPath: this.state.parentBookPath + '/' + formValue['dc:title'] + '.' + now
+      });
     } else {
       window.scrollTo(0, 0);
     }
@@ -147,34 +159,35 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     let FVBookEntryOptions = Object.assign({}, selectn("FVBookEntry", options));
 
-    const { computeBook, computeDialect } = this.props;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.bookEntryPath,
+      'entity': this.props.computeBookEntry
+    },{
+      'id': this.state.parentBookPath,
+      'entity': this.props.computeBook
+    },{
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    let dialect = computeDialect.response;
-
-    //let book = ProviderHelpers.getEntry(computeBook, this.state.parentBookPath);
-
-    let book = selectn('books[' + this.state.parentBookPath + ']', computeBook);
-    let bookResponse = selectn('response', book);
-
-    if (computeDialect.isFetching || (bookResponse && bookResponse.isFetching)) {
-      return <CircularProgress mode="indeterminate" size={2} />;
-    }
+    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.parentBookPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     // Set default value on form
-    if (selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect)) {
+    if (selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect2)) {
 
       if (selectn("fields.fv:literal_translation.item.fields.language.attrs", FVBookEntryOptions)) {
-        FVBookEntryOptions['fields']['fv:literal_translation']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect);
+        FVBookEntryOptions['fields']['fv:literal_translation']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect2);
       }
 
       if (selectn("fields.fvbookentry:dominant_language_text.item.fields.language.attrs", FVBookEntryOptions)) {
-        FVBookEntryOptions['fields']['fvbookentry:dominant_language_text']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect);
+        FVBookEntryOptions['fields']['fvbookentry:dominant_language_text']['item']['fields']['language']['attrs']['defaultValue'] = selectn('response.properties.fvdialect:dominant_language', this.props.computeDialect2);
       }
     }
 
-    return <div>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>Add New Entry to <i>{selectn('properties.dc:title', bookResponse)}</i> Book</h1>
+            <h1>Add New Entry to <i>{selectn('response.properties.dc:title', computeBook)}</i> Book</h1>
             
             <div className="row" style={{marginTop: '15px'}}>
 
@@ -183,7 +196,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
                   <t.form.Form
                     ref="form_book_entry_create"
                     type={t.struct(selectn("FVBookEntry", fields))}
-                    context={dialect}
+                    context={selectn('response', computeDialect2)}
                     value={this.state.formValue}
                     options={FVBookEntryOptions} />
                     <div className="form-group">
@@ -202,6 +215,6 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
               </div>
           </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }

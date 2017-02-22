@@ -28,13 +28,14 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 import Dialog from 'material-ui/lib/dialog';
 
-export default function withActions(ComposedFilter) {
+export default function withActions(ComposedFilter, publishWarningEnabled = false) {
   class ViewWithActions extends Component {
 
     constructor(props, context){
         super(props, context);
 
         this.state = {
+            deleteSuccessDialogOpen: false,
             deleteDialogOpen: false,
             prePublishDialogOpen: false,
             prePublishCompleteAction: null,
@@ -65,35 +66,57 @@ export default function withActions(ComposedFilter) {
 
      // Publish changes
      _publishChangesAction() {
-        this.setState({
-        prePublishDialogOpen: true,
-        prePublishCompleteAction: function () {
+
+        const publishChangesAction = function () {
             this.props.publishAction(this.props.itemPath, null, null, StringHelpers.toTitleCase(this.props.labels.single) + " published successfully!");
             this.setState({prePublishCompleteAction:null, prePublishDialogOpen: false});
-        }.bind(this)
-        });
+        }.bind(this);
+
+        if (publishWarningEnabled) {
+            this.setState({
+                prePublishDialogOpen: true,
+                prePublishCompleteAction: publishChangesAction
+            });
+        } else {
+            publishChangesAction();
+        }
     } 
 
     // Toggle published
     _publishToggleAction(toggled, workflow) {
         if (toggled) {
             if (workflow) {
-                this.setState({
-                    prePublishDialogOpen: true,
-                    prePublishCompleteAction: function () {
+
+                const askToPublishToggleAction = function () {
                         this.props.askToPublishAction(this.props.itemPath, {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish " + this.props.labels.single + " successfully submitted!", null);
                         this.setState({prePublishCompleteAction:null, prePublishDialogOpen: false});
-                    }.bind(this)
-                });
+                }.bind(this);
+
+                if (publishWarningEnabled) {
+                    this.setState({
+                        prePublishDialogOpen: true,
+                        prePublishCompleteAction: askToPublishToggleAction
+                    });
+                } else {
+                    askToPublishToggleAction();
+                }
+
             }
             else {
-                this.setState({
-                    prePublishDialogOpen: true,
-                    prePublishCompleteAction: function () {
+
+                const publishToggleAction = function () {
                         this.props.publishAction(this.props.itemPath, null, null, StringHelpers.toTitleCase(this.props.labels.single) + " published successfully!");
                         this.setState({prePublishCompleteAction:null, prePublishDialogOpen: false});
-                    }.bind(this)
-                });
+                }.bind(this);
+
+                if (publishWarningEnabled) {
+                    this.setState({
+                        prePublishDialogOpen: true,
+                        prePublishCompleteAction: publishToggleAction
+                    });
+                } else {
+                    publishToggleAction();
+                }
             }
         } else {
             if (workflow) {
@@ -107,12 +130,12 @@ export default function withActions(ComposedFilter) {
 
     _delete(item, event) {
         this.props.deleteAction(item.uid);
-        this.setState({deleteDialogOpen: false});
+        this.setState({deleteDialogOpen: false, deleteSuccessDialogOpen: true});
     }
 
     render() {
 
-        if (this.props.routeParams.area != 'Workspaces') {
+        if (!this.props.routeParams || this.props.routeParams.area != 'Workspaces') {
             return (<ComposedFilter {...this.props} {...this.state} />);
         }
 
@@ -159,8 +182,20 @@ export default function withActions(ComposedFilter) {
                             modal={false}
                             open={this.state.prePublishDialogOpen}
                             onRequestClose={() => this.setState({prePublishDialogOpen: false, publishToggleCancelled: true, prePublishCompleteAction: null})}>
-                            <p>Publishing this {this.props.labels.single} will also publish (or republish) the following related items:</p>
-                            <Tabs>{this.props.tabs}</Tabs>
+
+                            {(() => {
+                                if (this.props.tabs && this.props.tabs.length > 0) {
+                                    return  <div>
+                                                <p>Publishing this {this.props.labels.single} will also publish (or republish) the following related items:</p>
+                                                <Tabs>{this.props.tabs}</Tabs>
+                                            </div>;
+                                } else {
+                                    return  <div>
+                                                <p>Publishing this {this.props.labels.single} will also publish (or republish) all the media and child items associated with it.</p>
+                                            </div>;
+                                }
+                            })()}
+
                         </Dialog>
                     </AuthorizationFilter>
 
@@ -189,6 +224,24 @@ export default function withActions(ComposedFilter) {
                             onRequestClose={this._handleCancelDelete}>
                             Are you sure you would like to delete the {this.props.labels.single} <strong>{selectn('response.title', this.props.computeItem)}</strong>?
                         </Dialog>
+
+                        <Dialog
+                            title={"Delete " + StringHelpers.toTitleCase(this.props.labels.single) + " Success"}
+                            actions={[
+                            <FlatButton
+                            label="Return to Previous Page"
+                            secondary={true}
+                            onTouchTap={() => window.history.back()} />,
+                            <FlatButton
+                            label={"Go to Dialect Language Home"}
+                            primary={true}
+                            keyboardFocused={true}
+                            onTouchTap={this.props.onNavigateRequest.bind(this, '/' + this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length - 2).join('/'))} />]}
+                            modal={true}
+                            open={this.state.deleteSuccessDialogOpen}>
+                            The {this.props.labels.single} <strong>{selectn('response.title', this.props.computeItem)}</strong> has been successfully deleted.
+                        </Dialog>
+
                         </div>
                     </AuthorizationFilter>
 

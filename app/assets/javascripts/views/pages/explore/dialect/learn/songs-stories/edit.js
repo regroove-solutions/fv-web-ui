@@ -23,16 +23,30 @@ import t from 'tcomb-form';
 import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
+import Tabs from 'material-ui/lib/tabs/tabs';
+import Tab from 'material-ui/lib/tabs/tab';
+
 // Models
 import {Document} from 'nuxeo';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
+
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
+import BookEntryEdit from 'views/pages/explore/dialect/learn/songs-stories/entry/edit';
+import BookEntryList from 'views/pages/explore/dialect/learn/songs-stories/entry/list-view';
+
+import Dialog from 'material-ui/lib/dialog';
+
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+const DEFAULT_LANGUAGE = 'english';
+
+const DEFAULT_SORT_ORDER = '&sortOrder=asc,asc&sortBy=fvbookentry:sort_map,dc:created';
 
 @provide
 export default class PageDialectBookEdit extends Component {
@@ -42,7 +56,10 @@ export default class PageDialectBookEdit extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
+    fetchBookEntries: PropTypes.func.isRequired,
+    computeBookEntries: PropTypes.object.isRequired,
     updateBook: PropTypes.func.isRequired,
+    updateBookEntry: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
@@ -54,47 +71,27 @@ export default class PageDialectBookEdit extends Component {
 
     this.state = {
       book: null,
+      editPageDialogOpen: false,
+      editPageItem: null,
       bookPath: props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName,
-      formValue: null
+      formValue: null,
+      sortedItems: List()
     };
 
     // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_onRequestSaveForm', '_editPage', '_pageSaved', '_storeSortOrder'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(this.props.routeParams.dialect_path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchBook(this.state.bookPath);
+    newProps.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER);
   }
 
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
   }  
-
-  shouldComponentUpdate(newProps, newState) {
-
-    switch (true) {
-
-      case (newProps.routeParams.bookName != this.props.routeParams.bookName):
-        return true;
-      break;
-
-      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeBook, this.state.bookPath) != ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath)):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
-        return true;
-      break;
-    }
-
-    return false;
-  }
 
   _onRequestSaveForm(e) {
 
@@ -117,14 +114,49 @@ export default class PageDialectBookEdit extends Component {
       // Set new value property on document
       newDocument.set(formValue);
 
+      // Save new order for pages
+      if (!this.state.sortedItems.isEmpty()) {
+        this.state.sortedItems.forEach(function (entry, key) {
+
+          let newPage = new Document(entry, { 
+            'repository': book.response._repository,
+            'nuxeo': book.response._nuxeo
+          });
+
+          // Set new value property on document
+          newPage.set({'fvbookentry:sort_map': key});
+
+          // Save document
+          this.props.updateBookEntry(newPage);
+
+        }.bind(this));
+      }
+
       // Save document
       this.props.updateBook(newDocument);
+      this.props.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER);
 
       this.setState({ formValue: formValue });
     } else {
       window.scrollTo(0, 0);
     }
   }  
+
+  _storeSortOrder(items) {
+    this.setState({
+      sortedItems: items
+    });
+  }
+
+  _editPage(item) {
+    this.setState({editPageDialogOpen: true, editPageItem: item});
+  }
+
+  _pageSaved() {
+    // Ensure update is complete before re-fetch.
+    setTimeout(function(){ this.props.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER); }.bind(this), 500);
+    this.setState({editPageDialogOpen: false, editPageItem: null});
+  }
 
   render() {
 
@@ -134,29 +166,47 @@ export default class PageDialectBookEdit extends Component {
     }, {
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
+    }, {
+      'id': this.state.bookPath,
+      'entity': this.props.computeBookEntries
     }])
 
     const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
+    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.state.bookPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-	    <h1>Edit {selectn("response.properties.dc:title", computeBook)} book</h1>
-
 	    <div className="row" style={{marginTop: '15px'}}>
 	
 	      <div className={classNames('col-xs-8', 'col-md-10')}>
-	        <form onSubmit={this._onRequestSaveForm}>
-	          <t.form.Form
-	            ref="form_book"
-	            type={t.struct(selectn("FVBook", fields))}
-	            context={selectn("response", computeDialect2)}
-              value={this.state.formValue || selectn("response.properties", computeBook)}
-	            options={selectn("FVBook", options)} />
-	            <div className="form-group">
-	              <button type="submit" className="btn btn-primary">Save</button> 
-	            </div>
-	        </form>
+          <Tabs>
+            <Tab label="Book">
+              <h1>Edit {selectn("response.properties.dc:title", computeBook)} book</h1>
+              <form onSubmit={this._onRequestSaveForm}>
+                <t.form.Form
+                  ref="form_book"
+                  type={t.struct(selectn("FVBook", fields))}
+                  context={selectn("response", computeDialect2)}
+                  value={this.state.formValue || selectn("response.properties", computeBook)}
+                  options={selectn("FVBook", options)} />
+                  <div className="form-group">
+                    <button type="submit" className="btn btn-primary">Save</button> 
+                  </div>
+              </form>
+            </Tab>
+            <Tab label="Pages">
+              <h1>Edit {selectn("response.properties.dc:title", computeBook)} pages</h1>
+              <BookEntryList
+                reorder={true}
+                sortOrderChanged={this._storeSortOrder}
+                defaultLanguage={DEFAULT_LANGUAGE}
+                editAction={this._editPage}
+                innerStyle={{minHeight: 'inherit'}}
+                metadata={selectn('response', computeBookEntries) || {}}
+                items={selectn('response.entries', computeBookEntries) || []} />
+            </Tab>
+          </Tabs>
 	      </div>
 	
 	      <div className={classNames('col-xs-4', 'col-md-2')}>
@@ -168,6 +218,20 @@ export default class PageDialectBookEdit extends Component {
 	        </Paper>
 	
 	      </div>
+
+        <Dialog
+            autoScrollBodyContent={true}
+            style={{zIndex: 0}}
+            overlayStyle={{background: 'none'}}
+            open={this.state.editPageDialogOpen}
+            onRequestClose={() => this.setState({editPageDialogOpen: false})}>
+            <BookEntryEdit
+              entry={this.state.editPageItem}
+              handlePageSaved={this._pageSaved}
+              dialectEntry={computeDialect2}
+              {...this.props} />
+        </Dialog>
+
 	  </div>
 	</PromiseWrapper>;
   }

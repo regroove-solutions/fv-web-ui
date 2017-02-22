@@ -311,7 +311,7 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
         page: <PageDialectBookEdit typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]

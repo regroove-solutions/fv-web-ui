@@ -84,7 +84,7 @@ const fetchBooksAll = function fetchBooksAll(path, type) {
 
     dispatch( { type: FV_BOOK_FETCH_ALL_START } );
 
-    return DirectoryOperations.getDocumentByPath2(path, 'FVBook', '', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } })
+    return DirectoryOperations.getDocumentByPath2(path, 'FVBook', '', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } })
     .then((response) => {
       dispatch( { type: FV_BOOK_FETCH_ALL_SUCCESS, documents: response } )
     }).catch((error) => {
@@ -93,71 +93,59 @@ const fetchBooksAll = function fetchBooksAll(path, type) {
   }
 };
 
-const fetchBooksInPath = function fetchBooksInPath(path, queryAppend, headers = {}, params = {}) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_BOOKS_FETCH_START } );
-
-    return DirectoryOperations.getDocumentByPath2(path, 'FVBook', queryAppend, {headers: headers}, params)
-    .then((response) => {
-      dispatch( { type: FV_BOOKS_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_BOOKS_FETCH_ERROR, error: error } )
-    });
-  }
-};
-
-const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const fetchBooks = RESTActions.query('FV_BOOKS', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const createBook = RESTActions.create('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const updateBook = RESTActions.update('FV_BOOK', 'FVBook', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const deleteBook = RESTActions.delete('FV_BOOK', 'FVBook', {});
 
-const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToPublishBook = RESTActions.execute('FV_BOOK_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToUnpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToEnableBook = RESTActions.execute('FV_BOOK_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToDisableBook = RESTActions.execute('FV_BOOK_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToPublishBook = RESTActions.execute('FV_BOOK_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToUnpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToEnableBook = RESTActions.execute('FV_BOOK_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToDisableBook = RESTActions.execute('FV_BOOK_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 
-const fetchBookEntry = RESTActions.fetch('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const createBookEntry = RESTActions.create('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const updateBookEntry = RESTActions.update('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const fetchBookEntry = RESTActions.fetch('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const createBookEntry = RESTActions.create('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const updateBookEntry = RESTActions.update('FV_BOOK_ENTRY', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const deleteBookEntry = RESTActions.delete('FV_BOOK_ENTRY', 'FVBookEntry', {});
 
-const publishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToPublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const unpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToUnpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const enableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToEnableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const disableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
-const askToDisableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const publishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToPublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const unpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToUnpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const enableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToEnableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const disableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
+const askToDisableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE_WORKFLOW', 'Context.StartWorkflow', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 
-const fetchBookEntries = RESTActions.query('FV_BOOK_ENTRIES', 'FVBookEntry', { queryAppend: ' ORDER BY fvbookentry:sort_map', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const fetchBookEntries = RESTActions.query('FV_BOOK_ENTRIES', 'FVBookEntry', { headers: { 'X-NXenrichers.document': 'ancestry,book,permissions' } });
 
 const computeBookFetchFactory = RESTReducers.computeFetch('book');
+const computeBooksQueryFactory = RESTReducers.computeQuery('books');
 const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book');
 
 const computeBookEntryFetchFactory = RESTReducers.computeFetch('book_entry');
 const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries');
 
-const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const computeRecentlyModifiedStoriesQuery = RESTReducers.computeQuery('modified_stories');
-const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', { queryAppend: ' AND fvbook:type=\'story\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const computeRecentlyCreatedStoriesQuery = RESTReducers.computeQuery('created_stories');
 
-const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const computeRecentlyModifiedSongsQuery = RESTReducers.computeQuery('modified_songs');
-const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', { queryAppend: ' AND fvbook:type=\'song\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', headers: { 'X-NXenrichers.document': 'ancestry,permissions,book' } });
 const computeRecentlyCreatedSongsQuery = RESTReducers.computeQuery('created_songs');
 const queryUserModifiedStories = function queryUserModifiedStories(pathOrId, user) {
   return function (dispatch) {
 
     dispatch( { type: FV_STORIES_USER_MODIFIED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions,book' })
     .then((response) => {
       dispatch( { type: FV_STORIES_USER_MODIFIED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -171,7 +159,7 @@ const queryUserCreatedStories = function queryUserCreatedStories(pathOrId, user)
 
     dispatch( { type: FV_STORIES_USER_CREATED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'story\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions,book' })
     .then((response) => {
       dispatch( { type: FV_STORIES_USER_CREATED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -185,7 +173,7 @@ const queryUserModifiedSongs = function queryUserModifiedSongs(pathOrId, user) {
 
     dispatch( { type: FV_SONGS_USER_MODIFIED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions,book' })
     .then((response) => {
       dispatch( { type: FV_SONGS_USER_MODIFIED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -199,7 +187,7 @@ const queryUserCreatedSongs = function queryUserCreatedSongs(pathOrId, user) {
 
     dispatch( { type: FV_SONGS_USER_CREATED_QUERY_START } );
 
-    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions' })
+    return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVBook', ' AND fvbook:type=\'song\' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', { 'X-NXenrichers.document': 'ancestry,permissions,book' })
     .then((response) => {
       dispatch( { type: FV_SONGS_USER_CREATED_QUERY_SUCCESS, document: response } )
     }).catch((error) => {
@@ -209,7 +197,7 @@ const queryUserCreatedSongs = function queryUserCreatedSongs(pathOrId, user) {
 };
 
 const actions = {
-                  fetchBook, updateBook, createBook, deleteBook, publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBooksInPath, fetchBookEntries, fetchBooksAll,
+                  fetchBook, updateBook, fetchBooks, createBook, deleteBook, publishBook, unpublishBook, enableBook, disableBook, fetchSharedBooks, fetchBookEntries, fetchBooksAll,
                   askToPublishBook, askToUnpublishBook, askToEnableBook, askToDisableBook,
                   fetchBookEntry, updateBookEntry, createBookEntry, deleteBookEntry, publishBookEntry, unpublishBookEntry, enableBookEntry, disableBookEntry,
                   askToPublishBookEntry, askToUnpublishBookEntry, askToEnableBookEntry, askToDisableBookEntry, queryModifiedStories, queryCreatedStories, queryModifiedSongs, queryCreatedSongs,
@@ -221,6 +209,7 @@ const reducers = {
   computeDeleteBook: computeBookDeleteFactory.computeDeleteBook,
   computeBookEntry: computeBookEntryFetchFactory.computeBookEntry,
   computeBookEntries: computeBookEntriesQueryFactory.computeBookEntries,
+  computeBooks: computeBooksQueryFactory.computeBooks,
   computeSharedBooks(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
     switch (action.type) {
       case FV_BOOKS_SHARED_FETCH_START:
@@ -234,28 +223,6 @@ const reducers = {
 
       // Send modified document to UI without access REST end-point
       case FV_BOOKS_SHARED_FETCH_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
-  computeBooksInPath(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
-    switch (action.type) {
-      case FV_BOOKS_FETCH_START:
-        return Object.assign({}, state, { isFetching: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_BOOKS_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
-
-      // Send modified document to UI without access REST end-point
-      case FV_BOOKS_FETCH_ERROR:
-      case DISMISS_ERROR:
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;
 

@@ -18,6 +18,11 @@ const ResourceTypes = t.enums({
   FVVideo: 'Videos'
 });
 
+const BookTypes = t.enums({
+  song: 'Song Book',
+  story: 'Story Book'
+});
+
 const MaxMB = t.refinement(t.Number, (n) => {return n <= 2000});
 
 const fields = {
@@ -42,6 +47,10 @@ const fields = {
     'fvm:child_focused': t.Boolean,
     'fvm:origin': t.Boolean,
     'fvm:shared': t.Boolean
+  }),
+  Books: makeOptional({
+    'properties.dc:title': t.String,
+    'properties.fvbook:type': BookTypes
   })
 }
 

@@ -261,11 +261,11 @@ const options = {
     order: ['dc:title', 'fvbook:title_literal_translation', 'fvbook:introduction', 'fvbook:introduction_literal_translation', 'fvbook:type', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fvbook:author', 'fv:cultural_note', 'fv:source', 'fv:available_in_childrens_archive'],
     fields: {
       'dc:title': {
-        label: 'Book Name',
-        help: <i>The name of the song or story</i>
+        label: 'Book Title',
+        help: <i>The title of the song or story</i>
        },
       'fvbook:title_literal_translation': {
-        label: 'Title Translation',
+        label: 'Book Title Translation',
         item: {
           fields: {
             translation: {
@@ -365,13 +365,15 @@ const options = {
     i18n: i18nExt
   },
   FVBookEntry: {
-    order: ['dc:title', 'fv:literal_translation', 'fvbookentry:dominant_language_text', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:source', 'fvbookentry:sort_map'],
+    order: ['dc:title', 'fvbookentry:dominant_language_text', 'fv:literal_translation', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:source'],
     fields: {
       'dc:title': {
-        label: 'Book Entry Name'
+        label: 'Page Content',
+        type: 'textarea',
+        factory: WysiwygFactory
        },
-      'fv:literal_translation': {
-        label: 'Literal Translation',
+      'fvbookentry:dominant_language_text': {
+        label: 'Dominant Language Text',
         item: {
           fields: {
             translation: {
@@ -389,10 +391,10 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the book entry translates to regardless of context.</i>
+        help: <i>Page content translation.</i>
       },
-      'fvbookentry:dominant_language_text': {
-        label: 'Dominant Language Text',
+      'fv:literal_translation': {
+        label: 'Literal Translation',
         item: {
           fields: {
             translation: {
@@ -440,9 +442,6 @@ const options = {
           factory: SelectSuggestFactory,
           type: 'FVContributor'
         }
-      },
-      'fvbookentry:sort_map': {
-        label: 'Order'
       },
       'fv:cultural_note' : {
         label: 'Cultural Notes'

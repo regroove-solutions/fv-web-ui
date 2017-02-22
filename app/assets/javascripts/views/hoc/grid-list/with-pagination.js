@@ -8,19 +8,25 @@ import {IconButton, MenuItem, SelectField} from "material-ui";
 /**
  * HOC: Adds pagination to a grid list
  */
-export default function withPagination(ComposedFilter, pageSize) {
+export default function withPagination(ComposedFilter, pageSize, pageRange = 10) {
   class PaginatedGridList extends Component {
+
+    static defaultProps = {
+      disablePageSize: false
+    }
 
     static propTypes = {
         fetcher: PropTypes.func.isRequired,
         fetcherParams: PropTypes.object.isRequired,
-        metadata: PropTypes.object.isRequired
+        metadata: PropTypes.object.isRequired,
+        disablePageSize: PropTypes.bool
     }
 
     constructor(props, context){
       super(props, context);
 
       this.state = {
+          pageRange: pageRange,
           currentPageSize: pageSize,
           currentPageIndex: 0
       };
@@ -54,6 +60,19 @@ export default function withPagination(ComposedFilter, pageSize) {
 
     render() {
 
+      const pageSizeControl = (!this.props.disablePageSize) ? <div>
+                <label style={{verticalAlign: '4px', marginRight: '10px'}}>Per Page:</label>
+                <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize} onChange={this._onPageSizeChange}>
+                  <MenuItem value={5} primaryText="5" />
+                  <MenuItem value={10} primaryText="10" />
+                  <MenuItem value={20} primaryText="20" />
+                  <MenuItem value={30} primaryText="30" />
+                  <MenuItem value={40} primaryText="40" />
+                  <MenuItem value={50} primaryText="50" />
+                </SelectField>
+                <span style={{verticalAlign: '4px'}}>/ {selectn('resultsCount', this.props.metadata)}</span>
+              </div> : '';
+
       return(
           <div>
 
@@ -71,21 +90,16 @@ export default function withPagination(ComposedFilter, pageSize) {
                   forcePage={this.props.fetcherParams.currentPageIndex}
                   pageCount={selectn('pageCount', this.props.metadata)}
                   marginPagesDisplayed={0}
-                  pageRangeDisplayed={10}
+                  pageRangeDisplayed={this.state.pageRange}
                   onPageChange={this._onPageChange} />
               </div>
-              <div className="col-xs-3">
-                <label style={{verticalAlign: '4px', marginRight: '10px'}}>Per Page:</label>
-                <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize} onChange={this._onPageSizeChange}>
-                  <MenuItem value={5} primaryText="5" />
-                  <MenuItem value={10} primaryText="10" />
-                  <MenuItem value={20} primaryText="20" />
-                  <MenuItem value={30} primaryText="30" />
-                  <MenuItem value={40} primaryText="40" />
-                  <MenuItem value={50} primaryText="50" />
-                </SelectField>
-                <span style={{verticalAlign: '4px'}}>/ {selectn('resultsCount', this.props.metadata)}</span>
+
+              <div className="col-xs-3" style={{textAlign:'right'}}>
+                {pageSizeControl}
+                {this.props.appendControls}
               </div>
+
+
             </div>
 
           </div>)

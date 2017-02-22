@@ -82,6 +82,17 @@ const options = {
         nxql: ' fvm:shared = ${value}'
       }
     }
+  },
+  Books: {
+    fields: {
+      'properties.dc:title': {
+        label: 'Title'
+      },
+      'properties.fvbook:type': {
+        label: 'Resource Type',
+        factory: t.form.Select
+      }
+    }
   }
 };
 

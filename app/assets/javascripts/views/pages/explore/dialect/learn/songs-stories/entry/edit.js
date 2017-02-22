@@ -46,6 +46,10 @@ export default class PageDialectBookEdit extends Component {
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
+    entry: PropTypes.object,
+    bookEntry: PropTypes.object,
+    dialectEntry: PropTypes.object,
+    handlePageSaved: PropTypes.func,
     book: PropTypes.object
   };
   
@@ -54,7 +58,7 @@ export default class PageDialectBookEdit extends Component {
 
     this.state = {
       book: null,
-      bookEntryPath: props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.parentBookName + '/' + props.routeParams.bookName,
+      bookEntryPath: selectn('path', props.entry) || props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.parentBookName + '/' + props.routeParams.bookName,
       formValue: null
     };
 
@@ -70,30 +74,6 @@ export default class PageDialectBookEdit extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
-  }  
-
-  shouldComponentUpdate(newProps, newState) {
-
-    switch (true) {
-
-      case (newProps.routeParams.parentBookName != this.props.routeParams.parentBookName):
-        return true;
-      break;
-
-      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeBookEntry, this.state.bookEntryPath) != ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath)):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
-        return true;
-      break;
-    }
-
-    return false;
   }
 
   _onRequestSaveForm(e) {
@@ -120,6 +100,11 @@ export default class PageDialectBookEdit extends Component {
       // Save document
       this.props.updateBookEntry(newDocument);
 
+      // Call other methods (e.g. close dialog)
+      if (typeof this.props.handlePageSaved == 'function') {
+        this.props.handlePageSaved();
+      }
+
       this.setState({ formValue: formValue });
     } else {
       window.scrollTo(0, 0);
@@ -128,20 +113,12 @@ export default class PageDialectBookEdit extends Component {
 
   render() {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.bookEntryPath,
-      'entity': this.props.computeBookEntry
-    }, {
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    const computeBookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath) || {'response': this.props.entry};
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path) || this.props.dialectEntry;
 
-    const computeBookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    return <div>
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-
-	    <h1>Edit {selectn("response.properties.dc:title", computeBookEntry)} book</h1>
+	    <h1>Edit Page</h1>
 
 	    <div className="row" style={{marginTop: '15px'}}>
 	
@@ -169,6 +146,6 @@ export default class PageDialectBookEdit extends Component {
 	
 	      </div>
 	  </div>
-	</PromiseWrapper>;
+	</div>;
   }
 }
