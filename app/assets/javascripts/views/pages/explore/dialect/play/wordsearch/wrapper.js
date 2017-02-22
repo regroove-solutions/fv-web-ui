@@ -23,7 +23,7 @@ import WordsearchGame from 'games/wordsearch';
 export default class Game extends Component {
 
   static propTypes = {
-    characters: PropTypes.string.isRequired,
+    characters: PropTypes.array.isRequired,
     words: PropTypes.array.isRequired
   }
 
