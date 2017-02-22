@@ -86,22 +86,28 @@ export default class Wordsearch extends Component {
     const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
 
-    const alphabet_string = (selectn('response.entries', computeCharacters) || []).map(function(char) {
+    const alphabet_array= (selectn('response.entries', computeCharacters) || []).map(function(char) {
       return selectn('properties.dc:title', char);
-    }).join('');
+    });;
 
     const word_array = (selectn('response.entries', computeWords) || []).map(function(word) {
       return selectn('properties.dc:title', word);
-    });
+    }).filter(word=>word.length < 12);
 
     const word_obj_array = selectn('response.entries', computeWords);
 
-    console.log(alphabet_string);
-    console.log(word_array);
-    console.log(word_obj_array);
+    console.log('alphabet_array',alphabet_array);
+    console.log('word_array',word_array);
+    console.log('word_obj_array',word_obj_array);
+    
+    //Since the alphabet isn't complete, we need fill in the rest
+    const character_string = word_array.join('');
+    const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u)));
+  
 
-    if (alphabet_string.length > 0 && word_array.length > 0) {
-      game = <Game characters={alphabet_string} words={word_array} />;
+
+    if (word_array.length > 0) {
+      game = <Game characters={[...alphabet_array, ...unique_characters]} words={word_array} />;
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
