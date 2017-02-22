@@ -306,6 +306,7 @@ export default class Preview extends Component {
 
           let picture = {};
           let pictureResponse;
+          let pictureTag = '';
 
           let remotePicture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id || this.props.expandedValue.uid);
 
@@ -321,23 +322,30 @@ export default class Preview extends Component {
 
           if (pictureResponse && picture.success) {
 
-            body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
-                      <CardMedia>
-                        {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} /> : null}
-                      </CardMedia>
-                      <CardHeader
-                        title={selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}
-                        titleStyle={{lineHeight: 'initial'}}
-                        subtitle={selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}
-                        subtitleStyle={{lineHeight: 'initial'}}
-                        actAsExpander={true}
-                        showExpandableButton={true}
-                      />
-                      <CardText expandable={true}>
-                        <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('picture', pictureResponse)} />
-                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
-                      </CardText>
-                    </Card>;
+            pictureTag = <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} />;
+
+            if (this.props.minimal) {
+              body = pictureTag;
+            }
+            else {
+              body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+                        <CardMedia>
+                          {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? pictureTag : null}
+                        </CardMedia>
+                        <CardHeader
+                          title={selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}
+                          titleStyle={{lineHeight: 'initial'}}
+                          subtitle={selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}
+                          subtitleStyle={{lineHeight: 'initial'}}
+                          actAsExpander={true}
+                          showExpandableButton={true}
+                        />
+                        <CardText expandable={true}>
+                          <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('picture', pictureResponse)} />
+                          <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        </CardText>
+                      </Card>;
+            }
           }
 
         break;
@@ -368,7 +376,7 @@ export default class Preview extends Component {
               body = audioTag;
             }
             else {
-              body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+              body =  <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardHeader
                           title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
                           titleStyle={{lineHeight: 'initial'}}
@@ -394,6 +402,7 @@ export default class Preview extends Component {
 
           let video = {};
           let videoResponse;
+          let videoTag = '';
 
           let remoteVideo = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id || this.props.expandedValue.uid);
 
@@ -409,9 +418,15 @@ export default class Preview extends Component {
 
           if (videoResponse && video.success) {
 
-            body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+            videoTag = <video width="100%" height="auto" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls />;
+
+            if (this.props.minimal) {
+              body = videoTag;
+            }
+            else {
+              body = <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardMedia>
-                        {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? <video width="100%" height="auto" src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))} alt={selectn('title', videoResponse)} controls /> : null}
+                        {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? videoTag : null}
                       </CardMedia>
                       <CardHeader
                         title={selectn('title', videoResponse) || selectn('dc:title', videoResponse)}
@@ -426,6 +441,7 @@ export default class Preview extends Component {
                         <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
                       </CardText>
                     </Card>;
+            }
           }
 
         break;
