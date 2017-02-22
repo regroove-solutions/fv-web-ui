@@ -65,7 +65,7 @@ import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 import withActions from 'views/hoc/view/with-actions';
 
-const DetailsViewWithActions = withActions(PromiseWrapper);
+const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
 /**
 * View phrase entry
@@ -219,6 +219,7 @@ export default class View extends Component {
     return <DetailsViewWithActions
               labels={{single: "phrase"}}
               itemPath={this._getPhrasePath()}
+              actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
               publishAction={this.props.publishPhrase}
               unpublishAction={this.props.unpublishPhrase}
               askToPublishAction={this.props.askToPublishPhrase}

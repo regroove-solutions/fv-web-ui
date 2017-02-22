@@ -40,9 +40,9 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 export default class PageToolbar extends Component {
 
   static defaultProps = {
-    disableWorkflowActions: false,
     publishChangesAction: null,
-    handleNavigateRequest: null
+    handleNavigateRequest: null,
+    actions: [] // ['workflow', 'edit', 'add-child', 'publish-toggle', 'enable-toggle', 'publish', 'more-options']
   };
 
   static propTypes = {
@@ -56,9 +56,9 @@ export default class PageToolbar extends Component {
     publishToggleAction: PropTypes.func,
     publishChangesAction: PropTypes.func,
     enableToggleAction: PropTypes.func,
-    disableWorkflowActions: PropTypes.bool,
     children: PropTypes.node,
-    label: PropTypes.string
+    label: PropTypes.string,
+    actions: PropTypes.array
   };
 
   static contextTypes = {
@@ -193,7 +193,7 @@ export default class PageToolbar extends Component {
                     {this.props.children}
 
                     {(() => {
-                      if (!this.props.disableWorkflowActions) {
+                      if (this.props.actions.includes('workflow')) {
 
                           return <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
 
@@ -214,7 +214,7 @@ export default class PageToolbar extends Component {
 
 
                     {(() => {
-                      if (this.props.enableToggleAction) {
+                      if (this.props.actions.includes('enable-toggle')) {
 
                           return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                             <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
@@ -232,7 +232,7 @@ export default class PageToolbar extends Component {
                     })()}
 
                     {(() => {
-                      if (this.props.publishToggleAction) {
+                      if (this.props.actions.includes('publish-toggle')) {
 
                           return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                             <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
@@ -253,7 +253,7 @@ export default class PageToolbar extends Component {
                   <ToolbarGroup float="right">
 
                     {(() => {
-                      if (this.props.publishChangesAction) {
+                      if (this.props.actions.includes('publish')) {
                         return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                           <RaisedButton disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
                         </AuthorizationFilter>;
@@ -261,9 +261,17 @@ export default class PageToolbar extends Component {
                     })()}
 
                     {(() => {
-                      if (this.props.handleNavigateRequest) {
+                      if (this.props.actions.includes('edit')) {
                         return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
                           <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                        </AuthorizationFilter>;
+                      }
+                    })()}
+
+                    {(() => {
+                      if (this.props.actions.includes('add-child')) {
+                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                                <RaisedButton label="Add New Page" style={{marginRight: '5px', marginLeft: '0'}} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                         </AuthorizationFilter>;
                       }
                     })()}
@@ -271,7 +279,7 @@ export default class PageToolbar extends Component {
                     <ToolbarSeparator />
 
                     {(() => {
-                      if (this.props.handleNavigateRequest) {
+                      if (this.props.actions.includes('more-options')) {
                         return <IconMenu anchorOrigin={{horizontal: 'right', vertical: 'top'}} targetOrigin={{horizontal: 'right', vertical: 'top'}} iconButtonElement={
                                 <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true}>
                                   <NavigationExpandMoreIcon />

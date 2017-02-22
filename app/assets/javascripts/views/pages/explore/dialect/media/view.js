@@ -242,6 +242,7 @@ export default class View extends Component {
                   return <PageToolbar
                             label="Media"
                             handleNavigateRequest={this._onNavigateRequest}
+                            actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
                             computeEntity={computeResource}
                             computePermissionEntity={computeDialect2}
                             computeLogin={this.props.computeLogin}
@@ -311,10 +312,10 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Linked Resources"} id="find_words">
+                      <Tab label={"Linked Words"} id="find_words">
                         <div>
                           <CardText>
-                            <h2>Resources Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
+                            <h2>Words Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
                             <div className="row">
                               <ResourceListView
                                 filter={{currentAppliedFilter: {startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''}}}

@@ -29,7 +29,8 @@ export default class MediaPanel extends Component {
   static propTypes = {
     label: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    items: PropTypes.array.isRequired
+    items: PropTypes.array.isRequired,
+    minimal: PropTypes.bool
   };
 
   constructor(props, context){
@@ -38,7 +39,7 @@ export default class MediaPanel extends Component {
 
   render() {
 
-    const { label, items, type } = this.props;
+    const { label, items, type, minimal } = this.props;
 
     return (items.length === 0) ? null :
     
@@ -53,7 +54,8 @@ export default class MediaPanel extends Component {
                         key={selectn('uid', items[0].object)}
                         styles={{padding: '0px'}}
                         expandedValue={items[0].object}
-                        type={type} />  :
+                        type={type}
+                        minimal={minimal} />  :
 
                         <ImageGallery
                         showNav={false}
@@ -66,7 +68,8 @@ export default class MediaPanel extends Component {
                             styles={{padding: '0px'}}
                             key={selectn('id', item)}
                             expandedValue={items[selectn('key', item)].object}
-                            type={type} />
+                            type={type}
+                            minimal={minimal} />
                         </div>
                         }}
                         showThumbnails={true}

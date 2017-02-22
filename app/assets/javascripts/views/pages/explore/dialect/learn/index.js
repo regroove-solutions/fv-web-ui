@@ -236,7 +236,7 @@ export default class DialectLearn extends Component {
                   return <PageToolbar
                             label="Language Portal"
                             computeEntity={computeDialect2}
-                            disableWorkflowActions={true}
+                            actions={['publish']}
                             publishChangesAction={this._publishChangesAction}
                             {...this.props} />;
               }

@@ -194,6 +194,7 @@ export default class View extends Component {
                             computeEntity={computeCharacter}
                             computePermissionEntity={computeDialect2}
                             computeLogin={this.props.computeLogin}
+                            actions={['edit', 'publish']}
                             publishChangesAction={this._publishChangesAction}
                             {...this.props}></PageToolbar>;
               }
