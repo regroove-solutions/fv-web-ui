@@ -178,9 +178,17 @@ export default class View extends Component {
     let phrases = [];
 
     (selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
-      phrases.push(<SubViewTranslation key={key} group={selectn('fv:definitions', phrase)} groupByElement="language" groupValue="translation">
-        <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
-      </SubViewTranslation>);
+
+      const phraseDefinitions = selectn('fv:definitions', phrase);
+      const phraseLink = <Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link>;
+
+      if (phraseDefinitions.length == 0) {
+        phrases.push(<p key={key}>{phraseLink}</p>);
+      } else {
+        phrases.push(<SubViewTranslation key={key} group={phraseDefinitions} groupByElement="language" groupValue="translation">
+          <p>{phraseLink}</p>
+        </SubViewTranslation>);
+      }
     })
 
 
