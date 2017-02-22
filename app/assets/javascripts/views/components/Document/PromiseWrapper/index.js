@@ -82,7 +82,7 @@ export default class PromiseWrapper extends Component {
     }.bind(this));
 
     // Catch type errors
-    if (statusMessage && statusMessage instanceof TypeError) {
+    if (statusMessage && (statusMessage instanceof TypeError || statusMessage instanceof Error)) {
       console.error(statusMessage);
       statusMessage = statusMessage.message;
       render = <div>An unexpected error has occured.</div>;
