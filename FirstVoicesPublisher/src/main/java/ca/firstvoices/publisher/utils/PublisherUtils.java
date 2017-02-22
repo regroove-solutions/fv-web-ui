@@ -46,6 +46,10 @@ public class PublisherUtils {
             dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
         }
 
+        if (asset.hasSchema("fvbook")){
+            dependencies.put("fvbook:author", "fvproxy:proxied_author");
+        }
+
         if (asset.hasSchema("fv-phrase")) {
             dependencies.put("fv-phrase:phrase_books", "fvproxy:proxied_categories");
         }

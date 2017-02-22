@@ -7,6 +7,7 @@
   <xs:element name="proxied_pictures" type="nxs:stringList"/>
   <xs:element name="proxied_videos" type="nxs:stringList"/>
   <xs:element name="proxied_source" type="nxs:stringList"/>
+  <xs:element name="proxied_author" type="nxs:stringList"/>
   <xs:element name="proxied_recorder" type="nxs:stringList"/>
   <xs:element name="proxied_origin" type="xs:string"/>
   <xs:element name="proxied_phrases" type="nxs:stringList"/>
