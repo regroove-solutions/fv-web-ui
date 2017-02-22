@@ -22,7 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import Game from 'views/pages/explore/dialect/play/wordsearch/wrapper'
+import Game from './wrapper'
 
 /**
 * Play games
