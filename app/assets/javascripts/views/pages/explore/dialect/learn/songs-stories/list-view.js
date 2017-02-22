@@ -115,6 +115,8 @@ class CardView extends Component {
 
                     <div style={{position: 'absolute', zIndex: (this.state.showIntro) ? 2 : -1 ,top: '10px', left: '10px', width:'95%', minWidth: 'auto', padding:0, backgroundColor:'#fff', height: '100%', border: '1px solid #777777', borderRadius: '0 0 10px 10px'}}>
 
+                    <IconButton iconClassName="material-icons" style={{position:'absolute', right: 0, zIndex: 1000}} onTouchTap={() => this.setState({showIntro: false})}>clear</IconButton>
+
                     {(() => {
                       if (selectn('properties.fvbook:introduction', this.props.item)) {
                         return <Introduction {...this.props} />
