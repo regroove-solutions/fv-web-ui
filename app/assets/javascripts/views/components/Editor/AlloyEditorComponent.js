@@ -14,7 +14,9 @@ export default class AlloyEditorComponent extends Component {
     }
 
     componentWillUnmount() {
-        this._editor.destroy();
+        if (this._editor && this._editor.document) {
+            this._editor.destroy();
+        }
     }
 
     shouldComponentUpdate(newProps) {
