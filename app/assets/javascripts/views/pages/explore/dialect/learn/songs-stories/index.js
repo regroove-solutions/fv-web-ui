@@ -79,7 +79,8 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
 
     newProps.fetchBooks(newProps.routeParams.dialect_path + '/Stories & Songs',
-    (selectn('filter.currentAppliedFilter', newProps) ? Object.values(newProps.filter.currentAppliedFilter).join('') : '')
+    '&sortBy=dc:title' +
+    '&sortOrder=ASC'
     );
   }
 
