@@ -72,7 +72,7 @@ export default class ExploreDialects extends Component {
   fetchData(newProps) {
     const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
 
-    this.props.fetchPortals(pathOrId);
+    newProps.fetchPortals(pathOrId);
     this.setState({pathOrId})
   }
 
@@ -118,6 +118,7 @@ export default class ExploreDialects extends Component {
                     action={this._onNavigateRequest}
                     filterOptionsKey='Portals'
                     fixedList={true}
+                    area={this.props.routeParams.area}
                     fixedListFetcher={this.fixedListFetcher}
                     filteredItems={this.state.filteredList}
                     metadata={selectn('response', computePortals)}
