@@ -63,7 +63,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
-import ResourceListView from 'views/pages/explore/dialect/learn/words/list-view';
+import WordListView from 'views/pages/explore/dialect/learn/words/list-view';
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
@@ -230,6 +230,8 @@ export default class View extends Component {
     const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
+    const currentAppliedFilter = new Map({currentAppliedFilter: new Map({startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''})});
+
     /**
     * Generate definitions body
     */
@@ -266,7 +268,7 @@ export default class View extends Component {
 
                             <div className="col-xs-8">
 
-                              <Preview initiallyExpanded={true} metadataListStyles={{maxHeight: 'initial'}} expandedValue={selectn('response', computeResource)} type={selectn('response.type', computeResource)} />
+                              <Preview style={{width: 'auto'}} initiallyExpanded={true} metadataListStyles={{maxHeight: 'initial'}} expandedValue={selectn('response', computeResource)} type={selectn('response.type', computeResource)} />
 
                             </div>
 
@@ -284,7 +286,7 @@ export default class View extends Component {
 
                                         return <ListItem
                                                   onTouchTap={() => this.setState({showThumbnailDialog: thumbnail})}
-                                                  key={thumbnail.content.digest}
+                                                  key={key}
                                                   primaryText={thumbnail.title}
                                                   secondaryText={<p><span style={{color: '#000'}}>{thumbnail.description}</span> -- ({thumbnail.width + 'x' + thumbnail.height})</p>} />;
                                       }.bind(this))}
@@ -317,8 +319,8 @@ export default class View extends Component {
                           <CardText>
                             <h2>Words Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
                             <div className="row">
-                              <ResourceListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''}}}
+                              <WordListView
+                                filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>
@@ -330,7 +332,7 @@ export default class View extends Component {
                             <h2>Phrases Featuring with <strong>{selectn('response.title', computeResource)}</strong></h2>
                             <div className="row">
                               <PhraseListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''}}}
+                                filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>

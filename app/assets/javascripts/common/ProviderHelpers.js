@@ -92,6 +92,8 @@ export default {
         return row.workspace;
       }
     }
+
+    return workspaceKey;
   },
   replaceAllWorkspaceSectionKeys: function (string, area) {
 

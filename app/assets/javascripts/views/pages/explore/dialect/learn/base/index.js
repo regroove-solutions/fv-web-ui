@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 
 import selectn from 'selectn';
@@ -53,27 +54,28 @@ export default class PageDialectLearnBase extends Component {
 
   _handleFacetSelected(facetField, categoryId, event, checked) {
 
-    let currentCategoryFilterIds = this.state.filterInfo.currentCategoryFilterIds.slice();
+    let currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds');
 
     let categoryFilter = '';
+    let newList;
 
     // Adding filter
     if (checked) {
-      currentCategoryFilterIds.push(categoryId);
+      newList = currentCategoryFilterIds.push(categoryId);
     }
     // Removing filter
     else {
-      currentCategoryFilterIds.splice(currentCategoryFilterIds.indexOf(categoryId), 1);
+      newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(categoryId));
     }
 
     // Category filter 
-    if (currentCategoryFilterIds.length > 0) {
-      categoryFilter = ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area) + '/* IN ("' + currentCategoryFilterIds.join('","') + '")';
+    if (newList.size > 0) {
+      categoryFilter = ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area) + '/* IN ("' + newList.join('","') + '")';
     }
 
-    this.setState({filterInfo: {
-      currentCategoryFilterIds: currentCategoryFilterIds,
-      currentAppliedFilter: categoryFilter
-    }});
+    let newFilter = this.state.filterInfo.updateIn(['currentCategoryFilterIds'], () => {return newList});
+    newFilter = newFilter.updateIn(['currentAppliedFilter', 'categories'], () => {return categoryFilter});
+
+    this.setState({filterInfo: newFilter});
   }
 }

@@ -1,9 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
 
 import selectn from 'selectn';
 
 import Paper from 'material-ui/lib/paper';
-import List from 'material-ui/lib/lists/list';
+import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 import Checkbox from 'material-ui/lib/checkbox';
@@ -14,14 +15,15 @@ export default class FacetFilterList extends Component {
         title: PropTypes.string.isRequired,
         facets: PropTypes.array.isRequired,
         onFacetSelected: PropTypes.func.isRequired,
-        facetField: PropTypes.string.isRequired
+        facetField: PropTypes.string.isRequired,
+        appliedFilterIds: PropTypes.instanceOf(List)
     };
 
     constructor(props, context){
         super(props, context);
 
         this.state = {
-            checked: []
+            checked: props.appliedFilterIds
         };
 
         ['_toggleCheckbox'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -30,14 +32,18 @@ export default class FacetFilterList extends Component {
     _toggleCheckbox(facetId, event, checked) {
         this.props.onFacetSelected(this.props.facetField, facetId, event, checked);
         
+        let newList;
+
         // Checking
         if (checked) {
-            this.state.checked.push(facetId);
+            newList = this.state.checked.push(facetId);
         }
         // Unchecking
         else {
-            this.state.checked.splice(this.state.checked.indexOf(facetId), 1);
+            newList = this.state.checked.delete(this.state.checked.keyOf(facetId));
         }
+
+        this.setState({checked: newList});
     }
 
     render () {
@@ -45,7 +51,7 @@ export default class FacetFilterList extends Component {
         const listItemStyle = {fontSize: '13px', fontWeight: 'normal'};
 
         return <Paper>
-            <List subheader={this.props.titles}>
+            <ListUI subheader={this.props.titles}>
 
                 {(this.props.facets || []).map(function (facet, i) { 
 
@@ -76,7 +82,7 @@ export default class FacetFilterList extends Component {
                                 nestedItems={nestedItems} />
                 }.bind(this))}
 
-            </List>
+            </ListUI>
         </Paper>
     }
 }

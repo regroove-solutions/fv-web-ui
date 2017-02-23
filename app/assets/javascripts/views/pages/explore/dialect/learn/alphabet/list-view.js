@@ -42,7 +42,8 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
-    DEFAULT_SORT_TYPE: 'asc'
+    DEFAULT_SORT_TYPE: 'asc',
+    filter: new Map()
   }
 
   static propTypes = {

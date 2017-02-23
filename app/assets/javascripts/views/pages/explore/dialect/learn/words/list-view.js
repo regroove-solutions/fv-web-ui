@@ -42,7 +42,8 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fv:custom_order',
-    DEFAULT_SORT_TYPE: 'asc'
+    DEFAULT_SORT_TYPE: 'asc',
+    filter: new Map()
   }
 
   static propTypes = {
@@ -138,8 +139,15 @@ export default class ListView extends DataListView {
   }  
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+
+    let currentAppliedFilter = '';
+
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
+    }
+
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    (selectn('filter.currentAppliedFilter', props) ? Object.values(props.filter.currentAppliedFilter).join('') : '') + 
+    currentAppliedFilter + 
     '&currentPageIndex=' + pageIndex + 
     '&pageSize=' + pageSize + 
     '&sortOrder=' + sortOrder +

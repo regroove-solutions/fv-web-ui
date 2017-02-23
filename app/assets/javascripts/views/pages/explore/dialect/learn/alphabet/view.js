@@ -179,6 +179,8 @@ export default class View extends Component {
       videos.push(vid);
     })
 
+    const currentAppliedFilter = new Map({currentAppliedFilter: new Map({startsWith: ' AND dc:title LIKE \''+ selectn('response.title', computeCharacter) +'%\''})});
+
     /**
     * Generate definitions body
     */
@@ -270,7 +272,7 @@ export default class View extends Component {
                             <h2>Words Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <WordListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ selectn('response.title', computeCharacter) +'%\''}}}
+                                filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>
@@ -282,7 +284,7 @@ export default class View extends Component {
                             <h2>Phrases Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <PhraseListView
-                                filter={{currentAppliedFilter: {startsWith: ' AND dc:title LIKE \''+ selectn('response.title', computeCharacter) +'%\''}}}
+                                filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
                           </CardText>
