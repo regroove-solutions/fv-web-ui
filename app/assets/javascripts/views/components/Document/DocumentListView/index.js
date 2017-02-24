@@ -18,8 +18,12 @@ import classNames from 'classnames';
 import selectn from 'selectn';
 import DataGrid from 'react-datagrid';
 
+import GridView from 'views/pages/explore/dialect/learn/base/grid-view';
+
 import ClearFix from 'material-ui/lib/clearfix';
 import Paper from 'material-ui/lib/paper';
+
+import withPagination from 'views/hoc/grid-list/with-pagination';
 
 // is TapEvent needed here?! Test on mobile
 //var injectTapEventPlugin = require("react-tap-event-plugin");
@@ -27,6 +31,8 @@ import Paper from 'material-ui/lib/paper';
 
 // Stylesheet
 import '!style-loader!css-loader!react-datagrid/dist/index.min.css';
+
+const GridViewWithPagination = withPagination(GridView, 8);
 
 export default class DocumentListView extends Component {
 
@@ -38,7 +44,7 @@ export default class DocumentListView extends Component {
     };
 
     // Bind methods to 'this'
-    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', '_gridListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _handleSelectionChange(newSelectedId, data){
@@ -68,6 +74,10 @@ export default class DocumentListView extends Component {
     this.props.refetcher(this.props, (this.props.page - 1), pageSize);
   }
 
+  _gridListFetcher(fetcherParams) {
+    this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize);
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.data != this.props.data) {
       this.setState({
@@ -84,9 +94,21 @@ export default class DocumentListView extends Component {
       zIndex: 0
     };
 
-    return <Paper>
-        <ClearFix>
-        <DataGrid
+    if (this.props.gridListView) {
+      return <GridViewWithPagination
+                action={this._handleSelectionChange}
+                style={{overflowY: 'auto', maxHeight: '50vh'}}
+                cols={this.props.gridCols}
+                cellHeight={160}
+                fetcher={this._gridListFetcher}
+                type={this.props.type}
+                fetcherParams={{currentPageIndex: (this.props.page == 0 ? this.props.page : this.props.page - 1), pageSize: (this.props.pageSize)}}
+                metadata={selectn('response', this.props.data)}
+                items={selectn('response.entries', this.props.data)} />;
+    }
+
+    return <Paper><ClearFix>
+      <DataGrid
           idProperty="uid"
           dataSource={selectn('response.entries', this.props.data)}
           dataSourceCount={selectn('response.totalSize', this.props.data)}
@@ -105,7 +127,6 @@ export default class DocumentListView extends Component {
           onPageSizeChange={this._onPageSizeChange}
           emptyText={'No records'}
           showCellBorders={true} />
-        </ClearFix>
-    </Paper>;
+    </ClearFix></Paper>;
   }
 }

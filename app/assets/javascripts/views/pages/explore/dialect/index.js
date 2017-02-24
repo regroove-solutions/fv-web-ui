@@ -52,6 +52,8 @@ import EditableComponent, {EditableComponentHelper} from 'views/components/Edito
 import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
+import Kids from './kids';
+
 /**
 * Dialect portal page showing all the various components of this dialect.
 */
@@ -193,6 +195,14 @@ export default class ExploreDialect extends Component {
     const computeGalleries = ProviderHelpers.getEntry(this.props.computeGalleries, this.props.routeParams.dialect_path + '/Portal');
 
     const isSection = this.props.routeParams.area === 'sections';
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    // Render kids view
+    if (isKidsTheme && computePortal) {
+      return <PromiseWrapper computeEntities={computeEntities}>
+        <Kids {...this.props} portal={computePortal} />
+      </PromiseWrapper>;
+    }
 
     return <PromiseWrapper computeEntities={computeEntities}>
 

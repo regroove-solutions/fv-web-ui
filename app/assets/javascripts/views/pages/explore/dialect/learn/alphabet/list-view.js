@@ -142,7 +142,8 @@ export default class ListView extends DataListView {
                 if (selectn('response.entries', computeCharacters)) {
 
                     return <DocumentListView
-                                objectDescriptions="phrases" 
+                                objectDescriptions="characters" 
+                                type="FVCharacter"
                                 data={computeCharacters}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}

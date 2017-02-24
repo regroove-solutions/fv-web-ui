@@ -153,6 +153,29 @@ export default class View extends Component {
     const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this._getBookPath());
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
+    let page;
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    if (!this.state.bookOpen) {
+      page = <BookEntry cover={true} defaultLanguage={DEFAULT_LANGUAGE} pageCount={selectn('response.resultsCount', computeBookEntries)} entry={selectn('response', computeBook)} openBookAction={() => { this.setState({bookOpen: true})}} />
+    } else {
+      page = <PaginatedBookEntryList
+                style={{overflowY: 'auto', maxHeight: '50vh'}}
+                cols={5}
+                cellHeight={150}
+                disablePageSize={true}
+                defaultLanguage={DEFAULT_LANGUAGE}
+                fetcher={this._fetchListViewData}
+                fetcherParams={this.state.fetcherParams}
+                metadata={selectn('response', computeBookEntries) || {}}
+                items={selectn('response.entries', computeBookEntries) || []}
+                appendControls={[(this.state.bookOpen) ? <RaisedButton label="Close Book" key="close" onTouchTap={() => { this.setState({bookOpen: false})}} /> : '']} />
+    }
+
+    if (isKidsTheme) {
+      return page;
+    }
+
     return <DetailsViewWithActions labels={{single: "Book"}}
               itemPath={this._getBookPath()}
               actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish', 'add-child']}
@@ -171,19 +194,7 @@ export default class View extends Component {
               computeEntities={computeEntities}
               {...this.props}>
 
-              {(this.state.bookOpen) ? '' : <BookEntry cover={true} defaultLanguage={DEFAULT_LANGUAGE} pageCount={selectn('response.resultsCount', computeBookEntries)} entry={selectn('response', computeBook)} openBookAction={() => { this.setState({bookOpen: true})}} />}
-
-              {(!this.state.bookOpen) ? '' : <PaginatedBookEntryList
-                style={{overflowY: 'auto', maxHeight: '50vh'}}
-                cols={5}
-                cellHeight={150}
-                disablePageSize={true}
-                defaultLanguage={DEFAULT_LANGUAGE}
-                fetcher={this._fetchListViewData}
-                fetcherParams={this.state.fetcherParams}
-                metadata={selectn('response', computeBookEntries) || {}}
-                items={selectn('response.entries', computeBookEntries) || []}
-                appendControls={[(this.state.bookOpen) ? <RaisedButton label="Close Book" key="close" onTouchTap={() => { this.setState({bookOpen: false})}} /> : '']} />}
+              {page}
 
         </DetailsViewWithActions>;
   }

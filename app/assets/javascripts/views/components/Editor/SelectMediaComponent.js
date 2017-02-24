@@ -26,6 +26,7 @@ import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 import MediaList from 'views/components/Browsing/media-list';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
+import CircularProgress from 'material-ui/lib/circular-progress';
 
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
@@ -159,6 +160,22 @@ export default class SelectMediaComponent extends React.Component {
         break;
       }
 
+      // TODO: Replace with PromiseWrapper
+      let view = <FilteredPaginatedMediaList
+                      style={{overflowY: 'auto', maxHeight: '50vh'}}
+                      cols={5}
+                      cellHeight={150}
+                      filterOptionsKey={filterOptionsKey}
+                      action={this._handleSelectElement}
+                      fetcher={this.fetchData}
+                      fetcherParams={this.state.fetcherParams}
+                      metadata={selectn('response', computeEntity)}
+                      items={selectn('response.entries', computeEntity) || []} />;
+
+      if (selectn('isFetching', computeEntity)) {
+        view = <CircularProgress mode="indeterminate" size={2} />;
+      }
+
       return (
         <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
@@ -169,16 +186,7 @@ export default class SelectMediaComponent extends React.Component {
             contentStyle={{width: '80%', height: '80vh', maxWidth: '100%'}}
             open={this.state.open}>
 
-              <FilteredPaginatedMediaList
-                style={{overflowY: 'auto', maxHeight: '50vh'}}
-                cols={5}
-                cellHeight={150}
-                filterOptionsKey={filterOptionsKey}
-                action={this._handleSelectElement}
-                fetcher={this.fetchData}
-                fetcherParams={this.state.fetcherParams}
-                metadata={selectn('response', computeEntity)}
-                items={selectn('response.entries', computeEntity) || []} />
+              {view}
 
           </Dialog>
         </div>

@@ -54,9 +54,11 @@ export default class Jigsaw extends Component {
 
   fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
     props.fetchResources(props.routeParams.dialect_path + '/Resources',
-    'AND ecm:primaryType ILIKE \'FVPicture\' AND picture:views/3/width > 1000' + 
+    'AND ecm:primaryType ILIKE \'FVPicture\' AND picture:views/3/width < 800 AND picture:views/3/width > 500' + 
     '&currentPageIndex=0' + 
-    '&pageSize=4'
+    '&pageSize=4' + 
+    '&sortBy=dc:created' + 
+    '&sortOrder=DESC' 
     );
   }
 
@@ -77,12 +79,13 @@ export default class Jigsaw extends Component {
     let pictures = {};
 
     (selectn('response.entries', computeResources) || []).forEach(function(v, k) {
-      //pictures['picture' + (k + 1)] = selectn('properties.file:content.data', v) + '?inline=true';
+      pictures['thumb' + (k + 1)] = selectn('properties.picture:views[1].content.data', v) + '?inline=true';
+      pictures['picture' + (k + 1)] = selectn('properties.file:content.data', v) + '?inline=true';
     })
 
-    //if (Object.entries(pictures).length > 0) {
+    if (Object.entries(pictures).length > 0) {
       game = <Game pictures={pictures} />;
-    //}
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">

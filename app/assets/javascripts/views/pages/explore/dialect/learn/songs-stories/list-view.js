@@ -49,7 +49,7 @@ class Introduction extends Component {
     const introductionTranslations = selectn('properties.fvbook:introduction_literal_translation', this.props.item);
     const introductionDiv = <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(introduction)}} style={Object.assign(introTabStyle, this.props.style)}></div>;
 
-    if (introductionTranslations.length == 0) {
+    if (!introductionTranslations || introductionTranslations.length == 0) {
       if (!introduction) {
         return null;
       }
@@ -97,13 +97,14 @@ class CardView extends Component {
 
     const DEFAULT_LANGUAGE = this.props.defaultLanguage;
 
-    let coverImage = selectn('contextParameters.book.related_pictures[0].views[2].url', this.props.item) || '/assets/images/cover.png';
+    let mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item);
+    let coverImage = selectn('url', mediumImage) || '/assets/images/cover.png';
     let audioObj = selectn('contextParameters.book.related_audio[0]', this.props.item);
 
     let audio = (audioObj) ? <Preview minimal={true} key={selectn('uid', audioObj)} expandedValue={audioObj} type="FVAudio" /> : '';
 
     return <div style={Object.assign(defaultStyle, this.props.style)} key={this.props.item.uid} className={classNames('col-xs-12', 'col-md-' + Math.ceil(12 / this.props.cols))}>
-                <Card style={{minHeight: '265px'}}>
+                <Card style={{minHeight: '260px'}}>
 
                   <CardMedia
                     overlay={<CardTitle title={<span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.item.title)}} />} subtitle={selectn('properties.fvbook:title_literal_translation', this.props.item).map(function(translation, i) {
@@ -111,7 +112,10 @@ class CardView extends Component {
                         return <span key={i}>{translation.translation}</span>;
                       }
                     })} />}>
-                    <img style={{minWidth: 'inherit', width: 'inherit'}} src={coverImage + '?inline=true'} />
+
+                    <div style={{ backgroundSize: (selectn('width', mediumImage) > 200) ? 'contain' : 'cover', minWidth: 'inherit', width: '100%', height: '180px', textAlign: 'center',backgroundImage: 'url(\'' + coverImage + '?inline=true\')'}}>
+                    </div>
+                    
 
                     <div style={{position: 'absolute', zIndex: (this.state.showIntro) ? 2 : -1 ,top: '10px', left: '10px', width:'95%', minWidth: 'auto', padding:0, backgroundColor:'#fff', height: '100%', border: '1px solid #777777', borderRadius: '0 0 10px 10px'}}>
 
@@ -130,7 +134,7 @@ class CardView extends Component {
 
                   <CardText style={{padding: '4px'}}>
 
-                    <FlatButton onTouchTap={this.props.action.bind(this, '/explore' + this.props.item.path.replace('Stories & Songs', 'learn/' + (selectn('properties.fvbook:type', this.props.item) == 'story' ? 'stories' : 'songs') ))} primary={true} label={'Continue to ' + (selectn('properties.fvbook:type', this.props.item) || 'Entry')} />
+                    <FlatButton onTouchTap={this.props.action.bind(this, '/' + (this.props.theme || 'explore') + this.props.item.path.replace('Stories & Songs', 'learn/' + (selectn('properties.fvbook:type', this.props.item) == 'story' ? 'stories' : 'songs') ))} primary={true} label={'Continue to ' + (selectn('properties.fvbook:type', this.props.item) || 'Entry')} />
                     
                     {(() => {
                       if (selectn('properties.fvbook:introduction', this.props.item)) {
@@ -159,6 +163,7 @@ class ListView extends Component {
       PropTypes.instanceOf(List)
     ]),
     type: PropTypes.string,
+    theme: PropTypes.string,
     action: PropTypes.func,
     cols: PropTypes.number,
     cellHeight: PropTypes.number,

@@ -43,7 +43,8 @@ export default class ListView extends DataListView {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fv:custom_order',
     DEFAULT_SORT_TYPE: 'asc',
-    filter: new Map()
+    filter: new Map(),
+    gridListView: false
   }
 
   static propTypes = {
@@ -59,6 +60,7 @@ export default class ListView extends DataListView {
     routeParams: PropTypes.object.isRequired,
     filter: PropTypes.object,
     data: PropTypes.string,
+    gridListView: PropTypes.bool,
 
     DISABLED_SORT_COLS: PropTypes.array,
     DEFAULT_PAGE: PropTypes.number,
@@ -174,7 +176,9 @@ export default class ListView extends DataListView {
 
                     return <DocumentListView
                                 objectDescriptions="words" 
+                                type="FVWord"
                                 data={computeWords}
+                                gridListView={this.props.gridListView}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}
                                 onSelectionChange={this._onEntryNavigateRequest}

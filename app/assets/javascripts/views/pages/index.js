@@ -41,6 +41,8 @@ import PageDialectViewPhrase from './explore/dialect/learn/phrases/view'
 import PageDialectViewBook from './explore/dialect/learn/songs-stories/view'
 import PageDialectViewAlphabet from './explore/dialect/learn/alphabet/'
 import PageDialectViewCharacter from './explore/dialect/learn/alphabet/view'
+import PageDialectLearnWordsCategories from './explore/dialect/learn/words/categories';
+import PageDialectLearnPhrasesCategories from './explore/dialect/learn/phrases/categories';
 
 import PageTest from './test.js'
 import PageHome from './home'
@@ -66,7 +68,9 @@ module.exports = {
   PageDialectLearn,
   PageDialectMedia,
   PageDialectLearnWords,
+  PageDialectLearnWordsCategories,
   PageDialectLearnPhrases,
+  PageDialectLearnPhrasesCategories,
   PageDialectLearnStoriesAndSongs,
   PageDialectViewWord,
   PageDialectViewMedia,

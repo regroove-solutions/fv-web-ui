@@ -56,6 +56,8 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
     fetchBooks: PropTypes.func.isRequired,
     computeBooks: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired, 
@@ -77,6 +79,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
 
     newProps.fetchBooks(newProps.routeParams.dialect_path + '/Stories & Songs',
     '&sortBy=dc:title' +
@@ -119,35 +122,53 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path + '/Stories & Songs');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    let listProps = {
+      defaultLanguage: DEFAULT_LANGUAGE,
+      filterOptionsKey:"Books",
+      fixedList:true,
+      fixedListFetcher:this.fixedListFetcher,
+      filteredItems:this.state.filteredList,
+      area:this.props.routeParams.area,
+      applyDefaultFormValues:true,
+      formValues: {'properties.fvbook:type': this.props.typeFilter},
+      metadata:selectn('response', computeBooks),
+      items:selectn('response.entries', computeBooks) || [],
+      action: this._onNavigateRequest
+    };
+
+    let listView = <FilteredCardList {...listProps} />;
+
+    if (isKidsTheme) {
+      listView = <ListView {...listProps} cols={3} theme={this.props.routeParams.theme} />
+    }
+    
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-              <div className="row">
+
+              <div className={classNames('row', {'hidden': isKidsTheme})}>
+
                 <div className="col-xs-8"></div>
+
                 <div className={classNames('col-xs-4', 'text-right')}>
                   <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
                     <RaisedButton label={"Create " + this.props.typeFilter + " Book"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                   </AuthorizationFilter>
                 </div>
+
+                <div className="col-xs-12">
+                  <h1>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
+                </div>
+
               </div>
+
               <div className="row">
                 <div className="col-xs-12">
 
-                  <h1>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
-
                   <div className="row" style={{marginBottom: '20px'}}>
-
-                    <FilteredCardList
-                      defaultLanguage={DEFAULT_LANGUAGE}
-                      filterOptionsKey="Books"
-                      fixedList={true}
-                      fixedListFetcher={this.fixedListFetcher}
-                      filteredItems={this.state.filteredList}
-                      area={this.props.routeParams.area}
-                      applyDefaultFormValues={true}
-                      formValues={{'properties.fvbook:type': this.props.typeFilter}}
-                      metadata={selectn('response', computeBooks)}
-                      items={selectn('response.entries', computeBooks) || []}
-                      action={this._onNavigateRequest}  />
-
+                    <div className={classNames('col-xs-12', {'col-xs-8': isKidsTheme, 'col-xs-offset-2': isKidsTheme})}>
+                      {listView}
+                    </div>
                   </div>
 
                 </div>

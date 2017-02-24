@@ -43,9 +43,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     fetchDocument: PropTypes.func.isRequired,
     computeDocument: PropTypes.object.isRequired, 
     computeLogin: PropTypes.object.isRequired, 
-    fetchDialect2: PropTypes.func.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
     fetchCategories: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
     computeCategories: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -53,13 +53,15 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context);
 
+    let initialCategories = (props.routeParams.category) ? new List([props.routeParams.category]) : new List();
+
     this.state = {
-      filterInfo: {
-        currentCategoryFilterIds: [],
-        currentAppliedFilter: {
-          categories: ''
-        }
-      }
+      filterInfo: new Map({
+        currentCategoryFilterIds: initialCategories,
+        currentAppliedFilter: new Map({
+          categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
+        })
+      })
     };
 
     // Bind methods to 'this'
@@ -71,27 +73,44 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
 
-    newProps.fetchCategories('/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children');
+    newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children');
   }
 
   render() {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
+      'entity': this.props.computePortal
     },{
       'id': '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
       'entity': this.props.computeCategories
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children');
 
     let computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0;
+
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    const wordListView = <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
+
+    // Render kids view
+    if (isKidsTheme) {
+      return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <div className="row">
+
+              <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
+              {React.cloneElement(wordListView, { gridListView: true, DEFAULT_PAGE_SIZE: 8 })}
+              </div>
+              </div>
+            </PromiseWrapper>;
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
@@ -107,15 +126,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 <div className={classNames('col-xs-12', 'col-md-3', (computeCategoriesSize == 0) ? 'hidden': null)}>
                   <FacetFilterList
                     title='Categories'
-                    facetField='fv-word:categories'
+                    appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
+                    facetField={ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', this.props.routeParams.area)}
                     onFacetSelected={this._handleFacetSelected}
                     facets={selectn('response.entries', computeCategories) || []} />
                 </div>
                 <div className={classNames('col-xs-12', (computeCategoriesSize == 0) ? 'col-md-12': 'col-md-9')}>
-                  <h1>{selectn('response.title', computeDialect2)} Words</h1>
-                  <WordListView
-                    filter={this.state.filterInfo}
-                    routeParams={this.props.routeParams} />
+                  <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Words</h1>
+                  {wordListView}
                 </div>
               </div>
         </PromiseWrapper>;

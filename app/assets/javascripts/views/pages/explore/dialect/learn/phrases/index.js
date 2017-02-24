@@ -43,9 +43,9 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     fetchDocument: PropTypes.func.isRequired,
     computeDocument: PropTypes.object.isRequired, 
     computeLogin: PropTypes.object.isRequired, 
-    fetchDialect2: PropTypes.func.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
     fetchCategories: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
     computeCategories: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -53,13 +53,15 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context);
 
+    let initialCategories = (props.routeParams.category) ? new List([props.routeParams.category]) : new List();
+
     this.state = {
-      filterInfo: {
-        currentCategoryFilterIds: [],
-        currentAppliedFilter: {
-          categories: ''
-        }
-      }
+      filterInfo: new Map({
+        currentCategoryFilterIds: initialCategories,
+        currentAppliedFilter: new Map({
+          categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-phrase:phrase_books', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
+        })
+      })
     };
 
     // Bind methods to 'this'
@@ -67,7 +69,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
     newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
 
     newProps.fetchCategories('/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children');
@@ -77,17 +79,34 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
+      'entity': this.props.computePortal
     },{
       'id': '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children',
       'entity': this.props.computeCategories
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path);
     const computePhraseBooks = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children');
 
     let computePhraseBooksSize = selectn('response.entries.length', computePhraseBooks) || 0;
+
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    const phraseListView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
+
+    // Render kids view
+    if (isKidsTheme) {
+      return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+              <div className="row">
+                <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
+                  {React.cloneElement(phraseListView, { gridListView: true, gridCols: 2, DEFAULT_PAGE_SIZE: 4 })}
+                </div>
+              </div>
+
+            </PromiseWrapper>;
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
@@ -102,16 +121,15 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
               <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-3', (computePhraseBooksSize == 0) ? 'hidden': null)}>
                   <FacetFilterList
-                    title='Categories'
-                    facetField='fv-phrase:phrase_books'
+                    title='Phrase Books'
+                    appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
+                    facetField={ProviderHelpers.switchWorkspaceSectionKeys('fv-phrase:phrase_books', this.props.routeParams.area)}
                     onFacetSelected={this._handleFacetSelected}
                     facets={selectn('response.entries', computePhraseBooks) || []} />
                 </div>
                 <div className={classNames('col-xs-12', (computePhraseBooksSize == 0) ? 'col-md-12': 'col-md-9')}>
-                  <h1>{selectn('response.title', computeDialect2)} Phrases</h1>
-                  <PhraseListView
-                    filter={this.state.filterInfo}
-                    routeParams={this.props.routeParams} />
+                  <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Words Phrases</h1>
+                  {phraseListView}
                 </div>
               </div>
         </PromiseWrapper>;

@@ -99,13 +99,15 @@ const GetMetaData = function (type, response) {
   /**
    * Direct Link
    */
-  metadata.push({
-    label: 'Direct Link',
-    value: <span>
-            <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}} value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} /> 
-            &nbsp; <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}>GO</a>
-            </span>
-  });
+  if (selectn("path", response)) {
+    metadata.push({
+      label: 'Direct Link',
+      value: <span>
+              <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}} value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} /> 
+              &nbsp; <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}>GO</a>
+              </span>
+    });
+  }
 
   /**
    * File size
@@ -322,7 +324,7 @@ export default class Preview extends Component {
 
           if (pictureResponse && picture.success) {
 
-            pictureTag = <img style={{maxWidth: '100%'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} />;
+            pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} />;
 
             if (this.props.minimal) {
               body = pictureTag;

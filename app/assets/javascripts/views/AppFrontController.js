@@ -9,6 +9,9 @@ import classNames from 'classnames';
 import {Link} from 'provide-page';
 
 import Navigation from 'views/components/Navigation';
+import KidsNavigation from 'views/components/Kids/Navigation';
+import Footer from 'views/components/Navigation/Footer';
+
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
@@ -16,7 +19,7 @@ import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStories
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
@@ -196,7 +199,8 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
         page: <PageDialectPlay />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'jigsaw' ],
@@ -243,6 +247,18 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories' ],
+        page: <PageDialectLearnWordsCategories />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH) ],
+        page: <PageDialectLearnWords />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ],
         page: <PageDialectWordsCreate />,
         extractPaths: true
@@ -260,6 +276,18 @@ export default class AppFrontController extends Component {
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
+        page: <PageDialectLearnPhrases />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories' ],
+        page: <PageDialectLearnPhrasesCategories />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH) ],
         page: <PageDialectLearnPhrases />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
@@ -289,6 +317,12 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
         page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural="songs" />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs-stories' ],
+        page: <PageDialectLearnStoriesAndSongs typePlural="Songs and Stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
@@ -580,24 +614,29 @@ export default class AppFrontController extends Component {
 
     const { matchedPage, matchedRouteParams } = this.state;
 
-    let page;
+    let page, navigation = <Navigation routeParams={matchedRouteParams} />;
+    let theme = (matchedRouteParams.hasOwnProperty('theme')) ? matchedRouteParams.theme : 'default';
 
     if (!matchedPage) {
       page = <div>404</div>;
     } else {
-      page = this._renderWithBreadcrumb(
-          React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams }),
-          matchedPage,
-          this.props
-      );
+      let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
+
+      // Remove breadcrumbs for Kids portal
+      // TODO: Make more generic if additional themes are added in the future.
+      if (theme == 'kids') {
+        page = clonedElement;
+        navigation = <KidsNavigation routeParams={matchedRouteParams} />;
+      } else {
+        page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props);
+      }
     }
 
     return (
       <div>
-        <Navigation routeParams={matchedRouteParams} />
-        <div className="main">
-          {page}
-        </div>
+        <div className="row">{navigation}</div>
+        <div className={'page-' + theme + '-theme'}>{page}</div>
+        <div className="row"><Footer /></div>
       </div>
     );
   }

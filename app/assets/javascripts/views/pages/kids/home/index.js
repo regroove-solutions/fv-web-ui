@@ -20,6 +20,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
 
+import RaisedButton from 'material-ui/lib/raised-button';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -89,16 +91,22 @@ export default class PageKidsHome extends Component {
       backgroundColor: 'transparent',
       backgroundSize: 'cover',
       backgroundPosition: '0 0',
+      marginTop: '25px'
     }
 
     return <PromiseWrapper computeEntities={computeEntities}>
             <div className="container-fluid">
              <div className="row" style={homePageStyle}>
-              <div className="col-xs-12">
-                <PortalList
-                  action={this._onNavigateRequest}
-                  cols={5}
-                  tiles={selectn('response.entries', computePortals) || []} />
+              <div className={classNames('col-xs-3', 'col-md-4', 'text-right')}>
+                <img src="/assets/images/boy.gif" alt="Boy" />
+              </div>
+              <div className={classNames('col-xs-3', 'col-md-4', 'text-center')}>
+                <span style={{width: '45%'}}>
+                  <RaisedButton fullWidth={true} label="Enter Kids Area" onTouchTap={this._onNavigateRequest.bind(this, '/FV/Workspaces/Data/')} style={{marginTop: '20vh'}} />
+                </span>
+              </div>
+              <div className={classNames('col-xs-3', 'col-md-4', 'text-left')}>
+                <img src="/assets/images/girl.gif" alt="Girl" />
               </div>
              </div>
             </div>

@@ -49,17 +49,17 @@ export default class DirectoryOperations extends BaseOperations {
 
     let properties = this.properties;
 
-    // Escape single quotes
-    path = StringHelpers.clean(path);
-    
     // Replace Percent Sign
     queryAppend = queryAppend.replace(/%/g, "%25");
 
-    let requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + path + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
+    let requestBody;
 
     // Switch between direct REST access and controlled mode
     if (path.indexOf('/api') === 0) {
+      // NOTE: Do not escape single quotes in this mode
       requestBody = path.replace('/api/v1', '');
+    } else {
+      requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + StringHelpers.clean(path) + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
     }
 
     return new Promise(

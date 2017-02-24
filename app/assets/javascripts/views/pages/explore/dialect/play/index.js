@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component} from 'react';
-
+import classNames from 'classnames';
 
 /**
 * Play games
@@ -27,10 +27,13 @@ export default class Play extends Component {
   }
 
   render() {
+
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
     return <div>
             <div className="row">
               <div className="col-xs-12">
-                <h1>Games</h1>
+                <h1 className={classNames({'hidden': isKidsTheme})}>Games</h1>
                 <div className="flex-container">
                   <div className="grid">
                     <div className="cell">

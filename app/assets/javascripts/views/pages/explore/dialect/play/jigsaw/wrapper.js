@@ -79,7 +79,6 @@ export default class Game extends Component {
      * Create the game, with container and game config
      */
     const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-    console.log(gameConfig);
     JigsawGame.init(gameContainerNode, gameConfig);
   }
 

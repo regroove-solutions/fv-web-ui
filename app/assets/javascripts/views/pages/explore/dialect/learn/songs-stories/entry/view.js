@@ -35,6 +35,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 import ActionLaunch from 'material-ui/lib/svg-icons/action/launch';
 
 const defaultInnerStyle = {padding: '15px', margin: '15px 0', minHeight: '420px', maxHeight: '50vh', overflowX: 'auto'};
+const defaultCoverStyle = {padding: '15px', margin: '15px 0'};
 
 class MediaThumbnail extends Component {
     render() {
@@ -77,15 +78,14 @@ class Cover extends Component {
                              <header>
                                 <h1 dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( selectn('title', this.props.entry) )}}></h1>
                                 <h2 style={{fontSize: '1.3em'}} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( selectn('[0].translation', dominant_language_title_translation) )}}></h2>
-                                <subheader>
-                                    {(selectn('contextParameters.book.authors', this.props.entry) || []).map(function(author, i) {
-                                        return <span key={i}>{selectn('dc:title', author)}</span>;
-                                    })}
+                                <subheader>{(selectn('contextParameters.book.authors', this.props.entry) || []).map(function(author, i) {
+                                    return <span className={classNames('label', 'label-default')} key={i}>{selectn('dc:title', author)}</span>;
+                                })}
                                 </subheader>
                             </header>
 
                             <div>
-                                <Introduction item={this.props.entry} defaultLanguage={this.props.defaultLanguage} style={{height: '20vh', padding: '5px'}} />
+                                <Introduction item={this.props.entry} defaultLanguage={this.props.defaultLanguage} style={{height: '16vh', padding: '5px'}} />
                                 {this.props.audios}
                             </div>
                         </div>
@@ -188,11 +188,13 @@ export default class View extends Component {
         audios: audios
     }
 
+    let appliedStyle = (this.props.cover) ? Object.assign(defaultCoverStyle, this.props.innerStyle) : Object.assign(defaultInnerStyle, this.props.innerStyle);
+
     return <div className="row" style={{marginBottom: '20px'}}>
 
                       <div className="col-xs-12">
 
-                      	<Paper style={Object.assign(defaultInnerStyle, this.props.innerStyle)} zDepth={2}>
+                      	<Paper style={appliedStyle} zDepth={2}>
                             {(this.props.cover) ? <Cover {...this.props} {...media} /> : <Page {...this.props} {...media} />}
                         </Paper>
                       </div>

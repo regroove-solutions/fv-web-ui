@@ -8,7 +8,7 @@ import {IconButton, MenuItem, SelectField} from "material-ui";
 /**
  * HOC: Adds pagination to a grid list
  */
-export default function withPagination(ComposedFilter, pageSize, pageRange = 10) {
+export default function withPagination(ComposedFilter, pageSize = 10, pageRange = 10) {
   class PaginatedGridList extends Component {
 
     static defaultProps = {
@@ -27,7 +27,8 @@ export default function withPagination(ComposedFilter, pageSize, pageRange = 10)
 
       this.state = {
           pageRange: pageRange,
-          currentPageSize: pageSize,
+          initialPageSize:  selectn('fetcherParams.pageSize', props) || pageSize,
+          currentPageSize:  selectn('fetcherParams.pageSize', props) || pageSize,
           currentPageIndex: 0
       };
 
@@ -60,15 +61,17 @@ export default function withPagination(ComposedFilter, pageSize, pageRange = 10)
 
     render() {
 
+      const ips = this.state.initialPageSize;
+
       const pageSizeControl = (!this.props.disablePageSize) ? <div>
                 <label style={{verticalAlign: '4px', marginRight: '10px'}}>Per Page:</label>
                 <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize} onChange={this._onPageSizeChange}>
-                  <MenuItem value={5} primaryText="5" />
-                  <MenuItem value={10} primaryText="10" />
-                  <MenuItem value={20} primaryText="20" />
-                  <MenuItem value={30} primaryText="30" />
-                  <MenuItem value={40} primaryText="40" />
-                  <MenuItem value={50} primaryText="50" />
+                  <MenuItem value={Math.ceil(ips / 2)} primaryText={Math.ceil(ips / 2)} />
+                  <MenuItem value={Math.ceil(ips)} primaryText={Math.ceil(ips)} />
+                  <MenuItem value={Math.ceil(ips * 2)} primaryText={Math.ceil(ips * 2)} />
+                  <MenuItem value={Math.ceil(ips * 3)} primaryText={Math.ceil(ips * 3)} />
+                  <MenuItem value={Math.ceil(ips * 4)} primaryText={Math.ceil(ips * 4)} />
+                  <MenuItem value={Math.ceil(ips * 5)} primaryText={Math.ceil(ips * 5)} />
                 </SelectField>
                 <span style={{verticalAlign: '4px'}}>/ {selectn('resultsCount', this.props.metadata)}</span>
               </div> : '';

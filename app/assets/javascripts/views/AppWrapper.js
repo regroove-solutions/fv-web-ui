@@ -28,7 +28,6 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
 import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
 
 import FontIcon from 'material-ui/lib/font-icon';
-import Footer from 'views/components/Navigation/Footer';
 import Paper from 'material-ui/lib/paper';
 import FlatButton from 'material-ui/lib/flat-button';
 
@@ -65,6 +64,11 @@ export default class AppWrapper extends Component {
     muiTheme: React.PropTypes.object,
     kmw: React.PropTypes.object
   };
+
+  // react-redux-provide will pass context such as providers (Note: this is only needed for debugging the store atm)
+  /*static contextTypes = {
+    providers: PropTypes.object
+  }*/
 
   /**
   * Pass essential context to all children
@@ -213,7 +217,7 @@ export default class AppWrapper extends Component {
       }
     }
 
-    return <div>
+    return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}}>
         <AppFrontController />
         {keyboardPicker}
 
@@ -221,8 +225,7 @@ export default class AppWrapper extends Component {
             <option value="default">Default</option>
             <option value="kids">Kids</option>
         </select>
-        
-        <Footer />
+
     </div>;
   }
 }

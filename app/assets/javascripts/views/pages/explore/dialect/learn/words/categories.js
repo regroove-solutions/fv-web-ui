@@ -22,7 +22,7 @@ import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import PortalList from 'views/components/Browsing/portal-list'
+import CategoryList from 'views/components/Browsing/category-list';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Operations
@@ -37,18 +37,20 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
 
-const FilteredPortalList = withFilter(PortalList);
+const FilteredCategoryList = withFilter(CategoryList);
 
 /**
-* Explore Archive page shows all the families in the archive
+* Categories page for words
 */
 @provide
-export default class ExploreDialects extends Component {
+export default class Categories extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchPortals: PropTypes.func.isRequired,
-    computePortals: PropTypes.object.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
+    computeCategories: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -63,24 +65,21 @@ export default class ExploreDialects extends Component {
     this.state = {
       pathOrId: null,
       filteredList: null,
-      open: false
+      open: false,
+      categoriesPath: null
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
+    const categoriesPath = '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children';
 
-    newProps.fetchPortals(pathOrId);
-    this.setState({pathOrId})
-  }
-
-  fixedListFetcher(list) {
-    this.setState({
-      filteredList: list
-    });
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+    newProps.fetchCategories(categoriesPath);
+    this.setState({categoriesPath})
   }
 
   // Fetch data on initial render
@@ -95,66 +94,26 @@ export default class ExploreDialects extends Component {
     }
   }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + path);
+  _onNavigateRequest(category) {
+    this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/words/categories/' + category.uid);
   }
 
   render() {
 
-    const isKidsTheme = this.props.routeParams.theme === 'kids';
-
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.pathOrId,
-      'entity': this.props.computePortals
+      'id': this.state.categoriesPath,
+      'entity': this.props.computeCategories
     }])
 
-    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
-    
-    let portalsEntries = selectn('response.entries', computePortals) || [];
+    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath);
 
-    // Sort based on dialect name (all FVPortals have dc:title 'Portal')
-    let sortedPortals = portalsEntries.sort(function(a, b){
-
-        let a2 = selectn('contextParameters.ancestry.dialect.dc:title', a);
-        let b2 = selectn('contextParameters.ancestry.dialect.dc:title', b);
-
-        if(a2 < b2) return -1;
-        if(a2 > b2) return 1;
-        return 0;
-    });
-
-    let portalListProps = {
-      action:this._onNavigateRequest,
-      filterOptionsKey:'Portals',
-      fixedList:true,
-      area:this.props.routeParams.area,
-      fixedListFetcher:this.fixedListFetcher,
-      filteredItems:this.state.filteredList,
-      metadata:selectn('response', computePortals),
-      items: sortedPortals
-    };
-
-    let portalList = <FilteredPortalList {...portalListProps} />;
-
-    if (isKidsTheme) {
-      portalList = <PortalList {...portalListProps} cols={6} />
-    }
-
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
              <div className="row">
                
               <div className="col-xs-12">
 
-                  <div className={classNames({'hidden': isKidsTheme})}>
+                  <CategoryList action={this._onNavigateRequest} items={selectn('response.entries', computeCategories)} cols={6} />
 
-                    <h1>{this.props.properties.title} Archive</h1>
-
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-
-                  </div>
-
-                  {portalList}
-                  
               </div>
             </div>
           </PromiseWrapper>;
