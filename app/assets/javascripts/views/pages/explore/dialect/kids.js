@@ -58,7 +58,7 @@ export default class Kids extends Component {
 
               <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
 
-                  <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', border: '15px rgba(255,255,255,0) solid', borderRadius: '15px', backgroundColor: 'rgba(255,255,255,0.4)'}}>
+                  <div style={{marginTop: '40px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', border: '15px rgba(255,255,255,0) solid', borderRadius: '15px', backgroundColor: 'rgba(255,255,255,0.4)'}}>
                     <GridList
                       cols={2}
                       cellHeight={200}
