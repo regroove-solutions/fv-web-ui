@@ -83,9 +83,9 @@ export default class Jigsaw extends Component {
       pictures['picture' + (k + 1)] = selectn('properties.file:content.data', v) + '?inline=true';
     })
 
-    //if (Object.entries(pictures).length > 0) {
+    if (selectn('success', computeResources)) {
       game = <Game pictures={pictures} />;
-    //}
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
