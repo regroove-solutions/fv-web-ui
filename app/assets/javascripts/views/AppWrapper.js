@@ -21,12 +21,6 @@ import ProviderHelpers from 'common/ProviderHelpers';
 
 import AppFrontController from './AppFrontController';
 
-// Components & Themes
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
-
-import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
-import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
-
 import FontIcon from 'material-ui/lib/font-icon';
 import Paper from 'material-ui/lib/paper';
 import FlatButton from 'material-ui/lib/flat-button';
@@ -221,7 +215,7 @@ export default class AppWrapper extends Component {
         <AppFrontController />
         {keyboardPicker}
 
-        <select onChange={this.changeTheme}>
+        <select style={{display:'none'}} onChange={this.changeTheme}>
             <option value="default">Default</option>
             <option value="kids">Kids</option>
         </select>

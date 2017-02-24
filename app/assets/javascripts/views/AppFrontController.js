@@ -27,12 +27,6 @@ import {
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
   PageDialectContributorsCreate, PageDialectStoriesAndSongsBookEntryCreate } from 'views/pages/create';
 
-// Components & Themes
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
-
-import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
-import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
-
 /**
 * Parameter matching class
 */
@@ -460,8 +454,16 @@ export default class AppFrontController extends Component {
 
       // Switch themes based on route params
       if (matchedRouteParams.hasOwnProperty('theme')) {
-        if (props.properties.theme.id != matchedRouteParams.theme) {
-          props.changeTheme(matchedRouteParams.theme);
+
+        let newTheme = matchedRouteParams.theme;
+
+        // Switch to workspace theme if available
+        if ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') && matchedRouteParams.theme == 'explore') {
+          newTheme = 'workspace';
+        }
+
+        if (props.properties.theme.id != newTheme) {
+          props.changeTheme(newTheme);
         }
       }
       else {
@@ -551,7 +553,7 @@ export default class AppFrontController extends Component {
 
             if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin)) {
 
-              return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle"}}>
+              return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","padding-top": "10px"}}>
                 <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Public View</Link></li>
               </ul>;
 

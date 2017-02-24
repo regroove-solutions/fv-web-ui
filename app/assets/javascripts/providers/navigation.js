@@ -5,6 +5,7 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
 import FirstVoicesKidsTheme from 'views/themes/FirstVoicesKidsTheme.js';
+import FirstVoicesWorkspaceTheme from 'views/themes/FirstVoicesWorkspaceTheme.js';
 
 const loggerMiddleware = createLoggerMiddleware();
 
@@ -35,6 +36,10 @@ const actions = {
     switch (id) {
       case 'kids':
         theme = ThemeManager.getMuiTheme(FirstVoicesKidsTheme);
+      break;
+
+      case 'workspace':
+        theme = ThemeManager.getMuiTheme(FirstVoicesWorkspaceTheme);
       break;
     }
 
