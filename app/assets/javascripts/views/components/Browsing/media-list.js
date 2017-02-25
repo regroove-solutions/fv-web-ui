@@ -115,7 +115,7 @@ export default class MediaList extends Component {
                             key={tile.uid}
                             title={tile.title}
                             titlePosition={fileTypeTilePosition}
-                            subtitle={<span><strong>{tile.properties['dc:description']}</strong></span>}
+                            subtitle={<span><strong>{/*tile.properties['dc:description']*/}{Math.round(selectn('properties.common:size', tile) * 0.001)} KB</strong></span>}
                             >{this._getMediaPreview(tile)}</GridTile>
                         }.bind(this))}
                     </GridList>

@@ -43,6 +43,8 @@ const fields = {
     'properties.dc:title': t.String,
     'properties.type': ResourceTypes,
     'common:size': MaxMB,
+    'picture:info.height': t.Number,
+    'picture:info.width': t.Number,
     'dc:contributors': t.String,
     'fvm:child_focused': t.Boolean,
     'fvm:origin': t.Boolean,

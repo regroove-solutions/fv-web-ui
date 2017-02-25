@@ -1,8 +1,8 @@
 import t from 'tcomb-form';
 import ValuedCheckboxFactory from 'views/components/Editor/fields/valued-checkbox';
+import RangeSelector from 'views/components/Editor/fields/range';
 
 import ProviderHelpers from 'common/ProviderHelpers';
-
 
 const options = {
   Portals: {
@@ -63,6 +63,16 @@ const options = {
       'common:size': {
         label: 'Greater than (MB)',
         nxql: ' common:size > ${value} * 1024 * 1024'
+      },
+      'picture:info.height': {
+        label: 'Height Greater Than:',
+        nxql: ' picture:info/height > ${value}',
+        factory: RangeSelector
+      },
+      'picture:info.width': {
+        label: 'Width Greater Than:',
+        nxql: ' picture:info/width > ${value}',
+        factory: RangeSelector
       },
       'dc:contributors': {
         label: 'My Uploads/Contributions',
