@@ -29,8 +29,8 @@ export default class FacetFilterList extends Component {
         ['_toggleCheckbox'].forEach( (method => this[method] = this[method].bind(this)) );
     }
 
-    _toggleCheckbox(facetId, event, checked) {
-        this.props.onFacetSelected(this.props.facetField, facetId, event, checked);
+    _toggleCheckbox(facetId, childrenIDs = [], event, checked) {
+        this.props.onFacetSelected(this.props.facetField, facetId, childrenIDs, event, checked);
         
         let newList;
 
@@ -50,10 +50,13 @@ export default class FacetFilterList extends Component {
 
         const listItemStyle = {fontSize: '13px', fontWeight: 'normal'};
 
-        return <Paper>
+        return <Paper style={{maxHeight: '70vh', overflow: 'auto'}}>
             <ListUI subheader={this.props.titles}>
 
                 {(this.props.facets || []).map(function (facet, i) { 
+
+                    let childrenIds = [];
+                    let parentFacetChecked = this.state.checked.includes(facet.uid)
 
                     let nestedItems = [];
                     let children = selectn('contextParameters.children.entries', facet).sort(function(a, b){
@@ -65,9 +68,15 @@ export default class FacetFilterList extends Component {
                     // Render children if exist 
                     if (children.length > 0) {
                         children.map(function (facetChild, i) {
+
+                            childrenIds.push(facetChild.uid);
+
+                            // Mark as checked if parent checked or if it is checked directly.
+                            let checked = parentFacetChecked || this.state.checked.includes(facetChild.uid);
+
                             nestedItems.push(<ListItem
                                 key={facetChild.uid}
-                                leftCheckbox={<Checkbox checked={this.state.checked.includes(facetChild.uid)} onCheck={this._toggleCheckbox.bind(this, facetChild.uid)} />}
+                                leftCheckbox={<Checkbox checked={checked} onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)} />}
                                 style={listItemStyle}
                                 primaryText={facetChild.title} />);
                         }.bind(this));
@@ -76,9 +85,12 @@ export default class FacetFilterList extends Component {
                     return <ListItem
                                 style={listItemStyle}
                                 key={facet.uid}
-                                leftCheckbox={<Checkbox checked={this.state.checked.includes(facet.uid)}  onCheck={this._toggleCheckbox.bind(this, facet.uid)} />}
+                                leftCheckbox={<Checkbox checked={parentFacetChecked}
+                                onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)} />}
                                 primaryText={facet.title}
-                                primaryTogglesNestedList={true}
+                                open={parentFacetChecked}
+                                initiallyOpen={true}
+                                autoGenerateNestedIndicator={false}
                                 nestedItems={nestedItems} />
                 }.bind(this))}
 

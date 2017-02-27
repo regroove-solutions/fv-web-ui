@@ -52,20 +52,31 @@ export default class PageDialectLearnBase extends Component {
     }
   }
 
-  _handleFacetSelected(facetField, categoryId, event, checked) {
+  _handleFacetSelected(facetField, categoryId, childrenIds, event, checked) {
 
     let currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds');
 
     let categoryFilter = '';
     let newList;
+    let childrenIdsList = new List(childrenIds);
 
     // Adding filter
     if (checked) {
       newList = currentCategoryFilterIds.push(categoryId);
+
+      if (childrenIdsList.size > 0) {
+        newList = newList.merge(childrenIdsList);
+      }
     }
     // Removing filter
     else {
       newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(categoryId));
+
+      if (childrenIdsList.size > 0) {
+        newList = newList.filter(function(v, k){
+          return !childrenIdsList.includes(v);
+        });
+      }
     }
 
     // Category filter 
