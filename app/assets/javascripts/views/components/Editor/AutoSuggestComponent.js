@@ -6,6 +6,7 @@ import selectn from 'selectn';
 import Autosuggest from 'react-autosuggest';
 
 import RefreshIndicator from 'material-ui/lib/refresh-indicator';
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 const theme = {
   container: 'autosuggest dropdown',
@@ -258,7 +259,7 @@ export default class AutoSuggestComponent extends Component {
 
     return (
       <div className="row">
-        <div className="col-xs-10">
+        <div className="col-xs-12">
 
             <Autosuggest
               ref="suggestion_widget"
@@ -273,8 +274,8 @@ export default class AutoSuggestComponent extends Component {
 
         </div>
 
-        <div className="col-xs-2">
-          <RefreshIndicator size={40} left={20} top={0} status={status} />
+        <div className="col-xs-12">
+          <LinearProgress mode="indeterminate" className={classNames({'hidden': !this.getComputeType().isFetching})} />
         </div>
 
       </div>
