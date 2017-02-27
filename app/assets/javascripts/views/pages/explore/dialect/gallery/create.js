@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import Immutable, { List, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -24,6 +25,9 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -38,26 +42,27 @@ export default class PageDialectGalleryCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
     createGallery: PropTypes.func.isRequired,
-    computeCreateGallery: PropTypes.object.isRequired
+    computeGallery: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
     this.state = {
-      formValue: null
+      formValue: null,
+      galleryPath: null
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    let path = newProps.splitWindowPath.slice(1, newProps.splitWindowPath.length - 2).join('/');
-    newProps.fetchDialect('/' + path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   // Fetch data on initial render
@@ -79,11 +84,11 @@ export default class PageDialectGalleryCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect.response != this.props.computeDialect.response):
+      case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
       
-      case (newProps.computeCreateGallery.error != this.props.computeCreateGallery.error):
+      case (newProps.computeGallery != this.props.computeGallery):
         return true;
       break;
     }
@@ -91,16 +96,11 @@ export default class PageDialectGalleryCreate extends Component {
     return false;
   }
 
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
-  }
-
   _onRequestSaveForm(e) {
 
     // Prevent default behaviour
     e.preventDefault();
 
-    let path = this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length - 2).join('/');
     let formValue = this.refs["form_gallery_create"].getValue();
 
     //let properties = '';
@@ -121,11 +121,16 @@ export default class PageDialectGalleryCreate extends Component {
 
     // Passed validation
     if (formValue) {
-  	  this.props.createGallery('/' + path + '/Portal', {
+      let now = Date.now();
+  	  this.props.createGallery(this.props.routeParams.dialect_path + '/Portal/', {
   	    type: 'FVGallery',
   	    name: formValue['dc:title'],
   	    properties: properties
-  	  });
+  	  }, null, now);
+
+      this.setState({
+        galleryPath: this.props.routeParams.dialect_path + '/Portal/' + formValue['dc:title'] + '.' + now
+      });
     } else {
       //let firstError = this.refs["form_word_create"].validate().firstError();
       window.scrollTo(0, 0);
@@ -135,20 +140,23 @@ export default class PageDialectGalleryCreate extends Component {
 
   render() {
 
-    const { computeDialect, computeCreateGallery } = this.props;
+    let FVGalleryOptions = Object.assign({}, selectn("FVGallery", options));
 
-    let dialect = computeDialect.response;
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.galleryPath,
+      'entity': this.props.computeGallery
+    }, {
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
+    }])
 
-    if (computeDialect.isFetching || !computeDialect.success) {
-      return <CircularProgress mode="indeterminate" size={2} />;
-    }
+    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    return <div>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>Add New Gallery to <i>{dialect.get('dc:title')}</i></h1>
-            
-            {computeCreateGallery.isError ? <div className="alert alert-danger" role="alert">{computeCreateGallery.error}</div> : ''}
-            
+            <h1>Add New Gallery to <i>{selectn('response.title', computeDialect2)}</i></h1>
+
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
@@ -156,9 +164,9 @@ export default class PageDialectGalleryCreate extends Component {
                   <t.form.Form
                     ref="form_gallery_create"
                     type={t.struct(selectn("FVGallery", fields))}
-                    context={dialect}
+                    context={selectn('response', computeDialect2)}
                     value={this.state.formValue}
-                    options={selectn("FVGallery", options)} />
+                    options={FVGalleryOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
@@ -175,6 +183,6 @@ export default class PageDialectGalleryCreate extends Component {
 
               </div>
           </div>
-        </div>;
+        </PromiseWrapper>;
   }
 }
