@@ -14,7 +14,7 @@ import Footer from 'views/components/Navigation/Footer';
 
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGallery, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
+import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
@@ -215,12 +215,18 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery' ],
+        page: <PageDialectGalleries />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create' ],
         page: <PageDialectGalleryCreate />
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('galleryName', ANYTHING_BUT_SLASH) ],
-        page: <PageDialectGallery />,
+        page: <PageDialectGalleryView />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
@@ -553,7 +559,7 @@ export default class AppFrontController extends Component {
 
             if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin)) {
 
-              return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","padding-top": "10px"}}>
+              return <ul className={classNames('nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","paddingTop": "10px"}}>
                 <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Public View</Link></li>
               </ul>;
 

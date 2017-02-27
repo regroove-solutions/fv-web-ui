@@ -35,13 +35,14 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
-import {ListView} from './list-view';
+import GeneralList from 'views/components/Browsing/general-list';
+import {CardView} from './list-view';
 
 import withFilter from 'views/hoc/grid-list/with-filter';
 
 const DEFAULT_LANGUAGE = 'english';
 
-const FilteredCardList = withFilter(ListView);
+const FilteredCardList = withFilter(GeneralList);
 
 /**
 * Learn songs
@@ -130,6 +131,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
       fixedList:true,
       fixedListFetcher:this.fixedListFetcher,
       filteredItems:this.state.filteredList,
+      card: <CardView />,
       area:this.props.routeParams.area,
       applyDefaultFormValues:true,
       formValues: {'properties.fvbook:type': this.props.typeFilter},
@@ -141,7 +143,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     let listView = <FilteredCardList {...listProps} />;
 
     if (isKidsTheme) {
-      listView = <ListView {...listProps} cols={3} theme={this.props.routeParams.theme} />
+      listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme} />
     }
     
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>

@@ -32,6 +32,10 @@ const defaultFilterFunc = function (propertyToSearch, filterValue) {
 export default function withFilter(ComposedFilter, DefaultFetcherParams) {
   class FilteredGridList extends Component {
 
+    static defaultProps = {
+        filterOptionsKey: "Default"
+    }
+
     static propTypes = {
         fetcher: PropTypes.func,
         fixedList: PropTypes.bool,

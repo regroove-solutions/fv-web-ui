@@ -5,6 +5,14 @@ import RangeSelector from 'views/components/Editor/fields/range';
 import ProviderHelpers from 'common/ProviderHelpers';
 
 const options = {
+  Default: {
+    fields: {
+      'properties.dc:title': {
+        label: 'Title',
+        nxql: ' (dc:title ILIKE \'%${value}%\' OR dc:description ILIKE \'%${value}%\')'
+      },
+    }
+  },
   Portals: {
     fields: {
       'contextParameters.ancestry.dialect.dc:title': {

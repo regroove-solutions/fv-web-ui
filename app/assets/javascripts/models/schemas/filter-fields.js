@@ -26,6 +26,9 @@ const BookTypes = t.enums({
 const MaxMB = t.refinement(t.Number, (n) => {return n <= 2000});
 
 const fields = {
+  Default: {
+    'properties.dc:title': t.String
+  },
   Portals: makeOptional({
     'contextParameters.ancestry.dialect.dc:title': t.String,
     'contextParameters.portal.roles': Roles

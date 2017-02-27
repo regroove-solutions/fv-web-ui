@@ -57,7 +57,7 @@ export default class MediaList extends Component {
   _getMediaPreview(tile) {
     switch (selectn('type', tile)) {
       case 'FVAudio':
-        return <audio style={{height: '98px'}} src={tile.properties['file:content'].data} preload="none" controls />
+        return <audio style={{height: '98px'}} src={selectn('properties.file:content.data', tile)} preload="none" controls />
       break;
 
       case 'FVPicture':
@@ -65,7 +65,7 @@ export default class MediaList extends Component {
       break;
 
       case 'FVVideo':
-        return <video height={190} src={tile.properties['file:content'].data} preload="none" controls />
+        return <video height={190} src={selectn('properties.file:content.data', tile)} preload="none" controls />
       break;
     }
 

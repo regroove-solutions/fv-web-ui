@@ -28,7 +28,8 @@ import PageJigsawGame from './explore/dialect/play/jigsaw'
 import PageWordSearch from './explore/dialect/play/wordsearch'
 import PageColouringBook from './explore/dialect/play/colouringbook'
 
-import PageDialectGallery from './explore/dialect/gallery'
+import PageDialectGalleries from './explore/dialect/gallery'
+import PageDialectGalleryView from './explore/dialect/gallery/view'
 import PageDialectReports from './explore/dialect/reports'
 
 import PageDialectLearnWords from './explore/dialect/learn/words'
@@ -79,7 +80,8 @@ module.exports = {
   PageDialectViewAlphabet,
   PageDialectViewCharacter,
   PageDialectPlay,
-  PageDialectGallery,
+  PageDialectGalleries,
+  PageDialectGalleryView,
   PageDialectReports,
   PagePlay,
   PageSearch,

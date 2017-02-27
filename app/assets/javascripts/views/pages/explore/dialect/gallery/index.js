@@ -15,105 +15,163 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import Immutable, { List, Map } from 'immutable';
+
 import classNames from 'classnames';
-import ImageGallery from 'react-image-gallery';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
 import ConfGlobal from 'conf/local.json';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
+
 import RaisedButton from 'material-ui/lib/raised-button';
 
-import ProviderHelpers from 'common/ProviderHelpers';
-
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
-//Stylesheet
-import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+import DropDownMenu from 'material-ui/lib/DropDownMenu';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import GeneralList from 'views/components/Browsing/general-list';
+
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+const DEFAULT_LANGUAGE = 'english';
+
+const FilteredList = withFilter(GeneralList);
+
+/**
+* Learn songs
+*/
 @provide
-export default class Gallery extends React.Component {
+export default class PageDialectGalleries extends Component {
 
   static propTypes = {
-	  splitWindowPath: PropTypes.array.isRequired,
-	  windowPath: PropTypes.string.isRequired,
-	  pushWindowPath: PropTypes.func.isRequired,
-      fetchGallery: PropTypes.func.isRequired,
-      computeGallery: PropTypes.object.isRequired,
-      routeParams: PropTypes.object.isRequired
+    properties: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
+    fetchGalleries: PropTypes.func.isRequired,
+    computeGalleries: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired, 
+    routeParams: PropTypes.object.isRequired,
+    typeFilter: PropTypes.string,
+    typePlural: PropTypes.string
   };
 
-  constructor(props, context){
+  constructor(props, context) {
     super(props, context);
 
     this.state = {
-      galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
+      filteredList: null
     };
-  }
 
-  handleImageLoad(event) {
-    console.log('Image loaded ', event.target)
+    // Bind methods to 'this'
+    ['_onNavigateRequest', '_onItemNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-	  newProps.fetchGallery(this.props.routeParams.dialect_path + "/Portal/" + this.props.routeParams.galleryName);
-  }
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+    newProps.fetchGalleries(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
   componentDidMount() {
-	  this.fetchData(this.props);
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
+  }
+
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
+  }
+
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
+  }
+
+  _onItemNavigateRequest(path) {
+    this.props.pushWindowPath(path.replace('/Portal', '/gallery'));
   }
 
   render() {
 
-	const images = [];
-
-    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-
-	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
-		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
-		images.push(image);
-	});
-
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.galleryPath,
-      'entity': this.props.computeGallery
+      'id': this.props.routeParams.dialect_path + '/Portal',
+      'entity': this.props.computePortal
+    },{
+      'id': this.props.routeParams.dialect_path + '/Portal',
+      'entity': this.props.computeGalleries
     }])
 
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeGalleries = ProviderHelpers.getEntry(this.props.computeGalleries, this.props.routeParams.dialect_path + '/Portal');
+
+    const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+    let listProps = {
+      defaultLanguage: DEFAULT_LANGUAGE,
+      fixedList: true,
+      fixedListFetcher: this.fixedListFetcher,
+      filteredItems: this.state.filteredList,
+      contextParamsKey: 'gallery',
+      area: this.props.routeParams.area,
+      metadata: selectn('response', computeGalleries),
+      items: selectn('response.entries', computeGalleries) || [],
+      action: this._onItemNavigateRequest
+    };
+
+    let listView = <FilteredList {...listProps} />;
+
+    if (isKidsTheme) {
+      listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme} />
+    }
+    
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-	          <div className="row">
-	            <div className="col-xs-8">
-	            </div>
-	            <div className={classNames('col-xs-4', 'text-right')}>
-                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeGallery)}}>
-                    <RaisedButton label="Edit Gallery" onTouchTap={this._onNavigateRequest.bind(this, 'edit')} primary={true} />
+
+              <div className={classNames('row', {'hidden': isKidsTheme})}>
+
+                <div className="col-xs-8"></div>
+
+                <div className={classNames('col-xs-4', 'text-right')}>
+                  <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
+                    <RaisedButton label={"Create Gallery"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                   </AuthorizationFilter>
-	            </div>
-	          </div>
+                </div>
 
-            <div className="row">
+                <div className="col-xs-12">
+                  <h1>{selectn('response.title', computeDialect2)} Galleries</h1>
+                </div>
 
-              <div className="col-xs-12">
-                <h1>{selectn('response.title', computeGallery)}</h1>
-                <p>{selectn('response.properties.dc:description', computeGallery)}</p>
-                <div className="col-xs-4 col-xs-offset-4">
-	           	 <ImageGallery
-	              ref={i => this._imageGallery = i}
-	              items={images}
-	           	  slideInterval={2000}
-	              handleImageLoad={this.handleImageLoad}
-	              showThumbnails={false}
-	              showBullets={true} />
-	           	 </div>
-	           </div>
-            </div>
+              </div>
+
+              <div className="row">
+                <div className="col-xs-12">
+
+                  <div className="row" style={{marginBottom: '20px'}}>
+                    <div className={classNames('col-xs-12', {'col-xs-8': isKidsTheme, 'col-xs-offset-2': isKidsTheme})}>
+                      {listView}
+                    </div>
+                  </div>
+
+                </div>
+              </div>
         </PromiseWrapper>;
   }
 }

@@ -107,13 +107,13 @@ class CardView extends Component {
                 <Card style={{minHeight: '260px'}}>
 
                   <CardMedia
-                    overlay={<CardTitle title={<span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.item.title)}} />} subtitle={selectn('properties.fvbook:title_literal_translation', this.props.item).map(function(translation, i) {
+                    overlay={<CardTitle title={<span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.item.title)}} />} subtitle={(selectn('properties.fvbook:title_literal_translation', this.props.item) || []).map(function(translation, i) {
                       if (translation.language == DEFAULT_LANGUAGE) {
                         return <span key={i}>{translation.translation}</span>;
                       }
                     })} />}>
 
-                    <div style={{ backgroundSize: (selectn('width', mediumImage) > 200) ? 'contain' : 'cover', minWidth: 'inherit', width: '100%', height: '180px', textAlign: 'center',backgroundImage: 'url(\'' + coverImage + '?inline=true\')'}}>
+                    <div style={{ backgroundSize: (selectn('width', mediumImage) > 200) ? '100%' : 'cover', minWidth: 'inherit', width: '100%', height: '180px', textAlign: 'center',backgroundImage: 'url(\'' + coverImage + '?inline=true\')'}}>
                     </div>
                     
 
@@ -150,53 +150,7 @@ class CardView extends Component {
   }
 }
 
-
-class ListView extends Component {
-
-  static propTypes = {
-    items: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.instanceOf(List)
-    ]),
-    filteredItems: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.instanceOf(List)
-    ]),
-    type: PropTypes.string,
-    theme: PropTypes.string,
-    action: PropTypes.func,
-    cols: PropTypes.number,
-    cellHeight: PropTypes.number,
-    style: PropTypes.object
-  };
-
-  static defaultProps = {
-    cols: 3,
-    cellHeight: 210,
-    style: null
-  }
-
-  constructor(props, context){
-    super(props, context);
-  }
-
-  render() {
-
-    let items = this.props.filteredItems || this.props.items;
-
-    if (selectn('length', items) == 0) {
-      return <div style={{margin: '20px 0'}}>No results found.</div>;
-    }
-
-    return <div className="row">
-                {(items || []).map(function (item, i) {
-                    return <CardView key={item.uid} item={item} {...this.props} />
-                }.bind(this))}
-            </div>;
-  }
-}
-
 export {
   Introduction,
-  ListView
+  CardView
 }

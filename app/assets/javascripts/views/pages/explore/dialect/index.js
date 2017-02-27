@@ -185,9 +185,6 @@ export default class ExploreDialect extends Component {
     },{
       'id': this.props.routeParams.dialect_path + '/Portal',
       'entity': this.props.computePortal
-    },{
-      'id': this.props.routeParams.dialect_path + '/Portal',
-      'entity': this.props.computeGalleries
     }])
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
@@ -273,14 +270,7 @@ export default class ExploreDialect extends Component {
               <ToolbarGroup firstChild={true} float="left">
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
-                <DropDownMenu value="dropDownLabel" onChange={this._handleGalleryDropDownChange}>
-                  <MenuItem value="dropDownLabel" primaryText="Image Galleries" />    
-                  {(selectn('response.entries', computeGalleries) || []).map((gallery, i) =>
-                  	<MenuItem key={i} value={this.props.windowPath + "/gallery/" + gallery.title} primaryText={gallery.title} />  
-                  )}                   
-                  <MenuItem value={this.props.windowPath + "/gallery/create"} primaryText="Create New Gallery" />
-                </DropDownMenu>                
-                
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> <ToolbarSeparator />
               </ToolbarGroup>
 
               <ToolbarGroup float="right">
