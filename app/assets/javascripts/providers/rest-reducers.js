@@ -75,6 +75,8 @@ export default {
               id: action.pathOrId,
               isFetching: false,
               success: true,
+              wasUpdated: (action.type.indexOf('_UPDATE_') !== -1),
+              wasCreated: (action.type.indexOf('_CREATE_') !== -1),
               response: action.response,
               message: action.message
             }));

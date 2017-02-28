@@ -41,12 +41,14 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     fetchBook: PropTypes.func.isRequired,
     computeBook: PropTypes.object.isRequired,
     createBookEntry: PropTypes.func.isRequired,
     computeBookEntry: PropTypes.object.isRequired,
+    typePlural: PropTypes.string.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -84,8 +86,21 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
+    
+    let currentBookEntry, nextBookEntry;
+
+    if (this.state.bookEntryPath != null) {
+      currentBookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath);
+      nextBookEntry = ProviderHelpers.getEntry(nextProps.computeBookEntry, this.state.bookEntryPath);
+    }
+
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
+    }
+
+    // 'Redirect' on success
+    if (selectn('success', currentBookEntry) != selectn('success', nextBookEntry) && selectn('success', nextBookEntry) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + nextProps.routeParams.dialect_path + '/learn/' + nextProps.typePlural + '/' + nextProps.routeParams.parentBookName);
     }
   }
 

@@ -42,6 +42,7 @@ export default class PageDialectGalleryCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     createGallery: PropTypes.func.isRequired,
@@ -72,8 +73,21 @@ export default class PageDialectGalleryCreate extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
+
+    let currentGallery, nextGallery;
+
+    if (this.state.galleryPath != null) {
+      currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+      nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+    }
+
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
+    }
+
+    // 'Redirect' on success
+    if (selectn('success', currentGallery) != selectn('success', nextGallery) && selectn('success', nextGallery) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
     }
   }
 
@@ -122,7 +136,7 @@ export default class PageDialectGalleryCreate extends Component {
     // Passed validation
     if (formValue) {
       let now = Date.now();
-  	  this.props.createGallery(this.props.routeParams.dialect_path + '/Portal/', {
+  	  this.props.createGallery(this.props.routeParams.dialect_path + '/Portal', {
   	    type: 'FVGallery',
   	    name: formValue['dc:title'],
   	    properties: properties
@@ -132,7 +146,7 @@ export default class PageDialectGalleryCreate extends Component {
         galleryPath: this.props.routeParams.dialect_path + '/Portal/' + formValue['dc:title'] + '.' + now
       });
     } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
+      //let firstError = this.refs["form_Gallery_create"].validate().firstError();
       window.scrollTo(0, 0);
     }
 

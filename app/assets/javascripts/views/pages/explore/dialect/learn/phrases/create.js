@@ -39,6 +39,7 @@ export default class PageDialectPhrasesCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     createPhrase: PropTypes.func.isRequired,
@@ -77,9 +78,25 @@ export default class PageDialectPhrasesCreate extends Component {
 
   componentWillReceiveProps(nextProps) {
     
-    if(this.props.onDocumentCreated && this.state.phrasePath && selectn("success", ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath))) {
+    let currentPhrase, nextPhrase;
+
+    if (this.state.phrasePath != null) {
+      currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
+      nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath);
+    }
+
+    if(this.props.onDocumentCreated && this.state.phrasePath && selectn("success", nextPhrase)) {
     	this.props.onDocumentCreated(ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath).response);
     }    	
+
+    if (nextProps.windowPath !== this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
+
+    // 'Redirect' on success
+    if (!this.props.embedded && selectn('success', currentPhrase) != selectn('success', nextPhrase) && selectn('success', nextPhrase) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases'));
+    }
   }
 
   shouldComponentUpdate(newProps, newState) {

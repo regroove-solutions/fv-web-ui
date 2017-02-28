@@ -40,6 +40,7 @@ export default class PageDialectPhraseEdit extends Component {
   static propTypes = {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchPhrase: PropTypes.func.isRequired,
     computePhrase: PropTypes.object.isRequired,
     updatePhrase: PropTypes.func.isRequired,
@@ -71,6 +72,21 @@ export default class PageDialectPhraseEdit extends Component {
   componentDidMount() {
     this.fetchData(this.props);
   }  
+
+  componentWillReceiveProps(nextProps) {
+    
+    let currentPhrase, nextPhrase;
+
+    if (this.state.phrasePath != null) {
+      currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
+      nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath);
+    }
+
+    // 'Redirect' on success
+    if (selectn('wasUpdated', currentPhrase) != selectn('wasUpdated', nextPhrase) && selectn('wasUpdated', nextPhrase) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases'));
+    }
+  }
 
   shouldComponentUpdate(newProps, newState) {
 

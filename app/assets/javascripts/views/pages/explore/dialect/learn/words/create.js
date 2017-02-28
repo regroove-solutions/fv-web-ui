@@ -39,6 +39,7 @@ export default class PageDialectWordsCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     createWord: PropTypes.func.isRequired,
@@ -69,8 +70,21 @@ export default class PageDialectWordsCreate extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
+
+    let currentWord, nextWord;
+
+    if (this.state.wordPath != null) {
+      currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+      nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath);
+    }
+
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
+    }
+
+    // 'Redirect' on success
+    if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
     }
   }
 
@@ -128,6 +142,7 @@ export default class PageDialectWordsCreate extends Component {
       this.setState({
         wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
       });
+
     } else {
       //let firstError = this.refs["form_word_create"].validate().firstError();
       window.scrollTo(0, 0);

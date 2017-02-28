@@ -39,6 +39,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     createBook: PropTypes.func.isRequired,
@@ -52,7 +53,8 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     this.state = {
       formValue: null,
-      dialectPath: null
+      dialectPath: null,
+      bookPath: null
     };
 
     // Bind methods to 'this'
@@ -68,10 +70,23 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     this.fetchData(this.props);
   }
 
-  // Refetch data on URL change
+
   componentWillReceiveProps(nextProps) {
+    
+    let currentBook, nextBook;
+
+    if (this.state.bookPath != null) {
+      currentBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
+      nextBook = ProviderHelpers.getEntry(nextProps.computeBook, this.state.bookPath);
+    }
+
     if (nextProps.windowPath !== this.props.windowPath) {
       this.fetchData(nextProps);
+    }
+
+    // 'Redirect' on success
+    if (selectn('success', currentBook) != selectn('success', nextBook) && selectn('success', nextBook) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextBook).replace('Stories & Songs', 'learn/songs'));
     }
   }
 

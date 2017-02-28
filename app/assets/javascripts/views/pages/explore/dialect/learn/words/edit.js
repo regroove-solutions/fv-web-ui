@@ -40,6 +40,7 @@ export default class PageDialectWordEdit extends Component {
   static propTypes = {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchWord: PropTypes.func.isRequired,
     computeWord: PropTypes.object.isRequired,
     updateWord: PropTypes.func.isRequired,
@@ -71,6 +72,22 @@ export default class PageDialectWordEdit extends Component {
   componentDidMount() {
     this.fetchData(this.props);
   }  
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+
+    let currentWord, nextWord;
+
+    if (this.state.wordPath != null) {
+      currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+      nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath);
+    }
+
+    // 'Redirect' on success
+    if (selectn('wasUpdated', currentWord) != selectn('wasUpdated', nextWord) && selectn('wasUpdated', nextWord) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+    }
+  }
 
   shouldComponentUpdate(newProps, newState) {
 

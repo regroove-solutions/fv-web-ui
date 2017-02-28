@@ -40,6 +40,7 @@ export default class PageDialectGalleryEdit extends Component {
   static propTypes = {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchGallery: PropTypes.func.isRequired,
     computeGallery: PropTypes.object.isRequired,
     updateGallery: PropTypes.func.isRequired,
@@ -71,6 +72,22 @@ export default class PageDialectGalleryEdit extends Component {
   componentDidMount() {
     this.fetchData(this.props);
   }  
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+
+    let currentGallery, nextGallery;
+
+    if (this.state.galleryPath != null) {
+      currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+      nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+    }
+
+    // 'Redirect' on success
+    if (selectn('wasUpdated', currentGallery) != selectn('wasUpdated', nextGallery) && selectn('wasUpdated', nextGallery) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
+    }
+  }
 
   shouldComponentUpdate(newProps, newState) {
 
