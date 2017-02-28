@@ -248,7 +248,20 @@ export default class Preview extends Component {
           }
 
           if (wordResponse && word.success) {
-            body = <div><strong>{wordResponse.title}</strong></div>;
+
+            let image = selectn('contextParameters.word.related_pictures[0].path', wordResponse);
+            let translations = selectn('properties.fv:literal_translation', wordResponse) || selectn('properties.fv-word:definitions', wordResponse);
+
+            if (this.props.minimal) {
+              body = <div><strong>{selectn('properties.dc:title', wordResponse)}</strong></div>;
+            } else {
+              body = <div>
+                {(image) ? <Avatar src={ConfGlobal.baseURL + image} size={45} className="pull-left" style={{marginRight: '10px', marginTop: '10px'}} /> : ''}
+                <strong style={{lineHeight: '200%'}}>{selectn('properties.dc:title', wordResponse)} ({selectn('properties.dc:title', wordResponse)})</strong><br/>
+                {translations.map((translation, j) =><span key={j}>{translation.translation}<br/></span>)}<br/>
+                <audio src={ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', wordResponse)} controls />
+              </div>;
+            }
           }
         break;
 

@@ -16,7 +16,9 @@ function renderInput(locals) {
     locals.setExpandedValue(fullValue);
   };
 
-  let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
+  let previewProps = selectn('attrs.previewProps', locals) || {};
+
+  let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} {...previewProps} />
 
   if (!locals.value) {
     content = <div>

@@ -574,7 +574,10 @@ const options = {
           factory: SelectSuggestFactory,
           type: 'FVWord',
           attrs: {
-            disableCreateNewButton: true
+            disableCreateNewButton: true,
+            previewProps: {
+              minimal: true
+            }
           }
         }
       },

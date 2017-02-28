@@ -42,11 +42,15 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Paper from 'material-ui/lib/paper';
-import {List, ListItem} from 'material-ui/lib/lists';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
 
+import ListUI from 'material-ui/lib/lists/list';
+import ListItem from 'material-ui/lib/lists/list-item';
+
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
+
+import Preview from 'views/components/Editor/Preview';
 
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 import Link from 'views/components/Document/Link';
@@ -281,7 +285,7 @@ export default class ExploreDialect extends Component {
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-9', 'col-md-10')}>
+              <div className={classNames('col-xs-9', 'col-md-9')}>
                 <div>
                   <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                     <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
@@ -289,7 +293,7 @@ export default class ExploreDialect extends Component {
                 </div>
               </div>
 
-              <div className={classNames('col-xs-3', 'col-md-2')}>
+              <div className={classNames('col-xs-3', 'col-md-3')}>
 
                 {(() => {
 
@@ -297,29 +301,24 @@ export default class ExploreDialect extends Component {
 
                   if (featuredWords && featuredWords.length > 0) {
 
-                      return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
+                      return <div style={{padding: '25px'}}>
 
-                            <strong><span>First Words</span></strong><br />
+                            <ListUI subheader="First Words" zDepth={2}>
 
-                            {(featuredWords || []).map((word, i) =>
-                              <div key={i}>
-                                <strong><a href={'/explore' + word.path}>{word['dc:title']}</a></strong>
-                                {(word['fv:related_audio'][0]) ? 
-                                    <audio src={ConfGlobal.baseURL + word['fv:related_audio'][0].path} controls />
-                                : ''}
-                                <br />
-                                <span>{word['fv-word:part_of_speech']}</span><br />
-                                {word['fv:literal_translation'].map((wordTranslation, j) =>
-                                  <span key={j}>
-                                    {wordTranslation.language}<br />
-                                    {wordTranslation.translation}
-                                  </span>
-                                )}
-                                <br /><br />
-                              </div>
-                            )} 
+                              {(featuredWords || []).map(function (word, i) {
+                              
+                                let pathArray = selectn('path', word).split('/');
+                                let name = pathArray[pathArray.length-1];
+
+                                return <ListItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/words/' + name)} key={i} style={{backgroundColor: (i % 2) ? '#f7f7f7' : '#fff'}}>
+                                  <Preview id={word.uid} expandedValue={{contextParameters: {word: {related_audio: [selectn('fv:related_audio[0]', word)]}}, properties: word}} type="FVWord" />
+                                </ListItem>;
+                                }.bind(this)
+                              )} 
+
+                             </ListUI>
                             
-                          </Paper>;
+                          </div>;
                     }
 
                   })()}

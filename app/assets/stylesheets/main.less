@@ -394,3 +394,16 @@ audio,video{
 .breadcrumb{
   margin-top: 10px;
 }
+
+/*
+
+// Remove audio download button workaround
+// See http://stackoverflow.com/questions/39602852/disable-download-button-for-google-chrome/40975859#40975859
+audio::-webkit-media-controls {
+    overflow: hidden !important
+}
+audio::-webkit-media-controls-enclosure {
+    width: calc(100% + 12px);
+    margin-left: auto;
+}
+*/
