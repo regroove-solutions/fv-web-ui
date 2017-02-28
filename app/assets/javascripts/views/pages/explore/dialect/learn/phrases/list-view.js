@@ -36,7 +36,7 @@ import Preview from 'views/components/Editor/Preview';
 export default class ListView extends DataListView {
   
   static defaultProps = {
-    DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books'],
+    DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books', 'related_audio', 'related_pictures'],
     DEFAULT_PAGE: 0,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
