@@ -11,17 +11,19 @@ export default {
 
 			    dispatch( { type: key + '_CREATE_START', pathOrId: pathOrId } );
 
-			    let createMethod = DocumentOperations.createDocument(parentDoc, docParams)
-
 			    if (file) {
-			    	createMethod = DocumentOperations.createDocumentWithBlob(parentDoc, docParams, file);
-			    }
-
-			    return createMethod.then((response) => {
-			      dispatch( { type: key + '_CREATE_SUCCESS', message: 'Document created successfully!', response: response, pathOrId: pathOrId } )
-			    }).catch((error) => {
-			        dispatch( { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId } )
-			    });
+					return DocumentOperations.createDocumentWithBlob(parentDoc, docParams, file).then((response) => {
+					dispatch( { type: key + '_CREATE_SUCCESS', message: 'Document with blob created successfully!', response: response, pathOrId: pathOrId } )
+					}).catch((error) => {
+						dispatch( { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId } )
+					});
+			    } else {
+					return DocumentOperations.createDocument(parentDoc, docParams).then((response) => {
+					dispatch( { type: key + '_CREATE_SUCCESS', message: 'Document created successfully!', response: response, pathOrId: pathOrId } )
+					}).catch((error) => {
+						dispatch( { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId } )
+					});
+				}
 			}
 		}
 	},
