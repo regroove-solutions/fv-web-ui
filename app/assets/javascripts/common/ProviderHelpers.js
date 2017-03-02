@@ -122,5 +122,10 @@ export default {
     }
 
     return (!nxqlFilterString || nxqlFilterString.length == 0) ? '' : nxqlFilterString;
+  },
+  regex: {
+    ANYTHING_BUT_SLASH : "([^/]*)",
+    WORKSPACE_OR_SECTION : "(sections|Workspaces)",
+    KIDS_OR_DEFAULT : "(kids|explore)"
   }
 }

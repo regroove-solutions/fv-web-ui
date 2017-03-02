@@ -27,6 +27,12 @@ module.exports = function(env) {
   var absJSPublicDirectory = path.resolve(jsPublicDirectory)
   var absGamesDirectory = path.resolve()
 
+  var happyPackPlugins = ['transform-react-jsx-component-data-ids', 'transform-decorators-legacy'];
+
+  if (env === 'development') {
+    happyPackPlugins.push('transform-react-jsx-location')
+  }
+
   var webpackConfig = {
 
     context: absJSSourceDirectory,
@@ -41,7 +47,14 @@ module.exports = function(env) {
     plugins: [
      new HappyPack({
         id: 'js',
-        loaders: [ 'babel-loader' ],
+        loaders: [ {
+            loader: 'babel-loader',
+            query: {
+              plugins: happyPackPlugins,
+              presets: ['react', 'es2015', 'stage-0'],
+              cacheDirectory: true
+            }
+          } ],
         threads: 4
       })
     ],

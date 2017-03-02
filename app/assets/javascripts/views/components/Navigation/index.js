@@ -22,6 +22,8 @@ import provide from 'react-redux-provide';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import Shepherd from 'tether-shepherd';
+
 // Components
 import AppBar from 'material-ui/lib/app-bar';
 
@@ -39,6 +41,8 @@ import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications';
+import ActionHelp from 'material-ui/lib/svg-icons/action/help';
+import Popover from 'material-ui/lib/popover/popover';
 
 import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
@@ -56,6 +60,7 @@ export default class Navigation extends Component {
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     computeUserTasks: PropTypes.object.isRequired,
+    computeLoadGuide: PropTypes.object.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -82,13 +87,16 @@ export default class Navigation extends Component {
     super(props, context);
 
     this.state = {
-      hintTextSearch: "Search site:"
+      hintTextSearch: "Search site:",
+      guidePopoverOpen: false,
+      guidePopoverAnchorEl: null
     };
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
+    this._startTour = this._startTour.bind(this);
     //this._test = this._test.bind(this);
   }
 
@@ -128,6 +136,29 @@ export default class Navigation extends Component {
     });
   }
 
+  _startTour(tourContent) {
+
+      this.setState({guidePopoverOpen: false});
+
+      let newTour = new Shepherd.Tour({
+        defaults: {
+          classes: 'shepherd-theme-arrows'
+        }
+      });
+
+      (selectn('properties.fvguide:steps', tourContent) || []).map(function(step, i) {
+        newTour.addStep('step' + i, {
+          title: selectn('title', step),
+          text: selectn('text', step),
+          attachTo: selectn('attachTo', step),
+          advanceOn: selectn('advanceOn', step),
+          showCancelLink: selectn('showCancelLink', step)
+        });
+      });
+
+      newTour.start();
+  }
+
   _handleNavigationSearchSubmit() {
 	  let searchQueryParam = this.refs.navigationSearchField.getValue();	  
       let path = "/" + this.props.splitWindowPath.join("/");
@@ -154,6 +185,7 @@ export default class Navigation extends Component {
     const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, selectn('response.id', this.props.computeLogin));
 
     const userTaskCount = selectn('response.length', computeUserTasks) || 0;
+    const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     return <div>
         <AppBar
@@ -167,14 +199,55 @@ export default class Navigation extends Component {
 
             <Badge
               badgeContent={userTaskCount}
-              style={{paddingTop: 0, top: '8px', left: '-10px'}}
-              badgeStyle={{top: 12, right: 12}}
+              style={{top: '8px', left: '0', padding: '0 0 12px 12px'}}
+              badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
               primary={true}
             >
               <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false} tooltip="Active Tasks">
                 <NotificationsIcon />
               </IconButton>
             </Badge>
+
+            <Badge
+              badgeContent={guideCount}
+              style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
+              badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
+              primary={true}
+            >
+              <IconButton onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false} tooltip="Guides">
+                <ActionHelp />
+              </IconButton>
+            </Badge>
+
+            <Popover
+            open={this.state.guidePopoverOpen}
+            anchorEl={this.state.guidePopoverAnchorEl}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          >
+            <div>
+              <div className={classNames('panel', 'panel-default')} style={{marginBottom: 0}}>
+  <div className="panel-heading">
+    <h3 className="panel-title">Interactive Guides</h3>
+  </div>
+  <div className="panel-body">
+    <p>Learn how to use this page quickly and efficiently:</p>
+    <table>
+      <tbody>
+      {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function(guide, i) {
+        return <tr key={'guide' + i}>
+        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}</td>
+        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)} primary={false} label="Launch Guide"/></td>
+        </tr>;
+      }.bind(this))}
+</tbody>
+      </table>
+    
+  </div>
+</div>
+              
+            </div>
+          </Popover>
 
             <ToolbarSeparator style={{float: 'none', marginRight: '30px', marginLeft: 0}} />
 

@@ -6,6 +6,8 @@ import selectn from 'selectn';
 
 import classNames from 'classnames';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 import {Link} from 'provide-page';
 
 import Navigation from 'views/components/Navigation';
@@ -38,9 +40,9 @@ class paramMatch {
 }
 
 // Regex helper
-const ANYTHING_BUT_SLASH = new RegExp("([^/]*)");
-const WORKSPACE_OR_SECTION = new RegExp("(sections|Workspaces)");
-const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp("(kids|explore)"));
+const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH);
+const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION);
+const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT));
 
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search', 'gallery'];
 
@@ -58,7 +60,8 @@ export default class AppFrontController extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    changeTheme: PropTypes.func.isRequired
+    changeTheme: PropTypes.func.isRequired,
+    loadGuide: PropTypes.func.isRequired
   };
 
   constructor(props, context) {
@@ -477,10 +480,15 @@ export default class AppFrontController extends Component {
         props.changeTheme('default');
       }
 
-      this.setState({
+      let matchReturn = {
         matchedPage: matchedPage,
         matchedRouteParams: matchedRouteParams
-      });
+      };
+
+      // Load help
+      props.loadGuide(props.windowPath, matchReturn);
+
+      this.setState(matchReturn);
     }
   }
 

@@ -14,12 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import classNames from 'classnames';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
 import AppFrontController from './AppFrontController';
+
+import Shepherd from 'tether-shepherd';
 
 import FontIcon from 'material-ui/lib/font-icon';
 import Paper from 'material-ui/lib/paper';
@@ -41,6 +48,39 @@ const getPosition = function getPosition() {
     return {x:x, y:y};
 };
 
+/**
+ * Finds the xPath for a component, leading up to the 'app-wrapper'.
+ * Used as a utility for creating Shepherd tours
+ */
+function findComponentParents(el) {
+    let parents = [];
+    let originalEl = el;
+
+    if (!el.getAttribute('data-component-id')) {
+      return null;
+    }
+
+    while (el.parentNode) {
+        el = el.parentNode;
+
+        if (el.getAttribute('id') === 'app-wrapper') {
+          break;
+        }
+
+        if (el.tagName) {
+          let appendClass = (el.className) ? '.' + el.className.replace(/\s/g, '.').replace(/\:/g, '\\:') : '';
+          let appendData = (el.getAttribute('data-component-id')) ? '[data-component-id=\'' + el.getAttribute('data-component-id') + '\']' : '';
+
+          parents.push(el.tagName.toLowerCase() + appendClass + appendData);
+        }
+    }
+
+    parents = parents.reverse();
+    parents.push(originalEl.tagName.toLowerCase() + '[data-component-id=\'' + originalEl.getAttribute('data-component-id') + '\']');
+
+    return parents.join(' ');
+}
+
 @provide
 export default class AppWrapper extends Component {
 
@@ -49,6 +89,8 @@ export default class AppWrapper extends Component {
     getUser: PropTypes.func.isRequired,
     fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     changeTheme: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired
@@ -94,11 +136,12 @@ export default class AppWrapper extends Component {
     this.state = {
       kmw: kmw,
       kmwSelectedKeyboard: null,
-      kmwLoadedKeyboards: []
+      kmwLoadedKeyboards: [],
+      adminGuideStarted: false
     };
 
     // Bind methods to 'this'
-    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', 'changeTheme'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', '_changeTheme', '_startAdminGuideAssist'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -108,6 +151,11 @@ export default class AppWrapper extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+
+    window.onscroll = function() {
+      if (typeof KeymanWeb !== 'undefined')
+        KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
+    };
   }
 
   /**
@@ -158,19 +206,69 @@ export default class AppWrapper extends Component {
     if (nextProps.properties.theme.id != this.props.properties.theme.id) {
         nextProps.changeTheme(nextProps.properties.theme.id);
     }
-  }
 
-  componentDidMount() {
-    window.onscroll = function() {
-      if (typeof KeymanWeb !== 'undefined')
-        KeymanWeb.SetHelpPos(window.innerWidth - 500,getPosition().y + 200);
-    };
+    if (nextProps.windowPath != this.props.windowPath) {
+    }
   }
 
   // Changing a theme manually...
-  changeTheme(event) {
+  _changeTheme(event) {
     let index = event.nativeEvent.target.selectedIndex;
     this.props.changeTheme(event.target[index].value);
+  }
+
+  _startAdminGuideAssist() {
+
+    let doms = document.querySelectorAll('[data-component-id]');
+
+    let tour = new Shepherd.Tour({
+      defaults: {
+        classes: 'shepherd-theme-arrows'
+      }
+    });
+
+    document.onkeydown = function(e) {
+      e = e || window.event;
+      switch(e.which || e.keyCode) {
+        case 37:
+          tour.base();
+        break;
+
+        case 39: 
+          tour.next();
+        break;
+      }
+    }
+
+    doms.forEach(function(dom, i){
+
+      let xpath = findComponentParents(dom);
+
+      //if (!document.querySelector(xpath)) {
+      //  console.log(xpath);
+      //}
+
+      if (xpath != null) {
+        tour.addStep('step' + i, {
+          title: 'Element xPath',
+          text: xpath + '<textarea>' + dom.textContent + '</textarea>',
+          classes: 'shepherd-theme-arrows admin-guide-step',
+          attachTo: xpath + ' bottom',
+          showCancelLink: true,
+          scrollTo: true,
+          when: {
+            show: function() { dom.style.border = '2px blue dashed'; },
+            hide: function() { dom.style.border = 'initial'; },
+          }
+        });
+      }
+    });
+
+    this.setState({
+      adminGuideStarted: true
+    })
+
+    tour.start();
   }
 
   render() {
@@ -213,12 +311,22 @@ export default class AppWrapper extends Component {
 
     return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}}>
         <AppFrontController />
+
         {keyboardPicker}
 
-        <select style={{display:'none'}} onChange={this.changeTheme}>
-            <option value="default">Default</option>
-            <option value="kids">Kids</option>
-        </select>
+        <AuthorizationFilter filter={{role: ['Everything'], entity: selectn('response.entries[0]', dialects), login: this.props.computeLogin}}>
+          <div className="row" style={{backgroundColor: '#efefef'}}>
+
+              <select onChange={this._changeTheme}>
+                  <option value="default">Default</option>
+                  <option value="kids">Kids</option>
+              </select>
+
+              <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
+              {(this.state.adminGuideStarted) ? 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'' : ''}
+
+          </div>
+        </AuthorizationFilter>
 
     </div>;
   }
