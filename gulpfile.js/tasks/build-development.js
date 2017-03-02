@@ -3,5 +3,5 @@ var gulpSequence = require('gulp-sequence');
 
 gulp.task('build:development', function(cb) {
   //gulpSequence('clean', 'copy', ['fonts', 'images'], ['html'], ['webpack-dev-server'], cb);
-  gulpSequence('clean' , 'copy', 'copy-game-assets' , ['images'], ['html'], ['webpack-dev-server'], cb);
+  gulpSequence('clean' , 'copy', 'copy-game-assets', ['html'], ['webpack-dev-server'], cb);
 });
