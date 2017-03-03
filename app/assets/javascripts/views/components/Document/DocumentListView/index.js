@@ -133,11 +133,13 @@ export default class DocumentListView extends Component {
           style={DataGridStyles}
           selected={this.state.selectedId}
           onSelectionChange={this._handleSelectionChange}
-          onColumnOrderChange={this.props.onColumnOrderChange}
+          //onColumnOrderChange={this.props.onColumnOrderChange}
           onSortChange={this.props.onSortChange}
+          withColumnMenu={false}
           pagination={true}
           paginationToolbarProps={{
-            showRefreshIcon: false
+            showRefreshIcon: false,
+            pageSizes: [10, 20, 50],
           }} 
           sortInfo={this.props.sortInfo}
           page={this.props.page}
