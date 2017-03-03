@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, { List, Set, Map } from 'immutable';
 
 import selectn from 'selectn';
 
@@ -16,7 +16,7 @@ export default class FacetFilterList extends Component {
         facets: PropTypes.array.isRequired,
         onFacetSelected: PropTypes.func.isRequired,
         facetField: PropTypes.string.isRequired,
-        appliedFilterIds: PropTypes.instanceOf(List)
+        appliedFilterIds: PropTypes.instanceOf(Set)
     };
 
     constructor(props, context){
@@ -36,11 +36,21 @@ export default class FacetFilterList extends Component {
 
         // Checking
         if (checked) {
-            newList = this.state.checked.push(facetId);
+            newList = this.state.checked.add(facetId);
+
+            // Add all children
+            if (childrenIDs) {
+                childrenIDs.forEach((childId, i) => { newList = newList.add(childId) });
+            }
         }
         // Unchecking
         else {
             newList = this.state.checked.delete(this.state.checked.keyOf(facetId));
+
+            // Remove children
+            if (childrenIDs) {
+                childrenIDs.forEach((childId, i) => { newList = newList.delete(newList.keyOf(childId)) });
+            }
         }
 
         this.setState({checked: newList});
@@ -72,7 +82,7 @@ export default class FacetFilterList extends Component {
                             childrenIds.push(facetChild.uid);
 
                             // Mark as checked if parent checked or if it is checked directly.
-                            let checked = parentFacetChecked || this.state.checked.includes(facetChild.uid);
+                            let checked = this.state.checked.includes(facetChild.uid);
 
                             nestedItems.push(<ListItem
                                 key={facetChild.uid}

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, { List, Set, Map } from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -53,7 +53,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context);
 
-    let initialCategories = (props.routeParams.category) ? new List([props.routeParams.category]) : new List();
+    let initialCategories = (props.routeParams.category) ? new Set([props.routeParams.category]) : new Set();
 
     this.state = {
       filterInfo: new Map({

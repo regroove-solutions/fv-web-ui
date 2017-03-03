@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, { List, Set, Map } from 'immutable';
 import classNames from 'classnames';
 
 import selectn from 'selectn';
@@ -58,11 +58,11 @@ export default class PageDialectLearnBase extends Component {
 
     let categoryFilter = '';
     let newList;
-    let childrenIdsList = new List(childrenIds);
+    let childrenIdsList = new Set(childrenIds);
 
     // Adding filter
     if (checked) {
-      newList = currentCategoryFilterIds.push(categoryId);
+      newList = currentCategoryFilterIds.add(categoryId);
 
       if (childrenIdsList.size > 0) {
         newList = newList.merge(childrenIdsList);
