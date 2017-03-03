@@ -56,13 +56,24 @@ export default class DocumentListView extends Component {
 
   _onPageChange(page) {
 
+    // Skip if page hasn't actually changed.
+    if ((page - 1) == this.props.page){
+      return;
+    }
+
     this.setState({
       page: page
     });
+
     this.props.refetcher(this.props, (page - 1), this.props.pageSize);
   }
 
   _onPageSizeChange(pageSize, props) {
+
+    // Skip if page size hasn't actually changed
+    if (pageSize === this.props.pageSize){
+      return;
+    }
 
     let newPage = this.props.page;
 
@@ -120,6 +131,9 @@ export default class DocumentListView extends Component {
           onColumnOrderChange={this.props.onColumnOrderChange}
           onSortChange={this.props.onSortChange}
           pagination={true}
+          paginationToolbarProps={{
+            showRefreshIcon: false
+          }} 
           sortInfo={this.props.sortInfo}
           page={this.props.page}
           pageSize={this.props.pageSize}
