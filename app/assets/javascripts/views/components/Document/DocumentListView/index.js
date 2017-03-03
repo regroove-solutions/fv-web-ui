@@ -56,8 +56,13 @@ export default class DocumentListView extends Component {
 
   _onPageChange(page) {
 
+    // Datagrid starts page count at 1, back-end starts at 0; adjust for Datagrid.
+    if (page === 0) {
+      page = 1;
+    }
+
     // Skip if page hasn't actually changed.
-    if ((page - 1) == this.props.page){
+    if (page == this.props.page){
       return;
     }
 
