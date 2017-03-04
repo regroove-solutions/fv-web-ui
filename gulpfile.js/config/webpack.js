@@ -47,6 +47,7 @@ module.exports = function(env) {
     plugins: [
      new HappyPack({
         id: 'js',
+        cache: true,
         loaders: [ {
             loader: 'babel-loader',
             query: {

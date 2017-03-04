@@ -844,9 +844,9 @@ babel-plugin-transform-react-display-name@^6.3.13:
   dependencies:
     babel-runtime "^6.22.0"
 
-"babel-plugin-transform-react-jsx-component-data-ids@ssh://git@github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git#v0.1.6":
+"babel-plugin-transform-react-jsx-component-data-ids@ssh://git@github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git#v0.1.7":
   version "0.1.5"
-  resolved "ssh://git@github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git#767892432df4a9e83e2fcbaa45fc0c9d4f05b3ac"
+  resolved "ssh://git@github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git#65f2d700ea18711ce716f89bd264cb8832e4537f"
 
 babel-plugin-transform-react-jsx-location@^0.1.5:
   version "0.1.5"
