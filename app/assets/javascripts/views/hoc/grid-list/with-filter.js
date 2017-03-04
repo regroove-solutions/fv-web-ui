@@ -52,15 +52,17 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
         this.state = {
             options: options,
-            formValue: props.formValues,
-            defaultFormValue: props.formValues
+            formValue: props.initialFormValue || props.formValues,
+            defaultFormValue: props.formValues,
+            initialFormValue: props.initialFormValue
         };
 
         ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
     }
 
     componentDidMount() {
-        if (this.props.applyDefaultFormValues) {
+        // Only auto-apply with a fixed list
+        if (this.props.fixedList && this.props.applyDefaultFormValues) {
             this._onFilterSaveForm(null);
         }
     }

@@ -159,9 +159,10 @@ export default class PageDialectWordEdit extends Component {
     const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    // Additional context (in order to store origin)
-    if (selectn("response", computeDialect2)) {
-      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computeWord) } });
+    // Additional context (in order to store origin), and initial filter value
+    if (selectn("response", computeDialect2) && selectn("response", computeWord)) {
+      let providedFilter = selectn("response.properties.fv-word:definitions[0].translation", computeWord) || selectn("response.properties.fv:literal_translation[0].translation", computeWord);
+      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computeWord), 'providedFilter': providedFilter } });
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>

@@ -26,7 +26,7 @@ import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 import MediaList from 'views/components/Browsing/media-list';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
@@ -72,9 +72,13 @@ export default class SelectMediaComponent extends React.Component {
     // Bind methods to 'this'
     ['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach( (method => this[method] = this[method].bind(this)) );
 
+    // If initial filter value provided
+    let providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect);
+    let appliedParams = (providedTitleFilter) ? Object.assign({}, DefaultFetcherParams, {filters: {'properties.dc:title': {appliedFilter: providedTitleFilter}}}): DefaultFetcherParams;
+
     this.state = {
       open: false,
-      fetcherParams: DefaultFetcherParams
+      fetcherParams: appliedParams
     };
   }
 
@@ -118,7 +122,7 @@ export default class SelectMediaComponent extends React.Component {
           onTouchTap={this._handleClose} />
       ];
 
-      var results, computeEntity, filterOptionsKey;
+      var computeEntity, filterOptionsKey;
 
       switch (this.props.type) {
         case 'FVAudio':
@@ -136,8 +140,6 @@ export default class SelectMediaComponent extends React.Component {
           computeEntity = this.props.computeSharedVideos;
         break;
       }
-
-      results = computeEntity.response.entries || [];
 
       let fileTypeLabel = 'File';
       let fileTypeCellHeight = 210;
@@ -160,22 +162,6 @@ export default class SelectMediaComponent extends React.Component {
         break;
       }
 
-      // TODO: Replace with PromiseWrapper
-      let view = <FilteredPaginatedMediaList
-                      style={{overflowY: 'auto', maxHeight: '50vh'}}
-                      cols={5}
-                      cellHeight={150}
-                      filterOptionsKey={filterOptionsKey}
-                      action={this._handleSelectElement}
-                      fetcher={this.fetchData}
-                      fetcherParams={this.state.fetcherParams}
-                      metadata={selectn('response', computeEntity)}
-                      items={selectn('response.entries', computeEntity) || []} />;
-
-      if (selectn('isFetching', computeEntity)) {
-        view = <CircularProgress mode="indeterminate" size={2} />;
-      }
-
       return (
         <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
@@ -186,7 +172,22 @@ export default class SelectMediaComponent extends React.Component {
             contentStyle={{width: '80%', height: '80vh', maxWidth: '100%'}}
             open={this.state.open}>
 
-              {view}
+              <div className={classNames('alert', 'alert-info', {'hidden': !selectn('isFetching', computeEntity)})}>
+                Loading results... Please wait.<br/>
+                <LinearProgress mode="indeterminate" />
+              </div>
+
+              <FilteredPaginatedMediaList
+                      style={{overflowY: 'auto', maxHeight: '50vh'}}
+                      cols={5}
+                      cellHeight={150}
+                      filterOptionsKey={filterOptionsKey}
+                      action={this._handleSelectElement}
+                      fetcher={this.fetchData}
+                      fetcherParams={this.state.fetcherParams}
+                      initialFormValue={{'properties.dc:title': selectn('otherContext.providedFilter', this.props.dialect)}}
+                      metadata={selectn('response', computeEntity)}
+                      items={selectn('response.entries', computeEntity) || []} />
 
           </Dialog>
         </div>
