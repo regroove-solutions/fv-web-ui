@@ -37,7 +37,7 @@ const loadGuide = function loadGuide(currentPage, pageMatch) {
       let ANYTHING_BUT_SLASH_REGEX = '/' + ProviderHelpers.regex.ANYTHING_BUT_SLASH.replace('/', '\\/') + '/';
       // Check if path fragment matches ANYTHING_BUT_SLASH regex and replace wildcard.
       if (fragment == ANYTHING_BUT_SLASH_REGEX || fragment.hasOwnProperty('matcher') && fragment.matcher == ANYTHING_BUT_SLASH_REGEX) {
-        currentPageArray[i] = '%'
+        currentPageArray[i] = '*'
       }
     })
     

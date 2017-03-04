@@ -86,7 +86,7 @@ export default class AppWrapper extends Component {
 
   static propTypes = {
     connect: PropTypes.func.isRequired,
-    getUser: PropTypes.func.isRequired,
+    getCurrentUser: PropTypes.func.isRequired,
     fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
@@ -123,7 +123,7 @@ export default class AppWrapper extends Component {
 
     // Connect to Nuxeo
     this.props.connect();
-    this.props.getUser();
+    this.props.getCurrentUser();
 
     let kmw = null;
 
@@ -231,7 +231,7 @@ export default class AppWrapper extends Component {
       e = e || window.event;
       switch(e.which || e.keyCode) {
         case 37:
-          tour.base();
+          tour.back();
         break;
 
         case 39: 
