@@ -9,7 +9,8 @@ Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.securitypolicies.g
  le.xml,OSGI-INF/extensions/ca.firstvoices.permissions.xml,OSGI-INF/ex
  tensions/ca.firstvoices.filters.xml,OSGI-INF/extensions/ca.firstvoice
  s.operations.xml,OSGI-INF/extensions/ca.firstvoices.listeners.xml,OSG
- I-INF/extensions/ca.firstvoices.auth.xml
+ I-INF/extensions/ca.firstvoices.auth.xml,OSGI-INF/extensions/ca.first
+ voices.codecs.xml
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: FirstVoicesSecurity
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8

@@ -36,7 +36,6 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         }
 
         String docType = doc.getType().getName();
-        String parentType = doc.getParent().getType().getName();
 
         // Publishing permissions
 
@@ -68,7 +67,7 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         }
 
         // Restrict deletion of FVDialect children (but not unpublishing)
-        if (doc.getParent() != null && "FVDialect".equals(parentType) && "Remove".equals(permission)) {
+        if (doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName()) && "Remove".equals(permission)) {
         	return Access.DENY;
 		}
 
