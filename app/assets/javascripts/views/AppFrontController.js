@@ -21,7 +21,7 @@ import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStories
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
@@ -103,6 +103,10 @@ export default class AppFrontController extends Component {
       {
         path: ['tasks'],
         page: <PageTasks />
+      },
+      {
+        path: ['register'],
+        page: <PageUsersRegister />
       },
       {
         path: [KIDS_OR_DEFAULT],

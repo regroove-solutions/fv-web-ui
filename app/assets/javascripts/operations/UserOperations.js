@@ -20,10 +20,42 @@ import BaseOperations from 'operations/BaseOperations';
 
 export default class UserOperations extends BaseOperations {
 
-  /**
-  * Get a user object or current user if username is empty
-  */
   static getUser(username = "", headers = {}, params = {}) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .users()
+        .fetch(username)
+        .then((user) => {
+          resolve(user);
+        })
+        .catch((error) => { reject('Could not retrieve current user.'); } );
+    });
+  }
+
+  static createUser(newUser) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .users()
+        .create(newUser)
+        .then((user) => {
+          resolve(user);
+        })
+        .catch((error) => { reject('Could not create new user.'); } );
+    });
+  }
+
+  /**
+  * Gets current user object
+  */
+  static getCurrentUser(headers = {}, params = {}) {
 
     let properties = this.properties;
 
@@ -32,7 +64,7 @@ export default class UserOperations extends BaseOperations {
         properties.client
         .operation('User.Get')
         .params(params)
-        .input(username)
+        .input()
         .execute()
         .then((user) => {
             properties.client.request('/user/' + user.uid, params)
@@ -48,7 +80,7 @@ export default class UserOperations extends BaseOperations {
   static getUserTasks(params = {}) {
     let properties = this.properties;
 
-	return new Promise(
+	  return new Promise(
       function(resolve, reject) {
         properties.client
         .operation('Task.GetAssigned')

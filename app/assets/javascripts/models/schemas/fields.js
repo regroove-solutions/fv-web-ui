@@ -4,6 +4,11 @@ import Dublincore from 'models/schemas/Dublincore';
 import FVCore from 'models/schemas/FVCore';
 import FVMedia from 'models/schemas/FVMedia';
 
+// Very basic email validation
+var Email = t.subtype(t.Str, function (s) {
+  return /\S+@\S+\.\S+/.test(s);
+});
+
 const fields = {
   FVWord: Object.assign({}, Dublincore, FVCore, {
     'fv-word:categories' : t.list(t.String),
@@ -73,7 +78,13 @@ const fields = {
     'fvcharacter:alphabet_order': t.Number,
     'fvcharacter:related_words' : t.list(t.String),
     'fv:related_audio' : t.list(t.String)
-  })
+  }),
+  FVUser: {
+    'username': t.String,
+    'firstName': t.String,
+    'company': t.String,
+    'email': Email
+  }
 }
 
 export default fields;

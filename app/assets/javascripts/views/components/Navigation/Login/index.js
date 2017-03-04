@@ -29,11 +29,13 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 export default class Login extends Component {
 
   static propTypes = {
+    pushWindowPath: PropTypes.func.isRequired,
     login: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     logout: PropTypes.func.isRequired,
     computeLogout: PropTypes.object.isRequired,
-    label: PropTypes.string.isRequired
+    label: PropTypes.string.isRequired,
+    routeParams: PropTypes.object
   };
 
   componentDidUpdate(prevProps) {
@@ -51,10 +53,7 @@ export default class Login extends Component {
       loginAttempted: false
     };
 
-    this._handleOpen = this._handleOpen.bind(this);
-    this._handleClose = this._handleClose.bind(this);
-    this._handleLogin = this._handleLogin.bind(this);
-    this._handleLogout = this._handleLogout.bind(this);
+    ['_handleOpen','_handleClose','_handleLogin','_handleLogout','_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _handleOpen(event){
@@ -92,6 +91,17 @@ export default class Login extends Component {
     this.props.logout();
   }
 
+  _onNavigateRequest(path) {
+
+    let dest = '/' + path + '/';
+
+    if (this.props.hasOwnProperty('routeParams') && this.props.routeParams.dialect_path.length > 0) {
+      dest = '/explore/' + this.props.routeParams.dialect_path + '/' + path;
+    }
+
+    this.props.pushWindowPath(dest);
+  }
+
   render() {
 
     let loginFeedbackMessage = "";
@@ -120,6 +130,7 @@ export default class Login extends Component {
     return (
       <div style={{display: "inline-block", paddingRight: "10px"}}>
         <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />
+        <FlatButton label="Register" onTouchTap={this._onNavigateRequest.bind(this, 'register')} />
 
         <Popover open={this.state.open}
           anchorEl={this.state.anchorEl}

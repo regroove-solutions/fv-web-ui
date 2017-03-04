@@ -713,6 +713,9 @@ const options = {
       }
     },
     i18n: i18nExt
+  },
+  FVUser: {
+    fields: {}
   }
 };
 

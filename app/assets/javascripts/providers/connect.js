@@ -20,9 +20,9 @@ const LOGOUT_START = "LOGOUT_START";
 const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 const LOGOUT_ERROR = "LOGOUT_ERROR";
 
-const GET_USER_START = "GET_USER_START";
-const GET_USER_SUCCESS = "GET_USER_SUCCESS";
-const GET_USER_ERROR = "GET_USER_ERROR";
+const GET_CURRENT_USER_START = "GET_CURRENT_USER_START";
+const GET_CURRENT_USER_SUCCESS = "GET_CURRENT_USER_SUCCESS";
+const GET_CURRENT_USER_ERROR = "GET_CURRENT_USER_ERROR";
 
 /**
 * Actions: Represent that something happened
@@ -67,21 +67,21 @@ const logout = function logout() {
   }
 };
 
-const getUser = function getUser() {
+const getCurrentUser = function getCurrentUser() {
   return function (dispatch) {
 
-    dispatch( { type: GET_USER_START } );
+    dispatch( { type: GET_CURRENT_USER_START } );
 
-    return UserOperations.getUser()
+    return UserOperations.getCurrentUser()
       .then((response) => {
-        dispatch( { type: GET_USER_SUCCESS, user: response, isAnonymous: response.isAnonymous} );
+        dispatch( { type: GET_CURRENT_USER_SUCCESS, user: response, isAnonymous: response.isAnonymous} );
       }).catch((error) => {
-          dispatch( { type: GET_USER_ERROR, error: error } )
+          dispatch( { type: GET_CURRENT_USER_ERROR, error: error } )
     });
   }
 }
 
-const actions = { connect, login, logout, getUser };
+const actions = { connect, login, logout, getCurrentUser };
 
 /**
 * Reducers: Handle state changes based on an action
@@ -107,7 +107,7 @@ const reducers = {
       break;
 
       case LOGIN_SUCCESS:
-      case GET_USER_SUCCESS:
+      case GET_CURRENT_USER_SUCCESS:
         return Object.assign({}, state, { response: action.user, isFetching: false, success: true, isConnected: !action.isAnonymous });
       break;
 
