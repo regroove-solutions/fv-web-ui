@@ -1,4 +1,5 @@
 .DS_Store
+**/.DS_Store
 .sass-cache
 .project
 public
@@ -6,3 +7,4 @@ Desktop.ini
 node_modules
 app/assets/stylesheets/generated
 .happypack
+.vscode

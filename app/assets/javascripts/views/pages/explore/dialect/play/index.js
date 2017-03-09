@@ -30,20 +30,35 @@ export default class Play extends Component {
 
     const isKidsTheme = this.props.routeParams.theme === 'kids';
 
+    const cellStyle = {
+      border:'1px solid #000'
+    }
     return <div>
             <div className="row">
               <div className="col-xs-12">
                 <h1 className={classNames({'hidden': isKidsTheme})}>Games</h1>
                 <div className="flex-container">
                   <div className="grid">
-                    <div className="cell">
+                    <div className="cell" style={cellStyle}>
                       <a href="./play/jigsaw"><img src="/assets/games/jigsaw/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
-                   <div className="cell">
+                   <div className="cell" style={cellStyle}>
                       <a href="./play/colouringbook"><img src="/assets/games/colouring-book/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
-                    <div className="cell">
+                    <div className="cell" style={cellStyle}>
                       <a href="./play/wordsearch"><img src="/assets/games/wordsearch/assets/images/preview.png" className="responsive-image"/></a>
+                    </div>
+                    <div className="cell" style={cellStyle}>
+                      <a href="./play/wordscramble"><img src="https://placehold.it/533x398/ffffff/000000?text=Word+Scramble" className="responsive-image"/></a>
+                    </div>
+                    <div className="cell" style={cellStyle}>
+                      <a href="./play/picturethis"><img src="https://placehold.it/533x398/ffffff/000000?text=Picture+This" className="responsive-image"/></a>
+                    </div>
+                    <div className="cell" style={cellStyle}>
+                      <a href="./play/hangman"><img src="https://placehold.it/533x398/ffffff/000000?text=Hang+man " className="responsive-image"/></a>
+                    </div>
+                    <div className="cell" style={cellStyle}>
+                      <a href="./play/concentration"><img src="https://placehold.it/533x398/ffffff/000000?text=Concentration" className="responsive-image"/></a>
                     </div>
                   </div>
                 </div>

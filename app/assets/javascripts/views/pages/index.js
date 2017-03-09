@@ -27,6 +27,10 @@ import PageDialectPlay from './explore/dialect/play'
 import PageJigsawGame from './explore/dialect/play/jigsaw'
 import PageWordSearch from './explore/dialect/play/wordsearch'
 import PageColouringBook from './explore/dialect/play/colouringbook'
+import PagePictureThis from './explore/dialect/play/picturethis'
+import PageHangman from './explore/dialect/play/hangman'
+import PageWordscramble from './explore/dialect/play/wordscramble'
+import PageConcentration from './explore/dialect/play/concentration'
 
 import PageDialectGalleries from './explore/dialect/gallery'
 import PageDialectGalleryView from './explore/dialect/gallery/view'
@@ -45,6 +49,7 @@ import PageDialectViewAlphabet from './explore/dialect/learn/alphabet/'
 import PageDialectViewCharacter from './explore/dialect/learn/alphabet/view'
 import PageDialectLearnWordsCategories from './explore/dialect/learn/words/categories';
 import PageDialectLearnPhrasesCategories from './explore/dialect/learn/phrases/categories';
+
 
 import PageTest from './test.js'
 import PageHome from './home'
@@ -95,7 +100,11 @@ module.exports = {
   PageJigsawGame,
   PageColouringBook,
   PageWordSearch,
-
+  PagePictureThis,
+  PageConcentration,
+  PageHangman,
+  PageWordscramble,
+  
   // KIDS
   PageKidsHome
 }
