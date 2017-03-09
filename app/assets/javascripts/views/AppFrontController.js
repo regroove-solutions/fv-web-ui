@@ -16,10 +16,15 @@ import Footer from 'views/components/Navigation/Footer';
 
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
+import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports} from 'views/pages';
+
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
+
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
+
 import { PageDialectViewAlphabet } from 'views/pages';
+
+import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageHangman} from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
@@ -218,6 +223,30 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'colouringbook' ],
         page: <PageColouringBook />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'concentration' ],
+        page: <PageConcentration />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'picturethis' ],
+        page: <PagePictureThis />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'hangman' ],
+        page: <PageHangman />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordscramble' ],
+        page: <PageWordscramble />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
