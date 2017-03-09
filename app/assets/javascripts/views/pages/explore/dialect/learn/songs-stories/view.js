@@ -190,7 +190,7 @@ export default class View extends Component {
               deleteAction={this.props.deleteBook}
               onNavigateRequest={this._onNavigateRequest}
               computeItem={computeBook}
-              computeDialect2={computeDialect2}
+              permissionEntry={computeDialect2}
               computeEntities={computeEntities}
               {...this.props}>
 

@@ -231,7 +231,7 @@ export default class View extends Component {
               deleteAction={this.props.deletePhrase}
               onNavigateRequest={this._onNavigateRequest}
               computeItem={computePhrase}
-              computeDialect2={computeDialect2}
+              permissionEntry={computeDialect2}
               tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
               <div className="row">
