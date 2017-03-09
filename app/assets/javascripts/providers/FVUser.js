@@ -43,20 +43,20 @@ const createUser =
 			}
 		};
 
-const inviteUser = RESTActions.execute('FV_USER_INVITE', 'User.Invite', { headers: { } });
-
-
+const inviteUser = RESTActions.execute('FV_USER_INVITE', 'User.Invite', { reducerIdOverride: 'test' });
 
 const updateUser = null;
 const deleteUser = null;
 
 const computeUserFetchFactory = RESTReducers.computeFetch('user');
 const computeUserDeleteFactory = RESTReducers.computeDelete('delete_user');
+const computeUserInviteOperation = RESTReducers.computeOperation('user_invite');
 
 const actions = { fetchUser, createUser, inviteUser, deleteUser, updateUser };
 
 const reducers = {
   computeUser: computeUserFetchFactory.computeUser,
+  computeUserInvite: computeUserInviteOperation.computeUserInvite,
   computeDeleteUser: computeUserDeleteFactory.computeDeleteUser
 };
 

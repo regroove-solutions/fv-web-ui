@@ -6,7 +6,7 @@ import FVMedia from 'models/schemas/FVMedia';
 
 // Very basic email validation
 var Email = t.subtype(t.Str, function (s) {
-  return /\S+@\S+\.\S+/.test(s);
+  return /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/.test(s);
 });
 
 const fields = {
@@ -80,10 +80,10 @@ const fields = {
     'fv:related_audio' : t.list(t.String)
   }),
   FVUser: {
-    'username': t.String,
-    'firstName': t.String,
-    'company': t.String,
-    'email': Email
+    'userinfo:firstName': t.String,
+    'userinfo:lastName': t.String,
+    'userinfo:email': Email,
+    'fvuserinfo:requestedSpace': t.String
   }
 }
 

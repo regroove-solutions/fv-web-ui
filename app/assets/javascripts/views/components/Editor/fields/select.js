@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
 
 import DirectoryList from 'views/components/Editor/DirectoryList';
+import QueryList from 'views/components/Editor/QueryList';
 
 function renderInput(locals) {
 
@@ -9,9 +10,19 @@ function renderInput(locals) {
     locals.onChange(value)
   };
 
-  return <div>
-  	<DirectoryList label={locals.label} value={locals.value || locals.attrs.defaultValue} onChange={onChange} fancy={locals.attrs.fancy} directory={locals.attrs.directory} />
-  </div>;
+  let list;
+
+  // Render directory list
+  if (locals.attrs.directory) {
+    list = <DirectoryList label={locals.label} value={locals.value || locals.attrs.defaultValue} onChange={onChange} fancy={locals.attrs.fancy} directory={locals.attrs.directory} />
+  }
+
+  // Render query list
+  if (locals.attrs.query) {
+    list = <QueryList label={locals.attrs.label} value={locals.value || locals.attrs.defaultValue} onChange={onChange} fancy={locals.attrs.fancy} query={locals.attrs.query} queryId={locals.attrs.queryId} />
+  }
+
+  return <div>{list}</div>;
 }
 
 const selectTemplate = t.form.Form.templates.textbox.clone({ renderInput })

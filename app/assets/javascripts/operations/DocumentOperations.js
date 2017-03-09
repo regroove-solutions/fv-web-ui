@@ -442,10 +442,14 @@ export default class DocumentOperations extends BaseOperations {
 
     return new Promise(
       function(resolve, reject) {
-        properties.client
-        .operation(operationName)
-        .input(input)
-        .params(operationParams)
+        let operation = properties.client
+        .operation(operationName);
+
+        if (input){
+          operation = operation.input(input);
+        }
+        
+        operation.params(operationParams)
         .execute(headers)
         .then((response) => {
           resolve(response);

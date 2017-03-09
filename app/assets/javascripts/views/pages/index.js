@@ -31,6 +31,7 @@ import PageColouringBook from './explore/dialect/play/colouringbook'
 import PageDialectGalleries from './explore/dialect/gallery'
 import PageDialectGalleryView from './explore/dialect/gallery/view'
 import PageDialectReports from './explore/dialect/reports'
+import PageDialectUsers from './explore/dialect/users'
 
 import PageDialectLearnWords from './explore/dialect/learn/words'
 import PageDialectLearnPhrases from './explore/dialect/learn/phrases'
@@ -84,6 +85,7 @@ module.exports = {
   PageDialectGalleries,
   PageDialectGalleryView,
   PageDialectReports,
+  PageDialectUsers,
   PagePlay,
   PageSearch,
   PageTasks,

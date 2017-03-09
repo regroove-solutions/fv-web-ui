@@ -14,6 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import Immutable, { List, Map } from 'immutable';
+
+const toJSKeepId = function (js) {
+  return typeof js !== 'object' || js === null ? js :
+    Array.isArray(js) ? 
+      Immutable.Seq(js).map(toJSKeepId).toList() :
+      (js.hasOwnProperty('id')) ? Immutable.Seq(js).toMap() : Immutable.Seq(js).map(toJSKeepId).toMap();
+}
+
 const proxiesKeys = [
   {
     workspace: 'fv-word:categories',
@@ -55,6 +64,7 @@ export default {
 
     return null;
   },
+  toJSKeepId: function(js) { return toJSKeepId(js)},
   /*hasExtendedGroup: function (extendedGroups, group) {
 
     if (extendedGroups && extendedGroups.size > 0) {

@@ -16,7 +16,7 @@ import Footer from 'views/components/Navigation/Footer';
 
 import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
+import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectUsers, PageJigsawGame, PageColouringBook, PageWordSearch } from 'views/pages';
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDialectViewCharacter, PageDialectViewMedia } from 'views/pages';
 import { PageDialectViewAlphabet } from 'views/pages';
@@ -130,6 +130,11 @@ export default class AppFrontController extends Component {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
         page: <PageSearch />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', 'sections', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'register'],
+        page: <PageUsersRegister />,
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
@@ -246,6 +251,11 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
         page: <PageDialectReports />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users' ],
+        page: <PageDialectUsers />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {

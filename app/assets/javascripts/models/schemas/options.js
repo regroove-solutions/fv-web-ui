@@ -715,7 +715,26 @@ const options = {
     i18n: i18nExt
   },
   FVUser: {
-    fields: {}
+    fields: {
+      'userinfo:firstName': {
+        label: 'First Name'
+      },
+      'userinfo:lastName': {
+        label: 'Last Name'
+      },
+      'userinfo:email': {
+        label: 'Email address'
+      },
+      'fvuserinfo:requestedSpace': {
+        label: 'Dialect to Join',
+        factory: SelectFactory,
+        attrs: {
+          query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:path STARTSWITH \'/FV/sections\'',
+          queryId: 'dialect_titles_uids',
+          label: 'Dialect to Join'
+        }
+      }
+    }
   }
 };
 

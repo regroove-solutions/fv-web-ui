@@ -95,8 +95,8 @@ export default class Login extends Component {
 
     let dest = '/' + path + '/';
 
-    if (this.props.hasOwnProperty('routeParams') && this.props.routeParams.dialect_path.length > 0) {
-      dest = '/explore/' + this.props.routeParams.dialect_path + '/' + path;
+    if (selectn("routeParams.dialect_path", this.props)) {
+      dest = '/explore' + this.props.routeParams.dialect_path + '/' + path;
     }
 
     this.props.pushWindowPath(dest);

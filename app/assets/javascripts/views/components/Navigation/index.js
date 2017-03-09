@@ -56,10 +56,10 @@ export default class Navigation extends Component {
     replaceWindowPath: PropTypes.func.isRequired,    
     splitWindowPath: PropTypes.array.isRequired,    
     toggleMenuAction: PropTypes.func.isRequired,
-    fetchUserTasks: PropTypes.func.isRequired,
+    countTotalTasks: PropTypes.func.isRequired,
+    computeCountTotalTasks: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    computeUserTasks: PropTypes.object.isRequired,
     computeLoadGuide: PropTypes.object.isRequired,
     routeParams: PropTypes.object
   };
@@ -89,7 +89,8 @@ export default class Navigation extends Component {
     this.state = {
       hintTextSearch: "Search site:",
       guidePopoverOpen: false,
-      guidePopoverAnchorEl: null
+      guidePopoverAnchorEl: null,
+      userRegistrationTasksPath: '/management/registrationRequests/'
     };
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
@@ -102,7 +103,8 @@ export default class Navigation extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.computeLogin != this.props.computeLogin) {
-      this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin));
+      // TODO: Build end point that will combine the two
+      this.props.countTotalTasks('count_total_tasks', {'query':'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')', 'language': 'nxql', 'sortOrder': 'ASC'});
     }
   }
 
@@ -182,9 +184,9 @@ export default class Navigation extends Component {
 
   render() {
 
-    const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, selectn('response.id', this.props.computeLogin));
+    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');    
+    const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
-    const userTaskCount = selectn('response.length', computeUserTasks) || 0;
     const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     return <div>
@@ -193,7 +195,7 @@ export default class Navigation extends Component {
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup>
-            <Login label="Sign in"/>
+            <Login routeParams={this.props.routeParams} label="Sign in"/>
 
             <ToolbarSeparator style={{float: 'none', marginLeft: 0, marginRight: 0}} />
 

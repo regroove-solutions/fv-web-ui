@@ -34,7 +34,7 @@ import options from 'models/schemas/options';
 * Create user entry
 */
 @provide
-export default class PageDialectWordsCreate extends Component {
+export default class Register extends Component {
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
@@ -43,11 +43,10 @@ export default class PageDialectWordsCreate extends Component {
     replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
-    createUser: PropTypes.func.isRequired,
-	inviteUser: PropTypes.func.isRequired,
-	fetchUser: PropTypes.func.isRequired,
+    inviteUser: PropTypes.func.isRequired,
+    computeUserInvite: PropTypes.object.isRequired,
     computeUser: PropTypes.object.isRequired,
-	computeLogin: PropTypes.object.isRequired,
+	  computeLogin: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -56,7 +55,7 @@ export default class PageDialectWordsCreate extends Component {
 
     this.state = {
       formValue: null,
-      wordPath: null
+      userRequest: null
     };
 
     // Bind methods to 'this'
@@ -64,8 +63,9 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   fetchData(newProps) {
-    //newProps.fetchDialect2(newProps.routeParams.dialect_path);
-	newProps.fetchUser('Administrator');
+    if (newProps.routeParams.hasOwnProperty('dialect_path')) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
   }
 
   // Fetch data on initial render
@@ -78,9 +78,9 @@ export default class PageDialectWordsCreate extends Component {
 
     let currentWord, nextWord;
 
-    if (this.state.wordPath != null) {
-      currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
-      nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath);
+    if (this.state.userRequest != null) {
+      currentWord = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
+      nextWord = ProviderHelpers.getEntry(nextProps.computeUserInvite, this.state.userRequest);
     }
 
     if (nextProps.windowPath !== this.props.windowPath) {
@@ -89,7 +89,7 @@ export default class PageDialectWordsCreate extends Component {
 
     // 'Redirect' on success
     if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+        //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
     }
   }
 
@@ -104,7 +104,7 @@ export default class PageDialectWordsCreate extends Component {
         return true;
       break;
 
-      case (newProps.computeWord != this.props.computeWord):
+      case (newProps.computeUserInvite != this.props.computeUserInvite):
         return true;
       break;
     }
@@ -121,13 +121,13 @@ export default class PageDialectWordsCreate extends Component {
 
     let properties = {};
     
-	for (let key in formValue) {
-	if (formValue.hasOwnProperty(key) && key) {
-		if (formValue[key] && formValue[key] != '') {
-			properties[key] = formValue[key];
-		}
-	}
-	}
+    for (let key in formValue) {
+      if (formValue.hasOwnProperty(key) && key) {
+        if (formValue[key] && formValue[key] != '') {
+          properties[key] = formValue[key];
+        }
+      }
+    }
 
     this.setState({
       formValue: properties
@@ -135,12 +135,16 @@ export default class PageDialectWordsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-		let nuxeoPrincipal = new User(properties, { 
-			'repository': currentUser.response._repository,
-			'nuxeo': currentUser.response._nuxeo
-      	});
-		this.props.inviteUser(nuxeoPrincipal);
-		//this.props.createUser({'properties': properties});
+      let userRequest = {
+        "entity-type":"document",
+        "type": "FVUserRegistration",
+        "id": selectn('userinfo:email', properties),
+        "properties": properties
+      };
+
+      this.props.inviteUser(userRequest, null, null, "User request submitted successfully!");
+      this.setState({userRequest});
+
     } else {
       window.scrollTo(0, 0);
     }
@@ -149,20 +153,27 @@ export default class PageDialectWordsCreate extends Component {
 
   render() {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.wordPath,
-      'entity': this.props.computeWord
+    let FVUserOptions = Object.assign({}, selectn("FVUser", options));
+
+    const computeEntities = ProviderHelpers.toJSKeepId([{
+      'id': this.state.userRequest,
+      'entity': this.props.computeUserInvite,
     }, {
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+    const computeUserInvite = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+    // Hide requested space field is pre-set.
+    if (selectn("fields.fvuserinfo:requestedSpace", FVUserOptions) && selectn('response.uid', computeDialect2)) {
+      FVUserOptions['fields']['fvuserinfo:requestedSpace']['type'] = 'hidden';
+    }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>Register <i>{selectn('response.title', computeDialect2)}</i></h1>
+            <h1>{selectn('response.title', computeDialect2)} Register</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
@@ -172,8 +183,8 @@ export default class PageDialectWordsCreate extends Component {
                     ref="form_user_create"
                     type={t.struct(selectn("FVUser", fields))}
                     context={selectn('response', computeDialect2)}
-                    value={this.state.formValue}
-                    options={Object.assign({}, selectn("FVUser", options))} />
+                    value={this.state.formValue || {'fvuserinfo:requestedSpace': selectn('response.uid', computeDialect2)}}
+                    options={FVUserOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>
