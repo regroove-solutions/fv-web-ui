@@ -40,8 +40,8 @@ export default class Picturethis extends Component {
           name:'Animals',
           words:[
             {
-                word:'Test',
-                translation:'test',
+                word:'(replace with word)',
+                translation:'(replace with translation)',
                 location:{
                   x:13,
                   y:59
@@ -49,8 +49,8 @@ export default class Picturethis extends Component {
                 audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
             },
             {
-                word:'Test',
-                translation:'test',
+                word:'(replace with word)',
+                translation:'(replace with translation)',
                 location:{
                   x:100,
                   y:59
@@ -58,8 +58,8 @@ export default class Picturethis extends Component {
                 audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
             },
             {
-                word:'Test',
-                translation:'test',
+                word:'(replace with word)',
+                translation:'(replace with translation)',
                 location:{
                   x:200,
                   y:59
@@ -67,8 +67,8 @@ export default class Picturethis extends Component {
                 audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
             },
             {
-                word:'Test',
-                translation:'test',
+                word:'(replace with word)',
+                translation:'(replace with translation)',
                 location:{
                   x:300,
                   y:59
@@ -79,47 +79,465 @@ export default class Picturethis extends Component {
         },
         {
           image:'/assets/games/picturethis/assets/02backyard.png',
-          name:'Backyard'
+          name:'Backyard',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/03bedroom.png',
-          name:'Bedroom'
+          name:'Bedroom',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/04camping.png',
-          name:'Camping'
+          name:'Camping',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/05classroom.png',
-          name:'Classroom'
+          name:'Classroom',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/06feast.png',
-          name:'Feast'
+          name:'Feast',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/07garage_sale.png',
-          name:'Garage Sale'
+          name:'Garage Sale',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/08kitchen.png',
-          name:'Kitchen'
+          name:'Kitchen',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/09medical_center.png',
-          name:'Medical Center'
+          name:'Medical Center',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/10pow_wow.png',
-          name:'Pow Wow'
+          name:'Pow Wow',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/11travel.png',
-          name:'Travel'
+          name:'Travel',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         },
         {
           image:'/assets/games/picturethis/assets/12village.png',
-          name:'Village'
+          name:'Village',
+          words:[
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:13,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:100,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:200,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            },
+            {
+                word:'(replace with word)',
+                translation:'(replace with translation)',
+                location:{
+                  x:300,
+                  y:59
+                },
+                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+            }
+          ]
         }
       ]
     }
