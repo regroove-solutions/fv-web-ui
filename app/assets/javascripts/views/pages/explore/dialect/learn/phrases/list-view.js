@@ -37,7 +37,7 @@ export default class ListView extends DataListView {
   
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books', 'related_audio', 'related_pictures'],
-    DEFAULT_PAGE: 0,
+    DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fv:custom_order',
@@ -141,7 +141,7 @@ export default class ListView extends DataListView {
 
     props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
     currentAppliedFilter + 
-    '&currentPageIndex=' + pageIndex + 
+    '&currentPageIndex=' + (pageIndex - 1) + 
     '&pageSize=' + pageSize + 
     '&sortOrder=' + sortOrder +
     '&sortBy=' + sortBy

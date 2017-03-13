@@ -38,7 +38,7 @@ export default class ListView extends DataListView {
   
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'related_audio'],
-    DEFAULT_PAGE: 0,
+    DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',

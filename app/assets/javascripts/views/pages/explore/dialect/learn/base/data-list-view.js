@@ -65,7 +65,7 @@ export default class DataListView extends Component {
 
     this.setState({
       pageInfo: {
-        page: page + 1,
+        page: page,
         pageSize: pageSize
       }
     });

@@ -24,6 +24,8 @@ import Colors from 'material-ui/lib/styles/colors';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
+import IconButton from 'material-ui/lib/icon-button';
+
 import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow';
 import AVStop from 'material-ui/lib/svg-icons/av/stop';
 
@@ -46,7 +48,8 @@ export default class GridView extends Component {
   };
 
   static defaultProps = {
-    cols: 4
+    cols: 4,
+    cellHeight: 160
   }
 
   constructor(props, context){
@@ -57,7 +60,10 @@ export default class GridView extends Component {
     };
   }
 
-  _playAudio(audioFile) {
+  _playAudio(audioFile, e) {
+
+    e.preventDefault();
+    e.stopPropagation();
 
     let audioItem = new Audio(ConfGlobal.baseURL + audioFile);
 
@@ -78,9 +84,14 @@ export default class GridView extends Component {
       });
     }.bind(this);
     
+    return false;
   }
   
-  _stopAudio() {
+  _stopAudio(audioFile, e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
     if (this.state.nowPlaying != null) {
       this.state.nowPlaying.pause();
       this.state.currentTime = 0;
@@ -89,6 +100,8 @@ export default class GridView extends Component {
         nowPlaying: null
       });
     }
+
+    return false;
   }
 
   componentWillUnmount() {
@@ -114,10 +127,10 @@ export default class GridView extends Component {
       break;
     }
 
-    return <div>
+    return <div className="grid-view">
               <GridList
                 cols={this.props.cols}
-                cellHeight={160}
+                cellHeight={this.props.cellHeight}
                 style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
                 >
                   {(items).map(function (tile, i) { 
@@ -139,13 +152,13 @@ export default class GridView extends Component {
                       audioCallback = (selectn('src', this.state.nowPlaying) !== ConfGlobal.baseURL + audio) ? this._playAudio.bind(this, audio) : this._stopAudio.bind(this, audio);
                     }
 
-                    if (definitions.length > 0) {
+                    if (definitions && definitions.length > 0) {
                       definitionsHTML = definitions.map(function(definition, key){
                         return <span key={key} style={{whiteSpace: 'initial'}}>{selectn('translation', definition)}</span>;
                       })
                     }
                     
-                    if (literal_translations.length > 0) {
+                    if (literal_translations && literal_translations.length > 0) {
                       literal_translationsHTML = literal_translations.map(function(definition, key){
                         return <span key={key} style={{whiteSpace: 'initial'}}>{selectn('translation', definition)}</span>;
                       });
@@ -153,14 +166,16 @@ export default class GridView extends Component {
 
                     let image = thumbnail || original || '/assets/images/cover.png';
 
+                    let audioIconAction = <IconButton onTouchTap={audioCallback}>{audioIcon}</IconButton>;
+
                     return <GridTile
-                      onTouchTap={audioCallback}
+                      onTouchTap={(this.props.action) ? this.props.action.bind(this, tile.uid, tile) : audioCallback}
                       key={tile.uid}
                       title={title}
                       actionPosition="right"
-                      actionIcon={audioIcon}
+                      actionIcon={(this.props.action) ? audioIconAction : audioIcon}
                       subtitle={definitionsHTML || literal_translationsHTML}
-                      ><img src={image} alt={title} /></GridTile>
+                      ><img style={{filter: 'grayscale(100%) opacity(80%)'}} src={image} alt={title} /></GridTile>
                   }.bind(this))}
               </GridList>
             </div>;
