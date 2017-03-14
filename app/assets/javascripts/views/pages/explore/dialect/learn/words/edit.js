@@ -96,6 +96,12 @@ export default class PageDialectWordEdit extends Component {
 
   shouldComponentUpdate(newProps, newState) {
 
+    let previousWord = this.props.computeWord;
+    let nextWord = newProps.computeWord;
+
+    let previousDialect = this.props.computeDialect2;
+    let nextDialect = newProps.computeDialect2;
+
     switch (true) {
 
       case (newProps.routeParams.word != this.props.routeParams.word):
@@ -106,11 +112,11 @@ export default class PageDialectWordEdit extends Component {
         return true;
       break;
 
-      case (ProviderHelpers.getEntry(newProps.computeWord, this.state.wordPath) != ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)):
+      case (typeof nextWord.equals === 'function' && nextWord.equals(previousWord) === false):
         return true;
       break;
 
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
+      case (typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false):
         return true;
       break;
     }
@@ -159,7 +165,7 @@ export default class PageDialectWordEdit extends Component {
       context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computeWord), 'providedFilter': providedFilter } });
     }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    return <div>
 
 	    <h1>Edit {selectn("response.properties.dc:title", computeWord)} word</h1>
 
@@ -176,6 +182,6 @@ export default class PageDialectWordEdit extends Component {
         type="FVWord"
         routeParams={this.props.routeParams} />
 
-	</PromiseWrapper>;
+	</div>;
   }
 }

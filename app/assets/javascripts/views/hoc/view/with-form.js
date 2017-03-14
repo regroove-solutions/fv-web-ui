@@ -41,6 +41,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
         super(props, context);
 
         this.state = {
+            formValue: null,
             showCancelWarning: false,
             saved: false
         };
@@ -71,7 +72,8 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
             this.props.saveMethod(portal, formValue);
 
             this.setState({
-                saved: true
+                saved: true,
+                formValue: formValue
             });
         } else {
             window.scrollTo(0, 0);
@@ -124,7 +126,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
         return(
             <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-9')}>
-                    <ComposedFilter {...this.props} {...this.state}>
+                    <ComposedFilter renderOnError={true} {...this.props} {...this.state}>
               
                         <div className="form-horizontal" style={{padding: '0 15px'}}>
 
@@ -133,7 +135,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                                 ref={"form_" + type}
                                 type={t.struct(selectn(type, fields))}
                                 context={initialValues}
-                                value={selectn("response.properties", computeItem)}
+                                value={this.state.formValue || selectn("response.properties", computeItem)}
                                 options={selectn(type, options)} />
                                 
                                 <hr/>

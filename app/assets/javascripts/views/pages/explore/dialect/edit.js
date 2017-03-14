@@ -75,7 +75,7 @@ export default class ExploreDialectEdit extends Component {
     }
   }
 
-  /*shouldComponentUpdate(newProps) {
+  shouldComponentUpdate(newProps) {
 
     const portalPath = this.props.routeParams.dialect_path + '/Portal';
 
@@ -94,7 +94,7 @@ export default class ExploreDialectEdit extends Component {
     }
 
     return false;
-  }*/
+  }
 
   _handleSave(portal, formValue) {
     // TODO: Find better way to construct object then accessing internal function
