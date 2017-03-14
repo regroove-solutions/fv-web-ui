@@ -98,13 +98,32 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 					}
 					featuredWordJsonObj.put("fv:literal_translation", literalTranslationJsonArray);
 
+                    // Process "fv-word:definitions" values
+                    Object definitionsObj = featuredWordDoc.getProperty("fvcore", "definitions");
+                    List<Object> definitionsList = (ArrayList<Object>) definitionsObj;
+                    ArrayNode definitionsJsonArray = mapper.createArrayNode();
+                    for(Object definitionsListItem : definitionsList) {
+                        Map<String, Object> complexValue = (HashMap<String, Object>) definitionsListItem;
+                        String language = (String) complexValue.get("language");
+                        String translation = (String) complexValue.get("translation");
+
+                        // Create JSON node and add it to the array
+                        ObjectNode definitionsJsonObj = mapper.createObjectNode();
+                        definitionsJsonObj.put("language", language);
+                        definitionsJsonObj.put("translation", translation);
+                        definitionsJsonArray.add(definitionsJsonObj);
+                    }
+                    featuredWordJsonObj.put("fv:definitions", definitionsJsonArray);
+
+
 					// Process "fv-word:part_of_speech" value
 					String partOfSpeechId = (String) featuredWordDoc.getProperty("fv-word",	"part_of_speech");
 					String partOfSpeechLabel = EnricherUtils.getPartOfSpeechLabel(partOfSpeechId);
 					featuredWordJsonObj.put("fv-word:part_of_speech", partOfSpeechLabel);
 
 					// Process "fv:related_audio" values
-					String[] relatedAudioIds = (String[]) featuredWordDoc.getPropertyValue("fv:related_audio");
+					String[] relatedAudioIds = (!featuredWordDoc.isProxy()) ? (String []) featuredWordDoc.getProperty("fvcore", "related_audio") : (String []) featuredWordDoc.getProperty("fvproxy", "proxied_audio");
+
 					ArrayNode relatedAudioJsonArray = mapper.createArrayNode();
 
 					// Retrieve additional properties from the referenced binaries, and add them to the JSON
@@ -114,7 +133,22 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
 							relatedAudioJsonArray.add(binaryJsonObj);
 						}
 					}
+
 					featuredWordJsonObj.put("fv:related_audio", relatedAudioJsonArray);
+
+                    // Process "fv:related_pictures" values
+                    String[] relatedPicturesIds = (!featuredWordDoc.isProxy()) ? (String []) featuredWordDoc.getProperty("fvcore", "related_pictures") : (String []) featuredWordDoc.getProperty("fvproxy", "proxied_pictures");
+                    ArrayNode relatedPicturesJsonArray = mapper.createArrayNode();
+
+                    // Retrieve additional properties from the referenced binaries, and add them to the JSON
+                    for(String relatedPictureId : relatedPicturesIds) {
+                        ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(relatedPictureId, session);
+                        if(binaryJsonObj != null) {
+                            relatedPicturesJsonArray.add(binaryJsonObj);
+                        }
+                    }
+
+                    featuredWordJsonObj.put("fv:related_pictures", relatedPicturesJsonArray);
 
 					featuredWordJsonArray.add(featuredWordJsonObj);
 				}
