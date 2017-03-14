@@ -17,6 +17,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import selectn from 'selectn';
+import ConfGlobal from 'conf/local.json';
 
 import provide from 'react-redux-provide';
 
@@ -43,6 +44,9 @@ import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications';
 import ActionHelp from 'material-ui/lib/svg-icons/action/help';
 import Popover from 'material-ui/lib/popover/popover';
+import Avatar from 'material-ui/lib/avatar';
+
+import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
 
 import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
@@ -61,6 +65,7 @@ export default class Navigation extends Component {
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     computeLoadGuide: PropTypes.object.isRequired,
+    computePortal: PropTypes.object,
     routeParams: PropTypes.object
   };
 
@@ -87,7 +92,7 @@ export default class Navigation extends Component {
     super(props, context);
 
     this.state = {
-      hintTextSearch: "Search site:",
+      hintTextSearch: "Search site: ",
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
       userRegistrationTasksPath: '/management/registrationRequests/'
@@ -102,8 +107,7 @@ export default class Navigation extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin) {
-      // TODO: Build end point that will combine the two
+    if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
       this.props.countTotalTasks('count_total_tasks', {'query':'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')', 'language': 'nxql', 'sortOrder': 'ASC'});
     }
   }
@@ -163,63 +167,86 @@ export default class Navigation extends Component {
 
   _handleNavigationSearchSubmit() {
 	  let searchQueryParam = this.refs.navigationSearchField.getValue();	  
-      let path = "/" + this.props.splitWindowPath.join("/");
-      let queryPath = "";    
-      
-      // Do a global search in either the workspace or section
-      if(path.includes("/explore/FV/Workspaces/Data")) {
-    	  queryPath = "/explore/FV/Workspaces/Data"
-      }      
-      else if(path.includes("/explore/FV/sections/Data")) {
-    	  queryPath = "/explore/FV/sections/Data"
-      }
-      else {
-    	  queryPath = "/explore/FV/sections/Data"    	  
-      }
-      
-      // Clear out the input field
-      this.refs.navigationSearchField.setValue("");
+    let path = "/" + this.props.splitWindowPath.join("/");
+    let queryPath = "";    
+    
+    // Do a global search in either the workspace or section
+    if(path.includes("/explore/FV/Workspaces/Data")) {
+      queryPath = "/explore/FV/Workspaces/Data"
+    }      
+    else if(path.includes("/explore/FV/sections/Data")) {
+      queryPath = "/explore/FV/sections/Data"
+    }
+    else {
+      queryPath = "/explore/FV/sections/Data"    	  
+    }
+
+    // Do a dialect search
+    if (this.props.routeParams.dialect_path) {
+      queryPath = "/explore" + this.props.routeParams.dialect_path;
+    }
+
+    // Clear out the input field
+    this.refs.navigationSearchField.setValue("");
 	  this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
   } 
 
   render() {
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+    const isDialect = this.props.routeParams.hasOwnProperty('dialect_path');
 
-    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');    
+    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+
     const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
     const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
+    let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal);
+    let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal);
+
+    const avatar = (portalLogo) ? <Avatar src={ConfGlobal.baseURL + portalLogo} size={50} style={{marginRight: '10px'}} /> : '';
+
+    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle + " Community Portal"}</a> : this.props.properties.title;
+
+    const hintTextSearch = isDialect ? 'Search dialect:' : this.state.hintTextSearch;
+
     return <div>
         <AppBar
-          title={this.props.properties.title}
+          title={title}
+          showMenuIconButton={isDialect ? false : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
-          <ToolbarGroup>
+          <ToolbarGroup style={{position: 'relative'}}>
             <Login routeParams={this.props.routeParams} label="Sign in"/>
 
             <ToolbarSeparator style={{float: 'none', marginLeft: 0, marginRight: 0}} />
 
-            <Badge
-              badgeContent={userTaskCount}
-              style={{top: '8px', left: '0', padding: '0 0 12px 12px'}}
-              badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
-              primary={true}
-            >
-              <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false} tooltip="Active Tasks">
-                <NotificationsIcon />
-              </IconButton>
-            </Badge>
+            <AuthenticationFilter login={this.props.computeLogin} anon={false} routeParams={this.props.routeParams} containerStyle={{display: 'inline'}}>
+              <span>
+                <Badge
+                  badgeContent={userTaskCount}
+                  style={{top: '8px', left: '0', padding: '0 0 12px 12px'}}
+                  badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
+                  primary={true}
+                >
+                  <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false}>
+                    <NotificationsIcon />
+                  </IconButton>
+                </Badge>
 
-            <Badge
-              badgeContent={guideCount}
-              style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
-              badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
-              primary={true}
-            >
-              <IconButton onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false} tooltip="Guides">
-                <ActionHelp />
-              </IconButton>
-            </Badge>
+                <Badge
+                  badgeContent={guideCount}
+                  style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
+                  badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
+                  primary={true}
+                >
+                  <IconButton onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
+                    <ActionHelp />
+                  </IconButton>
+                </Badge>
+              </span>
+            </AuthenticationFilter>
 
             <Popover
             open={this.state.guidePopoverOpen}
@@ -254,7 +281,9 @@ export default class Navigation extends Component {
             <ToolbarSeparator style={{float: 'none', marginRight: '30px', marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
-            <TextField ref="navigationSearchField" hintText={this.state.hintTextSearch} onBlur={() => this.setState({hintTextSearch: 'Search:'})} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />
+            <TextField underlineStyle={{width:'90%'}} style={{fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', borderRadius: '5px'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch })} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />
+
+            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0'}} iconStyle={{fontSize: '24px', padding: '5px', borderRadius: '20px', color: themePalette.alternateTextColor, background: themePalette.primary2Color}}>search</IconButton>
 
             {/*<IconMenu
                 iconButtonElement={
@@ -271,7 +300,7 @@ export default class Navigation extends Component {
 
         </AppBar>
 
-        <Toolbar>
+        <Toolbar className={classNames({'hidden': isDialect})}>
 
           <ToolbarGroup float="right">
             <DialectDropDown routeParams={this.props.routeParams} />

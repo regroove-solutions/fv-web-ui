@@ -55,12 +55,6 @@ export default class DocumentListView extends Component {
   }
 
   _onPageChange(page) {
-
-    // Datagrid starts page count at 1, back-end starts at 0; adjust for Datagrid.
-    if (page === 0) {
-      page = 1;
-    }
-
     // Skip if page hasn't actually changed.
     if (page == this.props.page){
       return;
@@ -70,7 +64,7 @@ export default class DocumentListView extends Component {
       page: page
     });
 
-    this.props.refetcher(this.props, (page - 1), this.props.pageSize);
+    this.props.refetcher(this.props, page, this.props.pageSize);
   }
 
   _onPageSizeChange(pageSize, props) {
@@ -87,7 +81,7 @@ export default class DocumentListView extends Component {
     }
 
     // Refresh data
-    this.props.refetcher(this.props, (this.props.page - 1), pageSize);
+    this.props.refetcher(this.props, newPage, pageSize);
   }
 
   _gridListFetcher(fetcherParams) {
@@ -112,13 +106,13 @@ export default class DocumentListView extends Component {
 
     if (this.props.gridListView) {
       return <GridViewWithPagination
-                action={this._handleSelectionChange}
+                //action={this._handleSelectionChange}
                 style={{overflowY: 'auto', maxHeight: '50vh'}}
                 cols={this.props.gridCols}
                 cellHeight={160}
                 fetcher={this._gridListFetcher}
                 type={this.props.type}
-                fetcherParams={{currentPageIndex: (this.props.page == 0 ? this.props.page : this.props.page - 1), pageSize: (this.props.pageSize)}}
+                fetcherParams={{currentPageIndex: this.props.page, pageSize: (this.props.pageSize)}}
                 metadata={selectn('response', this.props.data)}
                 items={selectn('response.entries', this.props.data)} />;
     }

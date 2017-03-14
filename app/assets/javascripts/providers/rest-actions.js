@@ -73,16 +73,16 @@ export default {
 		}
 	},
 	update: function(key, type, properties = {}) {
-		return function update(newDoc, messageStart = null, messageSuccess = null, messageError = null) {
+		return function update(newDoc, messageStart = undefined, messageSuccess = undefined, messageError = undefined) {
 			return function (dispatch) {
 
-			    dispatch( { type: key + '_UPDATE_START', pathOrId: newDoc.path, message: (messageStart || 'Update started...') } );
+			    dispatch( { type: key + '_UPDATE_START', pathOrId: newDoc.path, message: ((messageStart === undefined) ? 'Updated started...': messageStart) } );
 
 			    return DocumentOperations.updateDocument(newDoc, { headers: properties.headers })
 			      .then((response) => {
-			        dispatch( { type: key + '_UPDATE_SUCCESS', message: (messageSuccess || 'Document updated successfully!'), response: response, pathOrId: newDoc.path } )
+			        dispatch( { type: key + '_UPDATE_SUCCESS', message: ((messageSuccess === undefined) ? 'Document updated successfully!': messageSuccess), response: response, pathOrId: newDoc.path } )
 			      }).catch((error) => {
-			          dispatch( { type: key + '_UPDATE_ERROR', message: (messageError || error), pathOrId: newDoc.path } )
+			          dispatch( { type: key + '_UPDATE_ERROR', message: ((messageError === undefined) ? error: messageError), pathOrId: newDoc.path } )
 			    });
 			}
 		}

@@ -64,9 +64,9 @@ export default class RecentActivityList extends Component {
 	  
     return (
     	<div>
-        	<h3 style={{margin: '0', padding: '10px 0'}}>{this.props.title}</h3>
+        	<h3 style={{margin: '0', padding: '10px 0', fontSize: '1.2em'}}>{this.props.title}</h3>
         	<ul>
-			{this.props.data.entries.map((document, i) => 
+				{this.props.data.entries.map((document, i) => 
 				<li style={{padding: '0 0 5px 0'}} key={document['uid']}><a href={this._formatLink(document['path'], this.props.docType)}>{document['title']}</a> <br />
     				{this._formatDate(document.properties['dc:modified'])} by <strong>{document.properties['dc:lastContributor']}</strong>
 				</li>

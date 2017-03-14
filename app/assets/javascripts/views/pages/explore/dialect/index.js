@@ -32,7 +32,7 @@ import SearchBar from 'views/pages/explore/dialect/search-bar';
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-import RaisedButton from 'material-ui/lib/raised-button';
+
 import Toggle from 'material-ui/lib/toggle';
 import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
@@ -51,12 +51,20 @@ import ListItem from 'material-ui/lib/lists/list-item';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 
 import Preview from 'views/components/Editor/Preview';
+import GridList from 'material-ui/lib/grid-list/grid-list';
+import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import GridView from 'views/pages/explore/dialect/learn/base/grid-view';
+
+const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
 
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 import Kids from './kids';
+
+const portalNavigationWrapperStyles = {position: 'absolute', bottom: '0', backgroundColor: 'rgba(0,0,0,0.5)'};
+const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '16px'}
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -99,7 +107,7 @@ export default class ExploreDialect extends Component {
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_publishChangesAction', '_handleGalleryDropDownChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_publishChangesAction', '_handleGalleryDropDownChange', '_handleSelectionChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -178,6 +186,10 @@ export default class ExploreDialect extends Component {
 	  }
   }
 
+  _handleSelectionChange(itemId, item) {
+    this.props.pushWindowPath('/' + this.props.routeParams.theme + selectn('properties.path', item).replace('Dictionary', 'learn/words'));
+  }
+
   
   render() {
 
@@ -205,9 +217,9 @@ export default class ExploreDialect extends Component {
       </PromiseWrapper>;
     }
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    let featuredWords = selectn('response.contextParameters.portal.fv-portal:featured_words', computePortal) || [];
 
-            <PageHeader title="Community Portal" portalLogo={selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)} dialectName={selectn('response.title', computeDialect2)} />
+    return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
@@ -228,7 +240,7 @@ export default class ExploreDialect extends Component {
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
 			        {(() => {
                 if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
-                  return <h2 style={{padding: '10px 30px', position: 'absolute', bottom: '20px', backgroundColor: 'rgba(255,255,255, 0.3)'}}>
+                  return <h2 style={{maxWidth: '70%', padding: '10px 30px', lineHeight: '180%', borderRadius: '0 10px 10px 0', position: 'absolute', bottom: '80px', backgroundColor: 'rgba(255,255,255, 0.5)'}}>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                       <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
                     </AuthorizationFilter>
@@ -240,7 +252,7 @@ export default class ExploreDialect extends Component {
                 }
               })()}
 
-              <div className="pull-right" style={{"width":"200px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px"}}>
+              <div style={{"width":"260px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px", position: 'absolute', bottom: '85px', right: '0'}}>
                 <div>
                   <strong>Name of Archive</strong>: 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
@@ -267,25 +279,23 @@ export default class ExploreDialect extends Component {
                   </div>
 
               </div>
+
+              <Toolbar style={portalNavigationWrapperStyles}>
+
+                <ToolbarGroup firstChild={true}>
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> <ToolbarSeparator />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))} label="Kids Portal" /> 
+                </ToolbarGroup>
+
+              </Toolbar>
+
             </Header>
-
-            <Toolbar>
-
-              <ToolbarGroup firstChild={true} float="left">
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> <ToolbarSeparator />
-              </ToolbarGroup>
-
-              <ToolbarGroup float="right">
-              	<SearchBar />
-              </ToolbarGroup>
-
-            </Toolbar>
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-9', 'col-md-9')}>
+              <div className={classNames('col-xs-8', 'col-md-8')}>
                 <div>
                   <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                     <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
@@ -293,35 +303,23 @@ export default class ExploreDialect extends Component {
                 </div>
               </div>
 
-              <div className={classNames('col-xs-3', 'col-md-3')}>
+              <div className={classNames('col-xs-4', 'col-md-4')}>
 
-                {(() => {
+                  <h3>First Words</h3>
 
-                  const featuredWords = selectn('response.contextParameters.portal.fv-portal:featured_words', computePortal);
-
-                  if (featuredWords && featuredWords.length > 0) {
-
-                      return <div style={{padding: '25px'}}>
-
-                            <ListUI subheader="First Words" zDepth={2}>
-
-                              {(featuredWords || []).map(function (word, i) {
-                              
-                                let pathArray = selectn('path', word).split('/');
-                                let name = pathArray[pathArray.length-1];
-
-                                return <ListItem onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/words/' + name)} key={i} style={{backgroundColor: (i % 2) ? '#f7f7f7' : '#fff'}}>
-                                  <Preview id={word.uid} expandedValue={{contextParameters: {word: {related_audio: [selectn('fv:related_audio[0]', word)]}}, properties: word}} type="FVWord" />
-                                </ListItem>;
-                                }.bind(this)
-                              )} 
-
-                             </ListUI>
-                            
-                          </div>;
-                    }
-
-                  })()}
+                  <GridView
+                    action={this._handleSelectionChange}
+                    cols={2}
+                    cellHeight={125}
+                    type="FVWord"
+                    metadata={selectn('response', computeDialect2)}
+                    items={featuredWords.map(function(word){
+                      return {contextParameters: {
+                        word: {
+                          related_pictures: [selectn('fv:related_pictures[0]', word)],
+                          related_audio: [selectn('fv:related_audio[0]', word)]
+                        }}, properties: word};
+                    })} />
 
                   {(() => {
 

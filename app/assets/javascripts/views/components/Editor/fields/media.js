@@ -9,8 +9,6 @@ import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
 import Preview from 'views/components/Editor/Preview';
 
-import Paper from 'material-ui/lib/paper';
-
 /**
 * Define auto-suggest factory
 */
@@ -33,12 +31,12 @@ function renderInput(locals) {
       locals.onChange(initialValue);
   };
 
-  let content = <Paper style={{maxWidth: '400px', textAlign: 'center'}} zDepth={2}>
-      <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} />
-      <FlatButton onTouchTap={_onRequestEdit} label="Replace Selection" labelPosition="after">
+  let content = <div>
+      <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} crop={true} tagStyles={(locals.type == 'FVPicture') ? {height: '200px'} : null} />
+      <FlatButton style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '0 0 0 10px', border: '1px dashed #dedede', paddingLeft: '5px', textAlign: 'center', borderTop: 0, borderRight: 0}} onTouchTap={_onRequestEdit} label="Replace" labelPosition="after">
         <FontIcon style={{verticalAlign: 'middle'}} className="material-icons">swap_horiz</FontIcon>
       </FlatButton>
-  </Paper>;
+  </div>;
 
   if (!locals.value) {
     content = <div>
@@ -48,7 +46,7 @@ function renderInput(locals) {
               </div>;
   }
 
-  return <div>{content}</div>;
+  return <div style={{width:'100%', border: '1px dashed #dedede', padding: '10px', position: 'relative'}}>{content}</div>;
 }
 
 const mediaTemplate = t.form.Form.templates.textbox.clone({ renderInput })

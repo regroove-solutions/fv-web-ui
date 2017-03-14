@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -33,6 +34,10 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+import withForm from 'views/hoc/view/with-form';
+
+const EditViewWithForm = withForm(PromiseWrapper, true);
 
 @provide
 export default class PageDialectWordEdit extends Component {
@@ -60,7 +65,7 @@ export default class PageDialectWordEdit extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_handleSave', '_handleCancel'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   fetchData(newProps) {
@@ -113,19 +118,8 @@ export default class PageDialectWordEdit extends Component {
     return false;
   }
 
-  _onRequestSaveForm(e) {
+  _handleSave(word, formValue) {
 
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_word"].getValue();
-
-    // Passed validation
-    if (formValue) {
-      let word = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
-
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
       let newDocument = new Document(word.response, { 
         'repository': word.response._repository,
         'nuxeo': word.response._nuxeo
@@ -135,14 +129,14 @@ export default class PageDialectWordEdit extends Component {
       newDocument.set(formValue);
 
       // Save document
-      this.props.updateWord(newDocument);
+      this.props.updateWord(newDocument, null, null);
 
       this.setState({ formValue: formValue });
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0);
-    }
-  }  
+  }
+
+  _handleCancel() {
+    NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+  }
 
   render() {
 
@@ -169,32 +163,19 @@ export default class PageDialectWordEdit extends Component {
 
 	    <h1>Edit {selectn("response.properties.dc:title", computeWord)} word</h1>
 
-	    <div className="row" style={{marginTop: '15px'}}>
-	
-	      <div className={classNames('col-xs-8', 'col-md-10')}>
-	        <form onSubmit={this._onRequestSaveForm}>
-	          <t.form.Form
-	            ref="form_word"
-	            type={t.struct(selectn("FVWord", fields))}
-	            context={context}
-              value={this.state.formValue || selectn("response.properties", computeWord)}
-	            options={selectn("FVWord", options)} />
-	            <div className="form-group">
-	              <button type="submit" className="btn btn-primary">Save</button> 
-	            </div>
-	        </form>
-	      </div>
-	
-	      <div className={classNames('col-xs-4', 'col-md-2')}>
-	
-	        <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-	
-	          <div className="subheader">Metadata</div>
-	
-	        </Paper>
-	
-	      </div>
-	  </div>
+      <EditViewWithForm
+        computeEntities={computeEntities} 
+        initialValues={context}
+        itemId={this.state.wordPath}
+        fields={fields}
+        options={options}
+        saveMethod={this._handleSave}
+        cancelMethod={this._handleCancel}
+        currentPath={this.props.splitWindowPath}
+        navigationMethod={this.props.replaceWindowPath}
+        type="FVWord"
+        routeParams={this.props.routeParams} />
+
 	</PromiseWrapper>;
   }
 }

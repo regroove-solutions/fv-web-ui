@@ -43,11 +43,11 @@ export default class Header extends Component {
 
     const portalBackgroundStyles = {
       position: 'relative',
-      minHeight: '200px',
+      minHeight: '400px',
       backgroundColor: 'transparent',
       backgroundSize: 'cover',
       backgroundImage: 'url("' + portalBackgroundImagePath + '")',
-      backgroundPosition: '0 0',
+      backgroundPosition: '0 -100',
     }
 
     return <div style={portalBackgroundStyles}>

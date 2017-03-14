@@ -1,6 +1,8 @@
 import React from 'react';
 import t from 'tcomb-form';
 
+import classNames from 'classnames';
+
 import VirtualKeyboardFactory from 'views/components/Editor/fields/virtualKeyboard';
 
 import WysiwygFactory from 'views/components/Editor/fields/wysiwyg';
@@ -26,6 +28,31 @@ const configExt = {
   }
 }
 
+const FVPortalTemplate = function template(locals) {
+  return (
+    <fieldset>
+      <div className="col-md-12">
+        {locals.inputs['fv-portal:greeting']}
+      </div>
+      <div className="col-md-12">
+        {locals.inputs['fv-portal:about']}
+      </div>
+      <div className="col-md-12">
+        {locals.inputs['fv-portal:featured_words']}
+      </div>
+      <div className="col-md-12">
+        {locals.inputs['fv-portal:featured_audio']}
+      </div>
+      <div className="col-md-6">
+        {locals.inputs['fv-portal:background_top_image']}
+      </div>
+      <div className="col-md-6">
+        {locals.inputs['fv-portal:logo']}
+      </div>
+    </fieldset>
+  )
+}
+
 const DefinitionsLayout = function (locals) {
   return (
     <div className="table-responsive">
@@ -40,6 +67,16 @@ const DefinitionsLayout = function (locals) {
     </div>
   );
 };
+
+/*const RelatedPicturesLayout = function (locals) {
+  return (
+    <fieldset>
+        {(locals.items || []).map(function(item, i) {
+          return <div key={i} className={classNames('col-xs-12','col-md-3')}>{item.input}</div>;
+        })}
+    </fieldset>
+  );
+};*/
 
 t.String.getValidationErrorMessage = (value, path, context) => {
   if (!value) {
@@ -141,7 +178,8 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVPicture'
-        }
+        }/*,
+        template: RelatedPicturesLayout*/
       },
       'fv:related_videos' : {
         label: 'Related Videos',
@@ -555,6 +593,11 @@ const options = {
       'fv-portal:greeting': {
         label: 'Portal Greeting'
       },
+      'fv-portal:featured_audio' : {
+        label: 'Greeting Audio',
+        factory: MediaFactory,
+        type: 'FVAudio'
+      },
       'fv-portal:about': {
         label: 'Portal Introduction',
         type: 'textarea',
@@ -563,10 +606,15 @@ const options = {
           placeholder: 'Enter portal description here'
         }
       },
-      'fv-portal:featured_audio' : {
-        label: 'Featured Audio',
+      'fv-portal:background_top_image' : {
+        label: 'Background Image',
         factory: MediaFactory,
-        type: 'FVAudio'
+        type: 'FVPicture'
+      },
+      'fv-portal:logo' : {
+        label: 'Logo',
+        factory: MediaFactory,
+        type: 'FVPicture'
       },
       'fv-portal:featured_words' : {
         label: 'Featured Words',
@@ -580,18 +628,9 @@ const options = {
             }
           }
         }
-      },
-      'fv-portal:background_top_image' : {
-        label: 'Background Image',
-        factory: MediaFactory,
-        type: 'FVPicture'
-      },
-      'fv-portal:logo' : {
-        label: 'Logo',
-        factory: MediaFactory,
-        type: 'FVPicture'
       }
     },
+    template: FVPortalTemplate,
     i18n: i18nExt
   },
 

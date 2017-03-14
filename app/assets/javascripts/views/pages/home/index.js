@@ -24,6 +24,9 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import Paper from 'material-ui/lib/paper';
+
+import Map from 'views/components/Geo/map';
 
 /**
 * Explore Archive page shows all the families in the archive
@@ -47,19 +50,34 @@ export default class PageHome extends Component {
     const homePageStyle = {
       position: 'relative',
       minHeight: '155px',
-      height: '600px',
+      height: '700px',
       backgroundColor: 'transparent',
       backgroundSize: 'cover',
       backgroundImage: 'url("/assets/images/homepage.jpg")',
       backgroundPosition: '0 0',
+      overflow: 'hidden'
     }
 
-    return <div className="container-fluid">
-             <div className="row" style={homePageStyle}>
-              <div className="col-xs-12">
-                Testing
+    return <div>
+            <div className="row" style={homePageStyle}>
+              <div className={classNames('col-xs-12')} style={{height: '100%', textAlign: 'right'}}>
+                <Map style={{display:'none', position: 'absolute', right: '0', bottom: '0'}} />
               </div>
-             </div>
-           </div>;
+            </div>
+            <div className={classNames('row', 'hidden')}>
+              <div className={classNames('col-xs-12', 'col-md-3')}>
+                <Paper>test</Paper>
+              </div>
+              <div className={classNames('col-xs-12', 'col-md-3')}>
+                <Paper>test</Paper>
+              </div>
+              <div className={classNames('col-xs-12', 'col-md-3')}>
+                <Paper>test</Paper>
+              </div>
+              <div className={classNames('col-xs-12', 'col-md-3')}>
+                <Paper>test</Paper>
+              </div>
+                </div>
+            </div>;
   }
 }

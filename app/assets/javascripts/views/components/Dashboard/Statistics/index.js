@@ -41,24 +41,28 @@ export default class Statistics extends Component {
 
     return (
 		<div>
-			<div className={'row'} style={{margin: '0 0 15px 0'}}>
-	    		<h3>{this.props.headerText}: {dataResponse[docType].total}</h3>
-	    		<div className={'col-lg-8'}>
-	    			<Doughnut data={lifecycleStateDoughnutData} />
+			<div className={'row'} style={{margin: '0'}}>
+	    		<div className={'col-lg-4'} style={{paddingLeft: '0'}}>
+	    			<Doughnut data={lifecycleStateDoughnutData} width="200" height="170" options={{responsive: true}} />
 	    		</div>
-	    		<div className={'col-lg-4'}>
+	    		<div className={'col-lg-3'} style={{paddingTop: '35px', paddingLeft: '35px'}}>
+							
+							<div style={{paddingBottom: '10px'}}><strong>{this.props.headerText}</strong>: {dataResponse[docType].total}</div>
+
 		        	{lifecycleStateDoughnutData.map((slice, i) =>
 		  		  		<div key={slice.label}><span className={'glyphicon glyphicon-stop'} style={{color: slice.color}} /> {slice.label}: {slice.value}</div>
-			    	)}	
+			    		)}	
+	    		</div>
+	    		<div className={'col-lg-5'} style={{paddingTop: '65px'}}>
+						<ul>
+							<li><strong>Created Today: </strong>{dataResponse[docType].created_today}</li>                         
+							<li><strong>Modified Today: </strong>{dataResponse[docType].modified_today}</li> 
+							<li><strong>Created Last 7 Days: </strong>{dataResponse[docType].created_within_7_days}</li>                         
+							<li><strong>Available In Kids Area: </strong>{dataResponse[docType].available_in_childrens_archive}</li>    
+						</ul>
 	    		</div>
     		</div>
-    		
-    		<ul>
-	    		<li><strong>Created Today: </strong>{dataResponse[docType].created_today}</li>                         
-	    		<li><strong>Modified Today: </strong>{dataResponse[docType].modified_today}</li> 
-	    		<li><strong>Created Within Last 7 Days: </strong>{dataResponse[docType].created_within_7_days}</li>                         
-	    		<li><strong>Available In Childrens Archive: </strong>{dataResponse[docType].available_in_childrens_archive}</li>    
-    		</ul>
+    	
 		</div>
     );
   }

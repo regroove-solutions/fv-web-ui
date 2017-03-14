@@ -162,12 +162,14 @@ export default class Preview extends Component {
     tagStyles: PropTypes.object,
     metadataListStyles: PropTypes.object,
     minimal: PropTypes.bool,
+    crop: PropTypes.bool,
     initiallyExpanded: PropTypes.bool,
   };
 
   static defaultProps = {
     styles: {},
     tagStyles: {},
+    crop: false,
     minimal: false,
     initiallyExpanded: false
   };
@@ -228,7 +230,7 @@ export default class Preview extends Component {
       let handleExpandChange = () => {};
 
       let previewStyles = Object.assign({
-        padding: '10px'
+        padding: '10px 0'
       }, this.props.styles);
 
       let body = <CircularProgress mode="indeterminate" size={1} />;
@@ -251,6 +253,7 @@ export default class Preview extends Component {
 
             let image = selectn('contextParameters.word.related_pictures[0].path', wordResponse);
             let translations = selectn('properties.fv:literal_translation', wordResponse) || selectn('properties.fv-word:definitions', wordResponse);
+            let audio = selectn('contextParameters.word.related_audio[0].path', wordResponse);
 
             if (this.props.minimal) {
               body = <div><strong>{selectn('properties.dc:title', wordResponse)}</strong></div>;
@@ -259,7 +262,7 @@ export default class Preview extends Component {
                 {(image) ? <Avatar src={ConfGlobal.baseURL + image} size={45} className="pull-left" style={{marginRight: '10px', marginTop: '10px'}} /> : ''}
                 <strong style={{lineHeight: '200%'}}>{selectn('properties.dc:title', wordResponse)} ({selectn('properties.dc:title', wordResponse)})</strong><br/>
                 {translations.map((translation, j) =><span key={j}>{translation.translation}<br/></span>)}<br/>
-                <audio src={ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', wordResponse)} controls />
+                {(audio) ? <audio src={ConfGlobal.baseURL + audio} controls /> : ''}
               </div>;
             }
           }
@@ -323,12 +326,12 @@ export default class Preview extends Component {
           let pictureResponse;
           let pictureTag = '';
 
-          let remotePicture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id || this.props.expandedValue.uid);
+          let remotePicture = ProviderHelpers.getEntry(this.props.computePicture, this.props.id || selectn('expandedValue.uid', this.props));
 
           if (this.props.expandedValue && !selectn('success', remotePicture)) {
             picture.success = true;
             pictureResponse = this.props.expandedValue;
-            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchPicture);
+            handleExpandChange = this._handleExpandChange.bind(this, selectn('expandedValue.uid', this.props), this.props.fetchPicture);
           }
           else {
             picture = remotePicture;
@@ -337,7 +340,13 @@ export default class Preview extends Component {
 
           if (pictureResponse && picture.success) {
 
-            pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse))} alt={selectn('title', pictureResponse)} />;
+            let pictureUrl = selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse));
+
+            pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={pictureUrl} alt={selectn('title', pictureResponse)} />;
+
+            if (this.props.crop) {
+              pictureTag = <div style={{width: '100%', backgroundImage: 'url(' + pictureUrl + ')', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPositionX: '50%', ...this.props.tagStyles}}></div>;
+            }
 
             if (this.props.minimal) {
               body = pictureTag;
@@ -371,12 +380,12 @@ export default class Preview extends Component {
           let audioResponse;
           let audioTag = '';
 
-          let remoteAudio = ProviderHelpers.getEntry(this.props.computeAudio, this.props.id || this.props.expandedValue.uid);
+          let remoteAudio = ProviderHelpers.getEntry(this.props.computeAudio, this.props.id || selectn('expandedValue.uid', this.props));
 
           if (this.props.expandedValue && !selectn('success', remoteAudio)) {
             audio.success = true;
             audioResponse = this.props.expandedValue;
-            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchAudio);
+            handleExpandChange = this._handleExpandChange.bind(this, selectn('expandedValue.uid', this.props), this.props.fetchAudio);
           }
           else {
             audio = remoteAudio;
@@ -419,12 +428,12 @@ export default class Preview extends Component {
           let videoResponse;
           let videoTag = '';
 
-          let remoteVideo = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id || this.props.expandedValue.uid);
+          let remoteVideo = ProviderHelpers.getEntry(this.props.computeVideo, this.props.id || selectn('expandedValue.uid', this.props));
 
           if (this.props.expandedValue && !selectn('success', remoteVideo)) {
             video.success = true;
             videoResponse = this.props.expandedValue;
-            handleExpandChange = this._handleExpandChange.bind(this, this.props.expandedValue.uid, this.props.fetchVideo);
+            handleExpandChange = this._handleExpandChange.bind(this, selectn('expandedValue.uid', this.props), this.props.fetchVideo);
           }
           else {
             video = remoteVideo;

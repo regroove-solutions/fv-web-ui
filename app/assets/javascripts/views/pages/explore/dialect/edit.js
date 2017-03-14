@@ -24,44 +24,38 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
-import {Document} from 'nuxeo';
-
-// Views
-import RaisedButton from 'material-ui/lib/raised-button';
-import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import { Document } from 'nuxeo';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+import withForm from 'views/hoc/view/with-form';
+
+const EditViewWithForm = withForm(PromiseWrapper, true);
 
 @provide
 export default class ExploreDialectEdit extends Component {
 
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     updatePortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
-  };
-
-  static contextTypes = {
-    muiTheme: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_handleSave', '_handleCancel'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -81,11 +75,7 @@ export default class ExploreDialectEdit extends Component {
     }
   }
 
-  _onNavigateRequest(path) {
-    //this.props.pushWindowPath('/' + path);
-  }
-
-  shouldComponentUpdate(newProps) {
+  /*shouldComponentUpdate(newProps) {
 
     const portalPath = this.props.routeParams.dialect_path + '/Portal';
 
@@ -104,34 +94,24 @@ export default class ExploreDialectEdit extends Component {
     }
 
     return false;
+  }*/
+
+  _handleSave(portal, formValue) {
+    // TODO: Find better way to construct object then accessing internal function
+    let portalDoc = new Document(portal.response, { 
+      'repository': portal.response._repository,
+      'nuxeo': portal.response._nuxeo
+    });
+
+    // Set new value property on document
+    portalDoc.set(formValue);
+
+    // Save document
+    this.props.updatePortal(portalDoc, null, null);
   }
 
-  _onRequestSaveForm(portal, e) {
-
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_portal"].getValue();
-
-    // Passed validation
-    if (formValue) {
-
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
-      let newDocument = new Document(portal.response, { 
-        'repository': portal.response._repository,
-        'nuxeo': portal.response._nuxeo
-      });
-
-      // Set new value property on document
-      newDocument.set(formValue);
-
-      // Save document
-      this.props.updatePortal(newDocument);
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0);
-    }
+  _handleCancel() {
+    NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
   }
 
   render() {
@@ -153,73 +133,29 @@ export default class ExploreDialectEdit extends Component {
 
     // Set initial values
     if (selectn('response', computeDialect2) && selectn('response', computePortal)) {
-      initialValues = Object.assign(selectn('response', computeDialect2), {initialValues: selectn("response.properties", computePortal)})
+      initialValues = Object.assign(
+        selectn('response', computeDialect2),
+        { initialValues: selectn("response.properties", computePortal) }
+      );
     }
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <div>
+      
+            <h1>Edit {selectn('response.title', computeDialect2)} Community Portal</h1>
 
-              <div className="form-horizontal">
+            <EditViewWithForm
+              computeEntities={computeEntities} 
+              initialValues={initialValues}
+              itemId={portalPath}
+              fields={fields}
+              options={options}
+              saveMethod={this._handleSave}
+              cancelMethod={this._handleCancel}
+              currentPath={this.props.splitWindowPath}
+              navigationMethod={this.props.replaceWindowPath}
+              type="FVPortal"
+              routeParams={this.props.routeParams} />
 
-                <h1>Edit {selectn('response.title', computeDialect2)} Community Portal</h1>
-   
-                <div className="row" style={{marginTop: '15px'}}>
-
-                  <div className={classNames('col-xs-8', 'col-md-10')}>
-                    <form onSubmit={this._onRequestSaveForm.bind(this, computePortal)}>
-                      <t.form.Form
-                        ref="form_portal"
-                        type={t.struct(selectn("FVPortal", fields))}
-                        context={initialValues}
-                        value={selectn("response.properties", computePortal)}
-                        options={selectn("FVPortal", options)} />
-                        <div className="form-group">
-                          <button type="submit" className="btn btn-primary">Save</button> 
-                        </div>
-                    </form>
-                  </div>
-
-                  <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                    <div style={{marginTop: '25px'}} className={classNames('panel', 'panel-primary')}>
-
-                      <div className="panel-heading">Metadata</div>
-
-                      <ul className="list-group">
-
-                        <li className="list-group-item">
-                          <span className={classNames('label', 'label-default')}>Last Modified</span><br/>
-                          {selectn("response.lastModified", computePortal)}
-                        </li>
-
-                        <li className="list-group-item">
-                          <span className={classNames('label', 'label-default')}>Last Contributor</span><br/>
-                          {selectn("response.properties.dc:lastContributor", computePortal)}
-                        </li>
-
-                        <li className="list-group-item">
-                          <span className={classNames('label', 'label-default')}>Date Created</span><br/>
-                          {selectn("response.properties.dc:created", computePortal)}
-                        </li>
-
-                        <li className="list-group-item">
-                          <span className={classNames('label', 'label-default')}>Contributors</span><br/>
-                          {(selectn("response.properties.dc:contributors", computePortal) || []).join(',')}
-                        </li>
-
-                        <li className="list-group-item">
-                          <span className={classNames('label', 'label-default')}>Version</span><br/>
-                          {selectn("response.properties.uid:major_version", computePortal)}.{selectn("response.properties.uid:minor_version", computePortal)} 
-                        </li>
-
-                      </ul>
-
-                    </div>
-
-                  </div>
-              </div>
-
-            </div>
-
-        </PromiseWrapper>;
+          </div>
   }
 }

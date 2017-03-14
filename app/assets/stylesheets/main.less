@@ -172,6 +172,7 @@ form.editableComponentForm{
     border:0;
     border-top:1px #DEDEDE solid;
     padding-top: 15px;
+    margin-top: 30px;
 
     .fv-small-logo{
       padding-right:15px;
@@ -301,13 +302,27 @@ audio,video{
   text-align:center;
 }
 
+.grid-view div:hover{
+  > img{
+    filter: none !important;
+  }
+}
+
 /**
-* Edit Word View
+* Edit View
 */
-.form-horizontal fieldset > .btn{
-  float:right;
-  margin-right:12px;
-  background-color:#EBF4B6;
+.form-horizontal {
+
+  .form-group{
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  fieldset > .btn {
+    float:right;
+    margin-right:12px;
+    background-color:#EBF4B6;
+   }
 }
 
 /**
@@ -377,9 +392,9 @@ audio,video{
 /**
 * Themes
 */
-.page-default-theme{
+/*.page-default-theme{
   margin-top: 25px;
-}
+}*/
 
 .page-kids-theme{
   margin-top: 0;
@@ -391,14 +406,77 @@ audio,video{
   }
 }
 
+.workspace-switcher{
+  >li {
+    margin-left:10px;
+    border-radius: 0;
+
+    > a {
+      border-radius: 4px 4px 0 0;
+      color: #000;
+
+      &:hover, &:focus {
+        background-color: #dcdcdc;
+      }
+    }
+  }
+  
+  > li.active {
+
+    border-bottom: 4px solid #a7a7a7;
+
+    > a{
+      color: #000;
+      background-color: transparent;
+      padding-bottom: 5px;
+
+      &:hover, &:focus{
+        background-color: #dcdcdc;
+        color: #000;
+      }
+    }
+  }
+}
+
 .breadcrumb{
   margin-top: 10px;
+  background-color: transparent;
+
+  a {
+    color: #353b40;
+  }
 }
 
 .admin-guide-step{
   width: 300px;
 }
 
+.map-component{
+  path {
+    stroke-width: 1px;
+    stroke: #000;
+    fill: #000;
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  path:hover, path.highlighted {
+    fill: #d23c2f;
+  }
+
+
+}
+
+
+  div.tooltip2 {
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
+    color: black;
+    font-weight: bold;
+    padding: 4px 8px;
+    display: none;
+  }
 /*
 
 // Remove audio download button workaround
