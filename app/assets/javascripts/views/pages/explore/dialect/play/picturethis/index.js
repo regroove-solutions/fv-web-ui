@@ -40,13 +40,13 @@ export default class Picturethis extends Component {
           name:'Animals',
           words:[
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
+                word:'alíiluya',
+                translation:'Bird',
                 location:{
                   x:13,
                   y:59
                 },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+                audio:'https://fv.nuxeocloud.com/nuxeo/nxfile/default/4aed0782-43f4-49aa-b328-453cd2fac538/file:content/seagull03_stat.mp3'
             },
             {
                 word:'(replace with word)',
