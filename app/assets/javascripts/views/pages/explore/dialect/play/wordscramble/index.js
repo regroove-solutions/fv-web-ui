@@ -15,44 +15,77 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import Immutable, { List, Map } from 'immutable';
+
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import Colors from 'material-ui/lib/styles/colors';
 import FontIcon from 'material-ui/lib/font-icon';
 
+import ConfGlobal from 'conf/local.json';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
 import _ from 'underscore';
 /**
 * Play games
 */
+@provide
 export default class Wordscramble extends Component {
+
+  static propTypes = {
+    fetchPhrases: PropTypes.func.isRequired,
+    computePhrases: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
+  }
 
   /**
    * Constructor
    */
   constructor(props, context) {
-
     super(props, context);
+  }
 
-    this.config = {
-      sentences:[{
-        original:['This','is','a','sentence'],
-        translation:'This is the translation'
-      },
-      {
-        original:['This','is','a','sentence'],
-        translation:'This is the translation'
-      }]
-    }
+  /**
+   * componentDidMount
+   */
+  componentDidMount () {
+    // Fetch fetch data
+    this.fetchData(this.props);
+  }
 
+  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
+    //' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    '&currentPageIndex=0' + 
+    '&pageSize=10' + 
+    '&sortBy=dc:created' + 
+    '&sortOrder=DESC' 
+    );
   }
 
   /**
    * Render
    */
   render() {
+
+    const computeEntities = Immutable.fromJS([{
+      'id': this.props.routeParams.dialect_path + '/Dictionary',
+      'entity': this.props.computePhrases
+    }])
+
+    const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
+
     return <div className="wordscramble-game">
-              {this.config.sentences.map((sentence,index)=>{
-                return <Scramble key={index} sentence={sentence}/>
+              {(selectn('response.entries', computePhrases) || []).map(function(phrase, i) {
+                return <Scramble key={i} sentence={{
+                    original: selectn('properties.dc:title', phrase).split(' '),
+                    translation: selectn('properties.fv:definitions[0].translation', phrase),
+                    audio: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_audio[0].path', phrase) + '?inline=true',
+                    picture: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_pictures[0].path', phrase) + '?inline=true'}} />
               })}
           </div>;
   }
@@ -144,7 +177,7 @@ export class Scramble extends Component {
         position:'relative'
     }
 
-    return <div>
+    return <div style={{marginTop: '15px'}}>
             <div className="scrambled-sentence" style={containerStyles}>
                 <div style={{height:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
                     {this.state.selected.map((word, index)=>{
@@ -170,10 +203,7 @@ export class Scramble extends Component {
                 <RaisedButton label="Check"  style={ this.state.complete ? {visibility:'hidden'} : {}} disabled={this.state.complete ? true : false} secondary={true} onMouseUp={this.checkAnswer.bind(this)}/>
                 {this.state.complete ? false : <RaisedButton label="Reset" primary={true} onMouseUp={this.reset.bind(this)}/>}
                 <div>
-                    <audio controls>
-                        <source src="horse.ogg" type="audio/ogg"/>
-                        <source src="horse.mp3" type="audio/mpeg"/>
-                    </audio>
+                    <audio src={this.props.sentence.audio} controls />
                     <TextField disabled={true} hintText={this.props.sentence.translation} />
                 </div>
             </div>
