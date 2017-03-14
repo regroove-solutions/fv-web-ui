@@ -14,7 +14,8 @@ const fields = {
     'fv-word:categories' : t.list(t.String),
     'fv-word:pronunciation' : t.String,
     'fv-word:related_phrases' : t.list(t.String),
-    'fv-word:part_of_speech' : t.String
+    'fv-word:part_of_speech' : t.String,
+    'fv-word:available_in_games' : t.Boolean
   }),
   FVPhrase: Object.assign({}, Dublincore, FVCore, {
     'fv:literal_translation' : t.maybe(t.String), // make optional

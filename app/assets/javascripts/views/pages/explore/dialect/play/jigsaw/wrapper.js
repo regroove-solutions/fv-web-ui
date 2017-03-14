@@ -23,7 +23,7 @@ import JigsawGame from 'games/jigsaw'
 export default class Game extends Component {
 
   static propTypes = {
-    pictures: PropTypes.object.isRequired
+    words: PropTypes.array.isRequired
   }
 
   /**
@@ -53,26 +53,18 @@ export default class Game extends Component {
         libs:{
             bitmapJigsawScript:`${defaultLibsPath}/BitmapDataJigsawCut.js`        
         },
-
         images: Object.assign({
             preloaderLoading:`${defaultImagesPath}/loading.png`,
             preloaderLogo:`${defaultImagesPath}/logo.png`,
             backgroundImage:`${defaultImagesPath}/wood.jpg`,
             youWin:`${defaultImagesPath}/well-done.png`,
-            thumb1:`${defaultImagesPath}/thumb1.png`,
-            thumb2:`${defaultImagesPath}/thumb2.png`,
-            thumb3:`${defaultImagesPath}/thumb3.png`,
-            thumb4:`${defaultImagesPath}/thumb4.png`,
             cornerTopLeft:`${defaultImagesPath}/corner1a.png`,
             cornerTopRight:`${defaultImagesPath}/corner1b.png`,
             cornerBottomLeft:`${defaultImagesPath}/corner1c.png`,
             cornerBottomRight:`${defaultImagesPath}/corner1d.png`,
-            picture1:`${defaultImagesPath}/picture1.jpg`,
-            picture2:`${defaultImagesPath}/picture2.jpg`,
-            picture3:`${defaultImagesPath}/picture3.jpg`,
-            picture4:`${defaultImagesPath}/picture4.jpg`
-        }, this.props.pictures)
-
+            arrow:`${defaultImagesPath}/blue_arrow.png`
+        }),
+        words: this.props.words
     };
 
     /**

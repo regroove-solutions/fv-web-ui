@@ -19,6 +19,8 @@ import Immutable, { List, Map } from 'immutable';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ConfGlobal from 'conf/local.json';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import ProviderHelpers from 'common/ProviderHelpers';
 
@@ -53,10 +55,10 @@ export default class Jigsaw extends Component {
   }
 
   fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    props.fetchResources(props.routeParams.dialect_path + '/Resources',
-    'AND ecm:primaryType ILIKE \'FVPicture\' AND picture:views/3/width < 800 AND picture:views/3/width > 500' + 
+    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    ' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
     '&currentPageIndex=0' + 
-    '&pageSize=4' + 
+    '&pageSize=100' + 
     '&sortBy=dc:created' + 
     '&sortOrder=DESC' 
     );
@@ -70,21 +72,52 @@ export default class Jigsaw extends Component {
     let game = '';
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Resources',
-      'entity': this.props.computeResources
+      'id': this.props.routeParams.dialect_path + '/Dictionary',
+      'entity': this.props.computeWords
     }])
 
-    const computeResources = ProviderHelpers.getEntry(this.props.computeResources, this.props.routeParams.dialect_path + '/Resources');
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
 
-    let pictures = {};
-
-    (selectn('response.entries', computeResources) || []).forEach(function(v, k) {
-      pictures['thumb' + (k + 1)] = selectn('properties.picture:views[1].content.data', v) + '?inline=true';
-      pictures['picture' + (k + 1)] = selectn('properties.file:content.data', v) + '?inline=true';
+    let words = (selectn('response.entries', computeWords) || []).map(function(word, k) {
+      return {
+          word: selectn('properties.dc:title', word),
+          translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
+          audio: ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true',
+          picture: ConfGlobal.baseURL + selectn('contextParameters.word.related_pictures[0].path', word) + '?inline=true'
+      };
     })
 
-    if (selectn('success', computeResources)) {
-      game = <Game pictures={pictures} />;
+    if (selectn('success', computeWords)) {
+
+      // If no words found, use placeholders.
+      if (words.length == 0) {
+        words = [{
+          word: 'Bear',
+          translation: 'Bear',
+          audio: '/assets/games/jigsaw/assets/sounds/sample.mp3',
+          picture: '/assets/games/jigsaw/assets/images/picture1.jpg'
+        },
+        {
+          word: 'Totem',
+          translation: 'Totem',
+          audio: '/assets/games/jigsaw/assets/sounds/sample.mp3',
+          picture: '/assets/games/jigsaw/assets/images/picture2.jpg'
+        },
+        {
+          word: 'Fish',
+          translation: 'Fish',
+          audio: '/assets/games/jigsaw/assets/sounds/sample.mp3',
+          picture: '/assets/games/jigsaw/assets/images/picture3.jpg'
+        },
+        {
+          word: 'Fire',
+          translation: 'Fire',
+          audio: '/assets/games/jigsaw/assets/sounds/sample.mp3',
+          picture: '/assets/games/jigsaw/assets/images/picture4.jpg'
+        }]
+      }
+
+      game = <Game words={words} />;
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
