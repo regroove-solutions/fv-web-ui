@@ -29,7 +29,6 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-import _ from 'underscore';
 /**
 * Play games
 */
@@ -80,9 +79,9 @@ export default class Wordscramble extends Component {
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
 
     return <div className="wordscramble-game">
-              {(selectn('response.entries', computePhrases) || []).map(function(phrase, i) {
+              {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map(function(phrase, i) {
                 return <Scramble key={i} sentence={{
-                    original: selectn('properties.dc:title', phrase).split(' '),
+                    original: new List(selectn('properties.dc:title', phrase).split(' ')),
                     translation: selectn('properties.fv:definitions[0].translation', phrase),
                     audio: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_audio[0].path', phrase) + '?inline=true',
                     picture: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_pictures[0].path', phrase) + '?inline=true'}} />
@@ -111,7 +110,7 @@ export class Scramble extends Component {
    */
   getDefaultState()
   {
-    const scrambledSentence = _.shuffle(this.props.sentence.original);
+    const scrambledSentence = this.props.sentence.original.sortBy(()=>Math.random());
     
     return {
       scrambledSentence:scrambledSentence,
@@ -155,7 +154,7 @@ export class Scramble extends Component {
    */
   checkAnswer()
   {
-      if(this.state.selected.join(' ') === this.props.sentence.original.join(' '))
+      if(this.state.selected.join(' ') === this.props.sentence.original.toJS().join(' '))
       {
         this.setState({complete:true})
       }
