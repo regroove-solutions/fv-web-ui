@@ -66,7 +66,7 @@ export default class Wordsearch extends Component {
     '&sortBy=fvcharacter:alphabet_order');
 
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    ' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    //' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
     '&currentPageIndex=0' + 
     '&pageSize=19' + 
     '&sortBy=dc:created' + 
@@ -102,7 +102,7 @@ export default class Wordsearch extends Component {
           word: selectn('properties.dc:title', word),
           translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
           audio: ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true',
-          picture: ConfGlobal.baseURL + selectn('contextParameters.word.related_pictures[0].path', word) + '?inline=true'
+          image: ConfGlobal.baseURL + selectn('contextParameters.word.related_pictures[0].path', word) + '?inline=true'
       };
     }).filter(v=>v.word.length < 12);
 
@@ -113,7 +113,7 @@ export default class Wordsearch extends Component {
     console.log('word_obj_array',word_obj_array);
     
     //Since the alphabet isn't complete, we need fill in the rest
-    const character_string = word_array.join('');
+    const character_string = word_array.map((word) => word.word).join('');
     const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u)));
 
     if (word_array.length > 0) {

@@ -60,6 +60,8 @@ export default class Game extends Component {
             preloaderLoading:`${defaultImagesPath}/loading.png`,
             preloaderLogo:`${defaultImagesPath}/logo.png`,
             azoFontImage:`${defaultImagesPath}/azo.png`,
+            playAudio:`${defaultImagesPath}/play_audio.png`,
+            tile: `${defaultImagesPath}/tile.png`,
             azoFontXml:`${defaultImagesPath}/azo.xml`,  
             letters:`${defaultImagesPath}/`
         },
