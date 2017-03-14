@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 	xmlns:nxsv="http://www.nuxeo.org/ecm/schemas/core/validation/"
+ 	xmlns:ref="http://www.nuxeo.org/ecm/schemas/core/external-references/"
+    xmlns:nxs="http://www.nuxeo.org/ecm/project/schemas/First-Voices/fvuserinfo"
+    targetNamespace="http://www.nuxeo.org/ecm/project/schemas/First-Voices/fvuserinfo">
+
+  	<xs:include schemaLocation="base.xsd" />
+	
+	<xs:element name="requestedSpace" type="xs:string"/>
+
+</xs:schema>

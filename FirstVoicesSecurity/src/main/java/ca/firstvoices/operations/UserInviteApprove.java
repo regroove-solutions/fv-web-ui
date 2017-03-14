@@ -19,6 +19,7 @@
 package ca.firstvoices.operations;
 
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -32,32 +33,25 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
-
-import ca.firstvoices.user.FVUserRegistrationInfo;
-import ca.firstvoices.utils.CustomSecurityConstants;
-
-import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
-
 import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURATION_NAME;
 
+import ca.firstvoices.utils.CustomSecurityConstants;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
-
 /**
- * Operation to invite a User.
+ * Operation to accept a user invitation.
  */
-@Operation(id = UserInvite.ID, category = Constants.CAT_USERS_GROUPS, label = "Invite a user",
-        description = "Stores a registration request and returns its ID.")
-public class UserInvite {
+@Operation(id = UserInviteApprove.ID, category = Constants.CAT_USERS_GROUPS, label = "Approve user invite",
+        description = "Approves a request to join the system.")
+public class UserInviteApprove {
 
-    public static final String ID = "User.Invite";
+    public static final String ID = "User.ApproveInvite";
 
     @Context
     protected UserManager userManager;
@@ -65,81 +59,55 @@ public class UserInvite {
     @Context
     protected UserRegistrationService registrationService;
 
-    @Param(name ="docInfo", required = false)
-    protected DocumentRegistrationInfo docInfo = null;
-
-    @Param(name = "validationMethod", required = false)
-    protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
-
-    @Param(name = "autoAccept", required = false)
-    protected boolean autoAccept = false;
-
-    @Param(name = "info", required = false)
-    protected Map<String, Serializable> info = new HashMap<>();
+    @Param(name = "group", required = false)
+    protected String group = "members";
 
     @Param(name = "comment", required = false)
     protected String comment;
+
+    @Param(name = "appurl", required = false)
+    protected String appurl = null;
 
     @Context
     protected CoreSession session;
 
     @OperationMethod
-    public String run(DocumentModel registrationRequest) {
+    public void run(String registrationId) {
 
-        DocumentRegistrationInfo docInfo = new DocumentRegistrationInfo();
-        FVUserRegistrationInfo userInfo = new FVUserRegistrationInfo();
+        Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
+        DocumentModel registrationDoc = session.getDocument(new IdRef(registrationId));
 
-        String requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
-        String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
-        String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
-        String email = (String) registrationRequest.getPropertyValue("userinfo:email");
+        // Add approved groups to registration document
+        ArrayList<String> approved_groups = new ArrayList<String>();
+        approved_groups.add(group);
+        registrationDoc.setPropertyValue("userinfo:groups", approved_groups);
 
-        // Source lookup (unrestricted)
-        UnrestrictedSourceDocumentResolver usdr = new UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
-        usdr.runUnrestricted();
+        // Add current user to contributors
+        String[] contributors = (String []) registrationDoc.getProperty("dublincore", "contributors");
+        NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
 
-        // Source document
-        DocumentModel dialect = usdr.dialect;
+        String[] newContributors = Arrays.copyOf(contributors, contributors.length + 1);
+        newContributors[newContributors.length - 1] = currentUser.getName();
 
-        String dialectTitle = (String) dialect.getPropertyValue("dc:title");
+        registrationDoc.setPropertyValue("dc:contributors", newContributors);
+        registrationDoc.setPropertyValue("dc:lastContributor", currentUser.getName());
 
-        docInfo.setDocumentId(dialect.getId());
+        registrationDoc.setPropertyValue("registration:comment", comment);
 
-        if (dialect.getCurrentLifeCycleState().equals("disabled")) {
-            throw new UserRegistrationException("Cannot request to join a disabled dialect.");
-        }
+        // Save document before accepting
+        session.saveDocument(registrationDoc);
 
-        docInfo.setDocumentTitle(dialectTitle);
+        // Set additional information for email
+        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(CONFIGURATION_NAME).getEnterPasswordUrl());
 
-        // Group lookup (unrestricted)
-        UnrestrictedGroupResolver ugdr = new UnrestrictedGroupResolver(session, dialect);
-        ugdr.runUnrestricted();
+        // Determine the document url to add it into the email
+        String dialectId = (String) registrationDoc.getPropertyValue("docinfo:documentId");
+        DocumentModel dialect = session.getDocument(new IdRef(dialectId));
 
-        // If no group found (somehow), add Read permission directly.
-        if (!ugdr.member_groups.isEmpty()) {
-            userInfo.setGroups(ugdr.member_groups);
-        } else {
-            docInfo.setPermission("Read");
-        }
+        additionalInfo.put("docUrl", appurl + "explore" + dialect.getPathAsString());
 
-        userInfo.setEmail(email);
-        userInfo.setFirstName(firstName);
-        userInfo.setLastName(lastName);
-        userInfo.setRequestedSpace(requestedSpaceId);
-
-        // Additional information from registration
-        info.put("fvuserinfo:requestedSpaceId", userInfo.getRequestedSpace());
-        info.put("registration:comment", comment);
-        info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
-
-        String registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(CONFIGURATION_NAME).getName(), userInfo, docInfo, info,
-                validationMethod, autoAccept, email);
-
-        // Set permissions on registration document
-        UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(session, registrationId, ugdr.language_admin_group);
-        urpr.runUnrestricted();
-
-        return registrationId;
+        // Accept registration
+        registrationService.acceptRegistrationRequest(registrationId, additionalInfo);
     }
 
     protected static class UnrestrictedSourceDocumentResolver extends UnrestrictedSessionRunner {
@@ -192,12 +160,14 @@ public class UserInvite {
                 if (SecurityConstants.READ.equals(ace.getPermission())) {
                     if (username.contains("_members") && ace.isGranted()) {
                         member_groups.add(username);
+                        break;
                     }
                 }
 
                 if (SecurityConstants.EVERYTHING.equals(ace.getPermission()) && ace.isGranted()) {
                     if (username.contains(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP)) {
                         language_admin_group = username;
+                        break;
                     }
                 }
             }

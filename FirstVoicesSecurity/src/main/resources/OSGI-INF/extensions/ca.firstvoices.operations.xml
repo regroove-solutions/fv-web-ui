@@ -5,7 +5,9 @@
 		<operation class="ca.firstvoices.operations.FVDialectRegularDocumentPermissions" replace="true" />
 		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
 		<operation class="ca.firstvoices.operations.FVGenerateJsonStatistics" replace="true" />
-		<operation class="ca.firstvoices.operations.UserInvite" replace="true" /> <!-- Until upgrade to 8.2 -->
+		
+		<operation class="ca.firstvoices.operations.UserInvite" replace="true" />
+		<operation class="ca.firstvoices.operations.UserInviteApprove" replace="true" />
 	</extension>
     
 </component>
