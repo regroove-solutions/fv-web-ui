@@ -15,6 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import HangManGame from './hangman';
 
 /**
 * Play games
@@ -39,7 +40,9 @@ export default class Hangman extends Component {
    * Render
    */
   render() {
-    return <div className="hangman-game"></div>;
+    return <div className="hangman-game">
+              <HangManGame word={"Charlie"}/>
+          </div>;
   }
 
 }

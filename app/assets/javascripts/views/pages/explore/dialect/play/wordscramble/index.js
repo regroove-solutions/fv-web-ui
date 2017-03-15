@@ -82,7 +82,7 @@ export default class Wordscramble extends Component {
     return <div className="wordscramble-game">
               {(selectn('response.entries', computePhrases) || []).map(function(phrase, i) {
                 return <Scramble key={i} sentence={{
-                    original: selectn('properties.dc:title', phrase).split(' '),
+                    word: selectn('properties.dc:title', phrase).split(' '),
                     translation: selectn('properties.fv:definitions[0].translation', phrase),
                     audio: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_audio[0].path', phrase) + '?inline=true',
                     picture: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_pictures[0].path', phrase) + '?inline=true'}} />
@@ -111,8 +111,8 @@ export class Scramble extends Component {
    */
   getDefaultState()
   {
-    const scrambledSentence = _.shuffle(this.props.sentence.original);
-    
+    const scrambledSentence = _.shuffle(this.props.sentence.word);
+
     return {
       scrambledSentence:scrambledSentence,
       selected:[],
@@ -155,9 +155,10 @@ export class Scramble extends Component {
    */
   checkAnswer()
   {
-      if(this.state.selected.join(' ') === this.props.sentence.original.join(' '))
+      if(this.state.selected.join(' ') === this.props.sentence.word.join(' '))
       {
         this.setState({complete:true})
+        this.audio.play();
       }
       else
       {
@@ -174,7 +175,8 @@ export class Scramble extends Component {
         background: '#FFF',
         boxShadow: '2px 2px 6px #CCC',
         marginBottom:'20px',
-        position:'relative'
+        position:'relative',
+        minWidth:'500px'
     }
 
     return <div style={{marginTop: '15px'}}>
@@ -203,7 +205,7 @@ export class Scramble extends Component {
                 <RaisedButton label="Check"  style={ this.state.complete ? {visibility:'hidden'} : {}} disabled={this.state.complete ? true : false} secondary={true} onMouseUp={this.checkAnswer.bind(this)}/>
                 {this.state.complete ? false : <RaisedButton label="Reset" primary={true} onMouseUp={this.reset.bind(this)}/>}
                 <div>
-                    <audio src={this.props.sentence.audio} controls />
+                    <audio ref={(el)=>{this.audio = el}} src={this.props.sentence.audio} controls />
                     <TextField disabled={true} hintText={this.props.sentence.translation} />
                 </div>
             </div>
