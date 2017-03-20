@@ -289,7 +289,7 @@ export default class HangmanGame extends Component {
                         {
                             wordStyle.marginLeft = '50px';
                         }
-                        return <div style={wordStyle}>
+                        return <div style={wordStyle} key={index} >
                             {word.map((letter,index)=>{
                                 return (<div key={index} className="spot" style={{...spotStyle,...borderStyle}} >
                                         <div className="letter">{letter.found ? letter.letter : false}</div>
