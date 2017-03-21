@@ -30,6 +30,19 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
 import _ from 'underscore';
+
+const containerStyle = {
+    background: 'url(/assets/games/wordscramble/assets/images/background.png)',
+    backgroundSize: 'cover',
+    padding: '40px 0'
+}
+
+const titleStyle = {
+    textAlign: 'center',
+    color: '#FFF',
+    margin: '30px 0',
+    textShadow: '1px 1px 1px #000'
+}
 /**
 * Play games
 */
@@ -79,7 +92,8 @@ export default class Wordscramble extends Component {
 
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
 
-    return <div className="wordscramble-game">
+    return <div className="wordscramble-game" style={containerStyle}>
+                <h1 style={titleStyle}>Word Scramble</h1>
               {(selectn('response.entries', computePhrases) || []).map(function(phrase, i) {
                 return <Scramble key={i} sentence={{
                     word: selectn('properties.dc:title', phrase).split(' '),
@@ -141,12 +155,10 @@ export class Scramble extends Component {
   /**
    * Unselect a word
    */
-  unSelectWord(word)
+  unSelectWord(word,index)
   {
-      const selectedWords = [...this.state.selected].filter((value)=>{
-          return value !== word;
-      });
-
+      const selectedWords = [...this.state.selected];
+      selectedWords.splice(index,1);
       this.setState({selected:selectedWords});
   }
   
@@ -170,20 +182,20 @@ export class Scramble extends Component {
 
     const containerStyles = {
         padding: '10px',
-        display: 'inline-block',
-        border: '1px solid #CCC',
-        background: '#FFF',
-        boxShadow: '2px 2px 6px #CCC',
+        display: 'block',
+        border: '7px solid #040000',
+        background: '#fafafa',
         marginBottom:'20px',
         position:'relative',
-        minWidth:'500px'
+        maxWidth:'700px',
+        margin:'auto'
     }
 
     return <div style={{marginTop: '15px'}}>
             <div className="scrambled-sentence" style={containerStyles}>
-                <div style={{height:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
+                <div style={{minHeight:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
                     {this.state.selected.map((word, index)=>{
-                        return <RaisedButton key={index} style={{backgroundColor:'#a7fba5'}} label={word} onMouseUp={this.unSelectWord.bind(this,word)}/>
+                        return <RaisedButton key={index} style={{backgroundColor:'#a7fba5'}} label={word} onMouseUp={this.unSelectWord.bind(this,word, index)}/>
                     })}
                     { this.state.complete ? <FontIcon className="material-icons" style={{color:Colors.greenA200, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>check_box</FontIcon> : false }
                     { this.state.incorrect ? <FontIcon className="material-icons" style={{color:Colors.red600, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>indeterminate_check_box</FontIcon> : false }
@@ -193,10 +205,10 @@ export class Scramble extends Component {
                             
                             let disabled = false;
 
-                            if(this.state.selected.includes(word))
-                            {
-                                disabled = true;
-                            }
+                            // if(this.state.selected.includes(word))
+                            // {
+                            //     disabled = true;
+                            // }
 
                         return <RaisedButton disabled={disabled} label={word} key={index} onMouseUp={this.selectWord.bind(this, word)} />
                         })
