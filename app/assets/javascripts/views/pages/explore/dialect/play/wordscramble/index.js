@@ -37,12 +37,26 @@ const containerStyle = {
     padding: '40px 0'
 }
 
+
 const titleStyle = {
     textAlign: 'center',
     color: '#FFF',
     margin: '30px 0',
     textShadow: '1px 1px 1px #000'
 }
+
+const titleLogoStyle = {
+    display:'block',
+    overflow:'hidden',
+    backgroundRepeat:'no-repeat',
+    width:'541px',
+    height:'87px',
+    background:'url(/assets/games/wordscramble/assets/images/word_scramble_title.png)',
+    textIndent:'-9000px',
+    margin:'auto'
+}
+
+
 /**
 * Play games
 */
@@ -93,7 +107,7 @@ export default class Wordscramble extends Component {
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
 
     return <div className="wordscramble-game" style={containerStyle}>
-                <h1 style={titleStyle}>Word Scramble</h1>
+            <h1 style={{...titleStyle, ...titleLogoStyle}}>Word Scramble</h1>
               {(selectn('response.entries', computePhrases) || []).map(function(phrase, i) {
                 return <Scramble key={i} sentence={{
                     word: selectn('properties.dc:title', phrase).split(' '),
