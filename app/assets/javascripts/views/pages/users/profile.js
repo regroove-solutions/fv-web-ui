@@ -34,17 +34,16 @@ import options from 'models/schemas/options';
 * Create user entry
 */
 @provide
-export default class Register extends Component {
+export default class Profile extends Component {
 
   static propTypes = {
+    properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    inviteUser: PropTypes.func.isRequired,
-    computeUserInvite: PropTypes.object.isRequired,
+    updateUser: PropTypes.func.isRequired,
+    fetchUser: PropTypes.func.isRequired,
     computeUser: PropTypes.object.isRequired,
 	  computeLogin: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
@@ -55,7 +54,8 @@ export default class Register extends Component {
 
     this.state = {
       formValue: null,
-      userRequest: null
+      userRequest: null,
+      currentUsername: null
     };
 
     // Bind methods to 'this'
@@ -63,8 +63,15 @@ export default class Register extends Component {
   }
 
   fetchData(newProps) {
-    if (newProps.routeParams.hasOwnProperty('dialect_path')) {
-      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+
+    let currentUsername = selectn("response.properties.username", newProps.computeLogin);
+
+    if (currentUsername) {
+      this.props.fetchUser(currentUsername);
+
+      this.setState({
+        currentUsername: currentUsername
+      });
     }
   }
 
@@ -76,11 +83,11 @@ export default class Register extends Component {
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
 
-    let currentWord, nextWord;
+    let currentUser, nextUser;
 
     if (this.state.userRequest != null) {
-      currentWord = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
-      nextWord = ProviderHelpers.getEntry(nextProps.computeUserInvite, this.state.userRequest);
+      currentUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.userRequest);
+      nextUser = ProviderHelpers.getEntry(nextProps.computeUser, this.state.userRequest);
     }
 
     if (nextProps.windowPath !== this.props.windowPath) {
@@ -88,8 +95,11 @@ export default class Register extends Component {
     }
 
     // 'Redirect' on success
-    if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
+    if (selectn('success', currentUser) != selectn('success', nextUser) && selectn('success', nextUser) === true) {
         //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+    }
+    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+      this.fetchData(nextProps);
     }
   }
 
@@ -100,11 +110,7 @@ export default class Register extends Component {
         return true;
       break;
 
-      case (newProps.computeDialect2 != this.props.computeDialect2):
-        return true;
-      break;
-
-      case (newProps.computeUserInvite != this.props.computeUserInvite):
+      case (newProps.computeUser != this.props.computeUser):
         return true;
       break;
     }
@@ -112,12 +118,12 @@ export default class Register extends Component {
     return false;
   }
 
-  _onRequestSaveForm(currentUser, e) {
+  _onRequestSaveForm(e) {
 
     // Prevent default behaviour
     e.preventDefault();
 
-    let formValue = this.refs["form_user_create"].getValue();
+    let formValue = this.refs["form_user_edit"].getValue();
 
     let properties = {};
     
@@ -133,20 +139,20 @@ export default class Register extends Component {
       formValue: properties
     })
 
+    // Flatten preferences
     let payload = Object.assign({}, properties, {
-      'userinfo:groups': [properties['userinfo:groups']]
+      'preferences': JSON.stringify(properties['preferences'])
     });
 
     // Passed validation
     if (formValue) {
       let userRequest = {
-        "entity-type":"document",
-        "type": "FVUserRegistration",
-        "id": selectn('userinfo:email', properties),
+        "entity-type":"user",
+        "id": selectn('email', properties),
         "properties": payload
       };
 
-      this.props.inviteUser(userRequest, null, null, "User request submitted successfully!");
+      this.props.updateUser(userRequest);
       this.setState({userRequest});
 
     } else {
@@ -156,48 +162,36 @@ export default class Register extends Component {
   }
 
   render() {
-    let FVUserFields = selectn("FVUser", fields);
-    let FVUserOptions = Object.assign({}, selectn("FVUser", options));
 
-    const computeEntities = ProviderHelpers.toJSKeepId([{
-      'id': this.state.userRequest,
-      'entity': this.props.computeUserInvite,
-    }, {
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    let FVUserProfileFields = selectn("FVUserProfile", fields);
+    let FVUserProfileOptions = {fields: Object.assign({}, selectn("FVUser.fields", options), selectn("FVUserProfile.fields", options))};
 
-    const computeUserInvite = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeEntities = Immutable.fromJS([{
+      'id': this.state.currentUsername,
+      'entity': this.props.computeUser,
+    }]);
 
-    // Hide requested space field is pre-set.
-    if (selectn("fields.fvuserinfo:requestedSpace", FVUserOptions) && selectn('response.uid', computeDialect2)) {
-      FVUserOptions['fields']['fvuserinfo:requestedSpace']['type'] = 'hidden';
-    }
+    const computeUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.currentUsername);
 
-    let dialectGroups = ProviderHelpers.getDialectGroups(selectn('response.contextParameters.acls[0].aces', computeDialect2));
+    let normalizedPayload = Object.assign({}, selectn('response.properties', computeUser));
 
-    if (dialectGroups.all != null) {
-      FVUserFields['userinfo:groups'] = t.enums(dialectGroups.all);
-      FVUserOptions['fields']['userinfo:groups'] = {
-        label: 'Group'
-      };
+    if (normalizedPayload.hasOwnProperty('preferences')) {
+      normalizedPayload['preferences'] = JSON.parse(selectn('response.properties', computeUser)['preferences']);
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>{selectn('response.title', computeDialect2)} Register</h1>
+            <h1>My Profile</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
-                <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
+                <form onSubmit={this._onRequestSaveForm}>
                   <t.form.Form
-                    ref="form_user_create"
-                    type={t.struct(FVUserFields)}
-                    context={selectn('response', computeDialect2)}
-                    value={this.state.formValue || {'fvuserinfo:requestedSpace': selectn('response.uid', computeDialect2)}}
-                    options={FVUserOptions} />
+                    ref="form_user_edit"
+                    type={t.struct(FVUserProfileFields)}
+                    value={this.state.formValue || normalizedPayload}
+                    options={FVUserProfileOptions} />
                     <div className="form-group">
                       <button type="submit" className="btn btn-primary">Save</button> 
                     </div>

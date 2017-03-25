@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable from 'immutable';
+import Immutable, { List, Map } from 'immutable';
 
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -23,6 +23,8 @@ import selectn from 'selectn';
 import QueryString from 'query-string';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageHeader from 'views/pages/explore/dialect/page-header';
@@ -42,23 +44,14 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
 
 import Statistics from 'views/components/Dashboard/Statistics';
-import RecentActivityList from 'views/components/Dashboard/RecentActivityList';
 import Link from 'views/components/Document/Link';
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
-import MediaList from 'views/components/Browsing/media-list';
-import withPagination from 'views/hoc/grid-list/with-pagination';
-import withFilter from 'views/hoc/grid-list/with-filter';
-
-const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
-
-const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 20, filters: {'properties.dc:title': '', 'dialect': '' } };
-
-const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
+import UserListView from 'views/pages/explore/dialect/users/list-view';
 
 /**
 * Browse users
@@ -67,55 +60,38 @@ const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultF
 export default class Index extends Component {
 
   static propTypes = {
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
+    properties: PropTypes.object.isRequired,
     navigateTo: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     computePortal: PropTypes.object.isRequired,
     fetchPortal: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
+  };
+
+  static contextTypes = {
+    muiTheme: PropTypes.object.isRequired
   };
 
   constructor(props, context){
     super(props, context);
 
-    this.state = {
-      fetcherParams: DefaultFetcherParams
-    };
-
     // Bind methods to 'this'
-    ['_onNavigateRequest', 'fetchData'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  _onNavigateRequest(media) {
-    const pathArray = selectn('path', media).split('/');
-    const name = pathArray[pathArray.length-1];
-    const newPathArray = this.props.splitWindowPath.slice();
-    newPathArray.push(name);
-
-    this.props.pushWindowPath('/' + newPathArray.join('/'));
-  }
-
-  fetchData(fetcherParams, props = this.props) {
-
-    this.setState({
-      fetcherParams: fetcherParams
-    });
- 
-    props.fetchResources(props.routeParams.dialect_path + '/Resources',
-    ProviderHelpers.filtersToNXQL(fetcherParams.filters) + 
-    '&currentPageIndex=' + fetcherParams.currentPageIndex + 
-    '&pageSize=' + fetcherParams.pageSize
-    );
+  _onNavigateRequest(pathArray) {
+    NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
   }
 
   // Fetch data on initial render
   componentDidMount() {
+    this.props.fetchDialect2(this.props.routeParams.dialect_path);
     this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal');
-    this.fetchData(this.state.fetcherParams);
   }
 
   // Refetch data on URL change
@@ -132,33 +108,29 @@ export default class Index extends Component {
       'id': this.props.routeParams.dialect_path + '/Portal',
       'entity': this.props.computePortal
     },{
-      'id': this.props.routeParams.dialect_path + '/Resources',
-      'entity': this.props.computeResources
+      'id': this.props.routeParams.dialect_path,
+      'entity': this.props.computeDialect2
     }])
 
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    const computeResources = ProviderHelpers.getEntry(this.props.computeResources, this.props.routeParams.dialect_path + '/Resources');
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper computeEntities={computeEntities}>
 
-            <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Media</h1>
+            <div className="row">
+              <div className={classNames('col-xs-4', 'col-xs-offset-8', 'text-right')}>
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
+                  <RaisedButton label="Create New User" onTouchTap={this._onNavigateRequest.bind(this, ['register'])} primary={true} />
+                </AuthorizationFilter>
+              </div>
+            </div>
 
             <hr />
 
             <div className="row">
 
               <div className="col-xs-12">
-                <FilteredPaginatedMediaList
-                    cols={5}
-                    cellHeight={150}
-                    formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
-                    filterOptionsKey="Resources"
-                    action={this._onNavigateRequest}
-                    fetcher={this.fetchData}
-                    area={this.props.routeParams.area}
-                    fetcherParams={this.state.fetcherParams}
-                    metadata={selectn('response', computeResources)}
-                    items={selectn('response.entries', computeResources) || []} />
+                <UserListView routeParams={this.props.routeParams} />
               </div>
 
             </div>

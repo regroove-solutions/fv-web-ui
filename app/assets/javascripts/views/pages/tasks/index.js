@@ -38,6 +38,8 @@ import SelectFactory from 'views/components/Editor/fields/select';
 import DocumentView from 'views/components/Document/view';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
+import GroupAssignmentDialog from 'views/pages/users/group-assignment-dialog';
+
 @provide
 export default class Tasks extends React.Component {
 
@@ -72,7 +74,7 @@ export default class Tasks extends React.Component {
 		};
 
 		   // Bind methods to 'this'
-	    ['_handleTaskActions','_handleRegistrationActions', '_handleOpen', '_handlePreApprovalOpen', '_handleClose', 'fetchData', '_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) ); 		
+	    ['_handleTaskActions','_handleRegistrationActions', '_handleOpen', '_handlePreApprovalOpen', '_handleClose', 'fetchData', '_saveMethod'].forEach( (method => this[method] = this[method].bind(this)) ); 		
 	}
 
 	_handleTaskActions(id, action) {
@@ -113,34 +115,6 @@ export default class Tasks extends React.Component {
 		this.setState({lastActionedTaskId: id});
 	}
 
-	_onRequestSaveForm(e) {
-
-		// Prevent default behaviour
-		e.preventDefault();
-
-		let formValue = this.refs["form_approve_task"].getValue();
-
-		let properties = {};
-
-		for (let key in formValue) {
-			if (formValue.hasOwnProperty(key) && key) {
-				if (formValue[key] && formValue[key] != '') {
-					properties[key] = formValue[key];
-				}
-			}
-		}
-
-		// Passed validation
-		if (formValue) {
-			this.props.approveRegistration(properties.id, {
-				comment: properties.comment,
-				group: properties.group,
-				appurl: ConfGlobal.baseWebUIURL
-			}, null, 'Request approved succesfully.');
-		}
-	}
-
-
 	fetchData(newProps) {
 		newProps.fetchUserTasks(selectn('response.id', newProps.computeLogin));
 		newProps.fetchUserRegistrationTasks(this.state.userRegistrationTasksPath);
@@ -158,10 +132,31 @@ export default class Tasks extends React.Component {
 		else if (newProps.computeUserTasksReject != this.props.computeUserTasksReject) {
 			this.fetchData(newProps);
 		}
+
+		else if (newProps.computeUserRegistrationApprove != this.props.computeUserRegistrationApprove) {
+			this.fetchData(newProps);
+		}
+
+		else if (newProps.computeUserRegistrationReject != this.props.computeUserRegistrationReject) {
+			this.fetchData(newProps);
+		}
 	}
 
 	componentDidMount() {
 		this.fetchData(this.props);
+	}
+
+	_saveMethod(properties) {
+		this.props.approveRegistration(properties.id, {
+				comment: properties.comment,
+				group: properties.group,
+				appurl: ConfGlobal.baseWebUIURL
+		}, null, 'Request approved succesfully.');
+
+		this.setState({
+			selectedPreapprovalTask: null,
+			preApprovalDialogOpen: false
+		});
 	}
 
 	_handleOpen(id) {
@@ -243,37 +238,6 @@ export default class Tasks extends React.Component {
 			
 		}.bind(this));
 
-		// Generate list of groups to add to
-		let groups = {};
-
-		(selectn('response.contextParameters.acls[0].aces', computeDialect) || []).forEach(function(group, i) {
-			let groupArray = group.username.split('_');
-			if (group.username.match(/members|recorders|administrators/g) != null) {
-				groups[group.username] = groupArray.map((group) => StringHelpers.toTitleCase(group)).join(' ');
-			}
-		});
-
-		let formSchema = t.struct({
-			'id': t.String,
-			'group': t.enums(groups),
-			'comment': t.maybe(t.String)
-		});
-
-		let formOptions = {
-			fields: {
-				'id': {
-					type: 'hidden'
-				},
-				'group': {
-					label: 'Group to Add User to:'
-				},
-				'comment': {
-					label: 'Comment (Optional)',
-					help: 'Note: Your comment will be attached to the welcome email sent to the user.',
-					type: 'textarea'
-				}
-		}};
-
 	    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
 	            <div>
@@ -301,36 +265,17 @@ export default class Tasks extends React.Component {
           		<DocumentView id={this.state.selectedTask} />
         	</Dialog>
 
-	      	<Dialog
-          		open={this.state.preApprovalDialogOpen}
-				actions={[
-				<FlatButton
-					label="Cancel"
-					secondary={true}
-					onTouchTap={this._handleClose}
-				/>,
-				<FlatButton
-					label="Submit"
-					primary={true}
-					keyboardFocused={true}
-					onTouchTap={this._onRequestSaveForm}
-				/>,
-				]}
-          		onRequestClose={this._handleClose}
-          		autoScrollBodyContent={true}>
-
-				<h1>Approve {selectn('properties.dc:title', this.state.selectedPreapprovalTask)}</h1>
-
-                <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_approve_task"
-					value={{'id': selectn('uid', this.state.selectedPreapprovalTask)}}
-                    type={formSchema}
-                    options={formOptions} />
-                </form>
-
-        	</Dialog>
-
+			<GroupAssignmentDialog 
+				title="Approve"
+				fieldMapping={{
+					id: 'uid',
+                    title: 'properties.dc:title'
+                }}
+				open={this.state.preApprovalDialogOpen}
+				saveMethod={this._saveMethod}
+				closeMethod={this._handleClose}
+				selectedItem={this.state.selectedPreapprovalTask}
+				dialect={computeDialect} />
 		</div>
 
         </PromiseWrapper>;
