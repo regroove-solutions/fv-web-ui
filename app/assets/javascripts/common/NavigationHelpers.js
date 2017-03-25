@@ -26,5 +26,9 @@ export default {
   // Navigate forward, replacing the current page within the URL
   navigateForwardReplace: function (currentPathArray, forwardPathArray, navigationFunc) {
         navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
+  },
+  // Navigate forward
+  navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
+        navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
   }
 }
