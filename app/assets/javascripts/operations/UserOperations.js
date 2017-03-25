@@ -52,6 +52,22 @@ export default class UserOperations extends BaseOperations {
     });
   }
 
+  static updateUser(user) {
+
+    let properties = this.properties;
+
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+        .users()
+        .update(user)
+        .then((user) => {
+          resolve(user);
+        })
+        .catch((error) => { reject('Could not create new user.'); } );
+    });
+  }
+
   /**
   * Gets current user object
   */
