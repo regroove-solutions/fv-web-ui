@@ -10,6 +10,7 @@ import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/phrasebook
 import PageDialectLinksCreate from 'views/pages/explore/dialect/links/create';
 
 import PageDialectLinksEdit from 'views/pages/explore/dialect/links/edit';
+import PageDialectContributorEdit from 'views/pages/explore/dialect/contributors/edit';
 import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/phrasebooks/edit';
 
 export default class DialogCreateForm extends React.Component {
@@ -73,8 +74,13 @@ export default class DialogCreateForm extends React.Component {
 		break;
 			
 		case "FVContributor":
-			createForm = <PageDialectContributorsCreate value={this.props.value} expandedValue={this.props.expandedValue} embedded={true} onDocumentCreated={this._onDocumentCreated} />;
-			createNewButtonLabel = (this.props.value || this.props.expandedValue) ? "Edit Contributor" : "Create New Contributor";
+			createForm = <PageDialectContributorsCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
+			createNewButtonLabel = "Create New Contributor";
+
+			if (this.props.value) {
+				createNewButtonLabel = "Edit Contributor";
+				createForm = <PageDialectContributorEdit dialect={this.props.context} routeParams={{dialect_path: this.props.context.path, theme: 'explore'}} value={this.props.value} embedded={true} onDocumentCreated={this._onDocumentCreated} cancelMethod={this.handleClose} />;
+			}
 		break;		
 
 		case "FVLink":

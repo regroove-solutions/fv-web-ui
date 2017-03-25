@@ -58,44 +58,6 @@ const FV_CONTRIBUTOR_DELETE_START = "FV_CONTRIBUTOR_DELETE_START";
 const FV_CONTRIBUTOR_DELETE_SUCCESS = "FV_CONTRIBUTOR_DELETE_SUCCESS";
 const FV_CONTRIBUTOR_DELETE_ERROR = "FV_CONTRIBUTOR_DELETE_ERROR";
 
-/*
-const createContributor = function createContributor(parentDoc, docParams) {
-  return function (dispatch) {
-
-    dispatch( { type: FV_CONTRIBUTOR_CREATE_START, document: docParams } );
-
-    return DocumentOperations.createDocument(parentDoc, docParams)
-      .then((response) => {
-        dispatch( { type: FV_CONTRIBUTOR_CREATE_SUCCESS, document: response} );
-      }).catch((error) => {
-          dispatch( { type: FV_CONTRIBUTOR_CREATE_ERROR, error: error } )
-    });
-  }
-};
-*/
-const updateContributor = function updateContributor(newDoc, field) {
-  return function (dispatch) {
-
-    let contributors = {};
-    contributors[newDoc.id] = {};
-
-    dispatch( { type: FV_CONTRIBUTOR_UPDATE_START, contributors: contributors, pathOrId: newDoc.id } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-
-        contributors[newDoc.id] = { response: response };
-
-        dispatch( { type: FV_CONTRIBUTOR_UPDATE_SUCCESS, contributors: contributors, pathOrId: newDoc.id} );
-      }).catch((error) => {
-
-          contributors[newDoc.id] = { error: error };
-
-          dispatch( { type: FV_CONTRIBUTOR_UPDATE_ERROR, contributors: contributors, pathOrId: newDoc.id } )
-    });
-  }
-};
-
 const fetchSharedContributors = function fetchSharedContributors(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
 
@@ -165,6 +127,7 @@ const fetchContributor = function fetchContributor(pathOrId) {
 const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry' } });
 const fetchContributors = RESTActions.query('FV_CONTRIBUTORS', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry'} });
 const createContributor = RESTActions.create('FV_CONTRIBUTOR', 'FVContributor');
+const updateContributor = RESTActions.update('FV_CONTRIBUTOR', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry' } }, false);
 
 const computeContributorFactory = RESTReducers.computeFetch('contributor');
 const computeContributorsFactory = RESTReducers.computeQuery('contributors');

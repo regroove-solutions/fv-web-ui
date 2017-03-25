@@ -222,7 +222,10 @@ const options = {
         help: <i>Contributor(s) who helped create this record.</i>,
         item: {
           factory: SelectSuggestFactory,
-          type: 'FVContributor'
+          type: 'FVContributor',
+          attrs: {
+            allowEdit: true
+          }
         }
       },
       'fv:available_in_childrens_archive': {
