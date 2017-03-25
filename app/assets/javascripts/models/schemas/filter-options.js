@@ -1,63 +1,11 @@
 import t from 'tcomb-form';
 import ValuedCheckboxFactory from 'views/components/Editor/fields/valued-checkbox';
 import RangeSelector from 'views/components/Editor/fields/range';
+import SelectFactory from 'views/components/Editor/fields/select';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-const options = {
-  Default: {
-    fields: {
-      'properties.dc:title': {
-        label: 'Title',
-        nxql: ' (dc:title ILIKE \'%${value}%\' OR dc:description ILIKE \'%${value}%\')'
-      },
-    }
-  },
-  Portals: {
-    fields: {
-      'contextParameters.ancestry.dialect.dc:title': {
-        label: 'Dialect Name'
-      },
-      'contextParameters.portal.roles': {
-        label: 'My Roles',
-        factory: t.form.Select,
-        filterFunc: function(propertyToSearch, filterValue) {
-            if (!propertyToSearch)
-                return true;
-
-            return !(propertyToSearch.findIndex(function (value, index, array) {
-                if (filterValue == 'Anything') {
-                    return ProviderHelpers.isActiveRole(value);
-                } else {
-                    return value.search(new RegExp(filterValue, "i")) === -1 ? false : true
-                }
-            }) === -1)
-        }
-      }
-    }
-  },
-  SharedPictures: {
-    fields: {
-      'properties.dc:title': {
-        label: 'Name'
-      }
-    }
-  },
-  SharedAudio: {
-    fields: {
-      'properties.dc:title': {
-        label: 'Name'
-      }
-    }
-  },
-  SharedVideos: {
-    fields: {
-      'properties.dc:title': {
-        label: 'Name'
-      }
-    }
-  },
-  Resources: {
+let ResourcesFields = {
     fields: {
       'properties.dc:title': {
         label: 'Name/Description',
@@ -100,7 +48,57 @@ const options = {
         nxql: ' fvm:shared = ${value}'
       }
     }
+  };
+
+const options = {
+  Default: {
+    fields: {
+      'properties.dc:title': {
+        label: 'Title',
+        nxql: ' (dc:title ILIKE \'%${value}%\' OR dc:description ILIKE \'%${value}%\')'
+      },
+    }
   },
+  Portals: {
+    fields: {
+      'contextParameters.ancestry.dialect.dc:title': {
+        label: 'Dialect Name'
+      },
+      'contextParameters.portal.roles': {
+        label: 'My Roles',
+        factory: t.form.Select,
+        filterFunc: function(propertyToSearch, filterValue) {
+            if (!propertyToSearch)
+                return true;
+
+            return !(propertyToSearch.findIndex(function (value, index, array) {
+                if (filterValue == 'Anything') {
+                    return ProviderHelpers.isActiveRole(value);
+                } else {
+                    return value.search(new RegExp(filterValue, "i")) === -1 ? false : true
+                }
+            }) === -1)
+        }
+      }
+    }
+  },
+  ResourcesSelector: {
+    fields: Object.assign({}, ResourcesFields.fields, {
+      'shared_fv': {
+        label: 'Include Shared from FirstVoices',
+        nxql: ' (ecm:path STARTSWITH \'/FV/Workspaces/SharedData/Shared%20Resources/\')',
+        operator: 'OR'
+        //nxqlGroup: 'search_group1'
+      },
+      'shared_dialects': {
+        label: 'Include Shared from Other Dialects',
+        nxql: ' (fvm:shared = 1 AND ecm:currentLifeCycleState != \'New\')',
+        operator: 'OR'
+        //nxqlGroup: 'search_group1'
+      }
+    })
+  },
+  Resources: ResourcesFields,
   Books: {
     fields: {
       'properties.dc:title': {
@@ -109,6 +107,17 @@ const options = {
       'properties.fvbook:type': {
         label: 'Resource Type',
         factory: t.form.Select
+      }
+    }
+  },
+  User: {
+    fields: {
+      'searchTerm': {
+        label: 'Search Term'
+      },
+      'group': {
+        label: 'Group(s)',
+        help: 'Group identifiers (For example: "sample_dialect_recorders")'
       }
     }
   }

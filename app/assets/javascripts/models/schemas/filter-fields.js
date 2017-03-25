@@ -25,24 +25,7 @@ const BookTypes = t.enums({
 
 const MaxMB = t.refinement(t.Number, (n) => {return n <= 2000});
 
-const fields = {
-  Default: {
-    'properties.dc:title': t.String
-  },
-  Portals: makeOptional({
-    'contextParameters.ancestry.dialect.dc:title': t.String,
-    'contextParameters.portal.roles': Roles
-  }),
-  SharedPictures: {
-    'properties.dc:title': t.String
-  },
-  SharedAudio: {
-    'properties.dc:title': t.String
-  },
-  SharedVideos: {
-    'properties.dc:title': t.String
-  },
-  Resources: makeOptional({
+const ResourcesFields = {
     'properties.dc:title': t.String,
     'properties.type': ResourceTypes,
     'common:size': MaxMB,
@@ -52,10 +35,34 @@ const fields = {
     'fvm:child_focused': t.Boolean,
     'fvm:origin': t.Boolean,
     'fvm:shared': t.Boolean
+  };
+
+let ResourcesSelectorFields = Object.assign({}, ResourcesFields, {
+  'shared_fv': t.Boolean,
+  'shared_dialects': t.Boolean
+});
+
+delete ResourcesSelectorFields['properties.type'];
+delete ResourcesSelectorFields['fvm:shared'];
+delete ResourcesSelectorFields['fvm:origin'];
+
+const fields = {
+  Default: {
+    'properties.dc:title': t.String
+  },
+  Portals: makeOptional({
+    'contextParameters.ancestry.dialect.dc:title': t.String,
+    'contextParameters.portal.roles': Roles
   }),
+  ResourcesSelector: makeOptional(ResourcesSelectorFields),
+  Resources: makeOptional(ResourcesFields),
   Books: makeOptional({
     'properties.dc:title': t.String,
     'properties.fvbook:type': BookTypes
+  }),
+  User: makeOptional({
+    'searchTerm': t.String,
+    'group': t.String
   })
 }
 
