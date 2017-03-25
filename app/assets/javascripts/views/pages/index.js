@@ -59,6 +59,7 @@ import PagePlay from './play'
 import PageSearch from './search'
 import PageTasks from './tasks'
 import PageUsersRegister from './users/register'
+import PageUsersProfile from './users/profile'
 
 // KIDS
 import PageKidsHome from './kids/home'
@@ -95,6 +96,7 @@ module.exports = {
   PageSearch,
   PageTasks,
   PageUsersRegister,
+  PageUsersProfile,
 
   //GAMES
   PageJigsawGame,

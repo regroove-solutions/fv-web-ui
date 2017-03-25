@@ -54,7 +54,7 @@ export default class AuthorizationFilter extends Component {
       let acls = selectn('contextParameters.acls', filter.entity);
 
       if (acls) {
-        let combinedAces = Object.assign(selectn('[0].aces', acls), selectn('[1].aces', acls));
+        let combinedAces = selectn('[0].aces', acls).concat(selectn('[1].aces', acls) || []);
         let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login));
 
         if (!extendedUserGroups || extendedUserGroups.size === 0) {

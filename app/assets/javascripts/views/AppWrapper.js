@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
@@ -81,6 +82,23 @@ function findComponentParents(el) {
     return parents.join(' ');
 }
 
+const getPreferences = function (login, dialect) {
+    let preferences2 = selectn('response.properties.preferences', login);
+    let preferences = (preferences2) ? JSON.parse(preferences2) : {};
+    let flattenedPreferences = {};
+
+    for (var preference22 in preferences) {
+      for (var preference33 in preferences[preference22]) {
+        flattenedPreferences[preference33] = preferences[preference22][preference33];
+      }
+    }
+
+    // Dialect assignment
+    flattenedPreferences['primary_dialect_path'] = selectn('path', dialect);
+
+    return flattenedPreferences;
+}
+
 @provide
 export default class AppWrapper extends Component {
 
@@ -89,6 +107,10 @@ export default class AppWrapper extends Component {
     getCurrentUser: PropTypes.func.isRequired,
     fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    queryDialect2: PropTypes.func.isRequired,
+    computeDialect2Query: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -102,9 +124,9 @@ export default class AppWrapper extends Component {
   };
 
   // react-redux-provide will pass context such as providers (Note: this is only needed for debugging the store atm)
-  /*static contextTypes = {
+  static contextTypes = {
     providers: PropTypes.object
-  }*/
+  }
 
   /**
   * Pass essential context to all children
@@ -137,7 +159,8 @@ export default class AppWrapper extends Component {
       kmw: kmw,
       kmwSelectedKeyboard: null,
       kmwLoadedKeyboards: [],
-      adminGuideStarted: false
+      adminGuideStarted: false,
+      dialect: null
     };
 
     // Bind methods to 'this'
@@ -207,7 +230,22 @@ export default class AppWrapper extends Component {
         nextProps.changeTheme(nextProps.properties.theme.id);
     }
 
-    if (nextProps.windowPath != this.props.windowPath) {
+    //if (nextProps.windowPath != this.props.windowPath) {
+    //}
+
+    if (nextProps.computeLogin != this.props.computeLogin && selectn('success', nextProps.computeLogin)) {
+
+      let userPreferences = getPreferences(nextProps.computeLogin);
+
+      if (userPreferences.hasOwnProperty('primary_dialect')) {
+        nextProps.fetchDialect2(userPreferences.primary_dialect);
+        this.setState({dialect: userPreferences.primary_dialect});
+      }
+      // User groups
+      else {
+        nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + selectn('response.properties.groups', nextProps.computeLogin).join('\',\'') + '\')');
+      }
+
     }
   }
 
@@ -277,6 +315,7 @@ export default class AppWrapper extends Component {
     let keyboardPicker;
 
     const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/Workspaces');
+    const dialectQuery = ProviderHelpers.getEntry(this.props.computeDialect2Query, '/FV/Workspaces');
 
     if (selectn('success', dialects)) {
 
@@ -309,8 +348,26 @@ export default class AppWrapper extends Component {
       }
     }
 
-    return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}}>
-        <AppFrontController />
+  let controller = null;
+
+  const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
+  let warnings = {};
+  let groupQuery = selectn('response.entries', dialectQuery);
+  let dialectQuery123;
+
+  if (groupQuery && groupQuery.length > 0) {
+    dialectQuery123 = groupQuery[0];
+
+    if (groupQuery.length > 1) {
+      warnings['multiple_dialects'] = <span><strong>Note:</strong> You're a member of more than one dialect. <a href="/profile">Please configure a primary dialect or select a default starting page.</a></span>;
+    }
+  }
+
+    let preferences1222 = getPreferences(this.props.computeLogin, selectn('response', computeDialect2) || dialectQuery123);
+
+    return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}} style={{fontSize: UIHelpers.getPreferenceVal('font_size', preferences1222)}}>
+
+        <AppFrontController preferences={preferences1222} warnings={warnings} />
 
         {keyboardPicker}
 

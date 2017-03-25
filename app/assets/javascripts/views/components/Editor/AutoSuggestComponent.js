@@ -34,6 +34,8 @@ export default class AutoSuggestComponent extends Component {
     computeSharedCategories: PropTypes.object.isRequired,  
     fetchSharedContributors: PropTypes.func.isRequired,
     computeSharedContributors: PropTypes.object.isRequired,
+    fetchSharedLinks: PropTypes.func.isRequired,
+    computeSharedLinks: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.string.isRequired,
@@ -146,6 +148,9 @@ export default class AutoSuggestComponent extends Component {
         case 'FVContributor':
           this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
         break;
+        case 'FVLink':
+          this.props.fetchSharedLinks('link_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+        break;
       }
     }.bind(this), 750);
   }
@@ -187,6 +192,10 @@ export default class AutoSuggestComponent extends Component {
 
       case 'FVContributor':
         return this.props.computeSharedContributors;
+      break;
+
+      case 'FVLink':
+        return this.props.computeSharedLinks;
       break;
     }
   }

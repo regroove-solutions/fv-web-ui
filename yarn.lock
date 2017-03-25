@@ -4122,6 +4122,10 @@ lcid@^1.0.0:
   dependencies:
     invert-kv "^1.0.0"
 
+leaflet@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.0.3.tgz#1f401b98b45c8192134c6c8d69686253805007c8"
+
 less-loader@~0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/less-loader/-/less-loader-0.6.2.tgz#9de2df8060b9bd6d84bb2af036075102c5c9da23"
@@ -4567,7 +4571,7 @@ lodash@^2.4.1, lodash@~2.4.1:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-2.4.2.tgz#fadd834b9683073da179b3eae6d9c0d15053f73e"
 
-lodash@^4.11.2, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.2.1:
+lodash@^4.0.0, lodash@^4.11.2, lodash@^4.14.0, lodash@^4.2.0, lodash@^4.2.1:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -5684,6 +5688,13 @@ react-image-gallery@~0.6.0:
   resolved "https://registry.yarnpkg.com/react-image-gallery/-/react-image-gallery-0.6.10.tgz#9b47832353c3fd6aba2d4d25c995b4609e3360cf"
   dependencies:
     react-swipeable "^3.5.1"
+
+react-leaflet@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/react-leaflet/-/react-leaflet-1.1.4.tgz#a447c74302d2c4192b1e26795b3c7dd92aa93244"
+  dependencies:
+    lodash "^4.0.0"
+    warning "^3.0.0"
 
 react-load-mask@^2.0.1:
   version "2.0.2"
@@ -7135,6 +7146,12 @@ ware@^0.3.0:
 warning@^2.0.0, warning@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/warning/-/warning-2.1.0.tgz#21220d9c63afc77a8c92111e011af705ce0c6901"
+  dependencies:
+    loose-envify "^1.0.0"
+
+warning@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/warning/-/warning-3.0.0.tgz#32e5377cb572de4ab04753bdf8821c01ed605b7c"
   dependencies:
     loose-envify "^1.0.0"
 

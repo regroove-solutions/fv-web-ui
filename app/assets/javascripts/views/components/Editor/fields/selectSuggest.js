@@ -3,6 +3,7 @@ import t from 'tcomb-form';
 import selectn from 'selectn';
 
 import AutoSuggestComponent from 'views/components/Editor/AutoSuggestComponent';
+import BrowseComponent from 'views/components/Editor/BrowseComponent';
 import Preview from 'views/components/Editor/Preview';
 import DialogCreateForm from 'views/components/DialogCreateForm';
 
@@ -16,14 +17,23 @@ function renderInput(locals) {
     locals.setExpandedValue(fullValue);
   };
 
+  const onComplete = function (fullValue) {
+    locals.onChange(fullValue.uid);
+    locals.setExpandedValue(fullValue);
+  };
+
   let previewProps = selectn('attrs.previewProps', locals) || {};
 
-  let content = <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} {...previewProps} />
+  let content = <div>
+    <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} {...previewProps} />
+    {(locals.attrs.allowEdit) ? <DialogCreateForm context={locals.context} value={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} onChange={onChange} fieldAttributes={locals.attrs} /> : ''}
+  </div>;
 
   if (!locals.value) {
     content = <div>
                 <AutoSuggestComponent locals={locals} type={locals.type} value={locals.value || ''} provider={locals.attrs.page_provider} dialect={locals.context} onChange={onChange} />
                 {(locals.attrs.hideCreate) ? '' : <DialogCreateForm context={locals.context} onChange={onChange} fieldAttributes={locals.attrs} />}
+                <BrowseComponent type={locals.type} label="Browse Existing" onComplete={onComplete} dialect={locals.context} containerType={locals.attrs.containerType} />
               </div>;
   }
 

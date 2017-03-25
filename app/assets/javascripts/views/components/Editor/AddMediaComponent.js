@@ -232,7 +232,7 @@ export default class AddMediaComponent extends Component {
         <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this.handleOpen} />
           <Dialog
-            title={"Create New " + fileTypeLabel + " in the " + this.props.dialect.get('dc:title') + " dialect."}
+            title={"Create New " + fileTypeLabel + " in the " + selectn('response.properties.dc:title', this.props.dialect) + " dialect."}
             actions={actions}
             modal={true}
             autoScrollBodyContent={true}

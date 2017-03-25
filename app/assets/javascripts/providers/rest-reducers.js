@@ -24,6 +24,14 @@ const CAMEL_CASE_KEY = function (key) {
   return modifiedKey;
 };
 
+const getListIndexForPushOrReplace = function(s, i) {
+  return i == -1 ? s.size : i;
+}
+
+const getPreviousResponse = function(s, i) {
+  return (i !== -1 && s.get(i).has('response')) ? s.get(i).get('response') : null;
+}
+
 export default {
   computeFetch: function computeFetch(key) {
 
@@ -47,10 +55,12 @@ export default {
           case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_START':
           case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_START':
 
-            return state.push(Map({
+            // Push or replace
+            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
               action: action.type,            	
               id: action.pathOrId,
               message: action.message,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               isFetching: true,
               success: false
             }));
@@ -78,6 +88,7 @@ export default {
               wasUpdated: (action.type.indexOf('_UPDATE_') !== -1),
               wasCreated: (action.type.indexOf('_CREATE_') !== -1),
               response: action.response,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -103,6 +114,7 @@ export default {
               isError: true,
               success: false,
               response: state.get(indexOfEntry).get('response'),
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -124,10 +136,12 @@ export default {
         switch (action.type) {
           case UPPER_CASE_KEY(key) + '_QUERY_START':
 
-            return state.push(Map({
+            // push or replace
+            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
               action: action.type,              
               id: action.pathOrId,
               message: action.message,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               isFetching: true,
               success: false
             }));
@@ -143,6 +157,7 @@ export default {
               isFetching: false,
               success: true,
               response: action.response,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -158,6 +173,7 @@ export default {
               isError: true,
               success: false,
               response: state.get(indexOfEntry).get('response'),
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -179,10 +195,12 @@ export default {
         switch (action.type) {
           case UPPER_CASE_KEY(key) + '_EXECUTE_START':
 
-            return state.push(Map({
+            // push or replace
+            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
               action: action.type,              
               id: action.pathOrId,
               message: action.message,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               isFetching: true,
               success: false
             }));
@@ -198,6 +216,7 @@ export default {
               isFetching: false,
               success: true,
               response: action.response,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -213,6 +232,7 @@ export default {
               isError: true,
               success: false,
               response: state.get(indexOfEntry).get('response'),
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -234,10 +254,12 @@ export default {
         switch (action.type) {
           case UPPER_CASE_KEY(key) + '_DELETE_START':
 
-            return state.push(Map({
+            // push or replace
+            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
               action: action.type,              
               id: action.pathOrId,
               message: action.message,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               isFetching: true,
               success: false
             }));
@@ -253,6 +275,7 @@ export default {
               isFetching: false,
               success: true,
               response: action.response,
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 
@@ -268,6 +291,7 @@ export default {
               isError: true,
               success: false,
               response: state.get(indexOfEntry).get('response'),
+              response_prev: getPreviousResponse(state, indexOfEntry),
               message: action.message
             }));
 

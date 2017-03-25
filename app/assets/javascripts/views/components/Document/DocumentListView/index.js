@@ -36,6 +36,10 @@ const GridViewWithPagination = withPagination(GridView, 8);
 
 export default class DocumentListView extends Component {
 
+  static defaultProps = {
+    pagination: true
+  };
+
   constructor(props, context) {
     super(props, context);
 
@@ -105,16 +109,24 @@ export default class DocumentListView extends Component {
     };
 
     if (this.props.gridListView) {
-      return <GridViewWithPagination
-                //action={this._handleSelectionChange}
-                style={{overflowY: 'auto', maxHeight: '50vh'}}
-                cols={this.props.gridCols}
-                cellHeight={160}
-                fetcher={this._gridListFetcher}
-                type={this.props.type}
-                fetcherParams={{currentPageIndex: this.props.page, pageSize: (this.props.pageSize)}}
-                metadata={selectn('response', this.props.data)}
-                items={selectn('response.entries', this.props.data)} />;
+      let gridViewProps = {
+        style:{overflowY: 'auto', maxHeight: '50vh'},
+        cols:this.props.gridCols,
+        cellHeight:160,
+        fetcher:this._gridListFetcher,
+        type:this.props.type,
+        pagination:this.props.pagination,
+        fetcherParams:{currentPageIndex: this.props.page, pageSize: (this.props.pageSize)},
+        metadata:selectn('response', this.props.data),
+        gridListTile: this.props.gridListTile,
+        items:selectn('response.entries', this.props.data)
+      };
+
+      if (this.props.pagination) {
+        return <GridViewWithPagination {...gridViewProps} />;
+      } else {
+        return <GridView {...gridViewProps} />;
+      }
     }
 
     return <Paper><ClearFix>
@@ -130,7 +142,7 @@ export default class DocumentListView extends Component {
           //onColumnOrderChange={this.props.onColumnOrderChange}
           onSortChange={this.props.onSortChange}
           withColumnMenu={false}
-          pagination={true}
+          pagination={this.props.pagination}
           paginationToolbarProps={{
             showRefreshIcon: false,
             pageSizes: [10, 20, 50],

@@ -17,8 +17,6 @@ import React, { Component, PropTypes } from 'react';
 import Immutable, { List, Map } from 'immutable';
 import selectn from 'selectn';
 
-import ConfGlobal from 'conf/local.json';
-
 import Colors from 'material-ui/lib/styles/colors';
 
 import GridList from 'material-ui/lib/grid-list/grid-list';
@@ -26,6 +24,7 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile';
 import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 export default class PortalList extends Component {
 
@@ -39,11 +38,16 @@ export default class PortalList extends Component {
       PropTypes.instanceOf(List)
     ]),
     action: PropTypes.func,
-    cols: PropTypes.number
+    cols: PropTypes.number,
+    fieldMapping: PropTypes.object
   };
 
   static defaultProps = {
-    cols: 3
+    cols: 3,
+    fieldMapping: {
+      title: 'properties.dc:title',
+      logo: 'properties.file:content'
+    }
   }
 
   constructor(props, context){
@@ -73,9 +77,8 @@ export default class PortalList extends Component {
                           }
 
                           // Dialect title
-                          let title = selectn('contextParameters.ancestry.dialect.dc:title', tile);
-                          let logoPath = selectn('contextParameters.portal.fv-portal:logo.path', tile);
-                          let portalLogo = logoPath ? (ConfGlobal.baseURL + logoPath) : '/assets/images/cover.png';
+                          let title = selectn(this.props.fieldMapping.title, tile);
+                          let logo = selectn(this.props.fieldMapping.logo, tile);
 
                           return <GridTile
                             onTouchTap={this.props.action.bind(this, tile.path.replace('/Portal', ''))}
@@ -84,7 +87,7 @@ export default class PortalList extends Component {
                             actionPosition="right"
                             actionIcon={actionIcon}
                             subtitle={(tile.description || '')}
-                            ><img src={portalLogo} alt={title + ' Logo'} /></GridTile>
+                            ><img src={UIHelpers.getThumbnail(logo, 'Medium')} alt={title + ' Logo'} /></GridTile>
                         }.bind(this))}
                     </GridList>
                   </div>;

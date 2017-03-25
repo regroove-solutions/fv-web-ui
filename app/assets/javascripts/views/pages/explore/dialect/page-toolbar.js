@@ -287,6 +287,9 @@ export default class PageToolbar extends Component {
                               }>
                                 <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
                                 <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} primaryText="Media Browser" />
+                                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}}>
+                                  <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')} primaryText="Users" />
+                                </AuthorizationFilter>
                               </IconMenu>;
                       }
                     })()}

@@ -38,7 +38,13 @@ const FVPortalTemplate = function template(locals) {
         {locals.inputs['fv-portal:about']}
       </div>
       <div className="col-md-12">
+        {locals.inputs['fv-portal:news']}
+      </div>
+      <div className="col-md-12">
         {locals.inputs['fv-portal:featured_words']}
+      </div>
+      <div className="col-md-12">
+        {locals.inputs['fv-portal:related_links']}
       </div>
       <div className="col-md-12">
         {locals.inputs['fv-portal:featured_audio']}
@@ -68,15 +74,25 @@ const DefinitionsLayout = function (locals) {
   );
 };
 
-/*const RelatedPicturesLayout = function (locals) {
+const RelatedPicturesLayout = function (locals) {
   return (
+    <div>
     <fieldset>
         {(locals.items || []).map(function(item, i) {
-          return <div key={i} className={classNames('col-xs-12','col-md-3')}>{item.input}</div>;
+          return <div key={i} className={classNames('col-xs-12','col-md-3')}>
+            {item.input}
+                    {
+                      item.buttons.map((button, i) => {
+                        return <button key={i} className="btn btn-info" onClick={button.click}>{button.label}</button>
+                      })
+                    }
+            </div>;
         })}
     </fieldset>
+    <button className="btn btn-info" onClick={locals.add.click}>{locals.add.label}</button>
+    </div>
   );
-};*/
+};
 
 t.String.getValidationErrorMessage = (value, path, context) => {
   if (!value) {
@@ -158,6 +174,7 @@ const options = {
           factory: SelectSuggestFactory,
           type: 'FVCategory',
           attrs: {
+            containerType: 'FVWord',
             page_provider: {
               name: 'category_suggestion',
               folder: 'Categories'
@@ -178,8 +195,8 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVPicture'
-        }/*,
-        template: RelatedPicturesLayout*/
+        },
+        template: RelatedPicturesLayout
       },
       'fv:related_videos' : {
         label: 'Related Videos',
@@ -249,6 +266,8 @@ const options = {
           factory: SelectSuggestFactory,
           type: 'FVCategory',
           attrs: {
+            containerType: 'FVPhrase',
+            //allowEdit: true,
             page_provider: {
               name: 'phrasebook_suggestion',
               folder: 'Phrase Books'
@@ -609,6 +628,12 @@ const options = {
           placeholder: 'Enter portal description here'
         }
       },
+      'fv-portal:news': {
+        label: 'News',
+        type: 'textarea',
+        factory: WysiwygFactory,
+        help: 'Tip: Use * to start a bullet list!'
+      },
       'fv-portal:background_top_image' : {
         label: 'Background Image',
         factory: MediaFactory,
@@ -629,6 +654,19 @@ const options = {
             previewProps: {
               minimal: true
             }
+          }
+        }
+      },
+      'fv-portal:related_links' : {
+        label: 'Related Links',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVLink',
+          attrs: {
+            previewProps: {
+              minimal: true
+            },
+            allowEdit: true
           }
         }
       }
@@ -667,6 +705,19 @@ const options = {
       'fvdialect:region': {
         label: 'Region',
         type: 'text'
+      },
+      'fvdialect:keyboards': {
+        label: 'Keyboard Links',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVLink',
+          attrs: {
+            previewProps: {
+              minimal: true
+            },
+            allowEdit: true
+          }
+        }
       },
       'fvdialect:contact_information': {
         label: 'Contact Information',
@@ -776,6 +827,58 @@ const options = {
           label: 'Dialect to Join'
         }
       }
+    }
+  },
+  FVUserProfile: {
+    fields: {
+      'firstName': {
+        label: 'First Name'
+      },
+      'lastName': {
+        label: 'Last Name'
+      },
+      'email': {
+        label: 'Email address'
+      },
+      'preferences': {
+        label: 'Preferences',
+        fields: {
+          General: {
+            label: 'General Options',
+            fields: {
+              primary_dialect: {
+                label: 'My Primary Dialect',
+                factory: SelectFactory,
+                attrs: {
+                  query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:path STARTSWITH \'/FV/Workspaces\'',
+                  queryId: 'dialect_titles_uids',
+                  label: 'Primary Dialect',
+                  help: 'Note: If you are a member of only one dialect, that will be your primary dialect automatically.'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  FVLink: {
+    fields: {
+      'dc:title': {
+        label: 'Title'
+      },
+      'dc:description': {
+        label: 'Description'
+      },
+      'fvlink:url': {
+        label: 'URL',
+        help: 'Specify URL if linking to external or internal links.'
+      }/*,
+      'file:content': {
+        label: 'File',
+        help: 'Optional: For linking directly to a file.',
+        type: 'file'
+      },*/
     }
   }
 };

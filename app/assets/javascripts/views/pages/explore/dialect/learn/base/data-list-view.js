@@ -128,6 +128,11 @@ export default class DataListView extends Component {
   }
 
   _resetColumns(props) {
+
+    if (this.state.fixedCols) {
+      return;
+    }
+
     // Toggle 'state' column for section/workspaces view
     if (props.routeParams.area == 'sections') {
       let stateCol = this.state.columns.findIndex(function(item) {

@@ -26,10 +26,12 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
+import withActions from 'views/hoc/view/with-actions';
+
+const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
 //Stylesheet
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
@@ -41,9 +43,22 @@ export default class Gallery extends React.Component {
 	  splitWindowPath: PropTypes.array.isRequired,
 	  windowPath: PropTypes.string.isRequired,
 	  pushWindowPath: PropTypes.func.isRequired,
-      fetchGallery: PropTypes.func.isRequired,
-      computeGallery: PropTypes.object.isRequired,
-      routeParams: PropTypes.object.isRequired
+    computeLogin: PropTypes.object.isRequired,
+    fetchGallery: PropTypes.func.isRequired,
+    computeGallery: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+
+    deleteGallery: PropTypes.func.isRequired,
+    publishGallery: PropTypes.func.isRequired,
+    askToPublishGallery: PropTypes.func.isRequired,
+    unpublishGallery: PropTypes.func.isRequired,
+    askToUnpublishGallery: PropTypes.func.isRequired,
+    enableGallery: PropTypes.func.isRequired,
+    askToEnableGallery: PropTypes.func.isRequired,
+    disableGallery: PropTypes.func.isRequired,
+    askToDisableGallery: PropTypes.func.isRequired
   };
 
   constructor(props, context){
@@ -52,6 +67,17 @@ export default class Gallery extends React.Component {
     this.state = {
       galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
     };
+
+    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+  }
+
+  _getGalleryPath(props = null) {
+
+    if (props == null) {
+      props = this.props;
+    }
+
+    return props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName;
   }
 
   handleImageLoad(event) {
@@ -59,11 +85,12 @@ export default class Gallery extends React.Component {
   }
 
   fetchData(newProps) {
-	  newProps.fetchGallery(this.props.routeParams.dialect_path + "/Portal/" + this.props.routeParams.galleryName);
+	  newProps.fetchGallery(this._getGalleryPath());
+    newProps.fetchDialect2(newProps.routeParams.dialect_path);
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+    this.props.pushWindowPath(path);
   }
 
   // Fetch data on initial render
@@ -75,7 +102,8 @@ export default class Gallery extends React.Component {
 
 	const images = [];
 
-    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+  const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+  const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
 
 	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
 		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
@@ -87,16 +115,25 @@ export default class Gallery extends React.Component {
       'entity': this.props.computeGallery
     }])
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-	          <div className="row">
-	            <div className="col-xs-8">
-	            </div>
-	            <div className={classNames('col-xs-4', 'text-right')}>
-                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeGallery)}}>
-                    <RaisedButton label="Edit Gallery" onTouchTap={this._onNavigateRequest.bind(this, 'edit')} primary={true} />
-                  </AuthorizationFilter>
-	            </div>
-	          </div>
+    return <DetailsViewWithActions
+              labels={{single: "Gallery"}}
+              itemPath={this._getGalleryPath()}
+              actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
+              publishAction={this.props.publishGallery}
+              unpublishAction={this.props.unpublishGallery}
+              askToPublishAction={this.props.askToPublishGallery}
+              askToUnpublishAction={this.props.askToUnpublishGallery}
+              enableAction={this.props.enableGallery}
+              askToEnableAction={this.props.askToEnableGallery}
+              disableAction={this.props.disableGallery}
+              askToDisableAction={this.props.askToDisableGallery}
+              deleteAction={this.props.deleteGallery}
+              onNavigateRequest={this._onNavigateRequest}
+              computeItem={computeGallery}
+              permissionEntry={computeDialect2}
+              renderOnError={true}
+              computeEntities={computeEntities}
+              {...this.props}>
 
             <div className="row">
 
@@ -114,6 +151,6 @@ export default class Gallery extends React.Component {
 	           	 </div>
 	           </div>
             </div>
-        </PromiseWrapper>;
+        </DetailsViewWithActions>;
   }
 }

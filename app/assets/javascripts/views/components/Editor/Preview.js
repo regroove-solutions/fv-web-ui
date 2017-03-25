@@ -21,6 +21,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import MetadataList from 'views/components/Browsing/metadata-list';
 
@@ -155,6 +156,8 @@ export default class Preview extends Component {
     computeVideo: PropTypes.object.isRequired,
     fetchContributor: PropTypes.func.isRequired,
     computeContributor: PropTypes.object.isRequired,
+    fetchLink: PropTypes.func.isRequired,
+    computeLink: PropTypes.object.isRequired,
     id: PropTypes.string,
     type: PropTypes.string.isRequired,
     expandedValue: PropTypes.object,
@@ -214,6 +217,10 @@ export default class Preview extends Component {
         case 'FVContributor':
             this.props.fetchContributor(this.props.id);
         break;
+
+        case 'FVLink':
+            this.props.fetchLink(this.props.id);
+        break;
       }
     }
   }
@@ -266,6 +273,10 @@ export default class Preview extends Component {
               </div>;
             }
           }
+          else if (word && word.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', word)}</div>;
+          }
+          
         break;
 
         case 'FVPhrase':
@@ -284,6 +295,10 @@ export default class Preview extends Component {
           if (phraseResponse && phrase.success) {
             body = <div><strong>{phraseResponse.title}</strong></div>;
           }
+          else if (phrase && phrase.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', phrase)}</div>;
+          }
+
         break;
 
         case 'FVCategory':
@@ -318,6 +333,10 @@ export default class Preview extends Component {
 
             body = <div><strong>{breadcrumb}</strong></div>;
           }
+          else if (category && category.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', category)}</div>;
+          }
+
         break;
 
         case 'FVPicture':
@@ -339,13 +358,10 @@ export default class Preview extends Component {
           }
 
           if (pictureResponse && picture.success) {
-
-            let pictureUrl = selectn('properties.file:content.data', pictureResponse) || (ConfGlobal.baseURL + selectn('path', pictureResponse));
-
-            pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={pictureUrl} alt={selectn('title', pictureResponse)} />;
+            pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={UIHelpers.getThumbnail(pictureResponse, 'Medium')} alt={selectn('title', pictureResponse)} />;
 
             if (this.props.crop) {
-              pictureTag = <div style={{width: '100%', backgroundImage: 'url(' + pictureUrl + ')', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPositionX: '50%', ...this.props.tagStyles}}></div>;
+              pictureTag = <div style={{width: '100%', backgroundImage: 'url(' + UIHelpers.getThumbnail(pictureResponse, 'Medium') + ')', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPositionX: '50%', ...this.props.tagStyles}}></div>;
             }
 
             if (this.props.minimal) {
@@ -370,6 +386,9 @@ export default class Preview extends Component {
                         </CardText>
                       </Card>;
             }
+          }
+          else if (picture && picture.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', picture)}</div>;
           }
 
         break;
@@ -419,6 +438,9 @@ export default class Preview extends Component {
                       </Card>;
             }
           }
+          else if (audio && audio.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', audio)}</div>;
+          }
 
         break;
 
@@ -467,6 +489,9 @@ export default class Preview extends Component {
                     </Card>;
             }
           }
+          else if (video && video.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', video)}</div>;
+          }
 
         break;
 
@@ -490,9 +515,49 @@ export default class Preview extends Component {
               <span> {selectn('properties.dc:description', contributorResponse) || selectn('dc:description', contributorResponse)}</span>
             </div>;
           }
+          else if (contributor && contributor.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', contributor)}</div>;
+          }
+
+        break;
+
+        case 'FVLink':
+
+          let link = {};
+          let linkResponse;
+
+          if (this.props.expandedValue) {
+            link.success = true;
+            linkResponse = this.props.expandedValue;
+          }
+          else {
+            link = ProviderHelpers.getEntry(this.props.computeLink, this.props.id);
+            linkResponse = selectn('response', link);
+          }
+
+          if (linkResponse && link.success) {
+
+            let link = selectn('properties.fvlink:url', linkResponse) || selectn('fvlink:url', linkResponse) || selectn('properties.file:content.data', linkResponse) || selectn('file:content.data', linkResponse);
+
+            body = <div style={{borderLeft: '2px solid gray', paddingLeft: '10px'}}>
+              <div><a href={link} target="_blank"><strong>{selectn('title', linkResponse) || selectn('dc:title', linkResponse)}</strong></a></div>
+              <div>{selectn('properties.dc:description', linkResponse) || selectn('dc:description', linkResponse)}</div>
+            </div>;
+          }
+          else if (link && link.isError) {
+            body = <div>An error has occured. Server returned: {selectn('message', link)}</div>;
+          }
+
+        break;
+
+        default:
+
+            body = 'Preview option not available. Please report to Administrator.';
 
         break;
       }
+
+      
 
       return (
         <div style={previewStyles}>

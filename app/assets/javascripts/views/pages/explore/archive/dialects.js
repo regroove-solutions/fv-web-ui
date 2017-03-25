@@ -130,6 +130,10 @@ export default class ExploreDialects extends Component {
       area:this.props.routeParams.area,
       fixedListFetcher:this.fixedListFetcher,
       filteredItems:this.state.filteredList,
+      fieldMapping: {
+        title: 'contextParameters.ancestry.dialect.dc:title',
+        logo: 'contextParameters.portal.fv-portal:logo'
+      },
       metadata:selectn('response', computePortals),
       items: sortedPortals
     };

@@ -7,6 +7,10 @@ import PageDialectPhrasesCreate from 'views/pages/explore/dialect/learn/phrases/
 import PageDialectCategoryCreate from 'views/pages/explore/dialect/category/create';
 import PageDialectContributorsCreate from 'views/pages/explore/dialect/contributors/create';
 import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/phrasebooks/create';
+import PageDialectLinksCreate from 'views/pages/explore/dialect/links/create';
+
+import PageDialectLinksEdit from 'views/pages/explore/dialect/links/edit';
+//import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/phrasebooks/edit';
 
 export default class DialogCreateForm extends React.Component {
   constructor(props) {
@@ -38,6 +42,7 @@ export default class DialogCreateForm extends React.Component {
   
   _onDocumentCreated(document) {
 	  if(document) {
+			this.setState({open: false});
 		  this.props.onChange(event, document);
 	  }
   }
@@ -55,6 +60,11 @@ export default class DialogCreateForm extends React.Component {
 			if(this.props.fieldAttributes.page_provider.folder == "Phrase Books") {
 				createForm = <PageDialectPhraseBooksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
 				createNewButtonLabel = "Create New Phrase Book";
+
+				/*if (this.props.value) {
+					createNewButtonLabel = "Edit Link";
+					createForm = <PageDialectPhraseBooksEdit dialect={this.props.context} routeParams={{dialect_path: this.props.context.path, theme: 'explore'}} value={this.props.value} embedded={true} onDocumentCreated={this._onDocumentCreated} cancelMethod={this.handleClose} />;
+				}*/
 			}
 			else if(this.props.fieldAttributes.page_provider.folder == "Categories") {
 				createForm = <PageDialectCategoryCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;				
@@ -63,9 +73,19 @@ export default class DialogCreateForm extends React.Component {
 		break;
 			
 		case "FVContributor":
-			createForm = <PageDialectContributorsCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
-			createNewButtonLabel = "Create New Contributor";
-		break;				
+			createForm = <PageDialectContributorsCreate value={this.props.value} expandedValue={this.props.expandedValue} embedded={true} onDocumentCreated={this._onDocumentCreated} />;
+			createNewButtonLabel = (this.props.value || this.props.expandedValue) ? "Edit Contributor" : "Create New Contributor";
+		break;		
+
+		case "FVLink":
+			createForm = <PageDialectLinksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
+			createNewButtonLabel = (this.props.value || this.props.expandedValue) ? "Edit Link" : "Create New Link";
+
+			if (this.props.value) {
+				createNewButtonLabel = "Edit Link";
+				createForm = <PageDialectLinksEdit dialect={this.props.context} routeParams={{dialect_path: this.props.context.path, theme: 'explore'}} value={this.props.value} embedded={true} onDocumentCreated={this._onDocumentCreated} cancelMethod={this.handleClose} />;
+			}
+		break;			
 	}  
 
 	// Show Create New button, unless otherwise specified

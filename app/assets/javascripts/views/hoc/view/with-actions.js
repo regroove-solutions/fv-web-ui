@@ -222,7 +222,8 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                             modal={false}
                             open={this.state.deleteDialogOpen}
                             onRequestClose={this._handleCancelDelete}>
-                            Are you sure you would like to delete the {this.props.labels.single} <strong>{selectn('response.title', this.props.computeItem)}</strong>?
+                            Are you sure you would like to delete the {this.props.labels.single} <strong>{selectn('response.title', this.props.computeItem)}</strong>?<br/>
+                            Proceeding will also delete all published versions of this {this.props.labels.single}.
                         </Dialog>
 
                         <Dialog

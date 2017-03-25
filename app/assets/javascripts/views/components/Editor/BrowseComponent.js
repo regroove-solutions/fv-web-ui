@@ -37,6 +37,12 @@ import IconButton from 'material-ui/lib/icon-button';
 import ActionInfo from 'material-ui/lib/svg-icons/action/info';
 import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline';
 
+import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
+import WordListView from 'views/pages/explore/dialect/learn/words/list-view';
+import CategoriesListView from 'views/pages/explore/dialect/learn/words/categories-list-view';
+import ContributorsListView from 'views/pages/explore/dialect/learn/base/contributors-list-view';
+import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-view';
+
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
 const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': {appliedFilter: ''}, 'dialect': {appliedFilter: ''} } };
@@ -83,7 +89,7 @@ class SharedResourceGridTile extends Component {
 }
 
 @provide
-export default class SelectMediaComponent extends React.Component {
+export default class BrowseComponent extends React.Component {
 
   static propTypes = {
     onComplete: PropTypes.func.isRequired,
@@ -98,7 +104,8 @@ export default class SelectMediaComponent extends React.Component {
     computeLogin: PropTypes.object.isRequired,
     dialect: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    containerType: PropTypes.string
   };
 
   getDefaultValues() {
@@ -135,32 +142,33 @@ export default class SelectMediaComponent extends React.Component {
 
   fetchData(fetcherParams) {
 
-    if (selectn('path', this.props.dialect)) {
-      // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-      let group1 = new Map(fetcherParams.filters).filter((v,k) => k == 'shared_fv' || k == 'shared_dialects').toJS();
-      let group2 = new Map(fetcherParams.filters).filterNot((v,k) => k == 'shared_fv' || k == 'shared_dialects').toJS();
+    // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
+    let group1 = new Map(fetcherParams.filters).filter((v,k) => k == 'shared_fv' || k == 'shared_dialects').toJS();
+    let group2 = new Map(fetcherParams.filters).filterNot((v,k) => k == 'shared_fv' || k == 'shared_dialects').toJS();
 
-      this.props.fetchResources('/FV/Workspaces/',
-      ' AND ecm:primaryType ILIKE \'' + this.props.type + '\'' +
-      ' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != \'deleted\' AND ecm:currentLifeCycleState != \'Disabled\'' + 
-      ' AND (ecm:path STARTSWITH \'' + selectn('path', this.props.dialect) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) + 
-      '&currentPageIndex=' + fetcherParams.currentPageIndex + 
-      '&pageSize=' + fetcherParams.pageSize + 
-      '&sortBy=dc:created' + 
-      '&sortOrder=DESC'
-      );
+    this.props.fetchResources('/FV/Workspaces/',
+    ' AND ecm:primaryType ILIKE \'' + this.props.type + '\'' +
+    ' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != \'deleted\' AND ecm:currentLifeCycleState != \'Disabled\'' + 
+    ' AND (ecm:path STARTSWITH \'' + selectn('path', this.props.dialect) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) + 
+    '&currentPageIndex=' + fetcherParams.currentPageIndex + 
+    '&pageSize=' + fetcherParams.pageSize + 
+    '&sortBy=dc:created' + 
+    '&sortOrder=DESC'
+    );
 
-      this.setState({
-        fetcherParams: fetcherParams
-      });
-    }
+    this.setState({
+      fetcherParams: fetcherParams
+    });
   }
 
   componentDidMount() {
-    this.fetchData(this.state.fetcherParams);
+    //this.fetchData(this.state.fetcherParams);
   }
 
   render() {
+
+      const dialect = this.props.dialect;
+      const dialectPath = selectn('path', dialect);
 
       const actions = [
         <FlatButton
@@ -169,65 +177,88 @@ export default class SelectMediaComponent extends React.Component {
           onTouchTap={this._handleClose} />
       ];
 
-      let fileTypeLabel = 'File';
-      let fileTypeCellHeight = 210;
-      let fileTypeTilePosition = 'bottom';
+      let title = '';
+      let view = null;
 
       switch (this.props.type) {
-        case 'FVAudio':
-          fileTypeLabel = 'audio files';
-          fileTypeCellHeight = 100;
-          fileTypeTilePosition = 'top';
+        case 'FVPhrase':
+          title = "Select existing phrases from " + selectn('properties.dc:title', dialect) + " dialect:";
+          view = <PhraseListView
+                  action={this._handleSelectElement}
+                  dialect={dialect}
+                  routeParams={{
+                    theme: 'explore',
+                    dialect_path: dialectPath
+                  }} />;
         break;
 
-        case 'FVPicture':
-          fileTypeLabel = 'pictures';
+        case 'FVCategory':
+          title = "Select " + (this.props.containerType == 'FVWord') ? "Categories" : "Phrase Books";
+          view = <CategoriesListView
+                  action={this._handleSelectElement}
+                  dialect={dialect}
+                  categoriesPath={(this.props.containerType == 'FVWord') ? '/FV/Workspaces/SharedData/Shared Categories/' : dialectPath + '/Phrase Books/'}
+                  routeParams={{
+                    theme: 'explore',
+                    area: 'Workspaces',
+                    dialect_path: dialectPath
+                  }} />;
         break;
 
-        case 'FVVideo':
-          fileTypeLabel = 'videos';
-          fileTypeTilePosition = 'top';
+        case 'FVContributor': 
+          title = "Select contributors from " + selectn('properties.dc:title', dialect) + " dialect:";
+          view = <ContributorsListView
+                  action={this._handleSelectElement}
+                  dialect={dialect}
+                  routeParams={{
+                    theme: 'explore',
+                    area: 'Workspaces',
+                    dialect_path: dialectPath
+                  }} />;
+        break;
+
+        case 'FVLink':
+          title = "Select links from " + selectn('properties.dc:title', dialect) + " dialect:";
+          view = <LinksListView
+                  action={this._handleSelectElement}
+                  dialect={dialect}
+                  routeParams={{
+                    theme: 'explore',
+                    area: 'Workspaces',
+                    dialect_path: dialectPath
+                  }} />;
+        break;
+
+        case 'FVWord':
+          title = "Select existing words from " + selectn('properties.dc:title', dialect) + " dialect:";
+          view = <WordListView
+                  action={this._handleSelectElement}
+                  dialect={dialect}
+                  routeParams={{
+                    theme: 'explore',
+                    dialect_path: dialectPath
+                  }} />;
         break;
       }
 
-    const computeResources = ProviderHelpers.getEntry(this.props.computeResources, '/FV/Workspaces/');
-    const dialect = this.props.dialect;
-
-    var SharedResourceGridTileWithDialect = React.createClass({
-      render: function() {
-        return React.createElement(SharedResourceGridTile, { ...this.props, dialect: dialect });
-      }
-    });
 
       return (
         <div style={{display: 'inline'}}>
           <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
           <Dialog
-            title={"Select existing " + fileTypeLabel + " from " + selectn('properties.dc:title', dialect) + " dialect or shared resources:"}
+            title={title}
             actions={actions}
             modal={true}
             contentStyle={{width: '80%', height: '80vh', maxWidth: '100%'}}
             autoScrollBodyContent={true}
             open={this.state.open}>
 
-              <div className={classNames('alert', 'alert-info', {'hidden': !selectn('isFetching', computeResources)})}>
-                Loading results... Please wait.<br/>
-                <LinearProgress mode="indeterminate" />
-              </div>
-
-              <FilteredPaginatedMediaList
-                      style={{overflowY: 'auto', maxHeight: '100vh'}}
-                      cols={5}
-                      cellHeight={150}
-                      filterOptionsKey={'ResourcesSelector'}
-                      action={this._handleSelectElement}
-                      fetcher={this.fetchData}
-                      gridListTile={SharedResourceGridTileWithDialect}
-                      fetcherParams={this.state.fetcherParams}
-                      formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
-                      metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
-                      items={selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []} />
-
+                {(() => {
+                if (dialectPath) {
+                    return view;
+                }
+                })()}
+              
           </Dialog>
         </div>
       );

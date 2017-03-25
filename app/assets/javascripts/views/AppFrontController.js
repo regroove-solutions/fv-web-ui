@@ -6,10 +6,14 @@ import selectn from 'selectn';
 
 import classNames from 'classnames';
 
+import ConfGlobal from 'conf/local.json';
+
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import {Link} from 'provide-page';
 
+import FlatButton from 'material-ui/lib/flat-button';
 import Navigation from 'views/components/Navigation';
 import KidsNavigation from 'views/components/Kids/Navigation';
 import Footer from 'views/components/Navigation/Footer';
@@ -26,7 +30,7 @@ import { PageDialectViewAlphabet } from 'views/pages';
 
 import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageHangman} from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
@@ -49,17 +53,34 @@ const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH);
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION);
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT));
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search', 'gallery'];
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search'];
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') },
   target: function(params) { return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections'); }
 };
 
+class Redirecter extends Component {
+  constructor(props, context) {
+    super (props, context);
+  }
+
+  componentDidMount() {
+    this.props.redirect();
+  }
+  
+
+  render() {
+    return <div style={{backgroundColor: '#fff', height: '100vh'}}>Redirecting...</div>;
+  }
+}
+
 @provide
 export default class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
+    preferences: PropTypes.object,
+    warnings: PropTypes.object.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -84,7 +105,34 @@ export default class AppFrontController extends Component {
       {
         path: [],
         page: <PageHome />,
-        breadcrumbs: false
+        breadcrumbs: false,
+        frontpage: true,
+        redirects: [{
+          // For any start page value other than a dialect, simple redirect to that start page
+          condition: function(params) {
+            return selectn('preferences.start_page', params.props) !== undefined && selectn('preferences.start_page', params.props) !== 'my_dialect' && selectn('preferences.start_page', params.props) !== 'my_kids_dialect';
+          },
+          target: function(params) {
+            return UIHelpers.getPreferenceVal('start_page', params.props.preferences);
+          }
+        },{
+          // Redirecting to a dialect (requires dialect_path to be provided)
+          condition: function(params) {
+            return selectn('preferences.primary_dialect_path', params.props) !== undefined;
+          },
+          target: function(params) {
+            let start_page = selectn('preferences.start_page', params.props);
+            let primary_dialect_path = selectn('preferences.primary_dialect_path', params.props);
+            return '/' + (start_page == 'my_kids_dialect' ? 'kids' : 'explore') + selectn('preferences.primary_dialect_path', params.props);
+          }
+        }]
+      },
+      {
+        path: ['home'],
+        page: <PageHome />,
+        title: 'Home',
+        breadcrumbs: false,
+        frontpage: true
       },
       {
         path: ['test'],
@@ -115,6 +163,10 @@ export default class AppFrontController extends Component {
         page: <PageUsersRegister />
       },
       {
+        path: ['profile'],
+        page: <PageUsersProfile />
+      },
+      {
         path: [KIDS_OR_DEFAULT],
         page: <PageExploreArchive />,
         redirects: [{
@@ -138,8 +190,9 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', 'sections', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'register'],
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'register'],
         page: <PageUsersRegister />,
+        disableWorkspaceSectionNav: true,
         extractPaths: true
       },
       {
@@ -160,10 +213,12 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
+        id: 'page_explore_dialect',
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
         page: <PageExploreDialect />,
         extractPaths: true,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        warnings: ['multiple_dialects']
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit' ],
@@ -196,6 +251,11 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet'],
         page: <PageDialectViewAlphabet />,
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', 'print'],
+        page: <PageDialectViewAlphabet print={true} />,
         extractPaths: true
       },
       {
@@ -284,9 +344,10 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users' ],
+        path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users' ],
         page: <PageDialectUsers />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
@@ -448,7 +509,8 @@ export default class AppFrontController extends Component {
     return {
       routes: routes,
       matchedPage: null,
-      matchedRouteParams: []
+      matchedRouteParams: {},
+      warningsDismissed: false
     };
   }
 
@@ -457,14 +519,16 @@ export default class AppFrontController extends Component {
   * This could normally go into the render method to keep things simple,
   * however redirecting (i.e. updating state), cannot be done inside render.
   */
-  _route(props) {
+  _route(props, routesOverride = null) {
 
     let matchedPage = null
-    let matchedRouteParams = [];
+    let matchedRouteParams = {};
 
     const pathArray = props.splitWindowPath;
 
-    this.state.routes.forEach(function(value, key) {
+    let routes = routesOverride || this.state.routes;
+
+    routes.forEach(function(value, key) {
 
       let matchTest = this._matchPath(value.get('path'), pathArray);
 
@@ -500,7 +564,12 @@ export default class AppFrontController extends Component {
         matchedPage.get('redirects').forEach(function(value, key) {
 
           if (value.get('condition')({props: props})) {
-            props.replaceWindowPath(value.get('target')({props: props}));
+
+            // Avoid invariant violations during rendering by setting temporary placeholder component as matched page, and 'redirecting' after mount.
+            matchedPage = matchedPage.set('page', Immutable.fromJS(React.createElement(Redirecter, {redirect: function () {
+                return props.replaceWindowPath(value.get('target')({props: props}));
+            }}, matchedPage.get('page'))))
+            
             return false;
           }
         }.bind(this));
@@ -512,7 +581,7 @@ export default class AppFrontController extends Component {
         let newTheme = matchedRouteParams.theme;
 
         // Switch to workspace theme if available
-        if ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') && matchedRouteParams.theme == 'explore') {
+        if (((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') || matchedPage.get('path').indexOf('Workspaces') !== -1) && matchedRouteParams.theme == 'explore') {
           newTheme = 'workspace';
         }
 
@@ -541,12 +610,68 @@ export default class AppFrontController extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+
+    let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences);
+    let next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences);
+    
+    // Re-route on window path change
     if (nextProps.windowPath != this.props.windowPath) {
       this._route(nextProps);
     }
 
-    if (nextProps.computeLogin != this.props.computeLogin) {
+    // Re-route on login
+    else if (nextProps.computeLogin != this.props.computeLogin) {
       this._route(nextProps);
+    }
+
+    // Re-route if preferences change
+    else if (next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
+      this._route(nextProps);
+    }
+
+    // Update title
+    if (this.state.matchedPage && this.state.matchedPage.hasOwnProperty('title') && this.state.matchedPage.get('title') && this.state.matchedPage.get('title') != document.title) {
+      document.title = this.state.matchedPage.get('title') + ' | ' + ConfGlobal.title;
+    }
+
+    ////////
+    if (1===2) {
+      let frontPage = this.state.routes.findEntry(function(v, k) {
+        return v.get('path').isEmpty();
+      });
+
+      let dialectPage = this.state.routes.findEntry(function(v, k) {
+        return v.get('id') === 'page_explore_dialect';
+      });
+
+
+    let preferences2 = selectn('response.properties.preferences', nextProps.computeLogin);
+    let preferences = (preferences2) ? JSON.parse(preferences2) : {};
+    let flattenedPreferences = [];
+
+    for (var preference22 in preferences) {
+      flattenedPreferences.push(preferences[preference22]);
+    }
+
+
+      // Modify front page based on preferences
+      // Note: Adding a redirect here will cause invariant violations during rendering
+      //let routes = this.state.routes.set(frontPage[0], frontPage[1].set('page', Immutable.fromJS(<PageExploreDialect />)));
+      /*let routes = this.state.routes.set(frontPage[0], frontPage[1].set('redirects', Immutable.fromJS(
+        [{
+          condition: function(params) { return true; },
+          target: function(params) {
+            console.log(params);
+            return '/contribute';
+          }
+        }]
+      )));*/
+
+
+
+      //this.setState({routes})
+
+      //this._route(nextProps, routes);
     }
   }
 
@@ -574,7 +699,6 @@ export default class AppFrontController extends Component {
 
             if (matchTest.matched) {
 
-              // Redirect if required
               if (value.has('redirects')) {
                 value.get('redirects').forEach(function(redirectValue, key) {
 
@@ -609,8 +733,7 @@ export default class AppFrontController extends Component {
         <div className="clearfix">
 
           {(() => {
-
-            if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin)) {
+            if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
 
               return <ul className={classNames('workspace-switcher', 'nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","paddingTop": "10px"}}>
                 <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Public View</Link></li>
@@ -620,7 +743,7 @@ export default class AppFrontController extends Component {
 
           })()}
 
-          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
+          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/home">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
 
         </div>
 
@@ -672,16 +795,21 @@ export default class AppFrontController extends Component {
   }
 
   render() {
-
     const { matchedPage, matchedRouteParams } = this.state;
-
-    let page, navigation = <Navigation routeParams={matchedRouteParams} />;
+    
+    let page, navigation = <Navigation frontpage={(!matchedPage) ? false : matchedPage.get('frontpage')} routeParams={matchedRouteParams} />;
     let theme = (matchedRouteParams.hasOwnProperty('theme')) ? matchedRouteParams.theme : 'default';
+    let print = (matchedPage) ? matchedPage.get('page').get('props').get('print') === true : false;
 
     if (!matchedPage) {
       page = <div>404</div>;
     } else {
       let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
+
+      // For print view return page only
+      if (print) {
+        return <div style={{margin: '25px'}}>{clonedElement}</div>;
+      }
 
       // Remove breadcrumbs for Kids portal
       // TODO: Make more generic if additional themes are added in the future.
@@ -702,6 +830,13 @@ export default class AppFrontController extends Component {
 
     return (
       <div>
+
+        {((matchedPage && matchedPage.hasOwnProperty('warnings')) ? matchedPage.get('warnings') : []).map(function (warning) {
+          if (this.props.warnings.hasOwnProperty(warning) && !this.state.warningsDismissed) {
+            return <div style={{position: 'fixed', bottom: 0, zIndex: 99999}} className={classNames('alert', 'alert-warning')}>{selectn(warning, this.props.warnings)} <FlatButton label="Dismiss" onTouchTap={() => this.setState({warningsDismissed: true})} /></div>;
+          }
+        }.bind(this))}
+
         <div className="row">{navigation}</div>
         <div className={'page-' + theme + '-theme'}>{page}</div>
         <div className="row"><Footer /></div>

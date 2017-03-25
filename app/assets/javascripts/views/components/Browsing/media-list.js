@@ -41,7 +41,8 @@ export default class MediaList extends Component {
     action: PropTypes.func,
     cols: PropTypes.number,
     cellHeight: PropTypes.number,
-    style: PropTypes.object
+    style: PropTypes.object,
+    gridListTile: PropTypes.func
   };
 
   static defaultProps = {
@@ -90,7 +91,7 @@ export default class MediaList extends Component {
     }
 
     if (selectn('length', items) == 0) {
-      return <div style={{margin: '20px 0'}}>No results found.</div>;
+      //return <div style={{margin: '20px 0'}}>No results found.</div>;
     }
 
     // If action is not defined
@@ -109,6 +110,10 @@ export default class MediaList extends Component {
                       style={Object.assign(defaultStyle, this.props.style)}
                       >
                         {(items).map(function (tile, i) { 
+
+                          if (this.props.gridListTile) {
+                            return React.createElement(this.props.gridListTile, { key: tile.uid, tile: tile, action: action, preview: this._getMediaPreview(tile), titlePosition: fileTypeTilePosition });
+                          }
 
                           return <GridTile
                             onTouchTap={action.bind(this, tile)}

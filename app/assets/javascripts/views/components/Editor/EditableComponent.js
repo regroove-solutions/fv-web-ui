@@ -4,6 +4,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 import DOMPurify from 'dompurify';
 
+import Preview from 'views/components/Editor/Preview';
 import StatusBar from 'views/components/StatusBar';
 
 // Models
@@ -16,6 +17,26 @@ import options from 'models/schemas/options';
 import IconButton from 'material-ui/lib/icon-button';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
+const RenderRegular = function(currentValue, preview, previewType, returnWrapper = 'span') {
+  let output = [];
+  let values = [];
+
+  if (!Array.isArray(currentValue)) {
+    values[0] = currentValue;
+  } else {
+    values = currentValue;
+  }
+
+  output = values.map(function(value, i) {
+
+    let id = (value && value.hasOwnProperty('uid') ?  value.uid : value);
+
+    return (preview) ? <Preview key={i} id={id} type={previewType} /> : React.createElement(returnWrapper, {key: i, dangerouslySetInnerHTML: {__html: DOMPurify.sanitize(value)}});
+  });
+
+  return output;
+}
+
 @provide
 export default class EditableComponent extends Component {
 
@@ -23,14 +44,19 @@ export default class EditableComponent extends Component {
     computeEntity: PropTypes.object.isRequired,
     updateEntity: PropTypes.func.isRequired,
     property: PropTypes.string.isRequired,
+    sectionProperty: PropTypes.string,
+    context: PropTypes.object,
     className: PropTypes.string,
     options: PropTypes.array,
-    accessDenied: PropTypes.bool
+    accessDenied: PropTypes.bool,
+    showPreview: PropTypes.bool,
+    previewType: PropTypes.string
   };
 
   static defaultProps = {
     accessDenied: false,
-    className: ''
+    className: '',
+    showPreview: false
   };
 
   constructor(props, context) {
@@ -103,7 +129,7 @@ export default class EditableComponent extends Component {
                       ref={"form_" + property}
                       value={fieldFormValues}
                       type={fieldFormStruct}
-                      context={this.props.computeEntity.response}
+                      context={selectn('response', this.props.context) || selectn('response', this.props.computeEntity)}
                       options={fieldFormOptions} />
                       <button type="submit" className="btn btn-primary">Save</button> 
                  </form>;
@@ -113,7 +139,7 @@ export default class EditableComponent extends Component {
 
     // Render regular field if not in edit mode
     return <div>
-              <span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(currentValue)}}></span>
+              {RenderRegular(currentValue, this.props.showPreview, this.props.previewType)}
               <IconButton iconClassName="material-icons" iconStyle={{fontSize: '20px'}} style={{verticalAlign: '-4px', padding: '0px 5px', height: '22px', width: '22px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
@@ -169,7 +195,7 @@ export default class EditableComponent extends Component {
 export class EditableComponentHelper extends Component {
   render() {
     if (this.props.isSection) {
-      return <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.entity.get(this.props.property))}}></div>;
+      return <div>{RenderRegular(selectn(this.props.sectionProperty || 'properties.' + this.props.property, this.props.entity), this.props.showPreview, this.props.previewType, 'div')}</div>;
     }
 
     return <EditableComponent {...this.props} />;

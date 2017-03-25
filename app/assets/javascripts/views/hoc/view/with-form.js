@@ -83,8 +83,12 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
     _onRequestCancelForm(e, force = false) {
 
         if (force) {
-            this.props.cancelMethod();
-            NavigationHelpers.navigateUp(this.props.currentPath, this.props.navigationMethod);
+            if (this.props.cancelMethod) {
+                this.props.cancelMethod();
+            }
+            else {
+                NavigationHelpers.navigateUp(this.props.currentPath, this.props.navigationMethod);
+            }
         }
 
         this.setState({

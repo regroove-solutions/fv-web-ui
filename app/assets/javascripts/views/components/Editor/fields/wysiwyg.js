@@ -12,7 +12,7 @@ function renderTextarea(locals) {
     locals.onChange(value);
   }
 
-  return <AlloyEditorComponent content={locals.value} onContentChange={onContentChange} container="editable" />
+  return <AlloyEditorComponent content={locals.value} onContentChange={onContentChange} container={"editable" + locals.label.replace(' ', '_')} />
 }
 
 const textboxTemplate = t.form.Form.templates.textbox.clone({ renderTextarea })

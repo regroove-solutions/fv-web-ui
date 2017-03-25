@@ -1,13 +1,13 @@
 import React, {Component, PropTypes} from 'react';
 import t from 'tcomb-form';
 
-let initialValue = null;
-
 function renderLabel(locals) {
     return '';
 }
 
 function renderInput(locals) {
+
+  let initialValue = null;
 
   if (!initialValue) {
     initialValue = locals.value;

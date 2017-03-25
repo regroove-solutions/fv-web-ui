@@ -64,7 +64,8 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
       const ips = this.state.initialPageSize;
 
       const pageSizeControl = (!this.props.disablePageSize) ? <div>
-                <label style={{verticalAlign: '4px', marginRight: '10px'}}>Per Page:</label>
+                <label style={{verticalAlign: '4px', marginRight: '10px'}}>Page:</label>
+                <span style={{verticalAlign: '4px'}}>{this.state.currentPageIndex + 1} / </span>
                 <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize} onChange={this._onPageSizeChange}>
                   <MenuItem value={Math.ceil(ips / 2)} primaryText={Math.ceil(ips / 2)} />
                   <MenuItem value={Math.ceil(ips)} primaryText={Math.ceil(ips)} />
@@ -73,7 +74,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
                   <MenuItem value={Math.ceil(ips * 4)} primaryText={Math.ceil(ips * 4)} />
                   <MenuItem value={Math.ceil(ips * 5)} primaryText={Math.ceil(ips * 5)} />
                 </SelectField>
-                <span style={{verticalAlign: '4px'}}>/ {selectn('resultsCount', this.props.metadata)}</span>
+                <span style={{verticalAlign: '4px'}}>Results: {selectn('resultsCount', this.props.metadata)}</span>
               </div> : '';
 
       return(

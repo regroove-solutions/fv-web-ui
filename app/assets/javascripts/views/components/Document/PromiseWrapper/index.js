@@ -18,6 +18,8 @@ import Immutable, { List, Map } from 'immutable';
 
 import selectn from 'selectn';
 
+import ConfGlobal from 'conf/local.json';
+
 import StatusBar from 'views/components/StatusBar';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -31,11 +33,14 @@ export default class PromiseWrapper extends Component {
 
   static propTypes = {
     computeEntities: PropTypes.instanceOf(List),
+    titleEntityId: PropTypes.string,
+    titleEntityField: PropTypes.string,
     renderOnError: PropTypes.bool
   };
 
   static defaultProps = {
-    renderOnError: false
+    renderOnError: false,
+    titleEntityField: 'response.properties.dc:title'
   };
 
   constructor(props, context){
@@ -46,6 +51,25 @@ export default class PromiseWrapper extends Component {
     }
   }
 
+  componentDidMount() {
+    if (this.props.title){
+      document.title = this.props.title + ' | ' + ConfGlobal.title;
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.title != this.props.title) {
+      document.title = nextProps.title + ' | ' + ConfGlobal.title;
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.props.title){
+      document.title = ConfGlobal.title;
+    }
+  }
+  
+ 
   render () {
 
     let statusMessage = null;
@@ -75,8 +99,10 @@ export default class PromiseWrapper extends Component {
         return false;
       }
 
-      if (reducedOperation.success && selectn('message', reducedOperation)) {
-        statusMessage = selectn('message', reducedOperation);
+      if (reducedOperation.success) {
+        if (selectn('message', reducedOperation)) {
+          statusMessage = selectn('message', reducedOperation);
+        }
       }
 
     }.bind(this));
