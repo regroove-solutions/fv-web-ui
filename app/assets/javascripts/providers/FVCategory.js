@@ -72,28 +72,6 @@ const createCategory = function createCategory(parentDoc, docParams) {
   }
 };
 */
-const updateCategory = function updateCategory(newDoc, field) {
-  return function (dispatch) {
-
-    let categories = {};
-    categories[newDoc.id] = {};
-
-    dispatch( { type: FV_CATEGORY_UPDATE_START, categories: categories, pathOrId: newDoc.id } );
-
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
-
-        categories[newDoc.id] = { response: response };
-
-        dispatch( { type: FV_CATEGORY_UPDATE_SUCCESS, categories: categories, pathOrId: newDoc.id} );
-      }).catch((error) => {
-
-          categories[newDoc.id] = { error: error };
-
-          dispatch( { type: FV_CATEGORY_UPDATE_ERROR, categories: categories, pathOrId: newDoc.id } )
-    });
-  }
-};
 
 const fetchSharedCategories = function fetchSharedCategories(page_provider, headers = {}, params = {}) {
   return function (dispatch) {
@@ -161,8 +139,9 @@ const fetchCategory = function fetchCategory(pathOrId) {
 };
 */
 const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, breadcrumb' } });
-const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, children'} });
+const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, parentDoc, breadcrumb, children'} });
 const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
+const updateCategory = RESTActions.update('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
 const computeCategoryFactory = RESTReducers.computeFetch('category');
 const computeCategoriesFactory = RESTReducers.computeQuery('categories');
 

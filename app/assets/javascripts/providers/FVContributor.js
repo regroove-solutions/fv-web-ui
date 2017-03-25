@@ -163,10 +163,13 @@ const fetchContributor = function fetchContributor(pathOrId) {
 */
 
 const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const fetchContributors = RESTActions.query('FV_CONTRIBUTORS', 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry'} });
 const createContributor = RESTActions.create('FV_CONTRIBUTOR', 'FVContributor');
-const computeContributorFactory = RESTReducers.computeFetch('contributor');
 
-const actions = { fetchSharedContributors, fetchContributorsInPath, fetchContributor, createContributor, fetchContributorsAll, updateContributor };
+const computeContributorFactory = RESTReducers.computeFetch('contributor');
+const computeContributorsFactory = RESTReducers.computeQuery('contributors');
+
+const actions = { fetchSharedContributors, fetchContributorsInPath, fetchContributor, fetchContributors, createContributor, fetchContributorsAll, updateContributor };
 
 const reducers = {
   computeSharedContributors(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
@@ -213,6 +216,7 @@ const reducers = {
     }
   },
   computeContributor: computeContributorFactory.computeContributor, 
+  computeContributors: computeContributorsFactory.computeContributors, 
 
 /*  
   computeContributor(state = { contributors: {} }, action) {

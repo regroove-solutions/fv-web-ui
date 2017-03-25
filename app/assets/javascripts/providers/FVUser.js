@@ -9,55 +9,65 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 import DocumentOperations from 'operations/DocumentOperations';
 import UserOperations from 'operations/UserOperations';
 
-const key = 'USER';
+const key = 'FV_USER';
 
 /**
 * Single User Actions
 */
-const fetchUser = 
-        function fetch(username, messageStart = null, messageSuccess = null, messageError = null) {
-			return function (dispatch) {
+const fetchUser = function fetch(username, messageStart = null, messageSuccess = null, messageError = null) {
+	return function (dispatch) {
 
-			    dispatch( { type: key + '_FETCH_START', username: username, message: (messageStart || 'Fetch started...') } );
+		dispatch( { type: key + '_FETCH_START', pathOrId: username, message: (messageStart || 'Fetch started...') } );
 
-				    return UserOperations.getUser(username, { headers: {} })
-				    .then((response) => {
-				      dispatch( { type: key + '_FETCH_SUCCESS', message: messageSuccess, response: response, username: username } )
-				    }).catch((error) => {
-				        dispatch( { type: key + '_FETCH_ERROR', message: (messageError || error), username: username } )
-				    });
-			}
-		};
+			return UserOperations.getUser(username, { headers: {} })
+			.then((response) => {
+				dispatch( { type: key + '_FETCH_SUCCESS', message: messageSuccess, response: response, pathOrId: username } )
+			}).catch((error) => {
+				dispatch( { type: key + '_FETCH_ERROR', message: (messageError || error), pathOrId: username } )
+			});
+	}
+};
 
-const createUser =
-        function create(user) {
-			return function (dispatch) {
+const createUser = function create(user) {
+	return function (dispatch) {
 
-			    dispatch( { type: key + '_CREATE_START', user: user } );
+		dispatch( { type: key + '_CREATE_START', pathOrId: user.id, user: user } );
 
-                return UserOperations.createUser(user).then((response) => {
-                    dispatch( { type: key + '_CREATE_SUCCESS', message: 'User account created successfully!', response: response, user: user } )
-                }).catch((error) => {
-                    dispatch( { type: key + '_CREATE_ERROR', message: error, user: user } )
-                });
-			}
-		};
+		return UserOperations.createUser(user).then((response) => {
+			dispatch( { type: key + '_CREATE_SUCCESS', message: 'User account created successfully!', response: response, user: user, pathOrId: user.id } )
+		}).catch((error) => {
+			dispatch( { type: key + '_CREATE_ERROR', message: error, user: user, pathOrId: user.id } )
+		});
+	}
+};
 
-const inviteUser = RESTActions.execute('FV_USER_INVITE', 'User.Invite', { reducerIdOverride: 'test' });
+const updateUser = function update(user) {
+	return function (dispatch) {
 
-const updateUser = null;
-const deleteUser = null;
+		dispatch( { type: key + '_UPDATE_START', user: user, pathOrId: user.id } );
+
+		return UserOperations.updateUser(user).then((response) => {
+			dispatch( { type: key + '_UPDATE_SUCCESS', message: 'User account updated successfully!', response: response, user: user, pathOrId: user.id } )
+		}).catch((error) => {
+			dispatch( { type: key + '_UPDATE_ERROR', message: error, user: user, pathOrId: user.id } )
+		});
+	}
+};
+
+const inviteUser = RESTActions.execute('FV_USER_INVITE', 'User.Invite', {});
+const userSuggestion = RESTActions.execute('FV_USER_SUGGESTION', 'UserGroup.Suggestion', { headers: { 'X-NXenrichers.document': '' } });
 
 const computeUserFetchFactory = RESTReducers.computeFetch('user');
-const computeUserDeleteFactory = RESTReducers.computeDelete('delete_user');
+const computeUserSuggestion = RESTReducers.computeOperation('user_suggestion');
+
 const computeUserInviteOperation = RESTReducers.computeOperation('user_invite');
 
-const actions = { fetchUser, createUser, inviteUser, deleteUser, updateUser };
+const actions = { fetchUser, userSuggestion, createUser, inviteUser, updateUser };
 
 const reducers = {
   computeUser: computeUserFetchFactory.computeUser,
-  computeUserInvite: computeUserInviteOperation.computeUserInvite,
-  computeDeleteUser: computeUserDeleteFactory.computeDeleteUser
+  computeUserSuggestion: computeUserSuggestion.computeUserSuggestion,
+  computeUserInvite: computeUserInviteOperation.computeUserInvite
 };
 
 const middleware = [thunk];

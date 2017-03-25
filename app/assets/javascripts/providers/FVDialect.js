@@ -78,6 +78,7 @@ const fetchDialect = function fetchDialect(pathOrId) {
 
 const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
+const queryDialect2 = RESTActions.query('FV_DIALECT2_QUERY', 'FVDialect', {});
 const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {});
 const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
@@ -86,9 +87,10 @@ const unpublishDialect = RESTActions.execute('FV_DIALECT2_UNPUBLISH', 'FVUnpubli
 const enableDialect = RESTActions.execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
 
-const actions = { fetchDialect, updateDialect2, fetchDialect2, publishDialect, publishDialectOnly, unpublishDialect, fetchDialects, fetchDialectStats, enableDialect, disableDialect };
+const actions = { fetchDialect, queryDialect2, updateDialect2, fetchDialect2, publishDialect, publishDialectOnly, unpublishDialect, fetchDialects, fetchDialectStats, enableDialect, disableDialect };
 
-const computeDialectQuery = RESTReducers.computeQuery('dialects');
+const computeDialectsQuery = RESTReducers.computeQuery('dialects');
+const computeDialectQuery = RESTReducers.computeQuery('dialect2_query');
 const computeDialectFetch = RESTReducers.computeFetch('dialect2');
 const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats');
 
@@ -118,7 +120,9 @@ const reducers = {
       break;
     }
   },
-  computeDialects: computeDialectQuery.computeDialects,
+
+  computeDialect2Query: computeDialectQuery.computeDialect2Query,
+  computeDialects: computeDialectsQuery.computeDialects,
   computeDialect2: computeDialectFetch.computeDialect2,
   computeDialectStats: computeDialectStatsOperation.computeDialectStats,
   computeDialectUnpublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
