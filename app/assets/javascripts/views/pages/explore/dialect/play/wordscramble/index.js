@@ -105,7 +105,7 @@ export default class Wordscramble extends Component {
 
     return <div className="wordscramble-game" style={containerStyle}>
             <h1 style={{...titleStyle, ...titleLogoStyle}}>Word Scramble</h1>
-              {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map
+              {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map(function(phrase,i) {
                 return <Scramble key={i} sentence={{
                     original: new List(selectn('properties.dc:title', phrase).split(' ')),
                     translation: selectn('properties.fv:definitions[0].translation', phrase),
