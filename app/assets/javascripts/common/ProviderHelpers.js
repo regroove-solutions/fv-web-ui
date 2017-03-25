@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import Immutable, { List, Map } from 'immutable';
+import StringHelpers from './StringHelpers'
 
 const toJSKeepId = function (js) {
   return typeof js !== 'object' || js === null ? js :
@@ -105,6 +106,42 @@ export default {
 
     return workspaceKey;
   },
+  getDialectGroups: function (aces = [], currentlyAssignedGroups = []) {
+
+        if (aces.length === 0)
+        {
+            return {
+              all: null,
+              new: null
+            };
+        }
+
+        // Generate list of groups this user can be added to
+        let allAvailableGroups = {};
+
+        // Generate list of all groups related to this dialect
+        let newAvailableGroups = {};
+
+        (aces).forEach(function(group, i) {
+            let groupArray = group.username.split('_');
+            if (group.username.match(/members|recorders|administrators/g) != null) {
+
+                let groupLabel = groupArray.map((group) => StringHelpers.toTitleCase(group)).join(' ');
+
+                allAvailableGroups[group.username] = groupLabel;
+
+                // If user is not already a memeber of this group, add to new available groups
+                if (currentlyAssignedGroups.indexOf(group.username) === -1) {
+                    newAvailableGroups[group.username] = groupLabel;
+                }
+            }
+        });
+
+        return {
+            all: allAvailableGroups,
+            new: newAvailableGroups
+        };
+  },
   replaceAllWorkspaceSectionKeys: function (string, area) {
 
     let searchKey = (area == 'sections') ? 'workspace' : 'section';
@@ -119,6 +156,11 @@ export default {
   filtersToNXQL: function (filterArray) {
 
     let nxqlFilterString = '';
+    let nxqlGroups = {};
+
+    const generateNXQLString = function(nxql, appliedFilter) {
+      return nxql.replace(/\$\{value\}/g, appliedFilter);
+    }
 
     for (let appliedFilterKey in filterArray) {
         let ak = Object.assign({}, filterArray[appliedFilterKey]);
@@ -127,11 +169,25 @@ export default {
             if (ak.appliedFilter === true) (ak.appliedFilter = 1);
             if (ak.appliedFilter === false) (ak.appliedFilter = 0);
 
-            nxqlFilterString += ' AND ' + ak.filterOptions.nxql.replace(/\$\{value\}/g, ak.appliedFilter);
+            if (!ak.filterOptions.hasOwnProperty('nxqlGroup')) {
+              nxqlFilterString += ' ' + (ak.filterOptions.hasOwnProperty('operator') ? ak.filterOptions.operator : 'AND') + ' ' + generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter);
+            } else { 
+              if (nxqlGroups.hasOwnProperty(ak.filterOptions.nxqlGroup) && nxqlGroups[ak.filterOptions.nxqlGroup].length > 0) {
+                nxqlGroups[ak.filterOptions.nxqlGroup].push(generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter));
+              } else {
+                nxqlGroups[ak.filterOptions.nxqlGroup] = [generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter)];
+              }
+            }
         }
     }
 
-    return (!nxqlFilterString || nxqlFilterString.length == 0) ? '' : nxqlFilterString;
+    let appendGroupNXQL = '';
+
+    for (var key in nxqlGroups) {
+      appendGroupNXQL += ' AND (' + nxqlGroups[key].join(' OR ') + ')'
+    }
+
+    return nxqlFilterString + appendGroupNXQL;
   },
   regex: {
     ANYTHING_BUT_SLASH : "([^/]*)",
