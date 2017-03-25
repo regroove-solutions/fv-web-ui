@@ -18,14 +18,16 @@ import Immutable, { List, Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import PortalList from 'views/components/Browsing/portal-list'
 
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+const FilteredPortalList = withFilter(PortalList);
 
 /**
 * Explore Archive page shows all the families in the archive
@@ -52,13 +54,16 @@ export default class ExploreFamily extends Component {
   constructor(props, context){
     super(props, context);
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    this.state = {
+      filteredList: null
+    };
+
+    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    this.props.fetchLanguageFamily(newProps.routeParams.language_family_path);
-    this.props.fetchLanguages(newProps.routeParams.language_family_path);
+    newProps.fetchLanguageFamily(newProps.routeParams.language_family_path);
+    newProps.fetchLanguages(newProps.routeParams.language_family_path);
   }
 
   // Fetch data on initial render
@@ -77,6 +82,12 @@ export default class ExploreFamily extends Component {
     this.props.pushWindowPath('/explore' + path);
   }
 
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
+  }
+
   render() {
 
     const pathOrId = this.props.routeParams.language_family_path;
@@ -92,34 +103,24 @@ export default class ExploreFamily extends Component {
     const computeLanguages = ProviderHelpers.getEntry(this.props.computeLanguages, pathOrId);
     const computeLanguageFamily = ProviderHelpers.getEntry(this.props.computeLanguageFamily, pathOrId);
 
+    let portalListProps = {
+      action: this._onNavigateRequest,
+      filterOptionsKey: 'Default',
+      fixedList: true,
+      area: this.props.routeParams.area,
+      fixedListFetcher: this.fixedListFetcher,
+      filteredItems: this.state.filteredList,
+      metadata: selectn('response', computeLanguages),
+      items: selectn('response.entries', computeLanguages) || []
+    };
+
     return <PromiseWrapper computeEntities={computeEntities}>
-              <div className="row">
-                <div className="col-md-4 col-xs-12">
-                  <h1>{selectn('title', computeLanguageFamily)}</h1>
-                  <div>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                  </div>
-                </div>
-                <div className="col-md-8 col-xs-12">
-                    <h2>Browse the following Languages:</h2>
-                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                      <GridList
-                        cols={2}
-                        cellHeight={200}
-                        style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                        >
-                          {(selectn('response.entries', computeLanguages) || []).map((tile, i) => 
-                            <GridTile
-                              onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                              key={tile.uid}
-                              title={tile.title}
-                              subtitle={tile.description}
-                              ><img src="/assets/images/cover.png" /></GridTile>
-                          )}
-                      </GridList>
-                    </div>
-                </div>
+             <div className="row">
+               
+              <div className="col-xs-12">
+                  <h1>{selectn('response.properties.dc:title', computeLanguageFamily)} &raquo; Languages</h1>
+                  <FilteredPortalList {...portalListProps} />
+              </div>
             </div>
           </PromiseWrapper>;
   }
