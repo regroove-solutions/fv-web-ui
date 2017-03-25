@@ -42,6 +42,10 @@ export default class DocumentOperations extends BaseOperations {
           if (error.hasOwnProperty('response')) {
             error.response.json().then(
               (jsonError) => {
+                if (jsonError.hasOwnProperty('status') && jsonError.status == '404') {
+                  jsonError.message = jsonError.message + ' (404 - Document Not Found)';
+                }
+
                 reject(StringHelpers.extractErrorMessage(jsonError));
               }
             );
