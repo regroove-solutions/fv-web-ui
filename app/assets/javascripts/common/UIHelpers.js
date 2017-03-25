@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import ConfGlobal from 'conf/local.json';
+import selectn from 'selectn';
+
 export default {
   renderComplexArrayRow(dataItems = [], render) {
       let rows = [];
@@ -32,5 +36,42 @@ export default {
       }}>
           {rows}
       </ul>;
+  },
+  getPreferenceVal(key, preferences) {
+      return selectn('preferences.values.' + key + '.' + selectn(key, preferences), ConfGlobal);
+  },
+  getThumbnail(imgObj, view = 'Thumbnail', returnObj = false) {
+
+      let i = 0;
+
+      switch (view) {
+          case 'Thumbnail': 
+            i = 0;
+          break;
+
+          case 'Small': 
+            i = 1;
+          break;
+
+          case 'Medium': 
+            i = 2;
+          break;
+
+          case 'OriginalJpeg': 
+            i = 3;
+          break;
+      }
+
+      if (selectn('views[' + i + ']', imgObj)) {
+        return (returnObj) ? selectn('views[' + i + ']', imgObj) : selectn('views[' + i + '].url', imgObj);
+      } else if (selectn('properties.picture:views[' + i + ']', imgObj)) {
+        return (returnObj) ? selectn('properties.picture:views[' + i + ']', imgObj) : selectn('properties.picture:views[' + i + '].content.data', imgObj);
+      } else if (selectn('properties.file:content.data', imgObj)) {
+        return (returnObj) ? selectn('properties.file:content.data', imgObj) : selectn('properties.file:content.data', imgObj);
+      } else if (selectn('path', imgObj)) {
+        return ConfGlobal.baseURL + selectn('path', imgObj);
+      }
+
+      return '/assets/images/cover.png';
   }
 }
