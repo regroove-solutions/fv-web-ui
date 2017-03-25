@@ -19,6 +19,8 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import GridTile from 'material-ui/lib/grid-list/grid-tile';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
@@ -43,7 +45,8 @@ export default class ListView extends DataListView {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
     DEFAULT_SORT_TYPE: 'asc',
-    filter: new Map()
+    filter: new Map(),
+    gridListView: false
   }
 
   static propTypes = {
@@ -59,6 +62,9 @@ export default class ListView extends DataListView {
     routeParams: PropTypes.object.isRequired,
     filter: PropTypes.object,
     data: PropTypes.string,
+    gridListView: PropTypes.bool,
+    gridListTile: PropTypes.func,
+    pagination: PropTypes.bool,
 
     DISABLED_SORT_COLS: PropTypes.array,
     DEFAULT_PAGE: PropTypes.number,
@@ -145,14 +151,17 @@ export default class ListView extends DataListView {
                                 objectDescriptions="characters" 
                                 type="FVCharacter"
                                 data={computeCharacters}
+                                gridListView={this.props.gridListView}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}
                                 onSelectionChange={this._onEntryNavigateRequest}
                                 page={this.state.pageInfo.page}
                                 pageSize={this.state.pageInfo.pageSize}
                                 onColumnOrderChange={this._handleColumnOrderChange}
+                                pagination={this.props.pagination}
                                 columns={this.state.columns}
                                 sortInfo={this.state.sortInfo.uiSortOrder}
+                                gridListTile={this.props.gridListTile}
                                 className="browseDataGrid" 
                                 dialect={selectn('response', computeDialect2)} />;
                 }

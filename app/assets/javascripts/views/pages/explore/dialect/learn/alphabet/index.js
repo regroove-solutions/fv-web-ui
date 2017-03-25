@@ -25,11 +25,32 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view';
 
+import GridTile from 'material-ui/lib/grid-list/grid-tile';
+
+class AlphabetGridTile extends Component {
+
+  constructor(props) {
+    super(props)
+  }
+
+  render() {
+    return <GridTile key={selectn('uid', this.props.tile)} style={{border: '3px solid #e0e0e0', borderRadius: '5px', textAlign: 'center', paddingTop: '15px'}}>
+      <span style={{fontSize: '2em'}}>{selectn('properties.fvcharacter:upper_case_character', this.props.tile)} {selectn('properties.dc:title', this.props.tile)}</span><br/><br/>
+      <strong style={{fontSize: '1.3em'}}>{selectn('contextParameters.character.related_words[0].dc:title', this.props.tile)}</strong><br/>
+      {selectn('contextParameters.character.related_words[0].fv:definitions[0].translation', this.props.tile) || selectn('contextParameters.character.related_words[0].fv:literal_translation[0].translation', this.props.tile)}
+    </GridTile>;
+  }
+}
+
 /**
 * Learn alphabet
 */
 @provide
 export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
+
+  static defaultProps = {
+    print: false
+  }
 
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
@@ -39,7 +60,8 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired,
+    print: PropTypes.bool
   };
 
   constructor(props, context) {
@@ -63,12 +85,25 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
+    const alphabetListView = <AlphabetListView pagination={false} routeParams={this.props.routeParams} />;
+
+    if (this.props.print) {
+      return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <div className="row">
+                <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
+                {React.cloneElement(alphabetListView, { gridListView: true, gridListTile: AlphabetGridTile })}
+                </div>
+            </div>
+            
+            </PromiseWrapper>;
+    }
+
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
               <div className="row">
                 <div className={classNames('col-xs-12')}>
                   <h1>{selectn('response.title', computeDialect2)} Alphabet</h1>
-                  <AlphabetListView
-                    routeParams={this.props.routeParams} />
+                  {alphabetListView}
                 </div>
               </div>
         </PromiseWrapper>;
