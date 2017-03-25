@@ -95,7 +95,7 @@ export default class Edit extends Component {
       nextPhraseBook = ProviderHelpers.getEntry(nextProps.computeCategory, this.state.phraseBookPath);
     }
 
-    // 'Redirect' or complete on success
+    // Complete on success
     if (selectn('wasUpdated', currentPhraseBook) != selectn('wasUpdated', nextPhraseBook) && selectn('wasUpdated', nextPhraseBook) === true) {
       if (nextProps.onDocumentCreated) {
         nextProps.onDocumentCreated(selectn('response', nextPhraseBook));

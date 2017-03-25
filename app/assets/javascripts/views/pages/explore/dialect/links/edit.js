@@ -95,9 +95,11 @@ export default class Edit extends Component {
       nextLink = ProviderHelpers.getEntry(nextProps.computeLink, this.state.linkPath);
     }
 
-    // 'Redirect' on success
+    // Complete on success
     if (selectn('wasUpdated', currentLink) != selectn('wasUpdated', nextLink) && selectn('wasUpdated', nextLink) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextLink).replace('Dictionary', 'learn/links'));
+      if (nextProps.onDocumentCreated) {
+        nextProps.onDocumentCreated(selectn('response', nextLink));
+      }
     }
   }
 
@@ -193,7 +195,7 @@ export default class Edit extends Component {
         saveMethod={this._handleSave}
         cancelMethod={this._handleCancel}
         currentPath={this.props.splitWindowPath}
-        navigationMethod={this.props.replaceWindowPath}
+        navigationMethod={() => {}}
         type="FVLink"
         routeParams={this.props.routeParams} />
 
