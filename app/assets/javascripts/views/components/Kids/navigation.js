@@ -177,7 +177,7 @@ export default class Navigation extends Component {
 
             <ToolbarSeparator style={{float: 'none', marginLeft: '10px', marginRight: '10px'}} />
 
-            <IconButton style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/')} tooltipPosition="bottom-left" tooltip={"Back to Main Site"}>clear</IconButton>
+            <IconButton style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/home')} tooltipPosition="bottom-left" tooltip={"Back to Main Site"}>clear</IconButton>
 
           </ToolbarGroup>
 

@@ -24,13 +24,6 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
-
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
-
-import PortalList from 'views/components/Browsing/portal-list';
-
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -39,8 +32,6 @@ export default class PageKidsHome extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    fetchPortals: PropTypes.func.isRequired,
-    computePortals: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired
   };
 
@@ -59,30 +50,11 @@ export default class PageKidsHome extends Component {
     ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  fetchData(newProps) {
-    const pathOrId = '/' + newProps.properties.domain + '/sections';
-
-    this.props.fetchPortals(pathOrId);
-    this.setState({pathOrId})
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
   _onNavigateRequest(path) {
     this.props.pushWindowPath('/kids' + path);
   }
 
   render() {
-
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.pathOrId,
-      'entity': this.props.computePortals
-    }])
-
-    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
 
     const homePageStyle = {
       position: 'relative',
@@ -94,7 +66,7 @@ export default class PageKidsHome extends Component {
       marginTop: '25px'
     }
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <div>
             <div className="container-fluid">
              <div className="row" style={homePageStyle}>
               <div className={classNames('col-xs-3', 'col-md-4', 'text-right')}>
@@ -110,6 +82,6 @@ export default class PageKidsHome extends Component {
               </div>
              </div>
             </div>
-          </PromiseWrapper>;
+          </div>;
   }
 }
