@@ -14,9 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+
+import Immutable, { List } from 'immutable';
 import classNames from 'classnames';
 import selectn from 'selectn';
+
+import UIHelpers from 'common/UIHelpers';
+
 
 import DOMPurify from 'dompurify';
 import * as topojson from "topojson-client";
@@ -34,6 +38,15 @@ import IconButton from 'material-ui/lib/icon-button';
 import FlatButton from 'material-ui/lib/flat-button';
 
 import CanadaTopoJSON from 'json-loader!models/data/canada.topojson';
+import CanadaGeoJSON from 'json-loader!models/data/map.geojson';
+
+import { Map, Marker, Popup, Tooltip, TileLayer, GeoJSON } from 'react-leaflet';
+
+import L from 'leaflet';
+
+require('!style-loader!css-loader!leaflet/dist/leaflet.css');
+
+const position = [64.4115405, -110.5384721];
 
 const defaultStyle = {marginBottom: '20px'};
 
@@ -109,18 +122,20 @@ export default class Index extends Component {
     super(props, context);
 
     let path = d3.geo.path().projection(d3.geo.conicEqualArea()
-    .scale(254.95512216068207)
+    .scale(24.8653664820463)
     .center([-96.64130229352139,60.53857675138788]) //projection center
     .parallels([41.9714969544088,83.14808593636062]) //parallels for conic projection
     .rotate([96.64130229352139]) //rotation for conic projection
-    .translate([-7.9648681948011415,-4.367192739990202]));
+    .translate([-73.89460458440345,-13.101578219970634]));
 
     this.state = {
       path: path,
-      width: 400,
-      height: 200,
+      width: 800,
+      height: 700,
       translate: [0,0],
-      scale: 1
+      scale: 1,
+      zoom: 1,
+      currentBounds: [[83.100354, -144.257421], [40.677028, -47.828260]]
     };
 
     ['_zoom'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -131,10 +146,11 @@ export default class Index extends Component {
 
   _zoom(d) {
 
-    let scale1 = 0;
-    let scale2 = 0;
-    let scale3 = 1;
-    let scaleMax = [0,0]
+    let scale1;
+    let scale2;
+    let scale3;
+    let scaleMax;
+
     let province = d.properties.CODE;
 
     switch(province) {
@@ -144,11 +160,15 @@ export default class Index extends Component {
         scale3 = 1.1;
         scaleMax = [111,111];
       break; 
+
+      default: 
+        return;
+      break;
     }
 
 
     this.setState({
-path:d3.geo.path().projection(d3.geo.conicEqualArea()
+      path:d3.geo.path().projection(d3.geo.conicEqualArea()
     .scale(764.8653664820463)
     .center([-96.64130229352139,60.53857675138788]) //projection center
     .parallels([41.9714969544088,83.14808593636062]) //parallels for conic projection
@@ -193,9 +213,58 @@ var centered;
     .on("click",this._zoom);
 
   let svgToRender = svg.node().toReact();
+// maxBounds={[[83.100354, -144.257421], [40.677028, -47.828260]]}
+// minZoom={2.2}
+    return <Map center={position} onZoom={ (e) => this.setState({zoom: e.target._zoom}) } zoom={this.state.zoom} bounds={this.state.currentBounds}>
+        <GeoJSON
+            style={function(feature) {
+                switch (selectn('properties.CODE', feature)) {
+                    case 'BC': return {color: "#ff0000"};
+                    case 'YT':   return {color: "#0000ff"};
+                }
+            }}
+            onEachFeature={function (feature, layer) {
+              //layer.bindPopup('Hello world!');
+              layer.bindTooltip(selectn('properties.NAME', feature));
+              layer.on('click', function(e) {
+                //console.log(feature);
+                //console.log(e.target.getBounds());
+                this.setState({
+                  //zoom: this.state.zoom * 2,
+                  currentBounds: e.target.getBounds()
+                })
+              }.bind(this))
+            }.bind(this)}
+            data={CanadaGeoJSON} />
+        <TileLayer
+          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        />
 
-    return <div className="map-component" style={this.props.style}>
-          {svgToRender}
-    </div>;
+        {(this.props.dialects || []).map(function(dialect, i) {
+
+          let myIcon = L.icon({
+              iconUrl: UIHelpers.getThumbnail(selectn('contextParameters.portal.fv-portal:logo', dialect), 'Thumbnail') || '/assets/images/cover.png',
+              iconSize: [25, 25],
+          });
+
+          let location = '';
+          let region = selectn('contextParameters.ancestry.dialect.fvdialect:region', dialect);
+          let country = selectn('contextParameters.ancestry.dialect.fvdialect:country', dialect);
+
+          if (country && region) {
+            location = region + ', ' + country;
+          } else if (region) {
+            location = region;
+          }
+
+          return <Marker icon={myIcon} position={[53.293064 * i, -132.218825 * i]}>
+            <Popup>
+              <span>{selectn('contextParameters.ancestry.dialect.dc:title', dialect)}<br/>{location}<br/><a href={"/explore" + selectn('contextParameters.ancestry.dialect.path', dialect)}>Go To Dialect</a></span>
+            </Popup>
+          </Marker>;
+        })}
+
+      </Map>;
   }
 }

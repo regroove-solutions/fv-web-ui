@@ -21,25 +21,25 @@ export default class GetStarted extends React.Component {
 
     return <div className="row">
             <div className="col-md-8 col-xs-12">
-              <h2>Get Started</h2>
-              <p>Some text here</p>
-              <h3>Recommended fonts</h3>
-              <p>Due to FirstVoices' use of Unicode font technology, one or more of the following fonts are recommended to ensure correct character representation: Aboriginal Sans Serif, Aboriginal Serif, Lucida Grande (bundled with Mac OSX) , Lucida Sans Unicode (comes with Windows), Gentium, Code2001. FirstVoices also uses the Quicktime video player. Download the free plug-in here: QuickTime</p>
-              <p>FirstVoices Audio Recording Buyer's Guide - view our online audio equipment guide</p>
-              <h2>Getting Started</h2>
-              <p>Some getting started information could go here.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
+              <h2>What is FirstVoices?</h2>
+              <p>FirstVoices is a suite of web-based tools and services designed to support Aboriginal people engaged in language archiving, language teaching &amp; culture revitalization.</p>
+              <p>The FirstVoices Language Archive contains thousands of text entries in many diverse Aboriginal writing systems, enhanced with sounds, pictures and videos.</p>
+              <p>A companion set of interactive online games is designed to present the archived FirstVoices language data in creative learning activities.</p>
+              <p>Some language archives at FirstVoices are publicly accessible, while others are password protected at the request of the language community.</p>
+
+              <h3>Donate to FirstVoices </h3>
+
+              <p>
+                We gratefully accept donations to FirstVoices.<br/>For more information, please contact the First Peoples' Cultural Foundation at www.fpcf.ca.</p>
+                <p>Hy'chka, Gilakas'la, Kleco-Kleco, Thank You!</p>
+                <p>We gratefully acknowledge support from the New Relationship Trust, TELUS, the Department of Canadian Heritage, and the Government of British Columbia.</p>
             </div>
             <div className="col-md-4 col-xs-12">
-              <h2>News</h2>
-              <p>Some getting started information could go here.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
-              <p>Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum. Lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum.</p>
-              <h2>Map Navigation</h2>
-              <p>Map here</p>
+              <h2>Contact Us</h2>
+              <p>Aboriginal communities interested in archiving and teaching their languages using the FirstVoices multimedia language tools are invited to contact the FirstVoices team:</p>
+              <p>Alex Wadsworth, I.T., FirstVoices and Mapping Manager<br/>
+              Telephone: (250) 652-5952 ext. 205<br/>
+              Email: (alex@firstvoices.com)</p>
             </div>
           </div>;
   }
