@@ -27,25 +27,25 @@ import UIHelpers from 'common/UIHelpers';
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view';
-
 import Preview from 'views/components/Editor/Preview';
 
 /**
-* List view for words
+* List view for contributors
 */
 @provide
 export default class ListView extends DataListView {
   
   static defaultProps = {
-    DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
+    DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
-    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
-    gridListView: false
+    gridListView: false,
+    gridCols: 4
   }
 
   static propTypes = {
@@ -55,14 +55,15 @@ export default class ListView extends DataListView {
     pushWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
+    fetchContributors: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     dialect: PropTypes.object,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
+    computeContributors: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
     filter: PropTypes.object,
     data: PropTypes.string,
     gridListView: PropTypes.bool,
+    gridCols: PropTypes.number,
     action: PropTypes.func,
 
     DISABLED_SORT_COLS: PropTypes.array,
@@ -77,47 +78,10 @@ export default class ListView extends DataListView {
 
     this.state = {
       columns : [
-        { name: 'title', title: 'Word', render: function(v, data, cellProps){
-          //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
-          return v;
-        }, sortName: 'fv:custom_order'},
-        /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
-            });
-          }.bind(this), sortName: 'fv:definitions/0/translation'
-        },*/
-        { name: 'related_pictures', width: 72, textAlign: 'center', title: 'Picture', render: function(v, data, cellProps) {
-            let firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
-            if (firstPicture)
-              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')} />;
-          }.bind(this)
-        },
-        { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
-            let firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
-            if (firstAudio)
-              return <Preview minimal={true} tagStyles={{width: '300px', maxWidth:'100%'}} key={selectn('uid', firstAudio)} expandedValue={firstAudio} type="FVAudio" />;
-          }.bind(this)
-        },
-        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
-            }.bind(this));
-          }.bind(this),
-          sortName: 'fv:literal_translation/0/translation'
-        },
-        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
-        { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('contextParameters.word.categories', data), function (entry, i) {
-                return <li key={i}>{selectn('dc:title', entry)}</li>;
-            });
-          }.bind(this)
-        },
-        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } }
+        { name: 'title', title: 'Contributor', render: function(v, data, cellProps){ return v; }},
+        { name: 'dc:description', title: 'Short Profile', render: function(v, data, cellProps) {
+          return selectn('properties.dc:description', data);
+        }}
       ],
       sortInfo: {
         uiSortOrder: [], 
@@ -127,11 +91,12 @@ export default class ListView extends DataListView {
       pageInfo: {
         page: this.props.DEFAULT_PAGE,
         pageSize: this.props.DEFAULT_PAGE_SIZE
-      }
+      },
+      contributorsPath: props.routeParams.dialect_path + '/Contributors'
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns', '_fetchListViewData'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -145,7 +110,7 @@ export default class ListView extends DataListView {
     if (this.props.action) {
       this.props.action(item);
     } else {
-      this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/words'));
+      //this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'words/contributors/' + item.uid));
     }
   }  
 
@@ -157,7 +122,7 @@ export default class ListView extends DataListView {
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
 
-    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    props.fetchContributors(this.state.contributorsPath,
     currentAppliedFilter + 
     '&currentPageIndex=' + (pageIndex - 1) + 
     '&pageSize=' + pageSize + 
@@ -169,24 +134,25 @@ export default class ListView extends DataListView {
   render() {
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Dictionary',
-      'entity': this.props.computeWords
+      'id': this.state.contributorsPath,
+      'entity': this.props.computeContributors
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+    const computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.state.contributorsPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
                 {(() => {
-                if (selectn('response.entries', computeWords)) {
+                if (selectn('response.entries', computeContributors)) {
 
                     return <DocumentListView
-                                objectDescriptions="words" 
-                                type="FVWord"
-                                data={computeWords}
+                                objectDescriptions="contributors" 
+                                type="FVContributor"
+                                data={computeContributors}
+                                gridCols={this.props.gridCols}
                                 gridListView={this.props.gridListView}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}

@@ -27,25 +27,25 @@ import UIHelpers from 'common/UIHelpers';
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view';
-
 import Preview from 'views/components/Editor/Preview';
 
 /**
-* List view for words
+* List view for categories
 */
 @provide
 export default class ListView extends DataListView {
   
   static defaultProps = {
-    DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
+    DISABLED_SORT_COLS: ['state', 'parent'],
     DEFAULT_PAGE: 1,
-    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
-    gridListView: false
+    gridListView: false,
+    gridCols: 4
   }
 
   static propTypes = {
@@ -55,14 +55,16 @@ export default class ListView extends DataListView {
     pushWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
     dialect: PropTypes.object,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
+    computeCategories: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
+    categoriesPath: PropTypes.string.isRequired,
     filter: PropTypes.object,
     data: PropTypes.string,
     gridListView: PropTypes.bool,
+    gridCols: PropTypes.number,
     action: PropTypes.func,
 
     DISABLED_SORT_COLS: PropTypes.array,
@@ -77,47 +79,11 @@ export default class ListView extends DataListView {
 
     this.state = {
       columns : [
-        { name: 'title', title: 'Word', render: function(v, data, cellProps){
-          //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
-          return v;
-        }, sortName: 'fv:custom_order'},
-        /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
-            });
-          }.bind(this), sortName: 'fv:definitions/0/translation'
-        },*/
-        { name: 'related_pictures', width: 72, textAlign: 'center', title: 'Picture', render: function(v, data, cellProps) {
-            let firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
-            if (firstPicture)
-              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')} />;
-          }.bind(this)
-        },
-        { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
-            let firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
-            if (firstAudio)
-              return <Preview minimal={true} tagStyles={{width: '300px', maxWidth:'100%'}} key={selectn('uid', firstAudio)} expandedValue={firstAudio} type="FVAudio" />;
-          }.bind(this)
-        },
-        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-              if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
-                return <li key={i}>{entry.translation}</li>;
-              }
-            }.bind(this));
-          }.bind(this),
-          sortName: 'fv:literal_translation/0/translation'
-        },
-        { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
-        { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
-            return UIHelpers.renderComplexArrayRow(selectn('contextParameters.word.categories', data), function (entry, i) {
-                return <li key={i}>{selectn('dc:title', entry)}</li>;
-            });
-          }.bind(this)
-        },
-        { name: 'fv-word:part_of_speech', title: 'Part of Speech', render: function(v, data, cellProps) { return selectn('contextParameters.word.part_of_speech', data); } }
+        { name: 'title', title: 'Category', render: function(v, data, cellProps){ return v; }},
+        { name: 'parent', title: 'Parent Category', render: function(v, data, cellProps) {
+          let parentCategory = selectn('contextParameters.parentDoc.title', data);
+          return (parentCategory === 'Shared Categories') ? '' : parentCategory;
+        }},
       ],
       sortInfo: {
         uiSortOrder: [], 
@@ -145,7 +111,7 @@ export default class ListView extends DataListView {
     if (this.props.action) {
       this.props.action(item);
     } else {
-      this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/words'));
+      this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'words/categories/' + item.uid));
     }
   }  
 
@@ -157,7 +123,7 @@ export default class ListView extends DataListView {
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
 
-    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    props.fetchCategories(this.props.categoriesPath,
     currentAppliedFilter + 
     '&currentPageIndex=' + (pageIndex - 1) + 
     '&pageSize=' + pageSize + 
@@ -169,24 +135,25 @@ export default class ListView extends DataListView {
   render() {
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Dictionary',
-      'entity': this.props.computeWords
+      'id': this.props.categoriesPath,
+      'entity': this.props.computeCategories
     },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.props.categoriesPath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
                 {(() => {
-                if (selectn('response.entries', computeWords)) {
+                if (selectn('response.entries', computeCategories)) {
 
                     return <DocumentListView
-                                objectDescriptions="words" 
-                                type="FVWord"
-                                data={computeWords}
+                                objectDescriptions="categories" 
+                                type="FVCategory"
+                                data={computeCategories}
+                                gridCols={this.props.gridCols}
                                 gridListView={this.props.gridListView}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}

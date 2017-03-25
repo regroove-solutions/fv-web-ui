@@ -54,7 +54,8 @@ export default class Categories extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
-    routeParams: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired,
+    action: PropTypes.func
   };
 
   /*static contextTypes = {
@@ -107,7 +108,11 @@ export default class Categories extends Component {
   }
 
   _onNavigateRequest(category) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/phrases/categories/' + category.uid);
+    if (this.props.action) {
+      this.props.action(category);
+    } else {
+      this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/phrases/categories/' + category.uid);
+    }
   }
 
   render() {

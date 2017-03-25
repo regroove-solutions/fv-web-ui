@@ -42,6 +42,7 @@ export default class ListView extends DataListView {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'fv:custom_order',
     DEFAULT_SORT_TYPE: 'asc',
+    dialect: null,
     filter: new Map(),
     gridListView: false,
     gridCols: 4
@@ -56,12 +57,14 @@ export default class ListView extends DataListView {
     fetchDialect2: PropTypes.func.isRequired,
     fetchPhrases: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
+    dialect: PropTypes.object,
     computePhrases: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
     filter: PropTypes.object,
     data: PropTypes.string,
     gridListView: PropTypes.bool,
     gridCols: PropTypes.number,
+    action: PropTypes.func,
 
     DISABLED_SORT_COLS: PropTypes.array,
     DEFAULT_PAGE: PropTypes.number,
@@ -91,7 +94,7 @@ export default class ListView extends DataListView {
         { name: 'related_pictures', width: 72, textAlign: 'center', title: 'Picture', render: function(v, data, cellProps) {
             let firstPicture = selectn('contextParameters.phrase.' + cellProps.name + '[0]', data);
             if (firstPicture)
-              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={selectn('views[0].url', firstPicture)} />;
+              return <img style={{maxWidth: '62px', maxHeight: '45px'}} key={selectn('uid', firstPicture)} src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')} />;
           }.bind(this)
         },
         { name: 'related_audio', title: 'Audio', render: function(v, data, cellProps) {
@@ -123,12 +126,18 @@ export default class ListView extends DataListView {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    if (newProps.dialect == null) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
   _onEntryNavigateRequest(item) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/phrases'));
+    if (this.props.action) {
+      this.props.action(item);
+    } else {
+      this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/phrases'));
+    }
   }  
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
