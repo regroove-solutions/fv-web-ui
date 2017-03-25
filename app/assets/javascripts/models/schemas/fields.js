@@ -4,10 +4,24 @@ import Dublincore from 'models/schemas/Dublincore';
 import FVCore from 'models/schemas/FVCore';
 import FVMedia from 'models/schemas/FVMedia';
 
+import ConfGlobal from 'conf/local.json';
+
 // Very basic email validation
 var Email = t.subtype(t.Str, function (s) {
   return /^(?:[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+\.)*[\w\!\#\$\%\&\'\*\+\-\/\=\?\^\`\{\|\}\~]+@(?:(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!\.)){0,61}[a-zA-Z0-9]?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9\-](?!$)){0,61}[a-zA-Z0-9]?)|(?:\[(?:(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\.){3}(?:[01]?\d{1,2}|2[0-4]\d|25[0-5])\]))$/.test(s);
 });
+
+var UserPreferences = t.maybe(t.struct({
+  General: t.maybe(t.struct({
+    primary_dialect: t.String
+  })),
+  Navigation: t.maybe(t.struct({
+    start_page: t.enums(ConfGlobal.preferences.fields.start_page)
+  })),
+  Theme: t.maybe(t.struct({
+    font_size: t.enums(ConfGlobal.preferences.fields.font_size)
+  }))
+}));
 
 const fields = {
   FVWord: Object.assign({}, Dublincore, FVCore, {
@@ -55,9 +69,11 @@ const fields = {
     'fv-portal:greeting': t.String,
     'fv-portal:featured_audio' : t.maybe(t.String),
     'fv-portal:about': t.String,
+    'fv-portal:news': t.maybe(t.String),
     'fv-portal:background_top_image' : t.String,
     'fv-portal:logo' : t.String,
-    'fv-portal:featured_words' : t.list(t.String)
+    'fv-portal:featured_words' : t.list(t.String),
+    'fv-portal:related_links': t.list(t.String)
   },
   FVGallery: Object.assign({}, Dublincore, {
 	'fv:related_pictures' : t.list(t.String)
@@ -71,6 +87,7 @@ const fields = {
     'fvdialect:country' : t.String,
     'fvdialect:dominant_language' : t.String,
     'fvdialect:region' : t.String,
+    'fvdialect:keyboards' : t.list(t.String),
     'fvdialect:contact_information' : t.String
   }),
   FVCharacter: Object.assign({}, {
@@ -85,7 +102,18 @@ const fields = {
     'userinfo:lastName': t.String,
     'userinfo:email': Email,
     'fvuserinfo:requestedSpace': t.String
-  }
+  },
+  FVUserProfile: {
+    'firstName': t.String,
+    'lastName': t.String,
+    'email': Email,
+    'preferences': UserPreferences
+  },
+  FVLink: Object.assign({}, Dublincore, {
+    'dc:description': t.maybe(t.String),
+    'fvlink:url': t.maybe(t.String)/*,
+    'file:content': t.maybe(t.form.File)*/
+  })
 }
 
 export default fields;
