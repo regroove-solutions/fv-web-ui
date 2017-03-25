@@ -101,6 +101,10 @@ module.exports = function(env) {
           use: ["url-loader?limit=10000&minetype=application/octet-stream"]
         },
         {
+          test: /\.(jpg|jpeg|png|gif)$/,
+          loader: 'file-loader'
+        },
+        {
           test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
           use: ["file-loader"]
         },
