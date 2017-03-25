@@ -8,10 +8,12 @@ import FVLanguageFamily from './FVLanguageFamily';
 import FVLanguage from './FVLanguage';
 import FVDialect from './FVDialect';
 import FVPortal from './FVPortal';
+import FVPage from './FVPage';
 import FVWord from './FVWord';
 import FVPhrase from './FVPhrase';
 import FVBook from './FVBook';
 import FVContributor from './FVContributor';
+import FVLink from './FVLink';
 import FVCategory from './FVCategory';
 import FVAudio from './FVAudio';
 import FVPicture from './FVPicture';
@@ -38,6 +40,7 @@ const providers = { page,
   FVLanguage,
   FVDialect,
   FVPortal,
+  FVPage,
   FVAudio,
   FVVideo,
   FVPicture,
@@ -47,6 +50,7 @@ const providers = { page,
   FVBook,
   FVCategory,
   FVContributor,
+  FVLink,
   FVCharacter,
   FVGallery,
   FVUser,
