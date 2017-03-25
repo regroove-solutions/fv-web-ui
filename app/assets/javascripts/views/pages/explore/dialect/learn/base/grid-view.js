@@ -30,6 +30,7 @@ import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow';
 import AVStop from 'material-ui/lib/svg-icons/av/stop';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 export default class GridView extends Component {
 
@@ -44,7 +45,8 @@ export default class GridView extends Component {
     ]),
     action: PropTypes.func,
     cols: PropTypes.number,
-    type: PropTypes.string
+    type: PropTypes.string,
+    gridListTile: PropTypes.func,
   };
 
   static defaultProps = {
@@ -135,6 +137,10 @@ export default class GridView extends Component {
                 >
                   {(items).map(function (tile, i) { 
 
+                    if (this.props.gridListTile) {
+                      return React.createElement(this.props.gridListTile, { key: tile.uid, tile: tile });
+                    }
+
                     let audioIcon, audioCallback = null;
                     let definitionsHTML, literal_translationsHTML;
 
@@ -143,9 +149,7 @@ export default class GridView extends Component {
                     let literal_translations = selectn('properties.fv:literal_translation', tile);
 
                     let audio = selectn('contextParameters.' + single + '.related_audio[0].path', tile);
-
-                    let thumbnail = selectn('contextParameters.' + single + '.related_pictures[0].views[1].url', tile);
-                    let original = selectn('contextParameters.' + single + '.related_pictures[0].views[3].url', tile);
+                    let imageObj = selectn('contextParameters.' + single + '.related_pictures[0]', tile);
 
                     if (audio) {
                       audioIcon = (selectn('src', this.state.nowPlaying) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow style={{marginRight: '10px'}} color='white' /> : <AVStop style={{marginRight: '10px'}} color='white' />;
@@ -164,8 +168,6 @@ export default class GridView extends Component {
                       });
                     }
 
-                    let image = thumbnail || original || '/assets/images/cover.png';
-
                     let audioIconAction = <IconButton onTouchTap={audioCallback}>{audioIcon}</IconButton>;
 
                     return <GridTile
@@ -175,7 +177,7 @@ export default class GridView extends Component {
                       actionPosition="right"
                       actionIcon={(this.props.action) ? audioIconAction : audioIcon}
                       subtitle={definitionsHTML || literal_translationsHTML}
-                      ><img style={{filter: 'grayscale(100%) opacity(80%)'}} src={image} alt={title} /></GridTile>
+                      ><img style={{filter: 'grayscale(100%) opacity(80%)'}} src={UIHelpers.getThumbnail(imageObj, 'Small')} alt={title} /></GridTile>
                   }.bind(this))}
               </GridList>
             </div>;
