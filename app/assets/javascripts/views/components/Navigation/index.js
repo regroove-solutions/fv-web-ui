@@ -22,6 +22,7 @@ import ConfGlobal from 'conf/local.json';
 import provide from 'react-redux-provide';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import Shepherd from 'tether-shepherd';
 
@@ -55,6 +56,10 @@ import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 @provide
 export default class Navigation extends Component {
 
+  static defaultProps = {
+    frontpage: false
+  }
+
   static propTypes = {
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,    
@@ -66,7 +71,8 @@ export default class Navigation extends Component {
     computeLogin: PropTypes.object.isRequired,
     computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
-    routeParams: PropTypes.object
+    routeParams: PropTypes.object,
+    frontpage: PropTypes.bool
   };
 
   /*static childContextTypes = {
@@ -194,6 +200,7 @@ export default class Navigation extends Component {
   render() {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette;
     const isDialect = this.props.routeParams.hasOwnProperty('dialect_path');
+    const isFrontPage = this.props.frontpage;
 
     const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
@@ -202,10 +209,10 @@ export default class Navigation extends Component {
 
     const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
-    let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal);
+    let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal);
     let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal);
 
-    const avatar = (portalLogo) ? <Avatar src={ConfGlobal.baseURL + portalLogo} size={50} style={{marginRight: '10px'}} /> : '';
+    const avatar = (portalLogo) ? <Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px'}} /> : '';
 
     const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle + " Community Portal"}</a> : this.props.properties.title;
 
@@ -278,6 +285,8 @@ export default class Navigation extends Component {
             </div>
           </Popover>
 
+            <span className={classNames({'hidden': isFrontPage})}>
+
             <ToolbarSeparator style={{float: 'none', marginRight: '30px', marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
@@ -296,11 +305,13 @@ export default class Navigation extends Component {
                 <MenuItem primaryText="Help" />
                 <MenuItem primaryText="Sign out" />
             </IconMenu>*/}
+
+            </span>
           </ToolbarGroup>
 
         </AppBar>
 
-        <Toolbar className={classNames({'hidden': isDialect})}>
+        <Toolbar className={classNames({'hidden': isDialect || isFrontPage})}>
 
           <ToolbarGroup float="right">
             <DialectDropDown routeParams={this.props.routeParams} />

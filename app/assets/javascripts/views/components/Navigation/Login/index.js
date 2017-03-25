@@ -95,7 +95,7 @@ export default class Login extends Component {
 
     let dest = '/' + path + '/';
 
-    if (selectn("routeParams.dialect_path", this.props)) {
+    if (selectn("routeParams.dialect_path", this.props) && path === 'register') {
       dest = '/explore' + this.props.routeParams.dialect_path + '/' + path;
     }
 
@@ -114,7 +114,7 @@ export default class Login extends Component {
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
         return (
           <div style={{display: "inline-block", paddingRight: "10px"}}>
-            Welcome <strong>{selectn("response.properties.username", this.props.computeLogin)}</strong>! <FlatButton onTouchTap={this._handleLogout} label="Sign Out"/>
+            Welcome <strong><a style={{color: '#000'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.username", this.props.computeLogin)}</a></strong>! <FlatButton onTouchTap={this._handleLogout} label="Sign Out"/>
           </div>
         );
     } else {
@@ -128,7 +128,7 @@ export default class Login extends Component {
     }
 
     return (
-      <div style={{display: "inline-block", paddingRight: "10px"}}>
+      <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
         <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />
         <FlatButton label="Register" onTouchTap={this._onNavigateRequest.bind(this, 'register')} />
 

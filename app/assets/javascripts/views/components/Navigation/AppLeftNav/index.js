@@ -53,7 +53,7 @@ export default class AppLeftNav extends Component {
       {
         id: 'home',
         label: "Home",
-        path: "/"
+        path: "/home"
       },
       {
         id: 'get-started',
