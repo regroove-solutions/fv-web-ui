@@ -78,9 +78,12 @@ const fields = {
   FVGallery: Object.assign({}, Dublincore, {
 	'fv:related_pictures' : t.list(t.String)
   }),
+  FVPhraseBook: Object.assign({}, Dublincore, {
+	'fvcategory:image' : t.maybe(t.String),
+  }),
   FVCategory: Object.assign({}, Dublincore, {
-	'fvcategory:parent_category' : t.maybe(t.String), // make optional  
-	'fvcategory:image' : t.maybe(t.String), // make optional
+	'fvcategory:parent_category' : t.maybe(t.String),
+	'fvcategory:image' : t.maybe(t.String),
   }),
   FVContributor: Object.assign({}, Dublincore),   
   FVDialect: Object.assign({}, Dublincore, {

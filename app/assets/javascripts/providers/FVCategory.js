@@ -141,7 +141,7 @@ const fetchCategory = function fetchCategory(pathOrId) {
 const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, breadcrumb' } });
 const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, parentDoc, breadcrumb, children'} });
 const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
-const updateCategory = RESTActions.update('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry,permissions' } });
+const updateCategory = RESTActions.update('FV_CATEGORY', 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry,breadcrumb,permissions' } }, false);
 const computeCategoryFactory = RESTReducers.computeFetch('category');
 const computeCategoriesFactory = RESTReducers.computeQuery('categories');
 

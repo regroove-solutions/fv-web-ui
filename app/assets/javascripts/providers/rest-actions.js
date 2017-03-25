@@ -72,17 +72,17 @@ export default {
 			}
 		}
 	},
-	update: function(key, type, properties = {}) {
+	update: function(key, type, properties = {}, usePathAsId = true) {
 		return function update(newDoc, messageStart = undefined, messageSuccess = undefined, messageError = undefined) {
 			return function (dispatch) {
 
-			    dispatch( { type: key + '_UPDATE_START', pathOrId: newDoc.path, message: ((messageStart === undefined) ? 'Updated started...': messageStart) } );
+			    dispatch( { type: key + '_UPDATE_START', pathOrId: (usePathAsId) ? newDoc.path : newDoc.uid, message: ((messageStart === undefined) ? 'Updated started...': messageStart) } );
 
 			    return DocumentOperations.updateDocument(newDoc, { headers: properties.headers })
 			      .then((response) => {
-			        dispatch( { type: key + '_UPDATE_SUCCESS', message: ((messageSuccess === undefined) ? 'Document updated successfully!': messageSuccess), response: response, pathOrId: newDoc.path } )
+			        dispatch( { type: key + '_UPDATE_SUCCESS', message: ((messageSuccess === undefined) ? 'Document updated successfully!': messageSuccess), response: response, pathOrId: (usePathAsId) ? newDoc.path : newDoc.uid } )
 			      }).catch((error) => {
-			          dispatch( { type: key + '_UPDATE_ERROR', message: ((messageError === undefined) ? error: messageError), pathOrId: newDoc.path } )
+			          dispatch( { type: key + '_UPDATE_ERROR', message: ((messageError === undefined) ? error: messageError), pathOrId: (usePathAsId) ? newDoc.path : newDoc.uid } )
 			    });
 			}
 		}

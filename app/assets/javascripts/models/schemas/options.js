@@ -267,7 +267,7 @@ const options = {
           type: 'FVCategory',
           attrs: {
             containerType: 'FVPhrase',
-            //allowEdit: true,
+            allowEdit: true,
             page_provider: {
               name: 'phrasebook_suggestion',
               folder: 'Phrase Books'

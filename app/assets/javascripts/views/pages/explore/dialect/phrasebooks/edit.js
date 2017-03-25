@@ -95,9 +95,11 @@ export default class Edit extends Component {
       nextPhraseBook = ProviderHelpers.getEntry(nextProps.computeCategory, this.state.phraseBookPath);
     }
 
-    // 'Redirect' on success
+    // 'Redirect' or complete on success
     if (selectn('wasUpdated', currentPhraseBook) != selectn('wasUpdated', nextPhraseBook) && selectn('wasUpdated', nextPhraseBook) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextPhraseBook).replace('Phrase Books', 'learn/phraseBooks'));
+      if (nextProps.onDocumentCreated) {
+        nextProps.onDocumentCreated(selectn('response', nextPhraseBook));
+      }
     }
   }
 
@@ -144,10 +146,6 @@ export default class Edit extends Component {
       // Save document
       this.props.updateCategory(newDocument, null, null);
 
-      if (this.props.onDocumentCreated) {
-        this.props.onDocumentCreated(newDocument);
-      }
-
       this.setState({ formValue: formValue });
   }
 
@@ -193,7 +191,7 @@ export default class Edit extends Component {
         saveMethod={this._handleSave}
         cancelMethod={this._handleCancel}
         currentPath={this.props.splitWindowPath}
-        navigationMethod={this.props.replaceWindowPath}
+        navigationMethod={() => {}}
         type="FVPhraseBook"
         routeParams={this.props.routeParams} />
 

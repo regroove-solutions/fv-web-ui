@@ -10,7 +10,7 @@ import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/phrasebook
 import PageDialectLinksCreate from 'views/pages/explore/dialect/links/create';
 
 import PageDialectLinksEdit from 'views/pages/explore/dialect/links/edit';
-//import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/phrasebooks/edit';
+import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/phrasebooks/edit';
 
 export default class DialogCreateForm extends React.Component {
   constructor(props) {
@@ -61,10 +61,10 @@ export default class DialogCreateForm extends React.Component {
 				createForm = <PageDialectPhraseBooksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;
 				createNewButtonLabel = "Create New Phrase Book";
 
-				/*if (this.props.value) {
-					createNewButtonLabel = "Edit Link";
+				if (this.props.value) {
+					createNewButtonLabel = "Edit Phrase Book";
 					createForm = <PageDialectPhraseBooksEdit dialect={this.props.context} routeParams={{dialect_path: this.props.context.path, theme: 'explore'}} value={this.props.value} embedded={true} onDocumentCreated={this._onDocumentCreated} cancelMethod={this.handleClose} />;
-				}*/
+				}
 			}
 			else if(this.props.fieldAttributes.page_provider.folder == "Categories") {
 				createForm = <PageDialectCategoryCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />;				
