@@ -332,7 +332,7 @@ export default class DialectLearn extends Component {
 
                       if (characters && characters.length > 0) {
                           return <div style={{marginBottom: '20px'}}>
-                          <h3>Our Alphabet</h3>
+                          <h3>Our Alphabet <a href="./learn/alphabet/print" target="_blank"><i className="material-icons">print</i></a></h3>
                           {selectn('response.entries', computeCharacters).map((char, i) =>
                             <Paper key={char.uid} style={{textAlign: 'center', margin: '5px', padding: '5px 10px', display: 'inline-block'}}>
                               <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet/' + char.path.split('/')[char.path.split('/').length-1])} label={char.title} style={{minWidth: 'inherit'}} />
@@ -352,13 +352,21 @@ export default class DialectLearn extends Component {
 
                   <div className={classNames('col-xs-12')}>
                     {(() => {
-                      if (selectn('response.contextParameters.dialect.keyboards.length', computeDialect2) > 0) {
-                        return <Paper style={{marginBottom: '20px'}} zDepth={2}>
-                          <h3>Our Keyboards</h3>
-                          {(selectn('response.contextParameters.dialect.keyboards', computeDialect2) || []).map((keyboardLink, i) =>
-                            <Link key={i} data={keyboardLink} showDescription={true} />
-                          )}  
-                        </Paper>;
+                      if (selectn('response.contextParameters.dialect.keyboards.length', computeDialect2) > 0 || !isSection) {
+                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
+                                <div>
+                                  <h3>Our Keyboards</h3>
+                                  <EditableComponentHelper
+                                    isSection={isSection}
+                                    computeEntity={computeDialect2}
+                                    updateEntity={updateDialect2}
+                                    showPreview={true}
+                                    previewType="FVLink"
+                                    property="fvdialect:keyboards"
+                                    sectionProperty="contextParameters.dialect.keyboards"
+                                    entity={selectn('response', computeDialect2)} />
+                                </div>
+                              </AuthorizationFilter>;
                       }
                     })()}
                   </div> 
@@ -366,7 +374,7 @@ export default class DialectLearn extends Component {
                   <div className={classNames('col-xs-12')}>
                       {(() => {
                         if (selectn('response.properties.fvdialect:contact_information', computeDialect2) || !isSection) {
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={false}>
+                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                                   <div>
                                     <h3>Contact Information</h3>
                                     <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:contact_information" entity={selectn('response', computeDialect2)} />

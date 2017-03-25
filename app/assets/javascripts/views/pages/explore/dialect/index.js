@@ -189,7 +189,6 @@ export default class ExploreDialect extends Component {
   _handleSelectionChange(itemId, item) {
     this.props.pushWindowPath('/' + this.props.routeParams.theme + selectn('properties.path', item).replace('Dictionary', 'learn/words'));
   }
-
   
   render() {
 
@@ -219,7 +218,7 @@ export default class ExploreDialect extends Component {
 
     let featuredWords = selectn('response.contextParameters.portal.fv-portal:featured_words', computePortal) || [];
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <PromiseWrapper title={selectn('response.properties.dc:title', computeDialect2)} computeEntities={computeEntities}>
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
@@ -301,11 +300,26 @@ export default class ExploreDialect extends Component {
                     <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
                   </AuthorizationFilter>
                 </div>
+
+                <div>
+                    {(() => {
+                      if (selectn('response.properties.fv-portal:news', computePortal) || !isSection) {
+                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
+                                <div>
+                                  <h3>News</h3>
+                                  <EditableComponentHelper isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:news" entity={selectn('response', computePortal)} />
+                                </div>
+                              </AuthorizationFilter>;
+                      }
+                    })()}
+
+                </div>
+
               </div>
 
               <div className={classNames('col-xs-4', 'col-md-4')}>
 
-                  <h3>First Words</h3>
+                  {(featuredWords.length > 0) ? <h3>First Words</h3> : ''}
 
                   <GridView
                     action={this._handleSelectionChange}
@@ -321,24 +335,28 @@ export default class ExploreDialect extends Component {
                         }}, properties: word};
                     })} />
 
-                  {(() => {
 
-                    const relatedLinks = selectn('response.contextParameters.portal.fv-portal:related_links', computePortal);
-
-                    if (relatedLinks && relatedLinks.length > 0) {
-
-                        return <Paper style={{padding: '25px', marginBottom: '20px'}} zDepth={2}>
-
-                              <strong><span>Related Links</span></strong><br />
-
-                              {(relatedLinks || []).map((link, i) =>
-                                <Link key={i} data={link} showDescription={false} />
-                              )} 
-                              
-                            </Paper>;
+                  <div>
+                    {(() => {
+                      if (selectn('response.contextParameters.portal.fv-portal:related_links.length', computePortal) > 0 || !isSection) {
+                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computePortal)}} renderPartial={true}>
+                                <div>
+                                  <h3>Related Links</h3>
+                                  <EditableComponentHelper
+                                    isSection={isSection}
+                                    computeEntity={computePortal}
+                                    updateEntity={updatePortal}
+                                    context={computeDialect2}
+                                    showPreview={true}
+                                    previewType="FVLink"
+                                    property="fv-portal:related_links"
+                                    sectionProperty="contextParameters.portal.fv-portal:related_links"
+                                    entity={selectn('response', computePortal)} />
+                                </div>
+                              </AuthorizationFilter>;
                       }
-
-                  })()}
+                    })()}
+                  </div>
 
               </div>
 
