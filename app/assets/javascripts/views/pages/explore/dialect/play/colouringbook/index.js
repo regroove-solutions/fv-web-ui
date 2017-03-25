@@ -68,7 +68,8 @@ export default class ColouringBook extends Component {
             thumb1:`${defaultImagesPath}/thumb1.png`,
             thumb2:`${defaultImagesPath}/thumb2.png`,
             thumb3:`${defaultImagesPath}/thumb3.png`,
-            thumb4:`${defaultImagesPath}/thumb4.png`
+            thumb4:`${defaultImagesPath}/thumb4.png`,
+            background:`${defaultImagesPath}/background.png`
         }
 
     };

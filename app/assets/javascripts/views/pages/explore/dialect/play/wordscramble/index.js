@@ -29,6 +29,31 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+const containerStyle = {
+    background: 'url(/assets/games/wordscramble/assets/images/background.png)',
+    backgroundSize: 'cover',
+    padding: '40px 0'
+}
+
+
+const titleStyle = {
+    textAlign: 'center',
+    color: '#FFF',
+    margin: '30px 0',
+    textShadow: '1px 1px 1px #000'
+}
+
+const titleLogoStyle = {
+    display:'block',
+    overflow:'hidden',
+    backgroundRepeat:'no-repeat',
+    width:'541px',
+    height:'87px',
+    background:'url(/assets/games/wordscramble/assets/images/word_scramble_title.png)',
+    textIndent:'-9000px',
+    margin:'auto'
+}
+
 /**
 * Play games
 */
@@ -78,8 +103,9 @@ export default class Wordscramble extends Component {
 
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
 
-    return <div className="wordscramble-game">
-              {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map(function(phrase, i) {
+    return <div className="wordscramble-game" style={containerStyle}>
+            <h1 style={{...titleStyle, ...titleLogoStyle}}>Word Scramble</h1>
+              {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map
                 return <Scramble key={i} sentence={{
                     original: new List(selectn('properties.dc:title', phrase).split(' ')),
                     translation: selectn('properties.fv:definitions[0].translation', phrase),
@@ -111,7 +137,7 @@ export class Scramble extends Component {
   getDefaultState()
   {
     const scrambledSentence = this.props.sentence.original.sortBy(()=>Math.random());
-    
+
     return {
       scrambledSentence:scrambledSentence,
       selected:[],
@@ -140,12 +166,10 @@ export class Scramble extends Component {
   /**
    * Unselect a word
    */
-  unSelectWord(word)
+  unSelectWord(word,index)
   {
-      const selectedWords = [...this.state.selected].filter((value)=>{
-          return value !== word;
-      });
-
+      const selectedWords = [...this.state.selected];
+      selectedWords.splice(index,1);
       this.setState({selected:selectedWords});
   }
   
@@ -157,6 +181,7 @@ export class Scramble extends Component {
       if(this.state.selected.join(' ') === this.props.sentence.original.toJS().join(' '))
       {
         this.setState({complete:true})
+        this.audio.play();
       }
       else
       {
@@ -168,19 +193,20 @@ export class Scramble extends Component {
 
     const containerStyles = {
         padding: '10px',
-        display: 'inline-block',
-        border: '1px solid #CCC',
-        background: '#FFF',
-        boxShadow: '2px 2px 6px #CCC',
+        display: 'block',
+        border: '7px solid #040000',
+        background: '#fafafa',
         marginBottom:'20px',
-        position:'relative'
+        position:'relative',
+        maxWidth:'700px',
+        margin:'auto'
     }
 
     return <div style={{marginTop: '15px'}}>
             <div className="scrambled-sentence" style={containerStyles}>
-                <div style={{height:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
+                <div style={{minHeight:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
                     {this.state.selected.map((word, index)=>{
-                        return <RaisedButton key={index} style={{backgroundColor:'#a7fba5'}} label={word} onMouseUp={this.unSelectWord.bind(this,word)}/>
+                        return <RaisedButton key={index} style={{backgroundColor:'#a7fba5'}} label={word} onMouseUp={this.unSelectWord.bind(this,word, index)}/>
                     })}
                     { this.state.complete ? <FontIcon className="material-icons" style={{color:Colors.greenA200, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>check_box</FontIcon> : false }
                     { this.state.incorrect ? <FontIcon className="material-icons" style={{color:Colors.red600, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>indeterminate_check_box</FontIcon> : false }
@@ -190,10 +216,10 @@ export class Scramble extends Component {
                             
                             let disabled = false;
 
-                            if(this.state.selected.includes(word))
-                            {
-                                disabled = true;
-                            }
+                            // if(this.state.selected.includes(word))
+                            // {
+                            //     disabled = true;
+                            // }
 
                         return <RaisedButton disabled={disabled} label={word} key={index} onMouseUp={this.selectWord.bind(this, word)} />
                         })
@@ -202,7 +228,7 @@ export class Scramble extends Component {
                 <RaisedButton label="Check"  style={ this.state.complete ? {visibility:'hidden'} : {}} disabled={this.state.complete ? true : false} secondary={true} onMouseUp={this.checkAnswer.bind(this)}/>
                 {this.state.complete ? false : <RaisedButton label="Reset" primary={true} onMouseUp={this.reset.bind(this)}/>}
                 <div>
-                    <audio src={this.props.sentence.audio} controls />
+                    <audio ref={(el)=>{this.audio = el}} src={this.props.sentence.audio} controls />
                     <TextField disabled={true} hintText={this.props.sentence.translation} />
                 </div>
             </div>

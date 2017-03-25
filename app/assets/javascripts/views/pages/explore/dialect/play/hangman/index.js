@@ -15,6 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import HangManGame from './hangman';
 
 /**
 * Play games
@@ -39,7 +40,17 @@ export default class Hangman extends Component {
    * Render
    */
   render() {
-    return <div className="hangman-game"></div>;
+    
+    const config = {
+      puzzle:'charlie is cool',
+      translation:'translation',
+      alphabet:["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"],
+      audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+    }
+
+    return <div className="hangman-game">
+              <HangManGame {...config} />
+          </div>;
   }
 
 }

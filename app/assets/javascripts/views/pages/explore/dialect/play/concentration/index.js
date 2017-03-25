@@ -16,6 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 
+import Game from './wrapper';
 /**
 * Play games
 */
@@ -39,7 +40,10 @@ export default class Concentration extends Component {
    * Render
    */
   render() {
-    return <div className="concentration-game">Concentration</div>;
+    return <div className="concentration-game">
+      <h3>Concentration (Memory)</h3>
+      <Game />
+    </div>;
   }
 
 }

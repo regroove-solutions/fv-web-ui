@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
-import WordsearchGame from 'games/wordsearch';
+import Memory from 'games/memory'
 
 /**
 * Test game wrapper
@@ -23,7 +23,6 @@ import WordsearchGame from 'games/wordsearch';
 export default class Game extends Component {
 
   static propTypes = {
-    characters: PropTypes.array.isRequired,
     words: PropTypes.array.isRequired
   }
 
@@ -41,7 +40,7 @@ export default class Game extends Component {
   componentDidMount () {
 
     //Setup default asset paths
-    const defaultAssetsPath = '/assets/games/wordsearch/assets';
+    const defaultAssetsPath = '/assets/games/memory/assets';
     const defaultLibsPath = `${defaultAssetsPath}/libs`;
     const defaultImagesPath = `${defaultAssetsPath}/images`;
 
@@ -50,32 +49,61 @@ export default class Game extends Component {
      * @todo Setup image paths based on dialect
      */
 
+
     let gameConfig = {
 
-        libs:{
-            wordFindScript:`${defaultLibsPath}/wordfind.js`        
-        },
-
         images:{
-          preloaderLoading:`${defaultImagesPath}/loading.png`,
-          preloaderLogo:`${defaultImagesPath}/logo.png`,
-          tile:`${defaultImagesPath}/tile.png`,
-          playAudio:`${defaultImagesPath}/play_audio.png`,
-          background:`${defaultImagesPath}/background.png`
+            preloaderLoading:`${defaultImagesPath}/loading.png`,
+            preloaderLogo:`${defaultImagesPath}/logo.png`,
+            background:`${defaultImagesPath}/background.png`,
+            card:`${defaultImagesPath}/card.png`,
+            card_flipped:`${defaultImagesPath}/card_flipped.png`,
+            title:`${defaultImagesPath}/title.png`,
+            time:`${defaultImagesPath}/time.png`
         },
+
+        cards:[
+            {
+                word:'Word 1',
+                translation:'english translation',
+                image:`${defaultImagesPath}/example/1.png`,
+                audio:'assets/sounds/sample.mp3'
+            },
+            {
+                word:'Word 2',
+                translation:'english translation',
+                image:`${defaultImagesPath}/example/2.png`,
+                audio:'assets/sounds/sample.mp3'
+            },
+            {
+                word:'Word 3',
+                translation:'english translation',
+                image:`${defaultImagesPath}/example/3.png`,
+                audio:'assets/sounds/sample.mp3'
+            },
+            {
+                word:'Word 4',
+                translation:'english translation',
+                image:`${defaultImagesPath}/example/4.png`,
+                audio:'assets/sounds/sample.mp3'
+            },
+            {
+                word:'Word 5',
+                translation:'english translation',
+                image:`${defaultImagesPath}/example/5.png`,
+                audio:'assets/sounds/sample.mp3'
+            }
+        ]
         
-        letters: this.props.characters,
-
-        words: this.props.words
-
     };
+
 
 
     /**
      * Create the game, with container and game config
      */
     const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-    WordsearchGame.init(gameContainerNode, gameConfig);
+    Memory.init(gameContainerNode, gameConfig);
   }
 
   /**
@@ -83,7 +111,7 @@ export default class Game extends Component {
    * Cleanup the game / assets for memory management
    */
   componentWillUnmount () {
-      WordsearchGame.destroy();
+      Memory.destroy();
   }
 
   /**
