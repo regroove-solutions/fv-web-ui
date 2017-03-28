@@ -50,7 +50,7 @@ public class DialectEnricher extends AbstractJsonEnricher<DocumentModel> {
 		if (documentType.equalsIgnoreCase("FVDialect")) {
 
 			// Process "fvdialect:keyboards" values
-			String[] keyboardLinkIds = (String[]) doc.getProperty("fvdialect", "keyboards");
+			String[] keyboardLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvdialect", "keyboards") : (String[]) doc.getProperty("fvproxy", "proxied_keyboards");
 			if (keyboardLinkIds != null) {
 				ArrayNode keyboardJsonArray = mapper.createArrayNode();
 				for (String keyboardId : keyboardLinkIds) {
