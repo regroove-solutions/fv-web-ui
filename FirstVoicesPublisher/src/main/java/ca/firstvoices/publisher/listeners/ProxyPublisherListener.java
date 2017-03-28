@@ -50,5 +50,10 @@ public class ProxyPublisherListener implements EventListener {
         } else if ("Unpublish".equals(transition) || "Disable".equals(transition)){
             service.unpublish(doc);
         }
+
+        // If re-publishing a dialect directly (no transition)
+        if ("FVDialect".equals(doc.getType()) && "Published".equals(doc.getCurrentLifeCycleState()) && doc.isProxy()) {
+            service.setDialectProxies(doc);
+        }
     }
 }
