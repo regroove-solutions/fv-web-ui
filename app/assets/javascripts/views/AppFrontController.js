@@ -28,7 +28,7 @@ import { PageDialectViewWord, PageDialectViewPhrase, PageDialectViewBook, PageDi
 
 import { PageDialectViewAlphabet } from 'views/pages';
 
-import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageHangman} from 'views/pages';
+import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageQuiz, PageHangman} from 'views/pages';
 
 import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
@@ -313,6 +313,12 @@ export default class AppFrontController extends Component {
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordscramble' ],
         page: <PageWordscramble />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+        extractPaths: true
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'quiz' ],
+        page: <PageQuiz />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },

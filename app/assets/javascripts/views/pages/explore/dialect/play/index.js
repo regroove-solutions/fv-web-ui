@@ -60,6 +60,9 @@ export default class Play extends Component {
                     <div className="cell" style={cellStyle}>
                       <a href="./play/concentration"><img src="https://placehold.it/533x398/ffffff/000000?text=Concentration" className="responsive-image"/></a>
                     </div>
+                    <div className="cell" style={cellStyle}>
+                      <a href="./play/quiz"><img src="https://placehold.it/533x398/ffffff/000000?text=Knowledge+Quiz" className="responsive-image"/></a>
+                    </div>
                   </div>
                 </div>
               </div>

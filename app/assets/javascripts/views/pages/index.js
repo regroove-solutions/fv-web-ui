@@ -30,6 +30,7 @@ import PageColouringBook from './explore/dialect/play/colouringbook'
 import PagePictureThis from './explore/dialect/play/picturethis'
 import PageHangman from './explore/dialect/play/hangman'
 import PageWordscramble from './explore/dialect/play/wordscramble'
+import PageQuiz from './explore/dialect/play/quiz'
 import PageConcentration from './explore/dialect/play/concentration'
 
 import PageDialectGalleries from './explore/dialect/gallery'
@@ -106,6 +107,7 @@ module.exports = {
   PageConcentration,
   PageHangman,
   PageWordscramble,
+  PageQuiz,
   
   // KIDS
   PageKidsHome
