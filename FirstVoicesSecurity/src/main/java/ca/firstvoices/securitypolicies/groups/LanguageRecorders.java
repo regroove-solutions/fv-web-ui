@@ -97,6 +97,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
                 allowedDocumentTypes.add("FVBook");
                 allowedDocumentTypes.add("FVBooks");
                 allowedDocumentTypes.add("FVBookEntry");
+                allowedDocumentTypes.add("FVPortal");
             }
 
             // Allow adding children and removing children on allowed types
