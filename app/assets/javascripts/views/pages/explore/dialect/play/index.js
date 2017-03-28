@@ -49,19 +49,19 @@ export default class Play extends Component {
                       <a href="./play/wordsearch"><img src="/assets/games/wordsearch/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/wordscramble"><img src="https://placehold.it/533x398/ffffff/000000?text=Word+Scramble" className="responsive-image"/></a>
+                      <a href="./play/wordscramble"><img src="/assets/images/preview-wordscramble.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/picturethis"><img src="https://placehold.it/533x398/ffffff/000000?text=Picture+This" className="responsive-image"/></a>
+                      <a href="./play/picturethis"><img src="/assets/games/picturethis/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/hangman"><img src="https://placehold.it/533x398/ffffff/000000?text=Hang+man " className="responsive-image"/></a>
+                      <a href="./play/hangman"><img src="/assets/games/hangman/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/concentration"><img src="https://placehold.it/533x398/ffffff/000000?text=Concentration" className="responsive-image"/></a>
+                      <a href="./play/concentration"><img src="/assets/images/preview-concentration.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/quiz"><img src="https://placehold.it/533x398/ffffff/000000?text=Knowledge+Quiz" className="responsive-image"/></a>
+                      <a href="./play/quiz"><img src="/assets/images/preview-quiz.png" className="responsive-image"/></a>
                     </div>
                   </div>
                 </div>
