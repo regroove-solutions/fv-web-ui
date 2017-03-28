@@ -43,12 +43,12 @@ public class GalleryEnricher extends AbstractJsonEnricher<DocumentModel> {
 		// First create the parent document's Json object content
 		CoreSession session = doc.getCoreSession();
 
-		String documentType = (String) doc.getType();
+		String documentType = doc.getType();
 
 		if (documentType.equalsIgnoreCase("FVGallery")) {
 
 			// Process "fv:related_pictures" values
-			String[] pictureIds = (String[]) doc.getProperty("fvcore", "related_pictures");
+			String[] pictureIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "related_pictures") : (String []) doc.getProperty("fvproxy", "proxied_pictures");
 			if (pictureIds != null) {
 				ArrayNode pictureJsonArray = mapper.createArrayNode();
 				for (String pictureId : pictureIds) {
