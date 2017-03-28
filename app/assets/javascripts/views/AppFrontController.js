@@ -639,46 +639,6 @@ export default class AppFrontController extends Component {
     if (this.state.matchedPage && this.state.matchedPage.hasOwnProperty('title') && this.state.matchedPage.get('title') && this.state.matchedPage.get('title') != document.title) {
       document.title = this.state.matchedPage.get('title') + ' | ' + ConfGlobal.title;
     }
-
-    ////////
-    if (1===2) {
-      let frontPage = this.state.routes.findEntry(function(v, k) {
-        return v.get('path').isEmpty();
-      });
-
-      let dialectPage = this.state.routes.findEntry(function(v, k) {
-        return v.get('id') === 'page_explore_dialect';
-      });
-
-
-    let preferences2 = selectn('response.properties.preferences', nextProps.computeLogin);
-    let preferences = (preferences2) ? JSON.parse(preferences2) : {};
-    let flattenedPreferences = [];
-
-    for (var preference22 in preferences) {
-      flattenedPreferences.push(preferences[preference22]);
-    }
-
-
-      // Modify front page based on preferences
-      // Note: Adding a redirect here will cause invariant violations during rendering
-      //let routes = this.state.routes.set(frontPage[0], frontPage[1].set('page', Immutable.fromJS(<PageExploreDialect />)));
-      /*let routes = this.state.routes.set(frontPage[0], frontPage[1].set('redirects', Immutable.fromJS(
-        [{
-          condition: function(params) { return true; },
-          target: function(params) {
-            console.log(params);
-            return '/contribute';
-          }
-        }]
-      )));*/
-
-
-
-      //this.setState({routes})
-
-      //this._route(nextProps, routes);
-    }
   }
 
   _renderBreadcrumb(matchedPage, routeParams) {
