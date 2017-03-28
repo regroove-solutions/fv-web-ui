@@ -19,6 +19,7 @@
 package ca.firstvoices.operations;
 
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -46,6 +47,7 @@ import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURAT
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -85,6 +87,7 @@ public class UserInvite {
 
     @OperationMethod
     public String run(DocumentModel registrationRequest) {
+        NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
 
         DocumentRegistrationInfo docInfo = new DocumentRegistrationInfo();
         FVUserRegistrationInfo userInfo = new FVUserRegistrationInfo();
@@ -120,6 +123,22 @@ public class UserInvite {
             userInfo.setGroups(ugdr.member_groups);
         } else {
             docInfo.setPermission("Read");
+        }
+
+        // If authorized, use preset groups
+        if (currentUser.isAdministrator() || currentUser.isMemberOf(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP)) {
+            autoAccept = true;
+
+            @SuppressWarnings("unchecked")
+            List<String> preSetGroup = (List<String>) registrationRequest.getPropertyValue("userinfo:groups");
+
+            if (!preSetGroup.isEmpty()) {
+                userInfo.setGroups(preSetGroup);
+            }
+        }
+        // If not authorized, never autoaccept
+        else {
+            autoAccept = false;
         }
 
         userInfo.setEmail(email);
