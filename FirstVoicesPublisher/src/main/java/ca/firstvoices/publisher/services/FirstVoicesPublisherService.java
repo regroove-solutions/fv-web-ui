@@ -59,4 +59,6 @@ public interface FirstVoicesPublisherService {
 	public DocumentModel getPublication(CoreSession session, DocumentRef docRef);
 
     public DocumentModel publishDocument(CoreSession session, DocumentModel doc, DocumentModel section);
+
+    DocumentModel setDialectProxies(DocumentModel dialectProxy);
 }

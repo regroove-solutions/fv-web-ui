@@ -18,5 +18,6 @@
   <xs:element name="proxied_featured_audio" type="xs:string"/>
   <xs:element name="proxied_logo" type="xs:string"/>
   <xs:element name="proxied_related_links" type="nxs:stringList"/>
+  <xs:element name="proxied_keyboards" type="nxs:stringList"/>
 
 </xs:schema>
