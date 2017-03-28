@@ -144,7 +144,8 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['get-started'],
-        page: <PageGetStarted />
+        page: <PageGetStarted />,
+        title: 'Getting Started'
       },
       {
         path: ['contribute'],
@@ -615,11 +616,29 @@ export default class AppFrontController extends Component {
     this._route(this.props);
   }
 
+  componentWillUpdate(nextProps, nextState) {
+
+    if (nextProps.windowPath != this.props.windowPath) {
+      let title = ConfGlobal.title;
+
+      // Update title
+      if (nextState.matchedPage && nextState.matchedPage.has('title') && nextState.matchedPage.get('title') && nextState.matchedPage.get('title') != document.title) {
+        title = nextState.matchedPage.get('title') + ' | ' + ConfGlobal.title;
+      }
+
+      document.title = title;
+
+      // Track page view
+      window.snowplow('trackPageView');
+    }
+  }
+
   componentWillReceiveProps(nextProps) {
 
     let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences);
     let next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences);
     
+
     // Re-route on window path change
     if (nextProps.windowPath != this.props.windowPath) {
       this._route(nextProps);
@@ -633,11 +652,6 @@ export default class AppFrontController extends Component {
     // Re-route if preferences change
     else if (next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
       this._route(nextProps);
-    }
-
-    // Update title
-    if (this.state.matchedPage && this.state.matchedPage.hasOwnProperty('title') && this.state.matchedPage.get('title') && this.state.matchedPage.get('title') != document.title) {
-      document.title = this.state.matchedPage.get('title') + ' | ' + ConfGlobal.title;
     }
   }
 
@@ -761,6 +775,7 @@ export default class AppFrontController extends Component {
   }
 
   render() {
+
     const { matchedPage, matchedRouteParams } = this.state;
     
     let page, navigation = <Navigation frontpage={(!matchedPage) ? false : matchedPage.get('frontpage')} routeParams={matchedRouteParams} />;
