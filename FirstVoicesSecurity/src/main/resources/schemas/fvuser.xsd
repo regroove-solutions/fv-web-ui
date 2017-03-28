@@ -15,6 +15,9 @@
   <!-- inverse reference -->
   <xs:element name="groups" type="nxs:stringList" />
   
-  <xs:element name="test" type="xs:string" />
+  <!-- To avoid creating additional tables, use strings (should store JSON) -->
+  <xs:element name="contributors" type="xs:string" />
+  <xs:element name="comments" type="xs:string" />
+  <xs:element name="preferences" type="xs:string" />
 
 </xs:schema>
