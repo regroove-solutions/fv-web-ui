@@ -15,11 +15,32 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import Immutable, { List, Map } from 'immutable';
+
+import classNames from 'classnames';
+
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
+
+import ConfGlobal from 'conf/local.json';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 /**
 * Play games
 */
+@provide
 export default class Picturethis extends Component {
+
+  static propTypes = {
+    fetchWords: PropTypes.func.isRequired,
+    computeWords: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
+  }
 
   /**
    * Constructor
@@ -30,518 +51,279 @@ export default class Picturethis extends Component {
     this.state = {
       selectedTheme:false,
       selectedWordInPicture:false,
-      selectedWordInList:false
+      selectedWordInList:false,
+      foundWordKeys: new List(),
+      nowPlaying: null
     }
     
     this.config = {
       themes:[
         {
-          image:'/assets/games/picturethis/assets/01animals.png',
-          name:'Animals',
-          words:[
+          image: '/assets/games/picturethis/assets/01animals.png',
+          name: 'Animals',
+          words: Map(
             {
-                word:'alíiluya',
-                translation:'Bird',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'https://fv.nuxeocloud.com/nuxeo/nxfile/default/4aed0782-43f4-49aa-b328-453cd2fac538/file:content/seagull03_stat.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Bird': {
+                'locationInt': 0,
+                'location': {x: 13, y: 59}
+              },
+              'Word1': {
+                'locationInt': 1,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 2,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 3,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/02backyard.png',
           name:'Backyard',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/03bedroom.png',
           name:'Bedroom',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/04camping.png',
           name:'Camping',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/05classroom.png',
           name:'Classroom',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/06feast.png',
           name:'Feast',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/07garage_sale.png',
           name:'Garage Sale',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/08kitchen.png',
           name:'Kitchen',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/09medical_center.png',
           name:'Medical Center',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/10pow_wow.png',
           name:'Pow Wow',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/11travel.png',
           name:'Travel',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         },
         {
           image:'/assets/games/picturethis/assets/12village.png',
           name:'Village',
-          words:[
+          words: Map(
             {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:13,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:100,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:200,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
-            },
-            {
-                word:'(replace with word)',
-                translation:'(replace with translation)',
-                location:{
-                  x:300,
-                  y:59
-                },
-                audio:'/assets/games/jigsaw/assets/sounds/sample.mp3'
+              'Word1': {
+                'locationInt': 0,
+                'location': {x: 100, y: 59}
+              },
+              'Word2': {
+                'locationInt': 1,
+                'location': {x: 200, y: 59}
+              },
+              'Word3': {
+                'locationInt': 2,
+                'location': {x: 300, y: 59}
+              }
             }
-          ]
+          )
         }
       ]
     }
   }
+
+  fetchData(props, theme) {
+
+    if (theme.words.size > 0) {
+      let lowerCaseKeys = theme.words.map((v, k) => k.toLowerCase());
+      let wordKeys = theme.words.keySeq().concat(lowerCaseKeys);
+
+      let translationsJoin = wordKeys.join(',').replace(/\,/g, '\',\'');
+
+      props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+      //' AND fv:related_audio/* IS NOT NULL' + 
+      //' AND fv-word:available_in_games = 1' + 
+      ' AND fv:literal_translation/*/translation IN (\'' + translationsJoin + '\')' + 
+      '&sortBy=dc:title' + 
+      '&sortOrder=ASC' 
+      );
+    }
+  }
+
 
   /**
    * Select Theme
@@ -551,28 +333,17 @@ export default class Picturethis extends Component {
     window.scrollTo(0, 0); //@todo remove this, / find a better way
     
     this.resetTheme(theme);
-    this.buildAudioReferences(theme);
 
     this.setState({
-      selectedTheme:theme, 
-      selectedWordInList:false, 
-      selectedWordInList:false
+      selectedTheme: theme
     });
 
+    this.fetchData(this.props, theme);
   }
 
   resetTheme(theme)
   {
-    theme.words.forEach((word)=>{
-      word.found = false
-    })
-  }
-
-  buildAudioReferences(theme)
-  {
-    theme.words.forEach((word)=>{
-      word.audioObject = new Audio(word.audio);
-    })
+    this.setState({ foundWordKeys: new List(), selectedWordInList: false, selectedWordInList: false });
   }
 
   renderThemeList()
@@ -590,7 +361,7 @@ export default class Picturethis extends Component {
                     {this.config.themes.map((theme, index)=>{
                         return ( <div key={index} className="cell" style={{cursor:'pointer'}} onMouseUp={this.selectTheme.bind(this, theme)}>
                                   <img className="responsive-image" src={`${theme.image}`} style={imageTileStyle} />
-                                  <div style={{fontSize:'28px',textAlign:'center'}}>{theme.name}</div>
+                                  <div style={{fontSize:'22px',textAlign:'center'}}>{theme.name}</div>
                                 </div> )
                     })}
                 </div>
@@ -613,14 +384,18 @@ export default class Picturethis extends Component {
 
   checkMatch()
   {
-    if(this.state.selectedWordInList !== false && this.state.selectedWordInPicture !== false)
+    let wordInList = this.state.selectedWordInList;
+    let wordInPicture = this.state.selectedWordInPicture;
+
+    if(wordInList !== false && wordInPicture !== false)
     {
-      if(this.state.selectedWordInPicture === this.state.selectedWordInList)
+      if(selectn('locationInt', wordInPicture) === selectn('locationInt', wordInList) && wordInPicture != undefined)
       {
-          const word = this.state.selectedWordInList;
-          word.found = true;
-          word.audioObject.play();
-          this.setState({selectedWordInList:false, selectedWordInPicture:false})
+          if (selectn('audio', wordInList)) {
+            UIHelpers.playAudio(this.state, function(state) { this.setState(state); }.bind(this), ConfGlobal.baseURL + selectn('audio', wordInList));
+          }
+
+          this.setState({selectedWordInList:false, selectedWordInPicture:false, foundWordKeys: this.state.foundWordKeys.push(this.state.selectedTheme.name + '-' + selectn('locationInt', wordInList))})
       }
       else
       {
@@ -629,8 +404,37 @@ export default class Picturethis extends Component {
     }    
   }
 
-  renderGame()
+  renderGame(words)
   {
+    let warning = '';
+    let remoteWords = new Map();
+
+    // Merge remote words with state words
+    (selectn('response.entries', words) || []).map(function(word, wordKey) {
+
+      let literal_translation = selectn('properties.fv:literal_translation', word);
+
+      literal_translation.map(function(v, k) {
+
+        remoteWords = remoteWords.set(
+          selectn('translation', v),
+          Object.assign({}, this.state.selectedTheme.words.get(v.translation) || {}, {
+            word: selectn('properties.dc:title', word),
+            translation: v,
+            audio: selectn('contextParameters.word.related_audio[0].path', word)
+          }));
+
+      }.bind(this));
+
+    }.bind(this));
+
+    if (remoteWords.size != this.state.selectedTheme.words.size) {
+      warning = 'Note: This archive does not contain all of the words required for this game. Placeholders will be used.'
+    }
+
+    // Combine the two lists
+    remoteWords = this.state.selectedTheme.words.concat(remoteWords);
+
      const defaultAssetsPath = '/assets/games/picturethis/assets';
      const theme = this.state.selectedTheme;
 
@@ -642,7 +446,7 @@ export default class Picturethis extends Component {
 
      const tableStyle = {
        width: '700px',
-       margin: '20px auto',
+       margin: '20px 0',
        border:' 1px solid #000',
        borderRadius: '12px'
     };
@@ -682,7 +486,8 @@ export default class Picturethis extends Component {
     }
 
     const foundLocation = {
-      background: "#00bcd4",
+      background: "rgb(9, 189, 64)",
+      transition: "background-color 900ms linear",
       border:'1px solid #FFFFFF',
       color:'#FFFFFF'
     }
@@ -692,30 +497,30 @@ export default class Picturethis extends Component {
       background:'#00bcd4'
     }
 
-     return (<div className="game" style={{textAlign:'center'}}>
-              <a href="#" >Back</a>
+     return (<div className="game">
               <h2>{theme.name}</h2>
               <div style={{position:'relative', display:'inline-block'}}>
                 <img className="responsive-image" style={{borderRadius:'30px', border:'1px solid #000'}}src={`${theme.image}`} />
-                {this.state.selectedTheme.words.map((word, location)=>
+                {remoteWords.map((word, key)=>
                   {
                     let highlight = {};
 
-                    if(this.state.selectedWordInPicture === word)
+                    if (selectn('locationInt', this.state.selectedWordInPicture) === selectn('locationInt', word))
                     {
                       highlight = highlightLocation;
                     }
                     let dot = false;
                     
-                    if(word.found)
+                    if (this.state.foundWordKeys.includes(theme.name + '-' + selectn('locationInt', word)))
                     {
-                      dot = <div style={{...unknownLocation,...locationNumberStyle,...foundLocation,  top:`${word.location.y}px`,left:`${word.location.x}px`}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}>{location + 1}</div>;
+                      dot = <div style={{...unknownLocation,...locationNumberStyle,...foundLocation,  top:`${word.location.y}px`,left:`${word.location.x}px`}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}>{word.locationInt + 1}</div>;
                     }
                     else
                     {
                       dot = <div style={{...unknownLocation, ...highlight, top:`${word.location.y}px`,left:`${word.location.x}px`}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}></div>;
                     }
-                    return <div key={location}>
+
+                    return <div key={word.locationInt}>
                             {dot}
                         </div>
                 })}
@@ -727,13 +532,13 @@ export default class Picturethis extends Component {
                     <div style={tableCellStyle}>Translation</div>
                     <div style={tableCellStyle}>Audio</div>
                 </div>
-                {this.state.selectedTheme.words.map((word, location)=>{
+                {remoteWords.map((word, key)=>{
                   
                   let dotStyle = locationNumberStyle;
 
                   let dotAction = false;
 
-                  if(word.found === false)
+                  if (!this.state.foundWordKeys.includes(theme.name + '-' + selectn('locationInt', word)))
                   {
                     dotAction = this.selectWordOrMatch.bind(this, word, false)
                   }
@@ -742,23 +547,24 @@ export default class Picturethis extends Component {
                     dotStyle = {...dotStyle, ...foundLocation};
                   }
 
-                  if(this.state.selectedWordInList === word)
+                  if (selectn('locationInt', this.state.selectedWordInList) === selectn('locationInt', word))
                   {
                     dotStyle = {...locationNumberStyle,...highlightLocation}
                   }
 
-                  return <div key={location}>
-                            <div style={tableCellStyle}><div style={dotStyle} onMouseUp={dotAction}>{location + 1}</div></div>
-                            <div style={tableCellStyle}>{word.word}</div>
-                            <div style={tableCellStyle}>{word.translation}</div>
+                  return <div key={word.locationInt}>
+                            <div style={tableCellStyle}><div style={dotStyle} onMouseUp={dotAction}>{word.locationInt + 1}</div></div>
+                            <div style={tableCellStyle}>{word.word || key}</div>
+                            <div style={tableCellStyle}>{selectn('translation.translation', word) || key}</div>
                             <div style={tableCellStyle}>
-                              <audio controls style={{verticalAlign:'middle'}}>
-                                <source src={word.audio} type="audio/mpeg"/>
-                              </audio>
+                              {(word.audio) ? <audio controls style={{verticalAlign:'middle'}}><source src={ConfGlobal.baseURL + word.audio} type="audio/mpeg"/></audio>: 'N/A'}
                             </div>
                         </div>
                 })}
 
+            </div>
+            <div>
+              <small>{warning}</small>
             </div>
           </div>)
   }
@@ -766,10 +572,29 @@ export default class Picturethis extends Component {
    * Render
    */
   render() {
-      return (<div>
-        {this.state.selectedTheme === false ? false : this.renderGame()}
-        {this.renderThemeList()}
-      </div>);
+
+      const computeEntities = Immutable.fromJS([{
+        'id': this.props.routeParams.dialect_path + '/Dictionary',
+        'entity': this.props.computeWords
+      }])
+
+      const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+
+      return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+        <div className="row">
+
+          <div className={classNames('col-xs-12', {'col-md-12': !this.state.selectedTheme, 'col-md-4': this.state.selectedTheme})}>
+            {this.renderThemeList()}
+          </div>
+
+          <div className={classNames('col-xs-12', 'col-md-8')}>
+            {this.state.selectedTheme === false ? false : this.renderGame(computeWords)}
+          </div>
+
+        </div>
+
+      </PromiseWrapper>;
   }
 
 }
