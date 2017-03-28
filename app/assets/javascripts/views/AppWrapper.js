@@ -83,13 +83,13 @@ function findComponentParents(el) {
 }
 
 const getPreferences = function (login, dialect) {
-    let preferences2 = selectn('response.properties.preferences', login);
-    let preferences = (preferences2) ? JSON.parse(preferences2) : {};
+    let preferenceString = selectn('response.properties.preferences', login);
+    let parsedPreferences = (preferenceString) ? JSON.parse(preferenceString) : {};
     let flattenedPreferences = {};
 
-    for (var preference22 in preferences) {
-      for (var preference33 in preferences[preference22]) {
-        flattenedPreferences[preference33] = preferences[preference22][preference33];
+    for (var preferenceCat in parsedPreferences) {
+      for (var preference in parsedPreferences[preferenceCat]) {
+        flattenedPreferences[preference] = parsedPreferences[preferenceCat][preference];
       }
     }
 
