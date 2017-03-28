@@ -60,50 +60,8 @@ export default class GridView extends Component {
     this.state = {
       nowPlaying: null
     };
-  }
 
-  _playAudio(audioFile, e) {
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    let audioItem = new Audio(ConfGlobal.baseURL + audioFile);
-
-    if (this.state.nowPlaying != null) {
-      this.state.nowPlaying.pause();
-      this.state.currentTime = 0;
-    }
-
-    this.setState({
-      nowPlaying: audioItem
-    });
-
-    audioItem.play();
-
-    audioItem.onended = function () {
-      this.setState({
-        nowPlaying: null
-      });
-    }.bind(this);
-    
-    return false;
-  }
-  
-  _stopAudio(audioFile, e) {
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (this.state.nowPlaying != null) {
-      this.state.nowPlaying.pause();
-      this.state.currentTime = 0;
-
-      this.setState({
-        nowPlaying: null
-      });
-    }
-
-    return false;
+    ['_handleAudioPlayback'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   componentWillUnmount() {
@@ -113,6 +71,9 @@ export default class GridView extends Component {
     }
   }
   
+  _handleAudioPlayback(e) {
+
+  }
 
   render() {
 
@@ -152,8 +113,11 @@ export default class GridView extends Component {
                     let imageObj = selectn('contextParameters.' + single + '.related_pictures[0]', tile);
 
                     if (audio) {
-                      audioIcon = (selectn('src', this.state.nowPlaying) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow style={{marginRight: '10px'}} color='white' /> : <AVStop style={{marginRight: '10px'}} color='white' />;
-                      audioCallback = (selectn('src', this.state.nowPlaying) !== ConfGlobal.baseURL + audio) ? this._playAudio.bind(this, audio) : this._stopAudio.bind(this, audio);
+
+                      const stateFunc = function(state) { this.setState(state); }.bind(this);
+
+                      audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow style={{marginRight: '10px'}} color='white' /> : <AVStop style={{marginRight: '10px'}} color='white' />;
+                      audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audio) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
                     }
 
                     if (definitions && definitions.length > 0) {

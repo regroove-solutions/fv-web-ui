@@ -73,5 +73,46 @@ export default {
       }
 
       return '/assets/images/cover.png';
+  },
+  playAudio(state, stateFunc, audioUrl, e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    let audioItem = new Audio(audioUrl);
+
+    if (state.nowPlaying != null) {
+      state.nowPlaying.pause();
+      state.currentTime = 0;
+    }
+
+    stateFunc({
+      nowPlaying: audioItem
+    });
+
+    audioItem.play();
+
+    audioItem.onended = function () {
+      stateFunc({
+        nowPlaying: null
+      });
+    };
+
+    return false;
+  },
+  stopAudio(state, stateFunc, e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (state.nowPlaying != null) {
+      state.nowPlaying.pause();
+      state.currentTime = 0;
+
+      stateFunc({
+        nowPlaying: null
+      });
+    }
+
+    return false;
   }
 }
