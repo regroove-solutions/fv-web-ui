@@ -80,8 +80,15 @@ public class NonRecorders extends AbstractSecurityPolicy {
 
         	// Modify the query for anonymous and non-recorders only
         	if(nxPrincipal.isAnonymous() || (!nxPrincipal.isMemberOf("recorders") && !nxPrincipal.isMemberOf("language_administrators")) ) {
+
                 WhereClause where = query.where;
                 Predicate predicate;
+
+                // Do not limit published assets in the Site and SharedData directories. These generally do not follow fv-lifecycle
+                if (where.toString().indexOf("ecm:path STARTSWITH '/FV/sections/Site/Resources/'") != -1 || where.toString().indexOf("ecm:path STARTSWITH '/FV/sections/SharedData/'") != -1) {
+                    return query;
+                }
+
                 if (where == null || where.predicate == null) {
                 	predicate = new Predicate(NOT_DISABLED, Operator.AND, NOT_NEW);
                 } else {
