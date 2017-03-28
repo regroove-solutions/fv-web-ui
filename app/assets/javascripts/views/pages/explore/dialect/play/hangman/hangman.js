@@ -100,12 +100,12 @@ export default class HangmanGame extends Component {
   /**
    * Get Default State
    */
-  getDefaultState()
+  getDefaultState(props = this.props)
   {
       return  {
-        puzzle:this.preparePuzzle(),
+        puzzle:this.preparePuzzle(props),
         guessesLeft:7,
-        alphabet:this.prepareAlphabet(),
+        alphabet:this.prepareAlphabet(props),
         guessedLetters:[],
         succeeded:false,
         failed:false,
@@ -121,14 +121,21 @@ export default class HangmanGame extends Component {
       this.setState(this.getDefaultState());
   }
 
+  componentWillReceiveProps(nextProps) {
+      if (nextProps.puzzle != this.props.puzzle) {
+          this.setState(this.getDefaultState(nextProps));
+      }
+  }
+  
+
   /**
    * Prepare puzzle
    * breaks up puzzle into letters
    */
-  preparePuzzle(){
+  preparePuzzle(props){
 
-    var puzzle = this.props.puzzle;
-    var letters = this.props.alphabet;
+    var puzzle = props.puzzle;
+    var letters = props.alphabet;
     var letterCount = letters.length;
     var letterRegexStr = "";
 
@@ -171,8 +178,8 @@ export default class HangmanGame extends Component {
   /**
    * Prepare Alphabet
    */
-  prepareAlphabet(){
-      return this.props.alphabet.map((letter)=>{
+  prepareAlphabet(props){
+      return props.alphabet.map((letter)=>{
           return letter.toUpperCase();
       });
   }
@@ -309,7 +316,7 @@ export default class HangmanGame extends Component {
                 { (this.state.succeeded || this.state.failed) ?  false : this.renderKeyboard() }
                 { (this.state.succeeded ? this.renderSuccess() : false )}
                 { (this.state.failed ? this.renderFailure() : false )}
-                <RaisedButton secondary={true} label="New puzzle"/>
+                <RaisedButton secondary={true} onTouchTap={this.props.newPuzzle} label="New puzzle"/>
                 <RaisedButton primary={true} onMouseDown={this.restart} label="Restart"/>
 
            </div>;
