@@ -148,7 +148,7 @@ export default class Profile extends Component {
     if (formValue) {
       let userRequest = {
         "entity-type":"user",
-        "id": selectn('email', properties),
+        "id": this.state.currentUsername,
         "properties": payload
       };
 
