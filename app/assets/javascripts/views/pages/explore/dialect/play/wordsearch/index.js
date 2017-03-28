@@ -22,7 +22,9 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import Game from './wrapper'
 
@@ -66,7 +68,9 @@ export default class Wordsearch extends Component {
     '&sortBy=fvcharacter:alphabet_order');
 
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    //' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    ' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    //' AND fv-word:available_in_games = 1' + 
+    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
     '&currentPageIndex=0' + 
     '&pageSize=19' + 
     '&sortBy=dc:created' + 
@@ -108,10 +112,6 @@ export default class Wordsearch extends Component {
 
     const word_obj_array = selectn('response.entries', computeWords);
 
-    console.log('alphabet_array',alphabet_array);
-    console.log('word_array',word_array);
-    console.log('word_obj_array',word_obj_array);
-    
     //Since the alphabet isn't complete, we need fill in the rest
     const character_string = word_array.map((word) => word.word).join('');
     const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u)));
@@ -122,9 +122,9 @@ export default class Wordsearch extends Component {
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
-              <div className="col-xs-12">
-                <h1>Word Search</h1>
+              <div className="col-xs-12" style={{textAlign: 'center'}}>
                 {game}
+                <small>Archive contains {word_array.length} words that met game requirements.</small>
               </div>
             </div>
         </PromiseWrapper>;

@@ -21,10 +21,19 @@ import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import Colors from 'material-ui/lib/styles/colors';
 import FontIcon from 'material-ui/lib/font-icon';
+import IconButton from 'material-ui/lib/icon-button';
+import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow';
+import AVStop from 'material-ui/lib/svg-icons/av/stop';
+
+import classNames from 'classnames';
 
 import ConfGlobal from 'conf/local.json';
 
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -32,9 +41,9 @@ import selectn from 'selectn';
 const containerStyle = {
     background: 'url(/assets/games/wordscramble/assets/images/background.png)',
     backgroundSize: 'cover',
+    minHeight: '600px',
     padding: '40px 0'
 }
-
 
 const titleStyle = {
     textAlign: 'center',
@@ -83,7 +92,9 @@ export default class Wordscramble extends Component {
 
   fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
     props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
-    //' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    ' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    //' AND fv-word:available_in_games = 1' + 
+    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
     '&currentPageIndex=0' + 
     '&pageSize=10' + 
     '&sortBy=dc:created' + 
@@ -103,16 +114,16 @@ export default class Wordscramble extends Component {
 
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
 
-    return <div className="wordscramble-game" style={containerStyle}>
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities} className="wordscramble-game" style={containerStyle}>
             <h1 style={{...titleStyle, ...titleLogoStyle}}>Word Scramble</h1>
               {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map(function(phrase,i) {
                 return <Scramble key={i} sentence={{
                     original: new List(selectn('properties.dc:title', phrase).split(' ')),
                     translation: selectn('properties.fv:definitions[0].translation', phrase),
-                    audio: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_audio[0].path', phrase) + '?inline=true',
-                    picture: ConfGlobal.baseURL + selectn('contextParameters.phrase.related_pictures[0].path', phrase) + '?inline=true'}} />
+                    audio: selectn('contextParameters.phrase.related_audio[0].path', phrase),
+                    picture: selectn('contextParameters.phrase.related_pictures[0]', phrase)}} />
               })}
-          </div>;
+          </PromiseWrapper>;
   }
 
 }
@@ -139,10 +150,11 @@ export class Scramble extends Component {
     const scrambledSentence = this.props.sentence.original.sortBy(()=>Math.random());
 
     return {
-      scrambledSentence:scrambledSentence,
-      selected:[],
-      complete:false,
-      incorrect:false
+      scrambledSentence: scrambledSentence,
+      selected: [],
+      complete: false,
+      incorrect: false,
+      nowPlaying: null
     }
   }
 
@@ -181,7 +193,6 @@ export class Scramble extends Component {
       if(this.state.selected.join(' ') === this.props.sentence.original.toJS().join(' '))
       {
         this.setState({complete:true})
-        this.audio.play();
       }
       else
       {
@@ -190,6 +201,10 @@ export class Scramble extends Component {
   }
 
   render(){
+
+    let audioIcon, audioCallback = null;
+
+    let audio = this.props.sentence.audio;
 
     const containerStyles = {
         padding: '10px',
@@ -202,8 +217,19 @@ export class Scramble extends Component {
         margin:'auto'
     }
 
+
+    if (audio) {
+
+        const stateFunc = function(state) { this.setState(state); }.bind(this);
+
+        audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow style={{marginRight: '10px'}} /> : <AVStop style={{marginRight: '10px'}} />;
+
+        audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audio) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
+    }
+
     return <div style={{marginTop: '15px'}}>
             <div className="scrambled-sentence" style={containerStyles}>
+                <div style={{fontSize: '1.4em', padding: '5px', lineHeight: '244%', fontStyle: 'italic', color: '#3f8b53'}}><img style={{marginRight: '10px'}} src={UIHelpers.getThumbnail(this.props.sentence.picture, 'Thumbnail')} /> {this.props.sentence.translation} {(this.state.complete) ? <IconButton onTouchTap={audioCallback}>{audioIcon}</IconButton> : ''}</div>
                 <div style={{minHeight:'50px', borderBottom: '1px solid #CCC', marginBottom: '16px'}}>
                     {this.state.selected.map((word, index)=>{
                         return <RaisedButton key={index} style={{backgroundColor:'#a7fba5'}} label={word} onMouseUp={this.unSelectWord.bind(this,word, index)}/>
@@ -211,26 +237,18 @@ export class Scramble extends Component {
                     { this.state.complete ? <FontIcon className="material-icons" style={{color:Colors.greenA200, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>check_box</FontIcon> : false }
                     { this.state.incorrect ? <FontIcon className="material-icons" style={{color:Colors.red600, fontSize:'50px', position:'absolute', top:'5px', right:'5px'}}>indeterminate_check_box</FontIcon> : false }
                 </div>
-                    {
-                        this.state.scrambledSentence.map((word, index)=>{
-                            
-                            let disabled = false;
+                    {this.state.scrambledSentence.map((word, index)=>{
+                        let disabled = false;
 
-                            // if(this.state.selected.includes(word))
-                            // {
-                            //     disabled = true;
-                            // }
-
+                         if(this.state.selected.includes(word))
+                         {
+                             disabled = true;
+                         }
                         return <RaisedButton disabled={disabled} label={word} key={index} onMouseUp={this.selectWord.bind(this, word)} />
-                        })
-                    }
+                    })}
                 {this.state.complete ? <RaisedButton label="Reset" primary={true} onMouseUp={this.reset.bind(this)}/> : false}
-                <RaisedButton label="Check"  style={ this.state.complete ? {visibility:'hidden'} : {}} disabled={this.state.complete ? true : false} secondary={true} onMouseUp={this.checkAnswer.bind(this)}/>
+                <RaisedButton label="Check" className={classNames({'invisible': this.state.complete})} style={{margin: '0 5px'}} disabled={this.state.complete ? true : false} secondary={true} onMouseUp={this.checkAnswer.bind(this)}/>
                 {this.state.complete ? false : <RaisedButton label="Reset" primary={true} onMouseUp={this.reset.bind(this)}/>}
-                <div>
-                    <audio ref={(el)=>{this.audio = el}} src={this.props.sentence.audio} controls />
-                    <TextField disabled={true} hintText={this.props.sentence.translation} />
-                </div>
             </div>
     </div>
   }

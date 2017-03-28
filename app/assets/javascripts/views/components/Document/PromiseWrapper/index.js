@@ -35,12 +35,14 @@ export default class PromiseWrapper extends Component {
     computeEntities: PropTypes.instanceOf(List),
     titleEntityId: PropTypes.string,
     titleEntityField: PropTypes.string,
-    renderOnError: PropTypes.bool
+    renderOnError: PropTypes.bool,
+    style: PropTypes.object
   };
 
   static defaultProps = {
     renderOnError: false,
-    titleEntityField: 'response.properties.dc:title'
+    titleEntityField: 'response.properties.dc:title',
+    style: {}
   };
 
   constructor(props, context){
@@ -115,7 +117,7 @@ export default class PromiseWrapper extends Component {
       return false;
     }
 
-    return <div>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
+    return <div style={this.props.style}>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
   }
 
 }

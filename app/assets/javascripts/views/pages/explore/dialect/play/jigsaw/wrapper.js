@@ -56,8 +56,11 @@ export default class Game extends Component {
         images: Object.assign({
             preloaderLoading:`${defaultImagesPath}/loading.png`,
             preloaderLogo:`${defaultImagesPath}/logo.png`,
-            backgroundImage:`${defaultImagesPath}/wood.jpg`,
+            backgroundImage:`${defaultImagesPath}/background.png`,
             youWin:`${defaultImagesPath}/well-done.png`,
+            easy:`${defaultImagesPath}/easy.png`,
+            medium:`${defaultImagesPath}/medium.png`,
+            hard:`${defaultImagesPath}/hard.png`,
             cornerTopLeft:`${defaultImagesPath}/corner1a.png`,
             cornerTopRight:`${defaultImagesPath}/corner1b.png`,
             cornerBottomLeft:`${defaultImagesPath}/corner1c.png`,

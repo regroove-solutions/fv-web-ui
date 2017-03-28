@@ -22,7 +22,9 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import Game from './wrapper'
 
@@ -56,9 +58,11 @@ export default class Jigsaw extends Component {
 
   fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    ' AND fv-word:available_in_games = 1 AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    ' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    //' AND fv-word:available_in_games = 1' + 
+    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
     '&currentPageIndex=0' + 
-    '&pageSize=100' + 
+    '&pageSize=25' + 
     '&sortBy=dc:created' + 
     '&sortOrder=DESC' 
     );
@@ -122,9 +126,9 @@ export default class Jigsaw extends Component {
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
-              <div className="col-xs-12">
-                <h1>Jigsaw</h1>
+              <div className="col-xs-12" style={{textAlign: 'center'}}>
                 {game}
+                <small>Archive contains {selectn('response.resultsCount', computeWords)} words that met game requirements.</small>
               </div>
             </div>
         </PromiseWrapper>;

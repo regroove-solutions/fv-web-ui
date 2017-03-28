@@ -24,6 +24,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -40,10 +41,6 @@ const containerStyle = {
     position:'relative',
     maxWidth:'800px',
     margin:'auto'
-}
-
-const randomIntBetween = function(min, max) {
-    return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min))) + Math.ceil(min);
 }
 
 class Answer extends React.Component {
@@ -119,7 +116,7 @@ export default class Quiz extends Component {
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
         ' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
         //' AND fv-word:available_in_games = 1 ' + 
-        ' AND ecm:uuid LIKE \'%' + randomIntBetween(10, 99) + '%\'' +
+        ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
         '&currentPageIndex=0' + 
         '&pageSize=50'
         );

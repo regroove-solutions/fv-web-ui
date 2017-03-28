@@ -60,6 +60,7 @@ export default class Game extends Component {
           preloaderLoading:`${defaultImagesPath}/loading.png`,
           preloaderLogo:`${defaultImagesPath}/logo.png`,
           tile:`${defaultImagesPath}/tile.png`,
+          title:`${defaultImagesPath}/title.png`,
           playAudio:`${defaultImagesPath}/play_audio.png`,
           background:`${defaultImagesPath}/background.png`
         },

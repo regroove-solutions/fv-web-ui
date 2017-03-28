@@ -75,8 +75,11 @@ export default {
       return '/assets/images/cover.png';
   },
   playAudio(state, stateFunc, audioUrl, e) {
-    e.preventDefault();
-    e.stopPropagation();
+
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     let audioItem = new Audio(audioUrl);
 
@@ -101,8 +104,10 @@ export default {
   },
   stopAudio(state, stateFunc, e) {
 
-    e.preventDefault();
-    e.stopPropagation();
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
 
     if (state.nowPlaying != null) {
       state.nowPlaying.pause();
