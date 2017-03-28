@@ -233,15 +233,17 @@ export default class AppWrapper extends Component {
     //if (nextProps.windowPath != this.props.windowPath) {
     //}
 
+    // Get user preferences
     if (nextProps.computeLogin != this.props.computeLogin && selectn('success', nextProps.computeLogin)) {
 
       let userPreferences = getPreferences(nextProps.computeLogin);
 
+      // If primary dialect is defined, use value
       if (userPreferences.hasOwnProperty('primary_dialect')) {
         nextProps.fetchDialect2(userPreferences.primary_dialect);
         this.setState({dialect: userPreferences.primary_dialect});
       }
-      // User groups
+      // Otherwise select first dialect user has a role in
       else {
         nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + selectn('response.properties.groups', nextProps.computeLogin).join('\',\'') + '\')');
       }
@@ -350,24 +352,27 @@ export default class AppWrapper extends Component {
 
   let controller = null;
 
-  const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
+  const computeDialect2 = (!this.state.dialect) ? null : ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
+  let primaryDialectSearchQuery = selectn('response.entries', dialectQuery);
+
   let warnings = {};
-  let groupQuery = selectn('response.entries', dialectQuery);
-  let dialectQuery123;
+  
+  let autoPrimaryDialect;
 
-  if (groupQuery && groupQuery.length > 0) {
-    dialectQuery123 = groupQuery[0];
+  // If primary dialect was found manually
+  if (primaryDialectSearchQuery && primaryDialectSearchQuery.length > 0) {
+    autoPrimaryDialect = primaryDialectSearchQuery[0];
 
-    if (groupQuery.length > 1) {
+    if (primaryDialectSearchQuery.length > 1) {
       warnings['multiple_dialects'] = <span><strong>Note:</strong> You're a member of more than one dialect. <a href="/profile">Please configure a primary dialect or select a default starting page.</a></span>;
     }
   }
 
-    let preferences1222 = getPreferences(this.props.computeLogin, selectn('response', computeDialect2) || dialectQuery123);
+    let preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2) || autoPrimaryDialect);
 
-    return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}} style={{fontSize: UIHelpers.getPreferenceVal('font_size', preferences1222)}}>
+    return <div style={{backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties)}} style={{fontSize: UIHelpers.getPreferenceVal('font_size', preferences)}}>
 
-        <AppFrontController preferences={preferences1222} warnings={warnings} />
+        <AppFrontController preferences={preferences} warnings={warnings} />
 
         {keyboardPicker}
 
