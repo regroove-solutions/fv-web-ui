@@ -68,7 +68,7 @@ public class EnricherUtils {
 			binaryJsonObj.put("dc:description", (String)binaryDoc.getPropertyValue("dc:description"));
 
             // Get thumbnails
-			if (binaryDoc.getType().equals("FVPicture") || binaryDoc.getType().equals("FVVideo")) {
+			if (binaryDoc.hasSchema("picture")) {
                 ArrayNode thumbnailsJsonArray = mapper.createArrayNode();
 
                 List<HashMap<String, Object>> views = (List<HashMap<String, Object>>) binaryDoc.getPropertyValue("picture:views");
