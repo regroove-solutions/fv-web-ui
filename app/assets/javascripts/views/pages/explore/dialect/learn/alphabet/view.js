@@ -272,6 +272,7 @@ export default class View extends Component {
                             <h2>Words Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <WordListView
+                                dialect={selectn('response', computeDialect2)}
                                 filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
@@ -284,6 +285,7 @@ export default class View extends Component {
                             <h2>Phrases Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
                             <div className="row">
                               <PhraseListView
+                                dialect={selectn('response', computeDialect2)}
                                 filter={currentAppliedFilter}
                                 routeParams={this.props.routeParams} />
                             </div>
