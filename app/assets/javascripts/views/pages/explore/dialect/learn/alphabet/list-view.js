@@ -46,6 +46,7 @@ export default class ListView extends DataListView {
     DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
     DEFAULT_SORT_TYPE: 'asc',
     filter: new Map(),
+    dialect: null,
     gridListView: false
   }
 
@@ -58,6 +59,7 @@ export default class ListView extends DataListView {
     fetchDialect2: PropTypes.func.isRequired,
     fetchCharacters: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
+    dialect: PropTypes.object,
     computeCharacters: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
     filter: PropTypes.object,
@@ -114,7 +116,10 @@ export default class ListView extends DataListView {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    if (newProps.dialect == null) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
+
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
@@ -135,13 +140,18 @@ export default class ListView extends DataListView {
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path + '/Alphabet',
       'entity': this.props.computeCharacters
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    }]);
+
+    // If dialect not supplied, promise wrapper will need to wait for compute dialect
+    if (!this.props.dialect) {
+      computeEntities.push(new Map({
+        'id': this.props.routeParams.dialect_path,
+        'entity': this.props.computeDialect2
+      }));
+    }
 
     const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeDialect2 = this.props.dialect || ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
                 {(() => {

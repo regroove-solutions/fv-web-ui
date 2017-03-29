@@ -171,13 +171,18 @@ export default class ListView extends DataListView {
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path + '/Dictionary',
       'entity': this.props.computeWords
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    }]);
+
+    // If dialect not supplied, promise wrapper will need to wait for compute dialect
+    if (!this.props.dialect) {
+      computeEntities.push(new Map({
+        'id': this.props.routeParams.dialect_path,
+        'entity': this.props.computeDialect2
+      }));
+    }
 
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeDialect2 = this.props.dialect || ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
                 {(() => {
