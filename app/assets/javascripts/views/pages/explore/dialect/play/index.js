@@ -58,7 +58,7 @@ export default class Play extends Component {
                       <a href="./play/hangman"><img src="/assets/games/hangman/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
-                      <a href="./play/concentration"><img src="/assets/games/hangman/assets/images/preview.png" className="responsive-image"/></a>
+                      <a href="./play/concentration"><img src="/assets/games/memory/assets/images/preview.png" className="responsive-image"/></a>
                     </div>
                     <div className="cell" style={cellStyle}>
                       <a href="./play/quiz"><img src="/assets/images/preview-quiz.png" className="responsive-image"/></a>
