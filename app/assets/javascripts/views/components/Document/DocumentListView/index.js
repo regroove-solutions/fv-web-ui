@@ -135,7 +135,7 @@ export default class DocumentListView extends Component {
           dataSource={selectn('response.entries', this.props.data)}
           dataSourceCount={selectn('response.totalSize', this.props.data)}
           columns={this.props.columns}
-          rowHeight="55"
+          rowHeight={55}
           style={DataGridStyles}
           selected={this.state.selectedId}
           onSelectionChange={this._handleSelectionChange}
