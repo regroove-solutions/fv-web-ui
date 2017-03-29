@@ -57,8 +57,8 @@ export default class Game extends Component {
             preloaderLogo:`${defaultImagesPath}/logo.png`,
             background:`${defaultImagesPath}/background.png`,
             card:`${defaultImagesPath}/card.png`,
-            card_flipped:`${defaultImagesPath}/card_flipped.png`,
-            youWin:`${defaultImagesPath}/well-done.png`,
+            cardFlipped:`${defaultImagesPath}/card_flipped.png`,
+            wellDone:`${defaultImagesPath}/well-done.png`,
             title:`${defaultImagesPath}/title.png`,
             time:`${defaultImagesPath}/time.png`
         },
