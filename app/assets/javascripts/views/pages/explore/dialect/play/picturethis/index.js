@@ -315,7 +315,7 @@ export default class Picturethis extends Component {
       let translationsJoin = wordKeys.join(',').replace(/\,/g, '\',\'');
 
       props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-      //' AND fv:related_audio/* IS NOT NULL' + 
+      //' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
       //' AND fv-word:available_in_games = 1' + 
       ' AND fv:literal_translation/*/translation IN (\'' + translationsJoin + '\')' + 
       '&sortBy=dc:title' + 

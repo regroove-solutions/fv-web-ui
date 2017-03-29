@@ -64,10 +64,10 @@ export default class Hangman extends Component {
     '&sortBy=fvcharacter:alphabet_order');
 
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    //' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+    //' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
+    ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
     //' AND fv-word:available_in_games = 1' + 
-    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
-    '&currentPageIndex=0' + 
+    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
     '&pageSize=' + PUZZLES
     );
   }
@@ -107,7 +107,7 @@ export default class Hangman extends Component {
 
     const alphabet_array = (selectn('response.entries', computeCharacters) || []).map(function(char) {
       return selectn('properties.dc:title', char);
-    });;
+    });
 
     const word_array = (selectn('response.entries', computeWords) || []).map(function(word, k) {
       return {
@@ -115,7 +115,7 @@ export default class Hangman extends Component {
           translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
           audio: ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true'
       };
-    }).filter(v=>v.puzzle.length < 12);
+    });
 
     const word_obj_array = selectn('response.entries', computeWords);
 
@@ -123,7 +123,7 @@ export default class Hangman extends Component {
 
       //Since the alphabet isn't complete, we need fill in the rest
       const character_string = word_array.map((word) => word.puzzle).join('');
-      const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u)));
+      const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u))).filter((v) => v != ' ');
       
       word_array[this.state.currentPuzzleIndex]['alphabet'] = (alphabet_array.length > 0) ? alphabet_array : unique_characters;
       game = <HangManGame newPuzzle={this.newPuzzle} {...word_array[this.state.currentPuzzleIndex]} />

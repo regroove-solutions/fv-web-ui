@@ -69,14 +69,11 @@ export default class Concentration extends Component {
     '&sortBy=fvcharacter:alphabet_order');
 
     props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-    ' AND fv:related_pictures/* IS NOT NULL' + 
-    ' AND fv:related_audio/* IS NOT NULL' + 
+    ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
+    ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
     //' AND fv-word:available_in_games = 1' + 
-    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
-    '&currentPageIndex=0' + 
-    '&pageSize=5' + 
-    '&sortBy=dc:created' + 
-    '&sortOrder=DESC' 
+    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
+    '&pageSize=5'
     );
   }
 
@@ -98,7 +95,7 @@ export default class Concentration extends Component {
           audio: (selectn('contextParameters.word.related_audio[0].path', word)) ? ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true': null,
           image: UIHelpers.getThumbnail(selectn('contextParameters.word.related_pictures[0]', word), 'Thumbnail')
       };
-    }).filter(v=>v.word.length < 12);
+    });
 
     if (word_array.length > 0) {
       game = <Game cards={word_array} />;

@@ -114,10 +114,10 @@ export default class Quiz extends Component {
     fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
         // Fetch words (generate randomness based on GUID)
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
-        ' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL' + 
+        ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
+        ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
         //' AND fv-word:available_in_games = 1 ' + 
-        ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
-        '&currentPageIndex=0' + 
+        '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
         '&pageSize=50'
         );
     }
