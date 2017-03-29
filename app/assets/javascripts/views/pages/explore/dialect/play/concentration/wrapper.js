@@ -23,7 +23,7 @@ import Memory from 'games/memory'
 export default class Game extends Component {
 
   static propTypes = {
-    words: PropTypes.array.isRequired
+    cards: PropTypes.array.isRequired
   }
 
   /**
@@ -58,46 +58,14 @@ export default class Game extends Component {
             background:`${defaultImagesPath}/background.png`,
             card:`${defaultImagesPath}/card.png`,
             card_flipped:`${defaultImagesPath}/card_flipped.png`,
+            youWin:`${defaultImagesPath}/well-done.png`,
             title:`${defaultImagesPath}/title.png`,
             time:`${defaultImagesPath}/time.png`
         },
 
-        cards:[
-            {
-                word:'Word 1',
-                translation:'english translation',
-                image:`${defaultImagesPath}/example/1.png`,
-                audio:'assets/sounds/sample.mp3'
-            },
-            {
-                word:'Word 2',
-                translation:'english translation',
-                image:`${defaultImagesPath}/example/2.png`,
-                audio:'assets/sounds/sample.mp3'
-            },
-            {
-                word:'Word 3',
-                translation:'english translation',
-                image:`${defaultImagesPath}/example/3.png`,
-                audio:'assets/sounds/sample.mp3'
-            },
-            {
-                word:'Word 4',
-                translation:'english translation',
-                image:`${defaultImagesPath}/example/4.png`,
-                audio:'assets/sounds/sample.mp3'
-            },
-            {
-                word:'Word 5',
-                translation:'english translation',
-                image:`${defaultImagesPath}/example/5.png`,
-                audio:'assets/sounds/sample.mp3'
-            }
-        ]
+        cards: this.props.cards
         
     };
-
-
 
     /**
      * Create the game, with container and game config

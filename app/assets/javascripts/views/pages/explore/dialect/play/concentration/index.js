@@ -15,12 +15,33 @@ limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
+import Immutable, { List, Map } from 'immutable';
+import provide from 'react-redux-provide';
+import selectn from 'selectn';
 
-import Game from './wrapper';
+import ConfGlobal from 'conf/local.json';
+
+import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+
+import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+import UIHelpers from 'common/UIHelpers';
+
+import Game from './wrapper'
+
 /**
 * Play games
 */
+@provide
 export default class Concentration extends Component {
+
+  static propTypes = {
+    fetchCharacters: PropTypes.func.isRequired,
+    computeCharacters: PropTypes.object.isRequired,
+    fetchWords: PropTypes.func.isRequired,
+    computeWords: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired
+  }
 
   /**
    * Constructor
@@ -33,17 +54,64 @@ export default class Concentration extends Component {
    * componentDidMount
    */
   componentDidMount () {
-
+    // Fetch fetch data
+    this.fetchData(this.props);
   }
 
   /**
-   * Render
+   * Fetch list of characters
    */
+  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    props.fetchCharacters(props.routeParams.dialect_path + '/Alphabet',
+    '&currentPageIndex=0' + 
+    '&pageSize=100' + 
+    '&sortOrder=asc' + 
+    '&sortBy=fvcharacter:alphabet_order');
+
+    props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    ' AND fv:related_pictures/* IS NOT NULL' + 
+    ' AND fv:related_audio/* IS NOT NULL' + 
+    //' AND fv-word:available_in_games = 1' + 
+    ' AND ecm:uuid LIKE \'%' + StringHelpers.randomIntBetween(10, 99) + '%\'' +
+    '&currentPageIndex=0' + 
+    '&pageSize=5' + 
+    '&sortBy=dc:created' + 
+    '&sortOrder=DESC' 
+    );
+  }
+
   render() {
-    return <div className="concentration-game">
-      <h3>Concentration (Memory)</h3>
-      <Game />
-    </div>;
+
+    let game = '';
+
+    const computeEntities = Immutable.fromJS([{
+      'id': this.props.routeParams.dialect_path + '/Dictionary',
+      'entity': this.props.computeWords
+    }])
+
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+
+    const word_array = (selectn('response.entries', computeWords) || []).map(function(word, k) {
+      return {
+          word: selectn('properties.dc:title', word),
+          translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
+          audio: (selectn('contextParameters.word.related_audio[0].path', word)) ? ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true': null,
+          image: UIHelpers.getThumbnail(selectn('contextParameters.word.related_pictures[0]', word), 'Thumbnail')
+      };
+    }).filter(v=>v.word.length < 12);
+
+    if (word_array.length > 0) {
+      game = <Game cards={word_array} />;
+    }
+
+    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+            <div className="row">
+              <div className="col-xs-12" style={{textAlign: 'center'}}>
+                {game}
+                <small>{word_array.length} random words that met game requirements were found.</small>
+              </div>
+            </div>
+        </PromiseWrapper>;
   }
 
 }
