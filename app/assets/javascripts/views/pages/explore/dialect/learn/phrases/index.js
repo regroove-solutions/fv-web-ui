@@ -86,7 +86,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     }])
 
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path);
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computePhraseBooks = ProviderHelpers.getEntry(this.props.computeCategories, '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children');
 
     let computePhraseBooksSize = selectn('response.entries.length', computePhraseBooks) || 0;
@@ -128,7 +128,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                     facets={selectn('response.entries', computePhraseBooks) || []} />
                 </div>
                 <div className={classNames('col-xs-12', (computePhraseBooksSize == 0) ? 'col-md-12': 'col-md-9')}>
-                  <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Words Phrases</h1>
+                  <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Phrases</h1>
                   {phraseListView}
                 </div>
               </div>
