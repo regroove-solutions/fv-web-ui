@@ -85,14 +85,14 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    const alphabetListView = <AlphabetListView pagination={false} routeParams={this.props.routeParams} />;
+    const alphabetListView = <AlphabetListView pagination={false} routeParams={this.props.routeParams} dialect={selectn('response', computeDialect2)} />;
 
     if (this.props.print) {
       return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
             <div className="row">
                 <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
-                {React.cloneElement(alphabetListView, { gridListView: true, gridListTile: AlphabetGridTile })}
+                {React.cloneElement(alphabetListView, { gridListView: true, gridListTile: AlphabetGridTile, dialect: selectn('response', computeDialect2) })}
                 </div>
             </div>
             
