@@ -38,6 +38,8 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import Badge from 'material-ui/lib/badge';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
+
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import IconButton from 'material-ui/lib/icon-button';
@@ -99,6 +101,7 @@ export default class Navigation extends Component {
 
     this.state = {
       hintTextSearch: "Search site: ",
+      searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
       userRegistrationTasksPath: '/management/registrationRequests/'
@@ -171,31 +174,46 @@ export default class Navigation extends Component {
       newTour.start();
   }
 
-  _handleNavigationSearchSubmit() {
-	  let searchQueryParam = this.refs.navigationSearchField.getValue();	  
-    let path = "/" + this.props.splitWindowPath.join("/");
-    let queryPath = "";    
-    
-    // Do a global search in either the workspace or section
-    if(path.includes("/explore/FV/Workspaces/Data")) {
-      queryPath = "/explore/FV/Workspaces/Data"
-    }      
-    else if(path.includes("/explore/FV/sections/Data")) {
-      queryPath = "/explore/FV/sections/Data"
-    }
-    else {
-      queryPath = "/explore/FV/sections/Data"    	  
-    }
+  _handleNavigationSearchSubmit(e) {
 
-    // Do a dialect search
-    if (this.props.routeParams.dialect_path) {
-      queryPath = "/explore" + this.props.routeParams.dialect_path;
-    }
+    // If search bar is not visible, this button should show it
+    if (this.refs.navigationSearchField._getInputNode().offsetParent === null) {
+      this.setState({
+        searchBarVisibleInMobile: true
+      });
 
-    // Clear out the input field
-    this.refs.navigationSearchField.setValue("");
-	  this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
-  } 
+      e.preventDefault();
+    } else {
+
+      this.setState({
+        searchBarVisibleInMobile: false
+      });
+
+      let searchQueryParam = this.refs.navigationSearchField.getValue();	  
+      let path = "/" + this.props.splitWindowPath.join("/");
+      let queryPath = "";    
+      
+      // Do a global search in either the workspace or section
+      if(path.includes("/explore/FV/Workspaces/Data")) {
+        queryPath = "/explore/FV/Workspaces/Data"
+      }      
+      else if(path.includes("/explore/FV/sections/Data")) {
+        queryPath = "/explore/FV/sections/Data"
+      }
+      else {
+        queryPath = "/explore/FV/sections/Data"    	  
+      }
+
+      // Do a dialect search
+      if (this.props.routeParams.dialect_path) {
+        queryPath = "/explore" + this.props.routeParams.dialect_path;
+      }
+
+      // Clear out the input field
+      this.refs.navigationSearchField.setValue("");
+      this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
+    }
+  }
 
   render() {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette;
@@ -287,31 +305,22 @@ export default class Navigation extends Component {
 
             <span className={classNames({'hidden': isFrontPage})}>
 
-            <ToolbarSeparator style={{float: 'none', marginRight: '30px', marginLeft: 0}} />
+            <ToolbarSeparator style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
-            <TextField underlineStyle={{width:'90%'}} style={{fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', borderRadius: '5px'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch })} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} />
+            <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
+              <TextField underlineStyle={{width:'90%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', borderRadius: '5px', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch })} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} /> 
+              <FlatButton label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
+            </div>
 
-            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0'}} iconStyle={{fontSize: '24px', padding: '5px', borderRadius: '20px', color: themePalette.alternateTextColor, background: themePalette.primary2Color}}>search</IconButton>
-
-            {/*<IconMenu
-                iconButtonElement={
-                  <IconButton><MoreVertIcon /></IconButton>
-                }
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-              >
-                <MenuItem primaryText="Refresh" />
-                <MenuItem primaryText="Help" />
-                <MenuItem primaryText="Sign out" />
-            </IconMenu>*/}
+            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0'}} iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: themePalette.alternateTextColor, background: themePalette.primary2Color}}>search</IconButton>
 
             </span>
           </ToolbarGroup>
 
         </AppBar>
 
-        <Toolbar className={classNames({'hidden': isDialect || isFrontPage})}>
+        <Toolbar className={classNames('hidden-xs', {'hidden': isDialect || isFrontPage})}>
 
           <ToolbarGroup float="right">
             <DialectDropDown routeParams={this.props.routeParams} />

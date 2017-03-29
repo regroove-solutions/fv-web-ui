@@ -258,7 +258,7 @@ var centered;
             location = region;
           }
 
-          return <Marker icon={myIcon} position={[53.293064 * i, -132.218825 * i]}>
+          return <Marker key={i} icon={myIcon} position={[53.293064 * i, -132.218825 * i]}>
             <Popup>
               <span>{selectn('contextParameters.ancestry.dialect.dc:title', dialect)}<br/>{location}<br/><a href={"/explore" + selectn('contextParameters.ancestry.dialect.path', dialect)}>Go To Dialect</a></span>
             </Popup>

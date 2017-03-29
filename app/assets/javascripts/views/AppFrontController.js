@@ -650,7 +650,7 @@ export default class AppFrontController extends Component {
     }
 
     // Re-route if preferences change
-    else if (next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
+    else if (next_primary_dialect_path && next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
       this._route(nextProps);
     }
   }

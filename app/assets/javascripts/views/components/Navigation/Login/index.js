@@ -20,8 +20,11 @@ import selectn from 'selectn';
 // Components
 import Popover from 'material-ui/lib/popover/popover';
 import FlatButton from 'material-ui/lib/flat-button';
+import IconButton from 'material-ui/lib/icon-button';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
+
+import ActionExitToAppIcon from 'material-ui/lib/svg-icons/action/exit-to-app';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
@@ -112,9 +115,10 @@ export default class Login extends Component {
 
     // Handle success (anonymous or actual)
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
+
         return (
-          <div style={{display: "inline-block", paddingRight: "10px"}}>
-            Welcome <strong><a style={{color: '#000'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.username", this.props.computeLogin)}</a></strong>! <FlatButton onTouchTap={this._handleLogout} label="Sign Out"/>
+          <div className="hidden-xs" style={{display: "inline-block", paddingRight: "10px"}}>
+            Welcome <strong><a style={{color: '#000'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.username", this.props.computeLogin)}</a></strong>!
           </div>
         );
     } else {

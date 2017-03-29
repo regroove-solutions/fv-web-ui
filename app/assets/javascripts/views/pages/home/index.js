@@ -62,7 +62,7 @@ export default class PageHome extends Component {
     super(props, context);
 
     this.state = {
-      mapVisible: true,
+      mapVisible: false,
       pagePath: '/' + this.props.properties.domain + '/sections/Site/Resources/',
       dialectsPath: '/' + this.props.properties.domain + '/sections/',
     };
@@ -91,10 +91,11 @@ export default class PageHome extends Component {
       minHeight: '155px',
       //height: '650px',
       backgroundColor: 'transparent',
-      backgroundSize: '115%',
+      //backgroundSize: '115%',
+      backgroundSize: 'cover',
       backgroundAttachment: 'fixed',
       backgroundImage: 'url("/assets/images/homepage.jpg")',
-      backgroundPosition: '-280px -500px',
+      //backgroundPosition: '-280px -500px',
       overflow: 'hidden'
     }
 

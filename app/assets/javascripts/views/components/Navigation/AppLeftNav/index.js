@@ -30,6 +30,7 @@ export default class AppLeftNav extends Component {
   static propTypes = {
     toggleMenuAction: PropTypes.func.isRequired,
     computeToggleMenuAction: PropTypes.object.isRequired,
+    logout: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired
@@ -130,8 +131,12 @@ export default class AppLeftNav extends Component {
 
   _onNavigateRequest(event, path) {
 
-    // Request to navigate to
-    this.props.pushWindowPath(path);
+    if (path == '/logout/') {
+      this.props.logout();
+    } else {
+      // Request to navigate to
+      this.props.pushWindowPath(path);
+    }
 
     // Close side-menu
     this.props.toggleMenuAction();
@@ -169,6 +174,24 @@ export default class AppLeftNav extends Component {
           </SelectableList>
 
           <Divider />
+
+          <SelectableList
+            valueLink={{
+              value: location.pathname,
+              requestChange: this._onNavigateRequest
+          }}>
+
+            <ListItem
+              key="profile"
+              value="/profile/"
+              primaryText="My Profile" />
+
+            <ListItem
+              key="sign-out"
+              value="/logout/"
+              primaryText="Sign Out" />
+
+          </SelectableList>
 
       </LeftNav>
     );
