@@ -6,7 +6,8 @@ export default class AuthorizationFilter extends Component {
 
   static propTypes = {
     children: PropTypes.node,
-    renderPartial: PropTypes.bool
+    renderPartial: PropTypes.bool,
+    key: PropTypes.string
   };
 
   static defaultProps = {
@@ -88,8 +89,8 @@ export default class AuthorizationFilter extends Component {
       return null;
     }
 
-    let combinedStyle = { style: Object.assign({}, this.props.style, children.props.style) };
+    let combinedProps = { key: this.props.key, style: Object.assign({}, this.props.style, children.props.style) };
 
-	  return React.cloneElement(children, combinedStyle);
+	  return React.cloneElement(children, combinedProps);
   }
 }

@@ -10,7 +10,7 @@ import options from 'models/schemas/filter-options';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
-import { RaisedButton } from 'material-ui';
+import { RaisedButton, FlatButton, FontIcon } from 'material-ui';
 
 /**
  * Return 'true' if value was found, 'false' otherwise.
@@ -54,7 +54,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
             options: options,
             formValue: props.initialFormValue || props.formValues,
             defaultFormValue: props.formValues,
-            initialFormValue: props.initialFormValue
+            initialFormValue: props.initialFormValue,
+            showFilterMobile: false
         };
 
         ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -227,17 +228,17 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
             <div className="row">
 
-                <div className="col-xs-3">
+                <div className={classNames('col-xs-12', 'col-md-3')}>
 
                     <div className={classNames('panel', 'panel-default')}>
 
                         <form onSubmit={this._onFilterSaveForm}>
 
                         <div className="panel-heading">
-                            Filter Items
+                            Filter Items <FlatButton className="visible-xs" label={(this.state.showFilterMobile) ? 'Hide' : 'Show'} labelPosition="before" onTouchTap={(e) => {this.setState({showFilterMobile: !this.state.showFilterMobile}); e.preventDefault(); }} icon={<FontIcon className="material-icons">{(this.state.showFilterMobile) ? 'expand_less' : 'expand_more'}</FontIcon>} style={{float: 'right', lineHeight: 1}} />
                         </div>
 
-                        <div className="panel-body">
+                        <div className={classNames('panel-body', {'hidden-xs': !this.state.showFilterMobile})}>
                             <div className="row">
                                 <div className="col-xs-12">
                                     <t.form.Form
@@ -261,7 +262,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
                 </div>
 
-                <div className="col-xs-9">
+                <div className={classNames('col-xs-12', 'col-md-9')}>
                     <ComposedFilter
                     {...this.state}
                     {...this.props}

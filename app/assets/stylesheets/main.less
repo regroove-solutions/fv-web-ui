@@ -356,6 +356,36 @@ audio,video{
   }
 }
 
+/**
+* Dialect page
+*/
+.dialect-info-banner{
+  width: 260px ;
+  height: 175px ;
+  background: rgba(255, 255, 255, 0.7);
+  margin: 10px 25px ;
+  border-radius: 10px ;
+  padding: 10px ;
+  position: absolute;
+  bottom: 85px;
+  right: 0
+}
+
+.dialect-greeting-container{
+  max-width: 70%;
+  padding: 10px 30px;
+  line-height: 180%;
+  border-radius: 0 10px 10px 0;
+  position: absolute;
+  bottom: 80px;
+  background-color: rgba(255,255,255, 0.5);
+}
+
+.dialect-navigation{
+  position: absolute;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+}
 
 .flex-container {
   margin: auto;
@@ -535,11 +565,86 @@ audio::-webkit-media-controls-enclosure {
 }
 
 @media screen and (max-width: @mobile-xs-width) {
+
+  // Navigation
+
   .search-bar-seperator{
     margin-right: 15px!important;
   }
 
+  // Kids Theme
+
   .kids-home{
     background-size: 46%, 39%;
+  }
+
+
+  // Dialect Page
+
+  .dialect-info-banner{
+    width: 100%;
+    z-index: 9999;
+    top: 0;
+    right: 0;
+    margin: 0;
+    height: 100%;
+    background: transparent;
+
+    .dib-header{
+      top: 5px;
+      right: 5px;
+    }
+
+    .dib-body{
+      background: #ffffff;
+      margin-top: 35px;
+      padding: 20px 10px;
+      border: 1px solid #ababab;
+      border-radius: 5px;
+    }
+  }
+
+  .dialect-greeting-container{
+    width: 100%;
+    padding: 20px 10px;
+    line-height: 140%;
+    border-radius: 0;
+    position: relative;
+    bottom: 0;
+    background-color: transparent;
+    max-width: 100%;
+  }
+
+  .dialect-navigation{
+    position: relative;
+    background-color:rgba(0,0,0,0.5) !important;
+    height: inherit!important;
+
+    > div {
+      float: none!important;
+
+      >button{
+        float: none!important;
+      }
+    }
+  }
+
+  // Components -> Page Toolbar
+  .page-toolbar{
+    height: inherit!important;
+    width: 100%!important;
+    padding: 5px!important;
+    min-height: 58px;
+
+    > div:not(first-child){
+      float:none!important;
+
+      > div {
+        float:none!important;
+        width: 90%!important;
+        margin: 15px auto!important;
+        display: block!important;
+      }
+    }
   }
 }

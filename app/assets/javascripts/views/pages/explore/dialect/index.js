@@ -24,9 +24,7 @@ import selectn from 'selectn';
 import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
-import PageHeader from 'views/pages/explore/dialect/page-header';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-import SearchBar from 'views/pages/explore/dialect/search-bar';
 
 // Views
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
@@ -39,7 +37,7 @@ import TextField from 'material-ui/lib/text-field';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
+import FontIcon from 'material-ui/lib/font-icon';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -51,8 +49,7 @@ import ListItem from 'material-ui/lib/lists/list-item';
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
 
 import Preview from 'views/components/Editor/Preview';
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
+
 import GridView from 'views/pages/explore/dialect/learn/base/grid-view';
 
 const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
@@ -63,7 +60,6 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 import Kids from './kids';
 
-const portalNavigationWrapperStyles = {position: 'absolute', bottom: '0', backgroundColor: 'rgba(0,0,0,0.5)'};
 const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '16px'}
 
 /**
@@ -94,9 +90,7 @@ export default class ExploreDialect extends Component {
     disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    fetchGalleries: PropTypes.func.isRequired,
-    computeGalleries: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired
   };
 
   static contextTypes = {
@@ -106,6 +100,10 @@ export default class ExploreDialect extends Component {
   constructor(props, context){
     super(props, context);
 
+    this.state = {
+      showArchiveInfoMobile: false
+    };
+
     // Bind methods to 'this'
     ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_publishChangesAction', '_handleGalleryDropDownChange', '_handleSelectionChange'].forEach( (method => this[method] = this[method].bind(this)) );
   }
@@ -113,7 +111,6 @@ export default class ExploreDialect extends Component {
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal', 'Fetching community portal.', null, 'Problem fetching community portal it may be unpublished or offline.');
-    newProps.fetchGalleries(newProps.routeParams.dialect_path + '/Portal');
   }
 
   // Fetch data on initial render
@@ -204,7 +201,6 @@ export default class ExploreDialect extends Component {
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    const computeGalleries = ProviderHelpers.getEntry(this.props.computeGalleries, this.props.routeParams.dialect_path + '/Portal');
 
     const isSection = this.props.routeParams.area === 'sections';
     const isKidsTheme = this.props.routeParams.theme === 'kids';
@@ -239,7 +235,7 @@ export default class ExploreDialect extends Component {
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
 			        {(() => {
                 if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
-                  return <h2 style={{maxWidth: '70%', padding: '10px 30px', lineHeight: '180%', borderRadius: '0 10px 10px 0', position: 'absolute', bottom: '80px', backgroundColor: 'rgba(255,255,255, 0.5)'}}>
+                  return <h2 className="dialect-greeting-container">
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                       <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
                     </AuthorizationFilter>
@@ -251,9 +247,16 @@ export default class ExploreDialect extends Component {
                 }
               })()}
 
-              <div style={{"width":"260px","height":"175px","background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px", position: 'absolute', bottom: '85px', right: '0'}}>
-                <div>
-                  <strong>Name of Archive</strong>: 
+              <div className={classNames('dialect-info-banner')}>
+
+                <div className={classNames('dib-header', 'visible-xs')}>
+                  <FlatButton label={(this.state.showArchiveInfoMobile) ? 'Info' : 'Info'} labelPosition="before" onTouchTap={(e) => {this.setState({showArchiveInfoMobile: !this.state.showArchiveInfoMobile}); e.preventDefault(); }} icon={<FontIcon className="material-icons">{(this.state.showArchiveInfoMobile) ? 'info_outline' : 'info'}</FontIcon>} style={{float: 'right', lineHeight: 1}} />
+                </div>
+
+                <div className={classNames('dib-body', {'hidden-xs': !this.state.showArchiveInfoMobile})}>
+
+                  <div>
+                    <strong>Name of Archive</strong>: 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                       <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:title" entity={selectn('response', computeDialect2)} />
                     </AuthorizationFilter>
@@ -277,14 +280,16 @@ export default class ExploreDialect extends Component {
                     </AuthorizationFilter>
                   </div>
 
+                </div>
+
               </div>
 
-              <Toolbar style={portalNavigationWrapperStyles}>
+              <Toolbar className="dialect-navigation">
 
                 <ToolbarGroup firstChild={true}>
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> <ToolbarSeparator />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> <ToolbarSeparator className="hidden-xs" />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> <ToolbarSeparator className="hidden-xs" />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> <ToolbarSeparator className="hidden-xs" />
                   <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))} label="Kids Portal" /> 
                 </ToolbarGroup>
 
@@ -294,7 +299,7 @@ export default class ExploreDialect extends Component {
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-8', 'col-md-8')}>
+              <div className={classNames('col-xs-12', 'col-md-8')}>
                 <div>
                   <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                     <EditableComponentHelper className="fv-portal-about" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:about" entity={selectn('response', computePortal)} />
@@ -317,7 +322,7 @@ export default class ExploreDialect extends Component {
 
               </div>
 
-              <div className={classNames('col-xs-4', 'col-md-4')}>
+              <div className={classNames('col-xs-12', 'col-md-4')}>
 
                   {(featuredWords.length > 0) ? <h3>First Words</h3> : ''}
 

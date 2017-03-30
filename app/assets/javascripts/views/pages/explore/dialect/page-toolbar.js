@@ -23,15 +23,17 @@ import selectn from 'selectn';
 import provide from 'react-redux-provide';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
+
+import {RaisedButton, FlatButton, IconButton, FontIcon } from 'material-ui';
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar';
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-import RaisedButton from 'material-ui/lib/raised-button';
 import Toggle from 'material-ui/lib/toggle';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
+import Menu from 'material-ui/lib/menus/menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -72,7 +74,8 @@ export default class PageToolbar extends Component {
       enableActions: 0,
       disableActions: 0,
       publishActions: 0,
-      unpublishActions: 0
+      unpublishActions: 0,
+      showActionsMobile: false
     };
 
     // Bind methods to 'this'
@@ -186,9 +189,13 @@ export default class PageToolbar extends Component {
       });
     }
 
-    return <Toolbar>
+    return <Toolbar className="page-toolbar">
 
-                  <ToolbarGroup float="left">
+                  <ToolbarGroup className="visible-xs" style={{textAlign: 'right'}}>
+                    <IconButton iconClassName="material-icons" onTouchTap={(e) => {this.setState({showActionsMobile: !this.state.showActionsMobile}); e.preventDefault(); }}>menu</IconButton>
+                  </ToolbarGroup>
+
+                  <ToolbarGroup float="left" className={classNames({'hidden-xs': !this.state.showActionsMobile})}>
 
                     {this.props.children}
 
@@ -250,7 +257,7 @@ export default class PageToolbar extends Component {
 
                   </ToolbarGroup>
 
-                  <ToolbarGroup float="right">
+                  <ToolbarGroup float="right" className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
 
                     {(() => {
                       if (this.props.actions.includes('publish')) {
@@ -276,21 +283,26 @@ export default class PageToolbar extends Component {
                       }
                     })()}
 
-                    <ToolbarSeparator />
+                    <ToolbarSeparator className="hidden-xs" />
 
                     {(() => {
                       if (this.props.actions.includes('more-options')) {
-                        return <IconMenu anchorOrigin={{horizontal: 'right', vertical: 'top'}} targetOrigin={{horizontal: 'right', vertical: 'top'}} iconButtonElement={
-                                <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true}>
-                                  <NavigationExpandMoreIcon />
-                                </IconButton>
-                              }>
-                                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
-                                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} primaryText="Media Browser" />
-                                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}}>
-                                  <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')} primaryText="Users" />
-                                </AuthorizationFilter>
-                              </IconMenu>;
+                        
+                        let children = [
+                          <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} key="reports" primaryText="Reports" />,
+                          <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} key="media" primaryText="Media Browser" />,
+                          <AuthorizationFilter key="users" filter={{permission: 'Write', entity: selectn('response', computeEntity)}}>
+                            <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')} primaryText="Users" />
+                          </AuthorizationFilter>];
+
+                        return React.createElement(UIHelpers.isViewSize('xs') ? Menu : IconMenu, {
+                          anchorOrigin: {horizontal: 'right', vertical: 'top'},
+                          targetOrigin: {horizontal: 'right', vertical: 'top'},
+                          iconButtonElement:
+                            <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true} className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
+                              <NavigationExpandMoreIcon />
+                            </IconButton>
+                          }, children);
                       }
                     })()}
 
