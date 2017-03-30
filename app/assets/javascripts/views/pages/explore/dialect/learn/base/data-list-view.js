@@ -129,7 +129,7 @@ export default class DataListView extends Component {
 
   _resetColumns(props) {
 
-    if (this.state.fixedCols) {
+    if (this.state.fixedCols || this.state.hideStateColumn) {
       return;
     }
 

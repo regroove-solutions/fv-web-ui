@@ -253,7 +253,7 @@ export default class ExploreDialect extends Component {
                   <FlatButton label={(this.state.showArchiveInfoMobile) ? 'Info' : 'Info'} labelPosition="before" onTouchTap={(e) => {this.setState({showArchiveInfoMobile: !this.state.showArchiveInfoMobile}); e.preventDefault(); }} icon={<FontIcon className="material-icons">{(this.state.showArchiveInfoMobile) ? 'info_outline' : 'info'}</FontIcon>} style={{float: 'right', lineHeight: 1}} />
                 </div>
 
-                <div className={classNames('dib-body', {'hidden-xs': !this.state.showArchiveInfoMobile})}>
+                <div className={classNames('dib-body', {'hidden-xs': !this.state.showArchiveInfoMobile})} style={{zIndex: (this.state.showArchiveInfoMobile) ? 99 : 0}}>
 
                   <div>
                     <strong>Name of Archive</strong>: 

@@ -8,9 +8,13 @@ import t from 'tcomb-form';
 import fields from 'models/schemas/filter-fields';
 import options from 'models/schemas/filter-options';
 
+import withToggle from 'views/hoc/view/with-toggle';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import { RaisedButton, FlatButton, FontIcon } from 'material-ui';
+
+const FiltersWithToggle = withToggle();
 
 /**
  * Return 'true' if value was found, 'false' otherwise.
@@ -54,8 +58,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
             options: options,
             formValue: props.initialFormValue || props.formValues,
             defaultFormValue: props.formValues,
-            initialFormValue: props.initialFormValue,
-            showFilterMobile: false
+            initialFormValue: props.initialFormValue
         };
 
         ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -230,35 +233,25 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
                 <div className={classNames('col-xs-12', 'col-md-3')}>
 
-                    <div className={classNames('panel', 'panel-default')}>
+                    <form onSubmit={this._onFilterSaveForm}>
 
-                        <form onSubmit={this._onFilterSaveForm}>
+                        <FiltersWithToggle label="Filter Items" mobileOnly={true}>
+                            <t.form.Form
+                                ref="filter_form"
+                                type={t.struct(selectn(this.props.filterOptionsKey, fields))}
+                                value={this.state.formValue}
+                                options={options.toJS()} />      
+                            <RaisedButton
+                                onTouchTap={this._onReset}
+                                label="Reset"
+                                primary={true} /> &nbsp;
+                            <RaisedButton
+                                type="submit"
+                                label="Filter"
+                                primary={true} />
+                        </FiltersWithToggle>
 
-                        <div className="panel-heading">
-                            Filter Items <FlatButton className="visible-xs" label={(this.state.showFilterMobile) ? 'Hide' : 'Show'} labelPosition="before" onTouchTap={(e) => {this.setState({showFilterMobile: !this.state.showFilterMobile}); e.preventDefault(); }} icon={<FontIcon className="material-icons">{(this.state.showFilterMobile) ? 'expand_less' : 'expand_more'}</FontIcon>} style={{float: 'right', lineHeight: 1}} />
-                        </div>
-
-                        <div className={classNames('panel-body', {'hidden-xs': !this.state.showFilterMobile})}>
-                            <div className="row">
-                                <div className="col-xs-12">
-                                    <t.form.Form
-                                        ref="filter_form"
-                                        type={t.struct(selectn(this.props.filterOptionsKey, fields))}
-                                        value={this.state.formValue}
-                                        options={options.toJS()} />      
-                                    <RaisedButton
-                                        onTouchTap={this._onReset}
-                                        label="Reset"
-                                        primary={true} /> &nbsp;
-                                    <RaisedButton
-                                        type="submit"
-                                        label="Filter"
-                                        primary={true} />           
-                                </div>
-                            </div>
-                        </div>
-                        </form>
-                    </div>
+                    </form>
 
                 </div>
 

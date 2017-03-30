@@ -52,7 +52,6 @@ import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
 
-const portalNavigationWrapperStyles = {position: 'absolute', bottom: '0', backgroundColor: 'rgba(0,0,0,0.5)'};
 const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '16px'}
 
 /**
@@ -273,7 +272,7 @@ export default class DialectLearn extends Component {
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
               {(() => {
                 if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
-                  return <h2 style={{maxWidth: '70%', padding: '10px 30px', lineHeight: '180%', borderRadius: '0 10px 10px 0', position: 'absolute', bottom: '80px', backgroundColor: 'rgba(255,255,255, 0.5)'}}>
+                  return <h2 className="dialect-greeting-container">
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                       <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
                     </AuthorizationFilter>
@@ -286,22 +285,22 @@ export default class DialectLearn extends Component {
               })()}
 
               <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true} routeParams={this.props.routeParams}>
-                <div className={classNames({'invisible': !this.state.showStats})} style={{width: '50%', "background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px", position: 'absolute', top: '15px', right: '0'}}>
+                <div className={classNames('hidden-xs', {'invisible': !this.state.showStats})} style={{width: '50%', "background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px", position: 'absolute', top: '15px', right: '0'}}>
                   <PageStats dialectPath={this.props.routeParams.dialect_path} />
                 </div>
               </AuthenticationFilter>
 
-              <Toolbar style={portalNavigationWrapperStyles}>
+              <Toolbar className="dialect-navigation">
 
                 <ToolbarGroup firstChild={true} float="left">
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} /> <ToolbarSeparator />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} /> <ToolbarSeparator />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} /> <ToolbarSeparator />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
                   <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={"Stories (" + storyCount + ")"} />
                 </ToolbarGroup>
 
                 <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true} routeParams={this.props.routeParams}>
-                  <ToolbarGroup firstChild={false} float="right">
+                  <ToolbarGroup className="hidden-xs" firstChild={false} float="right">
                     <FlatButton icon={<EditorInsertChart />} style={portalNavigationStyles} onTouchTap={(e) => {this.setState({showStats: !this.state.showStats})}} label={"Language Statistics"} />
                   </ToolbarGroup>
                 </AuthenticationFilter>

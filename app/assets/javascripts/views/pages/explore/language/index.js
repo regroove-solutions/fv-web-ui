@@ -18,20 +18,22 @@ import Immutable, { List, Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
+import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import PortalList from 'views/components/Browsing/portal-list'
 
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+const FilteredPortalList = withFilter(PortalList);
 
 /**
 * Explore Archive page shows all the families in the archive
 */
 @provide
-export default class ExploreLanguage extends Component {
+export default class Explore extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -52,13 +54,16 @@ export default class ExploreLanguage extends Component {
   constructor(props, context){
     super(props, context);
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    this.state = {
+      filteredList: null
+    };
+
+    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    this.props.fetchLanguage(newProps.routeParams.language_path);
-    this.props.fetchDialects(newProps.routeParams.language_path);
+    newProps.fetchLanguage(newProps.routeParams.language_path);
+    newProps.fetchDialects(newProps.routeParams.language_path);
   }
 
   // Fetch data on initial render
@@ -68,13 +73,19 @@ export default class ExploreLanguage extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
+    if (nextProps.routeParams.language_path != this.props.routeParams.language_path) {
       this.fetchData(nextProps);
     }
   }
 
   _onNavigateRequest(path) {
     this.props.pushWindowPath('/explore' + path);
+  }
+
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
   }
 
   render() {
@@ -92,34 +103,24 @@ export default class ExploreLanguage extends Component {
     const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, pathOrId);
     const computeLanguage = ProviderHelpers.getEntry(this.props.computeLanguage, pathOrId);
 
+    let portalListProps = {
+      action: this._onNavigateRequest,
+      filterOptionsKey: 'Default',
+      fixedList: true,
+      area: this.props.routeParams.area,
+      fixedListFetcher: this.fixedListFetcher,
+      filteredItems: this.state.filteredList,
+      metadata: selectn('response', computeDialects),
+      items: selectn('response.entries', computeDialects) || []
+    };
+
     return <PromiseWrapper computeEntities={computeEntities}>
-              <div className="row">
-                <div className="col-md-4 col-xs-12">
-                  <h1>{selectn('title', computeLanguage)}</h1>
-                  <div>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                  </div>
-                </div>
-                <div className="col-md-8 col-xs-12">
-                    <h2>Browse the following Languages:</h2>
-                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                      <GridList
-                        cols={2}
-                        cellHeight={200}
-                        style={{width: '100%', height: 800, overflowY: 'auto', marginBottom: 24}}
-                        >
-                          {(selectn('response.entries', computeDialects) || []).map((tile, i) => 
-                            <GridTile
-                              onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                              key={tile.uid}
-                              title={tile.title}
-                              subtitle={tile.description}
-                              ><img src="/assets/images/cover.png" /></GridTile>
-                          )}
-                      </GridList>
-                    </div>
-                </div>
+             <div className="row">
+               
+              <div className="col-xs-12">
+                  <h1>{selectn('response.properties.dc:title', computeLanguage)} &raquo; Dialects</h1>
+                  <FilteredPortalList {...portalListProps} />
+              </div>
             </div>
           </PromiseWrapper>;
   }

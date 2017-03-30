@@ -384,7 +384,7 @@ audio,video{
 .dialect-navigation{
   position: absolute;
   bottom: 0;
-  background-color: rgba(0,0,0,0.5);
+  background-color:rgba(0,0,0,0.5) !important;
 }
 
 .flex-container {
@@ -566,6 +566,12 @@ audio::-webkit-media-controls-enclosure {
 
 @media screen and (max-width: @mobile-xs-width) {
 
+  // Common
+
+  h1{
+    font-size: 1.4em;
+  }
+
   // Navigation
 
   .search-bar-seperator{
@@ -578,12 +584,10 @@ audio::-webkit-media-controls-enclosure {
     background-size: 46%, 39%;
   }
 
-
-  // Dialect Page
+  // Dialect Page(s)
 
   .dialect-info-banner{
     width: 100%;
-    z-index: 9999;
     top: 0;
     right: 0;
     margin: 0;
@@ -601,6 +605,7 @@ audio::-webkit-media-controls-enclosure {
       padding: 20px 10px;
       border: 1px solid #ababab;
       border-radius: 5px;
+      position: relative;
     }
   }
 
@@ -617,7 +622,6 @@ audio::-webkit-media-controls-enclosure {
 
   .dialect-navigation{
     position: relative;
-    background-color:rgba(0,0,0,0.5) !important;
     height: inherit!important;
 
     > div {
@@ -629,12 +633,17 @@ audio::-webkit-media-controls-enclosure {
     }
   }
 
+  .row-create-wrapper{
+    margin-bottom: 20px;
+  }
+
   // Components -> Page Toolbar
+
   .page-toolbar{
     height: inherit!important;
     width: 100%!important;
     padding: 5px!important;
-    min-height: 58px;
+    min-height: 56px;
 
     > div:not(first-child){
       float:none!important;
@@ -645,6 +654,19 @@ audio::-webkit-media-controls-enclosure {
         margin: 15px auto!important;
         display: block!important;
       }
+    }
+  }
+
+  // Components -> react-datagrid
+  .react-datagrid {
+    .react-datagrid-pagination-toolbar{
+      > div{
+        min-width:100%!important;
+      }
+    }
+
+    .z-row .z-cell .z-content {
+      white-space: initial!important;
     }
   }
 }

@@ -121,6 +121,12 @@ export default class ListView extends DataListView {
       }
     };
 
+    // Reduce the number of columns displayed for mobile
+    if (UIHelpers.isViewSize('xs')) {
+      this.state.columns = this.state.columns.filter((v,k) => ['title', 'fv:definitions'].indexOf(v.name) != -1);
+      this.state['hideStateColumn'] = true;
+    }
+
     // Bind methods to 'this'
     ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns'].forEach( (method => this[method] = this[method].bind(this)) );
   }

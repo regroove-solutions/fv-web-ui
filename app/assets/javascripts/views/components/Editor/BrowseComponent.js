@@ -29,8 +29,6 @@ import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import MediaList from 'views/components/Browsing/media-list';
-import withPagination from 'views/hoc/grid-list/with-pagination';
-import withFilter from 'views/hoc/grid-list/with-filter';
 import LinearProgress from 'material-ui/lib/linear-progress';
 
 import IconButton from 'material-ui/lib/icon-button';
@@ -46,8 +44,6 @@ import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-vie
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
 const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': {appliedFilter: ''}, 'dialect': {appliedFilter: ''} } };
-
-const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
 
 class SharedResourceGridTile extends Component {
 

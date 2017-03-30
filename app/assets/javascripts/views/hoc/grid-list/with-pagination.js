@@ -7,6 +7,8 @@ import Pagination from 'views/components/Navigation/Pagination';
 
 import {IconButton, MenuItem, SelectField} from "material-ui";
 
+import UIHelpers from 'common/UIHelpers';
+
 /**
  * HOC: Adds pagination to a grid list
  */
@@ -96,7 +98,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
                   forcePage={this.props.fetcherParams.currentPageIndex - 1}
                   pageCount={selectn('pageCount', this.props.metadata)}
                   marginPagesDisplayed={0}
-                  pageRangeDisplayed={3}
+                  pageRangeDisplayed={(UIHelpers.isViewSize('xs')) ? 3 : 10}
                   onPageChange={this._onPageChange} />
               </div>
 

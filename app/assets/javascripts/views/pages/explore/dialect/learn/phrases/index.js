@@ -109,7 +109,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-              <div className="row">
+              <div className={classNames('row', 'row-create-wrapper')}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
                   <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDocument), login: this.props.computeLogin}}>
                     <RaisedButton label="Create New Phrase" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />

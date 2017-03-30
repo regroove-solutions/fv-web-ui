@@ -148,8 +148,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-              <div className={classNames('row', {'hidden': isKidsTheme})}>
-
+              <div className={classNames('row', 'row-create-wrapper', {'hidden': isKidsTheme})}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
                   <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
                     <RaisedButton label={"Create " + this.props.typeFilter + " Book"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
@@ -158,18 +157,14 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
 
               </div>
 
-              <div className="row">
-                <div className="col-xs-12">
-
-                  <div className="row" style={{marginBottom: '20px'}}>
-                    <h1 className={classNames({'hidden': isKidsTheme})}>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
-                    <div className={classNames('col-xs-12', {'col-md-8': isKidsTheme, 'col-md-offset-2': isKidsTheme})}>
-                      {listView}
-                    </div>
-                  </div>
-
+              <div className="row" style={{marginBottom: '20px'}}>
+                
+                <div className={classNames('col-xs-12', {'col-md-8': isKidsTheme, 'col-md-offset-2': isKidsTheme})}>
+                  <h1 className={classNames({'hidden': isKidsTheme})}>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
+                  {listView}
                 </div>
               </div>
+
         </PromiseWrapper>;
   }
 }

@@ -22,6 +22,8 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
+
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view';
@@ -111,7 +113,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-              <div className="row">
+              <div className={classNames('row', 'row-create-wrapper')}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
                   <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDocument), login: this.props.computeLogin}}>
                     <RaisedButton label="Create New Word" onTouchTap={this._onNavigateRequest.bind(this, 'create')} primary={true} />

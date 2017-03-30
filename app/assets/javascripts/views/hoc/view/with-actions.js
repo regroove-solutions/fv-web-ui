@@ -11,11 +11,9 @@ import options from 'models/schemas/filter-options';
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
 
-import { RaisedButton } from 'material-ui';
+import { RaisedButton, FontIcon, FlatButton } from 'material-ui';
 
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-
-import FlatButton from 'material-ui/lib/flat-button';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
@@ -200,10 +198,10 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', this.props.computeItem)}}>
-                        <div>
+                        <div className="col-xs-12">
                         <Toolbar className="toolbar">
                             <ToolbarGroup key={0} float="right">
-                            <RaisedButton onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label={"Delete " + StringHelpers.toTitleCase(this.props.labels.single)} />
+                                <RaisedButton icon={<FontIcon className="material-icons">delete</FontIcon>} onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label={"Delete " + StringHelpers.toTitleCase(this.props.labels.single)} />
                             </ToolbarGroup>
                         </Toolbar>
 

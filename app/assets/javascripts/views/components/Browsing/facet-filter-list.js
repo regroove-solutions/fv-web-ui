@@ -8,6 +8,9 @@ import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 import Checkbox from 'material-ui/lib/checkbox';
+import withToggle from 'views/hoc/view/with-toggle';
+
+const FiltersWithToggle = withToggle();
 
 export default class FacetFilterList extends Component {
 
@@ -60,51 +63,53 @@ export default class FacetFilterList extends Component {
 
         const listItemStyle = {fontSize: '13px', fontWeight: 'normal'};
 
-        return <Paper style={{maxHeight: '70vh', overflow: 'auto'}}>
-            <ListUI subheader={this.props.titles}>
+        return <FiltersWithToggle label={this.props.title} mobileOnly={true}>
+                <Paper style={{maxHeight: '70vh', overflow: 'auto'}}>
+                    <ListUI subheader={this.props.title}>
 
-                {(this.props.facets || []).map(function (facet, i) { 
+                    {(this.props.facets || []).map(function (facet, i) { 
 
-                    let childrenIds = [];
-                    let parentFacetChecked = this.state.checked.includes(facet.uid)
+                        let childrenIds = [];
+                        let parentFacetChecked = this.state.checked.includes(facet.uid)
 
-                    let nestedItems = [];
-                    let children = selectn('contextParameters.children.entries', facet).sort(function(a, b){
-                        if(a.title < b.title) return -1;
-                        if(a.title > b.title) return 1;
-                        return 0;
-                    });
+                        let nestedItems = [];
+                        let children = selectn('contextParameters.children.entries', facet).sort(function(a, b){
+                            if(a.title < b.title) return -1;
+                            if(a.title > b.title) return 1;
+                            return 0;
+                        });
 
-                    // Render children if exist 
-                    if (children.length > 0) {
-                        children.map(function (facetChild, i) {
+                        // Render children if exist 
+                        if (children.length > 0) {
+                            children.map(function (facetChild, i) {
 
-                            childrenIds.push(facetChild.uid);
+                                childrenIds.push(facetChild.uid);
 
-                            // Mark as checked if parent checked or if it is checked directly.
-                            let checked = this.state.checked.includes(facetChild.uid);
+                                // Mark as checked if parent checked or if it is checked directly.
+                                let checked = this.state.checked.includes(facetChild.uid);
 
-                            nestedItems.push(<ListItem
-                                key={facetChild.uid}
-                                leftCheckbox={<Checkbox checked={checked} onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)} />}
-                                style={listItemStyle}
-                                primaryText={facetChild.title} />);
-                        }.bind(this));
-                    }
+                                nestedItems.push(<ListItem
+                                    key={facetChild.uid}
+                                    leftCheckbox={<Checkbox checked={checked} onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)} />}
+                                    style={listItemStyle}
+                                    primaryText={facetChild.title} />);
+                            }.bind(this));
+                        }
 
-                    return <ListItem
-                                style={listItemStyle}
-                                key={facet.uid}
-                                leftCheckbox={<Checkbox checked={parentFacetChecked}
-                                onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)} />}
-                                primaryText={facet.title}
-                                open={parentFacetChecked}
-                                initiallyOpen={true}
-                                autoGenerateNestedIndicator={false}
-                                nestedItems={nestedItems} />
-                }.bind(this))}
+                        return <ListItem
+                                    style={listItemStyle}
+                                    key={facet.uid}
+                                    leftCheckbox={<Checkbox checked={parentFacetChecked}
+                                    onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)} />}
+                                    primaryText={facet.title}
+                                    open={parentFacetChecked}
+                                    initiallyOpen={true}
+                                    autoGenerateNestedIndicator={false}
+                                    nestedItems={nestedItems} />
+                    }.bind(this))}
 
-            </ListUI>
-        </Paper>
+                </ListUI>
+            </Paper>
+        </FiltersWithToggle>;
     }
 }

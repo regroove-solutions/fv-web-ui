@@ -117,8 +117,8 @@ export default class Index extends Component {
 
     return <PromiseWrapper computeEntities={computeEntities}>
 
-            <div className="row">
-              <div className={classNames('col-xs-4', 'col-xs-offset-8', 'text-right')}>
+            <div className={classNames('row', 'row-create-wrapper')}>
+              <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
                 <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
                   <RaisedButton label="Create New User" onTouchTap={this._onNavigateRequest.bind(this, ['register'])} primary={true} />
                 </AuthorizationFilter>

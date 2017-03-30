@@ -75,7 +75,7 @@ class Cover extends Component {
                         </div>
 
                         <div className="col-xs-12 col-md-9">
-                             <header>
+                             <header style={{marginBottom: '10px'}}>
                                 <h1 dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( selectn('title', this.props.entry) )}}></h1>
                                 <h2 style={{fontSize: '1.3em'}} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize( selectn('[0].translation', dominant_language_title_translation) )}}></h2>
                                 <subheader>{(selectn('contextParameters.book.authors', this.props.entry) || []).map(function(author, i) {
@@ -111,7 +111,7 @@ class Page extends Component {
 
                 <div className="row">
 
-                    <div className={classNames('col-xs-12', 'col-md-3', {'hidden': this.props.videos.length == 0 && this.props.photos.length == 0})}>
+                    <div className={classNames('col-xs-12', 'col-md-3', {'hidden': this.props.videos.length == 0 && this.props.photos.length == 0})} style={{marginBottom: '10px', textAlign: 'center'}}>
                         <MediaThumbnail videos={this.props.videos} photos={this.props.photos} />
                     </div>
 
@@ -126,10 +126,10 @@ class Page extends Component {
                                 }
                             })}
                         </div>
-                        <div className={classNames('col-xs-12')}>
+                        <div className={classNames('col-xs-12')} style={{marginTop: '15px'}}>
                             {(selectn('properties.fv:literal_translation', this.props.entry)  || []).map(function(translation, i) {
                                 if (translation.language == DEFAULT_LANGUAGE) {
-                                    return <span key={i}><strong>Literal Translation</strong>: {translation.translation}</span>;
+                                    return <span key={i}><strong>Literal Translation</strong>: <span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(translation.translation)}}></span></span>;
                                 }
                             })}
                         </div>
