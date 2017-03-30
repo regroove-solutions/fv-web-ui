@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -33,6 +34,10 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+import withForm from 'views/hoc/view/with-form';
+
+const EditViewWithForm = withForm(PromiseWrapper, true);
 
 @provide
 export default class PageDialectPhraseEdit extends Component {
@@ -60,7 +65,7 @@ export default class PageDialectPhraseEdit extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_handleSave', '_handleCancel'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   fetchData(newProps) {
@@ -73,8 +78,9 @@ export default class PageDialectPhraseEdit extends Component {
     this.fetchData(this.props);
   }  
 
+  // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    
+
     let currentPhrase, nextPhrase;
 
     if (this.state.phrasePath != null) {
@@ -90,6 +96,12 @@ export default class PageDialectPhraseEdit extends Component {
 
   shouldComponentUpdate(newProps, newState) {
 
+    let previousPhrase = this.props.computePhrase;
+    let nextPhrase = newProps.computePhrase;
+
+    let previousDialect = this.props.computeDialect2;
+    let nextDialect = newProps.computeDialect2;
+
     switch (true) {
 
       case (newProps.routeParams.phrase != this.props.routeParams.phrase):
@@ -100,11 +112,11 @@ export default class PageDialectPhraseEdit extends Component {
         return true;
       break;
 
-      case (ProviderHelpers.getEntry(newProps.computePhrase, this.state.phrasePath) != ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath)):
+      case (typeof nextPhrase.equals === 'function' && nextPhrase.equals(previousPhrase) === false):
         return true;
       break;
 
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
+      case (typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false):
         return true;
       break;
     }
@@ -112,19 +124,8 @@ export default class PageDialectPhraseEdit extends Component {
     return false;
   }
 
-  _onRequestSaveForm(e) {
+  _handleSave(phrase, formValue) {
 
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_phrase"].getValue();
-
-    // Passed validation
-    if (formValue) {
-      let phrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
-
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
       let newDocument = new Document(phrase.response, { 
         'repository': phrase.response._repository,
         'nuxeo': phrase.response._nuxeo
@@ -134,14 +135,14 @@ export default class PageDialectPhraseEdit extends Component {
       newDocument.set(formValue);
 
       // Save document
-      this.props.updatePhrase(newDocument);
+      this.props.updatePhrase(newDocument, null, null);
 
       this.setState({ formValue: formValue });
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0);
-    }
-  }  
+  }
+
+  _handleCancel() {
+    NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+  }
 
   render() {
 
@@ -158,41 +159,29 @@ export default class PageDialectPhraseEdit extends Component {
     const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    // Additional context (in order to store origin)
-    if (selectn("response", computeDialect2)) {
-      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computePhrase) } });
+    // Additional context (in order to store origin), and initial filter value
+    if (selectn("response", computeDialect2) && selectn("response", computePhrase)) {
+      let providedFilter = selectn("response.properties.fv-phrase:definitions[0].translation", computePhrase) || selectn("response.properties.fv:literal_translation[0].translation", computePhrase);
+      context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computePhrase), 'providedFilter': providedFilter } });
     }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    return <div>
 
 	    <h1>Edit {selectn("response.properties.dc:title", computePhrase)} phrase</h1>
 
-	    <div className="row" style={{marginTop: '15px'}}>
-	
-	      <div className={classNames('col-xs-8', 'col-md-10')}>
-	        <form onSubmit={this._onRequestSaveForm}>
-	          <t.form.Form
-	            ref="form_phrase"
-	            type={t.struct(selectn("FVPhrase", fields))}
-	            context={context}
-              value={this.state.formValue || selectn("response.properties", computePhrase)}
-	            options={selectn("FVPhrase", options)} />
-	            <div className="form-group">
-	              <button type="submit" className="btn btn-primary">Save</button> 
-	            </div>
-	        </form>
-	      </div>
-	
-	      <div className={classNames('col-xs-4', 'col-md-2')}>
-	
-	        <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-	
-	          <div className="subheader">Metadata</div>
-	
-	        </Paper>
-	
-	      </div>
-	  </div>
-	</PromiseWrapper>;
+      <EditViewWithForm
+        computeEntities={computeEntities} 
+        initialValues={context}
+        itemId={this.state.phrasePath}
+        fields={fields}
+        options={options}
+        saveMethod={this._handleSave}
+        cancelMethod={this._handleCancel}
+        currentPath={this.props.splitWindowPath}
+        navigationMethod={this.props.replaceWindowPath}
+        type="FVPhrase"
+        routeParams={this.props.routeParams} />
+
+	</div>;
   }
 }

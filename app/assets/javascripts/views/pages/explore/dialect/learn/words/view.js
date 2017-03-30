@@ -250,19 +250,19 @@ export default class View extends Component {
             <div className="row">
               <div className="col-xs-12">
                 <div>
-
                   <Card>
                     <CardHeader
                       title={selectn('response.title', computeWord)}
                       subtitle={(selectn('response.contextParameters.word.part_of_speech', computeWord) !=null) ? "Part of Speech: " + selectn('response.contextParameters.word.part_of_speech', computeWord) : ""}
-                      avatar={selectn('response.contextParameters.word.related_pictures[0].views[0].url', computeWord)} />
+                      avatar={selectn('response.contextParameters.word.related_pictures[0].views[0].url', computeWord)}
+                      style={{height: 'inherit'}} />
 
                     <Tabs tabItemContainerStyle={tabItemStyles}>
                       <Tab label="Definition" >
                         <div>
                           <CardText>
 
-                            <div className="col-xs-8">
+                            <div className={classNames('col-xs-12', 'col-md-8')}>
 
                               <h2>{selectn('response.title', computeWord)}</h2>
 
@@ -293,7 +293,7 @@ export default class View extends Component {
 
                             </div>
 
-                            <div className="col-xs-4">
+                            <div className={classNames('col-xs-12', 'col-md-4')}>
 
                               <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
                               <MediaPanel label="Video(s)" type="FVVideo" items={videos} />

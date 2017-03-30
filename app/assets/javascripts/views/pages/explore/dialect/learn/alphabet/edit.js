@@ -153,7 +153,7 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
 
 	    <div className="row" style={{marginTop: '15px'}}>
 	
-	      <div className={classNames('col-xs-8', 'col-md-10')}>
+	      <div className={classNames('col-xs-12')}>
 	        <form onSubmit={this._onRequestSaveForm}>
 	          <t.form.Form
 	            ref="form_character"
@@ -166,16 +166,7 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
 	            </div>
 	        </form>
 	      </div>
-	
-	      <div className={classNames('col-xs-4', 'col-md-2')}>
-	
-	        <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-	
-	          <div className="subheader">Metadata</div>
-	
-	        </Paper>
-	
-	      </div>
+
 	  </div>
 	</PromiseWrapper>;
   }

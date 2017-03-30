@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -266,7 +267,7 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Words Starting with " + selectn('response.title', computeCharacter)} id="find_words">
+                      <Tab label={UIHelpers.isViewSize('xs') ? 'Words' : 'Words Starting with ' + selectn('response.title', computeCharacter)} id="find_words">
                         <div>
                           <CardText>
                             <h2>Words Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>
@@ -279,7 +280,7 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Phrases Starting with " + selectn('response.title', computeCharacter)} id="find_phrases">
+                      <Tab label={UIHelpers.isViewSize('xs') ? 'Phrases' : 'Phrases Starting with ' + selectn('response.title', computeCharacter)} id="find_phrases">
                         <div>
                           <CardText>
                             <h2>Phrases Starting with <strong>{selectn('response.title', computeCharacter)}</strong></h2>

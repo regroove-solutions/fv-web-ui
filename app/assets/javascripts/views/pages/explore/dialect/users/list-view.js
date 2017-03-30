@@ -104,6 +104,11 @@ export default class ListView extends DataListView {
 			selectedUserName: null,
     };
 
+    // Reduce the number of columns displayed for mobile
+    if (UIHelpers.isViewSize('xs')) {
+      this.state.columns = this.state.columns.filter((v,k) => ['username', 'email'].indexOf(v.name) != -1);
+    }
+
     // Bind methods to 'this'
     ['_onNavigateRequest', '_onUserSelected', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns', '_handleClose', '_saveMethod', '_fetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }

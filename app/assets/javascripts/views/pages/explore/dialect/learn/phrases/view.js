@@ -248,7 +248,7 @@ export default class View extends Component {
                           <div>
                             <CardText>
 
-                              <div className="col-xs-8">
+                              <div className={classNames('col-xs-12', 'col-md-8')}>
 
                                 <h2>{selectn('response.title', computePhrase)}</h2>
 
@@ -266,7 +266,7 @@ export default class View extends Component {
 
                               </div>
 
-                              <div className="col-xs-4">
+                              <div className={classNames('col-xs-12', 'col-md-4')}>
 
                                 <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
                                 <MediaPanel label="Video(s)" type="FVVideo" items={videos} />

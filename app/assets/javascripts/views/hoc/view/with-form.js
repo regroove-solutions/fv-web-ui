@@ -89,6 +89,8 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
             else {
                 NavigationHelpers.navigateUp(this.props.currentPath, this.props.navigationMethod);
             }
+        } else {
+            e.preventDefault();
         }
 
         this.setState({
