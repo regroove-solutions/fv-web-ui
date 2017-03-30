@@ -24,6 +24,8 @@ import selectn from 'selectn';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
+import UIHelpers from 'common/UIHelpers';
+
 @provide
 export default class Kids extends Component {
 
@@ -54,13 +56,13 @@ export default class Kids extends Component {
 
     return <div>
 
-            <div className="row" style={{backgroundSize: 'cover', backgroundImage: 'url("' + selectn('response.contextParameters.portal.fv-portal:background_top_image.views[3].url', this.props.portal) + '?inline=true")'}}>
+            <div className="row" style={{backgroundSize: 'cover', backgroundPosition: 'center center', backgroundImage: 'url("' + selectn('response.contextParameters.portal.fv-portal:background_top_image.views[3].url', this.props.portal) + '?inline=true")'}}>
 
-              <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
+              <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
 
                   <div style={{marginTop: '40px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', border: '15px rgba(255,255,255,0) solid', borderRadius: '15px', backgroundColor: 'rgba(255,255,255,0.4)'}}>
                     <GridList
-                      cols={2}
+                      cols={UIHelpers.isViewSize('xs') ? 1 : 2}
                       cellHeight={200}
                       style={{width: '100%', overflowY: 'auto', marginBottom: 0}}
                       >

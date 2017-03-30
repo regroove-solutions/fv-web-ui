@@ -119,5 +119,14 @@ export default {
     }
 
     return false;
+  },
+  isViewSize(size) {
+    switch (size) {
+      case 'xs':
+        return window.innerWidth <= 420
+      break;
+    }
+    
+    return false;
   }
 }

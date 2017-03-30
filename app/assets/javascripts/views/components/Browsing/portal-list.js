@@ -60,7 +60,7 @@ export default class PortalList extends Component {
 
     return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                     <GridList
-                      cols={this.props.cols}
+                      cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
                       cellHeight={146}
                       style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
                       >

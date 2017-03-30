@@ -75,11 +75,6 @@ export default class AppLeftNav extends Component {
         id: 'contribute',
         label: "Contribute",
         path: "/contribute/"
-      },
-      {
-        id: 'play',
-        label: "Play",
-        path: "/play/"
       }
     ]);
 

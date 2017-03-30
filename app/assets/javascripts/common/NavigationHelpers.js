@@ -30,5 +30,9 @@ export default {
   // Navigate forward
   navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
         navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
-  }
+  },
+  // Navigate back to previous page
+  navigateBack: function () {
+        window.history.back();
+  },
 }

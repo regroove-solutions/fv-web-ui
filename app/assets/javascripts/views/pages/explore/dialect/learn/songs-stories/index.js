@@ -150,16 +150,10 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
 
               <div className={classNames('row', {'hidden': isKidsTheme})}>
 
-                <div className="col-xs-8"></div>
-
-                <div className={classNames('col-xs-4', 'text-right')}>
+                <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
                   <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
                     <RaisedButton label={"Create " + this.props.typeFilter + " Book"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                   </AuthorizationFilter>
-                </div>
-
-                <div className="col-xs-12">
-                  <h1>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
                 </div>
 
               </div>
@@ -168,7 +162,8 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
                 <div className="col-xs-12">
 
                   <div className="row" style={{marginBottom: '20px'}}>
-                    <div className={classNames('col-xs-12', {'col-xs-8': isKidsTheme, 'col-xs-offset-2': isKidsTheme})}>
+                    <h1 className={classNames({'hidden': isKidsTheme})}>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
+                    <div className={classNames('col-xs-12', {'col-md-8': isKidsTheme, 'col-md-offset-2': isKidsTheme})}>
                       {listView}
                     </div>
                   </div>

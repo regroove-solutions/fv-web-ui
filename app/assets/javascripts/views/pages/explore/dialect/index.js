@@ -326,6 +326,7 @@ export default class ExploreDialect extends Component {
                     cols={2}
                     cellHeight={125}
                     type="FVWord"
+                    className="grid-view-first-words"
                     metadata={selectn('response', computeDialect2)}
                     items={featuredWords.map(function(word){
                       return {contextParameters: {

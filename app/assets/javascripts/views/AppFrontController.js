@@ -140,6 +140,7 @@ export default class AppFrontController extends Component {
       },
       {
         path: [new paramMatch('theme', new RegExp("kids"))],
+        frontpage: true,
         page: <PageKidsHome />
       },
       {
@@ -778,7 +779,9 @@ export default class AppFrontController extends Component {
 
     const { matchedPage, matchedRouteParams } = this.state;
     
-    let page, navigation = <Navigation frontpage={(!matchedPage) ? false : matchedPage.get('frontpage')} routeParams={matchedRouteParams} />;
+    const isFrontPage = (!matchedPage) ? false : matchedPage.get('frontpage');
+
+    let page, navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
     let theme = (matchedRouteParams.hasOwnProperty('theme')) ? matchedRouteParams.theme : 'default';
     let print = (matchedPage) ? matchedPage.get('page').get('props').get('print') === true : false;
 
@@ -796,7 +799,7 @@ export default class AppFrontController extends Component {
       // TODO: Make more generic if additional themes are added in the future.
       if (theme == 'kids') {
         page = clonedElement;
-        navigation = <KidsNavigation routeParams={matchedRouteParams} />;
+        navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
       } else {
         // Without breadcrumbs
         if (matchedPage.get('breadcrumbs') === false) {
@@ -820,7 +823,7 @@ export default class AppFrontController extends Component {
 
         <div className="row">{navigation}</div>
         <div className={'page-' + theme + '-theme'}>{page}</div>
-        <div className="row"><Footer /></div>
+        <div className="row"><Footer className={'footer-' + theme + '-theme'} /></div>
       </div>
     );
   }

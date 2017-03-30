@@ -42,7 +42,8 @@ const containerStyle = {
     background: 'url(/assets/games/wordscramble/assets/images/background.png)',
     backgroundSize: 'cover',
     minHeight: '600px',
-    padding: '40px 0'
+    padding: '40px 0',
+    margin: '0 -15px'
 }
 
 const titleStyle = {
@@ -56,10 +57,12 @@ const titleLogoStyle = {
     display:'block',
     overflow:'hidden',
     backgroundRepeat:'no-repeat',
-    width:'541px',
+    width:'100%',
     height:'87px',
-    background:'url(/assets/games/wordscramble/assets/images/word_scramble_title.png)',
+    background:'transparent url(/assets/games/wordscramble/assets/images/word_scramble_title.png) 0 0 no-repeat',
     textIndent:'-9000px',
+    backgroundSize: 'contain',
+    backgroundPosition: 'center center',
     margin:'auto'
 }
 
@@ -95,8 +98,8 @@ export default class Wordscramble extends Component {
     ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
     ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
     //' AND fv-word:available_in_games = 1' + 
-    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
-    '&pageSize=10' + 
+    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) + 
+    '&pageSize=5' + 
     '&sortBy=dc:created' + 
     '&sortOrder=DESC' 
     );

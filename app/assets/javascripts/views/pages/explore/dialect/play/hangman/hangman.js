@@ -249,7 +249,7 @@ export default class HangmanGame extends Component {
   {
         const guessedLetters = this.state.guessedLetters;
 
-        return  <div className="keyboard" style={{width: '530px',margin: 'auto'}}>
+        return  <div className="keyboard" style={{width:'100%', maxWidth: '530px',margin: 'auto'}}>
                 {this.state.alphabet.map((letter, index)=>{
                     let guessed = false;
 
@@ -287,7 +287,7 @@ export default class HangmanGame extends Component {
                 
                 <div>Guess the puzzle to make it to the beach</div>
                 
-                <img src={`/assets/games/hangman/assets/${this.state.guessesLeft}.png`} style={{width:'750px',marginBottom:'-45px'}} />
+                <img src={`/assets/games/hangman/assets/${this.state.guessesLeft}.png`} style={{width: '100%', maxWidth:'750px'}} />
                             
                 <div>
                     {this.state.puzzle.map((word, index)=>{
@@ -316,8 +316,11 @@ export default class HangmanGame extends Component {
                 { (this.state.succeeded || this.state.failed) ?  false : this.renderKeyboard() }
                 { (this.state.succeeded ? this.renderSuccess() : false )}
                 { (this.state.failed ? this.renderFailure() : false )}
-                <RaisedButton secondary={true} onTouchTap={this.props.newPuzzle} label="New puzzle"/>
+
+                <div style={{margin: '15px 0'}}>
+                <RaisedButton secondary={true} onTouchTap={this.props.newPuzzle} label="New puzzle" style={{marginRight: '10px'}} />
                 <RaisedButton primary={true} onMouseDown={this.restart} label="Restart"/>
+                </div>
 
            </div>;
   }

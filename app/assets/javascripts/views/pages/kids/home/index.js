@@ -67,18 +67,12 @@ export default class PageKidsHome extends Component {
     }
 
     return <div>
-            <div className="container-fluid">
+            <div className={classNames("container-fluid", "kids-home")} style={{backgroundImage: 'url(/assets/images/boy.gif), url(/assets/images/girl.gif)', backgroundRepeat: 'no-repeat', backgroundPosition: 'left 40px, right 45px'}}>
              <div className="row" style={homePageStyle}>
-              <div className={classNames('col-xs-3', 'col-md-4', 'text-right')}>
-                <img src="/assets/images/boy.gif" alt="Boy" />
-              </div>
-              <div className={classNames('col-xs-3', 'col-md-4', 'text-center')}>
+              <div className={classNames('col-xs-8', 'col-xs-offset-2', 'text-center')}>
                 <span style={{width: '45%'}}>
                   <RaisedButton fullWidth={true} label="Enter Kids Area" onTouchTap={this._onNavigateRequest.bind(this, '/FV/Workspaces/Data/')} style={{marginTop: '20vh'}} />
                 </span>
-              </div>
-              <div className={classNames('col-xs-3', 'col-md-4', 'text-left')}>
-                <img src="/assets/images/girl.gif" alt="Girl" />
               </div>
              </div>
             </div>

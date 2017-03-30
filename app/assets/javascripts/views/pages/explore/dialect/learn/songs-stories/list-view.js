@@ -22,7 +22,12 @@ import DOMPurify from 'dompurify';
 
 import ConfGlobal from 'conf/local.json';
 
+import UIHelpers from 'common/UIHelpers';
+
 import Preview from 'views/components/Editor/Preview';
+
+import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow';
+import AVStop from 'material-ui/lib/svg-icons/av/stop';
 
 import Card from 'material-ui/lib/card/card';
 import CardTitle from 'material-ui/lib/card/card-title';
@@ -54,7 +59,7 @@ class Introduction extends Component {
         return null;
       }
 
-      return <div style={{padding: '10px'}}><div><h1 style={{fontSize: '1.2em'}}>Introduction</h1></div>{introductionDiv}</div>;
+      return <div style={{padding: '10px'}}><div><h1 style={{fontSize: '1.2em', marginTop: 0}}>Introduction {this.props.audio}</h1></div>{introductionDiv}</div>;
     }
 
     return <Tabs> 
@@ -89,6 +94,9 @@ class CardView extends Component {
     // If action is not defined
     let action;
 
+    let audioIcon = null;
+    let audioCallback = null;
+
     if (this.props.hasOwnProperty('action') && typeof this.props.action === "function") {
       action = this.props.action;
     } else {
@@ -99,15 +107,21 @@ class CardView extends Component {
 
     let mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item);
     let coverImage = selectn('url', mediumImage) || '/assets/images/cover.png';
-    let audioObj = selectn('contextParameters.book.related_audio[0]', this.props.item);
+    let audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item);
 
-    let audio = (audioObj) ? <Preview minimal={true} key={selectn('uid', audioObj)} expandedValue={audioObj} type="FVAudio" /> : '';
+    if (audioObj) {
+      const stateFunc = function(state) { this.setState(state); }.bind(this);
+
+      audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj) ? <AVPlayArrow style={{marginRight: '10px'}} /> : <AVStop style={{marginRight: '10px'}} />;
+
+      audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audioObj) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
+    }
 
     return <div style={Object.assign(defaultStyle, this.props.style)} key={this.props.item.uid} className={classNames('col-xs-12', 'col-md-' + Math.ceil(12 / this.props.cols))}>
                 <Card style={{minHeight: '260px'}}>
 
                   <CardMedia
-                    overlay={<CardTitle title={<span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.item.title)}} />} subtitle={(selectn('properties.fvbook:title_literal_translation', this.props.item) || []).map(function(translation, i) {
+                    overlay={<CardTitle titleStyle={{fontSize: '19px'}} title={<span dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(this.props.item.title)}} />} subtitle={(selectn('properties.fvbook:title_literal_translation', this.props.item) || []).map(function(translation, i) {
                       if (translation.language == DEFAULT_LANGUAGE) {
                         return <span key={i}>{translation.translation}</span>;
                       }
@@ -123,11 +137,9 @@ class CardView extends Component {
 
                     {(() => {
                       if (selectn('properties.fvbook:introduction', this.props.item)) {
-                        return <Introduction {...this.props} />
+                        return <Introduction {...this.props} audio={(audioIcon) ? <IconButton style={{verticalAlign: 'middle', padding: '0', width: '25px', height: '25px'}} iconStyle={{width: '25px', height: '25px'}} onTouchTap={audioCallback}>{audioIcon}</IconButton> : null} />
                       }
                     })()}
-
-                    {audio}
 
                     </div>
                   </CardMedia>

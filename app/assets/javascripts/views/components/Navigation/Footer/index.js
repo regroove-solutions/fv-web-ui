@@ -32,7 +32,7 @@ export default class Footer extends React.Component {
 
   render() {
     return (
-      <footer className="footer">
+      <footer className={classNames('footer', this.props.className)}>
         <div className="container-fluid">
             <div className="row">
               <div className="col-xs-12">

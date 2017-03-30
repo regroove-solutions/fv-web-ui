@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import selectn from 'selectn';
 
+import classNames from 'classnames';
+
 import Pagination from 'views/components/Navigation/Pagination';
 
 import {IconButton, MenuItem, SelectField} from "material-ui";
@@ -29,7 +31,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
           pageRange: pageRange,
           initialPageSize:  selectn('fetcherParams.pageSize', props) || pageSize,
           currentPageSize:  selectn('fetcherParams.pageSize', props) || pageSize,
-          currentPageIndex: 0
+          currentPageIndex: 1
       };
 
       ['_onPageChange', '_onPageSizeChange'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -49,7 +51,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
 
     _onPageChange(pagination) {
 
-      let currentPageIndex = pagination.selected;
+      let currentPageIndex = pagination.selected + 1;
 
       this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
         currentPageIndex: currentPageIndex,
@@ -65,7 +67,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
 
       const pageSizeControl = (!this.props.disablePageSize) ? <div>
                 <label style={{verticalAlign: '4px', marginRight: '10px'}}>Page:</label>
-                <span style={{verticalAlign: '4px'}}>{this.state.currentPageIndex + 1} / </span>
+                <span style={{verticalAlign: '4px'}}>{this.state.currentPageIndex} / </span>
                 <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize} onChange={this._onPageSizeChange}>
                   <MenuItem value={Math.ceil(ips / 2)} primaryText={Math.ceil(ips / 2)} />
                   <MenuItem value={Math.ceil(ips)} primaryText={Math.ceil(ips)} />
@@ -89,16 +91,16 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
             </div>
 
             <div className="row">
-              <div className="col-xs-9">
+              <div className={classNames('col-md-9', 'col-xs-12')} style={{paddingBottom:'15px'}}>
                 <Pagination 
-                  forcePage={this.props.fetcherParams.currentPageIndex}
+                  forcePage={this.props.fetcherParams.currentPageIndex - 1}
                   pageCount={selectn('pageCount', this.props.metadata)}
                   marginPagesDisplayed={0}
-                  pageRangeDisplayed={this.state.pageRange}
+                  pageRangeDisplayed={3}
                   onPageChange={this._onPageChange} />
               </div>
 
-              <div className="col-xs-3" style={{textAlign:'right'}}>
+              <div className={classNames('col-md-3', 'col-xs-12')} style={{textAlign:'right'}}>
                 {pageSizeControl}
                 {this.props.appendControls}
               </div>

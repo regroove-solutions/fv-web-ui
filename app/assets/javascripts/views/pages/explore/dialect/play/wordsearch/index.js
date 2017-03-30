@@ -71,7 +71,7 @@ export default class Wordsearch extends Component {
     ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
     ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
     //' AND fv-word:available_in_games = 1' + 
-    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
+    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) + 
     '&pageSize=19' + 
     '&sortBy=dc:created' + 
     '&sortOrder=DESC' 

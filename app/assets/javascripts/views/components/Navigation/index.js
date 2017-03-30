@@ -238,14 +238,14 @@ export default class Navigation extends Component {
 
     return <div>
         <AppBar
-          title={title}
+          title={<span className="hidden-xs">{title}</span>}
           showMenuIconButton={isDialect ? false : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup style={{position: 'relative'}}>
             <Login routeParams={this.props.routeParams} label="Sign in"/>
 
-            <ToolbarSeparator style={{float: 'none', marginLeft: 0, marginRight: 0}} />
+            <ToolbarSeparator className={classNames({'hidden-xs': this.props.computeLogin.isConnected})} style={{float: 'none', marginLeft: 0, marginRight: 0}} />
 
             <AuthenticationFilter login={this.props.computeLogin} anon={false} routeParams={this.props.routeParams} containerStyle={{display: 'inline'}}>
               <span>
@@ -305,12 +305,12 @@ export default class Navigation extends Component {
 
             <span className={classNames({'hidden': isFrontPage})}>
 
-            <ToolbarSeparator style={{float: 'none', marginRight: 0, marginLeft: 0}} />
+            <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
               <TextField underlineStyle={{width:'90%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', borderRadius: '5px', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch })} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} /> 
-              <FlatButton label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
+              <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
             </div>
 
             <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0'}} iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: themePalette.alternateTextColor, background: themePalette.primary2Color}}>search</IconButton>

@@ -117,7 +117,7 @@ export default class Login extends Component {
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
 
         return (
-          <div className="hidden-xs" style={{display: "inline-block", paddingRight: "10px"}}>
+          <div className="hidden-xs" style={{display: "inline-block", paddingRight: '15px'}}>
             Welcome <strong><a style={{color: '#000'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.username", this.props.computeLogin)}</a></strong>!
           </div>
         );

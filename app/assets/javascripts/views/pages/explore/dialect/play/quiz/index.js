@@ -29,12 +29,10 @@ import StringHelpers from 'common/StringHelpers';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-const TOTAL_QUESTIONS = 10;
-
 const containerStyle = {
     background: 'url(/assets/games/wordscramble/assets/images/background.png)',
     backgroundSize: 'cover',
-    padding: '40px',
+    padding: '10px',
     display: 'block',
     border: '3px solid #040000',
     marginBottom:'20px',
@@ -90,17 +88,20 @@ export default class Quiz extends Component {
 
     getDefaultState() {
 
-        // Create a random list of numbers to serve as the word order
-        const randomizeNumbers = new List([...Array(50).keys()]).sortBy(()=>Math.random())
+        let totalQuestions = 10;
+
+        // Create a random list of numbers to serve as the word order for all answers (correct or wrong)
+        const randomizeNumbers = new List([...Array(totalQuestions * 5).keys()]).sortBy(()=>Math.random())
 
         // First 10 of random numbers will be questions
-        const questionsOrder = randomizeNumbers.slice(0, 10);
+        const questionsOrder = randomizeNumbers.slice(0, totalQuestions);
 
         return  {
+            totalQuestions: totalQuestions,
             nowPlaying: null,
             questionsOrder: questionsOrder,
             fillerAnswers: new List(),
-            answersOrder: Array.from({length: 10}, () => Math.floor(Math.random() * 4)), // For each question determine random position of answer
+            answersOrder: Array.from({length: totalQuestions}, () => Math.floor(Math.random() * 4)), // For each question determine random position of answer
             selectedAnswers: new Map(),
             currentAnswerIndex: 0,
             attempts: 0
@@ -112,17 +113,42 @@ export default class Quiz extends Component {
     }
 
     fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
-        // Fetch words (generate randomness based on GUID)
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
         ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
         ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
         //' AND fv-word:available_in_games = 1 ' + 
-        '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
+        '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) + 
         '&pageSize=50'
         );
     }
 
-    _restart() {
+    componentWillReceiveProps(nextProps) {
+        const prevComputeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+        const nextComputeWords = ProviderHelpers.getEntry(nextProps.computeWords, nextProps.routeParams.dialect_path + '/Dictionary');
+
+        if (nextComputeWords && selectn('response', nextComputeWords) != selectn('response', prevComputeWords)) {
+            let resultCount = selectn('response.resultsCount', nextComputeWords);
+
+            // Account for results being less than 10
+            if (resultCount > 0 && resultCount < 50) {
+                const randomizeNumbers = new List([...Array(resultCount).keys()]).sortBy(()=>Math.random())
+
+                let totalQuestions = Math.ceil(resultCount/5);
+
+                this.setState({
+                    totalQuestions: totalQuestions,
+                    questionsOrder: randomizeNumbers.slice(0, totalQuestions),
+                    answersOrder: Array.from({length: totalQuestions}, () => Math.floor(Math.random() * 4))
+                })
+            }
+        }
+    }
+    
+
+    _restart(e) {
+
+        UIHelpers.stopAudio(this.state, function(state) { this.setState(state); }.bind(this), e);
+
         this.setState(this.getDefaultState());
         this.fetchData(this.props);
     }
@@ -139,7 +165,9 @@ export default class Quiz extends Component {
         });
     }
 
-    _handleNavigate(direction) {
+    _handleNavigate(direction, e) {
+
+        UIHelpers.stopAudio(this.state, function(state) { this.setState(state); }.bind(this), e);
 
         let newIndex;
 
@@ -148,7 +176,7 @@ export default class Quiz extends Component {
         else
             newIndex = this.state.currentAnswerIndex - 1;
 
-        if (newIndex <= (TOTAL_QUESTIONS - 1) && newIndex >= 0)
+        if (newIndex <= (this.state.totalQuestions - 1) && newIndex >= 0)
         {
             this.setState({
                 currentAnswerIndex: newIndex
@@ -182,7 +210,7 @@ export default class Quiz extends Component {
         let isSelected = this.state.selectedAnswers.has(this.state.currentAnswerIndex);
 
         // Quiz complete
-        let isComplete = correctAnswers.count() === TOTAL_QUESTIONS;
+        let isComplete = correctAnswers.count() === this.state.totalQuestions;
 
         const computeEntities = Immutable.fromJS([{
             'id': this.props.routeParams.dialect_path + '/Dictionary',
@@ -208,13 +236,17 @@ export default class Quiz extends Component {
             for (let i = 0; i < 4; ++i) {
                 let answer, isAnswerCorrect, isSelectedAnswer;
 
-                let key = i + (this.state.currentAnswerIndex * 3);
-
                 // Seperate correct answer from wrong answer
                 if (i === this.state.answersOrder[this.state.currentAnswerIndex]) {
                     answer = questions.get(this.state.currentAnswerIndex);
                     isAnswerCorrect = true;
                 } else {
+                    let key = i + (this.state.currentAnswerIndex * 3);
+
+                    if (!fillerAnswers.has(key)) {
+                        key = i;
+                    }
+
                     answer = fillerAnswers.get(key);
                     isAnswerCorrect = false;
                 }
@@ -232,26 +264,26 @@ export default class Quiz extends Component {
                     }
                 }
 
-                answers.push(<Answer onSelect={this._handleAnswerSelected} selected={isSelectedAnswer} key={selectn('uid', answer)} data={answer} correct={isAnswerCorrect} />);
+                answers.push(<Answer onSelect={this._handleAnswerSelected} selected={isSelectedAnswer} key={i + selectn('uid', answer)} data={answer} correct={isAnswerCorrect} />);
             }
         }
 
         // Show skill level message based on attempts.
         let skillLevel = '';
 
-        if (this.state.attempts == TOTAL_QUESTIONS) {
+        if (this.state.attempts == this.state.totalQuestions) {
             skillLevel = 'Looks like you\'re an expert!';
-        } else if (this.state.attempts > TOTAL_QUESTIONS && this.state.attempts < (TOTAL_QUESTIONS * 2)) {
+        } else if (this.state.attempts > this.state.totalQuestions && this.state.attempts < (this.state.totalQuestions * 2)) {
             skillLevel = 'On your way to becoming an expert!';
         }
 
-        return <div className="quiz-container">
+        return <div className="quiz-container" style={{margin: '15px 0'}}>
 
                 <div style={containerStyle}>
 
                     <div className="row">
                         <div className="col-xs-12">
-                            <LinearProgress style={{height: '15px'}} mode="determinate" value={((this.state.currentAnswerIndex + 1) / TOTAL_QUESTIONS) * 100} />
+                            <LinearProgress style={{height: '15px'}} mode="determinate" value={((this.state.currentAnswerIndex + 1) / this.state.totalQuestions) * 100} />
                         </div>
                     </div>   
 
@@ -270,13 +302,13 @@ export default class Quiz extends Component {
                     </div>
 
                     <div className={classNames('row', 'row-answers')}>
-                        {answers.map((answer) => { return (isCorrect && !answer.props.correct) ? React.cloneElement(answer, { disabled: true}) : answer })}
+                        {answers.map((answer, i) => { return (isCorrect && !answer.props.correct) ? React.cloneElement(answer, { disabled: true, key: i}) : answer })}
                     </div>
 
                     <div className={classNames('row', 'row-navigation')}>
 
                         <div className={classNames('col-xs-2', 'text-left')}>
-                            <IconButton onTouchTap={this._handleNavigate.bind(this, 'previous')} iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')} tooltip="Previous Question"/>
+                            <IconButton style={{backgroundColor: '#ffffff'}} onTouchTap={this._handleNavigate.bind(this, 'previous')} iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')} tooltip="Previous Question"/>
                         </div>
 
                         <div className={classNames('col-xs-8', 'text-center')}>
@@ -284,9 +316,13 @@ export default class Quiz extends Component {
                         </div>
 
                         <div className={classNames('col-xs-2', 'text-right')}>
-                            <IconButton onTouchTap={this._handleNavigate.bind(this, 'next')} disabled={!isCorrect || isComplete} iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')} tooltip="Next Question"/>
+                            <IconButton style={{backgroundColor: '#ffffff'}} onTouchTap={this._handleNavigate.bind(this, 'next')} disabled={!isCorrect || isComplete} iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')} tooltip="Next Question"/>
                         </div>
 
+                    </div>
+
+                    <div className={classNames('row', 'hidden-xs')} style={{textAlign: 'center'}}>
+                        <span style={{padding: '5px', borderRadius: '2px', color: '#fff', backgroundColor: 'rgba(0,0,0,0.5)'}}>Questions: {this.state.currentAnswerIndex + 1} / <strong>{this.state.totalQuestions}</strong></span>
                     </div>
                     
                 </div>

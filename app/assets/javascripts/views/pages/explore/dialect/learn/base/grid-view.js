@@ -16,6 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import Immutable, { List, Map } from 'immutable';
 import selectn from 'selectn';
+import classNames from 'classnames';
 
 import ConfGlobal from 'conf/local.json';
 
@@ -47,6 +48,7 @@ export default class GridView extends Component {
     cols: PropTypes.number,
     type: PropTypes.string,
     gridListTile: PropTypes.func,
+    className: PropTypes.string
   };
 
   static defaultProps = {
@@ -90,9 +92,9 @@ export default class GridView extends Component {
       break;
     }
 
-    return <div className="grid-view">
+    return <div className={classNames('grid-view', this.props.className)}>
               <GridList
-                cols={this.props.cols}
+                cols={(UIHelpers.isViewSize('xs')) ? ((this.props.type === 'FVPhrase') ? 1 : 2) : this.props.cols}
                 cellHeight={this.props.cellHeight}
                 style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
                 >
@@ -141,7 +143,7 @@ export default class GridView extends Component {
                       actionPosition="right"
                       actionIcon={(this.props.action) ? audioIconAction : audioIcon}
                       subtitle={definitionsHTML || literal_translationsHTML}
-                      ><img style={{filter: 'grayscale(100%) opacity(80%)'}} src={UIHelpers.getThumbnail(imageObj, 'Small')} alt={title} /></GridTile>
+                      ><img src={UIHelpers.getThumbnail(imageObj, 'Small')} alt={title} /></GridTile>
                   }.bind(this))}
               </GridList>
             </div>;

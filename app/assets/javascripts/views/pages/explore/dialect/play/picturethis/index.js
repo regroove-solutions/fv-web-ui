@@ -416,14 +416,19 @@ export default class Picturethis extends Component {
 
       literal_translation.map(function(v, k) {
 
-        remoteWords = remoteWords.set(
-          selectn('translation', v),
-          Object.assign({}, this.state.selectedTheme.words.get(v.translation) || {}, {
-            word: selectn('properties.dc:title', word),
-            translation: v,
-            audio: selectn('contextParameters.word.related_audio[0].path', word)
-          }));
+        // Convert to title case (e.g. bird -> Bird)
+        let translationTitleCase = StringHelpers.toTitleCase(selectn('translation', v));
 
+        // Only add to words if exists in theme words
+        if (this.state.selectedTheme.words.has(translationTitleCase)) {
+          remoteWords = remoteWords.set(
+            translationTitleCase,
+            Object.assign({}, this.state.selectedTheme.words.get(translationTitleCase) || {}, {
+              word: selectn('properties.dc:title', word),
+              translation: v,
+              audio: selectn('contextParameters.word.related_audio[0].path', word)
+            }));
+        }
       }.bind(this));
 
     }.bind(this));
@@ -513,11 +518,11 @@ export default class Picturethis extends Component {
                     
                     if (this.state.foundWordKeys.includes(theme.name + '-' + selectn('locationInt', word)))
                     {
-                      dot = <div style={{...unknownLocation,...locationNumberStyle,...foundLocation,  top:`${word.location.y}px`,left:`${word.location.x}px`}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}>{word.locationInt + 1}</div>;
+                      dot = <div style={{...unknownLocation,...locationNumberStyle,...foundLocation,  top: selectn('location.y', word) + 'px', left: selectn('location.x', word) + 'px'}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}>{word.locationInt + 1}</div>;
                     }
                     else
                     {
-                      dot = <div style={{...unknownLocation, ...highlight, top:`${word.location.y}px`,left:`${word.location.x}px`}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}></div>;
+                      dot = <div style={{...unknownLocation, ...highlight, top: selectn('location.y', word) + 'px', left: selectn('location.x', word) + 'px'}} onMouseUp={this.selectWordOrMatch.bind(this, word, true)}></div>;
                     }
 
                     return <div key={word.locationInt}>
@@ -584,12 +589,12 @@ export default class Picturethis extends Component {
 
         <div className="row">
 
-          <div className={classNames('col-xs-12', {'col-md-12': !this.state.selectedTheme, 'col-md-4': this.state.selectedTheme})}>
-            {this.renderThemeList()}
+          <div className={classNames('col-xs-12', 'col-md-7', 'col-md-offset-1')}>
+            {this.state.selectedTheme === false ? false : this.renderGame(computeWords)}
           </div>
 
-          <div className={classNames('col-xs-12', 'col-md-8')}>
-            {this.state.selectedTheme === false ? false : this.renderGame(computeWords)}
+          <div className={classNames('col-xs-12', {'col-md-12': !this.state.selectedTheme, 'col-md-4': this.state.selectedTheme})}>
+            {this.renderThemeList()}
           </div>
 
         </div>

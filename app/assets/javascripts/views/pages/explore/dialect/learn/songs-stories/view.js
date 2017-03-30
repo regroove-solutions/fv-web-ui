@@ -41,7 +41,7 @@ import withPagination from 'views/hoc/grid-list/with-pagination';
 
 const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
-const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 1 };
+const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 1 };
 
 const PaginatedBookEntryList = withPagination(BookEntryList, DefaultFetcherParams.pageSize, 100);
 
@@ -104,7 +104,7 @@ export default class View extends Component {
     });
 
     props.fetchBookEntries(this._getBookPath(props), 
-    '&currentPageIndex=' + fetcherParams.currentPageIndex + 
+    '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) + 
     '&pageSize=' + fetcherParams.pageSize +
     '&sortOrder=asc,asc' + 
     '&sortBy=fvbookentry:sort_map,dc:created');

@@ -23,6 +23,7 @@ import ConfGlobal from 'conf/local.json';
 import provide from 'react-redux-provide';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 // Components
 import AppBar from 'material-ui/lib/app-bar';
@@ -59,7 +60,8 @@ export default class Navigation extends Component {
     computeLogin: PropTypes.object.isRequired,
     computeUserTasks: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
-    routeParams: PropTypes.object
+    routeParams: PropTypes.object,
+    frontpage: PropTypes.bool
   };
 
   /*static childContextTypes = {
@@ -165,19 +167,22 @@ export default class Navigation extends Component {
 
     return <div>
         <AppBar
-          title={<a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/kids' + this.props.routeParams.dialect_path)}>{avatar} {(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' Kids Portal'}</a>}
+          title={<a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, (!this.props.routeParams.dialect_path) ? '/kids' : '/kids' + this.props.routeParams.dialect_path)}>{avatar} <span className="hidden-xs">{(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' Kids Portal'}</span></a>}
           iconClassNameRight="muidocs-icon-navigation-expand-more"
           showMenuIconButton={false}
           onRightIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup style={{paddingTop:'5px'}}>
 
-            <FlatButton label="Home" onTouchTap={this._onNavigateRequest.bind(this, '/kids' + (this.props.routeParams.dialect_path ? this.props.routeParams.dialect_path : ''))} style={{marginRight: 0, marginLeft: 0}} />
-            <FlatButton label="Choose Language" onTouchTap={this._onNavigateRequest.bind(this, '/kids/FV/Workspaces/Data')} style={{marginRight: 0, marginLeft: 0}} />
+            <IconButton className={classNames({'hidden': this.props.frontpage})} onTouchTap={(e) => NavigationHelpers.navigateBack()} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Back"}>keyboard_backspace</IconButton>
 
-            <ToolbarSeparator style={{float: 'none', marginLeft: '10px', marginRight: '10px'}} />
+            <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/kids' + (this.props.routeParams.dialect_path ? this.props.routeParams.dialect_path : ''))} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Home"}>home</IconButton>
 
-            <IconButton style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/home')} tooltipPosition="bottom-left" tooltip={"Back to Main Site"}>clear</IconButton>
+            <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/kids/FV/Workspaces/Data')} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Choose a Language"}>apps</IconButton>
+
+            <ToolbarSeparator style={{float: 'none', marginLeft: '0', marginRight: '15px'}} />
+
+            <IconButton style={{paddingTop: 0, paddingRight:0, top: '8px', left: '-10px'}} iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/home')} tooltipPosition="bottom-left" tooltip={"Back to Main Site"}>clear</IconButton>
 
           </ToolbarGroup>
 

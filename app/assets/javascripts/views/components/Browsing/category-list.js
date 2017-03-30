@@ -24,6 +24,8 @@ import Colors from 'material-ui/lib/styles/colors';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
+import UIHelpers from 'common/UIHelpers';
+
 const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
 
 export default class CategoryList extends Component {
@@ -73,7 +75,7 @@ export default class CategoryList extends Component {
 
     return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
                     <GridList
-                      cols={this.props.cols}
+                      cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
                       cellHeight={this.props.cellHeight}
                       style={Object.assign(defaultStyle, this.props.style)}
                       >

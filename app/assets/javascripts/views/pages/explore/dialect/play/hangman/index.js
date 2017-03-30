@@ -67,13 +67,16 @@ export default class Hangman extends Component {
     //' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' + 
     ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) +'/* IS NOT NULL' + 
     //' AND fv-word:available_in_games = 1' + 
-    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 99) + 
+    '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) + 
     '&pageSize=' + PUZZLES
     );
   }
 
   newPuzzle() {
-    if (this.state.currentPuzzleIndex < PUZZLES) {
+
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+
+    if (this.state.currentPuzzleIndex < PUZZLES && this.state.currentPuzzleIndex < selectn('response.resultsCount', computeWords) - 1 ) {
       this.setState({
         currentPuzzleIndex: this.state.currentPuzzleIndex + 1
       });
@@ -105,9 +108,10 @@ export default class Hangman extends Component {
     const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
 
-    const alphabet_array = (selectn('response.entries', computeCharacters) || []).map(function(char) {
+    // For now, don't use built in alphabets as most are incomplete
+    /*const alphabet_array = (selectn('response.entries', computeCharacters) || []).map(function(char) {
       return selectn('properties.dc:title', char);
-    });
+    });*/
 
     const word_array = (selectn('response.entries', computeWords) || []).map(function(word, k) {
       return {
@@ -125,7 +129,7 @@ export default class Hangman extends Component {
       const character_string = word_array.map((word) => word.puzzle).join('');
       const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u))).filter((v) => v != ' ');
       
-      word_array[this.state.currentPuzzleIndex]['alphabet'] = (alphabet_array.length > 0) ? alphabet_array : unique_characters;
+      word_array[this.state.currentPuzzleIndex]['alphabet'] = unique_characters; // (alphabet_array.length > 0) ? alphabet_array : 
       game = <HangManGame newPuzzle={this.newPuzzle} {...word_array[this.state.currentPuzzleIndex]} />
     }
 

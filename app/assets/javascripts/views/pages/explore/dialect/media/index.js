@@ -56,7 +56,7 @@ import withFilter from 'views/hoc/grid-list/with-filter';
 
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
-const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 20, filters: {'properties.dc:title': '', 'dialect': '' } };
+const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 20, filters: {'properties.dc:title': '', 'dialect': '' } };
 
 const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
 
@@ -104,10 +104,10 @@ export default class DialectMedia extends Component {
     this.setState({
       fetcherParams: fetcherParams
     });
- 
+
     props.fetchResources(props.routeParams.dialect_path + '/Resources',
     ProviderHelpers.filtersToNXQL(fetcherParams.filters) + 
-    '&currentPageIndex=' + fetcherParams.currentPageIndex + 
+    '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) + 
     '&pageSize=' + fetcherParams.pageSize
     );
   }

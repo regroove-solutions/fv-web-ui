@@ -34,7 +34,7 @@ import Tab from 'material-ui/lib/tabs/tab';
 
 import ActionLaunch from 'material-ui/lib/svg-icons/action/launch';
 
-const defaultInnerStyle = {padding: '15px', margin: '15px 0', minHeight: '420px', maxHeight: '50vh', overflowX: 'auto'};
+const defaultInnerStyle = {padding: '15px', margin: '15px 0', minHeight: '420px', overflowX: 'auto'};
 const defaultCoverStyle = {padding: '15px', margin: '15px 0'};
 
 class MediaThumbnail extends Component {
@@ -66,9 +66,9 @@ class Cover extends Component {
             return translation.language == DEFAULT_LANGUAGE;
         });
 
-        return  <div>
+        return  <div className="row">
 
-                    <div className="row">
+                    <div className="col-xs-12">
 
                         <div className={classNames('col-xs-12', 'col-md-3', {'hidden': this.props.videos.length == 0 && this.props.photos.length == 0})}>
                             <MediaThumbnail videos={this.props.videos} photos={this.props.photos} />
@@ -91,7 +91,7 @@ class Cover extends Component {
                         </div>
                     </div>
 
-                    <div className="row">
+                    <div className="col-xs-12">
                         <div className={classNames('col-xs-12', 'text-right')}>
                             {(this.props.openBookAction && this.props.pageCount > 0) ? <RaisedButton style={{marginRight: '10px'}} primary={true} label="Open Book" onTouchTap={this.props.openBookAction} icon={<ActionLaunch />} /> : ''}  
                         </div>
