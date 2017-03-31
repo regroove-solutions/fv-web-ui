@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -280,13 +281,13 @@ export default class View extends Component {
                         <div>
                           <CardText>
 
-                            <div className="col-xs-8">
+                            <div className={classNames('col-md-8', 'col-xs-12')}>
 
                               <Preview style={{width: 'auto'}} initiallyExpanded={true} metadataListStyles={{maxHeight: 'initial'}} expandedValue={selectn('response', computeResource)} type={selectn('response.type', computeResource)} />
 
                             </div>
 
-                            <div className="col-xs-4">
+                            <div className={classNames('col-md-4', 'hidden-xs')}>
 
                               {(() => {
 
@@ -328,7 +329,7 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Linked Words"} id="find_words">
+                      <Tab label={UIHelpers.isViewSize('xs') ? 'Words' : 'Linked Words'} id="find_words">
                         <div>
                           <CardText>
                             <h2>Words Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
@@ -340,7 +341,7 @@ export default class View extends Component {
                           </CardText>
                         </div>
                       </Tab>
-                      <Tab label={"Linked Phrases"} id="find_phrases">
+                      <Tab label={UIHelpers.isViewSize('xs') ? 'Phrases' : 'Linked Phrases'} id="find_phrases">
                         <div>
                           <CardText>
                             <h2>Phrases Featuring with <strong>{selectn('response.title', computeResource)}</strong></h2>
