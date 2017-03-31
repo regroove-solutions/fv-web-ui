@@ -111,7 +111,7 @@ export default class MediaList extends Component {
                       cellHeight={this.props.cellHeight}
                       style={Object.assign(defaultStyle, this.props.style)}
                       >
-                        {(items).map(function (tile, i) { 
+                        {(items || []).map(function (tile, i) { 
 
                           if (this.props.gridListTile) {
                             return React.createElement(this.props.gridListTile, { key: tile.uid, tile: tile, action: action, preview: this._getMediaPreview(tile), titlePosition: fileTypeTilePosition });

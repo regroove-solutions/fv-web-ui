@@ -111,7 +111,7 @@ export default class Index extends Component {
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
 
             <div className={classNames('row', 'row-create-wrapper')}>
               <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>

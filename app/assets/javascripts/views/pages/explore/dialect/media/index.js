@@ -139,7 +139,7 @@ export default class DialectMedia extends Component {
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeResources = ProviderHelpers.getEntry(this.props.computeResources, this.props.routeParams.dialect_path + '/Resources');
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
 
             <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Media</h1>
 
@@ -157,8 +157,8 @@ export default class DialectMedia extends Component {
                     fetcher={this.fetchData}
                     area={this.props.routeParams.area}
                     fetcherParams={this.state.fetcherParams}
-                    metadata={selectn('response', computeResources)}
-                    items={selectn('response.entries', computeResources) || []} />
+                    metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
+                    items={selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources)} />
               </div>
 
             </div>

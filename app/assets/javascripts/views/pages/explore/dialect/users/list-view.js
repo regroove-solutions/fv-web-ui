@@ -191,30 +191,26 @@ export default class ListView extends DataListView {
       }
     };
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-                {(() => {
-                if (selectn('success', computeUserSuggestion)) {
-                    return <FilteredPaginatedMediaList
-                                objectDescriptions="users" 
-                                type="FVUser"
-                                filterOptionsKey="User"
-                                data={normalizedComputeUserSuggestion}
-                                gridListView={this.props.gridListView}
-                                refetcher={this._handleRefetch}
-                                onSortChange={this._handleSortChange}
-                                onSelectionChange={this._onUserSelected}
-                                page={this.state.pageInfo.page}
-                                pagination={false}
-                                fetcher={this._fetcher}
-                                pageSize={this.state.pageInfo.pageSize}
-                                onColumnOrderChange={this._handleColumnOrderChange}
-                                columns={this.state.columns}
-                                fixedCols={this.state.fixedCols}
-                                sortInfo={this.state.sortInfo.uiSortOrder}
-                                className="browseDataGrid" 
-                                dialect={selectn('response', computeDialect2)} />
-                }
-                })()}
+    return <PromiseWrapper hideFetch={true} renderOnError={true} computeEntities={computeEntities}>
+                <FilteredPaginatedMediaList
+                  objectDescriptions="users" 
+                  type="FVUser"
+                  filterOptionsKey="User"
+                  data={normalizedComputeUserSuggestion}
+                  gridListView={this.props.gridListView}
+                  refetcher={this._handleRefetch}
+                  onSortChange={this._handleSortChange}
+                  onSelectionChange={this._onUserSelected}
+                  page={this.state.pageInfo.page}
+                  pagination={false}
+                  fetcher={this._fetcher}
+                  pageSize={this.state.pageInfo.pageSize}
+                  onColumnOrderChange={this._handleColumnOrderChange}
+                  columns={this.state.columns}
+                  fixedCols={this.state.fixedCols}
+                  sortInfo={this.state.sortInfo.uiSortOrder}
+                  className="browseDataGrid" 
+                  dialect={selectn('response', computeDialect2)} />
 
                 <GroupAssignmentDialog 
                   title="Assign"

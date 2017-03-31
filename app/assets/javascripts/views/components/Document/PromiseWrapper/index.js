@@ -36,11 +36,13 @@ export default class PromiseWrapper extends Component {
     titleEntityId: PropTypes.string,
     titleEntityField: PropTypes.string,
     renderOnError: PropTypes.bool,
+    hideFetch: PropTypes.bool,
     style: PropTypes.object
   };
 
   static defaultProps = {
     renderOnError: false,
+    hideFetch: false,
     titleEntityField: 'response.properties.dc:title',
     style: {}
   };
@@ -97,7 +99,8 @@ export default class PromiseWrapper extends Component {
       }
 
       if (reducedOperation.isFetching) {
-        render = <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
+        // If response already exists, and instructed to hide future fetches, render null (e.g. for pagination, filtering)
+        render = (this.props.hideFetch && selectn('response_prev', reducedOperation)) ? null : <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
         return false;
       }
 

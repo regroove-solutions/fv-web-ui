@@ -121,7 +121,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                 }
 
             this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
-                currentPageIndex: 0,
+                currentPageIndex: 1,
                 filters: preparedFilters
             }));
         }
