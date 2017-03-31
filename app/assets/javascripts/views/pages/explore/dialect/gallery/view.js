@@ -140,14 +140,14 @@ export default class Gallery extends React.Component {
               <div className="col-xs-12">
                 <h1>{selectn('response.title', computeGallery)}</h1>
                 <p>{selectn('response.properties.dc:description', computeGallery)}</p>
-                <div className="col-xs-4 col-xs-offset-4">
-	           	 <ImageGallery
-	              ref={i => this._imageGallery = i}
-	              items={images}
-	           	  slideInterval={2000}
-	              handleImageLoad={this.handleImageLoad}
-	              showThumbnails={false}
-	              showBullets={true} />
+                <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-4')}>
+                <ImageGallery
+                  ref={i => this._imageGallery = i}
+                  items={images}
+                  slideInterval={2000}
+                  handleImageLoad={this.handleImageLoad}
+                  showThumbnails={false}
+                  showBullets={true} />
 	           	 </div>
 	           </div>
             </div>
