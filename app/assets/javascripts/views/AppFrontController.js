@@ -685,7 +685,7 @@ export default class AppFrontController extends Component {
 
                   if (redirectValue.get('condition')({props: props})) {
                     hrefPath = redirectValue.get('target')({props: props});
-                    hrefPath = hrefPath.replace('sections', routeParams.area);
+                    hrefPath = hrefPath.replace('sections', routeParams.area || splitPath[2] || 'sections');
 
                     return false;
                   }
