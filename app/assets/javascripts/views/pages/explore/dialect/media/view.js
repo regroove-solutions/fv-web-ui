@@ -107,8 +107,14 @@ export default class View extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchResource(this._getMediaPath(newProps));
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+
+    if (!this.getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
+
+    if (!this.getResource(newProps)) {
+      newProps.fetchResource(this._getMediaPath(newProps));
+    }
   }
 
   // Refetch data on URL change
@@ -128,6 +134,14 @@ export default class View extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+  }
+
+  getResource(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeResource, this._getMediaPath());
+  }
+
+  getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
   }
 
   _getMediaPath(props = null) {
@@ -227,8 +241,8 @@ export default class View extends Component {
       'entity': this.props.computeDialect2
     }])
 
-    const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath());
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeResource = this.getResource();
+    const computeDialect2 = this.getDialect();
 
     const currentAppliedFilter = new Map({currentAppliedFilter: new Map({startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''})});
 

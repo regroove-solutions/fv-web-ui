@@ -105,14 +105,10 @@ export default class Index extends Component {
   render() {
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Portal',
-      'entity': this.props.computePortal
-    },{
       'id': this.props.routeParams.dialect_path,
       'entity': this.props.computeDialect2
     }])
 
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
     return <PromiseWrapper computeEntities={computeEntities}>

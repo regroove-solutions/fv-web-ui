@@ -132,7 +132,7 @@ export default class ListView extends DataListView {
   }
 
   fetchData(newProps) {
-    if (newProps.dialect == null) {
+    if (newProps.dialect == null && !this.getDialect(newProps)) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path);
     }
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
@@ -163,6 +163,10 @@ export default class ListView extends DataListView {
     );
   }
 
+  getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
+  }
+
   render() {
 
     let computeEntities = Immutable.fromJS([{
@@ -179,7 +183,7 @@ export default class ListView extends DataListView {
     }
 
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
-    const computeDialect2 = this.props.dialect || ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeDialect2 = this.props.dialect || this.getDialect();
 
     return <div renderOnError={true} computeEntities={computeEntities}>
                 {(() => {

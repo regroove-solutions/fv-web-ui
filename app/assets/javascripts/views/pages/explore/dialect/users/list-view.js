@@ -52,6 +52,7 @@ export default class ListView extends DataListView {
     DEFAULT_SORT_COL: 'fv:custom_order',
     DEFAULT_SORT_TYPE: 'asc',
     filter: new Map(),
+    dialect: null,
     gridListView: false
   }
 
@@ -63,6 +64,7 @@ export default class ListView extends DataListView {
     computeLogin: PropTypes.object.isRequired, 
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
+    dialect: PropTypes.object,
     fetchUser: PropTypes.func.isRequired,
     updateUser: PropTypes.func.isRequired,
     computeUser: PropTypes.object.isRequired,
@@ -114,7 +116,11 @@ export default class ListView extends DataListView {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+
+    if (newProps.dialect == null && !this.getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
+    
     this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
   }
 
@@ -160,6 +166,10 @@ export default class ListView extends DataListView {
     });
   }
 
+  getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
+  }
+
   render() {
 
     const computeEntities = Immutable.fromJS([{
@@ -171,7 +181,7 @@ export default class ListView extends DataListView {
     }])
 
     const computeUserSuggestion = ProviderHelpers.getEntry(this.props.computeUserSuggestion, this.props.routeParams.dialect_path);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    const computeDialect2 = this.props.dialect || this.getDialect();
     const computeUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.selectedUserName);
 
     let normalizedComputeUserSuggestion = {
