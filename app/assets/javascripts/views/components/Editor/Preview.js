@@ -361,7 +361,7 @@ export default class Preview extends Component {
             pictureTag = <img style={{maxWidth: '100%', width:'inherit', minWidth:'inherit'}} src={UIHelpers.getThumbnail(pictureResponse, 'Medium')} alt={selectn('title', pictureResponse)} />;
 
             if (this.props.crop) {
-              pictureTag = <div style={{width: '100%', backgroundImage: 'url(' + UIHelpers.getThumbnail(pictureResponse, 'Medium') + ')', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPositionX: '50%', ...this.props.tagStyles}}></div>;
+              pictureTag = <div style={{width: '100%', backgroundImage: 'url(\'' + UIHelpers.getThumbnail(pictureResponse, 'Medium') + '\')', backgroundSize: 'contain', backgroundRepeat: 'no-repeat', backgroundPositionX: '50%', ...this.props.tagStyles}}></div>;
             }
 
             if (this.props.minimal) {

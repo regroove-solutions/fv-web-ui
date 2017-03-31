@@ -43,7 +43,7 @@ import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-vie
 
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
-const DefaultFetcherParams = { currentPageIndex: 0, pageSize: 10, filters: {'properties.dc:title': {appliedFilter: ''}, 'dialect': {appliedFilter: ''} } };
+const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, filters: {'properties.dc:title': {appliedFilter: ''}, 'dialect': {appliedFilter: ''} } };
 
 class SharedResourceGridTile extends Component {
 
@@ -146,7 +146,7 @@ export default class BrowseComponent extends React.Component {
     ' AND ecm:primaryType ILIKE \'' + this.props.type + '\'' +
     ' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != \'deleted\' AND ecm:currentLifeCycleState != \'Disabled\'' + 
     ' AND (ecm:path STARTSWITH \'' + selectn('path', this.props.dialect) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) + 
-    '&currentPageIndex=' + fetcherParams.currentPageIndex + 
+    '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) + 
     '&pageSize=' + fetcherParams.pageSize + 
     '&sortBy=dc:created' + 
     '&sortOrder=DESC'

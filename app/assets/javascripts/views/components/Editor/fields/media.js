@@ -9,6 +9,8 @@ import AddMediaComponent from 'views/components/Editor/AddMediaComponent';
 import SelectMediaComponent from 'views/components/Editor/SelectMediaComponent';
 import Preview from 'views/components/Editor/Preview';
 
+const expandedValues = [];
+
 /**
 * Define auto-suggest factory
 */
@@ -20,7 +22,7 @@ function renderInput(locals) {
 
   const onComplete = function (fullValue) {
     locals.onChange(fullValue.uid);
-    locals.setExpandedValue(fullValue);
+    locals.setExpandedValue(fullValue, fullValue.uid);
   };
 
   const onCancel = function () {
@@ -32,7 +34,7 @@ function renderInput(locals) {
   };
 
   let content = <div>
-      <Preview id={locals.value} expandedValue={selectn('attrs.expandedValue', locals)} type={locals.type} crop={true} tagStyles={(locals.type == 'FVPicture') ? {height: '200px'} : null} />
+      <Preview id={locals.value} expandedValue={selectn(locals.value, expandedValues)} type={locals.type} crop={true} tagStyles={(locals.type == 'FVPicture') ? {height: '200px'} : null} />
       <FlatButton style={{position: 'absolute', top: 0, right: 0, backgroundColor: 'rgba(255, 255, 255, 0.9)', borderRadius: '0 0 0 10px', border: '1px dashed #dedede', paddingLeft: '5px', textAlign: 'center', borderTop: 0, borderRight: 0}} onTouchTap={_onRequestEdit} label="Replace" labelPosition="after">
         <FontIcon style={{verticalAlign: 'middle'}} className="material-icons">swap_horiz</FontIcon>
       </FlatButton>
@@ -60,9 +62,20 @@ export default class MediaFactory extends t.form.Textbox {
     this.setExpandedValue = this.setExpandedValue.bind(this);
   }
 
-  setExpandedValue(expandedValue) {
+  setExpandedValue(expandedValue, uid) {
+    expandedValues[uid] = expandedValue;
 	  this.setState({ expandedValue });
   }
+/*
+  componentWillReceiveProps(props) {
+    if (props.type !== this.props.type) {
+      this.typeInfo = getTypeInfo(props.type)
+    }
+    const value = this.getTransformer().format(props.value)
+    this.setState({ value })
+
+    console.log(expandedValues[value]);
+  }*/
 
   getLocals() {
     const locals = super.getLocals();

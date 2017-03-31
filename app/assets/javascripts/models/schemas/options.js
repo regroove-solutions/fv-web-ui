@@ -10,8 +10,10 @@ import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest';
 import SelectFactory from 'views/components/Editor/fields/select';
 import MediaFactory from 'views/components/Editor/fields/media';
 
+import { FlatButton, IconButton } from 'material-ui';
+
 const i18nExt = {
-  add: '+ Add',
+  add: '+ Add New',
   down: '▼',
   remove: 'X',
   up: '▲',
@@ -74,22 +76,43 @@ const DefinitionsLayout = function (locals) {
   );
 };
 
-const RelatedPicturesLayout = function (locals) {
+const RelatedMediaLayout = function (locals) {
   return (
-    <div>
+    <div className="row" style={{margin: '15px 0'}}>
     <fieldset>
+      <legend>{locals.label} <FlatButton label={locals.add.label} onTouchTap={locals.add.click} /></legend>
         {(locals.items || []).map(function(item, i) {
           return <div key={i} className={classNames('col-xs-12','col-md-3')}>
-            {item.input}
-                    {
-                      item.buttons.map((button, i) => {
-                        return <button key={i} className="btn btn-info" onClick={button.click}>{button.label}</button>
-                      })
-                    }
-            </div>;
+                    {item.input}
+                    <div style={{textAlign: 'center', marginTop: '-15px', backgroundColor: 'rgba(234, 234, 234, 0.6)', borderRadius: '0 0 10px 10px'}}>
+                      {item.buttons.map((button, i) => {
+                        
+                        let icon = '';
+                        let label = '';
+
+                        switch (button.type) {
+                          case 'remove':
+                            icon = 'clear';
+                            label = 'Remove Item';
+                          break;
+
+                          case 'move-up':
+                            icon = 'arrow_back';
+                            label = 'Move left (appears first)';
+                          break;
+
+                          case 'move-down':
+                            icon = 'arrow_forward';
+                            label = 'Move right';
+                          break;
+                        }
+
+                        return <IconButton tooltip={label} iconClassName="material-icons" key={i} onClick={button.click}>{icon}</IconButton>;
+                      })}
+                    </div>
+                </div>;
         })}
     </fieldset>
-    <button className="btn btn-info" onClick={locals.add.click}>{locals.add.label}</button>
     </div>
   );
 };
@@ -102,7 +125,7 @@ t.String.getValidationErrorMessage = (value, path, context) => {
 
 const options = {
   FVWord: {
-    order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv-word:related_phrases', 'fv-word:categories', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive','fv-word:available_in_games'],
+    order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv-word:related_phrases', 'fv-word:categories', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive','fv-word:available_in_games'],
     fields: {
       'dc:title': {
         label: 'Word',
@@ -188,7 +211,8 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVAudio'
-        }
+        },
+        template: RelatedMediaLayout
       },
       'fv:related_pictures' : {
         label: 'Related Pictures',
@@ -196,14 +220,15 @@ const options = {
           factory: MediaFactory,
           type: 'FVPicture'
         },
-        template: RelatedPicturesLayout
+        template: RelatedMediaLayout
       },
       'fv:related_videos' : {
         label: 'Related Videos',
         item: {
           factory: MediaFactory,
           type: 'FVVideo'
-        }
+        },
+        template: RelatedMediaLayout
       },
       'fv:cultural_note' : {
         label: 'Cultural Note',
@@ -283,21 +308,24 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVAudio'
-        }
+        },
+        template: RelatedMediaLayout
       },
       'fv:related_pictures' : {
         label: 'Related Pictures',
         item: {
           factory: MediaFactory,
           type: 'FVPicture'
-        }
+        },
+        template: RelatedMediaLayout
       },
       'fv:related_videos' : {
         label: 'Related Videos',
         item: {
           factory: MediaFactory,
           type: 'FVVideo'
-        }
+        },
+        template: RelatedMediaLayout
       },
       'fv:cultural_note' : {
         label: 'Cultural Notes'
