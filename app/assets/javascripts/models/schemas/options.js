@@ -107,7 +107,7 @@ const RelatedMediaLayout = function (locals) {
                           break;
                         }
 
-                        return <IconButton tooltip={label} iconClassName="material-icons" key={i} onClick={button.click}>{icon}</IconButton>;
+                        return <IconButton tooltip={label} iconClassName="material-icons" key={i} onClick={button.click} style={{verticalAlign: '-8px'}}>{icon}</IconButton>;
                       })}
                     </div>
                 </div>;

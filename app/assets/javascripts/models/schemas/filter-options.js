@@ -1,9 +1,43 @@
 import t from 'tcomb-form';
+
+import classNames from 'classnames';
+
 import ValuedCheckboxFactory from 'views/components/Editor/fields/valued-checkbox';
 import RangeSelector from 'views/components/Editor/fields/range';
 import SelectFactory from 'views/components/Editor/fields/select';
 
+import { FlatButton, IconButton } from 'material-ui';
+
 import ProviderHelpers from 'common/ProviderHelpers';
+
+const i18nExt = {
+  add: '+ Add New',
+  down: '▼',
+  remove: 'X',
+  up: '▲',
+  optional: '(optional)'
+}
+
+const SearchDocumentTypesTemplate = function (locals) {
+
+  return (
+    <div className="row" style={{margin: '15px 0'}}>
+    <fieldset>
+      <legend>{locals.label} {(locals.items.length < 4) ? <FlatButton label={locals.add.label} onTouchTap={locals.add.click} /> : ''}</legend>
+        {(locals.items || []).map(function(item, i) {
+          return <div key={i} className={classNames('col-xs-12')}>
+                    <div style={{width: '60%', display: 'inline-block'}}>{item.input}</div>
+                    <div style={{width: '40%', display: 'inline-block'}}>{item.buttons.map((button, i) => {
+                      if (button.type == 'remove') {
+                        return <IconButton tooltip='Remove Item' iconClassName="material-icons" key={i} onClick={button.click}>clear</IconButton>;
+                      }
+                    })}</div>
+                </div>;
+        })}
+    </fieldset>
+    </div>
+  );
+};
 
 let ResourcesFields = {
     fields: {
@@ -120,6 +154,18 @@ const options = {
         help: 'Group identifiers (For example: "sample_dialect_recorders")'
       }
     }
+  },
+  Search: {
+    fields: {
+      'searchTerm': {
+        label: 'Search Term'
+      },
+      'documentTypes': {
+        label: 'Document Types',
+        template: SearchDocumentTypesTemplate
+      }
+    },
+    i18n: i18nExt
   }
 };
 

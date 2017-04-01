@@ -182,13 +182,14 @@ export default class AppFrontController extends Component {
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', ANYTHING_BUT_SLASH],
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
         page: <PageSearch />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search'],
+        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
         page: <PageSearch />,
+        extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
@@ -196,11 +197,6 @@ export default class AppFrontController extends Component {
         page: <PageUsersRegister />,
         disableWorkspaceSectionNav: true,
         extractPaths: true
-      },
-      {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', ANYTHING_BUT_SLASH],
-        page: <PageSearch />,
-        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', new paramMatch('language_family', ANYTHING_BUT_SLASH)],

@@ -1,3 +1,6 @@
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -25,9 +28,15 @@ const querySearchResults = function querySearchResults(queryParam, queryPath, do
   }
 };
 
-const actions = { querySearchResults };
+
+const searchDocuments = RESTActions.query('FV_SEARCH_DOCUMENTS', 'Document', { headers: { 'X-NXenrichers.document': 'ancestry, word, phrase', 'X-NXproperties': 'dublincore, fv-word, fvcore, fv-phrase, fv-portal' } });
+
+const actions = { querySearchResults, searchDocuments };
+
+const computeSearchDocumentsQueryFactory = RESTReducers.computeQuery('search_documents');
 
 const reducers = {
+	computeSearchDocuments: computeSearchDocumentsQueryFactory.computeSearchDocuments,
 	computeSearchResults(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
 		switch (action.type) {
 			case QUERY_SEARCH_RESULTS_START:

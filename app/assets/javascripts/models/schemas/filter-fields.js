@@ -63,7 +63,16 @@ const fields = {
   User: makeOptional({
     'searchTerm': t.String,
     'group': t.String
-  })
+  }),
+  Search: {
+    'searchTerm': t.String,
+    'documentTypes': t.maybe(t.list(t.enums({
+      'FVWord': 'Words',
+      'FVPhrase': 'Phrases',
+      'FVPortal': 'Dialects',
+      'FVBook': 'Song/Story Books'
+    })))
+  }
 }
 
 export default fields;

@@ -48,6 +48,7 @@ export default class GridView extends Component {
     cols: PropTypes.number,
     type: PropTypes.string,
     gridListTile: PropTypes.func,
+    style: PropTypes.object,
     className: PropTypes.string
   };
 
@@ -92,11 +93,13 @@ export default class GridView extends Component {
       break;
     }
 
+    let gridListStyle = this.props.style || {width: '100%', overflowY: 'auto', marginBottom: 24};
+
     return <div className={classNames('grid-view', this.props.className)}>
               <GridList
                 cols={(UIHelpers.isViewSize('xs')) ? ((this.props.type === 'FVPhrase') ? 1 : 2) : this.props.cols}
                 cellHeight={this.props.cellHeight}
-                style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
+                style={gridListStyle}
                 >
                   {(items).map(function (tile, i) { 
 

@@ -37,7 +37,8 @@ const GridViewWithPagination = withPagination(GridView, 8);
 export default class DocumentListView extends Component {
 
   static defaultProps = {
-    pagination: true
+    pagination: true,
+    usePrevResponse: false
   };
 
   constructor(props, context) {
@@ -121,6 +122,8 @@ export default class DocumentListView extends Component {
         gridListTile: this.props.gridListTile,
         items:selectn('response.entries', this.props.data)
       };
+
+      gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps);
 
       if (this.props.pagination) {
         return <GridViewWithPagination {...gridViewProps} />;

@@ -211,7 +211,10 @@ export default class Navigation extends Component {
 
       // Clear out the input field
       this.refs.navigationSearchField.setValue("");
-      this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
+
+      if (searchQueryParam && searchQueryParam != '') {
+        this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
+      }
     }
   }
 

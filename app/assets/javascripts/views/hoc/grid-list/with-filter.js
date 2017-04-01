@@ -11,6 +11,7 @@ import options from 'models/schemas/filter-options';
 import withToggle from 'views/hoc/view/with-toggle';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import FormHelpers from 'common/FormHelpers';
 
 import { RaisedButton, FlatButton, FontIcon } from 'material-ui';
 
@@ -99,26 +100,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
         // Filter a remote list (i.e. partial list sent to component)
         else {
-                let preparedFilters = {};
-
-                // Test each of the filters against item
-                for (let filterKey in filters) {
-
-                    let filterOptions = selectn([this.props.filterOptionsKey, 'fields', filterKey], options);
-
-                    // Add options to returned filter object
-
-                    // Filter not prepared
-                    if (!filters[filterKey].hasOwnProperty('appliedFilter')) {
-                        preparedFilters[filterKey] = {
-                            appliedFilter: filters[filterKey],
-                            filterOptions: filterOptions
-                        }
-                    } else {
-                        preparedFilters[filterKey] = filters[filterKey];
-                    }
-
-                }
+            let preparedFilters = FormHelpers.prepareFilters(filters, options, this.props.filterOptionsKey);
 
             this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
                 currentPageIndex: 1,
@@ -174,30 +156,9 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
 
         let form = this.refs["filter_form"];
-        let formValue = form.getValue();
+        let properties = FormHelpers.getProperties(form);
 
-        let properties = {};
-
-            for (let key in formValue) {
-
-                // Treat valued checkboxes differently. Always have value, so skip if unchecked.
-                // getComponent does not work with input names that have '.' in them. Access directly.
-                //let valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
-                let valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
-                if (valuedCheckbox) {
-                    if (!valuedCheckbox.checked) {
-                        continue;
-                    }
-                }
-
-                if (formValue.hasOwnProperty(key) && key) {
-                    if (formValue[key] && formValue[key] != '') {
-                        properties[key] = formValue[key];
-                    }
-                }
-            }
-
-        if (formValue && Object.keys(properties).length != 0) {
+        if (Object.keys(properties).length != 0) {
             this.setState({
                 formValue: properties
             });

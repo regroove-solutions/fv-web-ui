@@ -70,7 +70,15 @@ export default class DataListView extends Component {
       }
     });
 
-    this._fetchListViewData(this.props, page, pageSize, this.state.sortInfo.currentSortType, this.state.sortInfo.currentSortCols);
+    let sortInfo = null;
+    let currentSortCols = null;
+
+    if (this.state.hasOwnProperty('sortInfo') && this.state.sortInfo.hasOwnProperty('currentSortType')) {
+      sortInfo = this.state.sortInfo.currentSortType;
+      currentSortCols = this.state.sortInfo.currentSortCols;
+    }
+
+    this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);
   }
 
   _handleSortChange(sortInfo) {
@@ -134,14 +142,16 @@ export default class DataListView extends Component {
     }
 
     // Toggle 'state' column for section/workspaces view
-    if (props.routeParams.area == 'sections') {
-      let stateCol = this.state.columns.findIndex(function(item) {
-          return item.name === 'state';
-      });
+    if (this.state.hasOwnProperty('columns')) {
+      if (props.routeParams.area == 'sections') {
+        let stateCol = this.state.columns.findIndex(function(item) {
+            return item.name === 'state';
+        });
 
-      this.state.columns.splice(stateCol, 1);
-    } else {
-      this.state.columns.push({ name: 'state', title: 'State' });
+        this.state.columns.splice(stateCol, 1);
+      } else {
+        this.state.columns.push({ name: 'state', title: 'State' });
+      }
     }
   }
 

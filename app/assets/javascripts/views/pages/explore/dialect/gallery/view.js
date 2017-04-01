@@ -25,6 +25,7 @@ import ConfGlobal from 'conf/local.json';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import UIHelpers from 'common/UIHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -106,7 +107,7 @@ export default class Gallery extends React.Component {
   const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
 
 	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
-		let image = { original: ConfGlobal.baseURL + picture.path, description: picture['dc:description'] };
+		let image = { original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description'] };
 		images.push(image);
 	});
 
@@ -137,17 +138,20 @@ export default class Gallery extends React.Component {
 
             <div className="row">
 
-              <div className="col-xs-12">
+              <div className="col-xs-12" style={{textAlign: 'center'}}>
                 <h1>{selectn('response.title', computeGallery)}</h1>
                 <p>{selectn('response.properties.dc:description', computeGallery)}</p>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-4')}>
-                <ImageGallery
-                  ref={i => this._imageGallery = i}
-                  items={images}
-                  slideInterval={2000}
-                  handleImageLoad={this.handleImageLoad}
-                  showThumbnails={false}
-                  showBullets={true} />
+                  <div>
+                    <ImageGallery
+                      ref={i => this._imageGallery = i}
+                      items={images}
+                      slideInterval={2000}
+                      showFullscreenButton={true}
+                      handleImageLoad={this.handleImageLoad}
+                      showThumbnails={false}
+                      showBullets={true} />
+                  </div>
 	           	 </div>
 	           </div>
             </div>
