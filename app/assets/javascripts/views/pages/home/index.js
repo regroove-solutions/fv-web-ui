@@ -20,6 +20,8 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
 
+import Colors from 'material-ui/lib/styles/colors';
+
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -119,24 +121,24 @@ export default class PageHome extends Component {
             <div style={{position: 'relative', height: '650px'}}>
               <div className={classNames('col-xs-12')} style={{height: '100%'}}>
 
-                <div style={{position: 'absolute', right: '25px', top: '25px', width: '40%'}} className={classNames({'hidden': !this.state.mapVisible})}>
+                <div className="hidden-xs" style={{position: 'absolute', left: '25px', top: '25px', width: '40%'}} className={classNames({'hidden': !this.state.mapVisible})}>
                   <Map dialects={dialects} />
                 </div>
 
-                <div style={{width: '35%', position: 'absolute', bottom: '15%', left: '10%', padding: '0 15px 15px 25px', color: '#ffffff', textShadow: '#000 2px 0 15px', fontSize: '1.5em', background: 'rgba(0,0,0,0.5)', borderRadius: '4px'}}>
+                <div className="home-intro-block">
                   <h2>{selectn('fvpage:blocks[0].title', page)}</h2>
                   <p dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}} style={{fontSize: '0.9em'}}></p>
                   <div style={{textAlign: 'right'}}>
                     <RaisedButton label="Explore Our Languages" onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px'}} /> 
-                    <RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} />
+                    <div className="hidden-xs" style={{display: 'inline-block'}}><RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{backgroundColor: '#923110', padding: '20px', borderTop: '1px rgba(213, 160, 92, 0.29) solid', borderBottom: '1px rgba(213, 160, 92, 0.29) solid', marginBottom: '20px', boxShadow: 'rgba(0, 0, 0, 0.49) 0 0 20px 0px', height: '90px'}}>
+            <div style={{backgroundColor: '#00bcd4', padding: '20px', borderTop: '1px rgba(213, 160, 92, 0.29) solid', borderBottom: '1px rgba(213, 160, 92, 0.29) solid', marginBottom: '20px', boxShadow: 'rgba(0, 0, 0, 0.49) 0 0 20px 0px', height: '90px'}}>
               <div className={classNames('col-xs-12')}>
-                <TextField underlineFocusStyle={{borderColor: '#000'}} underlineStyle={{width:'95%', borderColor: '#923110'}} style={{width: '100%', fontSize: '1.3em', height: '46px', backgroundColor: '#fff', padding: '0 15px'}} hintText="Search FirstVoices (word, phrase, language name):" ref="navigationSearchField" onEnterKeyDown={(e, v) => this._onNavigateRequest('/explore/FV/sections/Data/search/' + e.currentTarget.value)} />
+                <TextField underlineFocusStyle={{borderColor: '#000'}} underlineStyle={{width:'95%', borderColor: '#923110'}} style={{width: '100%', fontSize: '1.3em', height: '46px', backgroundColor: '#fff', padding: '0 15px'}} hintText="Search FirstVoices:" ref="navigationSearchField" onEnterKeyDown={(e, v) => this._onNavigateRequest('/explore/FV/sections/Data/search/' + e.currentTarget.value)} />
               </div>
             </div>
             </div>

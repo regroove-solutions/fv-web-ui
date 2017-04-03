@@ -18,7 +18,7 @@ import Navigation from 'views/components/Navigation';
 import KidsNavigation from 'views/components/Kids/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
-import { PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageIntro, PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectUsers } from 'views/pages';
 
@@ -104,9 +104,10 @@ export default class AppFrontController extends Component {
     const routes = Immutable.fromJS([
       {
         path: [],
-        page: <PageHome />,
+        page: <PageIntro />,
         breadcrumbs: false,
         frontpage: true,
+        navigation: false,
         redirects: [{
           // For any start page value other than a dialect, simple redirect to that start page
           condition: function(params) {
@@ -626,7 +627,9 @@ export default class AppFrontController extends Component {
       document.title = title;
 
       // Track page view
-      window.snowplow('trackPageView');
+      if (window.snowplow) {
+        window.snowplow('trackPageView');
+      }
     }
   }
 
@@ -776,10 +779,13 @@ export default class AppFrontController extends Component {
     const { matchedPage, matchedRouteParams } = this.state;
     
     const isFrontPage = (!matchedPage) ? false : matchedPage.get('frontpage');
+    const hideNavigation = matchedPage.hasOwnProperty('navigation') && matchedPage.get('navigation') === false;
 
     let page, navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
     let theme = (matchedRouteParams.hasOwnProperty('theme')) ? matchedRouteParams.theme : 'default';
     let print = (matchedPage) ? matchedPage.get('page').get('props').get('print') === true : false;
+
+    let footer = <Footer className={'footer-' + theme + '-theme'} />;
 
     if (!matchedPage) {
       page = <div>404</div>;
@@ -806,6 +812,11 @@ export default class AppFrontController extends Component {
           page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props);
         }
       }
+
+      // Hide navigation
+      if (hideNavigation) {
+        navigation = footer = '';
+      }
     }
 
     return (
@@ -819,7 +830,7 @@ export default class AppFrontController extends Component {
 
         <div className="row">{navigation}</div>
         <div className={'page-' + theme + '-theme'}>{page}</div>
-        <div className="row"><Footer className={'footer-' + theme + '-theme'} /></div>
+        <div className="row">{footer}</div>
       </div>
     );
   }

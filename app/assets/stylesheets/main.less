@@ -186,6 +186,22 @@ form.editableComponentForm{
 }
 
 /**
+* Home
+*/
+.home-intro-block{
+  width: 35%;
+  position: absolute;
+  bottom: 15%;
+  right: 10%;
+  padding: 0 15px 15px 25px;
+  color: #ffffff;
+  text-shadow: #000 2px 0 15px;
+  font-size: 1.5em;
+  background: rgba(0,0,0,0.5);
+  border-radius: 4px;
+}
+
+/**
 * Introduction page
 */
 body.introduction{
@@ -549,12 +565,14 @@ audio::-webkit-media-controls-enclosure {
 * Responsive design fixes
 */
 .search-bar-mobile{
+    width: 100%;
     bottom: 0;
     left: 0;
     z-index: 99999;
     position: fixed;
     border: 1px #e8e8e8 solid;
     padding: 20px 0 10px 0;
+    text-align:center;
 
     span{
       text-align: right;
@@ -582,6 +600,16 @@ audio::-webkit-media-controls-enclosure {
 
   .kids-home{
     background-size: 46%, 39%;
+  }
+
+  // Home
+  .home-intro-block{
+    width: 100%;
+    position: relative;
+    bottom: initial;
+    right: initial;
+    padding-top: 15px;
+    margin-top: 35px;
   }
 
   // Dialect Page(s)

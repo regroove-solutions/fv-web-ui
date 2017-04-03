@@ -54,6 +54,7 @@ import PageDialectLearnPhrasesCategories from './explore/dialect/learn/phrases/c
 
 import PageTest from './test.js'
 import PageHome from './home'
+import PageIntro from './intro'
 import PageGetStarted from './get-started'
 import PageContribute from './contribute'
 import PagePlay from './play'
@@ -67,6 +68,7 @@ import PageKidsHome from './kids/home'
 
 module.exports = {
   PageTest,
+  PageIntro,
   PageHome,
   PageExploreDialects,
   PageExploreArchive,
