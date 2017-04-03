@@ -779,7 +779,7 @@ export default class AppFrontController extends Component {
     const { matchedPage, matchedRouteParams } = this.state;
     
     const isFrontPage = (!matchedPage) ? false : matchedPage.get('frontpage');
-    const hideNavigation = matchedPage.hasOwnProperty('navigation') && matchedPage.get('navigation') === false;
+    const hideNavigation = matchedPage.has('navigation') && matchedPage.get('navigation') === false;
 
     let page, navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
     let theme = (matchedRouteParams.hasOwnProperty('theme')) ? matchedRouteParams.theme : 'default';
