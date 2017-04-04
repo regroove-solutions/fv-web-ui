@@ -20,7 +20,6 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
-import QueryString from 'query-string';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';

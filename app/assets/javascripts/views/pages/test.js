@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
-import QueryString from 'query-string';
+//import QueryString from 'query-string';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
@@ -110,7 +110,7 @@ export default class Test extends Component {
 
   fetchData(fetcherParams) {
 
-    const pathOrId = "/FV/sections/Data/Wakashan/diidiitidq/diidiitidq/Portal";
+    /*const pathOrId = "/FV/sections/Data/Wakashan/diidiitidq/diidiitidq/Portal";
 
     let preparedParams = {
       currentPageIndex: fetcherParams.currentPageIndex,
@@ -122,7 +122,7 @@ export default class Test extends Component {
     this.setState({
       fetcherParams: fetcherParams,
       pathOrId: pathOrId
-    });
+    });*/
   }
 
   // Fetch data on initial render

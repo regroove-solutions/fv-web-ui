@@ -21,8 +21,6 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 import classNames from 'classnames';
 
-import QueryString from 'query-string';
-
 import ProviderHelpers from 'common/ProviderHelpers';
 
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
