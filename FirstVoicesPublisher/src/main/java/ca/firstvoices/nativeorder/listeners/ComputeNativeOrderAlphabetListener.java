@@ -47,7 +47,7 @@ public class ComputeNativeOrderAlphabetListener implements EventListener {
         }
 
         // Handle language assets (Words and Phrases)
-        if (doc.getType().equals("FVCharacter")) {
+        if (doc.getType().equals("FVCharacter") && !doc.isProxy()) {
 
             // When modifying, only recompute if order has changed.
             if (event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
