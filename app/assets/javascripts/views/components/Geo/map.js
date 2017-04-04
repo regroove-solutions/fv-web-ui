@@ -21,9 +21,7 @@ import selectn from 'selectn';
 
 import UIHelpers from 'common/UIHelpers';
 
-
 import DOMPurify from 'dompurify';
-import * as topojson from "topojson-client";
 
 import Card from 'material-ui/lib/card/card';
 import CardTitle from 'material-ui/lib/card/card-title';
