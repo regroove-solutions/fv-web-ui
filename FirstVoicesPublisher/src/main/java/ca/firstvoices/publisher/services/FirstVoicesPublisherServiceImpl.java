@@ -463,6 +463,13 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                         DocumentModel parentDependencySection;
 
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
+
+                        // Publish parent if not yet published
+                        if (parentDependencySection == null) {
+                            DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
+                            parentDependencySection = publishDocument(session, parent, getPublication(session, parent.getParentRef()));
+                        }
+
                         publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
                     }
 
@@ -496,7 +503,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             throw new InvalidParameterException("Dialect should be published");
         }
         DocumentModel dialectSection = proxies.get(0);
-        DocumentModel input = getPublication(session, portal.getRef());
+        //DocumentModel input = getPublication(session, portal.getRef());
 
         // Portal should always be published at this point, skip if not
         //if (input == null) {
@@ -505,7 +512,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         //}
 
         // Publish changes
-        session.publishDocument(portal, dialectSection, true);
+        DocumentModel input = session.publishDocument(portal, dialectSection, true);
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
