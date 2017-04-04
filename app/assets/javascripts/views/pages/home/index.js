@@ -78,7 +78,7 @@ export default class PageHome extends Component {
     '&sortOrder=ASC' +
     '&sortBy=dc:title');
 
-    this.props.fetchPortals(this.state.dialectsPath);
+    this.props.fetchPortals(this.state.dialectsPath, ' AND fv-portal:map_marker_coords IS NOT NULL');
   }
   
 
@@ -121,7 +121,7 @@ export default class PageHome extends Component {
             <div style={{position: 'relative', height: '650px'}}>
               <div className={classNames('col-xs-12')} style={{height: '100%'}}>
 
-                <div className="hidden-xs" style={{position: 'absolute', left: '25px', top: '25px', width: '40%'}} className={classNames({'hidden': !this.state.mapVisible})}>
+                <div className="hidden-xs" style={{position: 'absolute', left: '25px', top: '25px', width: '40%'}} className={classNames({'invisible': !this.state.mapVisible})}>
                   <Map dialects={dialects} />
                 </div>
 
