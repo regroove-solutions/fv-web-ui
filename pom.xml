@@ -6,7 +6,7 @@
   <properties>
     <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
     <fv.studio.version>0.0.38</fv.studio.version>
-    <fv.plugin.version>1.0.10-SNAPSHOT</fv.plugin.version>
+    <fv.plugin.version>1.0.11-SNAPSHOT</fv.plugin.version>
   </properties>
 
   <parent>
@@ -19,7 +19,7 @@
   <artifactId>firstvoices-modules-parent</artifactId>
   <name>First Voices Project Parent</name>
   <packaging>pom</packaging>
-  <version>1.0.10-SNAPSHOT</version>
+  <version>1.0.11-SNAPSHOT</version>
 
   <modules>
     <module>FirstVoices-marketplace</module>
