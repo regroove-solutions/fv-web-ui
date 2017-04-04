@@ -130,7 +130,7 @@ export default class PageHome extends Component {
                   <p dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}} style={{fontSize: '0.9em'}}></p>
                   <div style={{textAlign: 'right'}}>
                     <RaisedButton label="Explore Our Languages" onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px'}} /> 
-                    <div className="hidden-xs" style={{display: 'inline-block'}}><RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
+                    <div className="hidden" style={{display: 'inline-block'}}><RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
                   </div>
                 </div>
               </div>
