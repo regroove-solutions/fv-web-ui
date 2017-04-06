@@ -78,13 +78,13 @@ export default class PageHome extends Component {
     return <div>
                 <div className="row" style={introMarginStyle}>
                     <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-2')}>
-                        <p style={{marginTop: '15px'}}><img src="/assets/images/intro-english.gif" alt="Language Legacies Celebrating Indigenous Cultures" /></p>
-                        <p><img src="/assets/images/logo.gif" alt="FirstVoices Logo" /></p>
+                        <p style={{marginTop: '15px'}}><img src="/assets/images/intro-english.gif" alt="Language Legacies Celebrating Indigenous Cultures" className="img-responsive" /></p>
+                        <p><img src="/assets/images/logo.gif" alt="FirstVoices Logo" className="img-responsive" /></p>
                         <RaisedButton label="Enter FirstVoices" onTouchTap={(e, v) => this._onNavigateRequest('/home')} style={{textAlign: 'center'}} />
-                        <p><img src="/assets/images/intro-french.gif" alt="Des patrimoines linguistiques célébrant des cultures indigènes" /></p>
+                        <p><img src="/assets/images/intro-french.gif" alt="Des patrimoines linguistiques célébrant des cultures indigènes" className="img-responsive" /></p>
                     </div>
                     <div className={classNames('col-xs-12', 'col-md-4')} style={{textAlign: 'right'}}>
-                        <img src="/assets/images/fv-girl.jpg" alt="FirstVoices Girl" style={{paddingTop: '10px'}} />
+                        <img src="/assets/images/fv-girl.jpg" alt="FirstVoices Girl" className="img-responsive" style={{paddingTop: '10px'}} />
                     </div>
                 </div>
 
