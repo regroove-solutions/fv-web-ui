@@ -214,7 +214,7 @@ export default class ExploreDialect extends Component {
 
     let featuredWords = selectn('response.contextParameters.portal.fv-portal:featured_words', computePortal) || [];
 
-    return <PromiseWrapper title={selectn('response.properties.dc:title', computeDialect2)} computeEntities={computeEntities}>
+    return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {

@@ -32,7 +32,7 @@ export default class AuthenticationFilter extends Component {
       ...other,
     } = this.props;
 
-    let isSection = (routeParams.area == 'sections');
+    let isSection = (selectn('area', routeParams) == 'sections');
     
     const comonentToRender = <div style={containerStyle}>{children}</div>; 
 

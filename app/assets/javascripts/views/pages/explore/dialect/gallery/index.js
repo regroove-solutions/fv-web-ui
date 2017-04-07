@@ -147,7 +147,7 @@ export default class PageDialectGalleries extends Component {
 
               <div className={classNames('row', 'row-create-wrapper', {'hidden': isKidsTheme})}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
-                  <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
+                  <AuthorizationFilter hideFromSections={true} routeParams={this.props.routeParams} filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
                     <RaisedButton label={"Create Gallery"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
                   </AuthorizationFilter>
                 </div>

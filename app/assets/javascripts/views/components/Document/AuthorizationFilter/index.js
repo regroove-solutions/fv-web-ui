@@ -6,11 +6,14 @@ export default class AuthorizationFilter extends Component {
 
   static propTypes = {
     children: PropTypes.node,
+    hideFromSections: PropTypes.bool,
     renderPartial: PropTypes.bool,
+    routeParams: PropTypes.object,
     key: PropTypes.string
   };
 
   static defaultProps = {
+    hideFromSections: false,
     renderPartial: false
   };
 
@@ -41,10 +44,18 @@ export default class AuthorizationFilter extends Component {
     const {
       children,
       filter,
+      hideFromSections,
+      routeParams,
       ...other,
     } = this.props;
 
+    let isSection = (selectn('area', routeParams) == 'sections');
+
     let currentUserEntityPermissions = selectn('contextParameters.permissions', filter.entity);
+
+    if (hideFromSections && isSection) {
+      return null;
+    }
 
     if (filter.hasOwnProperty('permission')) {
       if (!currentUserEntityPermissions || currentUserEntityPermissions.indexOf(filter.permission) === -1) {
