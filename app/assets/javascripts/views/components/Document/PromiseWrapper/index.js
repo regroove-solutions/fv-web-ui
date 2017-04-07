@@ -54,25 +54,6 @@ export default class PromiseWrapper extends Component {
       typeError: false
     }
   }
-
-  componentDidMount() {
-    if (this.props.title){
-      document.title = this.props.title + ' | ' + ConfGlobal.title;
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.title != this.props.title) {
-      document.title = nextProps.title + ' | ' + ConfGlobal.title;
-    }
-  }
-
-  componentWillUnmount() {
-    if (this.props.title){
-      document.title = ConfGlobal.title;
-    }
-  }
-  
  
   render () {
 

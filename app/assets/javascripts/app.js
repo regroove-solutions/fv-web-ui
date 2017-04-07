@@ -47,6 +47,7 @@ const context = {
   providedState: {
     properties: {
       title: ConfGlobal.title,
+      pageTitleParams: null,
       domain: ConfGlobal.domain,
       theme: {
         palette: ThemeManager.getMuiTheme(FirstVoicesTheme),

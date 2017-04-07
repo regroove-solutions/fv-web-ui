@@ -78,6 +78,7 @@ export default class View extends Component {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    changeTitleParams: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
@@ -128,6 +129,14 @@ export default class View extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()));
+
+    if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
+      this.props.changeTitleParams({'phrase': title});
+    }
   }
 
   _getPhrasePath(props = null) {

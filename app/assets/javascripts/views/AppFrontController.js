@@ -10,6 +10,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import {Link} from 'provide-page';
 
@@ -96,7 +97,7 @@ export default class AppFrontController extends Component {
     this.state = this._getInitialState();
 
     // Bind methods to 'this'
-    ['_matchPath', '_route'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_matchPath', '_route', '_updateTitle'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _getInitialState() {
@@ -108,6 +109,7 @@ export default class AppFrontController extends Component {
         breadcrumbs: false,
         frontpage: true,
         navigation: false,
+        title: 'Welcome',
         redirects: [{
           // For any start page value other than a dialect, simple redirect to that start page
           condition: function(params) {
@@ -142,31 +144,37 @@ export default class AppFrontController extends Component {
       {
         path: [new paramMatch('theme', new RegExp("kids"))],
         frontpage: true,
+        title: 'Kids Home',
         page: <PageKidsHome />
       },
       {
         path: ['get-started'],
-        page: <PageGetStarted />,
-        title: 'Getting Started'
+        title: 'Getting Started',
+        page: <PageGetStarted />
       },
       {
         path: ['contribute'],
+        title: 'Contribute',
         page: <PageContribute />
       },
       {
         path: ['play'],
+        title: 'Games',
         page: <PagePlay />
       },
       {
         path: ['tasks'],
+        title: 'Tasks',
         page: <PageTasks />
       },
       {
         path: ['register'],
+        title: 'Register',
         page: <PageUsersRegister />
       },
       {
         path: ['profile'],
+        title: 'User Profile',
         page: <PageUsersProfile />
       },
       {
@@ -179,34 +187,40 @@ export default class AppFrontController extends Component {
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
+        title: '{$theme} Dialects',
         page: <PageExploreDialects />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
+        title: '\'{$searchTerm}\' Search Results',
         page: <PageSearch />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
+        title: '\'{$searchTerm}\' Search Results | {$dialect_name} ',
         page: <PageSearch />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'register'],
+        title: '{$dialect_name} Registration',
         page: <PageUsersRegister />,
         disableWorkspaceSectionNav: true,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', new paramMatch('language_family', ANYTHING_BUT_SLASH)],
+        title: '{$language_family_name} Explore',
         page: <PageExploreFamily />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        title: '{$language_name} Explore',
         page: <PageExploreLanguage />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
@@ -214,6 +228,7 @@ export default class AppFrontController extends Component {
       {
         id: 'page_explore_dialect',
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH ],
+        title: '{$dialect_name} Home | {$theme}',
         page: <PageExploreDialect />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
@@ -221,292 +236,343 @@ export default class AppFrontController extends Component {
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit' ],
+        title: 'Edit {$dialect_name}',
         page: <PageExploreDialectEdit />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn' ],
+        title: 'Learn {$dialect_name}',
         page: <PageDialectLearn />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media' ],
+        title: 'Browse Media | {$dialect_name}',
         page: <PageDialectMedia />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH) ],
+        title: '{$media} | Media | {$dialect_name}',
         page: <PageDialectViewMedia />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$media} | Media | {$dialect_name}',
         page: <PageDialectEditMedia />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet'],
+        title: 'Alphabet | {$dialect_name}',
         page: <PageDialectViewAlphabet />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', 'print'],
+        title: 'Print Alphabet | {$dialect_name}',
         page: <PageDialectViewAlphabet print={true} />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', new paramMatch('character', ANYTHING_BUT_SLASH)],
+        title: 'Character - {$character} | Alphabet | {$dialect_name}',
         page: <PageDialectViewCharacter />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', new paramMatch('character', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$character} Character | Alphabet | {$dialect_name}',
         page: <PageDialectAlphabetCharacterEdit />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play' ],
+        title: 'Games | {$dialect_name}',
         page: <PageDialectPlay />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'jigsaw' ],
+        title: 'Jigsaw | Games | {$dialect_name}',
         page: <PageJigsawGame />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordsearch' ],
+        title: 'Word Search | Games | {$dialect_name}',
         page: <PageWordSearch />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'colouringbook' ],
+        title: 'Colouring Book | Games | {$dialect_name}',
         page: <PageColouringBook />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'concentration' ],
+        title: 'Memory Game | Games | {$dialect_name}',
         page: <PageConcentration />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'picturethis' ],
+        title: 'Picture This | Games | {$dialect_name}',
         page: <PagePictureThis />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'hangman' ],
+        title: 'Hangman | Games | {$dialect_name}',
         page: <PageHangman />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordscramble' ],
+        title: 'Word Scramble | Games | {$dialect_name}',
         page: <PageWordscramble />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'quiz' ],
+        title: 'Quiz | Games | {$dialect_name}',
         page: <PageQuiz />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery' ],
+        title: 'Galleries | {$dialect_name}',
         page: <PageDialectGalleries />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create' ],
+        title: 'Create Gallery | Galleries | {$dialect_name}',
         page: <PageDialectGalleryCreate />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('galleryName', ANYTHING_BUT_SLASH) ],
+        title: '{$gallery} | Galleries | {$dialect_name}',
         page: <PageDialectGalleryView />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('gallery', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$gallery} | Galleries | {$dialect_name}',
         page: <PageDialectGalleryEdit />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
+        title: 'Reports | {$dialect_name}',
         page: <PageDialectReports />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users' ],
+        title: 'Users | {$dialect_name}',
         page: <PageDialectUsers />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words' ],
+        title: 'Words | {$dialect_name}',
         page: <PageDialectLearnWords />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories' ],
+        title: 'Categories | Words | {$dialect_name} | {$theme}',
         page: <PageDialectLearnWordsCategories />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH) ],
+        title: 'Category View | Words | {$dialect_name} | {$theme}',
         page: <PageDialectLearnWords />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create' ],
+        title: 'Create | Words | {$dialect_name}',
         page: <PageDialectWordsCreate />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', new paramMatch('word', ANYTHING_BUT_SLASH) ],
+        title: '{$word} | Words | {$dialect_name}',
         page: <PageDialectViewWord />,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', new paramMatch('word', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$word} Word | Words | {$dialect_name}',
         page: <PageDialectWordEdit />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases' ],
+        title: 'Phrases | {$dialect_name}',
         page: <PageDialectLearnPhrases />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories' ],
+        title: 'Phrase Categories | {$dialect_name} | {$theme}',
         page: <PageDialectLearnPhrasesCategories />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH) ],
+        title: '{$category} | Categories | Phrases | {$dialect_name}',
         page: <PageDialectLearnPhrases />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create' ],
+        title: 'Create | Phrases | {$dialect_name}',
         page: <PageDialectPhrasesCreate />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH) ],
+        title: '{$phrase} | Phrases | {$dialect_name}',
         page: <PageDialectViewPhrase />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$phrase} Phrase | Phrases | {$dialect_name}',
         page: <PageDialectPhraseEdit />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories' ],
+        title: 'Stories | {$dialect_name}',
         page: <PageDialectLearnStoriesAndSongs typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs' ],
+        title: 'Songs | {$dialect_name}',
         page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs-stories' ],
+        title: 'Songs and Stories | {$dialect_name}',
         page: <PageDialectLearnStoriesAndSongs typePlural="Songs and Stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create' ],
+        title: 'Create | Stories | {$dialect_name}',
         page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', 'create' ],
+        title: 'Create | Songs | {$dialect_name}',
         page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        title: '{$bookName} | Songs | {$dialect_name}',
         page: <PageDialectViewBook typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$bookName} Book | Songs | {$dialect_name}',
         page: <PageDialectBookEdit typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        title: 'Create Entry | {$bookName} Book | Songs | {$dialect_name}',
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit Entry | {$bookName} Book | Songs | {$dialect_name}',
         page: <PageDialectBookEntryEdit typeFilter="song" typePlural="songs" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH) ],
+        title: '{$bookName} Book | Stories | {$dialect_name}',
         page: <PageDialectViewBook typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit {$bookName} Book | Stories | {$dialect_name}',
         page: <PageDialectBookEdit typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create' ],
+        title: 'Create Entry | {$bookName} Book | Stories | {$dialect_name}',
         page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit' ],
+        title: 'Edit Entry | {$bookName} Book | Stories | {$dialect_name}',
         page: <PageDialectBookEntryEdit typeFilter="story" typePlural="stories" />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create' ],
+        title: 'Create | Category | {$dialect_name}',
         page: <PageDialectCategoryCreate />,
         extractPaths: true
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create' ],
+        title: 'Create | Phrase Book | {$dialect_name}',
         page: <PageDialectPhraseBooksCreate />
       }
     ]);
@@ -517,6 +583,30 @@ export default class AppFrontController extends Component {
       matchedRouteParams: {},
       warningsDismissed: false
     };
+  }
+
+  /** 
+   * Dynamically update title
+   */
+  _updateTitle() {
+
+    // Title provided from within a component
+    let pageTitleParams = this.props.properties.pageTitleParams;
+
+    let title = this.props.properties.title;
+
+    if (this.state.matchedPage && this.state.matchedPage.has('title') && this.state.matchedPage.get('title') && this.state.matchedPage.get('title') != document.title) {
+      let combinedRouteParams = Object.assign({}, this.state.matchedRouteParams, pageTitleParams);
+
+      title = this.state.matchedPage.get('title');
+      Object.keys(combinedRouteParams).forEach(function(route, k) {
+        title = title.replace('{$' + route + '}', StringHelpers.toTitleCase(combinedRouteParams[route]));
+      }.bind(this));
+
+      title = title + ' | ' + this.props.properties.title;
+    }
+
+    document.title = title;
   }
 
   /**
@@ -543,14 +633,20 @@ export default class AppFrontController extends Component {
 
         // Extract common paths from URL
         if (value.has('extractPaths') && value.get('extractPaths')) {
-          if (pathArray.length >= 7)
+          if (pathArray.length >= 7) {
+            routeParams['dialect_name'] = decodeURI(pathArray.slice(1, 7)[5]);
             routeParams['dialect_path'] = decodeURI('/' + pathArray.slice(1, 7).join('/'));
+          }
 
-          if (pathArray.length >= 6)
+          if (pathArray.length >= 6) {
+            routeParams['language_name'] = decodeURI(pathArray.slice(1, 6)[4]);
             routeParams['language_path'] = decodeURI('/' + pathArray.slice(1, 6).join('/'));
+          }
 
-          if (pathArray.length >= 5)
+          if (pathArray.length >= 5) {
+            routeParams['language_family_name'] = decodeURI(pathArray.slice(1, 5)[3]);
             routeParams['language_family_path'] = decodeURI('/' + pathArray.slice(1, 5).join('/'));
+          }
         }
 
         matchedPage = value;
@@ -614,18 +710,10 @@ export default class AppFrontController extends Component {
     this._route(this.props);
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentDidUpdate(prevProps, prevState) {
+    this._updateTitle();
 
-    if (nextProps.windowPath != this.props.windowPath) {
-      let title = ConfGlobal.title;
-
-      // Update title
-      if (nextState.matchedPage && nextState.matchedPage.has('title') && nextState.matchedPage.get('title') && nextState.matchedPage.get('title') != document.title) {
-        title = nextState.matchedPage.get('title') + ' | ' + ConfGlobal.title;
-      }
-
-      document.title = title;
-
+    if (prevProps.windowPath != this.props.windowPath) {
       // Track page view
       if (window.snowplow) {
         window.snowplow('trackPageView');

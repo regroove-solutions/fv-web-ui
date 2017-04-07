@@ -18,6 +18,7 @@ import DirectoryOperations from 'operations/DirectoryOperations';
 const TOGGLE_MENU = 'TOGGLE_MENU';
 const NAVIGATE_PAGE = 'NAVIGATE_PAGE';
 const CHANGE_THEME = 'CHANGE_THEME';
+const CHANGE_TITLE_PARAMS = 'CHANGE_TITLE_PARAMS';
 
 const LOAD_GUIDE_STARTED = 'LOAD_GUIDE_STARTED';
 const LOAD_GUIDE_SUCCESS = 'LOAD_GUIDE_SUCCESS';
@@ -83,6 +84,10 @@ const actions = {
 
     return { type: CHANGE_THEME, theme: {palette: theme, id: id } }
   },
+
+  changeTitleParams(titleParams) {
+    return { type: CHANGE_TITLE_PARAMS, pageTitleParams: titleParams };
+  },
   
   loadGuide
 }
@@ -109,6 +114,12 @@ const reducers = {
       	return {
       		...state,
       		theme: action.theme
+      	};
+
+      case CHANGE_TITLE_PARAMS:
+      	return {
+      		...state,
+      		pageTitleParams: action.pageTitleParams
       	};
 
       default:
