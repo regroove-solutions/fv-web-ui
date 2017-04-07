@@ -35,20 +35,15 @@ export default class Footer extends React.Component {
       <footer className={classNames('footer', this.props.className)}>
         <div className="container-fluid">
             <div className="row">
-              <div className="col-xs-12">
-                <p className={classNames('text-center', 'text-muted')}><a href="mailto:feedback@fpcf.ca">Feedback</a> | Disclaimer | Conditions of Use</p>
+
+              <div className={classNames('col-xs-12', 'col-md-6')}>
+                <img src="/assets/images/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-{new Date().getFullYear()} FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca
               </div>
-              <div className="col-xs-12">
-                <div className="row">
-                  <div className="col-xs-6">
-                    {/*<img src="http://www.firstvoices.com/img/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-13 FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca*/}
-                  </div>
-                  <div className={classNames('text-right', 'col-xs-6')}>
-                    v1.0.2
-                    {/*<img src="http://www.firstvoices.com/img/fv-logo-100x25.gif" alt="FirstVoices" />*/}
-                  </div>
-                </div>
+
+              <div className={classNames('text-right', 'col-xs-12', 'col-md-6')}>
+                <p className={classNames('text-muted')}>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | v1.0.3</p>
               </div>
+
             </div>
         </div>
       </footer>
