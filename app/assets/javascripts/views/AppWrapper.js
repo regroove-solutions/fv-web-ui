@@ -164,7 +164,7 @@ export default class AppWrapper extends Component {
     };
 
     // Bind methods to 'this'
-    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', '_changeTheme', '_startAdminGuideAssist'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', '_startAdminGuideAssist'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
@@ -252,10 +252,10 @@ export default class AppWrapper extends Component {
   }
 
   // Changing a theme manually...
-  _changeTheme(event) {
+  /*_changeTheme(event) {
     let index = event.nativeEvent.target.selectedIndex;
     this.props.changeTheme(event.target[index].value);
-  }
+  }*/
 
   _startAdminGuideAssist() {
 
@@ -378,11 +378,6 @@ export default class AppWrapper extends Component {
 
         <AuthorizationFilter filter={{role: ['Everything'], entity: selectn('response.entries[0]', dialects), login: this.props.computeLogin}}>
           <div className="row" style={{backgroundColor: '#efefef'}}>
-
-              <select onChange={this._changeTheme}>
-                  <option value="default">Default</option>
-                  <option value="kids">Kids</option>
-              </select>
 
               <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
               {(this.state.adminGuideStarted) ? 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'' : ''}

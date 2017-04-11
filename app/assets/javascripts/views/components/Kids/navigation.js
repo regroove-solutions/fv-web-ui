@@ -43,7 +43,6 @@ import IconButton from 'material-ui/lib/icon-button';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
 import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications';
 
-import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 

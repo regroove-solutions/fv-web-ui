@@ -61,20 +61,16 @@ export default class ExploreDialects extends Component {
     super(props, context);
 
     this.state = {
-      pathOrId: null,
       filteredList: null,
       open: false
     };
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', 'fixedListFetcher', '_getParentPath'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
-
-    newProps.fetchPortals(pathOrId);
-    this.setState({pathOrId})
+    newProps.fetchPortals(this._getParentPath(newProps));
   }
 
   fixedListFetcher(list) {
@@ -99,16 +95,20 @@ export default class ExploreDialects extends Component {
     this.props.pushWindowPath('/' + this.props.routeParams.theme + path);
   }
 
+  _getParentPath(props = this.props) {
+    return '/' + props.properties.domain + '/' + props.routeParams.area;
+  }
+
   render() {
 
     const isKidsTheme = this.props.routeParams.theme === 'kids';
 
     const computeEntities = Immutable.fromJS([{
-      'id': this.state.pathOrId,
+      'id': this._getParentPath(),
       'entity': this.props.computePortals
     }])
 
-    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.pathOrId);
+    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getParentPath());
     
     let portalsEntries = selectn('response.entries', computePortals) || [];
 

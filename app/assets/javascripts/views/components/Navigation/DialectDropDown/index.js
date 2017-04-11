@@ -25,8 +25,6 @@ import Divider from 'material-ui/lib/divider';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
-import AutoComplete from 'material-ui/lib/auto-complete';
-
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import Avatar from 'material-ui/lib/avatar';
@@ -42,17 +40,14 @@ import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance
 
 let SelectableList = SelectableContainerEnhance(List);
 
-@provide
 export default class DialectDropDown extends Component {
 
   static propTypes = {
-    navigateTo: PropTypes.func.isRequired,
-    fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired,
+    label: PropTypes.string.isRequired,
     computeLogin: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
+    actionFunc: PropTypes.func.isRequired,
+    dialects: PropTypes.array.isRequired,
     routeParams: PropTypes.object
   };
 
@@ -60,62 +55,20 @@ export default class DialectDropDown extends Component {
     muiTheme: PropTypes.object
   };
 
-
-  function () {}
-
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       open: false,
-      browseLabel: 'Dialects...',
-      pathOrId: null
+      dropdownData: []
     };
 
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
-
-  fetchData(newProps) {
-
-    let fetchPath = selectn('routeParams.area', newProps);
-
-    if (!fetchPath) {
-      if (selectn("isConnected", newProps.computeLogin)) {
-        fetchPath = 'Workspaces';
-      } else {
-        fetchPath = 'sections';
-      }
-    }
-
-    const pathOrId = '/' + newProps.properties.domain + '/' + fetchPath;
-
-    this.setState({
-      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...'),
-      pathOrId: pathOrId
-    });
-
-    newProps.fetchDialects(pathOrId);
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    // No need to fetch on initial render because login status will change first
-    //this.fetchData(this.props);
-  }
-
-  // Refetch if logged in
-  componentWillReceiveProps(nextProps) {
-
-    const USER_LOG_IN_STATUS_CHANGED = (nextProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && nextProps.computeLogin.isConnected != undefined);
-
-    if (USER_LOG_IN_STATUS_CHANGED || nextProps.routeParams.area != this.props.routeParams.area) {
-      this.fetchData(nextProps);
-    }
+    ['_onNavigateRequest', '_groupedDialects'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _onNavigateRequest(event, path) {
     this.setState({open: false});
-    this.props.pushWindowPath('/explore' + path);
+    this.props.actionFunc('/explore' + path);
   }
 
   handleTouchTap(event){
@@ -131,15 +84,8 @@ export default class DialectDropDown extends Component {
     });
   }
 
-  render() {
-
-    let dropdownData;
-
-    let dialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
-
-    if (selectn('response.entries', dialects)) {
-
-      dropdownData = selectn('response.entries', dialects).map(function( dialect ) {
+  _groupedDialects(dialects) {
+      let dropdownData = dialects.map(function( dialect ) {
 
         let dialectTitle = selectn('properties.dc:title', dialect);
         let dialectUid = dialect.uid;
@@ -162,15 +108,32 @@ export default class DialectDropDown extends Component {
             return item.props.language;
         }));
       }
+
+      return dropdownData;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.dialects != nextProps.dialects) {
+      this.setState({
+        dropdownData: this._groupedDialects(nextProps.dialects)
+      })
     }
+  }
 
+  componentDidMount() {
+      this.setState({
+        dropdownData: this._groupedDialects(this.props.dialects)
+      })
+  }
+  
+  
 
-    let content = "";
+  render() {
 
-    if (selectn('response.entries.length', dialects) > 0) {
+    let { dialects } = this.props;
 
-      content = <div>
-        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label={this.state.browseLabel}>
+    return <div>
+        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label={this.props.label}>
           <DropDownArrow />
         </RaisedButton>
 
@@ -180,25 +143,17 @@ export default class DialectDropDown extends Component {
           anchorEl={this.state.anchorEl}
           anchorOrigin={{'horizontal':'left','vertical':'bottom'}}
           targetOrigin={{'horizontal':'middle','vertical':'bottom'}}>
-          <SelectableList
+          {this.state.dropdownData.length > 0 ? <SelectableList
             style={{maxHeight: '550px', minWidth:'300px'}}
             valueLink={{
               value: location.pathname,
               requestChange: this._onNavigateRequest
           }}>
-              {dropdownData.map(function(menuGroup, index) {
+              {this.state.dropdownData.map(function(menuGroup, index) {
                 return <ListItem initiallyOpen={true} key={index} value={false} primaryText={menuGroup[0]} nestedItems={menuGroup[1]} />;
               })}
-          </SelectableList>
+          </SelectableList> : <div style={{maxHeight: '550px', minWidth:'300px'}}>Loading...</div>}
         </Popover>
       </div>;
-    }
-
-
-    return (
-      <div>
-        {content}
-      </div>
-    );
   }
 }

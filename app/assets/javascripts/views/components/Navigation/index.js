@@ -73,6 +73,8 @@ export default class Navigation extends Component {
     computeLogin: PropTypes.object.isRequired,
     computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
+    fetchDialects: PropTypes.func.isRequired,
+    computeDialects: PropTypes.object.isRequired,
     routeParams: PropTypes.object,
     frontpage: PropTypes.bool
   };
@@ -101,10 +103,12 @@ export default class Navigation extends Component {
 
     this.state = {
       hintTextSearch: "Search site: ",
+      browseLabel: "Dialects...",
       searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
-      userRegistrationTasksPath: '/management/registrationRequests/'
+      userRegistrationTasksPath: '/management/registrationRequests/',
+      pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props)
     };
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
@@ -112,13 +116,44 @@ export default class Navigation extends Component {
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
     this._startTour = this._startTour.bind(this);
-    //this._test = this._test.bind(this);
+    this._fetchData = this._fetchData.bind(this);
+  }
+
+  _fetchData(props = this.props){
+    let fetchPath = selectn('routeParams.area', props);
+
+    if (!fetchPath) {
+      if (selectn("isConnected", props.computeLogin)) {
+        fetchPath = 'Workspaces';
+      } else {
+        fetchPath = 'sections';
+      }
+    }
+
+    const pathOrId = '/' + props.properties.domain + '/' + fetchPath;
+
+    this.setState({
+      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...'),
+      pathOrId: pathOrId
+    });
+
+    props.fetchDialects(pathOrId);
   }
 
   componentWillReceiveProps(newProps) {
     if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
       this.props.countTotalTasks('count_total_tasks', {'query':'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')', 'language': 'nxql', 'sortOrder': 'ASC'});
     }
+
+    const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined);
+
+    if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
+      this._fetchData(newProps);
+    }
+  }
+
+  componentDidMount() {
+    this._fetchData();
   }
 
   _handleMenuToggle (event) {
@@ -225,6 +260,7 @@ export default class Navigation extends Component {
 
     const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
     const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
@@ -326,7 +362,13 @@ export default class Navigation extends Component {
         <Toolbar className={classNames('hidden-xs', {'hidden': isDialect || isFrontPage})}>
 
           <ToolbarGroup float="right">
-            <DialectDropDown routeParams={this.props.routeParams} />
+            <DialectDropDown
+              dialects={selectn('response.entries', computeDialects) || []}
+              label={this.state.browseLabel}
+              properties={this.props.properties}
+              actionFunc={this.props.pushWindowPath}
+              computeLogin={this.props.computeLogin}
+              routeParams={this.props.routeParams} />
           </ToolbarGroup>
 
         </Toolbar>
