@@ -378,6 +378,7 @@ const options = {
       'fvbook:introduction': {
         label: 'Book Introduction',
         type: 'textarea',
+        factory: WysiwygFactory,
         attrs: {
           placeholder: 'Enter book introduction here'
         }
@@ -388,7 +389,8 @@ const options = {
           fields: {
             translation: {
               label: 'Translation',
-              type: 'textarea'
+              type: 'textarea',
+              factory: WysiwygFactory
             },
             language: {
               label: 'Language',
