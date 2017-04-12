@@ -67,7 +67,10 @@ export default class PageDialectBookEdit extends Component {
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(this.props.routeParams.dialect_path);
+    if (newProps.dialectEntry == null && !this.getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
+
     newProps.fetchBookEntry(this.state.bookEntryPath);
   }
 
@@ -110,6 +113,10 @@ export default class PageDialectBookEdit extends Component {
       window.scrollTo(0, 0);
     }
   }  
+
+  _getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
+  }
 
   render() {
 
