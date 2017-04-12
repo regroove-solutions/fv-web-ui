@@ -369,7 +369,7 @@ export default class AppFrontController extends Component {
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('galleryName', ANYTHING_BUT_SLASH) ],
-        title: '{$gallery} | Galleries | {$dialect_name}',
+        title: '{$galleryName} | Galleries | {$dialect_name}',
         page: <PageDialectGalleryView />,
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
