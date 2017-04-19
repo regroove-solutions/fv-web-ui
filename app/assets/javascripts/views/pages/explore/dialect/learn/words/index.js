@@ -103,10 +103,17 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     // Render kids view
     if (isKidsTheme) {
+
+      let kidsFilter = new Map({
+        currentAppliedFilter: new Map({
+          kids: ' AND fv:available_in_childrens_archive=1'
+        })
+      })
+
       return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
               <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
-                {React.cloneElement(wordListView, { gridListView: true, DEFAULT_PAGE_SIZE: 8 })}
+                {React.cloneElement(wordListView, { gridListView: true, DEFAULT_PAGE_SIZE: 8, filter: kidsFilter })}
               </div>
             </div>
       </PromiseWrapper>;
