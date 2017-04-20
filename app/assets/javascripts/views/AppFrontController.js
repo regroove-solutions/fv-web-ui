@@ -804,7 +804,7 @@ export default class AppFrontController extends Component {
             if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
 
               return <ul className={classNames('workspace-switcher', 'nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","paddingTop": "10px"}}>
-                <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><Link href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</Link></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><Link href={props.windowPath.replace('Workspaces', 'sections')}>Public View</Link></li>
+                <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><a href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</a></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><a href={props.windowPath.replace('Workspaces', 'sections')}>Public View</a></li>
               </ul>;
 
             }
