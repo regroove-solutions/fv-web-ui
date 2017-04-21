@@ -41,7 +41,7 @@ export default class Footer extends React.Component {
               </div>
 
               <div className={classNames('text-right', 'col-xs-12', 'col-md-6')}>
-                <p className={classNames('text-muted')}>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | v1.0.3</p>
+                <p className={classNames('text-muted')}>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | v1.0.4</p>
               </div>
 
             </div>
