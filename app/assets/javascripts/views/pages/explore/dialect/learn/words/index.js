@@ -106,7 +106,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
       let kidsFilter = new Map({
         currentAppliedFilter: new Map({
-          kids: ' AND fv:available_in_childrens_archive=1'
+          //kids: ' AND fv:available_in_childrens_archive=1'
         })
       })
 
