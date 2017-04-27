@@ -107,6 +107,13 @@ class Page extends Component {
 
     const DEFAULT_LANGUAGE = this.props.defaultLanguage;
 
+    // Audio
+    let audios = [];
+
+    (selectn('contextParameters.book.related_audio', this.props.entry) || []).map(function(audio, key) {
+      audios.push(<Preview minimal={true} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
+    })
+
     return  <div>
 
                 <div className="row">
@@ -118,6 +125,7 @@ class Page extends Component {
                     <div className="col-xs-12 col-md-9">
                         <div className={classNames('col-xs-6')}>
                             <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(selectn('properties.dc:title', this.props.entry))}}></div> 
+                            {audios}
                         </div>
                         <div className={classNames('col-xs-6')} style={{borderLeft: '1px solid #e1e1e1'}}>
                             {(selectn('properties.fvbookentry:dominant_language_text', this.props.entry) || []).map(function(translation, i) {
