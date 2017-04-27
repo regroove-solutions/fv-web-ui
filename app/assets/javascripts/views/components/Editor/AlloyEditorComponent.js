@@ -8,9 +8,9 @@ export default class AlloyEditorComponent extends Component {
 
         var _this = this;
 
-        this._nativeEditor.on('change', function () {
+        ['actionPerformed', 'change'].forEach( event => this._nativeEditor.on(event, function () {
             _this.props.onContentChange(_this._nativeEditor.getData());
-        });
+        }));
     }
 
     componentWillUnmount() {
