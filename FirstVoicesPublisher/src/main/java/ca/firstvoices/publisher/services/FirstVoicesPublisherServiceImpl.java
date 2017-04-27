@@ -28,8 +28,6 @@ import ca.firstvoices.publisher.utils.PublisherUtils;
  */
 public class FirstVoicesPublisherServiceImpl extends AbstractService implements FirstVoicesPublisherService {
 
-    private PublisherService publisherService = Framework.getLocalService(PublisherService.class);
-
     protected Map<String, DocumentModel> getAncestors(DocumentModel model) {
         if (model == null || !model.getDocumentType().getName().equals("FVDialect")) {
             throw new InvalidParameterException("Document must be a FVDialect type");
@@ -104,9 +102,11 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         DocumentModelList roots = null;
         if (workspace != null) {
+            PublisherService publisherService = Framework.getLocalService(PublisherService.class);
             roots = publisherService.getRootSectionFinder(session).getSectionRootsForWorkspace(workspace);
         }
         if (roots == null || roots.size() == 0) {
+            PublisherService publisherService = Framework.getLocalService(PublisherService.class);
             roots = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true);
         }
         if (roots.size() == 0) {
@@ -225,6 +225,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
+                        PublisherService publisherService = Framework.getLocalService(PublisherService.class);
                         publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
@@ -323,6 +324,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                     DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
+                        PublisherService publisherService = Framework.getLocalService(PublisherService.class);
                         publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
