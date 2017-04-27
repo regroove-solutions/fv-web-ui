@@ -235,16 +235,16 @@ export default class View extends Component {
 
                                 <div className={classNames('col-md-6', 'col-xs-12')}>
                                   {(() => {
-                                      if (selectn('response.contextParameters.character.related_words.length', computeCharacter)) {
+                                      if (selectn('response.contextParameters.character.related_words.length', computeCharacter) > 0) {
                                         return <div>
                                           <h3>Related Words:</h3>
 
-                                          {(selectn('response.contextParameters.character.related_words', computeCharacter) || []).map(function(phrase, key) {
-                                            let phraseItem = selectn('fv:definitions', phrase);
+                                          {(selectn('response.contextParameters.character.related_words', computeCharacter) || []).map(function(word, key) {
+                                            let wordItem = (selectn('fv:definitions.length', word) > 0) ? selectn('fv:definitions', word) : selectn('fv:literal_translation', word);
 
                                             return (
-                                            <SubViewTranslation key={key} group={phraseItem} groupByElement="language" groupValue="translation">
-                                              <p><Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link></p>
+                                            <SubViewTranslation key={key} group={wordItem} groupByElement="language" groupValue="translation">
+                                              <p><Link key={selectn('uid', word)} href={'/explore' + selectn('path', word).replace('Dictionary', 'learn/words')}>{selectn('dc:title', word)}</Link></p>
                                             </SubViewTranslation>
                                             );
                                           })}
