@@ -104,7 +104,7 @@ export default class GridView extends Component {
                   {(items).map(function (tile, i) { 
 
                     if (this.props.gridListTile) {
-                      return React.createElement(this.props.gridListTile, { key: tile.uid, tile: tile });
+                      return React.createElement(this.props.gridListTile, { key: i, tile: tile });
                     }
 
                     let audioIcon, audioCallback = null;
@@ -141,7 +141,7 @@ export default class GridView extends Component {
 
                     return <GridTile
                       onTouchTap={(this.props.action) ? this.props.action.bind(this, tile.uid, tile) : audioCallback}
-                      key={tile.uid}
+                      key={i}
                       title={title}
                       actionPosition="right"
                       actionIcon={(this.props.action) ? audioIconAction : audioIcon}
