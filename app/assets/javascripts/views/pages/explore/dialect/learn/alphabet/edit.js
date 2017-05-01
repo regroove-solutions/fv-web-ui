@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -34,12 +35,17 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
+import withForm from 'views/hoc/view/with-form';
+
+const EditViewWithForm = withForm(PromiseWrapper, true);
+
 @provide
 export default class PageDialectAlphabetCharacterEdit extends Component {
   
   static propTypes = {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
     fetchCharacter: PropTypes.func.isRequired,
     computeCharacter: PropTypes.object.isRequired,
     updateCharacter: PropTypes.func.isRequired,
@@ -59,7 +65,7 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
     };
 
     // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
+    ['_handleSave', '_handleCancel'].forEach( (method => this[method] = this[method].bind(this)) );    
   }
 
   fetchData(newProps) {
@@ -72,43 +78,24 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
     this.fetchData(this.props);
   }  
 
-  shouldComponentUpdate(newProps, newState) {
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
 
-    switch (true) {
+    let currentCharacter, nextCharacter;
 
-      case (newProps.routeParams.character != this.props.routeParams.character):
-        return true;
-      break;
-
-      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeCharacter, this.state.characterPath) != ProviderHelpers.getEntry(this.props.computeCharacter, this.state.characterPath)):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
-        return true;
-      break;
+    if (this.state.characterPath != null) {
+      currentCharacter = ProviderHelpers.getEntry(this.props.computeCharacter, this.state.characterPath);
+      nextCharacter = ProviderHelpers.getEntry(nextProps.computeCharacter, this.state.characterPath);
     }
 
-    return false;
+    // 'Redirect' on success
+    if (selectn('wasUpdated', currentCharacter) != selectn('wasUpdated', nextCharacter) && selectn('wasUpdated', nextCharacter) === true) {
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextCharacter).replace('Dictionary', 'learn/alphabet'));
+    }
   }
 
-  _onRequestSaveForm(e) {
+  _handleSave(character, formValue) {
 
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_character"].getValue();
-
-    // Passed validation
-    if (formValue) {
-      let character = ProviderHelpers.getEntry(this.props.computeCharacter, this.state.characterPath);
-
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
       let newDocument = new Document(character.response, { 
         'repository': character.response._repository,
         'nuxeo': character.response._nuxeo
@@ -121,11 +108,11 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
       this.props.updateCharacter(newDocument);
 
       this.setState({ formValue: formValue });
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0);
-    }
-  }  
+  }
+
+  _handleCancel() {
+    NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+  }
 
   render() {
 
@@ -147,27 +134,23 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
       context = Object.assign(selectn("response", computeDialect2), { otherContext: { 'parentId' : selectn("response.uid", computeCharacter) } });
     }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    return <div>
 
 	    <h1>Edit {selectn("response.properties.dc:title", computeCharacter)} character</h1>
 
-	    <div className="row" style={{marginTop: '15px'}}>
-	
-	      <div className={classNames('col-xs-12')}>
-	        <form onSubmit={this._onRequestSaveForm}>
-	          <t.form.Form
-	            ref="form_character"
-	            type={t.struct(selectn("FVCharacter", fields))}
-	            context={context}
-              value={this.state.formValue || selectn("response.properties", computeCharacter)}
-	            options={selectn("FVCharacter", options)} />
-	            <div className="form-group">
-	              <button type="submit" className="btn btn-primary">Save</button> 
-	            </div>
-	        </form>
-	      </div>
+      <EditViewWithForm
+        computeEntities={computeEntities} 
+        initialValues={context}
+        itemId={this.state.characterPath}
+        fields={fields}
+        options={options}
+        saveMethod={this._handleSave}
+        cancelMethod={this._handleCancel}
+        currentPath={this.props.splitWindowPath}
+        navigationMethod={this.props.replaceWindowPath}
+        type="FVCharacter"
+        routeParams={this.props.routeParams} />
 
-	  </div>
-	</PromiseWrapper>;
+	  </div>;
   }
 }
