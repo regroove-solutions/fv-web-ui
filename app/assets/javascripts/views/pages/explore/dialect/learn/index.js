@@ -217,7 +217,7 @@ export default class DialectLearn extends Component {
       'entity': this.props.computePortal
     }])
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    let computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     
     const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');    
@@ -253,6 +253,20 @@ export default class DialectLearn extends Component {
     let phraseCount = (selectn(COUNT_FIELD1, computePhrasesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount);
     let songCount = (selectn(COUNT_FIELD1, computeSongsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount);
     let storyCount = (selectn(COUNT_FIELD1, computeStoriesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount);
+
+    /**
+     * Suppress Editing for Language Recorders with Approvers
+     */
+    let roles = selectn('response.contextParameters.dialect.roles', computeDialect2);
+
+    if (roles && roles.indexOf('Manage') === -1 ) {
+      computeDialect2 = Object.assign(
+        computeDialect2, {
+          response: Object.assign(computeDialect2.response, {
+            contextParameters: Object.assign(computeDialect2.response.contextParameters, { permissions: ['Read'] })
+          })
+        });
+    }
 
     return <PromiseWrapper computeEntities={computeEntities}>
 

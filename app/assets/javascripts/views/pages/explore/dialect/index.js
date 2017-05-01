@@ -199,7 +199,7 @@ export default class ExploreDialect extends Component {
       'entity': this.props.computePortal
     }])
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    let computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
 
     const isSection = this.props.routeParams.area === 'sections';
@@ -214,12 +214,26 @@ export default class ExploreDialect extends Component {
 
     let featuredWords = selectn('response.contextParameters.portal.fv-portal:featured_words', computePortal) || [];
 
+    /**
+     * Suppress Editing for Language Recorders with Approvers
+     */
+    let roles = selectn('response.contextParameters.dialect.roles', computeDialect2);
+
+    if (roles && roles.indexOf('Manage') === -1 ) {
+      computeDialect2 = Object.assign(
+        computeDialect2, {
+          response: Object.assign(computeDialect2.response, {
+            contextParameters: Object.assign(computeDialect2.response.contextParameters, { permissions: ['Read'] })
+          })
+        });
+    }
+
     return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
               if (this.props.routeParams.area == 'Workspaces') {
                 
-                if (selectn('response', computeDialect2))
+                if (selectn('response', computeDialect2)) {
                   return <PageToolbar
                             label="Portal"
                             handleNavigateRequest={this._onNavigateRequest}
@@ -229,6 +243,7 @@ export default class ExploreDialect extends Component {
                             publishChangesAction={this._publishChangesAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props} />;
+                }
               }
             })()}
 
