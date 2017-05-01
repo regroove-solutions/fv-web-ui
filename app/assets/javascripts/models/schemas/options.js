@@ -752,6 +752,19 @@ const options = {
           }
         }
       },
+      'fvdialect:language_resources': {
+        label: 'Language Resources',
+        item: {
+          factory: SelectSuggestFactory,
+          type: 'FVLink',
+          attrs: {
+            previewProps: {
+              minimal: true
+            },
+            allowEdit: true
+          }
+        }
+      },
       'fvdialect:contact_information': {
         label: 'Contact Information',
         type: 'textarea',

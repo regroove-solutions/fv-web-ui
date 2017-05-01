@@ -91,6 +91,7 @@ const fields = {
     'fvdialect:dominant_language' : t.String,
     'fvdialect:region' : t.String,
     'fvdialect:keyboards' : t.list(t.String),
+    'fvdialect:language_resources' : t.list(t.String),
     'fvdialect:contact_information' : t.String
   }),
   FVCharacter: Object.assign({}, {
