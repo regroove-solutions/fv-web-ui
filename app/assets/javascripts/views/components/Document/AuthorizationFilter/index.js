@@ -2,6 +2,20 @@ import React, {Component, PropTypes} from 'react';
 import Immutable, { List, Map } from 'immutable';
 import selectn from 'selectn';
 
+function deepAssignPropsToChildren(children, cb) {
+  return React.Children.map(children, (child) => {
+    if (!React.isValidElement(child)) { return child; }
+
+    if (child.props.children) {
+      child = React.cloneElement(child, {
+        children: deepAssignPropsToChildren(child.props.children, cb)
+      });
+    }
+
+    return cb(child);
+  });
+}
+
 export default class AuthorizationFilter extends Component {
 
   static propTypes = {
@@ -33,7 +47,8 @@ export default class AuthorizationFilter extends Component {
   */
   _renderHelper() {
       if (this.props.renderPartial) {
-       return React.cloneElement(this.props.children, { accessDenied: true });
+       let children = deepAssignPropsToChildren(this.props.children, function(child) { return React.cloneElement(child, {accessDenied: true}); });
+       return <div>{children}</div>;
       }
       else {
        return null;
