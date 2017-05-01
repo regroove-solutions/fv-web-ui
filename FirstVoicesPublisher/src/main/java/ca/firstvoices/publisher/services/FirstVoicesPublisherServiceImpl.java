@@ -573,9 +573,12 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 // Handle exception property values as arrays
                 if (dependencyEntry.getKey() == "fv-portal:featured_words" || dependencyEntry.getKey() == "fv-portal:related_links") {
                     String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
-                    String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
-                    updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
-                	input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+
+                    if ( !Arrays.asList(property).contains(publishedDep.getRef().toString()) ) {
+                        String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
+                        updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
+                        input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
+                    }
                 }
                 // Handle as string
                 else {
