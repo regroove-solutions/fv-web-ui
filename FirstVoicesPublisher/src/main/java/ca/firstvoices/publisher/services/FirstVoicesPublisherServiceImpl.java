@@ -427,6 +427,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             Map<String, String> dependencies = new HashMap<String, String>();
 
             dependencies.put("fvdialect:keyboards", "fvproxy:proxied_keyboards");
+            dependencies.put("fvdialect:language_resources", "fvproxy:proxied_language_resources");
 
             for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
 
@@ -435,7 +436,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 ArrayList<String> dependencyPublishedPropertyValues = new ArrayList<String>();
 
                 // Handle values as arrays
-                if (dependencyEntry.getKey() == "fvdialect:keyboards") {
+                if (dependencyEntry.getKey() == "fvdialect:keyboards" || dependencyEntry.getKey() == "fvdialect:language_resources") {
                     dependencyPropertyValue = (String[]) dialectProxy.getPropertyValue(dependency);
                 }
                 // Handle as string
@@ -479,7 +480,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
 
                 // Handle property values as arrays
-                if (dependencyEntry.getKey() == "fvdialect:keyboards") {
+                if (dependencyEntry.getKey() == "fvdialect:keyboards" || dependencyEntry.getKey() == "fvdialect:language_resources") {
                     dialectProxy.setPropertyValue(dependencyEntry.getValue(), dependencyPublishedPropertyValues.toArray(new String[dependencyPublishedPropertyValues.size()]));
                 }
                 // Handle as string
