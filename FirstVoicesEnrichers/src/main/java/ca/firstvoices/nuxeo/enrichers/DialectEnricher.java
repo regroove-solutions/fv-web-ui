@@ -62,6 +62,19 @@ public class DialectEnricher extends AbstractJsonEnricher<DocumentModel> {
 				jsonObj.put("keyboards", keyboardJsonArray);
 			}
 
+            // Process "fvdialect:language_resources" values
+            String[] languageResourcesLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvdialect", "language_resources") : (String[]) doc.getProperty("fvproxy", "proxied_language_resources");
+            if (languageResourcesLinkIds != null) {
+                ArrayNode languageResourcesJsonArray = mapper.createArrayNode();
+                for (String languageResourceId : languageResourcesLinkIds) {
+                    ObjectNode languageResourceJsonObj = EnricherUtils.getLinkJsonObject(languageResourceId, session);
+                    if(languageResourceJsonObj != null) {
+                        languageResourcesJsonArray.add(languageResourceJsonObj);
+                    }
+                }
+                jsonObj.put("language_resources", languageResourcesJsonArray);
+            }
+
 			jsonObj.put("roles", EnricherUtils.getRolesAssociatedWithDialect(doc, session));
 		}
 
