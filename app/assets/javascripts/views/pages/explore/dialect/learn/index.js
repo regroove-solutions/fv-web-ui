@@ -351,6 +351,27 @@ export default class DialectLearn extends Component {
 
                   <div className={classNames('col-xs-12')}>
                     {(() => {
+                      if (selectn('response.contextParameters.dialect.language_resources.length', computeDialect2) > 0 || !isSection) {
+                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
+                                <div>
+                                  <h3>Language Resources</h3>
+                                  <EditableComponentHelper
+                                    isSection={isSection}
+                                    computeEntity={computeDialect2}
+                                    updateEntity={updateDialect2}
+                                    showPreview={true}
+                                    previewType="FVLink"
+                                    property="fvdialect:language_resources"
+                                    sectionProperty="contextParameters.dialect.language_resources"
+                                    entity={selectn('response', computeDialect2)} />
+                                </div>
+                              </AuthorizationFilter>;
+                      }
+                    })()}
+                  </div>
+
+                  <div className={classNames('col-xs-12')}>
+                    {(() => {
                       if (selectn('response.contextParameters.dialect.keyboards.length', computeDialect2) > 0 || !isSection) {
                         return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                                 <div>
