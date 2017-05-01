@@ -271,7 +271,7 @@ export default class Navigation extends Component {
 
     const avatar = (portalLogo) ? <Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px'}} /> : '';
 
-    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle + " Community Portal"}</a> : this.props.properties.title;
+    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle}</a> : this.props.properties.title;
 
     const hintTextSearch = isDialect ? 'Search dialect:' : this.state.hintTextSearch;
 
