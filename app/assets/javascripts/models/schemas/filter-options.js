@@ -155,6 +155,17 @@ const options = {
       }
     }
   },
+  Reports: {
+    fields: {
+      'name': {
+        label: 'Report Name'
+      },
+      'type': {
+        label: 'Show Report on:',
+        factory: t.form.Select
+      }
+    }
+  },
   Search: {
     fields: {
       'searchTerm': {

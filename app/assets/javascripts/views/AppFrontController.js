@@ -21,7 +21,7 @@ import Footer from 'views/components/Navigation/Footer';
 
 import { PageIntro, PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
-import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectUsers } from 'views/pages';
+import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectReportsView, PageDialectUsers } from 'views/pages';
 
 import { PageDialectLearnWords, PageDialectLearnPhrases, PageDialectLearnStoriesAndSongs, PageDialectViewDictionaryItem } from 'views/pages';
 
@@ -381,9 +381,17 @@ export default class AppFrontController extends Component {
         extractPaths: true
       },
       {
-        path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
+        path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports' ],
         title: 'Reports | {$dialect_name}',
         page: <PageDialectReports />,
+        extractPaths: true,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+      },
+      {
+        path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports', new paramMatch('reportName', ANYTHING_BUT_SLASH) ],
+        title: '{$reportName} | Reports | {$dialect_name}',
+        page: <PageDialectReportsView />,
+        extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {

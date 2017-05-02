@@ -31,31 +31,33 @@ import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 
 import RaisedButton from 'material-ui/lib/raised-button';
 
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
-
+import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
-import ReportBrowser from './browse-view';
+import GeneralList from 'views/components/Browsing/general-list';
+import {CardView} from './list-view';
+
+import withFilter from 'views/hoc/grid-list/with-filter';
+
+const DEFAULT_LANGUAGE = 'english';
+
+const FilteredCardList = withFilter(GeneralList);
 
 /**
 * Learn songs
 */
 @provide
-export default class PageDialectReports extends Component {
+export default class ReportBrowser extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchBooks: PropTypes.func.isRequired,
-    computeBooks: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired, 
-    routeParams: PropTypes.object.isRequired
+    routeParams: PropTypes.object.isRequired,
+    style: PropTypes.object,
+    fullWidth: PropTypes.bool
   };
 
   constructor(props, context) {
@@ -66,43 +68,37 @@ export default class PageDialectReports extends Component {
     };
 
     // Bind methods to 'this'
-    //[].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+  fixedListFetcher(list) {
+    this.setState({
+      filteredList: list
+    });
   }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath(path);
   }
 
   render() {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    let listProps = {
+      filterOptionsKey: "Reports",
+      fixedList: true,
+      fixedListFetcher: this.fixedListFetcher,
+      filteredItems: this.state.filteredList,
+      fullWidth: this.props.fullWidth,
+      style: {fontSize: '1.2em', padding: '8px 0 0 30px'},
+      wrapperStyle: this.props.style,
+      card: <CardView fullWidth={this.props.fullWidth} dialectPath={this.props.routeParams.dialect_path} />,
+      area: this.props.routeParams.area,
+      items: ReportsJson,
+      action: this._onNavigateRequest
+    };
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-
-    return <div>
-
-              <div className="row" style={{marginBottom: '20px'}}>
-                <div className={classNames('col-xs-12', 'col-md-8')}>
-                  <h1>{selectn('response.title', computeDialect2)} Reports</h1>
-                  <ReportBrowser routeParams={this.props.routeParams} />
-                </div>
-              </div>
-
-        </div>;
+    let listView = <FilteredCardList {...listProps} />;
+    
+    return listView;
   }
 }

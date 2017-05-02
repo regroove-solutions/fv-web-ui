@@ -38,7 +38,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
   class FilteredGridList extends Component {
 
     static defaultProps = {
-        filterOptionsKey: "Default"
+        filterOptionsKey: "Default",
+        fullWidth: false
     }
 
     static propTypes = {
@@ -48,6 +49,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         fetcherParams: PropTypes.object,
         filterOptionsKey: PropTypes.string.isRequired,
         applyDefaultFormValues: PropTypes.bool,
+        fullWidth: PropTypes.bool,
         metadata: PropTypes.object,
         area: PropTypes.string
     }
@@ -143,7 +145,10 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
         }
 
         // Items may change in a fixed list (e.g. deleted, added)
-        if (this.props.fixedList && nextProps.items != this.props.items) {
+        let nextPropsItemsList = Immutable.fromJS(nextProps.items);
+        let prevPropsItemsList = Immutable.fromJS(this.props.items);
+
+        if (this.props.fixedList && nextPropsItemsList.equals(prevPropsItemsList) === false) {
             this._onReset(null, nextProps);
         }
     }
@@ -192,7 +197,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
             <div className="row">
 
-                <div className={classNames('col-xs-12', 'col-md-3')}>
+                <div className={classNames('col-xs-12', {'col-md-3': !this.props.fullWidth, 'col-md-12': this.props.fullWidth})}>
 
                     <form onSubmit={this._onFilterSaveForm}>
 
@@ -216,7 +221,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
                 </div>
 
-                <div className={classNames('col-xs-12', 'col-md-9')}>
+                <div className={classNames('col-xs-12', {'col-md-9': !this.props.fullWidth, 'col-md-12': this.props.fullWidth})}>
                     <ComposedFilter
                     {...this.state}
                     {...this.props}

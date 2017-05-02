@@ -36,6 +36,7 @@ import PageConcentration from './explore/dialect/play/concentration'
 import PageDialectGalleries from './explore/dialect/gallery'
 import PageDialectGalleryView from './explore/dialect/gallery/view'
 import PageDialectReports from './explore/dialect/reports'
+import PageDialectReportsView from './explore/dialect/reports/view'
 import PageDialectUsers from './explore/dialect/users'
 
 import PageDialectLearnWords from './explore/dialect/learn/words'
@@ -94,6 +95,7 @@ module.exports = {
   PageDialectGalleries,
   PageDialectGalleryView,
   PageDialectReports,
+  PageDialectReportsView,
   PageDialectUsers,
   PagePlay,
   PageSearch,

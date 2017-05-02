@@ -42,12 +42,14 @@ export default class GeneralList extends Component {
     action: PropTypes.func,
     cols: PropTypes.number,
     cellHeight: PropTypes.number,
+    wrapperStyle: PropTypes.object,
     style: PropTypes.object
   };
 
   static defaultProps = {
     cols: 3,
     cellHeight: 210,
+    wrapperStyle: null,
     style: null
   }
 
@@ -65,9 +67,9 @@ export default class GeneralList extends Component {
 
     let card = (this.props.card) || <CardView />;
 
-    return <div className="row">
+    return <div className="row" style={this.props.wrapperStyle}>
                 {(items || []).map(function (item, i) {
-                    return React.cloneElement(card, {key: item.uid, item: item, ...this.props});
+                    return React.cloneElement(card, {key: i, item: item, ...this.props});
                 }.bind(this))}
             </div>;
   }

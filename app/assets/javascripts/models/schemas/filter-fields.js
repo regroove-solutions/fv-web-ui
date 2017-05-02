@@ -23,6 +23,13 @@ const BookTypes = t.enums({
   story: 'Story Book'
 });
 
+const ReportItemTypes = t.enums({
+  words: 'Words',
+  phrases: 'Phrases',
+  songs: 'Songs',
+  stories: 'Stories'
+});
+
 const MaxMB = t.refinement(t.Number, (n) => {return n <= 2000});
 
 const ResourcesFields = {
@@ -63,6 +70,10 @@ const fields = {
   User: makeOptional({
     'searchTerm': t.String,
     'group': t.String
+  }),
+  Reports: makeOptional({
+    'name': t.String,
+    'type': ReportItemTypes
   }),
   Search: {
     'searchTerm': t.String,
