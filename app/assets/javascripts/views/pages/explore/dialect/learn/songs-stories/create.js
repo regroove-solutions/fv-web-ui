@@ -70,7 +70,6 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     this.fetchData(this.props);
   }
 
-
   componentWillReceiveProps(nextProps) {
     
     let currentBook, nextBook;
@@ -86,7 +85,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // 'Redirect' on success
     if (selectn('success', currentBook) != selectn('success', nextBook) && selectn('success', nextBook) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextBook).replace('Stories & Songs', 'learn/songs'));
+        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextBook).replace('Stories & Songs', 'learn/' + (this.props.typeFilter === 'story' ? 'stories' : 'songs')));
     }
   }
 
