@@ -28,7 +28,7 @@
 
 	</style>
 
-	<script type="text/javascript">
+	<!--<script type="text/javascript">
 	  // Keyman web version 1.0
       // Keyman web configuration
       var KeymanWeb_BaseLayout = 'us';
@@ -37,7 +37,7 @@
       var KeymanWeb_DefaultKeyboardName = '(Select keyboard)';
 
 	</script>
-	<script type="text/javascript" src="http://www.firstvoices.com/kmw/keymanweb.js"></script>
+	<script type="text/javascript" src="http://www.firstvoices.com/kmw/keymanweb.js"></script>-->
 
 	{# Keyman web version 2.0 #}
 	{#
@@ -47,32 +47,5 @@
 
 {% endblock %}
 
-{% block javascript %}
-
-<!-- Snowplow starts plowing -->
- <script type="text/javascript">
-;(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];
- p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)
- };p[i].q=p[i].q||[];n=l.createElement(o);g=l.getElementsByTagName(o)[0];n.async=1;
- n.src=w;g.parentNode.insertBefore(n,g)}}(window,document,"script","//dexqzvifihpcx.cloudfront.net/A4ppeawfTeFw7cRoXsaMi43LjA.js","snowplow"));
- 
- window.snowplow('newTracker', 'co', 'ca-bc-gov-main.collector.snplow.net', {
-	platform: 'web',
-	post: true,
-	contexts: {
-	webPage: true,
-	performanceTiming: true
- }});
- 
- // Ping every 30 seconds after 30 seconds
- window.snowplow('enableActivityTracking', 30, 30);
-
- // Track initial page view (outside of SPA)
- window.snowplow('trackPageView');
- //window.snowplow('enableLinkClickTracking');
- 
- </script>
- <!-- Snowplow stop plowing -->​
-
-{% endblock %}
+{% block javascript %}{% endblock %}
 
