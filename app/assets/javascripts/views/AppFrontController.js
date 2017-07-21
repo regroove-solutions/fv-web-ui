@@ -31,7 +31,7 @@ import { PageDialectViewAlphabet } from 'views/pages';
 
 import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageQuiz, PageHangman} from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageUsersForgotPassword, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
@@ -176,6 +176,12 @@ export default class AppFrontController extends Component {
         path: ['profile'],
         title: 'User Profile',
         page: <PageUsersProfile />
+      },
+      {
+        path: ['forgotpassword'],
+        title: 'Forgot Your Password',
+        breadcrumbs: false,
+        page: <PageUsersForgotPassword />
       },
       {
         path: [KIDS_OR_DEFAULT],

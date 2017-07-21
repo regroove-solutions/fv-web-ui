@@ -102,6 +102,7 @@ export default class Login extends Component {
       dest = '/explore' + this.props.routeParams.dialect_path + '/' + path;
     }
 
+    this._handleClose();
     this.props.pushWindowPath(dest);
   }
 
@@ -153,6 +154,8 @@ export default class Login extends Component {
 
             <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
             <RaisedButton primary={true} onTouchTap={this._handleLogin} label="Sign in"/>
+
+            <p style={{paddingTop: '10px', marginTop: '10px', borderTop: '1px dashed #dadada', textAlign: 'right', fontSize: '0.9em'}}><a style={{color: '#000', cursor: 'pointer'}} onTouchTap={this._onNavigateRequest.bind(this, 'forgotpassword')}>Forgot your password?</a></p>
 
           </div>
 
