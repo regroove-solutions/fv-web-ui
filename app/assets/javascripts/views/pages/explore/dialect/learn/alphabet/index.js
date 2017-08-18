@@ -92,7 +92,8 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
 
             <div className="row">
                 <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
-                {React.cloneElement(alphabetListView, { gridListView: true, gridListTile: AlphabetGridTile, dialect: selectn('response', computeDialect2) })}
+                <h1>{selectn('response.title', computeDialect2)} Alphabet</h1>
+                {React.cloneElement(alphabetListView, { gridListView: true, gridViewProps: {style:{overflowY: 'auto', maxHeight: '100%'}}, gridListTile: AlphabetGridTile, dialect: selectn('response', computeDialect2) })}
                 </div>
             </div>
             

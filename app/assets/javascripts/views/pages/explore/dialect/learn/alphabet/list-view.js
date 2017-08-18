@@ -66,6 +66,7 @@ export default class ListView extends DataListView {
     data: PropTypes.string,
     gridListView: PropTypes.bool,
     gridListTile: PropTypes.func,
+    gridViewProps: PropTypes.object,
     pagination: PropTypes.bool,
 
     DISABLED_SORT_COLS: PropTypes.array,
@@ -168,6 +169,7 @@ export default class ListView extends DataListView {
                                 type="FVCharacter"
                                 data={computeCharacters}
                                 gridListView={this.props.gridListView}
+                                gridViewProps={this.props.gridViewProps}
                                 refetcher={this._handleRefetch}
                                 onSortChange={this._handleSortChange}
                                 onSelectionChange={this._onEntryNavigateRequest}
