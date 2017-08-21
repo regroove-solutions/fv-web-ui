@@ -419,11 +419,14 @@ export default class Preview extends Component {
               body = audioTag;
             }
             else {
+
+              let description = (selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse));
+
               body =  <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardHeader
                           title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
                           titleStyle={{lineHeight: 'initial'}}
-                          subtitle={selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)}
+                          subtitle={(description && description != "undefined") ? "Description: " + description : ""}
                           subtitleStyle={{lineHeight: 'initial'}}
                           actAsExpander={true}
                           showExpandableButton={true}
