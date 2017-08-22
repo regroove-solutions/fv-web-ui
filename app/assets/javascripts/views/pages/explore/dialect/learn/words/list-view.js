@@ -101,14 +101,14 @@ export default class ListView extends DataListView {
               return <Preview minimal={true} tagStyles={{width: '300px', maxWidth:'100%'}} key={selectn('uid', firstAudio)} expandedValue={firstAudio} type="FVAudio" />;
           }.bind(this)
         },
-        { name: 'fv:literal_translation', title: 'Literal Translation', render: function(v, data, cellProps) {
+        { name: 'fv:definitions', title: 'Definition', render: function(v, data, cellProps) {
             return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
               if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
                 return <li key={i}>{entry.translation}</li>;
               }
             }.bind(this));
           }.bind(this),
-          sortName: 'fv:literal_translation/0/translation'
+          sortName: 'fv:definitions/0/translation'
         },
         { name: 'fv-word:pronunciation', title: 'Pronunciation', render: function(v, data, cellProps) { return selectn('properties.fv-word:pronunciation', data); } },
         { name: 'fv-word:categories', title: 'Categories', render: function(v, data, cellProps) {
