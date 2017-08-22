@@ -104,11 +104,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     // Render kids view
     if (isKidsTheme) {
 
-      let kidsFilter = new Map({
-        currentAppliedFilter: new Map({
-          //kids: ' AND fv:available_in_childrens_archive=1'
-        })
-      })
+      let kidsFilter = this.state.filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1');
 
       return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
