@@ -170,23 +170,33 @@ export default class AppLeftNav extends Component {
 
           <Divider />
 
-          <SelectableList
-            valueLink={{
-              value: location.pathname,
-              requestChange: this._onNavigateRequest
-          }}>
+          {(() => {
+            
+            console.log(selectn("isConnected", this.props.computeLogin));
 
-            <ListItem
-              key="profile"
-              value="/profile/"
-              primaryText="My Profile" />
+            if (selectn("isConnected", this.props.computeLogin)) {
+              
+              return <SelectableList
+                valueLink={{
+                  value: location.pathname,
+                  requestChange: this._onNavigateRequest
+              }}>
 
-            <ListItem
-              key="sign-out"
-              value="/logout/"
-              primaryText="Sign Out" />
+                <ListItem
+                  key="profile"
+                  value="/profile/"
+                  primaryText="My Profile" />
 
-          </SelectableList>
+                <ListItem
+                  key="sign-out"
+                  value="/logout/"
+                  primaryText="Sign Out" />
+
+              </SelectableList>;
+
+            }
+
+          })()}
 
       </LeftNav>
     );

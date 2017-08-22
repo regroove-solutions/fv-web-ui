@@ -61,6 +61,11 @@ const WORKSPACE_TO_SECTION_REDIRECT = {
   target: function(params) { return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections'); }
 };
 
+const NOT_CONNECTED_REDIRECT = {
+  condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false) },
+  target: function(params) { return '/home'; }
+};
+
 class Redirecter extends Component {
   constructor(props, context) {
     super (props, context);
@@ -175,7 +180,8 @@ export default class AppFrontController extends Component {
       {
         path: ['profile'],
         title: 'User Profile',
-        page: <PageUsersProfile />
+        page: <PageUsersProfile />,
+        redirects: [NOT_CONNECTED_REDIRECT]
       },
       {
         path: ['forgotpassword'],
