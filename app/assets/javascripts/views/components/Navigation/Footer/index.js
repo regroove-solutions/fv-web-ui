@@ -37,7 +37,7 @@ export default class Footer extends React.Component {
             <div className="row">
 
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1')} style={{paddingTop: '20px'}}>
-                <img src="/assets/images/logo-fpcc.png" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />
+                <img src="/assets/images/logo-fpcc.png" alt="FirstVoices Logo" className={classNames('pull-left')} />
               </div>
 
               <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'body')} style={{paddingTop: '20px', fontWeight: 100}}>

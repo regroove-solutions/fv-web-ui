@@ -20,6 +20,10 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
 import {Divider, List, ListItem, LeftNav, AppBar} from 'material-ui/lib';
+
+import IconButton from 'material-ui/lib/icon-button';
+import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
 
 let SelectableList = SelectableContainerEnhance(List);
@@ -146,11 +150,16 @@ export default class AppLeftNav extends Component {
 
     return (
       <LeftNav 
-        docked={false}
+        docked={true}
+        style={{height: 'auto'}}
         open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
         >
-          <AppBar title={<img src="assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} />} />
+          <AppBar
+            iconElementLeft={<IconButton onTouchTap={this._onRequestChange}><NavigationClose /></IconButton>}
+            title={<img src="assets/images/logo.png"
+            style={{padding: '0 0 5px 0'}}
+            alt={this.props.properties.title} />} />
 
           <SelectableList
             valueLink={{
