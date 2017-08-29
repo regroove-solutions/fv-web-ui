@@ -36,6 +36,7 @@ export default class Login extends Component {
     login: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
     logout: PropTypes.func.isRequired,
+    properties: PropTypes.object.isRequired,
     computeLogout: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired,
     routeParams: PropTypes.object
@@ -108,6 +109,8 @@ export default class Login extends Component {
 
   render() {
 
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+
     let loginFeedbackMessage = "";
 
     if (this.props.computeLogin.isFetching || this.props.computeLogout.isFetching) {
@@ -134,8 +137,7 @@ export default class Login extends Component {
 
     return (
       <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
-        <FlatButton label={this.props.label} onTouchTap={this._handleOpen} />
-        <FlatButton label="Register" onTouchTap={this._onNavigateRequest.bind(this, 'register')} />
+        <FlatButton label={this.props.label} style={{color: themePalette.alternateTextColor}} onTouchTap={this._handleOpen} />
 
         <Popover open={this.state.open}
           anchorEl={this.state.anchorEl}
@@ -154,6 +156,8 @@ export default class Login extends Component {
 
             <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
             <RaisedButton primary={true} onTouchTap={this._handleLogin} label="Sign in"/>
+
+            <FlatButton label="Register" style={{color: themePalette.alternateTextColor}} onTouchTap={this._onNavigateRequest.bind(this, 'register')} />
 
             <p style={{paddingTop: '10px', marginTop: '10px', borderTop: '1px dashed #dadada', textAlign: 'right', fontSize: '0.9em'}}><a style={{color: '#000', cursor: 'pointer'}} onTouchTap={this._onNavigateRequest.bind(this, 'forgotpassword')}>Forgot your password?</a></p>
 

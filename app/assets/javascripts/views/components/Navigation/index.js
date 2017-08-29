@@ -107,6 +107,8 @@ export default class Navigation extends Component {
       searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
+      searchContextPopoverOpen: false,
+      searchContextPopoverAnchorEl: null,
       userRegistrationTasksPath: '/management/registrationRequests/',
       pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props)
     };
@@ -172,14 +174,12 @@ export default class Navigation extends Component {
   }
 
   handleChangeRequestLeftNav(open) {
-    console.log('ok2!');
     this.setState({
       leftNavOpen: open,
     });
   }
 
   handleRequestChangeList(event, value) {
-    console.log('ok!');
     //this.context.router.push(value);
     this.setState({
       leftNavOpen: false,
@@ -214,14 +214,16 @@ export default class Navigation extends Component {
     // If search bar is not visible, this button should show it
     if (this.refs.navigationSearchField._getInputNode().offsetParent === null) {
       this.setState({
-        searchBarVisibleInMobile: true
+        searchBarVisibleInMobile: true,
+        searchContextPopoverOpen: false
       });
 
       e.preventDefault();
     } else {
 
       this.setState({
-        searchBarVisibleInMobile: false
+        searchBarVisibleInMobile: false,
+        searchContextPopoverOpen: false
       });
 
       let searchQueryParam = this.refs.navigationSearchField.getValue();	  
@@ -271,13 +273,13 @@ export default class Navigation extends Component {
 
     const avatar = (portalLogo) ? <Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px'}} /> : '';
 
-    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle}</a> : this.props.properties.title;
+    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle}</a> : <img src="assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} />;
 
     const hintTextSearch = isDialect ? 'Search dialect:' : this.state.hintTextSearch;
 
     return <div>
         <AppBar
-          title={<span className="hidden-xs"><img src="assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={title} /></span>}
+          title={<span className="hidden-xs">{title}</span>}
           showMenuIconButton={isDialect ? false : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
@@ -342,19 +344,31 @@ export default class Navigation extends Component {
             </div>
           </Popover>
 
-            <span className={classNames({'hidden': isFrontPage})}>
-
             <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
             {/* KeymanWeb workaround for hinttext not disappearing */}
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
-              <TextField underlineStyle={{width:'90%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', borderRadius: '5px', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch })} onFocus={() => this.setState({hintTextSearch: ''})} onEnterKeyDown={this._handleNavigationSearchSubmit} /> 
-              <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
+              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch, searchContextPopoverOpen: false })} onFocus={(e) => this.setState({hintTextSearch: '', searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} /> 
+              <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} style={{color: themePalette.alternateTextColor}} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
             </div>
 
-            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0'}} iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: themePalette.alternateTextColor, background: themePalette.primary2Color}}>search</IconButton>
+            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0', left: (this.state.searchBarVisibleInMobile) ? '0' : '-40px'}} iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: themePalette.textColor}}>search</IconButton>
 
-            </span>
+            <Popover
+            useLayerForClickAway={false}
+            open={this.state.searchContextPopoverOpen}
+            anchorEl={this.state.searchContextPopoverAnchorEl}
+            style={{maxWidth: '220px', marginTop: '-14px', backgroundColor: 'transparent', boxShadow: 'none'}}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'middle', vertical: 'top'}}>
+              <div>
+                <img style={{position: 'relative', top: '14px', zIndex: 999999, paddingTop: '14px', left: '80%'}} src="/assets/images/popover-arrow.png" alt="" />
+                <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
+                  <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>    
+                </div>
+              </div>
+          </Popover>
+
           </ToolbarGroup>
 
         </AppBar>

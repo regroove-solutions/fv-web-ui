@@ -157,9 +157,7 @@ export default class AppLeftNav extends Component {
         >
           <AppBar
             iconElementLeft={<IconButton onTouchTap={this._onRequestChange}><NavigationClose /></IconButton>}
-            title={<img src="assets/images/logo.png"
-            style={{padding: '0 0 5px 0'}}
-            alt={this.props.properties.title} />} />
+            title={<img src="/assets/images/logo.png" style={{padding: '0 0 5px 0'}} alt={this.props.properties.title} />} />
 
           <SelectableList
             valueLink={{

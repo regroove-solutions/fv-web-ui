@@ -169,7 +169,10 @@ const options = {
   Search: {
     fields: {
       'searchTerm': {
-        label: 'Search Term'
+        label: 'Search Term',
+        attrs: {
+          autoFocus: true
+        }
       },
       'documentTypes': {
         label: 'Document Types',
