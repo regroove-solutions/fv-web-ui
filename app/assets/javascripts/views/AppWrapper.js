@@ -377,9 +377,9 @@ export default class AppWrapper extends Component {
         {keyboardPicker}
 
         <AuthorizationFilter filter={{role: ['Everything'], entity: selectn('response.entries[0]', dialects), login: this.props.computeLogin}}>
-          <div className="row" style={{backgroundColor: '#efefef'}}>
+          <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
 
-              <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
+              Super Admin Tools: <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
               {(this.state.adminGuideStarted) ? 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'' : ''}
 
           </div>

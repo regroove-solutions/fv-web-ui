@@ -40,6 +40,8 @@
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
     </script>
 
+    <link href="//fonts.googleapis.com/css?family=Roboto:100,400,500,500i,700,900&amp;subset=latin-ext" rel="stylesheet">
+
     {% block head %}{% endblock %}
 
   </head>
@@ -59,6 +61,8 @@
     <script src="/assets/javascripts/app.js"></script>
 
     {% block javascript %}{% endblock %}
+
+    <!-- v1.0.7 -->
 
   </body>
 </html>

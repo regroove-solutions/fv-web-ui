@@ -36,12 +36,14 @@ export default class Footer extends React.Component {
         <div className="container-fluid">
             <div className="row">
 
-              <div className={classNames('col-xs-12', 'col-md-6')}>
-                <img src="/assets/images/fpcf-logo-28x28.gif" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />&copy; 2000-{new Date().getFullYear()} FirstVoices<br/>Phone: 250-652-5952 · Email: info@fpcc.ca
+              <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1')} style={{paddingTop: '20px'}}>
+                <img src="/assets/images/logo-fpcc.png" alt="FirstVoices Logo" className={classNames('fv-small-logo', 'pull-left')} />
               </div>
 
-              <div className={classNames('text-right', 'col-xs-12', 'col-md-6')}>
-                <p className={classNames('text-muted')}>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | v1.0.7</p>
+              <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'body')} style={{paddingTop: '20px', fontWeight: 100}}>
+                <p>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | Donate</p>
+                <p>Phone: 250-652-5952 · Email: info@fpcc.ca</p>
+                <p>&copy; 2000-{new Date().getFullYear()} FirstVoices</p>
               </div>
 
             </div>

@@ -277,7 +277,7 @@ export default class Navigation extends Component {
 
     return <div>
         <AppBar
-          title={<span className="hidden-xs">{title}</span>}
+          title={<span className="hidden-xs"><img src="assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={title} /></span>}
           showMenuIconButton={isDialect ? false : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 

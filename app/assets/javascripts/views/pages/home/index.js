@@ -39,6 +39,8 @@ import TextField from 'material-ui/lib/text-field';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import IntroCardView from 'views/components/Browsing/intro-card-view';
+
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -96,7 +98,7 @@ export default class PageHome extends Component {
       //backgroundSize: '115%',
       backgroundSize: 'cover',
       backgroundAttachment: 'fixed',
-      backgroundImage: 'url("/assets/images/homepage.jpg")',
+      backgroundImage: 'url("/assets/images/intro-background.png")',
       //backgroundPosition: '-280px -500px',
       overflow: 'hidden'
     }
@@ -116,6 +118,13 @@ export default class PageHome extends Component {
     const page = selectn('response.entries[0].properties', computePage);
     const dialects = selectn('response.entries', computePortals);
 
+    const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
+    const primary2Color = selectn('theme.palette.baseTheme.palette.primary2Color', this.props.properties);
+    const accent1Color = selectn('theme.palette.baseTheme.palette.accent1Color', this.props.properties);
+    const alternateTextColor = selectn('theme.palette.baseTheme.palette.alternateTextColor', this.props.properties);
+
+    const sectionHrStyle = {backgroundColor: primary1Color, width: '94px', height: '4px', margin: '0'};
+
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
       <div className="row" style={homePageStyle}>
             <div style={{position: 'relative', height: '650px'}}>
@@ -126,37 +135,64 @@ export default class PageHome extends Component {
                 </div>
 
                 <div className="home-intro-block">
-                  <h2>{selectn('fvpage:blocks[0].title', page)}</h2>
-                  <p dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}} style={{fontSize: '0.9em'}}></p>
-                  <div style={{textAlign: 'right'}}>
-                    <RaisedButton label="Explore Our Languages" onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px'}} /> 
+                  <h1 className="display" style={{backgroundColor: 'rgba(180, 0, 0, 0.65)', fontWeight: 500}}>{selectn('fvpage:blocks[0].title', page)}</h1>
+                  <div className={classNames('home-intro-p-cont', 'body')}><p dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}}></p></div>
+                  <div>
+                    <RaisedButton label="Get Started!" onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px', height: '50px'}} backgroundColor={accent1Color} labelColor={alternateTextColor} labelStyle={{fontSize: '1.34em'}} /> 
                     <div className="hidden" style={{display: 'inline-block'}}><RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div style={{backgroundColor: '#00bcd4', padding: '20px', borderTop: '1px rgba(213, 160, 92, 0.29) solid', borderBottom: '1px rgba(213, 160, 92, 0.29) solid', marginBottom: '20px', boxShadow: 'rgba(0, 0, 0, 0.49) 0 0 20px 0px', height: '90px'}}>
-              <div className={classNames('col-xs-12')}>
-                <TextField underlineFocusStyle={{borderColor: '#000'}} underlineStyle={{width:'95%', borderColor: '#923110'}} style={{width: '100%', fontSize: '1.3em', height: '46px', backgroundColor: '#fff', padding: '0 15px'}} hintText="Search FirstVoices:" ref="navigationSearchField" onEnterKeyDown={(e, v) => this._onNavigateRequest('/explore/FV/sections/Data/search/' + e.currentTarget.value)} />
+            </div>
+
+            <div className={classNames('row')} style={{margin:'25px 0'}}>
+
+              <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
+                <hr style={sectionHrStyle}/>
+                <h1 style={{fontWeight: 500}}>TOOLS &amp; RESOURCES</h1>
+              </div>
+
+              <div>
+                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 1);})).map(function(block, i) {
+                  return <div key={i} className={classNames('col-xs-12', 'col-md-4')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
+                })}
               </div>
             </div>
+
+            <div className={classNames('row')} style={{margin:'25px 0'}}>
+              
+              <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
+                <hr style={sectionHrStyle}/>
+                <h1 style={{fontWeight: 500}}>NEWS &amp; UPDATES</h1>
+              </div>
+
+              <div>
+                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 2);})).map(function(block, i) {
+                  return <div key={i} className={classNames('col-xs-12', 'col-md-4')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
+                })}
+              </div>
+
             </div>
 
-            <div className={classNames('row')} style={{marginTop:'15px'}}>
-              {(selectn('fvpage:blocks', page) || []).map(function(block, i) {
+            <div className={classNames('row')} style={{margin:'25px 0'}}>
 
-                if (i == 0) {
-                  return;
-                }
+              <div className={classNames('col-xs-12')}>
+                <hr style={sectionHrStyle}/>
+                <h1 style={{fontWeight: 500}}>COMPATIBILITY</h1>
+              </div>
 
-                return <div key={i} className={classNames('col-xs-12', 'col-md-6')}>
-                        <Paper style={{backgroundColor: '#f8f5ec', minHeight: '150px', padding: '15px'}}>
-                        <h4>{selectn('title', block)}</h4>
-                        <p dangerouslySetInnerHTML={{__html: selectn('text', block)}}></p>
-                        </Paper>
-                      </div>;
-              })}
+              <div>
+                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 3);})).map(function(block, i) {
+                  return <div key={i} className={classNames('col-xs-12')}>
+                          <div className="body">
+                            <h2 style={{fontWeight: 500}}>{selectn('title', block)}</h2>
+                            <p dangerouslySetInnerHTML={{__html: selectn('text', block)}}></p>
+                          </div>
+                        </div>;
+                })}
+              </div>
 
             </div>
 

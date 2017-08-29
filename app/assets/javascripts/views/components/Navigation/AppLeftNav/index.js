@@ -150,7 +150,7 @@ export default class AppLeftNav extends Component {
         open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
         >
-          <AppBar title={this.props.properties.title} />
+          <AppBar title={<img src="assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} />} />
 
           <SelectableList
             valueLink={{
@@ -171,8 +171,6 @@ export default class AppLeftNav extends Component {
           <Divider />
 
           {(() => {
-            
-            console.log(selectn("isConnected", this.props.computeLogin));
 
             if (selectn("isConnected", this.props.computeLogin)) {
               

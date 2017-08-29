@@ -17,7 +17,8 @@
 }
 
 // Variables
-@primary-color: #AA1225;
+@primary-color: #b40000;
+@primary-header-color: #666666;
 @mobile-xs-width: 480px;
 
 /*.container-fluid{
@@ -26,7 +27,7 @@
 
 .app-wrapper{
   background-color:#fff;
-  font-family: Roboto, sans-serif;
+  font-family: 'Roboto', sans-serif;
   /*border:1px solid rgb(224, 224, 224);*/
 
   .main{
@@ -101,6 +102,52 @@
   padding: 0.5em 0;
 }
 
+.display{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  line-height: 34px;  
+}
+
+h1{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 900;
+  font-size: 24px;
+  color: @primary-header-color;
+  line-height: 24px;  
+}
+
+h2{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  font-size: 21px;
+  color: @primary-header-color;
+  line-height: 24px;
+}
+
+h3{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  color: @primary-header-color;
+}
+
+h4{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-size: 17px;
+  line-height: 21px;
+  color: @primary-header-color;
+}
+
+.body{
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
+}
+
 // Components
 
 // Editable component
@@ -172,16 +219,18 @@ form.editableComponentForm{
 
 .footer {
     width: 100%;
-    min-height:20vh;
-    background-color: #f5f5f5;
+    min-height:147px;
+    background-color: #6492a8;
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-image: url('/assets/images/footer-background.png');
     border:0;
-    border-top:1px #DEDEDE solid;
     padding-top: 15px;
     margin-top: 30px;
+    color: #ffffff;
 
-    .fv-small-logo{
-      padding-right:15px;
-      padding-top:5px;
+    a{
+      color: #ffffff;
     }
 }
 
@@ -191,14 +240,28 @@ form.editableComponentForm{
 .home-intro-block{
   width: 35%;
   position: absolute;
-  bottom: 15%;
-  right: 10%;
-  padding: 0 15px 15px 25px;
+  bottom: 12%;
+  right: 0;
   color: #ffffff;
-  text-shadow: #000 2px 0 15px;
-  font-size: 1.5em;
-  background: rgba(0,0,0,0.5);
-  border-radius: 4px;
+  //padding: 0 15px 15px 25px;
+  //text-shadow: #000 2px 0 15px;
+  //background: rgba(0,0,0,0.5);
+  //border-radius: 4px;
+
+  > h1{
+    padding: 20px;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  > div.home-intro-p-cont{
+    background: rgba(0,0,0,0.5);
+    text-shadow: #000 2px 0 15px;
+    border-radius: 4px;
+    padding: 20px;
+    margin: 0 0 10px 0;
+  }
 }
 
 /**
