@@ -284,6 +284,15 @@ export default class Navigation extends Component {
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup style={{position: 'relative'}}>
+
+            <DialectDropDown
+              dialects={selectn('response.entries', computeDialects) || []}
+              label={this.state.browseLabel}
+              properties={this.props.properties}
+              actionFunc={this.props.pushWindowPath}
+              computeLogin={this.props.computeLogin}
+              routeParams={this.props.routeParams} />
+
             <Login routeParams={this.props.routeParams} label="Sign in"/>
 
             <ToolbarSeparator className={classNames({'hidden-xs': this.props.computeLogin.isConnected})} style={{float: 'none', marginLeft: 0, marginRight: 0}} />
@@ -372,20 +381,6 @@ export default class Navigation extends Component {
           </ToolbarGroup>
 
         </AppBar>
-
-        <Toolbar className={classNames('hidden-xs', {'hidden': isDialect || isFrontPage})}>
-
-          <ToolbarGroup float="right">
-            <DialectDropDown
-              dialects={selectn('response.entries', computeDialects) || []}
-              label={this.state.browseLabel}
-              properties={this.props.properties}
-              actionFunc={this.props.pushWindowPath}
-              computeLogin={this.props.computeLogin}
-              routeParams={this.props.routeParams} />
-          </ToolbarGroup>
-
-        </Toolbar>
 
         <AppLeftNav
           menu={{main: true}}
