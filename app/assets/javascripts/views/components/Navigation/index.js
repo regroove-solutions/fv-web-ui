@@ -103,7 +103,7 @@ export default class Navigation extends Component {
 
     this.state = {
       hintTextSearch: "Search site: ",
-      browseLabel: "Dialects...",
+      browseDesc: "Dialects...",
       searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
@@ -135,7 +135,7 @@ export default class Navigation extends Component {
     const pathOrId = '/' + props.properties.domain + '/' + fetchPath;
 
     this.setState({
-      browseLabel: ((fetchPath == 'Workspaces') ? 'Workspace Dialects...' : 'Published Dialects...'),
+      browseDesc: ((fetchPath == 'Workspaces') ? 'Workspace Languages:' : 'Published Languages:'),
       pathOrId: pathOrId
     });
 
@@ -287,7 +287,8 @@ export default class Navigation extends Component {
 
             <DialectDropDown
               dialects={selectn('response.entries', computeDialects) || []}
-              label={this.state.browseLabel}
+              description={this.state.browseDesc}
+              label="CHOOSE A LANGUAGE"
               properties={this.props.properties}
               actionFunc={this.props.pushWindowPath}
               computeLogin={this.props.computeLogin}

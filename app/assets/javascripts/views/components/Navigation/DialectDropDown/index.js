@@ -31,6 +31,7 @@ import Avatar from 'material-ui/lib/avatar';
 import Popover from 'material-ui/lib/popover/popover';
 
 import RaisedButton from 'material-ui/lib/raised-button';
+import FlatButton from 'material-ui/lib/flat-button';
 import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
 import DropDownArrow from 'material-ui/lib/svg-icons/navigation/arrow-drop-down';
 import DefaultRawTheme from 'material-ui/lib/styles/raw-themes/light-raw-theme'
@@ -44,6 +45,7 @@ export default class DialectDropDown extends Component {
 
   static propTypes = {
     label: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
     computeLogin: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     actionFunc: PropTypes.func.isRequired,
@@ -130,20 +132,20 @@ export default class DialectDropDown extends Component {
 
   render() {
 
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+
     let { dialects } = this.props;
 
-    return <div>
-        <RaisedButton onTouchTap={this.handleTouchTap.bind(this)} label={this.props.label}>
-          <DropDownArrow />
-        </RaisedButton>
+    return <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
+        <FlatButton label={this.props.label} labelPosition="before" icon={<DropDownArrow />} style={{color: themePalette.alternateTextColor}} onTouchTap={this.handleTouchTap.bind(this)} />
 
         <Popover
           open={this.state.open} 
           onRequestClose={this.handleRequestClose.bind(this)} 
           anchorEl={this.state.anchorEl}
           anchorOrigin={{'horizontal':'left','vertical':'bottom'}}
-          targetOrigin={{'horizontal':'middle','vertical':'bottom'}}>
-          {this.state.dropdownData.length > 0 ? <SelectableList
+          targetOrigin={{'horizontal':'middle','vertical':'top'}}>
+          {this.state.dropdownData.length > 0 ? <div><p style={{padding: '15px 0 0 15px', fontSize: '1.25em'}}>{this.props.description}</p><SelectableList
             style={{maxHeight: '550px', minWidth:'300px'}}
             valueLink={{
               value: location.pathname,
@@ -152,7 +154,7 @@ export default class DialectDropDown extends Component {
               {this.state.dropdownData.map(function(menuGroup, index) {
                 return <ListItem initiallyOpen={true} key={index} value={false} primaryText={menuGroup[0]} nestedItems={menuGroup[1]} />;
               })}
-          </SelectableList> : <div style={{maxHeight: '550px', minWidth:'300px'}}>Loading...</div>}
+          </SelectableList></div> : <div style={{maxHeight: '550px', minWidth:'300px'}}>Loading...</div>}
         </Popover>
       </div>;
   }
