@@ -283,7 +283,7 @@ export default class Navigation extends Component {
           showMenuIconButton={isDialect ? false : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
-          <ToolbarGroup style={{position: 'relative'}}>
+          <ToolbarGroup style={{position: 'relative', color: '#fff'}}>
 
             <DialectDropDown
               dialects={selectn('response.entries', computeDialects) || []}
@@ -306,7 +306,7 @@ export default class Navigation extends Component {
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
                   primary={true}
                 >
-                  <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false}>
+                  <IconButton iconStyle={{fill: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false}>
                     <NotificationsIcon />
                   </IconButton>
                 </Badge>
@@ -317,7 +317,7 @@ export default class Navigation extends Component {
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
                   primary={true}
                 >
-                  <IconButton onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
+                  <IconButton iconStyle={{fill: '#fff'}} onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
                     <ActionHelp />
                   </IconButton>
                 </Badge>

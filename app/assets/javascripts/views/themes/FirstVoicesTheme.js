@@ -26,14 +26,18 @@ export default {
     primary1Color: "#b40000",
     primary2Color: "#3a6880",
     primary3Color: Colors.lightBlack,
-    accent1Color: "#559cbe",
-    accent2Color: "#666666",
+    primary4Color: "#c4baa7",
+    primary4ColorLightest: "#f0eee9",
+    accent1Color: "#3a6880",
+    accent2Color: "#b40000",
     accent3Color: "#c4baa7",
     textColor: "#666666",
     alternateTextColor: Colors.white,
     canvasColor: Colors.white,
     borderColor: Colors.grey300,
     disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
-    pickerHeaderColor: "#b40000",
+    pickerHeaderColor: "#b40000"
   }
 };
+
+// Tip: https://cimdalli.github.io/mui-theme-generator/

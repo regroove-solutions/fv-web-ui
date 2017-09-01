@@ -138,8 +138,8 @@ export default class PageHome extends Component {
                   <h1 className="display" style={{backgroundColor: 'rgba(180, 0, 0, 0.65)', fontWeight: 500}}>{selectn('fvpage:blocks[0].title', page)}</h1>
                   <div className={classNames('home-intro-p-cont', 'body')}><p dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}}></p></div>
                   <div>
-                    <RaisedButton label="Get Started!" onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px', height: '50px'}} backgroundColor={accent1Color} labelColor={alternateTextColor} labelStyle={{fontSize: '1.34em'}} /> 
-                    <div className="hidden" style={{display: 'inline-block'}}><RaisedButton label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
+                    <RaisedButton label="Get Started!" primary={true} onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')} style={{marginRight: '10px', height: '50px'}} labelColor={alternateTextColor} labelStyle={{fontSize: '1.34em'}} /> 
+                    <div className="hidden" style={{display: 'inline-block'}}><RaisedButton primary={true} label="Language Map" onTouchTap={() => this.setState({mapVisible: !this.state.mapVisible})} /></div>
                   </div>
                 </div>
               </div>

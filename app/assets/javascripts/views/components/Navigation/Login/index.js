@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
+import ReactDOM from 'react-dom';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
@@ -53,9 +55,11 @@ export default class Login extends Component {
 
     this.state = {
       open: false,
-      anchorEl: null,
-      loginAttempted: false
+      loginAttempted: false,
+      loginAttemptCleared: false
     };
+
+    this.anchorEl = null;
 
     ['_handleOpen','_handleClose','_handleLogin','_handleLogout','_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
@@ -65,7 +69,6 @@ export default class Login extends Component {
     event.preventDefault();
 
     this.setState({
-      anchorEl: event.currentTarget,
       open: true
     });
   }
@@ -110,19 +113,19 @@ export default class Login extends Component {
   render() {
 
     const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+    const TextFieldStyle = { border: '1px solid', borderColor: '#a2291d', width: '100%', paddingLeft: '5px', height: '34px', lineHeight: '10px', fontSize: '14px' };
 
     let loginFeedbackMessage = "";
 
     if (this.props.computeLogin.isFetching || this.props.computeLogout.isFetching) {
-      return <div style={{display: "inline-block", paddingRight: "10px"}}>Processing request...</div>;
+      return <div style={{display: "inline-block", paddingRight: "10px", color: '#fff'}}>Processing request...</div>;
     }
 
     // Handle success (anonymous or actual)
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
-
         return (
           <div className="hidden-xs" style={{display: "inline-block", paddingRight: '15px'}}>
-            Welcome <strong><a style={{color: '#000'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.username", this.props.computeLogin)}</a></strong>!
+            WELCOME, <a style={{color: '#fff', textTransform: 'uppercase', cursor: 'pointer'}} onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.firstName", this.props.computeLogin)}</a>
           </div>
         );
     } else {
@@ -136,30 +139,35 @@ export default class Login extends Component {
     }
 
     return (
-      <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
-        <FlatButton label={this.props.label} style={{color: themePalette.alternateTextColor}} onTouchTap={this._handleOpen} />
+      <div style={{display: "inline-block", paddingTop: '15px', maxWidth: '205px'}}>
+        <FlatButton ref={(el)=>{this.anchorEl = el}}  label={this.props.label} style={{color: themePalette.alternateTextColor}} onTouchTap={this._handleOpen} />
 
         <Popover open={this.state.open}
-          anchorEl={this.state.anchorEl}
+          anchorEl={ReactDOM.findDOMNode(this.anchorEl)}
+          useLayerForClickAway={false}
+          style={{marginTop: '-14px', backgroundColor: 'transparent', boxShadow: 'none'}}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
           onRequestClose={this._handleClose}>
 
-          <div style={{padding:20}}>
+          <div style={{width: '205px'}}>
 
-            <h2>Sign in</h2>
+            <img style={{position: 'relative', top: '14px', zIndex: 999999, left: '65%'}} src="/assets/images/popover-arrow.png" alt="" />
 
-            <div><TextField ref="username" hintText="Username:" /></div>
-            <div><TextField ref="password" type="password" hintText="Password:" /></div>
+            <div style={{backgroundColor: '#fff', padding:'10px', width: '100%'}}>
+              <h6>Sign In Below <a style={{cursor: 'pointer', fontWeight: 100}} onTouchTap={this._onNavigateRequest.bind(this, 'forgotpassword')} className="pull-right">Forgot?</a></h6>
 
-            <p>{loginFeedbackMessage}</p>
+              <div><TextField style={Object.assign({}, TextFieldStyle, {margin: '15px 0'})} underlineShow={false} ref="username" hintText="Username" /></div>
+              <div><TextField style={TextFieldStyle} underlineShow={false} ref="password" type="password" hintText="Password" /></div>
 
-            <RaisedButton onTouchTap={this._handleClose} primary={false} label="Cancel"/> 
-            <RaisedButton primary={true} onTouchTap={this._handleLogin} label="Sign in"/>
+              <p style={{margin: '10px 0', fontSize: '12px', backgroundColor: themePalette.primary4ColorLightest, padding: '0 3px'}}>{loginFeedbackMessage}</p>
 
-            <FlatButton label="Register" style={{color: themePalette.alternateTextColor}} onTouchTap={this._onNavigateRequest.bind(this, 'register')} />
+              <RaisedButton style={{width: '100%'}} secondary={true} onTouchTap={this._handleLogin} label="Sign in"/>
 
-            <p style={{paddingTop: '10px', marginTop: '10px', borderTop: '1px dashed #dadada', textAlign: 'right', fontSize: '0.9em'}}><a style={{color: '#000', cursor: 'pointer'}} onTouchTap={this._onNavigateRequest.bind(this, 'forgotpassword')}>Forgot your password?</a></p>
+              <h6 style={{fontWeight: 500, paddingTop: '10px'}}>New to FirstVoices?</h6>
+
+              <RaisedButton style={{width: '100%'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, 'register')} label="Register"/>
+            </div>
 
           </div>
 
