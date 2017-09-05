@@ -19,7 +19,7 @@ import Navigation from 'views/components/Navigation';
 import KidsNavigation from 'views/components/Kids/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
-import { PageIntro, PageHome, PageTest, PageKidsHome, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageIntro, PageHome, PageTest, PageKidsHome, PageContent, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectReportsView, PageDialectUsers } from 'views/pages';
 
@@ -141,6 +141,18 @@ export default class AppFrontController extends Component {
         title: 'Home',
         breadcrumbs: false,
         frontpage: true
+      },
+      {
+        path: ['content', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
+        page: <PageContent area="sections" />,
+        title: '{$pageTitle} | Pages',
+        breadcrumbs: false
+      },
+      {
+        path: ['content-preview', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
+        page: <PageContent area="Workspaces" />,
+        title: '{$pageTitle} | Pages',
+        breadcrumbs: false
       },
       {
         path: ['test'],
