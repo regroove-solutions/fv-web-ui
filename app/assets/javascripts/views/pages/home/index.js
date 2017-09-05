@@ -156,7 +156,7 @@ export default class PageHome extends Component {
 
               <div>
                 { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 1);})).map(function(block, i) {
-                  return <div key={i} className={classNames('col-xs-12', 'col-md-4')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
+                  return <div key={i} className={classNames('col-xs-12', 'col-md-3')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
                 })}
               </div>
             </div>
@@ -170,7 +170,7 @@ export default class PageHome extends Component {
 
               <div>
                 { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 2);})).map(function(block, i) {
-                  return <div key={i} className={classNames('col-xs-12', 'col-md-4')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
+                  return <div key={i} className={classNames('col-xs-12', 'col-md-3')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
                 })}
               </div>
 
