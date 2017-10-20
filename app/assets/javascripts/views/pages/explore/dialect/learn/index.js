@@ -52,7 +52,7 @@ import Link from 'views/components/Document/Link';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
 
-const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '16px'}
+const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '18px', fontWeight: 'bold', marginRight: 0}
 
 /**
 * Learn portion of the dialect portal
@@ -307,9 +307,9 @@ export default class DialectLearn extends Component {
               <Toolbar className="dialect-navigation">
 
                 <ToolbarGroup firstChild={true} float="left">
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} /> <ToolbarSeparator className="hidden-xs" />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} />
+                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} />
                   <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={"Stories (" + storyCount + ")"} />
                 </ToolbarGroup>
 

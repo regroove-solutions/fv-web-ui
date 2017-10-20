@@ -40,6 +40,7 @@ import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import IntroCardView from 'views/components/Browsing/intro-card-view';
+import TextHeader from 'views/components/Document/Typography/text-header';
 
 /**
 * Explore Archive page shows all the families in the archive
@@ -123,8 +124,6 @@ export default class PageHome extends Component {
     const accent1Color = selectn('theme.palette.baseTheme.palette.accent1Color', this.props.properties);
     const alternateTextColor = selectn('theme.palette.baseTheme.palette.alternateTextColor', this.props.properties);
 
-    const sectionHrStyle = {backgroundColor: primary1Color, width: '94px', height: '4px', margin: '0'};
-
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
       <div className="row" style={homePageStyle}>
             <div style={{position: 'relative', height: '650px'}}>
@@ -150,8 +149,7 @@ export default class PageHome extends Component {
             <div className={classNames('row')} style={{margin:'25px 0'}}>
 
               <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                <hr style={sectionHrStyle}/>
-                <h1 style={{fontWeight: 500}}>TOOLS &amp; RESOURCES</h1>
+                <TextHeader title="TOOLS &amp; RESOURCES" properties={this.props.properties} />
               </div>
 
               <div>
@@ -164,8 +162,7 @@ export default class PageHome extends Component {
             <div className={classNames('row')} style={{margin:'25px 0'}}>
               
               <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                <hr style={sectionHrStyle}/>
-                <h1 style={{fontWeight: 500}}>NEWS &amp; UPDATES</h1>
+                <TextHeader title="NEWS &amp; UPDATES" properties={this.props.properties} />
               </div>
 
               <div>
@@ -179,8 +176,7 @@ export default class PageHome extends Component {
             <div className={classNames('row')} style={{margin:'25px 0'}}>
 
               <div className={classNames('col-xs-12')}>
-                <hr style={sectionHrStyle}/>
-                <h1 style={{fontWeight: 500}}>COMPATIBILITY</h1>
+                <TextHeader title="COMPATIBILITY" properties={this.props.properties} />
               </div>
 
               <div>

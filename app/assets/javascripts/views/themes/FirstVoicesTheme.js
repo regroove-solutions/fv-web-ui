@@ -31,6 +31,7 @@ export default {
     accent1Color: "#3a6880",
     accent2Color: "#b40000",
     accent3Color: "#c4baa7",
+    accent4Color: "#e1e1e2",
     textColor: "#666666",
     alternateTextColor: Colors.white,
     canvasColor: Colors.white,

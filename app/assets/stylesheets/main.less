@@ -28,6 +28,9 @@
 .app-wrapper{
   background-color:#fff;
   font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 24px;
   /*border:1px solid rgb(224, 224, 224);*/
 
   .main{
@@ -149,11 +152,13 @@ h6{
   color: @primary-header-color;
 }
 
-.body{
-  font-family: 'Roboto', sans-serif;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 24px;
+a{
+  color: @primary-header-color;
+  text-decoration: underline;
+}
+
+a:visited{
+  color: @primary-color;
 }
 
 // Components
@@ -462,31 +467,42 @@ audio,video{
 * Dialect page
 */
 .dialect-info-banner{
-  width: 260px ;
-  height: 175px ;
-  background: rgba(255, 255, 255, 0.7);
-  margin: 10px 25px ;
-  border-radius: 10px ;
-  padding: 10px ;
-  position: absolute;
-  bottom: 85px;
-  right: 0
+  width: 100% ;
+  color: #ffffff;
+  background: rgba(0, 0, 0, 0.5);
+  margin: 10px 0 ;
+  padding: 10px 20px;
+  right: 0;
+  font-size: 18px;
+
+  .dib-body-row{
+    div{
+      display: inline-block;
+      font-weight: 200!important;
+    }
+
+    > strong {
+      font-weight: 400!important;
+    }
+  }
 }
 
 .dialect-greeting-container{
-  max-width: 70%;
-  padding: 10px 30px;
+  width: 100%;
+  padding: 10px 20px;
   line-height: 180%;
-  border-radius: 0 10px 10px 0;
-  position: absolute;
-  bottom: 80px;
-  background-color: rgba(255,255,255, 0.5);
+  color: #ffffff;
+  background-color: rgba(180,0,0, 0.65);
 }
 
 .dialect-navigation{
   position: absolute;
   bottom: 0;
-  background-color:rgba(0,0,0,0.5) !important;
+  background-color:rgba(196,186,167,0.75) !important;
+}
+
+.dialect-body-container{
+  padding: 0 25px;
 }
 
 .flex-container {
@@ -592,11 +608,16 @@ audio,video{
 }
 
 .breadcrumb{
-  margin-top: 10px;
+  margin: 0;
   background-color: transparent;
+  padding-left:20px;
 
   a {
     color: #353b40;
+  }
+
+  > li.active{
+    color: #000;
   }
 }
 
@@ -708,8 +729,6 @@ audio::-webkit-media-controls-enclosure {
 
   .dialect-info-banner{
     width: 100%;
-    top: 0;
-    right: 0;
     margin: 0;
     height: 100%;
     background: transparent;
@@ -751,6 +770,10 @@ audio::-webkit-media-controls-enclosure {
         float: none!important;
       }
     }
+  }
+
+  .dialect-body-container{
+    padding:0;
   }
 
   .row-create-wrapper{

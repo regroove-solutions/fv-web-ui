@@ -271,21 +271,18 @@ export default class Navigation extends Component {
     let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal);
     let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal);
 
-    const avatar = (portalLogo) ? <Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px'}} /> : '';
-
-    const title = (portalTitle) ? <a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}>{avatar} {portalTitle}</a> : <img src="/assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} />;
-
     const hintTextSearch = isDialect ? 'Search dialect:' : this.state.hintTextSearch;
 
     return <div>
         <AppBar
-          title={<span className="hidden-xs">{title}</span>}
-          showMenuIconButton={isDialect ? false : true}
+          title={<span className="hidden-xs"><img src="/assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} /></span>}
+          showMenuIconButton={isDialect ? true : true}
           onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
           <ToolbarGroup style={{position: 'relative', color: '#fff'}}>
 
             <DialectDropDown
+              className="hidden-xs"
               dialects={selectn('response.entries', computeDialects) || []}
               description={this.state.browseDesc}
               label="CHOOSE A LANGUAGE"
@@ -332,25 +329,24 @@ export default class Navigation extends Component {
           >
             <div>
               <div className={classNames('panel', 'panel-default')} style={{marginBottom: 0}}>
-  <div className="panel-heading">
-    <h3 className="panel-title">Interactive Guides</h3>
-  </div>
-  <div className="panel-body">
-    <p>Learn how to use this page quickly and efficiently:</p>
-    <table>
-      <tbody>
-      {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function(guide, i) {
-        return <tr key={'guide' + i}>
-        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}</td>
-        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)} primary={false} label="Launch Guide"/></td>
-        </tr>;
-      }.bind(this))}
-</tbody>
-      </table>
-    
-  </div>
-</div>
-              
+                <div className="panel-heading">
+                  <h3 className="panel-title">Interactive Guides</h3>
+                </div>
+                <div className="panel-body">
+                  <p>Learn how to use this page quickly and efficiently:</p>
+                  <table>
+                    <tbody>
+                      {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function(guide, i) {
+                        return <tr key={'guide' + i}>
+                        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}</td>
+                        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)} primary={false} label="Launch Guide"/></td>
+                        </tr>;
+                      }.bind(this))}
+                    </tbody>
+                    </table>
+                  
+                </div>
+              </div>
             </div>
           </Popover>
 
@@ -389,6 +385,19 @@ export default class Navigation extends Component {
           //onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
           //onRequestChangeList={this.handleRequestChangeList}
           docked={false} />
+        
+        {(() => {
+                if (isDialect) {
+                  return <div className="row" style={{backgroundColor: themePalette.primary2Color, minHeight: '64px', margin: '0'}}>
+
+                      <div className="col-xs-12">
+                        <h2 style={{fontWeight: '500', margin: '0'}}><a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}><Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px', marginTop: '8px', marginLeft: '3px'}} /> <span style={{verticalAlign: '-5px'}}>{portalTitle}</span></a></h2>
+                      </div>
+
+                    </div>;
+                }
+        })()}
+
     </div>;
   }
 }

@@ -50,7 +50,7 @@ export default class Header extends Component {
       backgroundPosition: '0 -100',
     }
 
-    return <div style={portalBackgroundStyles}>
+    return <div className="row" style={portalBackgroundStyles}>
               {this.props.children}
           </div>;
   }

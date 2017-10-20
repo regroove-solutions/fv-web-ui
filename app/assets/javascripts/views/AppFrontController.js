@@ -825,29 +825,33 @@ export default class AppFrontController extends Component {
     return breadcrumb;
   }
 
-  _renderWithBreadcrumb(reactElement, matchedPage, props) {
+  _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {
+
+    const themePalette = props.properties.theme.palette.rawTheme.palette;
 
     return (
       <div>
 
-        <div className="clearfix">
+        <div className="row">
+          <div className="clearfix" style={{backgroundColor: themePalette.accent4Color}}>
 
-          {(() => {
-            if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
+            {(() => {
+              if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
 
-              return <ul className={classNames('workspace-switcher', 'nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","paddingTop": "10px"}}>
-                <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><a href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</a></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><a href={props.windowPath.replace('Workspaces', 'sections')}>Public View</a></li>
-              </ul>;
+                return <ul className={classNames('workspace-switcher', 'nav', 'nav-pills', 'pull-right')} style={{"display":"inline-block","verticalAlign":"middle","paddingTop": "10px"}}>
+                  <li role="presentation" className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}><a href={props.windowPath.replace('sections', 'Workspaces')}>Workspace</a></li> <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''} role="presentation"><a href={props.windowPath.replace('Workspaces', 'sections')}>Public View</a></li>
+                </ul>;
 
-            }
+              }
 
-          })()}
+            })()}
 
-          <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/home">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
+            <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/home">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
 
+          </div>
         </div>
 
-        {reactElement}
+        <div className={'page-' + theme + '-theme'}>{reactElement}</div>
 
       </div>
     )
@@ -929,7 +933,7 @@ export default class AppFrontController extends Component {
         }
         // With breadcrumbs
         else {
-          page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props);
+          page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props, theme);
         }
       }
 
@@ -949,7 +953,7 @@ export default class AppFrontController extends Component {
         }.bind(this))}
 
         <div className="row">{navigation}</div>
-        <div className={'page-' + theme + '-theme'}>{page}</div>
+        {page}
         <div className="row">{footer}</div>
       </div>
     );

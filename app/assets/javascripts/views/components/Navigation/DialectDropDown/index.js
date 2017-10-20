@@ -136,7 +136,7 @@ export default class DialectDropDown extends Component {
 
     let { dialects } = this.props;
 
-    return <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
+    return <div className={this.props.className} style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
         <FlatButton label={this.props.label} labelPosition="before" icon={<DropDownArrow />} style={{color: themePalette.alternateTextColor}} onTouchTap={this.handleTouchTap.bind(this)} />
 
         <Popover

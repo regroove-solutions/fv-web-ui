@@ -121,7 +121,7 @@ export default class GridView extends Component {
 
                       const stateFunc = function(state) { this.setState(state); }.bind(this);
 
-                      audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow style={{marginRight: '10px'}} color='white' /> : <AVStop style={{marginRight: '10px'}} color='white' />;
+                      audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? <AVPlayArrow color='white' /> : <AVStop color='white' />;
                       audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audio) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
                     }
 
@@ -137,12 +137,13 @@ export default class GridView extends Component {
                       });
                     }
 
-                    let audioIconAction = <IconButton onTouchTap={audioCallback}>{audioIcon}</IconButton>;
+                    let audioIconAction = <IconButton style={{marginRight: '10px'}} iconStyle={{width: '40px', height: '40px'}} onTouchTap={audioCallback}>{audioIcon}</IconButton>;
 
                     return <GridTile
                       onTouchTap={(this.props.action) ? this.props.action.bind(this, tile.uid, tile) : audioCallback}
                       key={i}
                       title={title}
+                      titleBackground='rgba(180, 0, 0, 0.75)'
                       actionPosition="right"
                       actionIcon={(this.props.action) ? audioIconAction : audioIcon}
                       subtitle={definitionsHTML || literal_translationsHTML}

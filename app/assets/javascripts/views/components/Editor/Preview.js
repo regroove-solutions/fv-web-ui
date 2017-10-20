@@ -542,8 +542,8 @@ export default class Preview extends Component {
 
             let link = selectn('properties.fvlink:url', linkResponse) || selectn('fvlink:url', linkResponse) || selectn('properties.file:content.data', linkResponse) || selectn('file:content.data', linkResponse);
 
-            body = <div style={{borderLeft: '2px solid gray', paddingLeft: '10px'}}>
-              <div><a href={link} target="_blank"><strong>{selectn('title', linkResponse) || selectn('dc:title', linkResponse)}</strong></a></div>
+            body = <div>
+              <div><a href={link} target="_blank">{selectn('title', linkResponse) || selectn('dc:title', linkResponse)}</a></div>
               <div>{selectn('properties.dc:description', linkResponse) || selectn('dc:description', linkResponse)}</div>
             </div>;
           }
