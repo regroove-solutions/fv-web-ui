@@ -152,7 +152,7 @@ export default class Search extends DataListView {
 
 			this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
 
-			this.props.replaceWindowPath(this._getQueryPath() + '/search/' + properties.searchTerm); 
+			this.props.replaceWindowPath('/explore' + this._getQueryPath() + '/search/' + properties.searchTerm); 
 		}
 	}
 
@@ -161,7 +161,7 @@ export default class Search extends DataListView {
   }  
   
 	_getQueryPath(props = this.props) {
-		return props.routeParams.dialect_path || props.routeParams.language_path || props.routeParams.language_family_path || '/' + props.properties.domain + '/' + (props.routeParams.area || 'sections') + '/Data/';
+		return props.routeParams.dialect_path || props.routeParams.language_path || props.routeParams.language_family_path || '/' + props.properties.domain + '/' + (props.routeParams.area || 'sections') + '/Data';
 
 	}
 
@@ -230,7 +230,7 @@ export default class Search extends DataListView {
 				</div>
 				<div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
 					<h1>Search Results</h1>
-					
+
 					{(() => {
 						if (selectn('response.entries', computeSearchDocuments)) {
 
