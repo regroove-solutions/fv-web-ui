@@ -99,6 +99,7 @@ export default class Search extends DataListView {
 				pageSize: props.DEFAULT_PAGE_SIZE
 			},
 			formValue: { searchTerm: props.routeParams.searchTerm, documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'] },
+			defaultFormValue: { searchTerm: "", documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'] },
 			preparedFilters: null
 		};
 			
@@ -106,7 +107,7 @@ export default class Search extends DataListView {
 	  this.state.queryPath = this._getQueryPath();	
 
 		// Bind methods to 'this'
-		['_handleRefetch', '_onSearchSaveForm', '_computeQueryParam', '_getQueryPath',  '_onEntryNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) ); 
+		['_handleRefetch', '_onSearchSaveForm', '_computeQueryParam', '_getQueryPath',  '_onEntryNavigateRequest', '_onReset'].forEach( (method => this[method] = this[method].bind(this)) ); 
 
 	}
 
@@ -150,6 +151,8 @@ export default class Search extends DataListView {
 			});
 
 			this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
+
+			this.props.replaceWindowPath(this._getQueryPath() + '/search/' + properties.searchTerm); 
 		}
 	}
 
@@ -174,6 +177,22 @@ export default class Search extends DataListView {
 	  
 	  return queryParam;
   }  
+
+  _onReset(event, props = this.props) {
+	
+			// Reset all controlled inputs
+			let inputs = selectn('refs.input.refs', this.refs["search_form"]);
+	
+			for (let inputKey in inputs) {
+				if (typeof inputs[inputKey].reset === 'function') {
+					inputs[inputKey].reset();
+				}
+			}
+	
+			this.setState({
+				formValue: this.state.defaultFormValue || null
+			});
+	}
 
   render() {
 
