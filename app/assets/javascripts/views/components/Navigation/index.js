@@ -34,6 +34,8 @@ import TextField from 'material-ui/lib/text-field';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
+import RadioButton from 'material-ui/lib/radio-button';
+import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 
 import Badge from 'material-ui/lib/badge';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
@@ -63,6 +65,7 @@ export default class Navigation extends Component {
   }
 
   static propTypes = {
+    windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,    
     splitWindowPath: PropTypes.array.isRequired,    
@@ -102,13 +105,13 @@ export default class Navigation extends Component {
     super(props, context);
 
     this.state = {
-      hintTextSearch: "Search site: ",
       browseDesc: "Dialects...",
       searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
       searchContextPopoverOpen: false,
       searchContextPopoverAnchorEl: null,
+      searchLocal: true,
       userRegistrationTasksPath: '/management/registrationRequests/',
       pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props)
     };
@@ -119,6 +122,7 @@ export default class Navigation extends Component {
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
     this._startTour = this._startTour.bind(this);
     this._fetchData = this._fetchData.bind(this);
+    this._removePopoverUnlessOptionSelected = this._removePopoverUnlessOptionSelected.bind(this);
   }
 
   _fetchData(props = this.props){
@@ -152,10 +156,32 @@ export default class Navigation extends Component {
     if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
       this._fetchData(newProps);
     }
+
+    // Remove popover upon navigation
+    if (newProps.windowPath != this.props.windowPath) {
+      this.setState({
+        searchContextPopoverOpen: false
+      });
+    }
   }
 
   componentDidMount() {
     this._fetchData();
+
+    // Ensure Search Box blur does not remove Popover when focusing on search options (only applies to Dialect pages)
+    //document.body.addEventListener('click', this._removePopoverUnlessOptionSelected);
+  }
+
+  componentWillUnmount () {
+    //document.body.removeEventListener('click', this._removePopoverUnlessOptionSelected);
+  }
+
+  _removePopoverUnlessOptionSelected(e) {
+    if (this.props.routeParams.hasOwnProperty('dialect_path') && e.target.name !== "searchTarget" && e.target.name !== "searchbox" ) {
+      this.setState({
+        searchContextPopoverOpen: false
+      });
+    }
   }
 
   _handleMenuToggle (event) {
@@ -242,7 +268,7 @@ export default class Navigation extends Component {
       }
 
       // Do a dialect search
-      if (this.props.routeParams.dialect_path) {
+      if (this.props.routeParams.dialect_path && this.state.searchLocal) {
         queryPath = "/explore" + this.props.routeParams.dialect_path;
       }
 
@@ -270,8 +296,6 @@ export default class Navigation extends Component {
 
     let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal);
     let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal);
-
-    const hintTextSearch = isDialect ? 'Search dialect:' : this.state.hintTextSearch;
 
     return <div>
         <AppBar
@@ -352,9 +376,8 @@ export default class Navigation extends Component {
 
             <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
-            {/* KeymanWeb workaround for hinttext not disappearing */}
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
-              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText={hintTextSearch} onBlur={() => this.setState({hintTextSearch: hintTextSearch, searchContextPopoverOpen: false })} onFocus={(e) => this.setState({hintTextSearch: '', searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} /> 
+              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText="Search:" onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" /> 
               <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} style={{color: themePalette.alternateTextColor}} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
             </div>
 
@@ -364,14 +387,34 @@ export default class Navigation extends Component {
             useLayerForClickAway={false}
             open={this.state.searchContextPopoverOpen}
             anchorEl={this.state.searchContextPopoverAnchorEl}
-            style={{maxWidth: '220px', marginTop: '-14px', backgroundColor: 'transparent', boxShadow: 'none'}}
+            style={{maxWidth: (isDialect) ? '320px' : '220px', marginTop: '-14px', backgroundColor: 'transparent', boxShadow: 'none'}}
             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
             targetOrigin={{horizontal: 'middle', vertical: 'top'}}>
               <div>
                 <img style={{position: 'relative', top: '14px', zIndex: 999999, paddingTop: '14px', left: '80%'}} src="/assets/images/popover-arrow.png" alt="" />
-                <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
-                  <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>    
-                </div>
+                {(() => {
+                if (isDialect) {
+                  return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff', fontSize: '0.95em'}}>
+                    <p style={{padding: 0}}>Select Search Option</p>
+                    <div>
+                      <RadioButtonGroup onChange={() => this.setState({searchLocal: !this.state.searchLocal})} name="searchTarget" defaultSelected="local">
+                        <RadioButton
+                          value="all"
+                          label={(<span style={{fontWeight: '400'}}>FirstVoices.com <br/> <span style={{fontWeight: '300', color: '#959595'}}>All languages &amp; words.</span></span>)}
+                        />
+                        <RadioButton
+                          value="local"
+                          label={(<span style={{fontWeight: '400'}}>{portalTitle || "This Dialect"}<br/> <span style={{fontWeight: '300', color: '#959595'}}>Words, phrases, songs &amp; stories.</span></span>)}
+                        />
+                      </RadioButtonGroup>
+                    </div>
+                  </div>;
+                } else {
+                  return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
+                    <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>    
+                  </div>;
+                }
+                })()}
               </div>
           </Popover>
 
