@@ -284,6 +284,10 @@ export default class DialectLearn extends Component {
             })()}
 
             <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
+
+              <div style={{position: 'absolute', bottom: '80px', right: 0, width: '442px'}}>
+
+
               {(() => {
                 if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
                   return <h2 className="dialect-greeting-container">
@@ -303,6 +307,8 @@ export default class DialectLearn extends Component {
                   <PageStats dialectPath={this.props.routeParams.dialect_path} />
                 </div>
               </AuthenticationFilter>
+
+              </div>
 
               <Toolbar className="dialect-navigation">
 
