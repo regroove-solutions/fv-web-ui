@@ -97,11 +97,13 @@ export default class SearchResultTile extends Component {
 	if (desc) {
 		desc = desc.replace(new RegExp(this.props.searchTerm, 'gi'), '<strong>' + this.props.searchTerm + '</strong>');
 	}
+	
+	title = DOMPurify.sanitize(title);
 
     return <GridTile
 			  style={{borderBottom: '1px solid #e0e0e0', margin: '20px 0', paddingTop: '65px'}}
               key={selectn('uid', tile)}
-              title={<a onClick={(this.props.action) ? this.props.action.bind(this, targetPath) : null} style={{fontSize: '1.2em', cursor: 'pointer'}}>{title}<strong style={{fontSize: '0.6em'}}> [{type.replace('FV', '')}]</strong></a>}
+              title={<a onTouchTap={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null} style={{fontSize: '1.2em', cursor: 'pointer'}}>{title}<strong style={{fontSize: '0.6em'}}> [{type.replace('FV', '')}]</strong></a>}
               actionPosition="right"
 			  titlePosition="top" 
               //actionIcon={actionIcon}
@@ -109,7 +111,7 @@ export default class SearchResultTile extends Component {
 			  subtitle={<span style={{color: 'gray', fontSize: '1.2em'}}>{subtitle}</span>}
 			  >
 			  <div style={{marginLeft: '16px', width: '80%'}}>
-				<p><span>{(imgObj) ? <img className="pull-right" src={UIHelpers.getThumbnail(imgObj, 'Thumbnail')} alt={selectn('properties.dc:title', tile)} style={{maxHeight: '75px', marginLeft: '25px'}} /> : ''} <span dangerouslySetInnerHTML={{__html: desc}}></span></span></p>
+				<div>{(imgObj) ? <div className="pull-right" style={{height: '75px', width: '75px', maxHeight: '75px', marginLeft: '25px', background: 'url(' + UIHelpers.getThumbnail(imgObj, 'Thumbnail') + ')'}}></div> : ''} <span dangerouslySetInnerHTML={{__html: desc}}></span></div>
 				<p><span style={{color: 'gray'}} dangerouslySetInnerHTML={{__html: path.join(' &raquo; ')}}></span></p>
 			  </div>
 

@@ -171,7 +171,7 @@ const options = {
       'searchTerm': {
         label: 'Search Term',
         attrs: {
-          autoFocus: true
+          //autoFocus: true,
         }
       },
       'documentTypes': {

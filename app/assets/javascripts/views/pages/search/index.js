@@ -117,14 +117,14 @@ export default class Search extends DataListView {
 
 	_fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
 
-		if (formValue.searchTerm && formValue.searchTerm != '') {
+		if (props.routeParams.searchTerm && props.routeParams.searchTerm != '') {
 			let documentTypeFilter = '\'' + formValue.documentTypes.join('\',\'') + '\'';
 			props.searchDocuments(this._getQueryPath(props),
 			((props.routeParams.area == 'sections') ? ' AND ecm:isLatestVersion = 1' : ' ') + 
 			// Exclude Demo from search
 			((!props.routeParams.dialect_path) ? ' AND ecm:ancestorId <> \'b482d9df-e71b-40b5-9632-79b1fc2782d7\' AND ecm:ancestorId <> \'732c2ef6-19d3-45a8-97e7-b6cff7d84909\' ' : ' ') + 
 			' AND ecm:primaryType IN (' + documentTypeFilter + ')' +      
-			' AND ecm:fulltext = \'*' + StringHelpers.clean(formValue.searchTerm) + '*\'' +    
+			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm) + '*\'' +    
 			// More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +    
 			'&currentPageIndex=' + (pageIndex - 1) + 
 			'&pageSize=' + pageSize + 
@@ -150,7 +150,10 @@ export default class Search extends DataListView {
 				formValue: properties
 			});
 
-			this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
+			// If search term didn't change, but facets did - update results
+			if (properties.searchTerm == this.props.routeParams.searchTerm && properties != this.state.formValue) {
+				this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
+			}
 
 			this.props.replaceWindowPath('/explore' + this._getQueryPath() + '/search/' + properties.searchTerm); 
 		}
@@ -203,7 +206,16 @@ export default class Search extends DataListView {
 
     const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath());
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+	let _onEntryNavigateRequest = this._onEntryNavigateRequest;
+	let searchTerm = this.props.routeParams.searchTerm;
+
+	let SearchResultTileWithProps = React.createClass({
+		render: function() {
+			return React.createElement(SearchResultTile, {searchTerm: searchTerm, action: _onEntryNavigateRequest, ...this.props });
+		}
+	});
+
+    return <div>
 
 			<div className="row">
 				<div className={classNames('col-xs-12', 'col-md-3')}>
@@ -212,7 +224,7 @@ export default class Search extends DataListView {
 							<FiltersWithToggle label="Filter Items" mobileOnly={true}>
 								<t.form.Form
 									ref="search_form"
-									value={this.state.formValue}
+									value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
 									type={t.struct(selectn('Search', fields))}
 									options={selectn('Search', options)}
 								/>      
@@ -229,42 +241,37 @@ export default class Search extends DataListView {
 					</div>
 				</div>
 				<div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
-					<h1>Search Results</h1>
+					<h1>Search Results - {this.props.routeParams.searchTerm}</h1>
 
-					{(() => {
-						if (selectn('response.entries', computeSearchDocuments)) {
+					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-							let _onEntryNavigateRequest = this._onEntryNavigateRequest;
-							let searchTerm = this.props.routeParams.searchTerm;
+						{(() => {
+							if (selectn('response.entries', computeSearchDocuments)) {
 
-							let SearchResultTileWithProps = React.createClass({
-								render: function() {
-									return React.createElement(SearchResultTile, {searchTerm: searchTerm, action: _onEntryNavigateRequest, ...this.props });
-								}
-							});
+								return <DocumentListView
+											objectDescriptions="results" 
+											type="Document"
+											data={computeSearchDocuments}
+											gridCols={1}
+											gridListView={true}
+											gridListTile={SearchResultTileWithProps}
+											gridViewProps={{cellHeight: 170, style: {overflowY: 'hidden', margin:'0 0 30px 0'}}}
+											refetcher={this._handleRefetch}
+											onSortChange={this._handleSortChange}
+											onSelectionChange={this._onEntryNavigateRequest}
+											page={this.state.pageInfo.page}
+											pageSize={this.state.pageInfo.pageSize}
+											onColumnOrderChange={this._handleColumnOrderChange}
+											usePrevResponse={true}
+											className="browseDataGrid" />;
+							}
+						})()}
 
-							return <DocumentListView
-										objectDescriptions="results" 
-										type="Document"
-										data={computeSearchDocuments}
-										gridCols={1}
-										gridListView={true}
-										gridListTile={SearchResultTileWithProps}
-										gridViewProps={{cellHeight: 170, style: {overflowY: 'hidden', margin:'0 0 30px 0'}}}
-										refetcher={this._handleRefetch}
-										onSortChange={this._handleSortChange}
-										onSelectionChange={this._onEntryNavigateRequest}
-										page={this.state.pageInfo.page}
-										pageSize={this.state.pageInfo.pageSize}
-										onColumnOrderChange={this._handleColumnOrderChange}
-										usePrevResponse={true}
-										className="browseDataGrid" />;
-						}
-					})()}
+					</PromiseWrapper>
 
 				</div>
 			</div>
 
-		</PromiseWrapper>;
+		</div>;
   }
 }
