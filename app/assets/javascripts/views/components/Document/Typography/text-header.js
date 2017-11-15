@@ -19,11 +19,11 @@ export default class TextHeader extends Component {
 
 					switch (this.props.tag) {
 						case 'h2':
-							return <h2 style={{margin: '15px 0 15px 0'}}>{this.props.title}</h2>;
+							return <h2 style={{margin: '15px 0 15px 0'}}>{this.props.title} {this.props.appendToTitle}</h2>;
 						break;
 
 						default:
-							return <h1 style={{fontWeight: 500, margin: '15px 0 15px 0'}}>{this.props.title}</h1>;
+							return <h1 style={{fontWeight: 500, margin: '15px 0 15px 0'}}>{this.props.title} {this.props.appendToTitle}</h1>;
 						break;
 					}
 

@@ -73,7 +73,7 @@ export default class PageToolbar extends Component {
     const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.dialectPath);
 
     if (!selectn('response', computeDialectStats)) {
-        return null;
+        return <div>Loading...</div>;
     }
 
     return <Tabs>

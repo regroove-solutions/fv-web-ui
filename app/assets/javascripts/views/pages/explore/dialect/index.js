@@ -26,22 +26,21 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 
-// Views
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-
 import Toggle from 'material-ui/lib/toggle';
-import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
 import DropDownMenu from 'material-ui/lib/DropDownMenu';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
-import FontIcon from 'material-ui/lib/font-icon';
+import FlatButton from 'material-ui/lib/flat-button';
+
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
 import Paper from 'material-ui/lib/paper';
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Snackbar from 'material-ui/lib/snackbar';
+
+import Toolbar from 'material-ui/lib/toolbar/toolbar';
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 
 import ListUI from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
@@ -62,8 +61,6 @@ import TextHeader from 'views/components/Document/Typography/text-header';
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 import Kids from './kids';
-
-const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '18px', fontWeight: 'bold', marginRight: 0}
 
 /**
 * Dialect portal page showing all the various components of this dialect.
@@ -102,10 +99,6 @@ export default class ExploreDialect extends Component {
 
   constructor(props, context){
     super(props, context);
-
-    this.state = {
-      showArchiveInfoMobile: false
-    };
 
     // Bind methods to 'this'
     ['_onNavigateRequest', '_handleDialectSearchSubmit', '_onSwitchAreaRequest', '_enableToggleAction', '_publishToggleAction', '_publishChangesAction', '_handleGalleryDropDownChange', '_handleSelectionChange'].forEach( (method => this[method] = this[method].bind(this)) );
@@ -250,66 +243,19 @@ export default class ExploreDialect extends Component {
               }
             })()}
 
-            <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
-
-              <div style={{position: 'absolute', bottom: '80px', right: 0, width: '442px'}}>
-
-			        {(() => {
-                if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
-                  return <h1 className={classNames('display', 'dialect-greeting-container')}>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
-                    </AuthorizationFilter>
-
-                    {(selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) ? 
-                     <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal).path} controls />
-                    : ''}
-                  </h1>;
-                }
-              })()}
-
-              <div className={classNames('dialect-info-banner')}>
-
-                <div className={classNames('dib-header', 'visible-xs')}>
-                  <FlatButton label={(this.state.showArchiveInfoMobile) ? 'Info' : 'Info'} labelPosition="before" onTouchTap={(e) => {this.setState({showArchiveInfoMobile: !this.state.showArchiveInfoMobile}); e.preventDefault(); }} icon={<FontIcon className="material-icons">{(this.state.showArchiveInfoMobile) ? 'info_outline' : 'info'}</FontIcon>} style={{float: 'right', lineHeight: 1}} />
-                </div>
-
-                <div className={classNames('dib-body', {'hidden-xs': !this.state.showArchiveInfoMobile})} style={{zIndex: (this.state.showArchiveInfoMobile) ? 99 : 0}}>
-
-                  <div className="dib-body-row">
-                    <strong>Name of Archive: </strong>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:title" entity={selectn('response', computeDialect2)} />
-                    </AuthorizationFilter>
-                  </div>
-
-                  <div className="dib-body-row">
-                    <strong>Country: </strong>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:country" entity={selectn('response', computeDialect2)} />
-                    </AuthorizationFilter>
-                  </div>
-
-                  <div className="dib-body-row">
-                    <strong>Region: </strong>
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:region" entity={selectn('response', computeDialect2)} />
-                    </AuthorizationFilter>
-                  </div>
-
-                </div>
-
-                </div>
-
-              </div>
+            <Header
+              portal={{compute: computePortal, update: updatePortal}}
+              dialect={{compute: computeDialect2, update: updateDialect2}}
+              login={computeLogin}
+              routeParams={this.props.routeParams}>
 
               <Toolbar className="dialect-navigation">
 
                 <ToolbarGroup firstChild={true}>
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> 
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> 
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> 
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))} label="Kids Portal" /> 
+                  <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')} label="Learn Our Language" /> 
+                  <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')} label="Play a Game" /> 
+                  <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')} label="Photo Gallery" /> 
+                  <FlatButton onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))} label="Kids Portal" /> 
                 </ToolbarGroup>
 
               </Toolbar>

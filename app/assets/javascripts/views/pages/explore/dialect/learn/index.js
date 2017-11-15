@@ -26,21 +26,15 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageHeader from 'views/pages/explore/dialect/page-header';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-import PageStats from 'views/pages/explore/dialect/page-stats';
 import SearchBar from 'views/pages/explore/dialect/search-bar';
 
-import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import FlatButton from 'material-ui/lib/flat-button';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import IconButton from 'material-ui/lib/icon-button';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import EditorInsertChart from 'material-ui/lib/svg-icons/editor/insert-chart';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
@@ -49,10 +43,12 @@ import EditableComponent, {EditableComponentHelper} from 'views/components/Edito
 
 import RecentActivityList from 'views/components/Dashboard/RecentActivityList';
 import Link from 'views/components/Document/Link';
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
+import TextHeader from 'views/components/Document/Typography/text-header';
 
-const portalNavigationStyles = {textShadow: '0 0 2px rgba(0,0,0,0.5)', color: '#fff', fontSize: '18px', fontWeight: 'bold', marginRight: 0}
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+
+import ToolbarNavigation from 'views/pages/explore/dialect/learn/base/toolbar-navigation';
+import LearningSidebar from 'views/pages/explore/dialect/learn/base/learning-sidebar';
 
 /**
 * Learn portion of the dialect portal
@@ -63,10 +59,7 @@ export default class DialectLearn extends Component {
 
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
     windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     updateDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
@@ -74,8 +67,6 @@ export default class DialectLearn extends Component {
     updatePortal: PropTypes.func.isRequired,
     fetchPortal: PropTypes.func.isRequired,
     publishDialectOnly: PropTypes.func.isRequired,
-    fetchResultSet: PropTypes.func.isRequired,
-    computeResultSet: PropTypes.object.isRequired,
     queryModifiedWords: PropTypes.func.isRequired,
     computeModifiedWords: PropTypes.object.isRequired,
     queryCreatedWords: PropTypes.func.isRequired,
@@ -108,8 +99,6 @@ export default class DialectLearn extends Component {
     computeUserModifiedSongs: PropTypes.object.isRequired,
     queryUserCreatedSongs: PropTypes.func.isRequired,
     computeUserCreatedSongs: PropTypes.object.isRequired,    
-    fetchCharacters: PropTypes.func.isRequired,
-    computeCharacters: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -121,32 +110,12 @@ export default class DialectLearn extends Component {
       showStats: false
     };
 
-    ['_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
-
-  _onNavigateRequest(path) {
-    const destination = this.props.navigateTo(path);
-    const newPathArray = this.props.splitWindowPath.slice();
-
-    newPathArray.push(destination.path);
-
-    this.props.pushWindowPath('/' + newPathArray.join('/'));
+    ['_showStats', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-
-    // Get count for language assets
-    newProps.fetchResultSet('count_stories', {'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="story" AND ecm:path STARTSWITH "' + newProps.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-
-    newProps.fetchResultSet('count_songs', {'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + newProps.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-
-    newProps.fetchResultSet('count_words', {'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + newProps.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-
-    newProps.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + newProps.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
-
-    newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet', '&sortOrder=asc&sortBy=fvcharacter:alphabet_order');
 
     newProps.queryModifiedWords(newProps.routeParams.dialect_path);
     newProps.queryCreatedWords(newProps.routeParams.dialect_path);    
@@ -199,15 +168,11 @@ export default class DialectLearn extends Component {
       this.props.publishDialectOnly(this.props.routeParams.dialect_path, { target: this.props.routeParams.language_path.replace('Workspaces', 'sections')}, null, "Portal published successfully!");
   } 
 
-  _onCharAudioTouchTap(charAudioId) {
-	  document.getElementById(charAudioId).play();
-  }   
+  _showStats(){
+    this.setState({showStats: !this.state.showStats});
+  }
   
   render() {
-
-    // TODO: Find out why the results sometimes in field1 and sometimes in field2?
-    const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)';
-    const COUNT_FIELD2 = 'response.entries[1].COUNT(ecm:uuid)';
 
     const computeEntities = Immutable.fromJS([{
       'id': this.props.routeParams.dialect_path,
@@ -219,9 +184,6 @@ export default class DialectLearn extends Component {
 
     let computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    
-    const computeCharacters = ProviderHelpers.getEntry(this.props.computeCharacters, this.props.routeParams.dialect_path + '/Alphabet');    
-
 
     const computeModifiedWords = ProviderHelpers.getEntry(this.props.computeModifiedWords, this.props.routeParams.dialect_path);
     const computeCreatedWords = ProviderHelpers.getEntry(this.props.computeCreatedWords, this.props.routeParams.dialect_path);
@@ -233,12 +195,6 @@ export default class DialectLearn extends Component {
     const computeCreatedSongs = ProviderHelpers.getEntry(this.props.computeCreatedSongs, this.props.routeParams.dialect_path);    
     //const computeUserModifiedWords = ProviderHelpers.getEntry(this.props.computeUserModifiedWords, this.props.routeParams.dialect_path);
 
-    
-    const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_songs');  
-    const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_stories');  
-    const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_words');  
-    const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_phrases');  
-
     const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
     const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path + '/Stories & Songs');
@@ -248,11 +204,6 @@ export default class DialectLearn extends Component {
     const { updatePortal, updateDialect2, computeLogin, computeDocument, computeUserModifiedWords, computeUserCreatedWords, computeUserModifiedPhrases, 
     	computeUserCreatedPhrases, computeUserModifiedStories, computeUserCreatedStories, computeUserModifiedSongs, computeUserCreatedSongs} = this.props;
     //let dialect = computeDialect2.response;
-
-    let wordCount = (selectn(COUNT_FIELD1, computeWordsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeWordsCount) + selectn(COUNT_FIELD2, computeWordsCount);
-    let phraseCount = (selectn(COUNT_FIELD1, computePhrasesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount);
-    let songCount = (selectn(COUNT_FIELD1, computeSongsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount);
-    let storyCount = (selectn(COUNT_FIELD1, computeStoriesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount);
 
     /**
      * Suppress Editing for Language Recorders with Approvers
@@ -283,56 +234,21 @@ export default class DialectLearn extends Component {
               }
             })()}
 
-            <Header backgroundImage={selectn('response.contextParameters.portal.fv-portal:background_top_image.path', computePortal)}>
+              <Header
+                portal={{compute: computePortal, update: updatePortal}}
+                dialect={{compute: computeDialect2, update: updateDialect2}}
+                login={computeLogin}
+                showStats={this.state.showStats}
+                routeParams={this.props.routeParams}>
 
-              <div style={{position: 'absolute', bottom: '80px', right: 0, width: '442px'}}>
+                <ToolbarNavigation showStats={this._showStats} routeParams={this.props.routeParams} />
 
+              </Header>
 
-              {(() => {
-                if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
-                  return <h2 className="dialect-greeting-container">
-                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                      <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={computePortal} updateEntity={updatePortal} property="fv-portal:greeting" entity={selectn('response', computePortal)} />
-                    </AuthorizationFilter>
-
-                    {(selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) ? 
-                     <audio id="portalFeaturedAudio" src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal).path} controls />
-                    : ''}
-                  </h2>;
-                }
-              })()}
-
-              <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true} routeParams={this.props.routeParams}>
-                <div className={classNames('hidden-xs', {'invisible': !this.state.showStats})} style={{width: '50%', "background":"rgba(255, 255, 255, 0.7)","margin":"10px 25px","borderRadius":"10px","padding":"10px", position: 'absolute', top: '15px', right: '0'}}>
-                  <PageStats dialectPath={this.props.routeParams.dialect_path} />
-                </div>
-              </AuthenticationFilter>
-
-              </div>
-
-              <Toolbar className="dialect-navigation">
-
-                <ToolbarGroup firstChild={true} float="left">
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} />
-                  <FlatButton style={portalNavigationStyles} onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={"Stories (" + storyCount + ")"} />
-                </ToolbarGroup>
-
-                <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true} routeParams={this.props.routeParams}>
-                  <ToolbarGroup className="hidden-xs" firstChild={false} float="right">
-                    <FlatButton icon={<EditorInsertChart />} style={portalNavigationStyles} onTouchTap={(e) => {this.setState({showStats: !this.state.showStats})}} label={"Language Statistics"} />
-                  </ToolbarGroup>
-                </AuthenticationFilter>
-
-              </Toolbar>
-
-            </Header>
-
-            <div className="row">
+            <div className={classNames('row', 'dialect-body-container')} style={{marginTop: '15px'}}>
                       
-              <div className={classNames('col-xs-12', 'col-md-8')}>
-                <h1>About our Language</h1>
+              <div className={classNames('col-xs-12', 'col-md-7')}>
+                <TextHeader title="ABOUT OUR LANGUAGE" tag="h2" properties={this.props.properties} />
 
                 <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
                   <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:description" entity={selectn('response', computeDialect2)} />
@@ -340,92 +256,12 @@ export default class DialectLearn extends Component {
 
               </div>
 
-              <div className={classNames('col-xs-12', 'col-md-4')}>
+              <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
 
-                <div className="row">
-
-                  <div className={classNames('col-xs-12')}>
-                    {(() => {
-
-                      const characters = selectn('response.entries', computeCharacters);
-
-                      if (characters && characters.length > 0) {
-                          return <div style={{marginBottom: '20px'}}>
-                          <h3>Our Alphabet <a href="./learn/alphabet/print" target="_blank"><i className="material-icons">print</i></a></h3>
-                          {selectn('response.entries', computeCharacters).map((char, i) =>
-                            <Paper key={char.uid} style={{textAlign: 'center', margin: '5px', padding: '5px 10px', display: 'inline-block'}}>
-                              <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet/' + char.path.split('/')[char.path.split('/').length-1])} label={char.title} style={{minWidth: 'inherit'}} />
-                              {(char.contextParameters.character.related_audio[0]) ? 
-                                <span>
-                                <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
-                                  <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
-                                </span>
-                              : ''}           
-                            </Paper>
-                          )}
-                          </div>;
-                        }
-
-                    })()}
-                  </div>
-
-                  <div className={classNames('col-xs-12')}>
-                    {(() => {
-                      if (selectn('response.contextParameters.dialect.language_resources.length', computeDialect2) > 0 || !isSection) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                                <div>
-                                  <h3>Language Resources</h3>
-                                  <EditableComponentHelper
-                                    isSection={isSection}
-                                    computeEntity={computeDialect2}
-                                    updateEntity={updateDialect2}
-                                    showPreview={true}
-                                    previewType="FVLink"
-                                    property="fvdialect:language_resources"
-                                    sectionProperty="contextParameters.dialect.language_resources"
-                                    entity={selectn('response', computeDialect2)} />
-                                </div>
-                              </AuthorizationFilter>;
-                      }
-                    })()}
-                  </div>
-
-                  <div className={classNames('col-xs-12')}>
-                    {(() => {
-                      if (selectn('response.contextParameters.dialect.keyboards.length', computeDialect2) > 0 || !isSection) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                                <div>
-                                  <h3>Our Keyboards</h3>
-                                  <EditableComponentHelper
-                                    isSection={isSection}
-                                    computeEntity={computeDialect2}
-                                    updateEntity={updateDialect2}
-                                    showPreview={true}
-                                    previewType="FVLink"
-                                    property="fvdialect:keyboards"
-                                    sectionProperty="contextParameters.dialect.keyboards"
-                                    entity={selectn('response', computeDialect2)} />
-                                </div>
-                              </AuthorizationFilter>;
-                      }
-                    })()}
-                  </div> 
-
-                  <div className={classNames('col-xs-12')}>
-                      {(() => {
-                        if (selectn('response.properties.fvdialect:contact_information', computeDialect2) || !isSection) {
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={true}>
-                                  <div>
-                                    <h3>Contact Information</h3>
-                                    <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="fvdialect:contact_information" entity={selectn('response', computeDialect2)} />
-                                  </div>
-                                </AuthorizationFilter>;
-                        }
-                      })()}
-
-                  </div>
-
-                </div>
+                <LearningSidebar
+                  isSection={isSection}
+                  properties={this.props.properties}
+                  dialect={{compute: computeDialect2, update: updateDialect2}} />
 
               </div>
 
@@ -435,7 +271,7 @@ export default class DialectLearn extends Component {
 
                 <div className={classNames('col-xs-12')}>
                 
-                  <h3>Recent Activity</h3>
+                  <TextHeader title="RECENT ACTIVITY" tag="h2" properties={this.props.properties} />
 
                   <Tabs>
                     <Tab label="Words" id="recentActivityWords">
