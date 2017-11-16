@@ -158,6 +158,7 @@ export default class Preview extends Component {
     computeContributor: PropTypes.object.isRequired,
     fetchLink: PropTypes.func.isRequired,
     computeLink: PropTypes.object.isRequired,
+    properties: PropTypes.object.isRequired,
     id: PropTypes.string,
     type: PropTypes.string.isRequired,
     expandedValue: PropTypes.object,
@@ -233,6 +234,8 @@ export default class Preview extends Component {
   }
 
   render() {
+
+      const themePalette = this.props.properties.theme.palette.rawTheme.palette;
 
       let handleExpandChange = () => {};
 
@@ -424,11 +427,15 @@ export default class Preview extends Component {
 
               body =  <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardHeader
+                          className="card-header-custom"
                           title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
                           titleStyle={{lineHeight: 'initial'}}
+                          titleColor={themePalette.alternateTextColor}
+                          subtitleColor={themePalette.accent4Color}
                           subtitle={(description && description != "undefined") ? "Description: " + description : ""}
                           subtitleStyle={{lineHeight: 'initial'}}
                           actAsExpander={true}
+                          style={{backgroundColor: themePalette.primary2Color}}
                           showExpandableButton={true}
                         />
                         <CardMedia>

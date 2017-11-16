@@ -50,6 +50,10 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import ToolbarNavigation from 'views/pages/explore/dialect/learn/base/toolbar-navigation';
 import LearningSidebar from 'views/pages/explore/dialect/learn/base/learning-sidebar';
 
+import Card from 'material-ui/lib/card/card';
+import CardHeader from 'material-ui/lib/card/card-header';
+import CardText from 'material-ui/lib/card/card-text';
+
 /**
 * Learn portion of the dialect portal
 * TODO: Reduce the amount of queries this page runs.
@@ -219,6 +223,8 @@ export default class DialectLearn extends Component {
         });
     }
 
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+
     return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
@@ -254,27 +260,24 @@ export default class DialectLearn extends Component {
                   <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2} updateEntity={updateDialect2} property="dc:description" entity={selectn('response', computeDialect2)} />
                 </AuthorizationFilter>
 
-              </div>
+                <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+                  <div className={classNames('col-xs-12')}>
+                    <TextHeader title="RECENT ACTIVITY" tag="h2" properties={this.props.properties} />
+                  </div>
 
-                <LearningSidebar
-                  isSection={isSection}
-                  properties={this.props.properties}
-                  dialect={{compute: computeDialect2, update: updateDialect2}} />
-
-              </div>
-
-            </div>
-
-            <div className="row">
-
-                <div className={classNames('col-xs-12')}>
-                
-                  <TextHeader title="RECENT ACTIVITY" tag="h2" properties={this.props.properties} />
-
-                  <Tabs>
-                    <Tab label="Words" id="recentActivityWords">
+                  <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                      <CardHeader
+                        className="card-header-custom"
+                        title="WORDS"
+                        titleStyle={{lineHeight: 'initial'}}
+                        titleColor={themePalette.alternateTextColor}
+                        actAsExpander={true}
+                        style={{backgroundColor: themePalette.primary2Color, height: 'initial'}}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeModifiedWords)} title="Recently Modified" docType="word" />
@@ -288,10 +291,23 @@ export default class DialectLearn extends Component {
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeUserCreatedWords)} title="My Recently Created" docType="word" />	
                           </div>
-                        </div>      
-                    </Tab>
-                    
-                    <Tab label="Phrases" id="recentActivityPhrases">	      
+                        </div>   
+                      </CardText>
+                    </Card>
+                  </div>
+
+                  <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                      <CardHeader
+                        className="card-header-custom"
+                        title="PHRASES"
+                        titleStyle={{lineHeight: 'initial'}}
+                        titleColor={themePalette.alternateTextColor}
+                        actAsExpander={true}
+                        style={{backgroundColor: themePalette.primary2Color, height: 'initial'}}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeModifiedPhrases)} title="Recently Modified" docType="phrase" />
@@ -305,10 +321,23 @@ export default class DialectLearn extends Component {
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeUserCreatedPhrases)} title="My Recently Created" docType="phrase" />	
                           </div>
-                        </div>                 			              		           		
-                    </Tab>
-                    
-                    <Tab label="Songs" id="recentActivitySongs">
+                        </div>   
+                      </CardText>
+                    </Card>
+                  </div>
+
+                  <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                      <CardHeader
+                        className="card-header-custom"
+                        title="SONGS"
+                        titleStyle={{lineHeight: 'initial'}}
+                        titleColor={themePalette.alternateTextColor}
+                        actAsExpander={true}
+                        style={{backgroundColor: themePalette.primary2Color, height: 'initial'}}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeModifiedSongs)} title="Recently Modified" docType="song" />
@@ -322,10 +351,23 @@ export default class DialectLearn extends Component {
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeUserCreatedSongs)} title="My Recently Created" docType="song" />	
                           </div>
-                        </div> 		                			                
-                    </Tab>
-                    
-                    <Tab label="Stories" id="recentActivityStories">
+                        </div>   
+                      </CardText>
+                    </Card>
+                  </div>
+
+                  <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                      <CardHeader
+                        className="card-header-custom"
+                        title="STORIES"
+                        titleStyle={{lineHeight: 'initial'}}
+                        titleColor={themePalette.alternateTextColor}
+                        actAsExpander={true}
+                        style={{backgroundColor: themePalette.primary2Color, height: 'initial'}}
+                        showExpandableButton={true}
+                      />
+                      <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeModifiedStories)} title="Recently Modified" docType="stories" />
@@ -339,14 +381,25 @@ export default class DialectLearn extends Component {
                           <div className={classNames('col-xs-12', 'col-md-3')}>
                             <RecentActivityList data={selectn('response', computeUserCreatedStories)} title="My Recently Created" docType="stories" />	
                           </div>
-                        </div> 	               			                
-                    </Tab>	              		
-                  </Tabs>	                	                
+                        </div>   
+                      </CardText>
+                    </Card>
+                  </div>
 
-                </div>
+                  </div>
+
+              </div>
+
+              <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+
+                <LearningSidebar
+                  isSection={isSection}
+                  properties={this.props.properties}
+                  dialect={{compute: computeDialect2, update: updateDialect2}} />
+
+              </div>
 
             </div>
-
 
         </PromiseWrapper>;
   }
