@@ -76,6 +76,7 @@ export default class Navigation extends Component {
     computeLogin: PropTypes.object.isRequired,
     computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
+    computeDialect2: PropTypes.object,
     fetchDialects: PropTypes.func.isRequired,
     computeDialects: PropTypes.object.isRequired,
     routeParams: PropTypes.object,
@@ -288,6 +289,7 @@ export default class Navigation extends Component {
 
     const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+    const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
     const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
@@ -295,7 +297,7 @@ export default class Navigation extends Component {
     const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal);
-    let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal);
+    let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || selectn('response.properties.dc:title', computeDialect);
 
     return <div>
         <AppBar
