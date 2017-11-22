@@ -62,7 +62,7 @@
 
     {% block javascript %}{% endblock %}
 
-    <!-- v1.0.9 -->
+    <!-- v2.0.0 -->
 
   </body>
 </html>
