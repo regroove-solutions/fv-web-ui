@@ -30,6 +30,8 @@ import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
 
+import TextHeader from 'views/components/Document/Typography/text-header';
+
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 //import Header from 'views/pages/explore/dialect/header';
@@ -38,13 +40,7 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import Dialog from 'material-ui/lib/dialog';
 
 import Avatar from 'material-ui/lib/avatar';
-import Card from 'material-ui/lib/card/card';
-import CardActions from 'material-ui/lib/card/card-actions';
-import CardHeader from 'material-ui/lib/card/card-header';
-import CardMedia from 'material-ui/lib/card/card-media';
-import CardTitle from 'material-ui/lib/card/card-title';
 import FlatButton from 'material-ui/lib/flat-button';
-import CardText from 'material-ui/lib/card/card-text';
 import Divider from 'material-ui/lib/divider';
 
 import ListUI from 'material-ui/lib/lists/list';
@@ -56,7 +52,6 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
-import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
@@ -222,6 +217,20 @@ export default class View extends Component {
       </Tab>);
     }
 
+    // Categories
+    let phrase_books = [];
+    
+    {(selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []).map(function(phrase_book, key) {
+      phrase_books.push(<span key={key}>{selectn('dc:title', phrase_book)}</span>);
+    })};
+
+    // Cultural notes
+    let cultural_notes = [];
+    
+    {(selectn('response.properties.fv:cultural_note', computePhrase) || []).map(function(cultural_note, key) {
+      cultural_notes.push(<div key={key}>{cultural_note}</div>);
+    })};
+
     /**
     * Generate definitions body
     */
@@ -243,65 +252,58 @@ export default class View extends Component {
               permissionEntry={computeDialect2}
               tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
-              <div className="row">
-                <div className="col-xs-12">
+              <div className="row" style={{marginTop: '15px'}}>
+                <div className={classNames('col-xs-12', 'col-md-7')}>
                   <div>
 
-                    <Card>
-                      <CardHeader
-                        title={selectn('response.title', computePhrase)}
-                        avatar={selectn('response.contextParameters.phrase.related_pictures[0].views[0].url', computePhrase)} />
+                    <TextHeader title={selectn('response.title', computePhrase)} tag="h1" properties={this.props.properties} />
 
-                      <Tabs tabItemContainerStyle={tabItemStyles}>
-                        <Tab label="Definition" >
-                          <div>
-                            <CardText>
+                    <hr/>
 
-                              <div className={classNames('col-xs-12', 'col-md-8')}>
+                    {(() => {
+                        if (phrase_books.length > 0) {
+                          return <span><strong>Phrase Books</strong>: {phrase_books}</span>;
+                        }
+                    })()}
 
-                                <h2>{selectn('response.title', computePhrase)}</h2>
+                    <SubViewTranslation group={selectn('response.properties.fv:definitions', computePhrase)} groupByElement="language" groupValue="translation">
+                      <p><strong>Definitions:</strong></p>
+                    </SubViewTranslation>
 
-                                <h3>Audio</h3>
+                    <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computePhrase)} groupByElement="language" groupValue="translation">
+                      <p><strong>Literal Translations:</strong></p>
+                    </SubViewTranslation>
 
-                                <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
+                    {(() => {
+                        if (cultural_notes.length > 0) {
+                          return <div style={{margin: '10px 0'}}>
+                          <hr/>
+                            <p><strong>Cultural Notes:</strong></p>
+                            {cultural_notes}
+                          </div>;
+                        }
+                    })()}
 
-                                <SubViewTranslation group={selectn('response.properties.fv:definitions', computePhrase)} groupByElement="language" groupValue="translation">
-                                  <p>Definitions:</p>
-                                </SubViewTranslation>
+                    <hr/>
 
-                                <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computePhrase)} groupByElement="language" groupValue="translation">
-                                  <p>Literal Translations:</p>
-                                </SubViewTranslation>
-
-                              </div>
-
-                              <div className={classNames('col-xs-12', 'col-md-4')}>
-
-                                <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
-                                <MediaPanel label="Video(s)" type="FVVideo" items={videos} />
-
-                              </div>
-
-                            </CardText>
-                          </div>
-                        </Tab>
-                        <Tab label="Metadata" id="metadata">
-                          <div>
-                            <CardText>
-                              <h2>Metadata</h2>
-                              <div className="row">
-                                {(selectn('response', computePhrase)) ? <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} /> : ''}
-                              </div>
-                            </CardText>
-                          </div>
-                        </Tab>
-                      </Tabs>
-
-                    </Card>
-
+                    {(selectn('response', computePhrase)) ? <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} /> : ''}
+                    
                   </div>
+
                 </div>
+
+                <div className={classNames('col-xs-12', 'col-md-3')}>
+
+                <h3>AUDIO</h3>
+                <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
+
+                <MediaPanel label="PHOTO(S)" type="FVPicture" items={photos} />
+                <MediaPanel label="VIDEO(S)" type="FVVideo" items={videos} />
+
               </div>
+
+            </div>
+
         </DetailsViewWithActions>;
   }
 }
