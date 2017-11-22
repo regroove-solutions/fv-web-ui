@@ -43,16 +43,16 @@ export default class MediaPanel extends Component {
 
     return (items.length === 0) ? null :
     
-            <div className="row">
+            <div className={classNames("row", "media-panel", "media-panel-" + type)}>
                 <div className="col-xs-12">
 
-                    <h2>{label}</h2> 
+                    <h3>{label}</h3> 
                     {
                     (items.length === 1) ?
                     
                         <Preview
                         key={selectn('uid', items[0].object)}
-                        styles={{padding: '0px'}}
+                        styles={{padding: '0px', maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef'}}
                         expandedValue={items[0].object}
                         type={type}
                         minimal={minimal} />  :
@@ -65,7 +65,7 @@ export default class MediaPanel extends Component {
                         //console.log(item);
                         return <div className='image-gallery-image'>
                             <Preview
-                            styles={{padding: '0px'}}
+                            styles={{padding: '0px', maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef'}}
                             key={selectn('id', item)}
                             expandedValue={items[selectn('key', item)].object}
                             type={type}

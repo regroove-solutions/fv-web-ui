@@ -290,7 +290,7 @@ export default class View extends Component {
                             <CardText>
                               <h2>Metadata</h2>
                               <div className="row">
-                                {(selectn('response', computePhrase)) ? <MetadataPanel computeEntity={computePhrase} /> : ''}
+                                {(selectn('response', computePhrase)) ? <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} /> : ''}
                               </div>
                             </CardText>
                           </div>

@@ -18,8 +18,17 @@ import React, { Component, PropTypes } from 'react';
 import classNames from 'classnames';
 import selectn from 'selectn';
 
+import StringHelpers from 'common/StringHelpers';
+
 import Preview from 'views/components/Editor/Preview';
 import MetadataList from 'views/components/Browsing/metadata-list';
+
+import Card from 'material-ui/lib/card/card';
+import CardActions from 'material-ui/lib/card/card-actions';
+import CardHeader from 'material-ui/lib/card/card-header';
+import CardMedia from 'material-ui/lib/card/card-media';
+import CardTitle from 'material-ui/lib/card/card-title';
+import CardText from 'material-ui/lib/card/card-text';
 
 /**
 * Metadata panel for word or phrase views.
@@ -27,7 +36,8 @@ import MetadataList from 'views/components/Browsing/metadata-list';
 export default class MetadataPanel extends Component {
 
   static propTypes = {
-    computeEntity: PropTypes.object.isRequired
+    computeEntity: PropTypes.object.isRequired,
+    properties: PropTypes.object.isRequired
   };
 
   constructor(props, context){
@@ -70,20 +80,6 @@ export default class MetadataPanel extends Component {
     });
 
     /**
-     * Cultural notes
-     */
-    let cultural_notes = [];
-    
-    {(selectn('response.properties.fv:cultural_note', computeEntity) || []).map(function(cultural_note, key) {
-      cultural_notes.push(<div key={key}>{cultural_note}</div>);
-    })};
-    
-    metadata.push({
-      label: 'Cultural Notes',
-      value: cultural_notes
-    });
-
-    /**
      * Reference
      */
     metadata.push({
@@ -97,7 +93,7 @@ export default class MetadataPanel extends Component {
     let sources = [];
     
     {(selectn('response.contextParameters.word.sources', computeEntity) || []).map(function(source, key) {
-      sources.push(<Preview expandedValue={source} key={key} type="FVContributor" />);
+      sources.push(<Preview styles={{padding: 0}} expandedValue={source} key={key} type="FVContributor" />);
     })};
     
     metadata.push({
@@ -110,7 +106,7 @@ export default class MetadataPanel extends Component {
      */
     metadata.push({
       label: 'Date Created',
-      value: selectn("response.properties.dc:created", computeEntity)
+      value: StringHelpers.formatUTCDateString(selectn("response.properties.dc:created", computeEntity))
     });
 
     /**
@@ -129,10 +125,21 @@ export default class MetadataPanel extends Component {
       value: selectn("response.properties.uid:major_version", computeEntity) + '.' + selectn("response.properties.uid:minor_version", computeEntity)
     });
 
-    return  <div>
-              <div style={{margin: '15px', width: '80%'}} className={classNames('panel', 'panel-default')}>
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+
+    return  <Card initiallyExpanded={false}>
+              <CardHeader
+                  className="card-header-custom"
+                  title="METADATA"
+                  titleStyle={{lineHeight: 'initial'}}
+                  titleColor={themePalette.alternateTextColor}
+                  actAsExpander={true}
+                  style={{backgroundColor: themePalette.primary2Color, height: 'initial', borderBottom: '4px solid ' + themePalette.primary1Color}}
+                  showExpandableButton={true}
+                />
+              <CardText expandable={true} style={{backgroundColor: themePalette.accent4Color}}>
                   <MetadataList metadata={metadata} style={{overflow: 'auto', maxHeight: '100%'}} />
-              </div>
-            </div>;
+              </CardText>
+            </Card>;
   }
 }

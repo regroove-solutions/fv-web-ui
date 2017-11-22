@@ -44,5 +44,25 @@ export default {
   },
   randomIntBetween: function(min, max) {
     return Math.floor(Math.random() * (Math.floor(max) - Math.ceil(min))) + Math.ceil(min);
+  },
+  formatUTCDateString: function(dateString){
+    let dayDesc;
+    let d = new Date(dateString);
+    let m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+    
+    switch (d.getDate().toString()[d.getDate().toString().length - 1]) {
+      case '1': dayDesc = 'st';
+      break;
+      
+      case '2': dayDesc = 'nd';
+      break;
+      
+      case '3': dayDesc = 'rd';
+      break;
+      
+      default: dayDesc = 'th'
+    };
+
+    return (m[d.getMonth()]) + ' ' + d.getDate() + dayDesc + ', ' + d.getFullYear() + ' @ ' + ("0" + d.getUTCHours()).slice(-2) + ":" + ("0" + d.getUTCMinutes()).slice(-2);
   }
 }

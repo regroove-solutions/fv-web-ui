@@ -29,6 +29,7 @@ import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
+import TextHeader from 'views/components/Document/Typography/text-header';
 
 import {Link} from 'provide-page';
 
@@ -49,7 +50,6 @@ import ListItem from 'material-ui/lib/lists/list-item';
 import FontIcon from 'material-ui/lib/font-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
 
-import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
@@ -180,7 +180,7 @@ export default class View extends Component {
     let audios = [];
 
     (selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
-      audios.push(<Preview styles={{maxWidth: '350px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
+      audios.push(<Preview styles={{maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef', marginBottom: '25px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
     })
 
     // Phrases
@@ -199,7 +199,6 @@ export default class View extends Component {
         </SubViewTranslation>);
       }
     })
-
 
     let tabs = [];
 
@@ -235,6 +234,24 @@ export default class View extends Component {
       </Tab>);
     }
 
+    // Categories
+    let categories = [];
+    
+    {(selectn('response.contextParameters.word.categories', computeWord) || []).map(function(category, key) {
+      categories.push(<span key={key}>{selectn('dc:title', category)}</span>);
+    })};
+
+    // Cultural notes
+    let cultural_notes = [];
+    
+    {(selectn('response.properties.fv:cultural_note', computeWord) || []).map(function(cultural_note, key) {
+      cultural_notes.push(<div key={key}>{cultural_note}</div>);
+    })};
+
+
+    let definitions = selectn('response.properties.fv:definitions', computeWord);
+    let literal_translations = selectn('response.properties.fv:literal_translation', computeWord);
+
     /**
     * Generate definitions body
     */
@@ -256,78 +273,84 @@ export default class View extends Component {
               permissionEntry={computeDialect2}
               tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
-            <div className="row">
-              <div className="col-xs-12">
+            <div className="row" style={{marginTop: '15px'}}>
+              <div className={classNames('col-xs-12', 'col-md-7')}>
+
                 <div>
-                  <Card>
-                    <CardHeader
-                      title={selectn('response.title', computeWord)}
-                      subtitle={(selectn('response.contextParameters.word.part_of_speech', computeWord) !=null) ? "Part of Speech: " + selectn('response.contextParameters.word.part_of_speech', computeWord) : ""}
-                      avatar={selectn('response.contextParameters.word.related_pictures[0].views[0].url', computeWord)}
-                      style={{height: 'inherit'}} />
 
-                    <Tabs tabItemContainerStyle={tabItemStyles}>
-                      <Tab label="Definition" >
-                        <div>
-                          <CardText>
+                    <TextHeader title={selectn('response.title', computeWord)} tag="h1" properties={this.props.properties} />
 
-                            <div className={classNames('col-xs-12', 'col-md-8')}>
+                    <hr/>
 
-                              <h2>{selectn('response.title', computeWord)}</h2>
+                    <p><strong>Part of Speech</strong>: {selectn('response.contextParameters.word.part_of_speech', computeWord)} 
 
-                              <p>Part of Speech: {selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
+                    {(() => {
+                        if (categories.length > 0) {
+                          return <span> &nbsp;|&nbsp; <strong>Categories</strong>: {categories}</span>;
+                        }
+                    })()}
 
-                              <p>Pronunciation: {selectn('response.properties.fv-word:pronunciation', computeWord)}</p>
+                    </p>
 
-                              <h3>Audio</h3>
+                    <hr/>
 
-                              <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
+                    {(() => {
+                        let pronunciation = selectn('response.properties.fv-word:pronunciation', computeWord);
+                        if (pronunciation && pronunciation != '') {
+                          return <p><strong>Pronunciation</strong>: {pronunciation}</p>;
+                        }
+                    })()}
 
-                              <SubViewTranslation group={selectn('response.properties.fv:definitions', computeWord)} groupByElement="language" groupValue="translation">
-                                <p>Definitions:</p>
-                              </SubViewTranslation>
+                    {(definitions && definitions.length > 0) ? <hr/> : null}
 
-                              <SubViewTranslation group={selectn('response.properties.fv:literal_translation', computeWord)} groupByElement="language" groupValue="translation">
-                                <p>Literal Translations:</p>
-                              </SubViewTranslation>
+                    <SubViewTranslation group={definitions} groupByElement="language" groupValue="translation">
+                      <p><strong>Definitions:</strong></p>
+                    </SubViewTranslation>
 
-                              {(() => {
-                                  if (phrases.length > 0) {
-                                    return <div>
-                                      <h3>Related Phrases:</h3>
-                                      {phrases}
-                                    </div>;
-                                  }
-                              })()}
+                    {(literal_translations && literal_translations.length > 0) ? <hr/> : null}
 
-                            </div>
+                    <SubViewTranslation group={literal_translations} groupByElement="language" groupValue="translation">
+                      <p><strong>Literal Translations:</strong></p>
+                    </SubViewTranslation>
 
-                            <div className={classNames('col-xs-12', 'col-md-4')}>
+                    {(() => {
+                        if (phrases.length > 0) {
+                          return <div>
+                            <hr/>
+                            <p><strong>Related Phrases:</strong></p>
+                            {phrases}
+                          </div>;
+                        }
+                    })()}
 
-                              <MediaPanel label="Photo(s)" type="FVPicture" items={photos} />
-                              <MediaPanel label="Video(s)" type="FVVideo" items={videos} />
+                    {(() => {
+                        if (cultural_notes.length > 0) {
+                          return <div style={{margin: '10px 0'}}>
+                          <hr/>
+                            <p><strong>Cultural Notes:</strong></p>
+                            {cultural_notes}
+                          </div>;
+                        }
+                    })()}
 
-                            </div>
+                    <hr/>
 
-                          </CardText>
-                        </div>
-                      </Tab>
-                      <Tab label="Metadata" id="metadata">
-                        <div>
-                          <CardText>
-                            <h2>Metadata</h2>
-                            <div className="row">
-                              {(selectn('response', computeWord)) ? <MetadataPanel computeEntity={computeWord} /> : ''}
-                            </div>
-                          </CardText>
-                        </div>
-                      </Tab>
-                    </Tabs>
-
-                  </Card>
+                    {(selectn('response', computeWord)) ? <MetadataPanel properties={this.props.properties} computeEntity={computeWord} /> : ''}
 
                 </div>
+                
               </div>
+
+              <div className={classNames('col-xs-12', 'col-md-3')}>
+
+                <h3>AUDIO</h3>
+                <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
+
+                <MediaPanel label="PHOTO(S)" type="FVPicture" items={photos} />
+                <MediaPanel label="VIDEO(S)" type="FVVideo" items={videos} />
+
+              </div>
+
             </div>
         </DetailsViewWithActions>;
   }

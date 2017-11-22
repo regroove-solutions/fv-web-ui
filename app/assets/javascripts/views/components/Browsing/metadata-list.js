@@ -38,22 +38,16 @@ export default class MetadataList extends Component {
 
     const { metadata, style } = this.props;
 
-    return <ul className="list-group" style={{overflow: 'scroll', maxHeight: '200px', ...style}}>
+    return <ul style={{overflow: 'scroll', listStyleType: 'none', padding: 0, maxHeight: '200px', ...style}}>
 
             {metadata.map(function(item, key) {
 
                 let value = selectn("value", item);
 
                 if ((value && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
-                  return <li className="list-group-item" key={key}>
-
-                  <strong className="list-group-item-heading">{selectn("label", item)}</strong>
-                  
-                  <div className="list-group-item-text">
-                      {value}
-                  </div>
-
-                  </li>;
+                  return <li key={key} style={{paddingBottom: '5px'}}>
+                          <strong>{selectn("label", item)}:</strong><br/>{value}<hr style={{margin: '5px 0'}} />
+                        </li>;
                 }
             })}
 

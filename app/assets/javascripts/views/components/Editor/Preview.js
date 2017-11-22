@@ -31,13 +31,11 @@ import CardActions from 'material-ui/lib/card/card-actions';
 import CardHeader from 'material-ui/lib/card/card-header';
 import CardMedia from 'material-ui/lib/card/card-media';
 import CardTitle from 'material-ui/lib/card/card-title';
-import FlatButton from 'material-ui/lib/flat-button';
 import CardText from 'material-ui/lib/card/card-text';
+import FlatButton from 'material-ui/lib/flat-button';
 import Divider from 'material-ui/lib/divider';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
-
-const MEDIA_COPYRIGHT_NOTICE = <small>&copy; This database is protected by copyright laws and is owned by the First Peoples’ Cultural Foundation. All materials on this site are protected by copyright laws and are owned by the individual Indigenous language communities who created the archival content. Language and multimedia data available on this site is intended for private, non-commercial use by individuals. Any commercial use of the language data or multimedia data in whole or in part, directly or indirectly, is specifically forbidden except with the prior written authority of the owner of the copyright.</small>;
 
 const GetMetaData = function (type, response) {
 
@@ -104,8 +102,8 @@ const GetMetaData = function (type, response) {
     metadata.push({
       label: 'Direct Link',
       value: <span>
-              <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}} value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} /> 
-              &nbsp; <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}>GO</a>
+              <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}} value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} /> <br/>
+              <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')} target="_blank">Go to Record</a>
               </span>
     });
   }
@@ -131,7 +129,7 @@ const GetMetaData = function (type, response) {
    */
   metadata.push({
     label: 'Date Created',
-    value: selectn("properties.dc:created", response)
+    value:  StringHelpers.formatUTCDateString(selectn("properties.dc:created", response))
   });
 
   return metadata;
@@ -371,21 +369,31 @@ export default class Preview extends Component {
               body = pictureTag;
             }
             else {
-              body =   <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
-                        <CardMedia>
+
+              let description = (selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse));
+
+              body =   <Card style={{boxShadow: 'none'}} initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+                        <CardMedia style={{backgroundColor: themePalette.primary2Color, margin: '5px 0', padding: '8px'}}>
                           {(selectn('properties.file:content.data', pictureResponse) || selectn('path', pictureResponse) && selectn('path', pictureResponse).indexOf('nxfile') != -1) ? pictureTag : null}
                         </CardMedia>
                         <CardHeader
                           title={selectn('title', pictureResponse) || selectn('dc:title', pictureResponse)}
-                          titleStyle={{lineHeight: 'initial'}}
-                          subtitle={selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)}
+                          titleStyle={{lineHeight: 'initial', fontSize: '18px'}}
+                          subtitle={(description && description != "undefined") ? "Description: " + description : ""}
                           subtitleStyle={{lineHeight: 'initial'}}
+                          style={{height: 'inherit', padding: '16px 0'}}
+                        />
+                        <CardHeader
+                          className="card-header-custom"
+                          title="MORE IMAGE INFO"
+                          titleStyle={{lineHeight: 'initial'}}
+                          titleColor={themePalette.alternateTextColor}
                           actAsExpander={true}
                           showExpandableButton={true}
+                          style={{height: 'initial', backgroundColor: themePalette.primary2Color, padding: '8px', borderBottom: '4px solid ' + themePalette.primary1Color}}
                         />
-                        <CardText expandable={true}>
-                          <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('picture', pictureResponse)} />
-                          <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        <CardText expandable={true} style={{backgroundColor: themePalette.accent4Color}}>
+                          <MetadataList style={{lineHeight: 'initial', maxHeight: '100%', overflow: 'hidden', ...this.props.metadataListStyles}} metadata={GetMetaData('picture', pictureResponse)} />
                         </CardText>
                       </Card>;
             }
@@ -425,25 +433,30 @@ export default class Preview extends Component {
 
               let description = (selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse));
 
-              body =  <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+              body =  <Card style={{boxShadow: 'none'}} initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
                       <CardHeader
-                          className="card-header-custom"
                           title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
-                          titleStyle={{lineHeight: 'initial'}}
-                          titleColor={themePalette.alternateTextColor}
-                          subtitleColor={themePalette.accent4Color}
+                          titleStyle={{lineHeight: 'initial', fontSize: '18px'}}
+                          titleColor={themePalette.textColor}
+                          subtitleColor={themePalette.textColorFaded}
                           subtitle={(description && description != "undefined") ? "Description: " + description : ""}
                           subtitleStyle={{lineHeight: 'initial'}}
-                          actAsExpander={true}
-                          style={{backgroundColor: themePalette.primary2Color}}
-                          showExpandableButton={true}
+                          style={{height: 'initial', padding: 0}}
                         />
-                        <CardMedia>
+                        <CardMedia style={{backgroundColor: themePalette.primary2Color, margin: '5px 0', padding: '8px'}}>
                           {(selectn('properties.file:content.data', audioResponse) || selectn('path', audioResponse) && selectn('path', audioResponse).indexOf('nxfile') != -1) ? audioTag : null}
                         </CardMedia>
-                        <CardText expandable={true}>
-                          <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('audio', audioResponse)} />
-                          <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
+                        <CardHeader
+                          className="card-header-custom"
+                          title="MORE AUDIO INFO"
+                          titleStyle={{lineHeight: 'initial'}}
+                          titleColor={themePalette.alternateTextColor}
+                          actAsExpander={true}
+                          showExpandableButton={true}
+                          style={{height: 'initial', padding: 0, backgroundColor: themePalette.primary2Color, padding: '8px', borderBottom: '4px solid ' + themePalette.primary1Color}}
+                        />
+                        <CardText expandable={true} style={{backgroundColor: themePalette.accent4Color}}>
+                          <MetadataList style={{lineHeight: 'initial', maxHeight: '100%', overflow: 'hidden', ...this.props.metadataListStyles}} metadata={GetMetaData('audio', audioResponse)} />
                         </CardText>
                       </Card>;
             }
@@ -480,21 +493,31 @@ export default class Preview extends Component {
               body = videoTag;
             }
             else {
-              body = <Card initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
-                      <CardMedia>
+
+              let description = (selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse));
+
+              body = <Card style={{boxShadow: 'none'}} initiallyExpanded={this.props.initiallyExpanded} onExpandChange={handleExpandChange}>
+                      <CardMedia style={{backgroundColor: themePalette.primary2Color, margin: '5px 0', padding: '8px'}}>
                         {(selectn('properties.file:content.data', videoResponse) || selectn('path', videoResponse) && selectn('path', videoResponse).indexOf('nxfile') != -1) ? videoTag : null}
                       </CardMedia>
                       <CardHeader
                         title={selectn('title', videoResponse) || selectn('dc:title', videoResponse)}
-                        titleStyle={{lineHeight: 'initial'}}
+                        titleStyle={{lineHeight: 'initial', fontSize: '18px'}}
                         subtitle={selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)}
                         subtitleStyle={{lineHeight: 'initial'}}
-                        actAsExpander={true}
-                        showExpandableButton={true}
+                        style={{height: 'inherit', padding: '16px 0'}}
                       />
-                      <CardText expandable={true}>
-                        <MetadataList style={{lineHeight: 'initial', ...this.props.metadataListStyles}} metadata={GetMetaData('video', videoResponse)} />
-                        <p style={{lineHeight: 'initial', whiteSpace: 'initial'}}>{MEDIA_COPYRIGHT_NOTICE}</p>
+                      <CardHeader
+                          className="card-header-custom"
+                          title="MORE VIDEO INFO"
+                          titleStyle={{lineHeight: 'initial'}}
+                          titleColor={themePalette.alternateTextColor}
+                          actAsExpander={true}
+                          showExpandableButton={true}
+                          style={{height: 'initial', backgroundColor: themePalette.primary2Color, padding: '8px', borderBottom: '4px solid ' + themePalette.primary1Color}}
+                        />
+                      <CardText expandable={true} style={{backgroundColor: themePalette.accent4Color}}>
+                        <MetadataList style={{lineHeight: 'initial', maxHeight: '100%', overflow: 'hidden', ...this.props.metadataListStyles}} metadata={GetMetaData('video', videoResponse)} />
                       </CardText>
                     </Card>;
             }
@@ -521,7 +544,7 @@ export default class Preview extends Component {
 
           if (contributorResponse && contributor.success) {
             body = <div>
-              <strong>{selectn('title', contributorResponse) || selectn('dc:title', contributorResponse)}</strong> 
+              <span>{selectn('title', contributorResponse) || selectn('dc:title', contributorResponse)}</span> 
               <span> {selectn('properties.dc:description', contributorResponse) || selectn('dc:description', contributorResponse)}</span>
             </div>;
           }

@@ -24,13 +24,13 @@ import ListItem from 'material-ui/lib/lists/list-item';
 
 export default class SubViewTranslation extends Component {
 
-  static containerStyles = {
+  /*static containerStyles = {
     borderWidth: '1px',
     borderStyle: 'dashed',
     borderColor: '#efefef',
     margin: '10px 0',
     padding: '10px'
-  };
+  };*/
 
   static tabsStyles = {
     tabItemContainerStyle: {
@@ -40,11 +40,11 @@ export default class SubViewTranslation extends Component {
 
   static tabStyles = {
     headline: {
-      fontSize: 12,
-      color: '#000',
-      paddingTop: 2,
-      paddingBottom: 2,
-      marginBottom: 5,
+      fontSize: 15,
+      color: '#666666',
+      paddingTop: 1,
+      paddingBottom: 0,
+      marginBottom: 0,
       textAlign: 'left'
     }
   };
@@ -67,29 +67,29 @@ export default class SubViewTranslation extends Component {
     if ( !grouped || _.isEmpty(grouped) )
       return <div></div>;
 
-    return <div className="row" style={SubViewTranslation.containerStyles}>
-      <div className="col-md-4">
-        <h3>{this.props.children}</h3>
+    return <div className="row">
+      <div className={classNames('col-xs-12', 'col-md-2')} style={{marginTop: '10px'}}>
+        {this.props.children}
       </div>
 
-      <div className="col-md-8">
-      <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
-      {_.map(grouped, function(group, key) {
+      <div className={classNames('col-xs-12', 'col-md-10')}>
+        <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
+        {_.map(grouped, function(group, key) {
 
-        return <Tab style={SubViewTranslation.tabStyles.headline} label={key} key={key}>
+          return <Tab style={SubViewTranslation.tabStyles.headline} label={key + ':'} key={key}>
 
-        <List>
+          <List>
 
-          {group.map(function(groupValue, key) {
-            return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
-          })}
+            {group.map(function(groupValue, key) {
+              return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
+            })}
 
-        </List>
+          </List>
 
-        </Tab>;
+          </Tab>;
 
-      })}
-      </Tabs>
+        })}
+        </Tabs>
       </div>
     </div>;
   }

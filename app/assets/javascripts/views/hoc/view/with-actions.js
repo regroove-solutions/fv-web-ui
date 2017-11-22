@@ -198,7 +198,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                     </AuthorizationFilter>
 
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', this.props.computeItem)}}>
-                        <div className="col-xs-12">
+                        <div className="col-xs-12" style={{marginTop: '15px'}}>
                         <Toolbar className="toolbar">
                             <ToolbarGroup key={0} float="right">
                                 <RaisedButton icon={<FontIcon className="material-icons">delete</FontIcon>} onTouchTap={() => this.setState({deleteDialogOpen: true})} secondary={true} label={"Delete " + StringHelpers.toTitleCase(this.props.labels.single)} />
