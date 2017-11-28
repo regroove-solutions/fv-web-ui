@@ -87,10 +87,6 @@ export default class ExploreArchive extends Component {
              <div className="row">
               <div className="col-md-4 col-xs-12">
                 <h1>{this.props.properties.title} Archive</h1>
-                <div>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-                </div>
               </div>
               <div className="col-md-8 col-xs-12">
                   <h2>Browse the following Dialects:</h2>

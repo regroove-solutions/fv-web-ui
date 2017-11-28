@@ -49,6 +49,7 @@ export default class ExploreDialects extends Component {
     properties: PropTypes.object.isRequired,
     fetchPortals: PropTypes.func.isRequired,
     computePortals: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired
   };
@@ -125,7 +126,7 @@ export default class ExploreDialects extends Component {
 
     let portalListProps = {
       action:this._onNavigateRequest,
-      filterOptionsKey:'Portals',
+      filterOptionsKey: 'Portals',
       fixedList:true,
       area:this.props.routeParams.area,
       fixedListFetcher:this.fixedListFetcher,
@@ -150,11 +151,7 @@ export default class ExploreDialects extends Component {
               <div className="col-xs-12">
 
                   <div className={classNames({'hidden': isKidsTheme})}>
-
                     <h1>{this.props.properties.title} Archive</h1>
-
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis.</p>
-
                   </div>
 
                   {portalList}
