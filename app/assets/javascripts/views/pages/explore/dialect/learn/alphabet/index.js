@@ -171,10 +171,10 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                           return <div style={{marginBottom: '20px'}}>
                           {selectn('response.entries', computeCharacters).map((char, i) =>
                             <Paper key={char.uid} style={{textAlign: 'center', margin: '5px', padding: '5px 10px', display: 'inline-block'}}>
-                              <FlatButton onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length-1])} label={char.title} style={{minWidth: 'inherit'}} />
+                              <FlatButton onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length-1])} label={char.title} style={{minWidth: 'inherit', textTransform: 'initial'}} />
                               {(char.contextParameters.character.related_audio[0]) ? 
                                 <span>
-                                <a className="glyphicon glyphicon-volume-up" onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
+                                <a className="glyphicon glyphicon-volume-up" style={{textDecoration: 'none'}} onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)} />
                                   <audio id={'charAudio' + char.uid}  src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path} />
                                 </span>
                               : ''}           
