@@ -110,6 +110,7 @@ export default class ExploreDialects extends Component {
     }])
 
     const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getParentPath());
+    let isLoggedIn = this.props.computeLogin.success && this.props.computeLogin.isConnected;
     
     let portalsEntries = selectn('response.entries', computePortals) || [];
 
@@ -126,7 +127,7 @@ export default class ExploreDialects extends Component {
 
     let portalListProps = {
       action:this._onNavigateRequest,
-      filterOptionsKey: 'Portals',
+      filterOptionsKey: (isLoggedIn) ? 'Portals' : 'Default',
       fixedList:true,
       area:this.props.routeParams.area,
       fixedListFetcher:this.fixedListFetcher,
