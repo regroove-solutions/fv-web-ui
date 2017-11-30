@@ -75,10 +75,21 @@ export default class PageContent extends Component {
   }
 
   componentDidMount() {
-    this.props.queryPage(this.state.pagePath,
-    ' AND fvpage:url LIKE \'' + StringHelpers.clean(this.props.routeParams.friendly_url) + '\'' + 
-    '&sortOrder=ASC' +
-    '&sortBy=dc:title');
+    this.fetchData(this.props);
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.windowPath != this.props.windowPath) {
+      this.fetchData(nextProps);
+    }
+  }
+
+  fetchData(newProps) {
+    newProps.queryPage(this.state.pagePath,
+      ' AND fvpage:url LIKE \'' + StringHelpers.clean(newProps.routeParams.friendly_url) + '\'' + 
+      '&sortOrder=ASC' +
+      '&sortBy=dc:title');
   }
   
   componentDidUpdate(prevProps, prevState) {
