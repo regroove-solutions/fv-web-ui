@@ -42,7 +42,7 @@ export default class Footer extends React.Component {
                 </div>
 
                 <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'body')} style={{paddingTop: '20px', fontWeight: 100}}>
-                  <p>Disclaimer | Conditions of Use | <a href="mailto:feedback@fpcf.ca">Feedback</a> | Donate</p>
+                  <p><a href="/content/disclaimer/">Disclaimer</a> | <a href="/content/conditions/">Conditions of Use</a> | <a href="mailto:feedback@fpcf.ca">Feedback</a> | <a href="http://fpcf.ca/donate-now/">Donate</a></p>
                   <p>Phone: 250-652-5952 · Email: info@fpcc.ca</p>
                   <p>&copy; 2000-{new Date().getFullYear()} FirstVoices</p>
                 </div>
