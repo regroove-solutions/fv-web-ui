@@ -63,7 +63,7 @@ export default class AppLeftNav extends Component {
       {
         id: 'get-started',
         label: "Get Started",
-        path: "/get-started/"
+        path: "/content/get-started/"
       },     
       {
         id: 'explore',
@@ -78,7 +78,7 @@ export default class AppLeftNav extends Component {
       {
         id: 'contribute',
         label: "Contribute",
-        path: "/contribute/"
+        path: "/content/contribute/"
       }
     ]);
 
