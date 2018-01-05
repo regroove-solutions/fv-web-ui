@@ -61,4 +61,6 @@
 
 {% endblock %}
 
-{% block javascript %}{% endblock %}
+{% block javascript %}
+<script type="text/javascript" src="https://priologic.atlassian.net/s/d41d8cd98f00b204e9800998ecf8427e-T/-rfrvv0/b/6/a44af77267a987a660377e5c46e0fb64/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=bf057d7a"></script>
+{% endblock %}
