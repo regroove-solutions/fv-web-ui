@@ -743,6 +743,7 @@ export default class AppFrontController extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    
     this._updateTitle();
 
     if (prevProps.windowPath != this.props.windowPath) {
@@ -751,6 +752,18 @@ export default class AppFrontController extends Component {
         window.snowplow('trackPageView');
       }
     }
+
+    if(selectn('computeLogin.isConnected', this.props) && !selectn('computeLogin.isFetching',this.props) && selectn('computeLogin.isNewLogin', this.props))
+    {
+      let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences);
+
+      if(primary_dialect_path && prevProps.preferences.primary_dialect_path === undefined)
+      {
+        primary_dialect_path = '/explore'+ primary_dialect_path;
+        this.props.pushWindowPath(primary_dialect_path);
+      }
+    }
+
   }
 
   componentWillReceiveProps(nextProps) {
@@ -758,7 +771,6 @@ export default class AppFrontController extends Component {
     let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences);
     let next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences);
     
-
     // Re-route on window path change
     if (nextProps.windowPath != this.props.windowPath) {
       this._route(nextProps);
@@ -766,13 +778,16 @@ export default class AppFrontController extends Component {
 
     // Re-route on login
     else if (nextProps.computeLogin != this.props.computeLogin) {
+
       this._route(nextProps);
+
     }
 
     // Re-route if preferences change
-    else if (next_primary_dialect_path && next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
+    else if (next_primary_dialect_path !== undefined && next_primary_dialect_path != primary_dialect_path && next_primary_dialect_path.length > 0) {
       this._route(nextProps);
     }
+
   }
 
   _renderBreadcrumb(matchedPage, routeParams) {
