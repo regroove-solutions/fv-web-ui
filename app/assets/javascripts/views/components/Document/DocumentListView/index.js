@@ -34,6 +34,8 @@ import '!style-loader!css-loader!react-datagrid/dist/index.min.css';
 
 const GridViewWithPagination = withPagination(GridView, 8);
 
+function debounce(a,b,c){var d,e;return function(){function h(){d=null,c||(e=a.apply(f,g))}var f=this,g=arguments;return clearTimeout(d),d=setTimeout(h,b),c&&!d&&(e=a.apply(f,g)),e}};
+
 export default class DocumentListView extends Component {
 
   static defaultProps = {
@@ -56,10 +58,11 @@ export default class DocumentListView extends Component {
     this.setState({
       selectedId: newSelectedId
     });
+
     this.props.onSelectionChange(data);
   }
 
-  _onPageChange(page) {
+  _onPageChange = debounce((page) => {
     // Skip if page hasn't actually changed.
     if (page == this.props.page){
       return;
@@ -70,10 +73,9 @@ export default class DocumentListView extends Component {
     });
 
     this.props.refetcher(this.props, page, this.props.pageSize);
-  }
+  },750);
 
   _onPageSizeChange(pageSize, props) {
-
     // Skip if page size hasn't actually changed
     if (pageSize === this.props.pageSize){
       return;
@@ -102,7 +104,6 @@ export default class DocumentListView extends Component {
   }
 
   render() {
-
     // Styles
     var DataGridStyles = {
       minHeight:"70vh",
