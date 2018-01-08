@@ -102,7 +102,7 @@ export default class PageHome extends Component {
       backgroundImage: 'url("/assets/images/intro-background.png")',
       //backgroundPosition: '-280px -500px',
       overflow: 'hidden'
-    }
+    };
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pagePath,
@@ -111,7 +111,7 @@ export default class PageHome extends Component {
     {
       'id': this.state.dialectsPath,
       'entity': this.props.computePortals
-    }])
+    }]);
 
     const computePage = ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath);
     const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.dialectsPath);
