@@ -26,6 +26,7 @@ export default {
             // getComponent does not work with input names that have '.' in them. Access directly.
             // valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
             let valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
+
             if (valuedCheckbox) {
                   if (!valuedCheckbox.checked) {
                         continue;
