@@ -24,8 +24,8 @@ export default {
       for (let key in formValue) {
             // Treat valued checkboxes differently. Always have value, so skip if unchecked.
             // getComponent does not work with input names that have '.' in them. Access directly.
-            let valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
-            // let valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
+            // valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
+            let valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
             if (valuedCheckbox) {
                   if (!valuedCheckbox.checked) {
                         continue;
