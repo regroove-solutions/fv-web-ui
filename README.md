@@ -22,46 +22,62 @@ There are several version dependency requirements to properly build and run the 
 -  NodeJS v4.1.2
 -  Gulp CLI v3.9.1
 -  Yarn v0.21.3
+
 Instructions to install specific project dependencies and running the application are described in the *Setting Up and Running* section.
 
 Mac OS X is the ideal environment for running and developing the FirstVoices Web Application. The steps below are instructions for downloading project dependencies and building the project using Terminal on Mac OS X.
 
 ### Setting Up and Running ###
+Perform the steps below to setup your environment and run the FirstVoices Web Application on Mac OS X.
 
-TODO:
-- Describe getting brew, nvm, and npm.
-- ??? Do SubModules need to be pulled when using Yarn? Answer: Yes, they still do.
-- ??? Are Image Optimization Libraries handled by Yarn? Answer: It appears not, but they are installed globally on my machine.
+1. Install [Homebrew](https://brew.sh/) by following the instructions found on the [Homebrew](https://brew.sh/) home page.
 
-1. Clone this repository and navigate into the `fv-web-ui` directory:
+2. Use [Homebrew](https://brew.sh/) to install [NVM](http://nvm.sh) by running:
+```
+$ brew update
+$ brew install nvm
+$ mkdir ~/.nvm
+```
+Configure NVM by adding the following entry to your `~/.bash_profile` file:
+```
+export NVM_DIR=~/.nvm
+source $(brew --prefix nvm)/nvm.sh
+```
+Activate and verify your new `~/.bash_profile` entry by running:
+```
+source ~/.bash_profile
+echo $NVM_DIR
+```
+
+3. Clone this repository and navigate into the `fv-web-ui` directory:
 ```
 $ git clone https://github.com/First-Peoples-Cultural-Council/fv-web-ui.git
 $ cd fv-web-ui
 ```
 
-2. Initialize and recursively clone required Git SubModules by running:
+4. Initialize and recursively clone required Git SubModules by running:
 ```
 $ git submodule update --init --recursive
 $ git submodule foreach git pull origin master
 ```
 
-3. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
+5. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
 ```
 $ nvm install 4.8.0
 $ nvm use 4.8.0
 ```
 
-4. Install GULP CLI v3.9.1 by running:
+6. Install GULP CLI v3.9.1 by running:
 ```
 $ npm install -g gulp@3.9.1
 ```
 
-6. Install Yarn v0.21.3 by running:
+7. Install Yarn v0.21.3 by running:
 ```
 $ npm install -g yarn@0.21.3
 ```
 
-7. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
+8. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
 ```
 # Github RSA Key
 Host github.com
@@ -70,18 +86,18 @@ Host github.com
     IdentityFile ~/.ssh/<mykey>_rsa
 ```
 
-8. Run Yarn to download `node_modules` dependencies by running:
+9. Run Yarn to download `node_modules` dependencies by running:
 ```
 $ yarn
 ```
 Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed.
 
-9. Run GULP build the project and start the Node server by running:
+10. Run GULP build the project and start the Node server by running:
 ```
 $ gulp
 ```
 
-10. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
+11. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
 
 
 ## Old Notes to Remove (TBD) ##
