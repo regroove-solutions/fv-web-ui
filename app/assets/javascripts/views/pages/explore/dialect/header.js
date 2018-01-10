@@ -45,7 +45,7 @@ export default class Header extends Component {
 
   static defaultProps = {
     showStats: false
-  }
+  };
 
   constructor(props, context){
     super(props, context);
@@ -71,10 +71,11 @@ export default class Header extends Component {
       position: 'relative',
       minHeight: '400px',
       backgroundColor: 'transparent',
-      backgroundSize: 'cover',
+      backgroundSize: '100vw auto',
       backgroundImage: 'url("' + portalBackgroundImagePath + '")',
-      backgroundPosition: '0 -100',
-    }
+      backgroundPosition: 'center center',
+      backgroundRepeat: 'no-repeat'
+    };
 
     const isSection = routeParams.area === 'sections';
 

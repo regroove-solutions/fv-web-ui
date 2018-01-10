@@ -24,6 +24,8 @@ const GET_CURRENT_USER_START = "GET_CURRENT_USER_START";
 const GET_CURRENT_USER_SUCCESS = "GET_CURRENT_USER_SUCCESS";
 const GET_CURRENT_USER_ERROR = "GET_CURRENT_USER_ERROR";
 
+let isNewLoginValue = false;
+
 /**
 * Actions: Represent that something happened
 */
@@ -102,13 +104,20 @@ const reducers = {
 
   computeLogin(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
     switch (action.type) {
+      
       case LOGIN_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
+        isNewLoginValue = true;
+        return Object.assign({}, state, { isFetching: true, success: false, isNewLogin: isNewLoginValue });
       break;
 
       case LOGIN_SUCCESS:
+        return Object.assign({}, state, { isFetching: false, success: true, isConnected: !action.isAnonymous, isNewLogin: isNewLoginValue });
+      break;
+
       case GET_CURRENT_USER_SUCCESS:
-        return Object.assign({}, state, { response: action.user, isFetching: false, success: true, isConnected: !action.isAnonymous });
+        let newLoginValue = isNewLoginValue;
+        isNewLoginValue = false;
+        return Object.assign({}, state, { response: action.user, isFetching: false, success: true, isConnected: !action.isAnonymous, isNewLogin: newLoginValue });
       break;
 
       case LOGOUT_SUCCESS:
@@ -122,6 +131,7 @@ const reducers = {
       default: 
         return Object.assign({}, state, { isFetching: false });
       break;
+
     }
   },
 
