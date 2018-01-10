@@ -18,6 +18,73 @@ For additional dependencies see package.json.
 This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/gulp-starter).
 
 ## Getting Started ##
+There are several version dependency requirements to properly build and run the project:
+-  NodeJS v4.1.2
+-  Gulp CLI v3.9.1
+-  Yarn v0.21.3
+Instructions to install specific project dependencies and running the application are described in the *Setting Up and Running* section.
+
+Mac OS X is the ideal environment for running and developing the FirstVoices Web Application. The steps below are instructions for downloading project dependencies and building the project using Terminal on Mac OS X.
+
+### Setting Up and Running ###
+
+TODO:
+- Describe getting brew, nvm, and npm.
+- ??? Do SubModules need to be pulled when using Yarn? Answer: Yes, they still do.
+- ??? Are Image Optimization Libraries handled by Yarn? Answer: It appears not, but they are installed globally on my machine.
+
+1. Clone this repository and navigate into the `fv-web-ui` directory:
+```
+$ git clone https://github.com/First-Peoples-Cultural-Council/fv-web-ui.git
+$ cd fv-web-ui
+```
+
+2. Initialize and recursively clone required Git SubModules by running:
+```
+$ git submodule update --init --recursive
+$ git submodule foreach git pull origin master
+```
+
+3. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
+```
+$ nvm install 4.8.0
+$ nvm use 4.8.0
+```
+
+4. Install GULP CLI v3.9.1 by running:
+```
+$ npm install -g gulp@3.9.1
+```
+
+6. Install Yarn v0.21.3 by running:
+```
+$ npm install -g yarn@0.21.3
+```
+
+7. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
+```
+# Github RSA Key
+Host github.com
+    UseKeychain yes
+    AddKeysToAgent yes
+    IdentityFile ~/.ssh/<mykey>_rsa
+```
+
+8. Run Yarn to download `node_modules` dependencies by running:
+```
+$ yarn
+```
+Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed.
+
+9. Run GULP build the project and start the Node server by running:
+```
+$ gulp
+```
+
+10. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
+
+
+## Old Notes to Remove (TBD) ##
 
 You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads). Clone this repo from GitHub, change directory to the repo root.
 
