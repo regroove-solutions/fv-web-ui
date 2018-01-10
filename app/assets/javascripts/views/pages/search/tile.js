@@ -92,6 +92,15 @@ export default class SearchResultTile extends Component {
 
 			targetPath = selectn('contextParameters.ancestry.dialect.path', tile);
 		break;
+
+		case 'FVBook':
+			imgObj = selectn('contextParameters.phrase.related_pictures[0]', tile);
+			
+			desc = DOMPurify.sanitize(selectn('dc:description', tile), {ALLOWED_TAGS: []});
+			desc = (desc.length > 300) ? '...' + desc.substr(desc.indexOf(this.props.searchTerm) - 50, 250) + '...' : desc;
+
+			targetPath = selectn('path', tile).replace('/Stories & Songs/', '/learn/stories/');
+		break;
 	}
 
 	if (desc) {
