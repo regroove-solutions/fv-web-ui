@@ -33,7 +33,7 @@ Perform the steps below to setup your environment and run the FirstVoices Web Ap
 1. Install [Homebrew](https://brew.sh/) by following the instructions found on the [Homebrew](https://brew.sh/) home page.
 
 2. Use [Homebrew](https://brew.sh/) to install [NVM](http://nvm.sh) by running:
-```
+```bash
 $ brew update
 $ brew install nvm
 $ mkdir ~/.nvm
@@ -44,36 +44,36 @@ export NVM_DIR=~/.nvm
 source $(brew --prefix nvm)/nvm.sh
 ```
 Activate and verify your new `~/.bash_profile` entry by running:
-```
-source ~/.bash_profile
-echo $NVM_DIR
+```bash
+$ source ~/.bash_profile
+$ echo $NVM_DIR
 ```
 
 3. Clone this repository and navigate into the `fv-web-ui` directory:
-```
+```bash
 $ git clone https://github.com/First-Peoples-Cultural-Council/fv-web-ui.git
 $ cd fv-web-ui
 ```
 
 4. Initialize and recursively clone required Git SubModules by running:
-```
+```bash
 $ git submodule update --init --recursive
 $ git submodule foreach git pull origin master
 ```
 
 5. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
-```
+```bash
 $ nvm install 4.8.0
 $ nvm use 4.8.0
 ```
 
 6. Install GULP CLI v3.9.1 by running:
-```
+```bash
 $ npm install -g gulp@3.9.1
 ```
 
 7. Install Yarn v0.21.3 by running:
-```
+```bash
 $ npm install -g yarn@0.21.3
 ```
 
@@ -87,13 +87,13 @@ Host github.com
 ```
 
 9. Run Yarn to download `node_modules` dependencies by running:
-```
+```bash
 $ yarn
 ```
 Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed.
 
 10. Run GULP build the project and start the Node server by running:
-```
+```bash
 $ gulp
 ```
 
