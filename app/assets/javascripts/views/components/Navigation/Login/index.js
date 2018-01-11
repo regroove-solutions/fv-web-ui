@@ -93,7 +93,6 @@ export default class Login extends Component {
   }
 
   _handleLogout() {
-
     this.setState({loginAttempted: false});
     this.props.logout();
   }
