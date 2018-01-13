@@ -280,16 +280,16 @@ export default class DialectLearn extends Component {
                       <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeModifiedWords)} title="Recently Modified" docType="word" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeModifiedWords)} title="Recently Modified" docType="word" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeCreatedWords)} title="Recently Created" docType="word" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeCreatedWords)} title="Recently Created" docType="word" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeUserModifiedWords)} title="My Recently Modified" docType="word" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeUserModifiedWords)} title="My Recently Modified" docType="word" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeUserCreatedWords)} title="My Recently Created" docType="word" />	
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeUserCreatedWords)} title="My Recently Created" docType="word" />	
                           </div>
                         </div>   
                       </CardText>
@@ -310,16 +310,16 @@ export default class DialectLearn extends Component {
                       <CardText expandable={true}>
                         <div className="row" style={{paddingTop: '20px'}}>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeModifiedPhrases)} title="Recently Modified" docType="phrase" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeModifiedPhrases)} title="Recently Modified" docType="phrase" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeCreatedPhrases)} title="Recently Created" docType="phrase" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeCreatedPhrases)} title="Recently Created" docType="phrase" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeUserModifiedPhrases)} title="My Recently Modified" docType="phrase" />
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeUserModifiedPhrases)} title="My Recently Modified" docType="phrase" />
                           </div>
                           <div className={classNames('col-xs-12', 'col-md-3')}>
-                            <RecentActivityList data={selectn('response', computeUserCreatedPhrases)} title="My Recently Created" docType="phrase" />	
+                            <RecentActivityList theme={this.props.routeParams.theme} data={selectn('response', computeUserCreatedPhrases)} title="My Recently Created" docType="phrase" />	
                           </div>
                         </div>   
                       </CardText>

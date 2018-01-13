@@ -22,6 +22,8 @@ import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
@@ -180,7 +182,8 @@ export default class ExploreDialect extends Component {
   }
 
   _handleSelectionChange(itemId, item) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + selectn('properties.path', item).replace('Dictionary', 'learn/words'));
+    let itemPath = selectn('properties.path', item).replace('Dictionary', 'learn/words');
+    NavigationHelpers.navigate('/' + this.props.routeParams.theme + itemPath, this.props.pushWindowPath, true);
   }
   
   render() {

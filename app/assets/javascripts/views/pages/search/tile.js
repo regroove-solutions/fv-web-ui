@@ -7,6 +7,7 @@ import DOMPurify from 'dompurify';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import UIHelpers from 'common/UIHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 export default class SearchResultTile extends Component {
 
@@ -58,7 +59,8 @@ export default class SearchResultTile extends Component {
 			(categories.length > 0) ? output.push('<em>Categories</em>: ' + (categories.map((v, k) => selectn('dc:title', v) ).join(', '))) : null;
 
 			desc = output.join(', ');
-			targetPath = selectn('path', tile).replace('/Dictionary/', '/learn/words/');
+			targetPath = NavigationHelpers.navigate(selectn('path', tile).replace("/Dictionary/", "/learn/words/"), null, true);
+
 		break;
 
 		case 'FVPhrase':
@@ -79,7 +81,7 @@ export default class SearchResultTile extends Component {
 
 			desc = p_output.join(', ');
 
-			targetPath = selectn('path', tile).replace('/Dictionary/', '/learn/phrases/');
+			targetPath = NavigationHelpers.navigate(selectn('path', tile).replace("/Dictionary/", "/learn/phrases/"), null, true);
 		break;
 
 		case 'FVPortal':

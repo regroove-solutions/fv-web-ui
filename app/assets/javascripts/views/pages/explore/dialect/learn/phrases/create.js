@@ -95,7 +95,8 @@ export default class PageDialectPhrasesCreate extends Component {
 
     // 'Redirect' on success
     if (!this.props.embedded && selectn('success', currentPhrase) != selectn('success', nextPhrase) && selectn('success', nextPhrase) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases'));
+      let itemPath = selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases');
+      NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
     }
   }
 
