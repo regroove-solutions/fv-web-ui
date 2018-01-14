@@ -92,35 +92,26 @@ $ yarn
 ```
 Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed.
 
-10. Run GULP build the project and start the Node server by running:
+10. Rename `/app/assets/javascripts/configuration/sample.local.json` to `local.json`.
+
+11. Run GULP build the project and start the Node server by running:
 ```bash
 $ gulp
 ```
 
-11. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
+12. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
 
-
-## Old Notes to Remove (TBD) ##
-
-You'll need [NodeJS](http://nodejs.org/), and [Git](http://git-scm.com/downloads). Clone this repo from GitHub, change directory to the repo root.
-
-1. Run `npm install -g gulp`.
-2. Run `npm install`.
-3. Run `gulp` to start a Node server.  Defaults to [localhost:3001](http://localhost:3001).
-4. Install [Nuxeo](http://www.nuxeo.com) and setup your server, including enabling [Cross-Origin Resource Sharing (CORS)](https://doc.nuxeo.com/pages/viewpage.action?pageId=14257084).
-4. Rename */app/assets/javascripts/configuration/sample.local.json* to *local.json* and update that file.
-
-* On some machines installation of certain modules may not work as part of `npm install`. If that is the case, install missing modules individually (e.g. `npm install imagemin-jpegtran`, after trying to run `gulp`).
 
 ## Building for Production ##
+You can build for production after completing the steps found in the *Setting Up and Running* section above.
 
-In order to build for production:
-1. Run `npm install -g gulp`.
-2. Run `npm install`.
-3. Run `gulp build:production`.
-4. Copy generated files in /public folder to your webserver.
+1. Run the following command to build for production:
+```
+$ gulp build:production
+```
+2. Copy the generated files in `/public` folder to your webserver.
 
-Note: Remember to configure your web application to rewrite all requests to the root path, in order for Push State to work.
+*Note:* Remember to configure your web application to rewrite all requests to the root path, in order for Push State to work.
 
 ## Contributing ##
 
