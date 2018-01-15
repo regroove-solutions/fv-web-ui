@@ -8,3 +8,4 @@ node_modules
 app/assets/stylesheets/generated
 .happypack
 .vscode
+yarn.lock
