@@ -71,9 +71,9 @@ export default class Header extends Component {
       position: 'relative',
       minHeight: '400px',
       backgroundColor: 'transparent',
-      backgroundSize: '100vw auto',
+      backgroundSize: 'cover',
       backgroundImage: 'url("' + portalBackgroundImagePath + '")',
-      backgroundPosition: 'center center',
+      backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
     };
 
