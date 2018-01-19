@@ -19,17 +19,34 @@ const arrayPopImmutable = function (array) {
 }
 
 export default {
+  // Navigate to an absolute path, possibly URL encoding the last path part
+  // If no NavigationFunc is provided, will return the path
+  navigate: function (path, navigationFunc, encodeLastPart = false) {
+    let pathArray = path.split('/');
+
+    if (encodeLastPart) {
+      pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1]);
+    }
+
+    let transformedPath = pathArray.join('/');
+
+    if (!navigationFunc) {
+        return transformedPath;
+    } else {
+        navigationFunc(transformedPath);
+    }
+  },
   // Navigate up by removing the last page from the URL
   navigateUp: function (currentPathArray, navigationFunc) {
-        navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'));
+      navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'));
   },
   // Navigate forward, replacing the current page within the URL
   navigateForwardReplace: function (currentPathArray, forwardPathArray, navigationFunc) {
-        navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
+      navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
   },
-  // Navigate forward
+  // Navigate forward by appending the forward path
   navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
-        navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
+      navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
   },
   // Navigate back to previous page
   navigateBack: function () {

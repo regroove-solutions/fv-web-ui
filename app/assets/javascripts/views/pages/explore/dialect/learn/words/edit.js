@@ -90,7 +90,8 @@ export default class PageDialectWordEdit extends Component {
 
     // 'Redirect' on success
     if (selectn('wasUpdated', currentWord) != selectn('wasUpdated', nextWord) && selectn('wasUpdated', nextWord) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+        let itemPath = selectn('response.path', nextWord).replace('Dictionary', 'learn/words');
+        NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
     }
   }
 

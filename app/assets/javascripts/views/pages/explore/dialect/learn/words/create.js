@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
@@ -84,7 +86,8 @@ export default class PageDialectWordsCreate extends Component {
 
     // 'Redirect' on success
     if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+        let itemPath = selectn('response.path', nextWord).replace('Dictionary', 'learn/words');
+        NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
     }
   }
 

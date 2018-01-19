@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -180,11 +181,12 @@ export default class View extends Component {
 
     // Phrases
     let phrases = [];
+    let theme = this.props.routeParams.theme;
 
     (selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
 
       const phraseDefinitions = selectn('fv:definitions', phrase);
-      const phraseLink = <Link key={selectn('uid', phrase)} href={'/explore' + selectn('path', phrase).replace('Dictionary', 'learn/phrases')}>{selectn('dc:title', phrase)}</Link>;
+      const phraseLink = <Link key={selectn('uid', phrase)} href={NavigationHelpers.navigate('/' + theme + selectn('path', phrase).replace("/Dictionary/", "/learn/phrases/"), null, true)}>{selectn('dc:title', phrase)}</Link>;
 
       if (phraseDefinitions.length == 0) {
         phrases.push(<p key={key}>{phraseLink}</p>);
