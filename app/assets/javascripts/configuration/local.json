@@ -1,13 +1,13 @@
 {
 	"title": "FirstVoices",
 	"domain": "FV",
-	"baseWebUIURL": "https://fv.nuxeocloud.com/",
+	"baseWebUIURL": "http://localhost:3001/",
 	"baseURL": "https://fv.nuxeocloud.com/nuxeo/",
 	"preferences": {
 		"fields": {
 			"start_page": {
 				"my_dialect": "My Portal (default)",
-				"my_kids_dialect": "My Kids Portal", 
+				"my_kids_dialect": "My Kids Portal",
 				"home": "Home Page",
 				"all_dialects": "All Dialects",
 				"contribute": "Contribute",
@@ -21,7 +21,7 @@
 		"values": {
 			"start_page": {
 				"my_dialect": "my_dialect",
-				"my_kids_dialect": "my_kids_dialect", 
+				"my_kids_dialect": "my_kids_dialect",
 				"home": "/home",
 				"all_dialects": "/explore/FV/Workspaces/Data/",
 				"contribute": "/contribute",
