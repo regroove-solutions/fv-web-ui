@@ -139,8 +139,8 @@ export default class EditableComponent extends Component {
 
     // Render regular field if not in edit mode
     return <div>
-              <IconButton iconClassName="material-icons" iconStyle={{fontSize: '20px'}} style={{verticalAlign: '-4px', margin: '0 5px 0 -5px', padding: '0px 5px', height: '22px', width: '22px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
               {RenderRegular(currentValue, this.props.showPreview, this.props.previewType)}
+              <IconButton iconClassName="material-icons" iconStyle={{fontSize: '20px'}} style={{verticalAlign: '-4px', margin: '0 5px 0 -5px', padding: '0px 5px', height: '22px', width: '22px', display: (this.props.accessDenied) ? 'none' : 'inline-block'}} onTouchTap={this._onEditRequest.bind(this, property)} tooltip={"Edit"}>mode_edit</IconButton>
            </div>;
   }
 
