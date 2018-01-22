@@ -22,6 +22,8 @@ import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
@@ -180,7 +182,8 @@ export default class ExploreDialect extends Component {
   }
 
   _handleSelectionChange(itemId, item) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + selectn('properties.path', item).replace('Dictionary', 'learn/words'));
+    let itemPath = selectn('properties.path', item).replace('Dictionary', 'learn/words');
+    NavigationHelpers.navigate('/' + this.props.routeParams.theme + itemPath, this.props.pushWindowPath, true);
   }
   
   render() {
@@ -193,10 +196,10 @@ export default class ExploreDialect extends Component {
     },{
       'id': this.props.routeParams.dialect_path + '/Portal',
       'entity': this.props.computePortal
-    }])
+    }]);
 
     let computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+    let computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
 
     const isSection = this.props.routeParams.area === 'sections';
     const isKidsTheme = this.props.routeParams.theme === 'kids';
@@ -215,13 +218,30 @@ export default class ExploreDialect extends Component {
      */
     let roles = selectn('response.contextParameters.dialect.roles', computeDialect2);
 
-    if (roles && roles.indexOf('Manage') === -1 ) {
-      computeDialect2 = Object.assign(
-        computeDialect2, {
-          response: Object.assign(computeDialect2.response, {
-            contextParameters: Object.assign(computeDialect2.response.contextParameters, { permissions: ['Read'] })
-          })
-        });
+    if (roles && roles.indexOf('Manage') === -1) {
+        computeDialect2 = Object.assign(
+            computeDialect2, {
+                response: Object.assign(computeDialect2.response, {
+                    contextParameters: Object.assign(computeDialect2.response.contextParameters, {permissions: ['Read']})
+                })
+            });
+    }
+
+    let portalRoles = selectn('response.contextParameters.portal.roles', computePortal );
+    let portalPermissions = selectn('response.contextParameters.portal.permissions', computePortal );
+
+    // if we have roles and no permissions
+    if( portalRoles && !portalPermissions ) {
+      // we have the manage role, but no permissions
+      if( portalRoles.indexOf( 'Manage' ) >= 0 ) {
+        // update the permissions
+          computePortal = Object.assign(
+              computePortal, {
+                  response: Object.assign(computePortal.response, {
+                      contextParameters: Object.assign(computePortal.response.contextParameters, {permissions: ['Read', 'Write', 'Everything']})
+                  })
+              });
+      }
     }
 
     return <PromiseWrapper computeEntities={computeEntities}>

@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import Preview from 'views/components/Editor/Preview';
@@ -244,7 +245,7 @@ export default class View extends Component {
 
                                             return (
                                             <SubViewTranslation key={key} group={wordItem} groupByElement="language" groupValue="translation">
-                                              <p><Link key={selectn('uid', word)} href={'/explore' + selectn('path', word).replace('Dictionary', 'learn/words')}>{selectn('dc:title', word)}</Link></p>
+                                              <p><Link key={selectn('uid', word)} href={NavigationHelpers.navigate('/explore' + selectn('path', word).replace("/Dictionary/", "/learn/words/"), null, true)}>{selectn('dc:title', word)}</Link></p>
                                             </SubViewTranslation>
                                             );
                                           })}

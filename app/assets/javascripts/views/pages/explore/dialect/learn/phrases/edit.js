@@ -90,7 +90,8 @@ export default class PageDialectPhraseEdit extends Component {
 
     // 'Redirect' on success
     if (selectn('wasUpdated', currentPhrase) != selectn('wasUpdated', nextPhrase) && selectn('wasUpdated', nextPhrase) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases'));
+      let itemPath = selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases');
+      NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
     }
   }
 

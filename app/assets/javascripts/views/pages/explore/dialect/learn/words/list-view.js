@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
@@ -152,9 +153,10 @@ export default class ListView extends DataListView {
     if (this.props.action) {
       this.props.action(item);
     } else {
-      this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'learn/words'));
+      let itemPath = item.path.replace('Dictionary', 'learn/words');
+      NavigationHelpers.navigate('/' + this.props.routeParams.theme + itemPath, this.props.pushWindowPath, true);
     }
-  }  
+  }
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
 

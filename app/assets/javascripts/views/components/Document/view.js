@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -98,7 +99,7 @@ export default class View extends Component {
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
+    NavigationHelpers.navigate('/' + path, this.props.pushWindowPath, true);
   }
 
   // Refetch data on URL change
@@ -138,11 +139,11 @@ export default class View extends Component {
 
                 switch (selectn('response.type', computeDocument)) {
                   case 'FVWord':
-                    actionButton = <RaisedButton label="View Word" onTouchTap={this._onNavigateRequest.bind(this, '/explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/words'))} />;
+                    actionButton = <RaisedButton label="View Word" onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/words'))} />;
                   break;
 
                   case 'FVPhrase':
-                    actionButton = <RaisedButton label="View Phrase" onTouchTap={this._onNavigateRequest.bind(this, '/explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/phrases'))} />;
+                    actionButton = <RaisedButton label="View Phrase" onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/phrases'))} />;
                   break;
                 }
 
