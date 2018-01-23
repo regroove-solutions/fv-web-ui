@@ -58,7 +58,8 @@ public class CharacterEnricher extends AbstractJsonEnricher<DocumentModel> {
 		if (documentType.equalsIgnoreCase("FVCharacter")) {
 
 			// Process "fv:related_audio" values
-			String[] audioIds = (String[]) doc.getProperty("fvcore", "related_audio");
+            String[] audioIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "related_audio") : (String []) doc.getProperty("fvproxy", "proxied_audio");
+
 			if (audioIds != null) {
 				ArrayNode audioJsonArray = mapper.createArrayNode();
 				for (String audioId : audioIds) {
