@@ -30,6 +30,8 @@ import ActionExitToAppIcon from 'material-ui/lib/svg-icons/action/exit-to-app';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 
+import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
+
 @provide
 export default class Login extends Component {
 
@@ -68,6 +70,11 @@ export default class Login extends Component {
 
     event.preventDefault();
 
+    if(isMobile) {
+      this._onNavigateRequest("login");
+      return;
+    }
+
     this.setState({
       open: true
     });
@@ -84,9 +91,14 @@ export default class Login extends Component {
     let username = this.refs.username.getValue();
     let password = this.refs.password.getValue();
     
-    if ( username !== null && password !== null) {
-      this.setState({loginAttempted: true});
-      this.props.login(username, password);
+    if (username !== null && password !== null) {
+      if (username.length > 0 && password.length > 0) {
+
+        console.log('About to attempt login, desktop.');
+        
+        this.setState({loginAttempted: true});
+        this.props.login(username, password);
+      }
     }
 
     this._handleClose();
@@ -130,7 +142,6 @@ export default class Login extends Component {
     } else {
       if (this.state.loginAttempted) {
           loginFeedbackMessage = "Username or password incorrect.";
-
         if (this.props.computeLogin.isError) {
           loginFeedbackMessage = this.props.computeLogin.error;
         }
@@ -139,39 +150,28 @@ export default class Login extends Component {
 
     return (
       <div style={{display: "inline-block", paddingTop: '15px', maxWidth: '205px'}}>
-        <FlatButton ref={(el)=>{this.anchorEl = el}}  label={this.props.label} style={{color: themePalette.alternateTextColor}} onTouchTap={this._handleOpen} />
-
+        <FlatButton ref={(el)=>{this.anchorEl = el}} label={this.props.label} style={{"color": themePalette.alternateTextColor}} onTouchTap={this._handleOpen} />
         <Popover open={this.state.open}
           anchorEl={ReactDOM.findDOMNode(this.anchorEl)}
           useLayerForClickAway={false}
-          style={{marginTop: '-14px', backgroundColor: 'transparent', boxShadow: 'none'}}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'middle', vertical: 'top'}}
+          style={{marginTop:"-14px", "backgroundColor":"transparent", "boxShadow":"none"}}
+          anchorOrigin={{"horizontal":"left", "vertical":"bottom"}}
+          targetOrigin={{"horizontal":"middle", "vertical":"top"}}
           onRequestClose={this._handleClose}>
 
-          <div style={{width: '205px'}}>
-
-            <img style={{position: 'relative', top: '14px', zIndex: 999999, left: '65%'}} src="/assets/images/popover-arrow.png" alt="" />
-
-            <div style={{backgroundColor: '#fff', padding:'10px', width: '100%'}}>
-              <h6>Sign In Below <a style={{cursor: 'pointer', fontWeight: 100}} onTouchTap={this._onNavigateRequest.bind(this, 'forgotpassword')} className="pull-right">Forgot?</a></h6>
-
-              <div><TextField style={Object.assign({}, TextFieldStyle, {margin: '15px 0'})} underlineShow={false} ref="username" hintText="Username" /></div>
+          <div style={{"width":"205px"}}>
+            <img style={{"position":"relative", "top":"14px", "zIndex":"999999", "left":"65%"}} src="/assets/images/popover-arrow.png" alt="" />
+            <div style={{"backgroundColor":"#fff", "padding":"10px", "width":"100%"}}>
+              <h6>Sign In Below <a style={{"cursor":"pointer", "fontWeight":"100"}} onTouchTap={this._onNavigateRequest.bind(this, "forgotpassword")} className="pull-right">Forgot?</a></h6>
+              <div><TextField style={Object.assign({}, TextFieldStyle, {"margin":"15px 0"})} underlineShow={false} ref="username" hintText="Username" /></div>
               <div><TextField style={TextFieldStyle} underlineShow={false} ref="password" type="password" hintText="Password" /></div>
-
-              <p style={{margin: '10px 0', fontSize: '12px', backgroundColor: themePalette.primary4ColorLightest, padding: '0 3px'}}>{loginFeedbackMessage}</p>
-
-              <RaisedButton style={{width: '100%'}} secondary={true} onTouchTap={this._handleLogin} label="Sign in"/>
-
-              <h6 style={{fontWeight: 500, paddingTop: '10px'}}>New to FirstVoices?</h6>
-
-              <RaisedButton style={{width: '100%'}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, 'register')} label="Register"/>
+              <p style={{"margin":"10px 0", "fontSize":"12px", "backgroundColor":themePalette.primary4ColorLightest, "padding":"0 3px"}}>{loginFeedbackMessage}</p>
+              <RaisedButton style={{"width":"100%"}} secondary={true} onTouchTap={this._handleLogin} label="Sign in"/>
+              <h6 style={{"fontWeight":"500", "paddingTop":"10px"}}>New to FirstVoices?</h6>
+              <RaisedButton style={{"width":"100%"}} primary={true} onTouchTap={this._onNavigateRequest.bind(this, "register")} label="Register"/>
             </div>
-
           </div>
-
         </Popover>
-
       </div>
     );
   }

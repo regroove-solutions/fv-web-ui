@@ -63,6 +63,7 @@ import PagePlay from './play'
 import PageSearch from './search'
 import PageTasks from './tasks'
 import PageUsersRegister from './users/register'
+import PageUserLogin from './users/login'
 import PageUsersForgotPassword from './users/forgotpassword'
 import PageUsersProfile from './users/profile'
 
@@ -104,6 +105,7 @@ module.exports = {
   PageSearch,
   PageTasks,
   PageUsersRegister,
+  PageUserLogin,
   PageUsersForgotPassword,
   PageUsersProfile,
 
