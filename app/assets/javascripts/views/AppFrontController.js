@@ -31,7 +31,7 @@ import { PageDialectViewAlphabet } from 'views/pages';
 
 import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageQuiz, PageHangman} from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageUsersForgotPassword, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageUserLogin, PageUsersForgotPassword, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
@@ -188,6 +188,11 @@ export default class AppFrontController extends Component {
         path: ['register'],
         title: 'Register',
         page: <PageUsersRegister />
+      },
+      {
+        path: ['login'],
+        title: 'User Login',
+        page: <PageUserLogin />
       },
       {
         path: ['profile'],
@@ -929,6 +934,7 @@ export default class AppFrontController extends Component {
     if (!matchedPage) {
       page = <div>404</div>;
     } else {
+
       let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
 
       // For print view return page only
