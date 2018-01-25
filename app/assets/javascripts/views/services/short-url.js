@@ -14,53 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable from 'immutable';
 
-import classNames from 'classnames';
 import provide from 'react-redux-provide';
-import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
-
-import ProviderHelpers from 'common/ProviderHelpers';
-import NavigationHelpers from 'common/NavigationHelpers';
-
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
-import Header from 'views/pages/explore/dialect/header';
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
-
-import Toggle from 'material-ui/lib/toggle';
-import TextField from 'material-ui/lib/text-field';
-import DropDownMenu from 'material-ui/lib/DropDownMenu';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import FlatButton from 'material-ui/lib/flat-button';
-
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import Paper from 'material-ui/lib/paper';
-import CircularProgress from 'material-ui/lib/circular-progress';
-import Snackbar from 'material-ui/lib/snackbar';
-
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-
-import ListUI from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-
-import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
-
-import Preview from 'views/components/Editor/Preview';
-
-import GridView from 'views/pages/explore/dialect/learn/base/grid-view';
-
-const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
-
-import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent';
-
-import Link from 'views/components/Document/Link';
-import TextHeader from 'views/components/Document/Typography/text-header';
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
 /**
 * Dialect portal page showing all the various components of this dialect.
