@@ -98,17 +98,32 @@ export default class PageDialectMediaEdit extends Component {
     return false;
   }
 
+  _navigateToMediaPage()
+  {
+    let mediaPath = '';
+
+    for(let value of this.props.splitWindowPath) {
+      mediaPath += '/'+ value;
+      if(value === 'media') {
+        break;
+      }
+    }
+    if(mediaPath.length > 0) {
+      this.props.pushWindowPath(mediaPath);
+    }
+  }
+
   _onRequestSaveForm(e) {
 
     // Prevent default behaviour
     e.preventDefault();
 
     let formValue = this.refs["form_resource"].getValue();
+    let resource = ProviderHelpers.getEntry(this.props.computeResource, this.state.resourcePath);
 
     // Passed validation
     if (formValue) {
-      let resource = ProviderHelpers.getEntry(this.props.computeResource, this.state.resourcePath);
-
+      
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
       let newDocument = new Document(resource.response, { 
@@ -123,10 +138,16 @@ export default class PageDialectMediaEdit extends Component {
       this.props.updateResource(newDocument);
 
       this.setState({ formValue: formValue });
+
+      if(resource.action === "FV_RESOURCE_UPDATE_SUCCESS" || resource.action === "FV_RESOURCE_FETCH_SUCCESS") {
+        this._navigateToMediaPage();
+      }
+
     } else {
       //let firstError = this.refs["form_resource_create"].validate().firstError();
       window.scrollTo(0, 0);
     }
+
   }  
 
   render() {
