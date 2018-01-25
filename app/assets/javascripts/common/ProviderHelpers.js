@@ -191,6 +191,7 @@ export default {
   },
   regex: {
     ANYTHING_BUT_SLASH : "([^/]*)",
+    ANY_LANGUAGE_CODE : "(en|fr)",
     WORKSPACE_OR_SECTION : "(sections|Workspaces)",
     KIDS_OR_DEFAULT : "(kids|explore)"
   }
