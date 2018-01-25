@@ -39,6 +39,8 @@ import {
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
   PageDialectContributorsCreate, PageDialectStoriesAndSongsBookEntryCreate } from 'views/pages/create';
 
+import { ServiceShortURL } from 'views/services';
+
 /**
 * Parameter matching class
 */
@@ -205,6 +207,12 @@ export default class AppFrontController extends Component {
           condition: function(params) { return true; },
           target: function(params) { return '/explore/FV/sections/Data/'; }
         }]
+      },
+      {
+        path: [new paramMatch('area', WORKSPACE_OR_SECTION), new paramMatch('dialectFriendlyName', ANYTHING_BUT_SLASH)],
+        title: 'Dialect Short Url',
+        page: <ServiceShortURL />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
