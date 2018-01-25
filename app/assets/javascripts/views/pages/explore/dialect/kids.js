@@ -69,29 +69,33 @@ export default class Kids extends Component {
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/words/categories')}
                             key='words'
-                            title='Words'
-                            ><img src="/assets/images/cover.png" />
+                            // title='Words'
+                            >
+                          <div className={classNames('kids-image-grid-container', 'words-main')} />
                       </GridTile>
 
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/phrases/categories')}
                             key='phrases'
-                            title='Phrases'
-                            ><img src="/assets/images/cover.png" />
+                            // title='Phrases'
+                            >
+                          <div className={classNames('kids-image-grid-container', 'phrases-main')} />
                       </GridTile>
 
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/songs-stories')}
                             key='songs-stories'
-                            title='Songs and Stories'
-                            ><img src="/assets/images/cover.png" />
+                            // title='Songs and Stories'
+                            >
+                          <div className={classNames('kids-image-grid-container', 'songs-stories-main')} />
                       </GridTile>
 
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')}
                             key='games'
-                            title='Games'
-                            ><img src="/assets/images/cover.png" />
+                            // title='Games'
+                            >
+                          <div className={classNames('kids-image-grid-container', 'games-main')} />
                       </GridTile>
 
                     </GridList>
