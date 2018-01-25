@@ -31,13 +31,15 @@ import { PageDialectViewAlphabet } from 'views/pages';
 
 import { PageJigsawGame, PageColouringBook, PageWordSearch, PagePictureThis, PageConcentration, PageWordscramble, PageQuiz, PageHangman} from 'views/pages';
 
-import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageUsersForgotPassword, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
+import { PageGetStarted, PageContribute, PagePlay, PageSearch, PageTasks, PageUsersProfile, PageUsersRegister, PageUserLogin, PageUsersForgotPassword, PageDialectLearnWordsCategories, PageDialectLearnPhrasesCategories } from 'views/pages';
 
 import { PageExploreDialectEdit, PageDialectWordEdit, PageDialectAlphabetCharacterEdit, PageDialectEditMedia, PageDialectGalleryEdit, PageDialectPhraseEdit, PageDialectBookEdit, PageDialectBookEntryEdit } from 'views/pages/edit';
 import {
   PageDialectWordsCreate, PageDialectPhrasesCreate, PageDialectStoriesAndSongsCreate,
   PageDialectGalleryCreate, PageDialectCategoryCreate, PageDialectPhraseBooksCreate,
   PageDialectContributorsCreate, PageDialectStoriesAndSongsBookEntryCreate } from 'views/pages/create';
+
+import { ServiceShortURL } from 'views/services';
 
 /**
 * Parameter matching class
@@ -52,6 +54,7 @@ class paramMatch {
 // Regex helper
 const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH);
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION);
+const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE);
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT));
 
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search'];
@@ -137,6 +140,7 @@ export default class AppFrontController extends Component {
       },
       {
         path: ['home'],
+        alias: [ANY_LANGUAGE_CODE, 'home'],
         page: <PageHome />,
         title: 'Home',
         breadcrumbs: false,
@@ -165,16 +169,6 @@ export default class AppFrontController extends Component {
         page: <PageKidsHome />
       },
       {
-        path: ['get-started'],
-        title: 'Getting Started',
-        page: <PageGetStarted />
-      },
-      {
-        path: ['contribute'],
-        title: 'Contribute',
-        page: <PageContribute />
-      },
-      {
         path: ['play'],
         title: 'Games',
         page: <PagePlay />
@@ -188,6 +182,11 @@ export default class AppFrontController extends Component {
         path: ['register'],
         title: 'Register',
         page: <PageUsersRegister />
+      },
+      {
+        path: ['login'],
+        title: 'User Login',
+        page: <PageUserLogin />
       },
       {
         path: ['profile'],
@@ -208,6 +207,12 @@ export default class AppFrontController extends Component {
           condition: function(params) { return true; },
           target: function(params) { return '/explore/FV/sections/Data/'; }
         }]
+      },
+      {
+        path: [new paramMatch('area', WORKSPACE_OR_SECTION), new paramMatch('dialectFriendlyName', ANYTHING_BUT_SLASH)],
+        title: 'Dialect Short Url',
+        page: <ServiceShortURL />,
+        redirects: [WORKSPACE_TO_SECTION_REDIRECT]
       },
       {
         path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
@@ -658,6 +663,12 @@ export default class AppFrontController extends Component {
     routes.forEach(function(value, key) {
 
       let matchTest = this._matchPath(value.get('path'), pathArray);
+      let matchAlias = this._matchPath(value.get('alias'), pathArray);
+
+      // If only the alias matched, redirect to the original path
+      if (matchAlias.matched && !matchTest.matched) {
+        window.location.replace('/' + value.get('path').join());
+      }
 
       if (matchTest.matched) {
 
@@ -881,6 +892,10 @@ export default class AppFrontController extends Component {
     // Remove empties from path array, return Immutable list
     const currentPathArray = Immutable.fromJS(urlPath.filter(function(e){ return e; }));
 
+    if (!pathMatchArray) {
+      return false;
+    }
+
     if (pathMatchArray.size != currentPathArray.size) {
       return { matched: false, routeParams: {} };
     }
@@ -929,6 +944,7 @@ export default class AppFrontController extends Component {
     if (!matchedPage) {
       page = <div>404</div>;
     } else {
+
       let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
 
       // For print view return page only
