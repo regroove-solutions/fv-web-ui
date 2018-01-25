@@ -142,7 +142,9 @@ export default class Search extends DataListView {
 			e.preventDefault();
 		}
 
-		let form = this.refs["search_form"];
+		//let form = this.refs["search_form"];
+		let form = this.refs.search_form;
+
 		let properties = FormHelpers.getProperties(form);
 
 		if (Object.keys(properties).length != 0) {
