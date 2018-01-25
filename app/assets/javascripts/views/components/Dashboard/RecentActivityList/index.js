@@ -14,8 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component} from 'react';
-import provide from 'react-redux-provide';
 import selectn from 'selectn';
+
+import NavigationHelpers from 'common/NavigationHelpers';
 
 export default class RecentActivityList extends Component {
 
@@ -34,14 +35,12 @@ export default class RecentActivityList extends Component {
   _formatLink(path, docType) {
 	  
 	  switch(docType) {
-	  	case "word":
-	  		path = path.replace("/Dictionary/", "/learn/words/");
-	  		return "/explore" + path;
+			case "word":
+				return NavigationHelpers.navigate('/' + this.props.theme + path.replace("/Dictionary/", "/learn/words/"), null, true);
 	  	break;
 	  	
 	  	case "phrase":
-	  		path = path.replace("/Dictionary/", "/learn/phrases/");
-	  		return "/explore" + path;
+			return NavigationHelpers.navigate('/' + this.props.theme + path.replace("/Dictionary/", "/learn/phrases/"), null, true);
 	  	break;
 
 	  	case "song":

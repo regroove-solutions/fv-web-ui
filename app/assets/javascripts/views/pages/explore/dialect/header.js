@@ -71,9 +71,9 @@ export default class Header extends Component {
       position: 'relative',
       minHeight: '400px',
       backgroundColor: 'transparent',
-      backgroundSize: '100vw auto',
+      backgroundSize: 'cover',
       backgroundImage: 'url("' + portalBackgroundImagePath + '")',
-      backgroundPosition: 'center center',
+      backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat'
     };
 
@@ -85,7 +85,7 @@ export default class Header extends Component {
 
 			        {(() => {
                 if (selectn("isConnected", login) || selectn('response.properties.fv-portal:greeting', portal.compute) || selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute)) {
-                  return <h1 className={classNames('display', 'dialect-greeting-container')}>
+                  return <h1 className={classNames('display', 'dialect-greeting-container', selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute) ? 'has-audio' : '')}>
                     <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', dialect.compute)}} renderPartial={true}>
                       <EditableComponentHelper className="fv-portal-greeting" isSection={isSection} computeEntity={portal.compute} updateEntity={portal.update} property="fv-portal:greeting" entity={selectn('response', portal.compute)} />
                     </AuthorizationFilter>
