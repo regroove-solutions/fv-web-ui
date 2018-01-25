@@ -764,7 +764,7 @@ export default class AppFrontController extends Component {
       }
     }
 
-    if(selectn('computeLogin.isConnected', this.props) && !selectn('computeLogin.isFetching',this.props) && selectn('computeLogin.isNewLogin', this.props))
+    if(selectn('computeLogin.isConnected', this.props) && selectn('computeLogin.isNewLogin', this.props))
     {
       let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences);
 
