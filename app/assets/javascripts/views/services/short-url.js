@@ -18,6 +18,8 @@ import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
+import ProviderHelpers from 'common/ProviderHelpers';
+
 /**
 * Dialect portal page showing all the various components of this dialect.
 */
