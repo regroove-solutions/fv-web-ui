@@ -26,7 +26,7 @@ var UserPreferences = t.maybe(t.struct({
 const fields = {
   FVWord: Object.assign({}, Dublincore, FVCore, {
     'fv-word:categories' : t.list(t.String),
-    'fv-word:pronunciation' : t.String,
+    'fv-word:pronunciation' : t.maybe(t.String),
     'fv-word:related_phrases' : t.list(t.String),
     'fv-word:part_of_speech' : t.String,
     'fv-word:available_in_games' : t.Boolean
