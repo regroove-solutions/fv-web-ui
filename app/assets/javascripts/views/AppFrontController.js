@@ -942,7 +942,7 @@ export default class AppFrontController extends Component {
     let footer = <Footer className={'footer-' + theme + '-theme'} />;
 
     if (!matchedPage) {
-      page = <div>404</div>;
+      page = <div><h1>404 - Page Not Found</h1><p>Please report this error via the "Provide Feedback" feature so that we can fix it.</p><p>Include what link or action you took to get to this page.</p><p>Thank you!</p></div>;
     } else {
 
       let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });

@@ -72,7 +72,7 @@ export default class PromiseWrapper extends Component {
       if (!reducedOperation || (reducedOperation.isError && selectn('message', reducedOperation))) {
 
         if (!this.props.renderOnError) { 
-          render = <div><h1>404</h1></div>;
+          render = <div><h1>404 - Page Not Found</h1><p>Please report this error via the "Provide Feedback" feature so that we can fix it.</p><p>Include what link or action you took to get to this page.</p><p>Thank you!</p></div>;
         }
 
         statusMessage = selectn('message', reducedOperation);
