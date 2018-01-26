@@ -37,7 +37,7 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
 
-const FilteredPortalList = withFilter(PortalList);
+//const FilteredPortalList = withFilter(PortalList);
 
 /**
 * Explore Archive page shows all the families in the archive
@@ -140,7 +140,7 @@ export default class ExploreDialects extends Component {
       items: sortedPortals
     };
 
-    let portalList = <FilteredPortalList {...portalListProps} />;
+    let portalList = <PortalList {...portalListProps} cols={4} />;
 
     if (isKidsTheme) {
       portalList = <PortalList {...portalListProps} cols={6} />
