@@ -41,7 +41,7 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_COL: 'fv:definitions/0/translation', // 'fv:custom_order',
     DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
