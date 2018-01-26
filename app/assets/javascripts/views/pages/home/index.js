@@ -72,7 +72,7 @@ export default class PageHome extends Component {
       dialectsPath: '/' + this.props.properties.domain + '/sections/',
     };
 
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
+    ['_onNavigateRequest', '_getBlockByArea'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   componentDidMount() {
@@ -87,6 +87,10 @@ export default class PageHome extends Component {
 
   _onNavigateRequest(path) {
     this.props.pushWindowPath(path);
+  }
+
+  _getBlockByArea(page, area) {
+    return (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == area);}));
   }
 
   render() {
@@ -148,12 +152,25 @@ export default class PageHome extends Component {
 
             <div className={classNames('row')} style={{margin:'25px 0'}}>
 
-              <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                <TextHeader title="TOOLS &amp; RESOURCES" properties={this.props.properties} />
+              <div>
+                { this._getBlockByArea(page, 1).map(function(block, i) {
+                  return <div key={i} className={classNames('col-xs-12')}>
+                          <div className="body">
+                            <h2 style={{fontWeight: 500}}>{selectn('title', block)}</h2>
+                            <p dangerouslySetInnerHTML={{__html: selectn('text', block)}}></p>
+                          </div>
+                        </div>;
+                })}
               </div>
 
+            </div>
+
+            <div className={classNames('row')} style={{margin:'25px 0'}}>
+
+              {(this._getBlockByArea(page, 2).length > 0) ? <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}><TextHeader title="TOOLS &amp; RESOURCES" properties={this.props.properties} /></div> : null }
+
               <div>
-                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 1);})).map(function(block, i) {
+                { this._getBlockByArea(page, 2).map(function(block, i) {
                   return <div key={i} className={classNames('col-xs-12', 'col-md-3')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
                 })}
               </div>
@@ -161,12 +178,10 @@ export default class PageHome extends Component {
 
             <div className={classNames('row')} style={{margin:'25px 0'}}>
               
-              <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                <TextHeader title="NEWS &amp; UPDATES" properties={this.props.properties} />
-              </div>
+              {(this._getBlockByArea(page, 3).length > 0) ? <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}><TextHeader title="NEWS &amp; UPDATES" properties={this.props.properties} /></div> : null }
 
               <div>
-                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 2);})).map(function(block, i) {
+                { this._getBlockByArea(page, 3).map(function(block, i) {
                   return <div key={i} className={classNames('col-xs-12', 'col-md-3')}><IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color}/></div>;
                 })}
               </div>
@@ -175,12 +190,10 @@ export default class PageHome extends Component {
 
             <div className={classNames('row')} style={{margin:'25px 0'}}>
 
-              <div className={classNames('col-xs-12')}>
-                <TextHeader title="COMPATIBILITY" properties={this.props.properties} />
-              </div>
+              {(this._getBlockByArea(page, 4).length > 0) ? <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}><TextHeader title="COMPATIBILITY" properties={this.props.properties} /></div> : null }
 
               <div>
-                { (selectn('fvpage:blocks', page) || []).filter((function (block) { return (block.area == 3);})).map(function(block, i) {
+                { this._getBlockByArea(page, 4).map(function(block, i) {
                   return <div key={i} className={classNames('col-xs-12')}>
                           <div className="body">
                             <h2 style={{fontWeight: 500}}>{selectn('title', block)}</h2>
