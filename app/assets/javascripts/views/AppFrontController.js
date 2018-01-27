@@ -66,7 +66,7 @@ const WORKSPACE_TO_SECTION_REDIRECT = {
 
 const NOT_CONNECTED_REDIRECT = {
   condition: function(params) { return (selectn("isConnected", params.props.computeLogin) === false) },
-  target: function(params) { return '/home'; }
+  target: function(params) { return '/'; }
 };
 
 class Redirecter extends Component {
@@ -113,11 +113,11 @@ export default class AppFrontController extends Component {
     const routes = Immutable.fromJS([
       {
         path: [],
-        page: <PageIntro />,
+        alias: [ANY_LANGUAGE_CODE, 'home'],
+        page: <PageHome />,
+        title: 'Home',
         breadcrumbs: false,
         frontpage: true,
-        navigation: false,
-        title: 'Welcome',
         redirects: [{
           // For any start page value other than a dialect, simple redirect to that start page
           condition: function(params) {
@@ -137,14 +137,6 @@ export default class AppFrontController extends Component {
             return '/' + (start_page == 'my_kids_dialect' ? 'kids' : 'explore') + selectn('preferences.primary_dialect_path', params.props);
           }
         }]
-      },
-      {
-        path: ['home'],
-        alias: [ANY_LANGUAGE_CODE, 'home'],
-        page: <PageHome />,
-        title: 'Home',
-        breadcrumbs: false,
-        frontpage: true
       },
       {
         path: ['content', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
@@ -872,7 +864,7 @@ export default class AppFrontController extends Component {
 
             })()}
 
-            <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/home">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
+            <ol className={classNames('breadcrumb', 'pull-left')}><li><Link href="/">Home</Link></li>{this._renderBreadcrumb(matchedPage, reactElement.props.routeParams)}</ol>
 
           </div>
         </div>

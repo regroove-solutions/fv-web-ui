@@ -20,7 +20,7 @@ import Nuxeo from 'nuxeo';
 
 import BaseOperations from 'operations/BaseOperations';
 
-const TIMEOUT = 15000;
+const TIMEOUT = 60000;
 
 export default class DirectoryOperations extends BaseOperations {
 
