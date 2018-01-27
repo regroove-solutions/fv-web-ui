@@ -111,7 +111,7 @@ const reducers = {
       break;
 
       case LOGIN_SUCCESS:
-        return Object.assign({}, state, { isFetching: false, success: true, isConnected: !action.isAnonymous, isNewLogin: isNewLoginValue });
+        return Object.assign({}, state, { response: action.user, isFetching: false, success: true, isConnected: !action.isAnonymous, isNewLogin: isNewLoginValue });
       break;
 
       case GET_CURRENT_USER_SUCCESS:
