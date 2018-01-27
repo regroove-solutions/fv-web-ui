@@ -81,7 +81,7 @@ export default class PageHome extends Component {
                         <p style={{marginTop: '15px'}}><img src="/assets/images/intro-english.gif" alt="Language Legacies Celebrating Indigenous Cultures" className="img-responsive" /></p>
                         <p><img src="/assets/images/logo.gif" alt="FirstVoices Logo" className="img-responsive" /></p>
                         <a href="http://legacy.firstvoices.com/"><RaisedButton label="Legacy Site" style={{textAlign: 'center', marginRight:'14px'}} /></a>
-                        <RaisedButton label="Enter FirstVoices" onTouchTap={(e, v) => this._onNavigateRequest('/home')} style={{textAlign: 'center'}} />
+                        <RaisedButton label="Enter FirstVoices" onTouchTap={(e, v) => this._onNavigateRequest('/')} style={{textAlign: 'center'}} />
                         <p><img src="/assets/images/intro-french.gif" alt="Des patrimoines linguistiques célébrant des cultures indigènes" className="img-responsive" /></p>
                     </div>
                     <div className={classNames('col-xs-12', 'col-md-4')} style={{textAlign: 'right'}}>

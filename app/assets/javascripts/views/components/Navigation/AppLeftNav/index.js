@@ -58,7 +58,7 @@ export default class AppLeftNav extends Component {
       {
         id: 'home',
         label: "Home",
-        path: "/home"
+        path: "/"
       },
       {
         id: 'get-started',
@@ -132,7 +132,7 @@ export default class AppLeftNav extends Component {
 
     if (path == '/logout/') {
       this.props.logout();
-      this.props.pushWindowPath( '/home' );
+      this.props.pushWindowPath( '/' );
     } else {
       // Request to navigate to
       this.props.pushWindowPath(path);
