@@ -22,7 +22,7 @@
 			"start_page": {
 				"my_dialect": "my_dialect",
 				"my_kids_dialect": "my_kids_dialect",
-				"home": "/home",
+				"home": "/",
 				"all_dialects": "/explore/FV/Workspaces/Data/",
 				"contribute": "/contribute",
 				"kids": "/kids"
