@@ -8,7 +8,7 @@ export default class BaseOperations {
       baseURL: ConfGlobal.baseURL,
       restPath: 'site/api/v1',
       automationPath: 'site/automation',
-      timeout: 30000
+      timeout: 60000
     })
   };
 
