@@ -31,6 +31,9 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import FacetFilterList from 'views/components/Browsing/facet-filter-list';
 
+import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
+
+
 /**
 * Learn phrases
 */
@@ -96,7 +99,14 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     const phraseListView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
 
     // Render kids view
-    if (isKidsTheme) {
+    if (isKidsTheme || isMobile) {
+
+      let pageSize = 4; // Items per Kids page
+
+      // Mobile but not Kids
+      if(!isKidsTheme && isMobile) {
+        pageSize = 10; // Items per page for mobile, but not Kids
+      }
 
       let kidsFilter = this.state.filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1');
 
@@ -104,7 +114,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
               <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
-                  {React.cloneElement(phraseListView, { gridListView: true, gridCols: 2, DEFAULT_PAGE_SIZE: 4, filter: kidsFilter })}
+                  {React.cloneElement(phraseListView, { gridListView: true, gridCols: 2, DEFAULT_PAGE_SIZE: pageSize, filter: kidsFilter })}
                 </div>
               </div>
 
