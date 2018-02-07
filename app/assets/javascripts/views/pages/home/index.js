@@ -42,6 +42,8 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 import IntroCardView from 'views/components/Browsing/intro-card-view';
 import TextHeader from 'views/components/Document/Typography/text-header';
 
+import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
+
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -95,17 +97,19 @@ export default class PageHome extends Component {
 
   render() {
 
+    let bgAlign = 'center';
+
+    if(isMobile) {
+      bgAlign = 'left';
+    }
+
     const homePageStyle = {
       position: 'relative',
       minHeight: '155px',
-      //height: '650px',
-      //backgroundColor: 'transparent',
-      //backgroundSize: '115%',
       backgroundAttachment: 'fixed',
-      //backgroundImage: 'url("/assets/images/intro-background.png")',
-      background: 'transparent url("/assets/images/fv-intro-background.jpg") bottom center no-repeat',
+      background: 'transparent url("/assets/images/fv-intro-background.jpg") bottom '+ bgAlign +' no-repeat',
       backgroundSize: 'cover',
-      //backgroundPosition: '-280px -500px',
+      boxShadow: 'inset 0px 64px 112px 0 rgba(0,0,0,0.6)',
       overflow: 'hidden'
     };
 
