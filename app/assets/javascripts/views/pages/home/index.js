@@ -99,11 +99,12 @@ export default class PageHome extends Component {
       position: 'relative',
       minHeight: '155px',
       //height: '650px',
-      backgroundColor: 'transparent',
+      //backgroundColor: 'transparent',
       //backgroundSize: '115%',
-      backgroundSize: 'cover',
       backgroundAttachment: 'fixed',
-      backgroundImage: 'url("/assets/images/intro-background.png")',
+      //backgroundImage: 'url("/assets/images/intro-background.png")',
+      background: 'transparent url("/assets/images/fv-intro-background.jpg") bottom center no-repeat',
+      backgroundSize: 'cover',
       //backgroundPosition: '-280px -500px',
       overflow: 'hidden'
     };
