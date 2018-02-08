@@ -1,16 +1,16 @@
 /**
- * 
+ *
  */
 package ca.firstvoices.nativeorder.services;
 
 import java.util.Arrays;
 import java.util.Comparator;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 import ca.firstvoices.services.AbstractService;
+
 
 /**
  * @author loopingz
@@ -22,6 +22,7 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
         // TODO Know how the Alphabet is ordered
         DocumentModelList chars = session.query("SELECT * FROM FVCharacter WHERE ecm:ancestorId='"+dialect.getId()+"'");
         DocumentModel[] models = new DocumentModel[chars.size()];
+
         models = chars.toArray(models);
         Arrays.sort(models, new Comparator<DocumentModel>() {
 
@@ -33,7 +34,7 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
                     return 0;
                 }
                 if (title2 == null) {
-                    return -1;                    
+                    return -1;
                 }
                 if (title1 == null) {
                     return 1;
@@ -46,7 +47,7 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
                     return 0;
                 }
             }
-            
+
         });
         return models;
     }
@@ -75,15 +76,20 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
         computeNativeOrderTranslation(chars, session.query("SELECT * FROM FVPhrase WHERE ecm:ancestorId='"+dialect.getId()+"'"));
         session.save();
     }
-    
+
     protected void computeNativeOrderTranslation(DocumentModel[] chars, DocumentModel element) {
+    	if( element.isImmutable() ) {
+    		// We cannot update this element, no point in going any further
+    		return;
+    	}
         String title = (String) element.getPropertyValue("dc:title");
         String nativeTitle = "";
         while (title.length() > 0) {
             boolean found = false;
             for (DocumentModel charDoc : chars) {
                 String charValue = (String) charDoc.getPropertyValue("dc:title");
-                if (title.startsWith(charValue)) {
+                String ucCharValue = (String) charDoc.getPropertyValue("fvcharacter:upper_case_character");
+                if ((charValue != null && title.startsWith(charValue)) || (ucCharValue != null && title.startsWith(ucCharValue))) {
                     nativeTitle += new Character((char) (33 + (Long) charDoc.getPropertyValue("fvcharacter:alphabet_order"))).toString();
                     title = title.substring(charValue.length());
                     found = true;
@@ -99,7 +105,10 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
                 title = title.substring(1);
             }
         }
-        element.setPropertyValue("fv:custom_order", nativeTitle);
+
+        if( !element.isImmutable() ) {
+        	element.setPropertyValue("fv:custom_order", nativeTitle);
+        }
         element.getCoreSession().saveDocument(element);
     }
 
