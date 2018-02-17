@@ -2,13 +2,13 @@
   <require>ca.firstvoices.nativeorder.services.NativeOrderComputeServiceImpl</require>
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
-    <listener enabled="false" name="ComputeNativeOrderListener" postCommit="false" async="false"
+    <listener name="ComputeNativeOrderListener" postCommit="false" async="false"
       class="ca.firstvoices.nativeorder.listeners.ComputeNativeOrderListener" priority="150">
       <event>beforeDocumentModification</event>
       <event>documentCreated</event>
     </listener>
     
-    <listener enabled="false" name="ComputeNativeOrderAlphabetListener" postCommit="false" async="false"
+    <listener name="ComputeNativeOrderAlphabetListener" postCommit="false" async="false"
       class="ca.firstvoices.nativeorder.listeners.ComputeNativeOrderAlphabetListener" priority="250">
       <event>beforeDocumentModification</event>
       <event>documentCreated</event>
