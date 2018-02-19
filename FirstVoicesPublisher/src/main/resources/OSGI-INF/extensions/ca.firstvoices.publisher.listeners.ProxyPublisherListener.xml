@@ -11,6 +11,7 @@
     
     <listener name="DocumentDeletedUnpublishListener" async="false" postCommit="false"
       class="ca.firstvoices.publisher.listeners.DocumentDeletedUnpublishListener" priority="150">
+      <event>lifecycle_transition_event</event>
       <event>aboutToRemove</event>
     </listener>
     

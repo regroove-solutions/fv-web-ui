@@ -47,7 +47,8 @@ public class ProxyPublisherListener implements EventListener {
         	} else {
         		service.publish(doc);
         	}
-        } else if ("Unpublish".equals(transition) || "Disable".equals(transition)){
+
+        } else if ( "Unpublish".equals(transition) || "Disable".equals(transition) || (( "delete".equals(transition) || "Delete".equals(transition) ) && "Published".equals(transitionFrom))){
             service.unpublish(doc);
         }
 
