@@ -57,7 +57,7 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
         	sortedModels[ i ] = toAdd;
         }
 
-return sortedModels;
+        return sortedModels;
 //        try {
 //        Arrays.sort(models, new Comparator<DocumentModel>() {
 //
@@ -95,11 +95,17 @@ return sortedModels;
      */
     @Override
     public void computeAssetNativeOrderTranslation(DocumentModel asset) {
-        DocumentModel dialect = getDialect(asset);
-        CoreSession session = asset.getCoreSession();
-        // First get the native alphabet
-        DocumentModel[] chars = loadAlphabet(session, dialect);
-        computeNativeOrderTranslation(chars, asset);
+    	// appears that there's a lot of processing going on within the following methods
+    	// last of which, computeNativeOrderTranslation will just return if the asset is immutable
+    	// so, instead of processing all the dialect data, and the alphabet only to do nothing,
+    	// lets check that here
+    	if( !asset.isImmutable() ) {
+    		DocumentModel dialect = getDialect(asset);
+    		CoreSession session = asset.getCoreSession();
+    		// First get the native alphabet
+    		DocumentModel[] chars = loadAlphabet(session, dialect);
+    		computeNativeOrderTranslation(chars, asset);
+    	}
     }
 
     /* (non-Javadoc)
