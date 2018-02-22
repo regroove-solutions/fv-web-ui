@@ -145,6 +145,8 @@ export default class PageToolbar extends Component {
 
     const { computeEntity, computePermissionEntity, computeLogin } = this.props;
 
+    let showPublish = false; // Temporarily Hide/Show the Publish Dialect Toggle Switch
+
     let enableTasks = [];
     let disableTasks = [];
     let publishTasks = [];
@@ -189,127 +191,135 @@ export default class PageToolbar extends Component {
       });
     }
 
-    return <Toolbar className="page-toolbar">
+    return (
+      <Toolbar className="page-toolbar">
 
-                  <ToolbarGroup className="visible-xs" style={{textAlign: 'right'}}>
-                    <IconButton iconClassName="material-icons" onTouchTap={(e) => {this.setState({showActionsMobile: !this.state.showActionsMobile}); e.preventDefault(); }}>menu</IconButton>
-                  </ToolbarGroup>
+        <ToolbarGroup className="visible-xs" style={{textAlign: 'right'}}>
+          <IconButton iconClassName="material-icons" onTouchTap={(e) => {this.setState({showActionsMobile: !this.state.showActionsMobile}); e.preventDefault(); }}>menu</IconButton>
+        </ToolbarGroup>
 
-                  <ToolbarGroup float="left" className={classNames({'hidden-xs': !this.state.showActionsMobile})}>
+        <ToolbarGroup float="left" className={classNames({'hidden-xs': !this.state.showActionsMobile})}>
 
-                    {this.props.children}
+          {this.props.children}
 
-                    {(() => {
-                      if (this.props.actions.includes('workflow')) {
+          {(() => {
+            if (this.props.actions.includes('workflow')) {
+              return (
+                <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
+                  <div>
+                    <span style={{paddingRight: '15px'}}>REQUEST: </span>
+                    <RaisedButton label={"Enable (" + (enableTasks.length + this.state.enableActions ) + ")"} disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
+                    <RaisedButton label={"Disable (" + (disableTasks.length + this.state.disableActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
+                    <RaisedButton label={"Publish (" + (publishTasks.length + this.state.publishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
+                    <RaisedButton label={"Unpublish (" + (unpublishTasks.length + this.state.unpublishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+                  </div>
+                </AuthorizationFilter>
+              );
+            }
+          })()}
 
-                          return <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
+          {(() => {
+            if (this.props.actions.includes('enable-toggle')) {
+              return (
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                  <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                    <Toggle
+                      toggled={documentEnabled || documentPublished}
+                      onToggle={this._documentActionsToggleEnabled}
+                      ref="enabled"
+                      disabled={documentPublished}
+                      name="enabled"
+                      value="enabled"
+                      label="Enabled"/>
+                  </div>
+                </AuthorizationFilter>
+              );
+            }
+          })()}
 
-                            <div>
+          {(() => {
+            if (this.props.actions.includes('publish-toggle')) {
+              if(showPublish) {
+                return (
+                  <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                    <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                      <Toggle
+                        toggled={documentPublished}
+                        onToggle={this._documentActionsTogglePublished}
+                        disabled={!documentEnabled && !documentPublished}
+                        name="published"
+                        value="published"
+                        label="Published"/>
+                    </div>
+                  </AuthorizationFilter>
+                );
+              }
+              else {
+                return (<div style={{display:'inline-block', float: 'left', paddingTop:'16px',}}>Publishing temporarily unavailable.</div>);
+              }
+            }
+          })()}
 
-                              <span style={{paddingRight: '15px'}}>REQUEST: </span>
+        </ToolbarGroup>
 
-                              <RaisedButton label={"Enable (" + (enableTasks.length + this.state.enableActions ) + ")"} disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
-                              <RaisedButton label={"Disable (" + (disableTasks.length + this.state.disableActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
-                              <RaisedButton label={"Publish (" + (publishTasks.length + this.state.publishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
-                              <RaisedButton label={"Unpublish (" + (unpublishTasks.length + this.state.unpublishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+        <ToolbarGroup float="right" className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
 
-                            </div>
+          {(() => {
+            if (this.props.actions.includes('publish')) {
+              return (
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                  <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Portal Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
+                </AuthorizationFilter>
+              );
+            }
+          })()}
 
-                          </AuthorizationFilter>;
-                      }
-                    })()}
+          {(() => {
+            if (this.props.actions.includes('edit')) {
+              return (
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                  <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                </AuthorizationFilter>
+              );
+            }
+          })()}
 
+          {(() => {
+            if (this.props.actions.includes('add-child')) {
+              return (
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                  <RaisedButton label="Add New Page" style={{marginRight: '5px', marginLeft: '0'}} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                </AuthorizationFilter>
+              );
+            }
+          })()}
 
-                    {(() => {
-                      if (this.props.actions.includes('enable-toggle')) {
+          <ToolbarSeparator className="hidden-xs" />
 
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                            <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                              <Toggle
-                                toggled={documentEnabled || documentPublished}
-                                onToggle={this._documentActionsToggleEnabled}
-                                ref="enabled"
-                                disabled={documentPublished}
-                                name="enabled"
-                                value="enabled"
-                                label="Enabled"/>
-                            </div>
-                          </AuthorizationFilter>;
-                      }
-                    })()}
+          {(() => {
+            if (this.props.actions.includes('more-options')) {
+              
+              let children = [
+                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} key="reports" primaryText="Reports" />,
+                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} key="media" primaryText="Media Browser" />,
+                <AuthorizationFilter key="users" filter={{permission: 'Write', entity: selectn('response', computeEntity)}}>
+                  <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')} primaryText="Users" />
+                </AuthorizationFilter>];
 
-                    {(() => {
-                      if (this.props.actions.includes('publish-toggle')) {
+              return React.createElement(UIHelpers.isViewSize('xs') ? Menu : IconMenu, {
+                anchorOrigin: {horizontal: 'right', vertical: 'top'},
+                targetOrigin: {horizontal: 'right', vertical: 'top'},
+                iconButtonElement:
+                  <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true} className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
+                    <NavigationExpandMoreIcon />
+                  </IconButton>
+                }, children);
+            }
+          })()}
 
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                            <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                              <Toggle
-                                toggled={documentPublished}
-                                onToggle={this._documentActionsTogglePublished}
-                                disabled={!documentEnabled && !documentPublished}
-                                name="published"
-                                value="published"
-                                label="Published"/>
-                            </div>
-                          </AuthorizationFilter>;
-                      }
-                    })()}
+        </ToolbarGroup>
 
-                  </ToolbarGroup>
-
-                  <ToolbarGroup float="right" className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
-
-                    {(() => {
-                      if (this.props.actions.includes('publish')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                          <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    {(() => {
-                      if (this.props.actions.includes('edit')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                          <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    {(() => {
-                      if (this.props.actions.includes('add-child')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                                <RaisedButton label="Add New Page" style={{marginRight: '5px', marginLeft: '0'}} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    <ToolbarSeparator className="hidden-xs" />
-
-                    {(() => {
-                      if (this.props.actions.includes('more-options')) {
-                        
-                        let children = [
-                          <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} key="reports" primaryText="Reports" />,
-                          <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} key="media" primaryText="Media Browser" />,
-                          <AuthorizationFilter key="users" filter={{permission: 'Write', entity: selectn('response', computeEntity)}}>
-                            <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')} primaryText="Users" />
-                          </AuthorizationFilter>];
-
-                        return React.createElement(UIHelpers.isViewSize('xs') ? Menu : IconMenu, {
-                          anchorOrigin: {horizontal: 'right', vertical: 'top'},
-                          targetOrigin: {horizontal: 'right', vertical: 'top'},
-                          iconButtonElement:
-                            <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true} className={classNames( {'hidden-xs': !this.state.showActionsMobile})}>
-                              <NavigationExpandMoreIcon />
-                            </IconButton>
-                          }, children);
-                      }
-                    })()}
-
-
-                    
-                  </ToolbarGroup>
-
-                </Toolbar>;
+      </Toolbar>
+    );
   }
 }

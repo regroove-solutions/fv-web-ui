@@ -53,15 +53,17 @@ const proxiesKeys = [
 
 export default {
   getEntry: function (wordResults, path) {
-    if (!wordResults || wordResults.isEmpty() || !path)
+    if (!wordResults || wordResults.isEmpty() || !path) {
       return null;
+    }
 
     let result = wordResults.find(function(entry) {
         return entry.get('id') === path;
     });
 
-	if (result)
+    if (result) {
     	return result.toJS();
+    }
 
     return null;
   },
