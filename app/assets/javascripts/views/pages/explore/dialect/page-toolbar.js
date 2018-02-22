@@ -189,6 +189,8 @@ export default class PageToolbar extends Component {
       });
     }
 
+    let showPublish = false;
+
     return <Toolbar className="page-toolbar">
 
                   <ToolbarGroup className="visible-xs" style={{textAlign: 'right'}}>
@@ -241,6 +243,8 @@ export default class PageToolbar extends Component {
                     {(() => {
                       if (this.props.actions.includes('publish-toggle')) {
 
+                        if(showPublish) {
+
                           return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                             <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
                               <Toggle
@@ -252,6 +256,10 @@ export default class PageToolbar extends Component {
                                 label="Published"/>
                             </div>
                           </AuthorizationFilter>;
+                        }
+                        else {
+                          return (<div style={{display:'inline-block', float: 'left', paddingTop:'16px',}}>Publishing temporarily unavailable.</div>);
+                        }
                       }
                     })()}
 
@@ -261,9 +269,15 @@ export default class PageToolbar extends Component {
 
                     {(() => {
                       if (this.props.actions.includes('publish')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                          <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
-                        </AuthorizationFilter>;
+                        
+                        if(showPublish) {
+                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                            <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
+                          </AuthorizationFilter>;
+                        }
+                        else {
+                          return;
+                        }
                       }
                     })()}
 
