@@ -44,6 +44,7 @@ export default class PageToolbar extends Component {
   static defaultProps = {
     publishChangesAction: null,
     handleNavigateRequest: null,
+    showPublish: true,
     actions: [] // ['workflow', 'edit', 'add-child', 'publish-toggle', 'enable-toggle', 'publish', 'more-options']
   };
 
@@ -60,7 +61,8 @@ export default class PageToolbar extends Component {
     enableToggleAction: PropTypes.func,
     children: PropTypes.node,
     label: PropTypes.string,
-    actions: PropTypes.array
+    actions: PropTypes.array,
+    showPublish: PropTypes.bool
   };
 
   static contextTypes = {
@@ -189,8 +191,6 @@ export default class PageToolbar extends Component {
       });
     }
 
-    let showPublish = false;
-
     return <Toolbar className="page-toolbar">
 
                   <ToolbarGroup className="visible-xs" style={{textAlign: 'right'}}>
@@ -243,7 +243,7 @@ export default class PageToolbar extends Component {
                     {(() => {
                       if (this.props.actions.includes('publish-toggle')) {
 
-                        if(showPublish) {
+                        if (this.props.showPublish) {
 
                           return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                             <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
@@ -258,7 +258,7 @@ export default class PageToolbar extends Component {
                           </AuthorizationFilter>;
                         }
                         else {
-                          return (<div style={{display:'inline-block', float: 'left', paddingTop:'16px',}}>Publishing temporarily unavailable.</div>);
+                          return (<div style={{display:'inline-block', float: 'left', paddingTop:'16px'}}>To Publish/Unpublish an Entire {this.props.label} please contact us.</div>);
                         }
                       }
                     })()}
@@ -269,15 +269,9 @@ export default class PageToolbar extends Component {
 
                     {(() => {
                       if (this.props.actions.includes('publish')) {
-                        
-                        if(showPublish) {
                           return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
                             <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
                           </AuthorizationFilter>;
-                        }
-                        else {
-                          return;
-                        }
                       }
                     })()}
 
