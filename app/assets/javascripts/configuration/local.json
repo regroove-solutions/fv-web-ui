@@ -1,7 +1,7 @@
 {
 	"title": "FirstVoices",
 	"domain": "FV",
-	"baseWebUIURL": "http://localhost:3001/",
+	"baseWebUIURL": "https://fv.nuxeocloud.com/",
 	"baseURL": "https://fv.nuxeocloud.com/nuxeo/",
 	"preferences": {
 		"fields": {
