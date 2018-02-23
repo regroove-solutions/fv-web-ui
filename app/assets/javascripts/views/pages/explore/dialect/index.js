@@ -254,6 +254,7 @@ export default class ExploreDialect extends Component {
                             label="Portal"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computeDialect2}
+                            showPublish={false} 
                             actions={['edit', 'publish-toggle', 'enable-toggle', 'publish', 'more-options']}
                             publishToggleAction={this._publishToggleAction}
                             publishChangesAction={this._publishChangesAction}

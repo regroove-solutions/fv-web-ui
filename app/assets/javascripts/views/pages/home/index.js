@@ -57,8 +57,8 @@ export default class PageHome extends Component {
     computeLogin: PropTypes.object.isRequired,
     queryPage: PropTypes.func.isRequired,
     computePage: PropTypes.object.isRequired,
-    fetchPortals: PropTypes.func.isRequired,
-    computePortals: PropTypes.object.isRequired
+    //fetchPortals: PropTypes.func.isRequired,
+    //computePortals: PropTypes.object.isRequired
   };
 
   /*static contextTypes = {
@@ -83,7 +83,7 @@ export default class PageHome extends Component {
     '&sortOrder=ASC' +
     '&sortBy=dc:title');
 
-    this.props.fetchPortals(this.state.dialectsPath, ' AND fv-portal:map_marker_coords IS NOT NULL');
+    //this.props.fetchPortals(this.state.dialectsPath, ' AND fv-portal:map_marker_coords IS NOT NULL');
   }
   
 
@@ -116,17 +116,17 @@ export default class PageHome extends Component {
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pagePath,
       'entity': this.props.computePage
-    },
+    }/*,
     {
       'id': this.state.dialectsPath,
       'entity': this.props.computePortals
-    }]);
+    }*/]);
 
     const computePage = ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath);
-    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.dialectsPath);
+    //const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.dialectsPath);
 
     const page = selectn('response.entries[0].properties', computePage);
-    const dialects = selectn('response.entries', computePortals);
+    //const dialects = selectn('response.entries', computePortals);
 
     const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
     const primary2Color = selectn('theme.palette.baseTheme.palette.primary2Color', this.props.properties);
@@ -139,7 +139,7 @@ export default class PageHome extends Component {
               <div className={classNames('col-xs-12')} style={{height: '100%'}}>
 
                 <div className="hidden-xs" style={{position: 'absolute', left: '25px', top: '25px', width: '40%'}} className={classNames({'invisible': !this.state.mapVisible})}>
-                  <Map dialects={dialects} />
+                  {/*return <Map dialects={dialects} />*/}
                 </div>
 
                 <div className="home-intro-block">
