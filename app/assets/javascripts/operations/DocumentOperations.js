@@ -104,35 +104,6 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   /**
-  * Deletes a single document
-  */
-  static deleteDocument(pathOrUid = "", type, headers = {}, params = {}) {
-
-    let properties = this.properties;
-
-    return new Promise(
-      function(resolve, reject) {
-        properties.client
-        .repository()
-        .delete(pathOrUid, headers)
-        .then((res) => {
-          resolve(res);
-        }).catch((error) => {
-
-          if (error.hasOwnProperty('response')) {
-            error.response.json().then(
-              (jsonError) => {
-                reject(StringHelpers.extractErrorMessage(jsonError));
-              }
-            );
-          } else { 
-            return reject(error || 'Could not access server');
-          }
-        });
-    });
-  }
-
-  /**
   * Disable document
   */
   static disableDocument(pathOrUid) {

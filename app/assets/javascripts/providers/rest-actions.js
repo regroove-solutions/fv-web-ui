@@ -93,7 +93,7 @@ export default {
 
 			    dispatch( { type: key + '_DELETE_START', pathOrId: pathOrId, message: (messageStart || 'Delete started...') } );
 
-			    return DocumentOperations.deleteDocument(pathOrId, { headers: properties.headers })
+				return DocumentOperations.executeOperation(pathOrId, "Document.FollowLifecycleTransition", {'value': 'delete'})
 			      .then((response) => {
 			        dispatch( { type: key + '_DELETE_SUCCESS', message: (messageSuccess || 'Document deleted successfully!'), response: response, pathOrId: pathOrId } )
 			      }).catch((error) => {
