@@ -5,6 +5,7 @@
 		<operation class="ca.firstvoices.operations.FVDialectRegularDocumentPermissions" replace="true" />
 		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
 		<operation class="ca.firstvoices.operations.FVGenerateJsonStatistics" replace="true" />
+		<operation class="ca.firstvoices.operations.FVSetListenerFlag" replace="true" />
 		
 		<operation class="ca.firstvoices.operations.UserInvite" replace="true" />
 		<operation class="ca.firstvoices.operations.UserInviteApprove" replace="true" />
