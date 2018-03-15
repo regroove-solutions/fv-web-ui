@@ -313,60 +313,25 @@ export default class AppWrapper extends Component {
 
   render() {
 
-    let dialectsWithKeyboards;
-    let keyboardPicker;
-
-    const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/Workspaces');
     const dialectQuery = ProviderHelpers.getEntry(this.props.computeDialect2Query, '/FV/Workspaces');
 
-    if (selectn('success', dialects)) {
+    let controller = null;
 
-      dialectsWithKeyboards = dialects.response.entries.filter(function(dialect){
-        return selectn('properties.fvdialect:keymanweb.length', dialect) > 0;
-      });
+    const computeDialect2 = (!this.state.dialect) ? null : ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
+    let primaryDialectSearchQuery = selectn('response.entries', dialectQuery);
 
-      if (dialectsWithKeyboards.length > 0) {
-        keyboardPicker = <Paper zDepth={1} id="kmw-switcher" style={{position: 'fixed', bottom: '0', right: '0', zIndex: '9999', padding: '5px 15px'}}>
+    let warnings = {};
+    
+    let autoPrimaryDialect;
 
-          Select Keyboard:
+    // If primary dialect was found manually
+    if (primaryDialectSearchQuery && primaryDialectSearchQuery.length > 0) {
+      autoPrimaryDialect = primaryDialectSearchQuery[0];
 
-          <select ref="kmw_keyboard_select" style={{marginLeft: '8px'}} id='KWControl' onChange={this._KMWSwitchKeyboard}>
-
-            <option>Select from list:</option>
-
-            {dialectsWithKeyboards.map(function(dialect){
-              let keyboards = selectn('properties.fvdialect:keymanweb', dialect);
-
-              return keyboards.map(function(keyboard) {
-                return <option value={keyboard['key']} data-keyboard-file={keyboard['jsfile']}>{keyboard['name']}</option>;
-              });
-            })}
-
-          </select>
-
-          <FlatButton style={{marginLeft: '8px'}} onTouchTap={this._KMWToggleKeyboard} label="Show" />
-
-        </Paper>;
+      if (primaryDialectSearchQuery.length > 1) {
+        warnings['multiple_dialects'] = <span><strong>Note:</strong> You're a member of more than one dialect. <a href="/profile">Please configure a primary dialect or select a default starting page.</a></span>;
       }
     }
-
-  let controller = null;
-
-  const computeDialect2 = (!this.state.dialect) ? null : ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
-  let primaryDialectSearchQuery = selectn('response.entries', dialectQuery);
-
-  let warnings = {};
-  
-  let autoPrimaryDialect;
-
-  // If primary dialect was found manually
-  if (primaryDialectSearchQuery && primaryDialectSearchQuery.length > 0) {
-    autoPrimaryDialect = primaryDialectSearchQuery[0];
-
-    if (primaryDialectSearchQuery.length > 1) {
-      warnings['multiple_dialects'] = <span><strong>Note:</strong> You're a member of more than one dialect. <a href="/profile">Please configure a primary dialect or select a default starting page.</a></span>;
-    }
-  }
 
     let preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2) || autoPrimaryDialect);
 
@@ -374,16 +339,16 @@ export default class AppWrapper extends Component {
 
         <AppFrontController preferences={preferences} warnings={warnings} />
 
-        {keyboardPicker}
+        {(() => {
+          if (selectn('response.isAdministrator', this.props.computeLogin) == true) {
+            return <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
 
-        <AuthorizationFilter filter={{role: ['Everything'], entity: selectn('response.entries[0]', dialects), login: this.props.computeLogin}}>
-          <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
-
-              Super Admin Tools: <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
-              {(this.state.adminGuideStarted) ? 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'' : ''}
-
-          </div>
-        </AuthorizationFilter>
+            Super Admin Tools: <FlatButton onTouchTap={this._startAdminGuideAssist.bind(this.props.windowPath)} disabled={this.state.adminGuideStarted} label="Admin Guide Assist" />
+            {(this.state.adminGuideStarted) ? 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'' : ''}
+            
+            </div>;
+          }
+        })()}
 
     </div>;
   }
