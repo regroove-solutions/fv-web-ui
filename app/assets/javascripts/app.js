@@ -15,6 +15,8 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
+import RegisterServiceWorker from './workers/RegisterServiceWorker';
+
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import ThemeManager from 'material-ui/lib/styles/theme-manager';
@@ -32,8 +34,6 @@ import AppWrapper from 'views/AppWrapper';
 require('!style-loader!css-loader!normalize.css');
 require('!style-loader!css-loader!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css');
 require('!style-loader!css-loader!tether-shepherd/dist/css/shepherd-theme-arrows.css');
-
-
 require('bootstrap/less/bootstrap');
 require("styles/main");
 
