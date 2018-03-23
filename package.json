@@ -7,6 +7,9 @@
   "scripts": {
     "test": "gulp build:production"
   },
+  "engines": {
+    "node":">=8.10"
+  },
   "dependencies": {
     "alloyeditor": "^1.5.1",
     "babel-runtime": "~6.26.0",
