@@ -38,7 +38,9 @@ import GeneralList from 'views/components/Browsing/general-list';
 import {CardView} from './list-view';
 
 import withFilter from 'views/hoc/grid-list/with-filter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const DEFAULT_LANGUAGE = 'english';
 
 const FilteredCardList = withFilter(GeneralList);

@@ -13,67 +13,79 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 
 import classNames from 'classnames';
 import selectn from 'selectn';
 
 import ImageGallery from 'react-image-gallery';
 import Preview from 'views/components/Editor/Preview';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Media panel for word or phrase views.
-*/
+ * Media panel for word or phrase views.
+ */
 export default class MediaPanel extends Component {
 
-  static propTypes = {
-    label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    items: PropTypes.array.isRequired,
-    minimal: PropTypes.bool
-  };
+    static propTypes = {
+        label: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        items: PropTypes.array.isRequired,
+        minimal: PropTypes.bool
+    };
 
-  constructor(props, context){
-    super(props, context);
-  }
+    constructor(props, context) {
+        super(props, context);
+    }
 
-  render() {
+    render() {
 
-    const { label, items, type, minimal } = this.props;
+        const {label, items, type, minimal} = this.props;
 
-    return (items.length === 0) ? null :
-    
+        return (items.length === 0) ? null :
+
             <div className={classNames("row", "media-panel", "media-panel-" + type)}>
                 <div className="col-xs-12">
 
-                    <h3>{label}</h3> 
+                    <h3>{label}</h3>
                     {
-                    (items.length === 1) ?
-                    
-                        <Preview
-                        key={selectn('uid', items[0].object)}
-                        styles={{padding: '0px', maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef'}}
-                        expandedValue={items[0].object}
-                        type={type}
-                        minimal={minimal} />  :
+                        (items.length === 1) ?
 
-                        <ImageGallery
-                        showNav={false}
-                        ref={i => this._imageGallery = i}
-                        items={items}
-                        renderItem={function(item) {
-                        //console.log(item);
-                        return <div className='image-gallery-image'>
                             <Preview
-                            styles={{padding: '0px', maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef'}}
-                            key={selectn('id', item)}
-                            expandedValue={items[selectn('key', item)].object}
-                            type={type}
-                            minimal={minimal} />
-                        </div>
-                        }}
-                        showThumbnails={true}
-                        showBullets={false} />
+                                key={selectn('uid', items[0].object)}
+                                styles={{
+                                    padding: '0px',
+                                    maxWidth: '350px',
+                                    padding: '0 10px 0 10px',
+                                    borderLeft: '1px solid #efefef'
+                                }}
+                                expandedValue={items[0].object}
+                                type={type}
+                                minimal={minimal}/> :
+
+                            <ImageGallery
+                                showNav={false}
+                                ref={i => this._imageGallery = i}
+                                items={items}
+                                renderItem={function (item) {
+                                    //console.log(item);
+                                    return <div className='image-gallery-image'>
+                                        <Preview
+                                            styles={{
+                                                padding: '0px',
+                                                maxWidth: '350px',
+                                                padding: '0 10px 0 10px',
+                                                borderLeft: '1px solid #efefef'
+                                            }}
+                                            key={selectn('id', item)}
+                                            expandedValue={items[selectn('key', item)].object}
+                                            type={type}
+                                            minimal={minimal}/>
+                                    </div>
+                                }}
+                                showThumbnails={true}
+                                showBullets={false}/>
                     }
 
                 </div>

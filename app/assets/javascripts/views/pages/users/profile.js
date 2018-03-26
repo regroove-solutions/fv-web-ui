@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -29,178 +29,185 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import IntlService from "views/services/intl";
 
 /**
-* Create user entry
-*/
+ * Create user entry
+ */
 @provide
 export default class Profile extends Component {
+    intl = IntlService.instance;
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    fetchUser: PropTypes.func.isRequired,
-    computeUser: PropTypes.object.isRequired,
-	  computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      formValue: null,
-      userRequest: null,
-      currentUsername: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        updateUser: PropTypes.func.isRequired,
+        fetchUser: PropTypes.func.isRequired,
+        computeUser: PropTypes.object.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
+        this.state = {
+            formValue: null,
+            userRequest: null,
+            currentUsername: null
+        };
 
-    let currentUsername = selectn("response.properties.username", newProps.computeLogin);
-
-    if (currentUsername) {
-      this.props.fetchUser(currentUsername);
-
-      this.setState({
-        currentUsername: currentUsername
-      });
-    }
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-
-    let currentUser, nextUser;
-
-    if (this.state.userRequest != null) {
-      currentUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.userRequest);
-      nextUser = ProviderHelpers.getEntry(nextProps.computeUser, this.state.userRequest);
+        // Bind methods to 'this'
+        ['_onRequestSaveForm'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
+    fetchData(newProps) {
 
-    // 'Redirect' on success
-    if (selectn('success', currentUser) != selectn('success', nextUser) && selectn('success', nextUser) === true) {
-        //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
-    }
-    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      this.fetchData(nextProps);
-    }
-  }
+        let currentUsername = selectn("response.properties.username", newProps.computeLogin);
 
-  shouldComponentUpdate(newProps, newState) {
+        if (currentUsername) {
+            this.props.fetchUser(currentUsername);
 
-    switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
-        return true;
-      break;
-
-      case (newProps.computeUser != this.props.computeUser):
-        return true;
-      break;
-    }
-
-    return false;
-  }
-
-  _onRequestSaveForm(e) {
-
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_user_edit"].getValue();
-
-    let properties = {};
-    
-    for (let key in formValue) {
-      if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
-          properties[key] = formValue[key];
+            this.setState({
+                currentUsername: currentUsername
+            });
         }
-      }
     }
 
-    this.setState({
-      formValue: properties
-    })
-
-    // Flatten preferences
-    let payload = Object.assign({}, properties, {
-      'preferences': JSON.stringify(properties['preferences'])
-    });
-
-    // Passed validation
-    if (formValue) {
-      let userRequest = {
-        "entity-type":"user",
-        "id": this.state.currentUsername,
-        "properties": payload
-      };
-
-      this.props.updateUser(userRequest);
-      this.setState({userRequest});
-
-    } else {
-      window.scrollTo(0, 0);
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
     }
 
-  }
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-  render() {
+        let currentUser, nextUser;
 
-    let FVUserProfileFields = selectn("FVUserProfile", fields);
-    let FVUserProfileOptions = {fields: Object.assign({}, selectn("FVUser.fields", options), selectn("FVUserProfile.fields", options))};
+        if (this.state.userRequest != null) {
+            currentUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.userRequest);
+            nextUser = ProviderHelpers.getEntry(nextProps.computeUser, this.state.userRequest);
+        }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.currentUsername,
-      'entity': this.props.computeUser,
-    }]);
+        if (nextProps.windowPath !== this.props.windowPath) {
+            this.fetchData(nextProps);
+        }
 
-    const computeUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.currentUsername);
-
-    let normalizedPayload = Object.assign({}, selectn('response.properties', computeUser));
-
-    if (normalizedPayload.hasOwnProperty('preferences')) {
-      normalizedPayload['preferences'] = JSON.parse(selectn('response.properties', computeUser)['preferences']);
+        // 'Redirect' on success
+        if (selectn('success', currentUser) != selectn('success', nextUser) && selectn('success', nextUser) === true) {
+            //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+        }
+        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+            this.fetchData(nextProps);
+        }
     }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    shouldComponentUpdate(newProps, newState) {
 
-            <h1>My Profile</h1>
+        switch (true) {
+            case (newProps.windowPath != this.props.windowPath):
+                return true;
+                break;
+
+            case (newProps.computeUser != this.props.computeUser):
+                return true;
+                break;
+        }
+
+        return false;
+    }
+
+    _onRequestSaveForm(e) {
+
+        // Prevent default behaviour
+        e.preventDefault();
+
+        let formValue = this.refs["form_user_edit"].getValue();
+
+        let properties = {};
+
+        for (let key in formValue) {
+            if (formValue.hasOwnProperty(key) && key) {
+                if (formValue[key] && formValue[key] != '') {
+                    properties[key] = formValue[key];
+                }
+            }
+        }
+
+        this.setState({
+            formValue: properties
+        })
+
+        // Flatten preferences
+        let payload = Object.assign({}, properties, {
+            'preferences': JSON.stringify(properties['preferences'])
+        });
+
+        // Passed validation
+        if (formValue) {
+            let userRequest = {
+                "entity-type": "user",
+                "id": this.state.currentUsername,
+                "properties": payload
+            };
+
+            this.props.updateUser(userRequest);
+            this.setState({userRequest});
+
+        } else {
+            window.scrollTo(0, 0);
+        }
+
+    }
+
+    render() {
+        let FVUserProfileFields = selectn("FVUserProfile", fields);
+        let FVUserProfileOptions = {
+            fields: Object.assign({},
+                selectn("FVUser.fields", options),
+                selectn("FVUserProfile.fields", options)
+            )
+        };
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.currentUsername,
+            'entity': this.props.computeUser,
+        }]);
+
+        const computeUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.currentUsername);
+
+        let normalizedPayload = Object.assign({}, selectn('response.properties', computeUser));
+
+        if (normalizedPayload.hasOwnProperty('preferences')) {
+            normalizedPayload['preferences'] = JSON.parse(selectn('response.properties', computeUser)['preferences']);
+        }
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <h1>{this.intl.searchAndReplace('My Profile', {case: 'words'})}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-8', 'col-md-10')}>
-                <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_user_edit"
-                    type={t.struct(FVUserProfileFields)}
-                    value={this.state.formValue || normalizedPayload}
-                    options={FVUserProfileOptions} />
-                    <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button> 
-                    </div>
-                </form>
+                <div className={classNames('col-xs-8', 'col-md-10')}>
+                    <form onSubmit={this._onRequestSaveForm}>
+                        <t.form.Form
+                            ref="form_user_edit"
+                            type={t.struct(FVUserProfileFields)}
+                            value={this.state.formValue || normalizedPayload}
+                            options={FVUserProfileOptions}/>
+                        <div className="form-group">
+                            <button type="submit"
+                                    className="btn btn-primary">{this.intl.trans('save', 'Save', 'first')}</button>
+                        </div>
+                    </form>
 
-              </div>
+                </div>
 
             </div>
-  
+
         </PromiseWrapper>;
-  }
+    }
 }

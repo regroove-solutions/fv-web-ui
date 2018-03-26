@@ -39,123 +39,137 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager';
 
 import {SelectableContainerEnhance} from 'material-ui/lib/hoc/selectable-enhance';
 
+import IntlService from 'views/services/intl';
+
 let SelectableList = SelectableContainerEnhance(List);
 
 export default class DialectDropDown extends Component {
 
-  static propTypes = {
-    label: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    actionFunc: PropTypes.func.isRequired,
-    dialects: PropTypes.array.isRequired,
-    routeParams: PropTypes.object
-  };
+    intl = new IntlService('en');
 
-  static contextTypes = {
-    muiTheme: PropTypes.object
-  };
-
-  constructor(props, context) {
-    super(props, context);
-
-    this.state = {
-      open: false,
-      dropdownData: []
+    static propTypes = {
+        label: PropTypes.string.isRequired,
+        description: PropTypes.string.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        properties: PropTypes.object.isRequired,
+        actionFunc: PropTypes.func.isRequired,
+        dialects: PropTypes.array.isRequired,
+        routeParams: PropTypes.object
     };
 
-    ['_onNavigateRequest', '_groupedDialects'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    static contextTypes = {
+        muiTheme: PropTypes.object
+    };
 
-  _onNavigateRequest(event, path) {
-    this.setState({open: false});
-    this.props.actionFunc('/explore' + path);
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  handleTouchTap(event){
-    this.setState({
-      open: true,
-      anchorEl: event.currentTarget,
-    });
-  }
+        this.state = {
+            open: false,
+            dropdownData: []
+        };
 
-  handleRequestClose(){
-    this.setState({
-      open: false,
-    });
-  }
-
-  _groupedDialects(dialects) {
-      let dropdownData = dialects.map(function( dialect ) {
-
-        let dialectTitle = selectn('properties.dc:title', dialect);
-        let dialectUid = dialect.uid;
-        let parentLanguage = selectn('contextParameters.ancestry.language.dc:title', dialect);
-
-        let rightIcon = null;
-
-        if ( ProviderHelpers.isActiveRole(selectn('contextParameters.dialect.roles', dialect)) ) {
-          rightIcon = <ActionGrade />;
-        }
-
-        if (parentLanguage) {
-          return (<ListItem value={dialect.path} key={dialectUid} rightIcon={rightIcon} language={parentLanguage} primaryText={dialectTitle} />);
-        }
-      });
-
-      if (dropdownData) {
-        dropdownData = _.pairs(_.groupBy(dropdownData, function(item){
-          if (item)
-            return item.props.language;
-        }));
-      }
-
-      return dropdownData;
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (this.props.dialects != nextProps.dialects) {
-      this.setState({
-        dropdownData: this._groupedDialects(nextProps.dialects)
-      })
+        ['_onNavigateRequest', '_groupedDialects'].forEach((method => this[method] = this[method].bind(this)));
     }
-  }
 
-  componentDidMount() {
-      this.setState({
-        dropdownData: this._groupedDialects(this.props.dialects)
-      })
-  }
-  
-  
+    _onNavigateRequest(event, path) {
+        this.setState({open: false});
+        this.props.actionFunc('/explore' + path);
+    }
 
-  render() {
+    handleTouchTap(event) {
+        this.setState({
+            open: true,
+            anchorEl: event.currentTarget,
+        });
+    }
 
-    const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+    handleRequestClose() {
+        this.setState({
+            open: false,
+        });
+    }
 
-    let { dialects } = this.props;
+    _groupedDialects(dialects) {
+        let dropdownData = dialects.map(function (dialect) {
 
-    return <div className={this.props.className} style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
-        <FlatButton label={this.props.label} labelPosition="before" icon={<DropDownArrow />} style={{color: themePalette.alternateTextColor}} onTouchTap={this.handleTouchTap.bind(this)} />
+            let dialectTitle = selectn('properties.dc:title', dialect);
+            let dialectUid = dialect.uid;
+            let parentLanguage = selectn('contextParameters.ancestry.language.dc:title', dialect);
 
-        <Popover
-          open={this.state.open} 
-          onRequestClose={this.handleRequestClose.bind(this)} 
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{'horizontal':'left','vertical':'bottom'}}
-          targetOrigin={{'horizontal':'middle','vertical':'top'}}>
-          {this.state.dropdownData.length > 0 ? <div><p style={{padding: '15px 0 0 15px', fontSize: '1.25em'}}>{this.props.description}</p><SelectableList
-            style={{maxHeight: '550px', minWidth:'300px'}}
-            valueLink={{
-              value: location.pathname,
-              requestChange: this._onNavigateRequest
-          }}>
-              {this.state.dropdownData.map(function(menuGroup, index) {
-                return <ListItem initiallyOpen={true} key={index} value={false} primaryText={menuGroup[0]} nestedItems={menuGroup[1]} />;
-              })}
-          </SelectableList></div> : <div style={{maxHeight: '550px', minWidth:'300px'}}>Loading...</div>}
-        </Popover>
-      </div>;
-  }
+            let rightIcon = null;
+
+            if (ProviderHelpers.isActiveRole(selectn('contextParameters.dialect.roles', dialect))) {
+                rightIcon = <ActionGrade/>;
+            }
+
+            if (parentLanguage) {
+                return (<ListItem value={dialect.path} key={dialectUid} rightIcon={rightIcon} language={parentLanguage}
+                                  primaryText={dialectTitle}/>);
+            }
+        });
+
+        if (dropdownData) {
+            dropdownData = _.pairs(_.groupBy(dropdownData, function (item) {
+                if (item)
+                    return item.props.language;
+            }));
+        }
+
+        return dropdownData;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.dialects != nextProps.dialects) {
+            this.setState({
+                dropdownData: this._groupedDialects(nextProps.dialects)
+            })
+        }
+    }
+
+    componentDidMount() {
+        this.setState({
+            dropdownData: this._groupedDialects(this.props.dialects)
+        })
+    }
+
+
+    render() {
+
+        const themePalette = this.props.properties.theme.palette.rawTheme.palette;
+
+        let {dialects} = this.props;
+
+        return <div className={this.props.className}
+                    style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
+            <FlatButton label={this.props.label} labelPosition="before" icon={<DropDownArrow/>}
+                        style={{color: themePalette.alternateTextColor}} onTouchTap={this.handleTouchTap.bind(this)}/>
+
+            <Popover
+                open={this.state.open}
+                onRequestClose={this.handleRequestClose.bind(this)}
+                anchorEl={this.state.anchorEl}
+                anchorOrigin={{'horizontal': 'left', 'vertical': 'bottom'}}
+                targetOrigin={{'horizontal': 'middle', 'vertical': 'top'}}>
+                {this.state.dropdownData.length > 0 ?
+                    <div><p style={{padding: '15px 0 0 15px', fontSize: '1.25em'}}>{this.props.description}</p>
+                        <SelectableList
+                            style={{maxHeight: '550px', minWidth: '300px'}}
+                            valueLink={{
+                                value: location.pathname,
+                                requestChange: this._onNavigateRequest
+                            }}>
+                            {this.state.dropdownData.map(function (menuGroup, index) {
+                                return <ListItem initiallyOpen={true} key={index} value={false}
+                                                 primaryText={menuGroup[0]} nestedItems={menuGroup[1]}/>;
+                            })}
+                        </SelectableList></div> :
+                    <div style={{maxHeight: '550px', minWidth: '300px'}}>{this.intl.translate({
+                        key: 'general.loading',
+                        default: 'Loading',
+                        case: 'first'
+                    })}...</div>}
+            </Popover>
+        </div>;
+    }
 }

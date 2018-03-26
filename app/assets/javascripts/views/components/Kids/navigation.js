@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 import selectn from 'selectn';
 
@@ -45,147 +45,166 @@ import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications';
 
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 @provide
 export default class Navigation extends Component {
 
-  static propTypes = {
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,    
-    splitWindowPath: PropTypes.array.isRequired,    
-    toggleMenuAction: PropTypes.func.isRequired,
-    fetchUserTasks: PropTypes.func.isRequired,
-    properties: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    computeUserTasks: PropTypes.object.isRequired,
-    computePortal: PropTypes.object,
-    routeParams: PropTypes.object,
-    frontpage: PropTypes.bool
-  };
-
-  /*static childContextTypes = {
-    client: React.PropTypes.object,
-    muiTheme: React.PropTypes.object,
-    siteProps: React.PropTypes.object
-  };
-
-  static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
-  };
-
-  getChildContext() {
-    return {
-      //client: this.props.clientStore.client,
-      muiTheme: this.context.muiTheme,
-      siteProps: this.context.siteProps
-    };
-  }*/
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      hintTextSearch: "Search site:"
+    static propTypes = {
+        pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        toggleMenuAction: PropTypes.func.isRequired,
+        fetchUserTasks: PropTypes.func.isRequired,
+        properties: PropTypes.object.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        computeUserTasks: PropTypes.object.isRequired,
+        computePortal: PropTypes.object,
+        routeParams: PropTypes.object,
+        frontpage: PropTypes.bool
     };
 
-    this._handleMenuToggle = this._handleMenuToggle.bind(this);
-    this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
-    this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
-    this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
-    //this._test = this._test.bind(this);
-  }
+    /*static childContextTypes = {
+      client: React.PropTypes.object,
+      muiTheme: React.PropTypes.object,
+      siteProps: React.PropTypes.object
+    };
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin) {
-      this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin));
+    static contextTypes = {
+        muiTheme: React.PropTypes.object.isRequired,
+        siteProps: React.PropTypes.object.isRequired
+    };
+
+    getChildContext() {
+      return {
+        //client: this.props.clientStore.client,
+        muiTheme: this.context.muiTheme,
+        siteProps: this.context.siteProps
+      };
+    }*/
+
+    constructor(props, context) {
+        super(props, context);
+
+        this.state = {
+            hintTextSearch: intl.trans('search_site', 'Search Site', 'words') + ":"
+        };
+
+        this._handleMenuToggle = this._handleMenuToggle.bind(this);
+        this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
+        this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
+        this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
+        //this._test = this._test.bind(this);
     }
-  }
 
-  _handleMenuToggle (event) {
-    //console.log(event);
+    componentWillReceiveProps(newProps) {
+        if (newProps.computeLogin != this.props.computeLogin) {
+            this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin));
+        }
+    }
 
-    //const test = this.props.toggle("helloworld");
-    //console.log(test);
+    _handleMenuToggle(event) {
+        //console.log(event);
 
-    /*this.setState({
-      leftNavOpen: !this.state.leftNavOpen,
-    });*/
-  }
+        //const test = this.props.toggle("helloworld");
+        //console.log(test);
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
+        /*this.setState({
+          leftNavOpen: !this.state.leftNavOpen,
+        });*/
+    }
 
-  handleChangeRequestLeftNav(open) {
-    console.log('ok2!');
-    this.setState({
-      leftNavOpen: open,
-    });
-  }
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
 
-  handleRequestChangeList(event, value) {
-    console.log('ok!');
-    //this.context.router.push(value);
-    this.setState({
-      leftNavOpen: false,
-    });
-  }
+    handleChangeRequestLeftNav(open) {
+        console.log('ok2!');
+        this.setState({
+            leftNavOpen: open,
+        });
+    }
 
-  _handleNavigationSearchSubmit() {
-	  let searchQueryParam = this.refs.navigationSearchField.getValue();	  
-      let path = "/" + this.props.splitWindowPath.join("/");
-      let queryPath = "";    
-      
-      // Do a global search in either the workspace or section
-      if(path.includes("/explore/FV/Workspaces/Data")) {
-    	  queryPath = "/explore/FV/Workspaces/Data"
-      }      
-      else if(path.includes("/explore/FV/sections/Data")) {
-    	  queryPath = "/explore/FV/sections/Data"
-      }
-      else {
-    	  queryPath = "/explore/FV/sections/Data"    	  
-      }
-      
-      // Clear out the input field
-      this.refs.navigationSearchField.setValue("");
-	  this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
-  } 
+    handleRequestChangeList(event, value) {
+        console.log('ok!');
+        //this.context.router.push(value);
+        this.setState({
+            leftNavOpen: false,
+        });
+    }
 
-  render() {
+    _handleNavigationSearchSubmit() {
+        let searchQueryParam = this.refs.navigationSearchField.getValue();
+        let path = "/" + this.props.splitWindowPath.join("/");
+        let queryPath = "";
 
-    const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, selectn('response.id', this.props.computeLogin));
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+        // Do a global search in either the workspace or section
+        if (path.includes("/explore/FV/Workspaces/Data")) {
+            queryPath = "/explore/FV/Workspaces/Data"
+        }
+        else if (path.includes("/explore/FV/sections/Data")) {
+            queryPath = "/explore/FV/sections/Data"
+        }
+        else {
+            queryPath = "/explore/FV/sections/Data"
+        }
 
-    const userTaskCount = selectn('response.length', computeUserTasks) || 0;
+        // Clear out the input field
+        this.refs.navigationSearchField.setValue("");
+        this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam);
+    }
 
-    let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal);
+    render() {
 
-    const avatar = (portalLogo) ? <Avatar src={ConfGlobal.baseURL + portalLogo} size={50} style={{marginRight: '10px'}} /> : '';
+        const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, selectn('response.id', this.props.computeLogin));
+        const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
 
-    return <div>
-        <AppBar
-          title={<a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, (!this.props.routeParams.dialect_path) ? '/kids' : '/kids' + this.props.routeParams.dialect_path)}>{avatar} <span className="hidden-xs">{(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' Kids Portal'}</span></a>}
-          iconClassNameRight="muidocs-icon-navigation-expand-more"
-          showMenuIconButton={false}
-          onRightIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
+        const userTaskCount = selectn('response.length', computeUserTasks) || 0;
 
-          <ToolbarGroup style={{paddingTop:'5px'}}>
+        let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal);
 
-            <IconButton className={classNames({'hidden': this.props.frontpage})} onTouchTap={(e) => NavigationHelpers.navigateBack()} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Back"}>keyboard_backspace</IconButton>
+        const avatar = (portalLogo) ?
+            <Avatar src={ConfGlobal.baseURL + portalLogo} size={50} style={{marginRight: '10px'}}/> : '';
 
-            <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/kids' + (this.props.routeParams.dialect_path ? this.props.routeParams.dialect_path : ''))} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Home"}>home</IconButton>
+        return <div>
+            <AppBar
+                title={<a style={{textDecoration: 'none', color: '#fff'}}
+                          onTouchTap={this._onNavigateRequest.bind(this, (!this.props.routeParams.dialect_path) ? '/kids' : '/kids' + this.props.routeParams.dialect_path)}>{avatar}
+                    <span
+                        className="hidden-xs">{(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' ' + intl.trans('views.pages.explore.dialect.kids_portal', 'Kids Portal', 'words')}</span></a>}
+                iconClassNameRight="muidocs-icon-navigation-expand-more"
+                showMenuIconButton={false}
+                onRightIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
 
-            <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/kids/FV/Workspaces/Data')} style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons" tooltipPosition="bottom-left" tooltip={"Choose a Language"}>apps</IconButton>
+                <ToolbarGroup style={{paddingTop: '5px'}}>
 
-            <ToolbarSeparator style={{float: 'none', marginLeft: '0', marginRight: '15px'}} />
+                    <IconButton className={classNames({'hidden': this.props.frontpage})}
+                                onTouchTap={(e) => NavigationHelpers.navigateBack()}
+                                style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons"
+                                tooltipPosition="bottom-left"
+                                tooltip={intl.trans('back', 'Back', 'first')}>keyboard_backspace</IconButton>
 
-            <IconButton style={{paddingTop: 0, paddingRight:0, top: '8px', left: '-10px'}} iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/')} tooltipPosition="bottom-left" tooltip={"Back to Main Site"}>clear</IconButton>
+                    <IconButton
+                        onTouchTap={this._onNavigateRequest.bind(this, '/kids' + (this.props.routeParams.dialect_path ? this.props.routeParams.dialect_path : ''))}
+                        style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons"
+                        tooltipPosition="bottom-left" tooltip={intl.trans('home', 'Home', 'first')}>home</IconButton>
 
-          </ToolbarGroup>
+                    <IconButton onTouchTap={this._onNavigateRequest.bind(this, '/kids/FV/Workspaces/Data')}
+                                style={{paddingTop: 0, top: '8px', left: '-10px'}} iconClassName="material-icons"
+                                tooltipPosition="bottom-left"
+                                tooltip={intl.trans('choose_lang', 'Choose a Language', 'first')}>apps</IconButton>
 
-        </AppBar>
-    </div>;
-  }
+                    <ToolbarSeparator style={{float: 'none', marginLeft: '0', marginRight: '15px'}}/>
+
+                    <IconButton style={{paddingTop: 0, paddingRight: 0, top: '8px', left: '-10px'}}
+                                iconClassName="material-icons" onTouchTap={this._onNavigateRequest.bind(this, '/')}
+                                tooltipPosition="bottom-left"
+                                tooltip={intl.trans('back_to_main_site', 'Back to Main Site', 'words')}>clear</IconButton>
+
+                </ToolbarGroup>
+
+            </AppBar>
+        </div>;
+    }
 }

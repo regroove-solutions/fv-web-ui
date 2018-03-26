@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -33,160 +33,166 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 @provide
 export default class PageDialectGalleryEdit extends Component {
-  
-  static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    updateGallery: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    gallery: PropTypes.object
-  };
-  
-  constructor(props, context){
-    super(props, context);
 
-    this.state = {
-      gallery: null,
-      galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.gallery,
-      formValue: null
+    static propTypes = {
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        fetchGallery: PropTypes.func.isRequired,
+        computeGallery: PropTypes.object.isRequired,
+        updateGallery: PropTypes.func.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        gallery: PropTypes.object
     };
 
-    // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );    
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
-    newProps.fetchDialect2(this.props.routeParams.dialect_path);
-    newProps.fetchGallery(this.state.galleryPath);
-  }
+        this.state = {
+            gallery: null,
+            galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.gallery,
+            formValue: null
+        };
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }  
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-
-    let currentGallery, nextGallery;
-
-    if (this.state.galleryPath != null) {
-      currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-      nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+        // Bind methods to 'this'
+        ['_onRequestSaveForm'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    // 'Redirect' on success
-    if (selectn('wasUpdated', currentGallery) != selectn('wasUpdated', nextGallery) && selectn('wasUpdated', nextGallery) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
-    }
-  }
-
-  shouldComponentUpdate(newProps, newState) {
-
-    switch (true) {
-
-      case (newProps.routeParams.gallery != this.props.routeParams.gallery):
-        return true;
-      break;
-
-      case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeGallery, this.state.galleryPath) != ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath)):
-        return true;
-      break;
-
-      case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
-        return true;
-      break;
+    fetchData(newProps) {
+        newProps.fetchDialect2(this.props.routeParams.dialect_path);
+        newProps.fetchGallery(this.state.galleryPath);
     }
 
-    return false;
-  }
-
-  _onRequestSaveForm(e) {
-
-    // Prevent default behaviour
-    e.preventDefault();
-
-    let formValue = this.refs["form_gallery"].getValue();
-
-    // Passed validation
-    if (formValue) {
-      let gallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
-      let newDocument = new Document(gallery.response, { 
-        'repository': gallery.response._repository,
-        'nuxeo': gallery.response._nuxeo
-      });
-
-      // Set new value property on document
-      newDocument.set(formValue);
-
-      // Save document
-      this.props.updateGallery(newDocument);
-
-      this.setState({ formValue: formValue });
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0);
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
     }
-  }  
 
-  render() {
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.galleryPath,
-      'entity': this.props.computeGallery
-    }, {
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+        let currentGallery, nextGallery;
 
-    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+        if (this.state.galleryPath != null) {
+            currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+            nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+        }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+        // 'Redirect' on success
+        if (selectn('wasUpdated', currentGallery) != selectn('wasUpdated', nextGallery) && selectn('wasUpdated', nextGallery) === true) {
+            nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
+        }
+    }
 
-	    <h1>Edit {selectn("response.properties.dc:title", computeGallery)} Gallery</h1>
+    shouldComponentUpdate(newProps, newState) {
 
-	    <div className="row" style={{marginTop: '15px'}}>
-	
-	      <div className={classNames('col-xs-8', 'col-md-10')}>
-	        <form onSubmit={this._onRequestSaveForm}>
-	          <t.form.Form
-	            ref="form_gallery"
-	            type={t.struct(selectn("FVGallery", fields))}
-	            context={selectn("response", computeDialect2)}
-              value={this.state.formValue || selectn("response.properties", computeGallery)}
-	            options={selectn("FVGallery", options)} />
-	            <div className="form-group">
-	              <button type="submit" className="btn btn-primary">Save</button> 
-	            </div>
-	        </form>
-	      </div>
-	
-	      <div className={classNames('col-xs-4', 'col-md-2')}>
-	
-	        <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-	
-	          <div className="subheader">Metadata</div>
-	
-	        </Paper>
-	
-	      </div>
-	  </div>
-	</PromiseWrapper>;
-  }
+        switch (true) {
+
+            case (newProps.routeParams.gallery != this.props.routeParams.gallery):
+                return true;
+                break;
+
+            case (newProps.routeParams.dialect_path != this.props.routeParams.dialect_path):
+                return true;
+                break;
+
+            case (ProviderHelpers.getEntry(newProps.computeGallery, this.state.galleryPath) != ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath)):
+                return true;
+                break;
+
+            case (ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) != ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)):
+                return true;
+                break;
+        }
+
+        return false;
+    }
+
+    _onRequestSaveForm(e) {
+
+        // Prevent default behaviour
+        e.preventDefault();
+
+        let formValue = this.refs["form_gallery"].getValue();
+
+        // Passed validation
+        if (formValue) {
+            let gallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+
+            // TODO: Find better way to construct object then accessing internal function
+            // Create new document rather than modifying the original document
+            let newDocument = new Document(gallery.response, {
+                'repository': gallery.response._repository,
+                'nuxeo': gallery.response._nuxeo
+            });
+
+            // Set new value property on document
+            newDocument.set(formValue);
+
+            // Save document
+            this.props.updateGallery(newDocument);
+
+            this.setState({formValue: formValue});
+        } else {
+            //let firstError = this.refs["form_word_create"].validate().firstError();
+            window.scrollTo(0, 0);
+        }
+    }
+
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.galleryPath,
+            'entity': this.props.computeGallery
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <h1>{intl.trans('views.pages.explore.dialect.gallery.edit_x_gallery',
+                'Edit ' + selectn("response.properties.dc:title", computeGallery) + ' Gallery',
+                'words',
+                [selectn("response.properties.dc:title", computeGallery)])}</h1>
+
+            <div className="row" style={{marginTop: '15px'}}>
+
+                <div className={classNames('col-xs-8', 'col-md-10')}>
+                    <form onSubmit={this._onRequestSaveForm}>
+                        <t.form.Form
+                            ref="form_gallery"
+                            type={t.struct(selectn("FVGallery", fields))}
+                            context={selectn("response", computeDialect2)}
+                            value={this.state.formValue || selectn("response.properties", computeGallery)}
+                            options={selectn("FVGallery", options)}/>
+                        <div className="form-group">
+                            <button type="submit"
+                                    className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div className={classNames('col-xs-4', 'col-md-2')}>
+
+                    <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
+
+                        <div className="subheader">{intl.trans('metadata', 'Metadata', 'first')}</div>
+
+                    </Paper>
+
+                </div>
+            </div>
+        </PromiseWrapper>;
+    }
 }

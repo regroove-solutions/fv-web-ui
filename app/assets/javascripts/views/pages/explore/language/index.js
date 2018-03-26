@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -26,102 +26,104 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import PortalList from 'views/components/Browsing/portal-list'
 
 import withFilter from 'views/hoc/grid-list/with-filter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const FilteredPortalList = withFilter(PortalList);
 
 /**
-* Explore Archive page shows all the families in the archive
-*/
+ * Explore Archive page shows all the families in the archive
+ */
 @provide
 export default class Explore extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired,
-    fetchLanguage: PropTypes.func.isRequired,
-    computeLanguage: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  /*static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired
-  };*/
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      filteredList: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        fetchDialects: PropTypes.func.isRequired,
+        computeDialects: PropTypes.object.isRequired,
+        fetchLanguage: PropTypes.func.isRequired,
+        computeLanguage: PropTypes.object.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    /*static contextTypes = {
+        muiTheme: React.PropTypes.object.isRequired
+    };*/
 
-  fetchData(newProps) {
-    newProps.fetchLanguage(newProps.routeParams.language_path);
-    newProps.fetchDialects(newProps.routeParams.language_path);
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
+        this.state = {
+            filteredList: null
+        };
 
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.routeParams.language_path != this.props.routeParams.language_path) {
-      this.fetchData(nextProps);
+        ['_onNavigateRequest', 'fixedListFetcher'].forEach((method => this[method] = this[method].bind(this)));
     }
-  }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath('/explore' + path);
-  }
+    fetchData(newProps) {
+        newProps.fetchLanguage(newProps.routeParams.language_path);
+        newProps.fetchDialects(newProps.routeParams.language_path);
+    }
 
-  fixedListFetcher(list) {
-    this.setState({
-      filteredList: list
-    });
-  }
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-  render() {
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.routeParams.language_path != this.props.routeParams.language_path) {
+            this.fetchData(nextProps);
+        }
+    }
 
-    const pathOrId = this.props.routeParams.language_path;
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath('/explore' + path);
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': pathOrId,
-      'entity': this.props.computeDialects
-    }, {
-      'id': pathOrId,
-      'entity': this.props.computeLanguage
-    }])
+    fixedListFetcher(list) {
+        this.setState({
+            filteredList: list
+        });
+    }
 
-    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, pathOrId);
-    const computeLanguage = ProviderHelpers.getEntry(this.props.computeLanguage, pathOrId);
+    render() {
 
-    let portalListProps = {
-      action: this._onNavigateRequest,
-      filterOptionsKey: 'Default',
-      fixedList: true,
-      area: this.props.routeParams.area,
-      fixedListFetcher: this.fixedListFetcher,
-      filteredItems: this.state.filteredList,
-      metadata: selectn('response', computeDialects),
-      items: selectn('response.entries', computeDialects) || []
-    };
+        const pathOrId = this.props.routeParams.language_path;
 
-    return <PromiseWrapper computeEntities={computeEntities}>
-             <div className="row">
-               
-              <div className="col-xs-12">
-                  <h1>{selectn('response.properties.dc:title', computeLanguage)} &raquo; Dialects</h1>
-                  <FilteredPortalList {...portalListProps} />
-              </div>
+        const computeEntities = Immutable.fromJS([{
+            'id': pathOrId,
+            'entity': this.props.computeDialects
+        }, {
+            'id': pathOrId,
+            'entity': this.props.computeLanguage
+        }])
+
+        const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, pathOrId);
+        const computeLanguage = ProviderHelpers.getEntry(this.props.computeLanguage, pathOrId);
+
+        let portalListProps = {
+            action: this._onNavigateRequest,
+            filterOptionsKey: 'Default',
+            fixedList: true,
+            area: this.props.routeParams.area,
+            fixedListFetcher: this.fixedListFetcher,
+            filteredItems: this.state.filteredList,
+            metadata: selectn('response', computeDialects),
+            items: selectn('response.entries', computeDialects) || []
+        };
+
+        return <PromiseWrapper computeEntities={computeEntities}>
+            <div className="row">
+
+                <div className="col-xs-12">
+                    <h1>{selectn('response.properties.dc:title', computeLanguage)} &raquo; {intl.trans('dialects', 'Dialects', 'words')}</h1>
+                    <FilteredPortalList {...portalListProps} />
+                </div>
             </div>
-          </PromiseWrapper>;
-  }
+        </PromiseWrapper>;
+    }
 }

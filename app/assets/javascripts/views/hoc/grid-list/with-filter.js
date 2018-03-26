@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import selectn from 'selectn';
 
@@ -13,8 +13,10 @@ import withToggle from 'views/hoc/view/with-toggle';
 import ProviderHelpers from 'common/ProviderHelpers';
 import FormHelpers from 'common/FormHelpers';
 
-import { RaisedButton, FlatButton, FontIcon } from 'material-ui';
+import {RaisedButton, FlatButton, FontIcon} from 'material-ui';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const FiltersWithToggle = withToggle();
 
 /**
@@ -35,206 +37,214 @@ const defaultFilterFunc = function (propertyToSearch, filterValue) {
 }
 
 export default function withFilter(ComposedFilter, DefaultFetcherParams) {
-  class FilteredGridList extends Component {
+    class FilteredGridList extends Component {
 
-    static defaultProps = {
-        filterOptionsKey: "Default",
-        fullWidth: false
-    }
-
-    static propTypes = {
-        fetcher: PropTypes.func,
-        fixedList: PropTypes.bool,
-        fixedListFetcher: PropTypes.func,
-        fetcherParams: PropTypes.object,
-        filterOptionsKey: PropTypes.string.isRequired,
-        applyDefaultFormValues: PropTypes.bool,
-        fullWidth: PropTypes.bool,
-        metadata: PropTypes.object,
-        area: PropTypes.string
-    }
-
-    constructor(props, context){
-        super(props, context);
-
-        this.state = {
-            options: options,
-            formValue: props.initialFormValue || props.formValues,
-            defaultFormValue: props.formValues,
-            initialFormValue: props.initialFormValue
-        };
-
-        ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
-    }
-
-    componentDidMount() {
-        // Only auto-apply with a fixed list
-        if (this.props.fixedList && this.props.applyDefaultFormValues) {
-            this._onFilterSaveForm(null);
+        static defaultProps = {
+            filterOptionsKey: "Default",
+            fullWidth: false
         }
-    }
 
-    _doFilter(filters, props = this.props) {
+        static propTypes = {
+            fetcher: PropTypes.func,
+            fixedList: PropTypes.bool,
+            fixedListFetcher: PropTypes.func,
+            fetcherParams: PropTypes.object,
+            filterOptionsKey: PropTypes.string.isRequired,
+            applyDefaultFormValues: PropTypes.bool,
+            fullWidth: PropTypes.bool,
+            metadata: PropTypes.object,
+            area: PropTypes.string
+        }
 
-        // Filter a fixed list (i.e. all items sent to component)
-        if (this.props.fixedList) {
-            let filteredList = new List(props.items).filter(function(item) {
+        constructor(props, context) {
+            super(props, context);
 
-                // Test each of the filters against item
-                for (let filterKey in filters) {
+            this.state = {
+                options: options,
+                formValue: props.initialFormValue || props.formValues,
+                defaultFormValue: props.formValues,
+                initialFormValue: props.initialFormValue
+            };
 
-                    let filterOptions = selectn([props.filterOptionsKey, 'fields', filterKey], options);
-                    let filterFunc = (filterOptions && filterOptions.hasOwnProperty('filterFunc')) ? filterOptions.filterFunc : defaultFilterFunc;
+            ['_onReset', '_doFilter', '_onFilterSaveForm'].forEach((method => this[method] = this[method].bind(this)));
+        }
 
-                    let filterValue = filters[filterKey];
-                    let propertyToSearch = selectn(filterKey, item);
+        componentDidMount() {
+            // Only auto-apply with a fixed list
+            if (this.props.fixedList && this.props.applyDefaultFormValues) {
+                this._onFilterSaveForm(null);
+            }
+        }
 
-                    if (!filterFunc(propertyToSearch, filterValue)) {
-                        return false;
+        _doFilter(filters, props = this.props) {
+
+            // Filter a fixed list (i.e. all items sent to component)
+            if (this.props.fixedList) {
+                let filteredList = new List(props.items).filter(function (item) {
+
+                    // Test each of the filters against item
+                    for (let filterKey in filters) {
+
+                        let filterOptions = selectn([props.filterOptionsKey, 'fields', filterKey], options);
+                        let filterFunc = (filterOptions && filterOptions.hasOwnProperty('filterFunc')) ? filterOptions.filterFunc : defaultFilterFunc;
+
+                        let filterValue = filters[filterKey];
+                        let propertyToSearch = selectn(filterKey, item);
+
+                        if (!filterFunc(propertyToSearch, filterValue)) {
+                            return false;
+                        }
                     }
-                }
 
-                return true;
+                    return true;
 
-            }.bind(this));
+                }.bind(this));
 
-            props.fixedListFetcher(filteredList);
-        }
-        // Filter a remote list (i.e. partial list sent to component)
-        else {
-            let preparedFilters = FormHelpers.prepareFilters(filters, options, this.props.filterOptionsKey);
-
-            this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
-                currentPageIndex: 1,
-                filters: preparedFilters
-            }));
-        }
-    }
-
-    _onReset(event, props = this.props) {
-
-        // Reset all controlled inputs
-        let inputs = selectn('refs.input.refs', this.refs["filter_form"]);
-
-        for (let inputKey in inputs) {
-            if (typeof inputs[inputKey].reset === 'function') {
-                inputs[inputKey].reset();
+                props.fixedListFetcher(filteredList);
             }
-        }
-
-        this.setState({
-            formValue: this.state.defaultFormValue || null
-        });
-
-        if (props.fixedList) {
-            if (this.state.defaultFormValue) {
-                this._doFilter(this.state.defaultFormValue, props);
-            }
+            // Filter a remote list (i.e. partial list sent to component)
             else {
-                props.fixedListFetcher(props.items);
+                let preparedFilters = FormHelpers.prepareFilters(filters, options, this.props.filterOptionsKey);
+
+                this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
+                    currentPageIndex: 1,
+                    filters: preparedFilters
+                }));
             }
         }
-        else {
-            this._doFilter(DefaultFetcherParams.filters, props);
-        }
-    }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.area != this.props.area) {
-            this._onReset(null, nextProps);
-        }
+        _onReset(event, props = this.props) {
 
-        // Items may change in a fixed list (e.g. deleted, added)
-        let nextPropsItemsList = Immutable.fromJS(nextProps.items);
-        let prevPropsItemsList = Immutable.fromJS(this.props.items);
+            // Reset all controlled inputs
+            let inputs = selectn('refs.input.refs', this.refs["filter_form"]);
 
-        if (this.props.fixedList && nextPropsItemsList.equals(prevPropsItemsList) === false) {
-            this._onReset(null, nextProps);
-        }
-    }
+            for (let inputKey in inputs) {
+                if (typeof inputs[inputKey].reset === 'function') {
+                    inputs[inputKey].reset();
+                }
+            }
 
-    _onFilterSaveForm(e) {
-
-        // Prevent default behaviour
-        if (e) {
-            e.preventDefault();
-        }
-
-        let form = this.refs["filter_form"];
-        let properties = FormHelpers.getProperties(form);
-
-        if (Object.keys(properties).length != 0) {
             this.setState({
-                formValue: properties
+                formValue: this.state.defaultFormValue || null
             });
 
-            this._doFilter(properties);
-        } else {
-            this._onReset(null);
+            if (props.fixedList) {
+                if (this.state.defaultFormValue) {
+                    this._doFilter(this.state.defaultFormValue, props);
+                }
+                else {
+                    props.fixedListFetcher(props.items);
+                }
+            }
+            else {
+                this._doFilter(DefaultFetcherParams.filters, props);
+            }
+        }
+
+        componentWillReceiveProps(nextProps) {
+            if (nextProps.area != this.props.area) {
+                this._onReset(null, nextProps);
+            }
+
+            // Items may change in a fixed list (e.g. deleted, added)
+            let nextPropsItemsList = Immutable.fromJS(nextProps.items);
+            let prevPropsItemsList = Immutable.fromJS(this.props.items);
+
+            if (this.props.fixedList && nextPropsItemsList.equals(prevPropsItemsList) === false) {
+                this._onReset(null, nextProps);
+            }
+        }
+
+        _onFilterSaveForm(e) {
+
+            // Prevent default behaviour
+            if (e) {
+                e.preventDefault();
+            }
+
+            let form = this.refs["filter_form"];
+            let properties = FormHelpers.getProperties(form);
+
+            if (Object.keys(properties).length != 0) {
+                this.setState({
+                    formValue: properties
+                });
+
+                this._doFilter(properties);
+            } else {
+                this._onReset(null);
+            }
+        }
+
+        render() {
+
+            let options = Map(selectn(this.props.filterOptionsKey, this.state.options));
+
+            // Replace proxied properties where necessary
+            if (this.props.area) {
+
+                let fields = Map(options.get('fields')).map(function (field) {
+                    if (field.hasOwnProperty('nxql')) {
+                        field.nxql = ProviderHelpers.replaceAllWorkspaceSectionKeys(field.nxql, this.props.area);
+                    }
+
+                    return field;
+                }.bind(this));
+
+                options = options.set('fields', fields);
+            }
+
+            return (
+                <div>
+
+                    <div className="row">
+
+                        <div className={classNames('col-xs-12', {
+                            'col-md-3': !this.props.fullWidth,
+                            'col-md-12': this.props.fullWidth
+                        })}>
+
+                            <form onSubmit={this._onFilterSaveForm}>
+
+                                <FiltersWithToggle
+                                    label={intl.trans('views.pages.search.filter_items', 'Filter Items', 'words')}
+                                    mobileOnly={true}>
+                                    <t.form.Form
+                                        ref="filter_form"
+                                        type={t.struct(selectn(this.props.filterOptionsKey, fields))}
+                                        value={this.state.formValue}
+                                        options={options.toJS()}/>
+                                    <RaisedButton
+                                        onTouchTap={this._onReset}
+                                        label={intl.trans('reset', 'Reset', 'first')}
+                                        primary={true}/> &nbsp;
+                                    <RaisedButton
+                                        type="submit"
+                                        label={intl.trans('filter', 'Filter', 'first')}
+                                        primary={true}/>
+                                </FiltersWithToggle>
+
+                            </form>
+
+                        </div>
+
+                        <div className={classNames('col-xs-12', {
+                            'col-md-9': !this.props.fullWidth,
+                            'col-md-12': this.props.fullWidth
+                        })}>
+                            <ComposedFilter
+                                {...this.state}
+                                {...this.props}
+                            />
+                        </div>
+
+                    </div>
+
+
+                </div>)
+                ;
         }
     }
 
-    render() {
-
-    let options = Map(selectn(this.props.filterOptionsKey, this.state.options));
-
-    // Replace proxied properties where necessary
-    if (this.props.area) {
-        
-        let fields = Map(options.get('fields')).map(function(field) {
-            if (field.hasOwnProperty('nxql')) {
-                field.nxql = ProviderHelpers.replaceAllWorkspaceSectionKeys(field.nxql, this.props.area);
-            }
-
-            return field;
-        }.bind(this));
-
-        options = options.set('fields', fields);
-    }
-
-      return(
-          <div>
-
-            <div className="row">
-
-                <div className={classNames('col-xs-12', {'col-md-3': !this.props.fullWidth, 'col-md-12': this.props.fullWidth})}>
-
-                    <form onSubmit={this._onFilterSaveForm}>
-
-                        <FiltersWithToggle label="Filter Items" mobileOnly={true}>
-                            <t.form.Form
-                                ref="filter_form"
-                                type={t.struct(selectn(this.props.filterOptionsKey, fields))}
-                                value={this.state.formValue}
-                                options={options.toJS()} />      
-                            <RaisedButton
-                                onTouchTap={this._onReset}
-                                label="Reset"
-                                primary={true} /> &nbsp;
-                            <RaisedButton
-                                type="submit"
-                                label="Filter"
-                                primary={true} />
-                        </FiltersWithToggle>
-
-                    </form>
-
-                </div>
-
-                <div className={classNames('col-xs-12', {'col-md-9': !this.props.fullWidth, 'col-md-12': this.props.fullWidth})}>
-                    <ComposedFilter
-                    {...this.state}
-                    {...this.props}
-                    />
-                </div>
-
-            </div>
-
-
-          </div>)
-      ;
-    }
-  }
-
-  return FilteredGridList;
+    return FilteredGridList;
 }

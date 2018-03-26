@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -29,83 +29,105 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import FlatButton from 'material-ui/lib/flat-button';
 
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Navigation for learning page
-*/
+ * Navigation for learning page
+ */
 @provide
 export default class ToolbarNavigation extends Component {
 
-  static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchResultSet: PropTypes.func.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    computeResultSet: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    showStats: PropTypes.func,
-    routeParams: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        fetchResultSet: PropTypes.func.isRequired,
+        navigateTo: PropTypes.func.isRequired,
+        computeResultSet: PropTypes.object.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        showStats: PropTypes.func,
+        routeParams: PropTypes.object.isRequired
+    };
 
-  constructor(props, context){
-    super(props, context);
+    constructor(props, context) {
+        super(props, context);
 
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
-
-  componentDidMount() {
-    // Get count for language assets
-    this.props.fetchResultSet('count_stories', {'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="story" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-    
-    this.props.fetchResultSet('count_songs', {'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-
-    this.props.fetchResultSet('count_words', {'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"', 'language': 'nxql', 'sortOrder': 'ASC'});
-
-    this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
-  }
-
-  _onNavigateRequest(pathArray) {
-    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
-      NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
-    } else {
-      NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
-  }
 
-  render() {
-    // TODO: Find out why the results sometimes in field1 and sometimes in field2?
-    const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)';
-    const COUNT_FIELD2 = 'response.entries[1].COUNT(ecm:uuid)';
+    componentDidMount() {
+        // Get count for language assets
+        this.props.fetchResultSet('count_stories', {
+            'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="story" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
+            'language': 'nxql',
+            'sortOrder': 'ASC'
+        });
 
-    //const { label, items, type } = this.props;
+        this.props.fetchResultSet('count_songs', {
+            'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
+            'language': 'nxql',
+            'sortOrder': 'ASC'
+        });
 
-    const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_songs');  
-    const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_stories');  
-    const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_words');  
-    const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_phrases');  
+        this.props.fetchResultSet('count_words', {
+            'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"',
+            'language': 'nxql',
+            'sortOrder': 'ASC'
+        });
 
-    let wordCount = (selectn(COUNT_FIELD1, computeWordsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeWordsCount) + selectn(COUNT_FIELD2, computeWordsCount);
-    let phraseCount = (selectn(COUNT_FIELD1, computePhrasesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount);
-    let songCount = (selectn(COUNT_FIELD1, computeSongsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount);
-    let storyCount = (selectn(COUNT_FIELD1, computeStoriesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount);
+        this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
+    }
+
+    _onNavigateRequest(pathArray) {
+        if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
+            NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
+        } else {
+            NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
+        }
+    }
+
+    render() {
+        // TODO: Find out why the results sometimes in field1 and sometimes in field2?
+        const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)';
+        const COUNT_FIELD2 = 'response.entries[1].COUNT(ecm:uuid)';
+
+        //const { label, items, type } = this.props;
+
+        const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_songs');
+        const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_stories');
+        const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_words');
+        const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_phrases');
+
+        let wordCount = (selectn(COUNT_FIELD1, computeWordsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeWordsCount) + selectn(COUNT_FIELD2, computeWordsCount);
+        let phraseCount = (selectn(COUNT_FIELD1, computePhrasesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount);
+        let songCount = (selectn(COUNT_FIELD1, computeSongsCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount);
+        let storyCount = (selectn(COUNT_FIELD1, computeStoriesCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount);
 
 
-    return <Toolbar className="dialect-navigation">
+        return <Toolbar className="dialect-navigation">
 
-                <ToolbarGroup firstChild={true} float="left">
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'words')} label={"Words (" + wordCount + ")"} />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')} label={"Phrases (" + phraseCount + ")"} />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')} label={"Songs (" + songCount + ")"} />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')} label={"Stories (" + storyCount + ")"} />
-                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet')} label={"Alphabet"} />
+            <ToolbarGroup firstChild={true} float="left">
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'words')}
+                            label={intl.trans('words', 'Words', 'first') + " (" + wordCount + ")"}/>
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')}
+                            label={intl.trans('phrases', 'Phrases', 'first') + " (" + phraseCount + ")"}/>
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')}
+                            label={intl.trans('songs', 'Songs', 'first') + " (" + songCount + ")"}/>
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')}
+                            label={intl.trans('stories', 'Stories', 'first') + " (" + storyCount + ")"}/>
+                <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet')}
+                            label={intl.trans('alphabet', 'Alphabet', 'first')}/>
+            </ToolbarGroup>
+
+            <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true}
+                                  routeParams={this.props.routeParams}>
+                <ToolbarGroup className={classNames('hidden-xs', {'hidden': !this.props.showStats})} firstChild={false}
+                              float="right">
+                    <FlatButton icon={<EditorInsertChart/>} style={{color: '#fff'}} onTouchTap={this.props.showStats}
+                                label={intl.trans('language_statistics', 'Language Statistics')}/>
                 </ToolbarGroup>
+            </AuthenticationFilter>
 
-                <AuthenticationFilter login={this.props.computeLogin} hideFromSections={true} routeParams={this.props.routeParams}>
-                    <ToolbarGroup className={classNames('hidden-xs', {'hidden': !this.props.showStats})} firstChild={false} float="right">
-                        <FlatButton icon={<EditorInsertChart />} style={{color: '#fff'}} onTouchTap={this.props.showStats} label={"Language Statistics"} />
-                    </ToolbarGroup>
-                </AuthenticationFilter>
-
-          </Toolbar>;
+        </Toolbar>;
     };
 }

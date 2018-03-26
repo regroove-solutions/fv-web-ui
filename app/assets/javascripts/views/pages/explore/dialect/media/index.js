@@ -52,116 +52,118 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import MediaList from 'views/components/Browsing/media-list';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const gridListStyle = {width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10};
 
-const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 20, filters: {'properties.dc:title': '', 'dialect': '' } };
+const DefaultFetcherParams = {currentPageIndex: 1, pageSize: 20, filters: {'properties.dc:title': '', 'dialect': ''}};
 
 const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, DefaultFetcherParams.pageSize), DefaultFetcherParams);
 
 /**
-* Browse media related to this dialect
-*/
+ * Browse media related to this dialect
+ */
 @provide
 export default class DialectMedia extends Component {
 
-  static propTypes = {
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      fetcherParams: DefaultFetcherParams
+    static propTypes = {
+        fetchResources: PropTypes.func.isRequired,
+        computeResources: PropTypes.object.isRequired,
+        navigateTo: PropTypes.func.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        computePortal: PropTypes.object.isRequired,
+        fetchPortal: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest', 'fetchData'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  _onNavigateRequest(media) {
-    const pathArray = selectn('path', media).split('/');
-    const name = pathArray[pathArray.length-1];
-    const newPathArray = this.props.splitWindowPath.slice();
-    newPathArray.push(name);
+        this.state = {
+            fetcherParams: DefaultFetcherParams
+        };
 
-    this.props.pushWindowPath('/' + newPathArray.join('/'));
-  }
+        // Bind methods to 'this'
+        ['_onNavigateRequest', 'fetchData'].forEach((method => this[method] = this[method].bind(this)));
+    }
 
-  fetchData(fetcherParams, props = this.props) {
+    _onNavigateRequest(media) {
+        const pathArray = selectn('path', media).split('/');
+        const name = pathArray[pathArray.length - 1];
+        const newPathArray = this.props.splitWindowPath.slice();
+        newPathArray.push(name);
 
-    this.setState({
-      fetcherParams: fetcherParams
-    });
+        this.props.pushWindowPath('/' + newPathArray.join('/'));
+    }
 
-    props.fetchResources(props.routeParams.dialect_path + '/Resources',
-    ProviderHelpers.filtersToNXQL(fetcherParams.filters) + 
-    '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) + 
-    '&pageSize=' + fetcherParams.pageSize
-    );
-  }
+    fetchData(fetcherParams, props = this.props) {
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal');
-    this.fetchData(this.state.fetcherParams);
-  }
+        this.setState({
+            fetcherParams: fetcherParams
+        });
 
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal');
-      this.fetchData(DefaultFetcherParams, nextProps);
-    }    
-  }
-  
-  render() {
+        props.fetchResources(props.routeParams.dialect_path + '/Resources',
+            ProviderHelpers.filtersToNXQL(fetcherParams.filters) +
+            '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
+            '&pageSize=' + fetcherParams.pageSize
+        );
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Portal',
-      'entity': this.props.computePortal
-    },{
-      'id': this.props.routeParams.dialect_path + '/Resources',
-      'entity': this.props.computeResources
-    }])
+    // Fetch data on initial render
+    componentDidMount() {
+        this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal');
+        this.fetchData(this.state.fetcherParams);
+    }
 
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-    const computeResources = ProviderHelpers.getEntry(this.props.computeResources, this.props.routeParams.dialect_path + '/Resources');
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.windowPath !== this.props.windowPath) {
+            nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal');
+            this.fetchData(DefaultFetcherParams, nextProps);
+        }
+    }
 
-    return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
+    render() {
 
-            <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} Media</h1>
+        const computeEntities = Immutable.fromJS([{
+            'id': this.props.routeParams.dialect_path + '/Portal',
+            'entity': this.props.computePortal
+        }, {
+            'id': this.props.routeParams.dialect_path + '/Resources',
+            'entity': this.props.computeResources
+        }])
 
-            <hr />
+        const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+        const computeResources = ProviderHelpers.getEntry(this.props.computeResources, this.props.routeParams.dialect_path + '/Resources');
+
+        return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
+
+            <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} {intl.trans('media', 'Media', 'first')}</h1>
+
+            <hr/>
 
             <div className="row">
 
-              <div className="col-xs-12">
-                <FilteredPaginatedMediaList
-                    cols={5}
-                    cellHeight={150}
-                    formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
-                    filterOptionsKey="Resources"
-                    action={this._onNavigateRequest}
-                    fetcher={this.fetchData}
-                    area={this.props.routeParams.area}
-                    fetcherParams={this.state.fetcherParams}
-                    metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
-                    items={selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources)} />
-              </div>
+                <div className="col-xs-12">
+                    <FilteredPaginatedMediaList
+                        cols={5}
+                        cellHeight={150}
+                        formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
+                        filterOptionsKey="Resources"
+                        action={this._onNavigateRequest}
+                        fetcher={this.fetchData}
+                        area={this.props.routeParams.area}
+                        fetcherParams={this.state.fetcherParams}
+                        metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
+                        items={selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources)}/>
+                </div>
 
             </div>
-            
+
         </PromiseWrapper>;
-  }
+    }
 }

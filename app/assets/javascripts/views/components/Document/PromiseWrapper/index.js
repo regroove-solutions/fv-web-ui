@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 
 import selectn from 'selectn';
 
@@ -25,83 +25,106 @@ import StatusBar from 'views/components/StatusBar';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import IntlService from "views/services/intl";
 
 /**
-* Simple component to handle loading of promises.
-*/
+ * Simple component to handle loading of promises.
+ */
 export default class PromiseWrapper extends Component {
 
-  static propTypes = {
-    computeEntities: PropTypes.instanceOf(List),
-    titleEntityId: PropTypes.string,
-    titleEntityField: PropTypes.string,
-    renderOnError: PropTypes.bool,
-    hideFetch: PropTypes.bool,
-    style: PropTypes.object
-  };
+    intl = IntlService.instance;
 
-  static defaultProps = {
-    renderOnError: false,
-    hideFetch: false,
-    titleEntityField: 'response.properties.dc:title',
-    style: {}
-  };
+    static propTypes = {
+        computeEntities: PropTypes.instanceOf(List),
+        titleEntityId: PropTypes.string,
+        titleEntityField: PropTypes.string,
+        renderOnError: PropTypes.bool,
+        hideFetch: PropTypes.bool,
+        style: PropTypes.object
+    };
 
-  constructor(props, context){
-    super(props, context);
+    static defaultProps = {
+        renderOnError: false,
+        hideFetch: false,
+        titleEntityField: 'response.properties.dc:title',
+        style: {}
+    };
 
-    this.state = {
-      typeError: false
-    }
-  }
- 
-  render () {
+    constructor(props, context) {
+        super(props, context);
 
-    let statusMessage = null;
-    let render = null;
-
-    this.props.computeEntities.forEach(function(computeEntity) {
-
-      if (!List.isList(computeEntity.get('entity'))) {
-        console.warn("Trying to use promise wrapper on compute entity that does not return a list.");
-        return false;
-      }
-
-      let reducedOperation = ProviderHelpers.getEntry(computeEntity.get('entity'), computeEntity.get('id'));
-
-      if (!reducedOperation || (reducedOperation.isError && selectn('message', reducedOperation))) {
-
-        if (!this.props.renderOnError) { 
-          render = <div><h1>404 - Page Not Found</h1><p>Please report this error via the "Provide Feedback" feature so that we can fix it.</p><p>Include what link or action you took to get to this page.</p><p>Thank you!</p></div>;
+        this.state = {
+            typeError: false
         }
-
-        statusMessage = selectn('message', reducedOperation);
-        return false;
-      }
-
-      if (reducedOperation.isFetching) {
-        // If response already exists, and instructed to hide future fetches, render null (e.g. for pagination, filtering)
-        render = (this.props.hideFetch && selectn('response_prev', reducedOperation)) ? null : <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}} size={1} /> {selectn('message', reducedOperation)}</div>;
-        return false;
-      }
-
-      if (reducedOperation.success) {
-        if (selectn('message', reducedOperation)) {
-          statusMessage = selectn('message', reducedOperation);
-        }
-      }
-
-    }.bind(this));
-
-    // Catch type errors
-    if (statusMessage && (statusMessage instanceof TypeError || statusMessage instanceof Error)) {
-      console.error(statusMessage);
-      statusMessage = statusMessage.message;
-      render = <div>An unexpected error has occured.</div>;
-      return false;
     }
 
-    return <div style={this.props.style}>{(!render) ? this.props.children : render} {<StatusBar message={statusMessage} />}</div>
-  }
+    render() {
+
+        let statusMessage = null;
+        let render = null;
+
+        this.props.computeEntities.forEach(function (computeEntity) {
+
+            if (!List.isList(computeEntity.get('entity'))) {
+                console.warn("Trying to use promise wrapper on compute entity that does not return a list.");
+                return false;
+            }
+
+            let reducedOperation = ProviderHelpers.getEntry(computeEntity.get('entity'), computeEntity.get('id'));
+
+            if (!reducedOperation || (reducedOperation.isError && selectn('message', reducedOperation))) {
+
+                if (!this.props.renderOnError) {
+                    render = <div><h1>404 - {this.intl.translate({
+                        key: 'errors.page_not_found',
+                        default: 'Page Not Found',
+                        case: 'first'
+                    })}</h1><p>{this.intl.translate({
+                        key: 'errors.report_via_feedback',
+                        default: 'Please report this error via the "Provide Feedback" feature so that we can fix it',
+                        case: 'first'
+                    })}.
+                    </p><p>{this.intl.translate({
+                        key: 'errors.feedback_include_link',
+                        default: 'Include what link or action you took to get to this page'
+                    })}.</p><p>{this.intl.translate({
+                        key: 'thank_you',
+                        default: 'Thank You',
+                        case: 'words'
+                    })}!</p>
+                    </div>;
+                }
+
+                statusMessage = selectn('message', reducedOperation);
+                return false;
+            }
+
+            if (reducedOperation.isFetching) {
+                // If response already exists, and instructed to hide future fetches, render null (e.g. for pagination, filtering)
+                render = (this.props.hideFetch && selectn('response_prev', reducedOperation)) ? null :
+                    <div><CircularProgress mode="indeterminate" style={{verticalAlign: 'middle'}}
+                                           size={1}/> {selectn('message', reducedOperation)}</div>;
+                return false;
+            }
+
+            if (reducedOperation.success) {
+                if (selectn('message', reducedOperation)) {
+                    statusMessage = selectn('message', reducedOperation);
+                }
+            }
+
+        }.bind(this));
+
+        // Catch type errors
+        if (statusMessage && (statusMessage instanceof TypeError || statusMessage instanceof Error)) {
+            console.error(statusMessage);
+            statusMessage = statusMessage.message;
+            render = <div>An unexpected error has occured.</div>;
+            return false;
+        }
+
+        return <div style={this.props.style}>{(!render) ? this.props.children : render} {<StatusBar
+            message={statusMessage}/>}</div>
+    }
 
 }

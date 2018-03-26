@@ -1,7 +1,7 @@
 {% extends 'layouts/application.swig' %}
 
 {% block content %}
-  <div id="app-wrapper" class="app-wrapper"><div id="app-loader" class="app-loader">Loading...</div></div>
+  <div id="app-wrapper" class="app-wrapper"><div id="app-loader" class="app-loader">Loading/Chargement...</div></div>
 {% endblock %}
 
 {% block head %}
