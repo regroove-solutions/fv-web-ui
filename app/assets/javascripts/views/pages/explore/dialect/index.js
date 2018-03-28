@@ -92,6 +92,8 @@ export default class ExploreDialect extends Component {
     disableDialect: PropTypes.func.isRequired,
     computeDialectUnpublish: PropTypes.object.isRequired,
     computePublish: PropTypes.object.isRequired,
+    //fetchResultSet: PropTypes.func.isRequired,
+    //computeResultSet: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -109,6 +111,7 @@ export default class ExploreDialect extends Component {
   fetchData(newProps) {
     newProps.fetchDialect2(newProps.routeParams.dialect_path);
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal', 'Fetching community portal.', null, 'Problem fetching community portal it may be unpublished or offline.');
+    //newProps.fetchResultSet('count_scheduled_for_publishing', {'query': 'SELECT COUNT(ecm:uuid) FROM FVWord, FVPhrase WHERE ecm:tag = \'schedueled_for_publishing\' AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0 AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '"', 'language': 'nxql'});
   }
 
   // Fetch data on initial render
@@ -198,6 +201,14 @@ export default class ExploreDialect extends Component {
       'entity': this.props.computePortal
     }]);
 
+    /*
+    const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)';
+
+    const computeScheduledForPublishingCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_scheduled_for_publishing');  
+
+    let scheduledForPublishingCount = (selectn(COUNT_FIELD1, computeScheduledForPublishingCount) == undefined) ? '...' : selectn(COUNT_FIELD1, computeScheduledForPublishingCount);
+    */
+
     let computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
     let computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
 
@@ -250,7 +261,18 @@ export default class ExploreDialect extends Component {
               if (this.props.routeParams.area == 'Workspaces') {
                 
                 if (selectn('response', computeDialect2)) {
-                  return <PageToolbar
+                  return <div>
+                    
+                    <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}} renderPartial={false}>
+
+                      <div className={classNames('alert', 'alert-info')} style={{marginTop: '10px', marginBottom: '5px'}} role="alert">
+                        {/*Your dialect is currently scheduled to be published. There are <strong>{scheduledForPublishingCount}</strong> words and phrases scheduled. Estimated completion: <strong>{(scheduledForPublishingCount/100)}</strong> minutes.*/}
+                        <strong>Note</strong>: We are currently working on fixing issues with publishing entire dialects at once (large amounts of words/phrases/media). Once launched, we will re-enable the option of publishing entire dialects.
+                      </div>
+
+                    </AuthorizationFilter>
+                                        
+                    <PageToolbar
                             label="Portal"
                             handleNavigateRequest={this._onNavigateRequest}
                             computeEntity={computeDialect2}
@@ -259,7 +281,9 @@ export default class ExploreDialect extends Component {
                             publishToggleAction={this._publishToggleAction}
                             publishChangesAction={this._publishChangesAction}
                             enableToggleAction={this._enableToggleAction}
-                            {...this.props} />;
+                            {...this.props} />
+                            
+                            </div>;
                 }
               }
             })()}
