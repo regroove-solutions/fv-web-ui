@@ -267,7 +267,7 @@ export default class ExploreDialect extends Component {
 
                       <div className={classNames('alert', 'alert-info')} style={{marginTop: '10px', marginBottom: '5px'}} role="alert">
                         {/*Your dialect is currently scheduled to be published. There are <strong>{scheduledForPublishingCount}</strong> words and phrases scheduled. Estimated completion: <strong>{(scheduledForPublishingCount/100)}</strong> minutes.*/}
-                        <strong>Note</strong>: We are currently working on fixing issues with publishing entire dialects at once (large amounts of words/phrases/media). Once launched, we will re-enable the option of publishing entire dialects.
+                        <strong>Note</strong>: We are currently working on fixing issues with publishing entire dialects at once (large amounts of words/phrases/media). Please refrain from publishing large amounts of items individually in the meantime.
                       </div>
 
                     </AuthorizationFilter>
