@@ -21,7 +21,7 @@ This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/g
 There are several version dependency requirements to properly build and run the project:
 -  NodeJS>=v8.10
 -  Gulp CLI v3.9.1
--  Yarn v0.21.3
+-  Yarn v1.5.1
 
 Instructions to install specific project dependencies and running the application are described in the *Setting Up and Running* section.
 
@@ -61,10 +61,10 @@ $ git submodule update --init --recursive
 $ git submodule foreach git pull origin master
 ```
 
-5. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
+5. Install NodeJS v8.10.0 and set it as the active version of NodeJS by running:
 ```bash
-$ nvm install 4.8.0
-$ nvm use 4.8.0
+$ nvm install 8.10.0
+$ nvm use 8.10.0
 ```
 
 6. Install GULP CLI v3.9.1 by running:
@@ -72,9 +72,9 @@ $ nvm use 4.8.0
 $ npm install -g gulp@3.9.1
 ```
 
-7. Install Yarn v0.21.3 by running:
+7. Install Yarn v1.5.1 by running:
 ```bash
-$ npm install -g yarn@0.21.3
+$ npm install -g yarn@1.5.1
 ```
 
 8. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
