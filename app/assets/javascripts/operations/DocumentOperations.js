@@ -44,7 +44,7 @@ export default class DocumentOperations extends BaseOperations {
                         error.response.json().then(
                             (jsonError) => {
                                 if (jsonError.hasOwnProperty('status') && jsonError.status == '404') {
-                                    jsonError.message = jsonError.message + ' (404 - ' + this.intl.translate({
+                                    jsonError.message = jsonError.message + ' (404 - ' + IntlService.instance.translate({
                                         key: 'operations.document_not_found',
                                         default: 'Document not found'
                                     }) + ')';
@@ -54,7 +54,7 @@ export default class DocumentOperations extends BaseOperations {
                             }
                         );
                     } else {
-                        return reject(error || this.intl.translate({
+                        return reject(error || IntlService.instance.translate({
                             key: 'operations.could_not_access_server',
                             default: 'Could not access server'
                         }));
