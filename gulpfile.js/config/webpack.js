@@ -85,7 +85,7 @@ module.exports = function (env) {
                     options: {
                         filename: '[name].js',
                         publicPath: '/',
-                        outputPath: '/'
+                        outputPath: absPublicDirectory
                     },
                 },
                 {
