@@ -11,8 +11,8 @@ import DocumentOperations from 'operations/DocumentOperations';
 const DISMISS_ERROR = 'DISMISS_ERROR';
 
 /**
-* Multiple Dialect Actions
-*/
+ * Multiple Dialect Actions
+ */
 const FV_DIALECTS_FETCH_START = "FV_DIALECTS_FETCH_START";
 const FV_DIALECTS_FETCH_SUCCESS = "FV_DIALECTS_FETCH_SUCCESS";
 const FV_DIALECTS_FETCH_ERROR = "FV_DIALECTS_FETCH_ERROR";
@@ -30,8 +30,8 @@ const FV_DIALECTS_DELETE_SUCCESS = "FV_DIALECTS_DELETE_SUCCESS";
 const FV_DIALECTS_DELETE_ERROR = "FV_DIALECTS_DELETE_ERROR";
 
 /**
-* Single Dialect Actions
-*/
+ * Single Dialect Actions
+ */
 
 const FV_DIALECT_FETCH_START = "FV_DIALECT_FETCH_START";
 const FV_DIALECT_FETCH_SUCCESS = "FV_DIALECT_FETCH_SUCCESS";
@@ -62,32 +62,44 @@ const FV_DIALECT_UNPUBLISH_SUCCESS = "FV_DIALECT_UNPUBLISH_SUCCESS";
 const FV_DIALECT_UNPUBLISH_ERROR = "FV_DIALECT_UNPUBLISH_ERROR";
 
 const fetchDialect = function fetchDialect(pathOrId) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: FV_DIALECT_FETCH_START } );
+        dispatch({type: FV_DIALECT_FETCH_START});
 
-    return DocumentOperations.getDocument(pathOrId, 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } })
-    .then((response) => {
-      dispatch( { type: FV_DIALECT_FETCH_SUCCESS, document: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_DIALECT_FETCH_ERROR, error: error } )
-    });
+        return DocumentOperations.getDocument(pathOrId, 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}})
+            .then((response) => {
+                dispatch({type: FV_DIALECT_FETCH_SUCCESS, document: response})
+            }).catch((error) => {
+                dispatch({type: FV_DIALECT_FETCH_ERROR, error: error})
+            });
 
-  }
+    }
 };
 
-const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
-const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
+const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
+const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
 const queryDialect2 = RESTActions.query('FV_DIALECT2_QUERY', 'FVDialect', {});
 const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {});
-const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect' } });
-const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
-const publishDialectOnly = RESTActions.execute('FV_DIALECT2_PUBLISH', 'Document.PublishToSection', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
-const unpublishDialect = RESTActions.execute('FV_DIALECT2_UNPUBLISH', 'FVUnpublishDialect', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
-const enableDialect = RESTActions.execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
-const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', { headers: { 'X-NXenrichers.document': 'ancestry,dialect,permissions,acls' } });
+const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect'}});
+const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
+const publishDialectOnly = RESTActions.execute('FV_DIALECT2_PUBLISH', 'Document.PublishToSection', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
+const unpublishDialect = RESTActions.execute('FV_DIALECT2_UNPUBLISH', 'FVUnpublishDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
+const enableDialect = RESTActions.execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
+const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
 
-const actions = { fetchDialect, queryDialect2, updateDialect2, fetchDialect2, publishDialect, publishDialectOnly, unpublishDialect, fetchDialects, fetchDialectStats, enableDialect, disableDialect };
+const actions = {
+    fetchDialect,
+    queryDialect2,
+    updateDialect2,
+    fetchDialect2,
+    publishDialect,
+    publishDialectOnly,
+    unpublishDialect,
+    fetchDialects,
+    fetchDialectStats,
+    enableDialect,
+    disableDialect
+};
 
 const computeDialectsQuery = RESTReducers.computeQuery('dialects');
 const computeDialectQuery = RESTReducers.computeQuery('dialect2_query');
@@ -95,57 +107,74 @@ const computeDialectFetch = RESTReducers.computeFetch('dialect2');
 const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats');
 
 const reducers = {
-  computeDialect(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case FV_DIALECT_FETCH_START:
-      case FV_DIALECT_UPDATE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
+    computeDialect(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case FV_DIALECT_FETCH_START:
+            case FV_DIALECT_UPDATE_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
 
-      // Send modified document to UI without access REST end-point
-      case FV_DIALECT_FETCH_SUCCESS:
-      case FV_DIALECT_UPDATE_SUCCESS:
-        return Object.assign({}, { response: action.document, isFetching: false, success: true });
-      break;
+            // Send modified document to UI without access REST end-point
+            case FV_DIALECT_FETCH_SUCCESS:
+            case FV_DIALECT_UPDATE_SUCCESS:
+                return Object.assign({}, {response: action.document, isFetching: false, success: true});
+                break;
 
-      // Send modified document to UI without access REST end-point
-      case FV_DIALECT_FETCH_ERROR:
-      case FV_DIALECT_UPDATE_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
+            // Send modified document to UI without access REST end-point
+            case FV_DIALECT_FETCH_ERROR:
+            case FV_DIALECT_UPDATE_ERROR:
+            case DISMISS_ERROR:
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    isError: true,
+                    error: action.error,
+                    errorDismissed: (action.type === DISMISS_ERROR) ? true : false
+                });
+                break;
 
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
+    },
+
+    computeDialect2Query: computeDialectQuery.computeDialect2Query,
+    computeDialects: computeDialectsQuery.computeDialects,
+    computeDialect2: computeDialectFetch.computeDialect2,
+    computeDialectStats: computeDialectStatsOperation.computeDialectStats,
+    computeDialectUnpublish(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case FV_DIALECT_UNPUBLISH_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
+
+            case FV_DIALECT_UNPUBLISH_SUCCESS:
+                return Object.assign({}, state, {response: action.document, isFetching: false, success: true});
+                break;
+
+            case FV_DIALECT_UNPUBLISH_ERROR:
+                return Object.assign({}, state, {isFetching: false, isError: true, error: action.error});
+                break;
+
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
     }
-  },
-
-  computeDialect2Query: computeDialectQuery.computeDialect2Query,
-  computeDialects: computeDialectsQuery.computeDialects,
-  computeDialect2: computeDialectFetch.computeDialect2,
-  computeDialectStats: computeDialectStatsOperation.computeDialectStats,
-  computeDialectUnpublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case FV_DIALECT_UNPUBLISH_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case FV_DIALECT_UNPUBLISH_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
-
-      case FV_DIALECT_UNPUBLISH_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  }
 };
 
 const middleware = [thunk];
 
-export default { actions, reducers, middleware };
+export default {actions, reducers, middleware};

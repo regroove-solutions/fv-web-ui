@@ -14,107 +14,108 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import StringHelpers from './StringHelpers'
 
 const toJSKeepId = function (js) {
-  return typeof js !== 'object' || js === null ? js :
-    Array.isArray(js) ? 
-      Immutable.Seq(js).map(toJSKeepId).toList() :
-      (js.hasOwnProperty('id')) ? Immutable.Seq(js).toMap() : Immutable.Seq(js).map(toJSKeepId).toMap();
+    return typeof js !== 'object' || js === null ? js :
+        Array.isArray(js) ?
+            Immutable.Seq(js).map(toJSKeepId).toList() :
+            (js.hasOwnProperty('id')) ? Immutable.Seq(js).toMap() : Immutable.Seq(js).map(toJSKeepId).toMap();
 }
 
 const proxiesKeys = [
-  {
-    workspace: 'fv-word:categories',
-    section: 'fvproxy:proxied_categories'
-  },
-  {
-    workspace: 'fv-phrase:phrase_books',
-    section: 'fvproxy:proxied_categories'
-  },
-  {
-    workspace: 'fvm:origin',
-    section: 'fvproxy:proxied_origin'
-  },
-  {
-    workspace: 'fv:related_pictures',
-    section: 'fvproxy:proxied_pictures'
-  },
-  {
-    workspace: 'fv:related_videos',
-    section: 'fvproxy:proxied_videos'
-  },
-  {
-    workspace: 'fv:related_audio',
-    section: 'fvproxy:proxied_audio'
-  }
+    {
+        workspace: 'fv-word:categories',
+        section: 'fvproxy:proxied_categories'
+    },
+    {
+        workspace: 'fv-phrase:phrase_books',
+        section: 'fvproxy:proxied_categories'
+    },
+    {
+        workspace: 'fvm:origin',
+        section: 'fvproxy:proxied_origin'
+    },
+    {
+        workspace: 'fv:related_pictures',
+        section: 'fvproxy:proxied_pictures'
+    },
+    {
+        workspace: 'fv:related_videos',
+        section: 'fvproxy:proxied_videos'
+    },
+    {
+        workspace: 'fv:related_audio',
+        section: 'fvproxy:proxied_audio'
+    }
 ];
 
 export default {
-  getEntry: function (wordResults, path) {
-    if (!wordResults || wordResults.isEmpty() || !path) {
-      return null;
-    }
+    getEntry: function (wordResults, path) {
+        if (!wordResults || wordResults.isEmpty() || !path) {
+            return null;
+        }
 
-    let result = wordResults.find(function(entry) {
-        return entry.get('id') === path;
-    });
+        let result = wordResults.find(function (entry) {
+            return entry.get('id') === path;
+        });
 
-    if (result) {
-    	return result.toJS();
-    }
+        if (result) {
+            return result.toJS();
+        }
 
-    return null;
-  },
-  toJSKeepId: function(js) { return toJSKeepId(js)},
-  /*hasExtendedGroup: function (extendedGroups, group) {
+        return null;
+    },
+    toJSKeepId: function (js) {
+        return toJSKeepId(js)
+    },
+    /*hasExtendedGroup: function (extendedGroups, group) {
 
-    if (extendedGroups && extendedGroups.size > 0) {
-      if (extendedGroups.findIndex(function(entry) { return (entry.get('name') === group) }) === -1) {
+      if (extendedGroups && extendedGroups.size > 0) {
+        if (extendedGroups.findIndex(function(entry) { return (entry.get('name') === group) }) === -1) {
+          return false;
+        } else {
+          return true;
+        }
+      }
+
+      return false;
+    },*/
+    isActiveRole: function (roles) {
+        if (roles && roles.length > 0) {
+            if (roles.indexOf("Record") !== -1 || roles.indexOf("Approve") !== -1 || roles.indexOf("Manage") !== -1 || roles.indexOf("Member") !== -1) {
+                return true;
+            }
+        }
+
         return false;
-      } else {
-        return true;
-      }
-    }
+    },
+    getDialectPathFromURLArray: function (url) {
+        return decodeURI(url.slice(1, 7).join('/'));
+    },
+    switchWorkspaceSectionKeys: function (workspaceKey, area) {
 
-    return false;
-  },*/
-  isActiveRole: function(roles) {
-    if (roles && roles.length > 0) {
-      if (roles.indexOf("Record") !== -1 || roles.indexOf("Approve") !== -1 || roles.indexOf("Manage") !== -1 || roles.indexOf("Member") !== -1) {
-        return true;
-      }
-    }
+        let row = proxiesKeys.find(function (mapping) {
+            return mapping.workspace === workspaceKey;
+        })
 
-    return false;
-  },
-  getDialectPathFromURLArray: function (url) {
-  	return decodeURI(url.slice(1, 7).join('/'));
-  },
-  switchWorkspaceSectionKeys: function (workspaceKey, area) {
+        if (row) {
+            if (area == 'sections') {
+                return row.section;
+            } else {
+                return row.workspace;
+            }
+        }
 
-    let row = proxiesKeys.find(function (mapping) { 
-      return mapping.workspace === workspaceKey;
-    })
+        return workspaceKey;
+    },
+    getDialectGroups: function (aces = [], currentlyAssignedGroups = []) {
 
-    if (row){
-      if (area == 'sections') {
-        return row.section;
-      } else {
-        return row.workspace;
-      }
-    }
-
-    return workspaceKey;
-  },
-  getDialectGroups: function (aces = [], currentlyAssignedGroups = []) {
-
-        if (aces.length === 0)
-        {
+        if (aces.length === 0) {
             return {
-              all: null,
-              new: null
+                all: null,
+                new: null
             };
         }
 
@@ -124,7 +125,7 @@ export default {
         // Generate list of all groups related to this dialect
         let newAvailableGroups = {};
 
-        (aces).forEach(function(group, i) {
+        (aces).forEach(function (group, i) {
             let groupArray = group.username.split('_');
             if (group.username.match(/members|recorders|administrators/g) != null) {
 
@@ -143,58 +144,58 @@ export default {
             all: allAvailableGroups,
             new: newAvailableGroups
         };
-  },
-  replaceAllWorkspaceSectionKeys: function (string, area) {
+    },
+    replaceAllWorkspaceSectionKeys: function (string, area) {
 
-    let searchKey = (area == 'sections') ? 'workspace' : 'section';
-    let replaceKey = (area == 'sections') ? 'section' : 'workspace';
+        let searchKey = (area == 'sections') ? 'workspace' : 'section';
+        let replaceKey = (area == 'sections') ? 'section' : 'workspace';
 
-    for (let proxyKey in proxiesKeys) {
-      string = string.replace(new RegExp(proxiesKeys[proxyKey][searchKey],'g'), proxiesKeys[proxyKey][replaceKey]);
-    }
+        for (let proxyKey in proxiesKeys) {
+            string = string.replace(new RegExp(proxiesKeys[proxyKey][searchKey], 'g'), proxiesKeys[proxyKey][replaceKey]);
+        }
 
-    return string;
-  },
-  filtersToNXQL: function (filterArray) {
+        return string;
+    },
+    filtersToNXQL: function (filterArray) {
 
-    let nxqlFilterString = '';
-    let nxqlGroups = {};
+        let nxqlFilterString = '';
+        let nxqlGroups = {};
 
-    const generateNXQLString = function(nxql, appliedFilter) {
-      return nxql.replace(/\$\{value\}/g, appliedFilter);
-    }
+        const generateNXQLString = function (nxql, appliedFilter) {
+            return nxql.replace(/\$\{value\}/g, appliedFilter);
+        }
 
-    for (let appliedFilterKey in filterArray) {
-        let ak = Object.assign({}, filterArray[appliedFilterKey]);
-        if (ak && ak.hasOwnProperty('filterOptions') && ak.filterOptions && ak.filterOptions.hasOwnProperty('nxql')) {
-            
-            if (ak.appliedFilter === true) (ak.appliedFilter = 1);
-            if (ak.appliedFilter === false) (ak.appliedFilter = 0);
+        for (let appliedFilterKey in filterArray) {
+            let ak = Object.assign({}, filterArray[appliedFilterKey]);
+            if (ak && ak.hasOwnProperty('filterOptions') && ak.filterOptions && ak.filterOptions.hasOwnProperty('nxql')) {
 
-            if (!ak.filterOptions.hasOwnProperty('nxqlGroup')) {
-              nxqlFilterString += ' ' + (ak.filterOptions.hasOwnProperty('operator') ? ak.filterOptions.operator : 'AND') + ' ' + generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter);
-            } else { 
-              if (nxqlGroups.hasOwnProperty(ak.filterOptions.nxqlGroup) && nxqlGroups[ak.filterOptions.nxqlGroup].length > 0) {
-                nxqlGroups[ak.filterOptions.nxqlGroup].push(generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter));
-              } else {
-                nxqlGroups[ak.filterOptions.nxqlGroup] = [generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter)];
-              }
+                if (ak.appliedFilter === true) (ak.appliedFilter = 1);
+                if (ak.appliedFilter === false) (ak.appliedFilter = 0);
+
+                if (!ak.filterOptions.hasOwnProperty('nxqlGroup')) {
+                    nxqlFilterString += ' ' + (ak.filterOptions.hasOwnProperty('operator') ? ak.filterOptions.operator : 'AND') + ' ' + generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter);
+                } else {
+                    if (nxqlGroups.hasOwnProperty(ak.filterOptions.nxqlGroup) && nxqlGroups[ak.filterOptions.nxqlGroup].length > 0) {
+                        nxqlGroups[ak.filterOptions.nxqlGroup].push(generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter));
+                    } else {
+                        nxqlGroups[ak.filterOptions.nxqlGroup] = [generateNXQLString(ak.filterOptions.nxql, ak.appliedFilter)];
+                    }
+                }
             }
         }
+
+        let appendGroupNXQL = '';
+
+        for (var key in nxqlGroups) {
+            appendGroupNXQL += ' AND (' + nxqlGroups[key].join(' OR ') + ')'
+        }
+
+        return nxqlFilterString + appendGroupNXQL;
+    },
+    regex: {
+        ANYTHING_BUT_SLASH: "([^/]*)",
+        ANY_LANGUAGE_CODE: "(en|fr)",
+        WORKSPACE_OR_SECTION: "(sections|Workspaces)",
+        KIDS_OR_DEFAULT: "(kids|explore)"
     }
-
-    let appendGroupNXQL = '';
-
-    for (var key in nxqlGroups) {
-      appendGroupNXQL += ' AND (' + nxqlGroups[key].join(' OR ') + ')'
-    }
-
-    return nxqlFilterString + appendGroupNXQL;
-  },
-  regex: {
-    ANYTHING_BUT_SLASH : "([^/]*)",
-    ANY_LANGUAGE_CODE : "(en|fr)",
-    WORKSPACE_OR_SECTION : "(sections|Workspaces)",
-    KIDS_OR_DEFAULT : "(kids|explore)"
-  }
 }

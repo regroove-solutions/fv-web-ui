@@ -16,7 +16,9 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import WordsearchGame from 'games/wordsearch';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
 * Test game wrapper
 */

@@ -1,304 +1,312 @@
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 
 const TITLE_CASE_KEY = function (key) {
-  return key[0].toUpperCase()+key.substring(1)
+    return key[0].toUpperCase() + key.substring(1)
 };
 
 const UPPER_CASE_KEY = function (key) {
-  return 'FV_' + key.toUpperCase()
+    return 'FV_' + key.toUpperCase()
 };
 
 const CAMEL_CASE_KEY = function (key) {
-  
-  if (key.indexOf('_') === -1) {
-    return TITLE_CASE_KEY(key);
-  }
 
-  let modifiedKey = '';
-  let keyArray = key.split('_');
+    if (key.indexOf('_') === -1) {
+        return TITLE_CASE_KEY(key);
+    }
 
-  for (let i = 0; i < keyArray.length; ++i) {
-    modifiedKey += TITLE_CASE_KEY(keyArray[i]);
-  }
+    let modifiedKey = '';
+    let keyArray = key.split('_');
 
-  return modifiedKey;
+    for (let i = 0; i < keyArray.length; ++i) {
+        modifiedKey += TITLE_CASE_KEY(keyArray[i]);
+    }
+
+    return modifiedKey;
 };
 
-const getListIndexForPushOrReplace = function(s, i) {
-  return i == -1 ? s.size : i;
+const getListIndexForPushOrReplace = function (s, i) {
+    return i == -1 ? s.size : i;
 }
 
-const getPreviousResponse = function(s, i) {
-  return (i !== -1 && s.get(i).has('response')) ? s.get(i).get('response') : null;
+const getPreviousResponse = function (s, i) {
+    return (i !== -1 && s.get(i).has('response')) ? s.get(i).get('response') : null;
 }
 
 export default {
-  computeFetch: function computeFetch(key) {
+    computeFetch: function computeFetch(key) {
 
-    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+        return {
+            ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
 
-        // Find entry within state based on id
-        let indexOfEntry = state.findIndex(function(item) {
-          return item.get("id") === action.pathOrId; 
-        });
+                // Find entry within state based on id
+                let indexOfEntry = state.findIndex(function (item) {
+                    return item.get("id") === action.pathOrId;
+                });
 
-        switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_FETCH_START':
-          case UPPER_CASE_KEY(key) + '_UPDATE_START':
-          case UPPER_CASE_KEY(key) + '_CREATE_START':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_START':
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_START':
+                switch (action.type) {
+                    case UPPER_CASE_KEY(key) + '_FETCH_START':
+                    case UPPER_CASE_KEY(key) + '_UPDATE_START':
+                    case UPPER_CASE_KEY(key) + '_CREATE_START':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_START':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_START':
 
-            // Push or replace
-            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
-              action: action.type,            	
-              id: action.pathOrId,
-              message: action.message,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              isFetching: true,
-              success: false
-            }));
+                        // Push or replace
+                        return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            message: action.message,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            isFetching: true,
+                            success: false
+                        }));
 
-          break;
+                        break;
 
-          case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_SUCCESS':
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_SUCCESS':
-        	  
-            // Replace entry within state
-            return state.set(indexOfEntry, Map({
-              action: action.type,
-              id: action.pathOrId,
-              isFetching: false,
-              success: true,
-              wasUpdated: (action.type.indexOf('_UPDATE_') !== -1),
-              wasCreated: (action.type.indexOf('_CREATE_') !== -1),
-              response: action.response,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                    case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_SUCCESS':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_SUCCESS':
 
-          break;
+                        // Replace entry within state
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            success: true,
+                            wasUpdated: (action.type.indexOf('_UPDATE_') !== -1),
+                            wasCreated: (action.type.indexOf('_CREATE_') !== -1),
+                            response: action.response,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          case UPPER_CASE_KEY(key) + '_FETCH_ERROR':
-          case UPPER_CASE_KEY(key) + '_UPDATE_ERROR':
-          case UPPER_CASE_KEY(key) + '_CREATE_ERROR':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_ERROR':
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_ERROR':
+                        break;
 
-            // Add error message
-            return state.set(indexOfEntry, Map({
-              action: action.type,            	
-              id: action.pathOrId,
-              isFetching: false,
-              isError: true,
-              success: false,
-              response: state.get(indexOfEntry).get('response'),
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                    case UPPER_CASE_KEY(key) + '_FETCH_ERROR':
+                    case UPPER_CASE_KEY(key) + '_UPDATE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_CREATE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_ERROR':
 
-          break;
+                        // Add error message
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            isError: true,
+                            success: false,
+                            response: state.get(indexOfEntry).get('response'),
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
+
+                        break;
+                }
+
+                return state;
+            }
         }
+    },
+    computeQuery: function computeQuery(key) {
 
-        return state;
-    }}
-  },
-  computeQuery: function computeQuery(key) {
+        return {
+            ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
 
-    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+                // Find entry within state based on id
+                let indexOfEntry = state.findIndex(function (item) {
+                    return item.get("id") === action.pathOrId;
+                });
 
-        // Find entry within state based on id
-        let indexOfEntry = state.findIndex(function(item) {
-          return item.get("id") === action.pathOrId; 
-        });
+                switch (action.type) {
+                    case UPPER_CASE_KEY(key) + '_QUERY_START':
 
-        switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_QUERY_START':
+                        // push or replace
+                        return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            message: action.message,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            isFetching: true,
+                            success: false
+                        }));
 
-            // push or replace
-            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
-              action: action.type,              
-              id: action.pathOrId,
-              message: action.message,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              isFetching: true,
-              success: false
-            }));
+                        break;
 
-          break;
+                    case UPPER_CASE_KEY(key) + '_QUERY_SUCCESS':
 
-          case UPPER_CASE_KEY(key) + '_QUERY_SUCCESS':
-            
-            // Replace entry within state
-            return state.set(indexOfEntry, Map({
-              action: action.type,
-              id: action.pathOrId,
-              isFetching: false,
-              success: true,
-              response: action.response,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Replace entry within state
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            success: true,
+                            response: action.response,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
 
-          case UPPER_CASE_KEY(key) + '_QUERY_ERROR':
+                    case UPPER_CASE_KEY(key) + '_QUERY_ERROR':
 
-            // Add error message
-            return state.set(indexOfEntry, Map({
-              action: action.type,              
-              id: action.pathOrId,
-              isFetching: false,
-              isError: true,
-              success: false,
-              response: state.get(indexOfEntry).get('response'),
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Add error message
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            isError: true,
+                            success: false,
+                            response: state.get(indexOfEntry).get('response'),
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
+                }
+
+                return state;
+            }
         }
+    },
+    computeOperation: function computeOperation(key) {
 
-        return state;
-    }}
-  },
-  computeOperation: function computeOperation(key) {
+        return {
+            ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
 
-    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+                // Find entry within state based on id
+                let indexOfEntry = state.findIndex(function (item) {
+                    return item.get("id") === action.pathOrId;
+                });
 
-        // Find entry within state based on id
-        let indexOfEntry = state.findIndex(function(item) {
-          return item.get("id") === action.pathOrId; 
-        });
+                switch (action.type) {
+                    case UPPER_CASE_KEY(key) + '_EXECUTE_START':
 
-        switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_EXECUTE_START':
+                        // push or replace
+                        return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            message: action.message,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            isFetching: true,
+                            success: false
+                        }));
 
-            // push or replace
-            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
-              action: action.type,              
-              id: action.pathOrId,
-              message: action.message,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              isFetching: true,
-              success: false
-            }));
+                        break;
 
-          break;
+                    case UPPER_CASE_KEY(key) + '_EXECUTE_SUCCESS':
 
-          case UPPER_CASE_KEY(key) + '_EXECUTE_SUCCESS':
-            
-            // Replace entry within state
-            return state.set(indexOfEntry, Map({
-              action: action.type,
-              id: action.pathOrId,
-              isFetching: false,
-              success: true,
-              response: action.response,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Replace entry within state
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            success: true,
+                            response: action.response,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
 
-          case UPPER_CASE_KEY(key) + '_EXECUTE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_EXECUTE_ERROR':
 
-            // Add error message
-            return state.set(indexOfEntry, Map({
-              action: action.type,              
-              id: action.pathOrId,
-              isFetching: false,
-              isError: true,
-              success: false,
-              response: state.get(indexOfEntry).get('response'),
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Add error message
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            isError: true,
+                            success: false,
+                            response: state.get(indexOfEntry).get('response'),
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
+                }
+
+                return state;
+            }
         }
+    },
+    computeDelete: function computeDelete(key) {
 
-        return state;
-    }}
-  },
-  computeDelete: function computeDelete(key) {
+        return {
+            ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
 
-    return {['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+                // Find entry within state based on id
+                let indexOfEntry = state.findIndex(function (item) {
+                    return item.get("id") === action.pathOrId;
+                });
 
-        // Find entry within state based on id
-        let indexOfEntry = state.findIndex(function(item) {
-          return item.get("id") === action.pathOrId; 
-        });
+                switch (action.type) {
+                    case UPPER_CASE_KEY(key) + '_DELETE_START':
 
-        switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_DELETE_START':
+                        // push or replace
+                        return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            message: action.message,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            isFetching: true,
+                            success: false
+                        }));
 
-            // push or replace
-            return state.set(getListIndexForPushOrReplace(state, indexOfEntry), Map({
-              action: action.type,              
-              id: action.pathOrId,
-              message: action.message,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              isFetching: true,
-              success: false
-            }));
+                        break;
 
-          break;
+                    case UPPER_CASE_KEY(key) + '_DELETE_SUCCESS':
 
-          case UPPER_CASE_KEY(key) + '_DELETE_SUCCESS':
-            
-            // Replace entry within state
-            return state.set(indexOfEntry, Map({
-              action: action.type,
-              id: action.pathOrId,
-              isFetching: false,
-              success: true,
-              response: action.response,
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Replace entry within state
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            success: true,
+                            response: action.response,
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
 
-          case UPPER_CASE_KEY(key) + '_DELETE_ERROR':
+                    case UPPER_CASE_KEY(key) + '_DELETE_ERROR':
 
-            // Add error message
-            return state.set(indexOfEntry, Map({
-              action: action.type,              
-              id: action.pathOrId,
-              isFetching: false,
-              isError: true,
-              success: false,
-              response: state.get(indexOfEntry).get('response'),
-              response_prev: getPreviousResponse(state, indexOfEntry),
-              message: action.message
-            }));
+                        // Add error message
+                        return state.set(indexOfEntry, Map({
+                            action: action.type,
+                            id: action.pathOrId,
+                            isFetching: false,
+                            isError: true,
+                            success: false,
+                            response: state.get(indexOfEntry).get('response'),
+                            response_prev: getPreviousResponse(state, indexOfEntry),
+                            message: action.message
+                        }));
 
-          break;
+                        break;
+                }
+
+                return state;
+            }
         }
-
-        return state;
-    }}
-  }
+    }
 }

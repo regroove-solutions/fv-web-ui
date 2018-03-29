@@ -20,79 +20,84 @@ import selectn from 'selectn';
 import SelectField from 'material-ui/lib/SelectField';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import IntlService from 'views/services/intl';
+const intl = IntlService.instance;
+
 @provide
 export default class DirectoryList extends Component {
 
-  static propTypes = {
-    fetchDirectory: PropTypes.func.isRequired,
-    computeDirectory: PropTypes.object.isRequired,
-    directory: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    fancy: PropTypes.bool,
-    value: PropTypes.string
-  };
+    static propTypes = {
+        fetchDirectory: PropTypes.func.isRequired,
+        computeDirectory: PropTypes.object.isRequired,
+        directory: PropTypes.string.isRequired,
+        onChange: PropTypes.func.isRequired,
+        label: PropTypes.string.isRequired,
+        fancy: PropTypes.bool,
+        value: PropTypes.string
+    };
 
-  static defaultProps = {
-    fancy: true
-  };
+    static defaultProps = {
+        fancy: true
+    };
 
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this._handleChange = this._handleChange.bind(this);
-    this._handleStandardSelectChange = this._handleStandardSelectChange.bind(this);
-  }
-
-  _handleChange(event, index, value) {
-    this.props.onChange(value);
-  }
-
-  _handleStandardSelectChange(event) {
-    this.props.onChange(event.target.value);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // Ensure value is in sync -- relevant for setting default value dynamically
-    if (nextProps.value != undefined) {
-      this.props.onChange(nextProps.value);
+        this._handleChange = this._handleChange.bind(this);
+        this._handleStandardSelectChange = this._handleStandardSelectChange.bind(this);
     }
-  }
 
-  componentDidMount() {
-    this.props.fetchDirectory(this.props.directory);
-  }
+    _handleChange(event, index, value) {
+        this.props.onChange(value);
+    }
 
-  render() {
+    _handleStandardSelectChange(event) {
+        this.props.onChange(event.target.value);
+    }
 
-      let previewStyles = {
-        padding: '10px'
-      }
+    componentWillReceiveProps(nextProps) {
+        // Ensure value is in sync -- relevant for setting default value dynamically
+        if (nextProps.value != undefined) {
+            this.props.onChange(nextProps.value);
+        }
+    }
 
-      const { computeDirectory } = this.props;
+    componentDidMount() {
+        this.props.fetchDirectory(this.props.directory);
+    }
 
-      let entries = selectn('directories.' + this.props.directory, computeDirectory) || [];
+    render() {
 
-      return (
-        <div>
-          {
-            (this.props.fancy) ? 
+        let previewStyles = {
+            padding: '10px'
+        }
 
-            <SelectField maxHeight={300} autoWidth={true} value={this.props.value} onChange={this._handleChange} floatingLabelText={'Select ' + this.props.label + ':'}>
-              {entries.map((entry) => 
-                <MenuItem key={entry.value} value={entry.value} primaryText={entry.text} />
-              )}
-            </SelectField>
+        const {computeDirectory} = this.props;
 
-            :
+        let entries = selectn('directories.' + this.props.directory, computeDirectory) || [];
 
-            <select value={this.props.value} onChange={this._handleStandardSelectChange}>
-              {entries.map((entry) => 
-                <option key={entry.value} value={entry.value}>{entry.text}</option>
-              )}
-            </select>
-          }
-        </div>
-      );
+        return (
+            <div>
+                {
+                    (this.props.fancy) ?
+
+                        <SelectField maxHeight={300} autoWidth={true} value={this.props.value}
+                                     onChange={this._handleChange}
+                                     floatingLabelText={intl.trans('select_x', 'Select ' + this.props.label, 'first', [this.props.label]) + ':'}>
+                            {entries.map((entry) =>
+                                <MenuItem key={entry.value} value={entry.value} primaryText={entry.text}/>
+                            )}
+                        </SelectField>
+
+                        :
+
+                        <select value={this.props.value} onChange={this._handleStandardSelectChange}>
+                            {entries.map((entry) =>
+                                <option key={entry.value} value={entry.value}>{entry.text}</option>
+                            )}
+                        </select>
+                }
+            </div>
+        );
     }
 }

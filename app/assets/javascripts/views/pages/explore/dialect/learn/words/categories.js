@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -36,91 +36,94 @@ import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const FilteredCategoryList = withFilter(CategoryList);
 
 /**
-* Categories page for words
-*/
+ * Categories page for words
+ */
 @provide
 export default class Categories extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    computeCategories: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    action: PropTypes.func
-  };
-
-  /*static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired
-  };*/
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      pathOrId: null,
-      filteredList: null,
-      open: false,
-      categoriesPath: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        fetchCategories: PropTypes.func.isRequired,
+        computeCategories: PropTypes.object.isRequired,
+        fetchPortal: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        action: PropTypes.func
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    /*static contextTypes = {
+        muiTheme: React.PropTypes.object.isRequired
+    };*/
 
-  fetchData(newProps) {
-    const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
-    const categoriesPath = '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children';
+    constructor(props, context) {
+        super(props, context);
 
-    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-    newProps.fetchCategories(categoriesPath);
-    this.setState({categoriesPath})
-  }
+        this.state = {
+            pathOrId: null,
+            filteredList: null,
+            open: false,
+            categoriesPath: null
+        };
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.routeParams.area != this.props.routeParams.area) {
-      this.fetchData(nextProps);
+        // Bind methods to 'this'
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
-  }
 
-  _onNavigateRequest(category) {
-    if (this.props.action) {
-      this.props.action(category);
-    } else {
-      this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/words/categories/' + category.uid);
+    fetchData(newProps) {
+        const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
+        const categoriesPath = '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children';
+
+        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+        newProps.fetchCategories(categoriesPath);
+        this.setState({categoriesPath})
     }
-  }
 
-  render() {
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.categoriesPath,
-      'entity': this.props.computeCategories
-    }])
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.routeParams.area != this.props.routeParams.area) {
+            this.fetchData(nextProps);
+        }
+    }
 
-    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath);
+    _onNavigateRequest(category) {
+        if (this.props.action) {
+            this.props.action(category);
+        } else {
+            this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/words/categories/' + category.uid);
+        }
+    }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-             <div className="row">
-               
-              <div className="col-xs-12">
+    render() {
 
-                  <CategoryList action={this._onNavigateRequest} items={selectn('response.entries', computeCategories)} cols={6} />
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.categoriesPath,
+            'entity': this.props.computeCategories
+        }])
 
-              </div>
+        const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath);
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+            <div className="row">
+
+                <div className="col-xs-12">
+
+                    <CategoryList action={this._onNavigateRequest}
+                                  items={selectn('response.entries', computeCategories)} cols={6}/>
+
+                </div>
             </div>
-          </PromiseWrapper>;
-  }
+        </PromiseWrapper>;
+    }
 }

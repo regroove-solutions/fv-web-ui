@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -51,85 +51,93 @@ import Statistics from 'views/components/Dashboard/Statistics';
 import Link from 'views/components/Document/Link';
 
 import UserListView from 'views/pages/explore/dialect/users/list-view';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Browse users
-*/
+ * Browse users
+ */
 @provide
 export default class Index extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        navigateTo: PropTypes.func.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        computePortal: PropTypes.object.isRequired,
+        fetchPortal: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired
+    };
 
-  static contextTypes = {
-    muiTheme: PropTypes.object.isRequired
-  };
+    static contextTypes = {
+        muiTheme: PropTypes.object.isRequired
+    };
 
-  constructor(props, context){
-    super(props, context);
+    constructor(props, context) {
+        super(props, context);
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+        // Bind methods to 'this'
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+    }
 
-  _onNavigateRequest(pathArray) {
-    NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
-  }
+    _onNavigateRequest(pathArray) {
+        NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath);
+    }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.props.fetchDialect2(this.props.routeParams.dialect_path);
-    this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal');
-  }
+    // Fetch data on initial render
+    componentDidMount() {
+        this.props.fetchDialect2(this.props.routeParams.dialect_path);
+        this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal');
+    }
 
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal');
-      this.fetchData(DefaultFetcherParams, nextProps);
-    }    
-  }
-  
-  render() {
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.windowPath !== this.props.windowPath) {
+            nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal');
+            this.fetchData(DefaultFetcherParams, nextProps);
+        }
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    render() {
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+        const computeEntities = Immutable.fromJS([{
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
 
-    return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        return <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
 
             <div className={classNames('row', 'row-create-wrapper')}>
-              <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
-                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
-                  <RaisedButton label="Create New User" onTouchTap={this._onNavigateRequest.bind(this, ['register'])} primary={true} />
-                </AuthorizationFilter>
-              </div>
+                <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
+                    <AuthorizationFilter filter={{
+                        permission: 'Write',
+                        entity: selectn('response', computeDialect2),
+                        login: this.props.computeLogin
+                    }}>
+                        <RaisedButton
+                            label={intl.trans('views.pages.explore.dialect.users.create_new_user', 'Create New User', 'words')}
+                            onTouchTap={this._onNavigateRequest.bind(this, ['register'])} primary={true}/>
+                    </AuthorizationFilter>
+                </div>
             </div>
 
-            <hr />
+            <hr/>
 
             <div className="row">
 
-              <div className="col-xs-12">
-                <UserListView routeParams={this.props.routeParams} />
-              </div>
+                <div className="col-xs-12">
+                    <UserListView routeParams={this.props.routeParams}/>
+                </div>
 
             </div>
-            
+
         </PromiseWrapper>;
-  }
+    }
 }

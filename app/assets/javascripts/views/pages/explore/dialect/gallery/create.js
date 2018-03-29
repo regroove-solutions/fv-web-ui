@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -31,172 +31,176 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Create book entry
-*/
+ * Create book entry
+ */
 @provide
 export default class PageDialectGalleryCreate extends Component {
 
-  static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    createGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      formValue: null,
-      galleryPath: null
+    static propTypes = {
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        createGallery: PropTypes.func.isRequired,
+        computeGallery: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onRequestSaveForm'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
-  }
+        this.state = {
+            formValue: null,
+            galleryPath: null
+        };
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-
-    let currentGallery, nextGallery;
-
-    if (this.state.galleryPath != null) {
-      currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-      nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+        // Bind methods to 'this'
+        ['_onRequestSaveForm'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
+    fetchData(newProps) {
+        newProps.fetchDialect2(newProps.routeParams.dialect_path);
     }
 
-    // 'Redirect' on success
-    if (selectn('success', currentGallery) != selectn('success', nextGallery) && selectn('success', nextGallery) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
-    }
-  }
-
-  shouldComponentUpdate(newProps, newState) {
-
-    switch (true) {
-      case (newProps.windowPath != this.props.windowPath):
-        return true;
-      break;
-
-      case (newProps.computeDialect2 != this.props.computeDialect2):
-        return true;
-      break;
-      
-      case (newProps.computeGallery != this.props.computeGallery):
-        return true;
-      break;
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
     }
 
-    return false;
-  }
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-  _onRequestSaveForm(e) {
+        let currentGallery, nextGallery;
 
-    // Prevent default behaviour
-    e.preventDefault();
+        if (this.state.galleryPath != null) {
+            currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+            nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+        }
 
-    let formValue = this.refs["form_gallery_create"].getValue();
+        if (nextProps.windowPath !== this.props.windowPath) {
+            this.fetchData(nextProps);
+        }
 
-    //let properties = '';
-    let properties = {};
-    
-	  for (let key in formValue) {
-	    if (formValue.hasOwnProperty(key) && key) {
-	      if (formValue[key] && formValue[key] != '') {
-	        //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
-	    	  properties[key] = formValue[key];
-	  	  }
-	    }
-	  }
-
-    this.setState({
-      formValue: properties
-    })
-
-    // Passed validation
-    if (formValue) {
-      let now = Date.now();
-  	  this.props.createGallery(this.props.routeParams.dialect_path + '/Portal', {
-  	    type: 'FVGallery',
-  	    name: formValue['dc:title'],
-  	    properties: properties
-  	  }, null, now);
-
-      this.setState({
-        galleryPath: this.props.routeParams.dialect_path + '/Portal/' + formValue['dc:title'] + '.' + now
-      });
-    } else {
-      //let firstError = this.refs["form_Gallery_create"].validate().firstError();
-      window.scrollTo(0, 0);
+        // 'Redirect' on success
+        if (selectn('success', currentGallery) != selectn('success', nextGallery) && selectn('success', nextGallery) === true) {
+            nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
+        }
     }
 
-  }
+    shouldComponentUpdate(newProps, newState) {
 
-  render() {
+        switch (true) {
+            case (newProps.windowPath != this.props.windowPath):
+                return true;
+                break;
 
-    let FVGalleryOptions = Object.assign({}, selectn("FVGallery", options));
+            case (newProps.computeDialect2 != this.props.computeDialect2):
+                return true;
+                break;
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.galleryPath,
-      'entity': this.props.computeGallery
-    }, {
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+            case (newProps.computeGallery != this.props.computeGallery):
+                return true;
+                break;
+        }
 
-    const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+        return false;
+    }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    _onRequestSaveForm(e) {
 
-            <h1>Add New Gallery to <i>{selectn('response.title', computeDialect2)}</i></h1>
+        // Prevent default behaviour
+        e.preventDefault();
+
+        let formValue = this.refs["form_gallery_create"].getValue();
+
+        //let properties = '';
+        let properties = {};
+
+        for (let key in formValue) {
+            if (formValue.hasOwnProperty(key) && key) {
+                if (formValue[key] && formValue[key] != '') {
+                    //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+                    properties[key] = formValue[key];
+                }
+            }
+        }
+
+        this.setState({
+            formValue: properties
+        })
+
+        // Passed validation
+        if (formValue) {
+            let now = Date.now();
+            this.props.createGallery(this.props.routeParams.dialect_path + '/Portal', {
+                type: 'FVGallery',
+                name: formValue['dc:title'],
+                properties: properties
+            }, null, now);
+
+            this.setState({
+                galleryPath: this.props.routeParams.dialect_path + '/Portal/' + formValue['dc:title'] + '.' + now
+            });
+        } else {
+            //let firstError = this.refs["form_Gallery_create"].validate().firstError();
+            window.scrollTo(0, 0);
+        }
+
+    }
+
+    render() {
+
+        let FVGalleryOptions = Object.assign({}, selectn("FVGallery", options));
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.galleryPath,
+            'entity': this.props.computeGallery
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <h1>{intl.trans('views.pages.explore.dialect.gallery.add_new_gallery_to_x',
+                'Add New Gallery to ' + selectn('response.title', computeDialect2), null, [selectn('response.title', computeDialect2)])}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-8', 'col-md-10')}>
-                <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_gallery_create"
-                    type={t.struct(selectn("FVGallery", fields))}
-                    context={selectn('response', computeDialect2)}
-                    value={this.state.formValue}
-                    options={FVGalleryOptions} />
-                    <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button> 
-                    </div>
-                </form>
-              </div>
+                <div className={classNames('col-xs-8', 'col-md-10')}>
+                    <form onSubmit={this._onRequestSaveForm}>
+                        <t.form.Form
+                            ref="form_gallery_create"
+                            type={t.struct(selectn("FVGallery", fields))}
+                            context={selectn('response', computeDialect2)}
+                            value={this.state.formValue}
+                            options={FVGalleryOptions}/>
+                        <div className="form-group">
+                            <button type="submit"
+                                    className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
+                        </div>
+                    </form>
+                </div>
 
-              <div className={classNames('col-xs-4', 'col-md-2')}>
+                <div className={classNames('col-xs-4', 'col-md-2')}>
 
-                <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
+                    <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
 
-                  <div className="subheader">Metadata</div>
+                        <div className="subheader">{intl.trans('metadata', 'Metadata', 'first')}</div>
 
-                </Paper>
+                    </Paper>
 
-              </div>
-          </div>
+                </div>
+            </div>
         </PromiseWrapper>;
-  }
+    }
 }

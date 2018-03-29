@@ -25,148 +25,163 @@ const LOAD_GUIDE_SUCCESS = 'LOAD_GUIDE_SUCCESS';
 const LOAD_GUIDE_ERROR = 'LOAD_GUIDE_ERROR';
 
 const loadGuide = function loadGuide(currentPage, pageMatch) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: LOAD_GUIDE_STARTED, page: pageMatch  } );
+        dispatch({type: LOAD_GUIDE_STARTED, page: pageMatch});
 
-    let currentPageArray = decodeURIComponent(currentPage).split('/');
+        let currentPageArray = decodeURIComponent(currentPage).split('/');
 
-    // Remove empties
-    currentPageArray = currentPageArray.filter(String);
+        // Remove empties
+        currentPageArray = currentPageArray.filter(String);
 
-    let preparedCurrentPage = pageMatch.matchedPage.get('path').map(function(fragment, i){
-      let ANYTHING_BUT_SLASH_REGEX = '/' + ProviderHelpers.regex.ANYTHING_BUT_SLASH.replace('/', '\\/') + '/';
-      // Check if path fragment matches ANYTHING_BUT_SLASH regex and replace wildcard.
-      if (fragment == ANYTHING_BUT_SLASH_REGEX || fragment.hasOwnProperty('matcher') && fragment.matcher == ANYTHING_BUT_SLASH_REGEX) {
-        currentPageArray[i] = '*'
-      }
-    })
-    
-    //console.log('GUIDE MATCH = /' + currentPageArray.join('/') + '/');
-    
-    return DirectoryOperations.getDocumentByPath2('/FV/Workspaces/SharedData/Guides', 'FVGuide', ' AND fvguide:pageMatch LIKE \'/' + currentPageArray.join('/') + '/\'', { 'X-NXenrichers.document': '' })
-    .then((response) => {
-      dispatch( { type: LOAD_GUIDE_SUCCESS, document: response, page: pageMatch } )
-    }).catch((error) => {
-        dispatch( { type: LOAD_GUIDE_ERROR, error: error, page: pageMatch } )
-    });
-  }
+        let preparedCurrentPage = pageMatch.matchedPage.get('path').map(function (fragment, i) {
+            let ANYTHING_BUT_SLASH_REGEX = '/' + ProviderHelpers.regex.ANYTHING_BUT_SLASH.replace('/', '\\/') + '/';
+            // Check if path fragment matches ANYTHING_BUT_SLASH regex and replace wildcard.
+            if (fragment == ANYTHING_BUT_SLASH_REGEX || fragment.hasOwnProperty('matcher') && fragment.matcher == ANYTHING_BUT_SLASH_REGEX) {
+                currentPageArray[i] = '*'
+            }
+        })
+
+        //console.log('GUIDE MATCH = /' + currentPageArray.join('/') + '/');
+
+        return DirectoryOperations.getDocumentByPath2('/FV/Workspaces/SharedData/Guides', 'FVGuide', ' AND fvguide:pageMatch LIKE \'/' + currentPageArray.join('/') + '/\'', {'X-NXenrichers.document': ''})
+            .then((response) => {
+                dispatch({type: LOAD_GUIDE_SUCCESS, document: response, page: pageMatch})
+            }).catch((error) => {
+                dispatch({type: LOAD_GUIDE_ERROR, error: error, page: pageMatch})
+            });
+    }
 };
 
 /**
-* Actions: Represent that something happened, triggered by component or other action
-*/
+ * Actions: Represent that something happened, triggered by component or other action
+ */
 const actions = {
-  // Request to navigate to a page
-  navigateTo(path) {
-    return { type: NAVIGATE_PAGE, path };
-  },
+    // Request to navigate to a page
+    navigateTo(path) {
+        return {type: NAVIGATE_PAGE, path};
+    },
 
-  // Request to toggle side-menu
-  toggleMenuAction() {
-    return { type: TOGGLE_MENU };
-  },
+    // Request to toggle side-menu
+    toggleMenuAction() {
+        return {type: TOGGLE_MENU};
+    },
 
-  // Change theme
-  changeTheme(id) {
+    // Change theme
+    changeTheme(id) {
 
-    let theme = ThemeManager.getMuiTheme(FirstVoicesTheme);
+        let theme = ThemeManager.getMuiTheme(FirstVoicesTheme);
 
-    switch (id) {
-      case 'kids':
-        theme = ThemeManager.getMuiTheme(FirstVoicesKidsTheme);
-      break;
+        switch (id) {
+            case 'kids':
+                theme = ThemeManager.getMuiTheme(FirstVoicesKidsTheme);
+                break;
 
-      case 'workspace':
-        theme = ThemeManager.getMuiTheme(FirstVoicesWorkspaceTheme);
-      break;
-    }
+            case 'workspace':
+                theme = ThemeManager.getMuiTheme(FirstVoicesWorkspaceTheme);
+                break;
+        }
 
-    return { type: CHANGE_THEME, theme: {palette: theme, id: id } }
-  },
+        return {type: CHANGE_THEME, theme: {palette: theme, id: id}}
+    },
 
-  changeTitleParams(titleParams) {
-    return { type: CHANGE_TITLE_PARAMS, pageTitleParams: titleParams };
-  },
-  
-  loadGuide
+    changeTitleParams(titleParams) {
+        return {type: CHANGE_TITLE_PARAMS, pageTitleParams: titleParams};
+    },
+
+    loadGuide
 }
 
 /**
-* Reducers: Handle state changes based on an action.
-* Accept current state, return new computed state.
-* Reducer must be pure: No mutation, just calculations. See Redux for more info.
-*/
+ * Reducers: Handle state changes based on an action.
+ * Accept current state, return new computed state.
+ * Reducer must be pure: No mutation, just calculations. See Redux for more info.
+ */
 const reducers = {
 
-  computeNavigateTo(state = {path: null}, action) {
-    switch (action.type) {
-      case NAVIGATE_PAGE:
-        return Object.assign({}, {path: action.path});
-    }
+    computeNavigateTo(state = {path: null}, action) {
+        switch (action.type) {
+            case NAVIGATE_PAGE:
+                return Object.assign({}, {path: action.path});
+        }
 
-    return state;
-  },
-
-  properties(state = null, action) {
-    switch (action.type) {
-      case CHANGE_THEME:
-      	return {
-      		...state,
-      		theme: action.theme
-      	};
-
-      case CHANGE_TITLE_PARAMS:
-      	return {
-      		...state,
-      		pageTitleParams: action.pageTitleParams
-      	};
-
-      default:
         return state;
-    }
-  },
+    },
 
-  computeLoadGuide(state = { isFetching: false, page: { matchedPage: null, matchedRouteParams: null }, response: null, success: false }, action) {
-    switch (action.type) {
-      case LOAD_GUIDE_STARTED:
-        return Object.assign({}, state, { isFetching: true, page: action.page });
-      break;
+    properties(state = null, action) {
+        switch (action.type) {
+            case CHANGE_THEME:
+                return {
+                    ...state,
+                    theme: action.theme
+                };
 
-      // Send modified document to UI without access REST end-point
-      case LOAD_GUIDE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, page: action.page, success: true });
-      break;
+            case CHANGE_TITLE_PARAMS:
+                return {
+                    ...state,
+                    pageTitleParams: action.pageTitleParams
+                };
 
-      // Send modified document to UI without access REST end-point
-      case LOAD_GUIDE_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, page: action.page });
-      break;
+            default:
+                return state;
+        }
+    },
 
-      default: 
-        return Object.assign({}, state, { isFetching: false, page: action.page });
-      break;
-    }
-  },
+    computeLoadGuide(state = {
+        isFetching: false,
+        page: {matchedPage: null, matchedRouteParams: null},
+        response: null,
+        success: false
+    }, action) {
+        switch (action.type) {
+            case LOAD_GUIDE_STARTED:
+                return Object.assign({}, state, {isFetching: true, page: action.page});
+                break;
 
-  computeToggleMenuAction(state = {menuVisible: false}, action) {
-    switch (action.type) {
-      case TOGGLE_MENU:
-      	return {
-      		...state,
-      		menuVisible: !state.menuVisible
-      	};
+            // Send modified document to UI without access REST end-point
+            case LOAD_GUIDE_SUCCESS:
+                return Object.assign({}, state, {
+                    response: action.document,
+                    isFetching: false,
+                    page: action.page,
+                    success: true
+                });
+                break;
 
-      default:
-        return state;
-    }
-  },
+            // Send modified document to UI without access REST end-point
+            case LOAD_GUIDE_ERROR:
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    isError: true,
+                    error: action.error,
+                    page: action.page
+                });
+                break;
+
+            default:
+                return Object.assign({}, state, {isFetching: false, page: action.page});
+                break;
+        }
+    },
+
+    computeToggleMenuAction(state = {menuVisible: false}, action) {
+        switch (action.type) {
+            case TOGGLE_MENU:
+                return {
+                    ...state,
+                    menuVisible: !state.menuVisible
+                };
+
+            default:
+                return state;
+        }
+    },
 };
 
-function merge (stateProps, dispatchProps, parentProps) {
-  return Object.assign(stateProps, dispatchProps, parentProps);
+function merge(stateProps, dispatchProps, parentProps) {
+    return Object.assign(stateProps, dispatchProps, parentProps);
 }
 
 const middleware = [/*loggerMiddleware,*/ thunk];
 
-export default { actions, reducers, middleware, merge };
+export default {actions, reducers, middleware, merge};

@@ -8,7 +8,7 @@ export default class AlloyEditorComponent extends Component {
 
         var _this = this;
 
-        ['actionPerformed', 'change'].forEach( event => this._nativeEditor.on(event, function () {
+        ['actionPerformed', 'change'].forEach(event => this._nativeEditor.on(event, function () {
             _this.props.onContentChange(_this._nativeEditor.getData());
         }));
     }
@@ -29,7 +29,8 @@ export default class AlloyEditorComponent extends Component {
 
     render() {
         return (
-            <div id={this.props.container} dangerouslySetInnerHTML={{__html: this.props.content}} className="form-control" style={{minHeight: '100px', height: 'auto'}}></div>
+            <div id={this.props.container} dangerouslySetInnerHTML={{__html: this.props.content}}
+                 className="form-control" style={{minHeight: '100px', height: 'auto'}}></div>
         );
     }
 }

@@ -41,7 +41,9 @@ import IconButton from 'material-ui/lib/icon-button';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const defaultStyle = {marginBottom: '20px'};
 
 class Introduction extends Component {
@@ -59,11 +61,11 @@ class Introduction extends Component {
         return null;
       }
 
-      return <div style={{padding: '10px'}}><div><h1 style={{fontSize: '1.2em', marginTop: 0}}>Introduction {this.props.audio}</h1></div>{introductionDiv}</div>;
+      return <div style={{padding: '10px'}}><div><h1 style={{fontSize: '1.2em', marginTop: 0}}>{intl.trans('introduction','Introduction','first')} {this.props.audio}</h1></div>{introductionDiv}</div>;
     }
 
     return <Tabs> 
-            <Tab label="Introduction"> 
+            <Tab label={intl.trans('introduction','Introduction','first')}>
               {introductionDiv}
             </Tab> 
             <Tab label={DEFAULT_LANGUAGE}> 

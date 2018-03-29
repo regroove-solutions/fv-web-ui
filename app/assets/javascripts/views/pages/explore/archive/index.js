@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -29,85 +29,88 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 import CircularProgress from 'material-ui/lib/circular-progress';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Explore Archive page shows all the families in the archive
-*/
+ * Explore Archive page shows all the families in the archive
+ */
 @provide
 export default class ExploreArchive extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchLanguageFamilies: PropTypes.func.isRequired,
-    computeLanguageFamilies: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired
-  };
-
-  /*static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired
-  };*/
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      pathOrId: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        fetchLanguageFamilies: PropTypes.func.isRequired,
+        computeLanguageFamilies: PropTypes.object.isRequired,
+        pushWindowPath: PropTypes.func.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    /*static contextTypes = {
+        muiTheme: React.PropTypes.object.isRequired
+    };*/
 
-  fetchData(newProps) {
-    const pathOrId = '/' + newProps.properties.domain + '/sections/';
+    constructor(props, context) {
+        super(props, context);
 
-    this.props.fetchLanguageFamilies(pathOrId);
-    this.setState({pathOrId})
-  }
+        this.state = {
+            pathOrId: null
+        };
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
+        // Bind methods to 'this'
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+    }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath('/explore' + path);
-  }
+    fetchData(newProps) {
+        const pathOrId = '/' + newProps.properties.domain + '/sections/';
 
-  render() {
+        this.props.fetchLanguageFamilies(pathOrId);
+        this.setState({pathOrId})
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.pathOrId,
-      'entity': this.props.computeLanguageFamilies
-    }])
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-    const computeLanguageFamilies = ProviderHelpers.getEntry(this.props.computeLanguageFamilies, this.state.pathOrId);
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath('/explore' + path);
+    }
 
-    return <PromiseWrapper computeEntities={computeEntities}>
-             <div className="row">
-              <div className="col-md-4 col-xs-12">
-                <h1>{this.props.properties.title} Archive</h1>
-              </div>
-              <div className="col-md-8 col-xs-12">
-                  <h2>Browse the following Dialects:</h2>
-                  <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                    <GridList
-                      cols={2}
-                      cellHeight={200}
-                      style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
-                      >
-                        {(selectn('response.entries', computeLanguageFamilies) || []).map((tile, i) => 
-                          <GridTile
-                            onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                            key={tile.uid}
-                            title={tile.title}
-                            subtitle={tile.description}
-                            ><img src="/assets/images/cover.png" /></GridTile>
-                        )}
-                    </GridList>
-                  </div>
-              </div>
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.pathOrId,
+            'entity': this.props.computeLanguageFamilies
+        }])
+
+        const computeLanguageFamilies = ProviderHelpers.getEntry(this.props.computeLanguageFamilies, this.state.pathOrId);
+
+        return <PromiseWrapper computeEntities={computeEntities}>
+            <div className="row">
+                <div className="col-md-4 col-xs-12">
+                    <h1>{intl.trans('views.pages.explore.archive.x_archive',
+                        this.props.properties.title + ' Archive', 'words', [this.props.properties.title])}</h1>
+                </div>
+                <div className="col-md-8 col-xs-12">
+                    <h2>{intl.trans('views.pages.explore.dialect.category.browse_dialects', 'Browse the following Dialects', 'words')}:</h2>
+                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+                        <GridList
+                            cols={2}
+                            cellHeight={200}
+                            style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
+                        >
+                            {(selectn('response.entries', computeLanguageFamilies) || []).map((tile, i) =>
+                                <GridTile
+                                    onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                                    key={tile.uid}
+                                    title={tile.title}
+                                    subtitle={tile.description}
+                                ><img src="/assets/images/cover.png"/></GridTile>
+                            )}
+                        </GridList>
+                    </div>
+                </div>
             </div>
-          </PromiseWrapper>;
-  }
+        </PromiseWrapper>;
+    }
 }

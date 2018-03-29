@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -47,233 +47,246 @@ import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import withToggle from 'views/hoc/view/with-toggle';
+import IntlService from "views/services/intl";
 
 const FiltersWithToggle = withToggle();
+const intl = IntlService.instance;
 
 @provide
 export default class Search extends DataListView {
 
-  static defaultProps = {
-    DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
-    DEFAULT_PAGE: 1,
-    DEFAULT_PAGE_SIZE: 10,
-    DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
-    DEFAULT_SORT_TYPE: 'asc',
-    dialect: null,
-    filter: new Map(),
-    gridListView: false
-  }
+    static defaultProps = {
+        DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
+        DEFAULT_PAGE: 1,
+        DEFAULT_PAGE_SIZE: 10,
+        DEFAULT_LANGUAGE: 'english',
+        DEFAULT_SORT_COL: 'fv:custom_order',
+        DEFAULT_SORT_TYPE: 'asc',
+        dialect: null,
+        filter: new Map(),
+        gridListView: false
+    }
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-	replaceWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-	searchDocuments: PropTypes.func.isRequired,
-	computeSearchDocuments: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    action: PropTypes.func,
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        dialect: PropTypes.object,
+        searchDocuments: PropTypes.func.isRequired,
+        computeSearchDocuments: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        filter: PropTypes.object,
+        data: PropTypes.string,
+        gridListView: PropTypes.bool,
+        action: PropTypes.func,
 
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string
-  };
+        DISABLED_SORT_COLS: PropTypes.array,
+        DEFAULT_PAGE: PropTypes.number,
+        DEFAULT_PAGE_SIZE: PropTypes.number,
+        DEFAULT_SORT_COL: PropTypes.string,
+        DEFAULT_SORT_TYPE: PropTypes.string
+    };
 
-	constructor(props, context) {
-		super(props, context);
+    constructor(props, context) {
+        super(props, context);
 
-		this.state = {
-			pageInfo: {
-				page: props.DEFAULT_PAGE,
-				pageSize: props.DEFAULT_PAGE_SIZE
-			},
-			formValue: { searchTerm: props.routeParams.searchTerm, documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'] },
-			defaultFormValue: { searchTerm: "", documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'] },
-			preparedFilters: null
-		};
-			
-	  this.state.queryParam = this._computeQueryParam();
-	  this.state.queryPath = this._getQueryPath();	
+        this.state = {
+            pageInfo: {
+                page: props.DEFAULT_PAGE,
+                pageSize: props.DEFAULT_PAGE_SIZE
+            },
+            formValue: {
+                searchTerm: props.routeParams.searchTerm,
+                documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal']
+            },
+            defaultFormValue: {searchTerm: "", documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal']},
+            preparedFilters: null
+        };
 
-		// Bind methods to 'this'
-		['_handleRefetch', '_onSearchSaveForm', '_computeQueryParam', '_getQueryPath',  '_onEntryNavigateRequest', '_onReset'].forEach( (method => this[method] = this[method].bind(this)) ); 
+        this.state.queryParam = this._computeQueryParam();
+        this.state.queryPath = this._getQueryPath();
 
-	}
+        // Bind methods to 'this'
+        ['_handleRefetch', '_onSearchSaveForm', '_computeQueryParam', '_getQueryPath', '_onEntryNavigateRequest', '_onReset'].forEach((method => this[method] = this[method].bind(this)));
 
-	fetchData(newProps = this.props) {
-		this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
-	}
+    }
 
-	_fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
+    fetchData(newProps = this.props) {
+        this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
+    }
 
-		if (props.routeParams.searchTerm && props.routeParams.searchTerm != '') {
-			let documentTypeFilter = '\'' + formValue.documentTypes.join('\',\'') + '\'';
-			props.searchDocuments(this._getQueryPath(props),
-			((props.routeParams.area == 'sections') ? ' AND ecm:isLatestVersion = 1' : ' ') + 
-			// Exclude Demo from search
-			((!props.routeParams.dialect_path) ? ' AND ecm:ancestorId <> \'b482d9df-e71b-40b5-9632-79b1fc2782d7\' AND ecm:ancestorId <> \'732c2ef6-19d3-45a8-97e7-b6cff7d84909\' ' : ' ') + 
-			' AND ecm:primaryType IN (' + documentTypeFilter + ')' +      
-			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm) + '*\'' +    
-			// More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +    
-			'&currentPageIndex=' + (pageIndex - 1) + 
-			'&pageSize=' + pageSize + 
-			'&sortBy=ecm:fulltextScore'
-			);
+    _fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
 
-			// TODO: Update with path after filter.
-		}
-	}
+        if (props.routeParams.searchTerm && props.routeParams.searchTerm != '') {
+            let documentTypeFilter = '\'' + formValue.documentTypes.join('\',\'') + '\'';
+            props.searchDocuments(this._getQueryPath(props),
+                ((props.routeParams.area == 'sections') ? ' AND ecm:isLatestVersion = 1' : ' ') +
+                // Exclude Demo from search
+                ((!props.routeParams.dialect_path) ? ' AND ecm:ancestorId <> \'b482d9df-e71b-40b5-9632-79b1fc2782d7\' AND ecm:ancestorId <> \'732c2ef6-19d3-45a8-97e7-b6cff7d84909\' ' : ' ') +
+                ' AND ecm:primaryType IN (' + documentTypeFilter + ')' +
+                ' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm) + '*\'' +
+                // More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +
+                '&currentPageIndex=' + (pageIndex - 1) +
+                '&pageSize=' + pageSize +
+                '&sortBy=ecm:fulltextScore'
+            );
 
-	_onSearchSaveForm(e) {
+            // TODO: Update with path after filter.
+        }
+    }
 
-		// Prevent default behaviour
-		if (e) {
-			e.preventDefault();
-		}
+    _onSearchSaveForm(e) {
 
-		//let form = this.refs["search_form"];
-		let form = this.refs.search_form;
+        // Prevent default behaviour
+        if (e) {
+            e.preventDefault();
+        }
 
-		let properties = FormHelpers.getProperties(form);
+        //let form = this.refs["search_form"];
+        let form = this.refs.search_form;
 
-		if (Object.keys(properties).length != 0) {
-			this.setState({
-				formValue: properties
-			});
+        let properties = FormHelpers.getProperties(form);
 
-			// If search term didn't change, but facets did - update results
-			if (properties.searchTerm == this.props.routeParams.searchTerm && properties != this.state.formValue) {
-				this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
-			}
+        if (Object.keys(properties).length != 0) {
+            this.setState({
+                formValue: properties
+            });
 
-			this.props.replaceWindowPath('/explore' + this._getQueryPath() + '/search/' + properties.searchTerm); 
-		}
-	}
+            // If search term didn't change, but facets did - update results
+            if (properties.searchTerm == this.props.routeParams.searchTerm && properties != this.state.formValue) {
+                this._fetchListViewData(this.props, this.state.pageInfo.page, this.state.pageInfo.pageSize, this.props.DEFAULT_SORT_TYPE, this.props.DEFAULT_SORT_COL, properties);
+            }
 
-  _onEntryNavigateRequest(path) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + path);
-  }  
-  
-	_getQueryPath(props = this.props) {
-		return props.routeParams.dialect_path || props.routeParams.language_path || props.routeParams.language_family_path || '/' + props.properties.domain + '/' + (props.routeParams.area || 'sections') + '/Data';
+            this.props.replaceWindowPath('/explore' + this._getQueryPath() + '/search/' + properties.searchTerm);
+        }
+    }
 
-	}
+    _onEntryNavigateRequest(path) {
+        this.props.pushWindowPath('/' + this.props.routeParams.theme + path);
+    }
 
-  _computeQueryParam() {
-	  let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
-	  let lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1];
-	  
-	  let queryParam = "";
-	  if(lastPathSegment != "search") {
-		  queryParam = lastPathSegment;
-		  //console.log("queryParam:" + queryParam);		  
-	  }
-	  
-	  return queryParam;
-  }  
+    _getQueryPath(props = this.props) {
+        return props.routeParams.dialect_path || props.routeParams.language_path || props.routeParams.language_family_path || '/' + props.properties.domain + '/' + (props.routeParams.area || 'sections') + '/Data';
 
-  _onReset(event, props = this.props) {
-	
-			// Reset all controlled inputs
-			let inputs = selectn('refs.input.refs', this.refs["search_form"]);
-	
-			for (let inputKey in inputs) {
-				if (typeof inputs[inputKey].reset === 'function') {
-					inputs[inputKey].reset();
-				}
-			}
-	
-			this.setState({
-				formValue: this.state.defaultFormValue || null
-			});
-	}
+    }
 
-  render() {
+    _computeQueryParam() {
+        let path = "/" + this.props.splitWindowPath.slice(1, this.props.splitWindowPath.length).join('/');
+        let lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1];
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this._getQueryPath(),
-      'entity': this.props.computeSearchDocuments
-    }]);
+        let queryParam = "";
+        if (lastPathSegment != "search") {
+            queryParam = lastPathSegment;
+            //console.log("queryParam:" + queryParam);
+        }
 
-    const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath());
+        return queryParam;
+    }
 
-	let _onEntryNavigateRequest = this._onEntryNavigateRequest;
-	let searchTerm = this.props.routeParams.searchTerm;
+    _onReset(event, props = this.props) {
 
-	let SearchResultTileWithProps = React.createClass({
-		render: function() {
-			return React.createElement(SearchResultTile, {searchTerm: searchTerm, action: _onEntryNavigateRequest, ...this.props });
-		}
-	});
+        // Reset all controlled inputs
+        let inputs = selectn('refs.input.refs', this.refs["search_form"]);
 
-    return <div>
+        for (let inputKey in inputs) {
+            if (typeof inputs[inputKey].reset === 'function') {
+                inputs[inputKey].reset();
+            }
+        }
 
-			<div className="row">
-				<div className={classNames('col-xs-12', 'col-md-3')}>
-					<div className="col-xs-12">
-						<form onSubmit={this._onSearchSaveForm}>
-							<FiltersWithToggle label="Filter Items" mobileOnly={true}>
-								<t.form.Form
-									ref="search_form"
-									value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
-									type={t.struct(selectn('Search', fields))}
-									options={selectn('Search', options)}
-								/>      
-								<RaisedButton
-									onTouchTap={this._onReset}
-									label="Reset"
-									primary={true} /> &nbsp;
-								<RaisedButton
-									type="submit"
-									label="Search"
-									primary={true} />
-							</FiltersWithToggle>
-						</form>
-					</div>
-				</div>
-				<div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
-					<h1>Search Results - {this.props.routeParams.searchTerm}</h1>
+        this.setState({
+            formValue: this.state.defaultFormValue || null
+        });
+    }
 
-					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    render() {
 
-						{(() => {
-							if (selectn('response.entries', computeSearchDocuments)) {
+        const computeEntities = Immutable.fromJS([{
+            'id': this._getQueryPath(),
+            'entity': this.props.computeSearchDocuments
+        }]);
 
-								return <DocumentListView
-											objectDescriptions="results" 
-											type="Document"
-											data={computeSearchDocuments}
-											gridCols={1}
-											gridListView={true}
-											gridListTile={SearchResultTileWithProps}
-											gridViewProps={{cellHeight: 170, style: {overflowY: 'hidden', margin:'0 0 30px 0'}}}
-											refetcher={this._handleRefetch}
-											onSortChange={this._handleSortChange}
-											onSelectionChange={this._onEntryNavigateRequest}
-											page={this.state.pageInfo.page}
-											pageSize={this.state.pageInfo.pageSize}
-											onColumnOrderChange={this._handleColumnOrderChange}
-											usePrevResponse={true}
-											className="browseDataGrid" />;
-							}
-						})()}
+        const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath());
 
-					</PromiseWrapper>
+        let _onEntryNavigateRequest = this._onEntryNavigateRequest;
+        let searchTerm = this.props.routeParams.searchTerm;
 
-				</div>
-			</div>
+        let SearchResultTileWithProps = React.createClass({
+            render: function () {
+                return React.createElement(SearchResultTile, {
+                    searchTerm: searchTerm,
+                    action: _onEntryNavigateRequest, ...this.props
+                });
+            }
+        });
 
-		</div>;
-  }
+        return <div>
+
+            <div className="row">
+                <div className={classNames('col-xs-12', 'col-md-3')}>
+                    <div className="col-xs-12">
+                        <form onSubmit={this._onSearchSaveForm}>
+                            <FiltersWithToggle
+                                label={intl.trans('views.pages.search.filter_items', 'Filter Items', 'first')}
+                                mobileOnly={true}>
+                                <t.form.Form
+                                    ref="search_form"
+                                    value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
+                                    type={t.struct(selectn('Search', fields))}
+                                    options={selectn('Search', options)}
+                                />
+                                <RaisedButton
+                                    onTouchTap={this._onReset}
+                                    label={intl.trans('reset', 'Reset', 'first')}
+                                    primary={true}/> &nbsp;
+                                <RaisedButton
+                                    type="submit"
+                                    label={intl.trans('submit', 'Submit', 'first')}
+                                    primary={true}/>
+                            </FiltersWithToggle>
+                        </form>
+                    </div>
+                </div>
+                <div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
+                    <h1>{intl.trans('search_results', 'Search Results', 'words')} - {this.props.routeParams.searchTerm}</h1>
+
+                    <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+                        {(() => {
+                            if (selectn('response.entries', computeSearchDocuments)) {
+
+                                return <DocumentListView
+                                    objectDescriptions="results"
+                                    type="Document"
+                                    data={computeSearchDocuments}
+                                    gridCols={1}
+                                    gridListView={true}
+                                    gridListTile={SearchResultTileWithProps}
+                                    gridViewProps={{
+                                        cellHeight: 170,
+                                        style: {overflowY: 'hidden', margin: '0 0 30px 0'}
+                                    }}
+                                    refetcher={this._handleRefetch}
+                                    onSortChange={this._handleSortChange}
+                                    onSelectionChange={this._onEntryNavigateRequest}
+                                    page={this.state.pageInfo.page}
+                                    pageSize={this.state.pageInfo.pageSize}
+                                    onColumnOrderChange={this._handleColumnOrderChange}
+                                    usePrevResponse={true}
+                                    className="browseDataGrid"/>;
+                            }
+                        })()}
+
+                    </PromiseWrapper>
+
+                </div>
+            </div>
+
+        </div>;
+    }
 }

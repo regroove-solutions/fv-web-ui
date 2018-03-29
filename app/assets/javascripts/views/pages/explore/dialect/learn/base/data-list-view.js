@@ -18,7 +18,9 @@ import classNames from 'classnames';
 
 import selectn from 'selectn';
 import ProviderHelpers from 'common/ProviderHelpers';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const innerUlStyle = {
     'fontSize': '0.9em',
     'margin': 0,
@@ -26,141 +28,141 @@ const innerUlStyle = {
 };
 
 /**
-* Data List View
-* TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
-*/
+ * Data List View
+ * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
+ */
 export default class DataListView extends Component {
 
-  constructor(props, context) {
-    super(props, context);
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this._resetColumns(this.props);
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
+    constructor(props, context) {
+        super(props, context);
     }
 
-    if (nextProps.routeParams.area !== this.props.routeParams.area) {
-      this._resetColumns(nextProps);
-      this._resetPagination(nextProps);
+    // Fetch data on initial render
+    componentDidMount() {
+        this._resetColumns(this.props);
+        this.fetchData(this.props);
     }
 
-    if (this.props.filter.has('currentAppliedFilter') && !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))) {
-        this._fetchListViewData(nextProps, nextProps.DEFAULT_PAGE, nextProps.DEFAULT_PAGE_SIZE, nextProps.DEFAULT_SORT_TYPE, nextProps.DEFAULT_SORT_COL);
-    }
-  }
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.windowPath !== this.props.windowPath) {
+            this.fetchData(nextProps);
+        }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
-  }
+        if (nextProps.routeParams.area !== this.props.routeParams.area) {
+            this._resetColumns(nextProps);
+            this._resetPagination(nextProps);
+        }
 
-  _handleRefetch(dataGridProps, page, pageSize) {
-
-    this.setState({
-      pageInfo: {
-        page: page,
-        pageSize: pageSize
-      }
-    });
-
-    let sortInfo = null;
-    let currentSortCols = null;
-
-    if (this.state.hasOwnProperty('sortInfo') && this.state.sortInfo.hasOwnProperty('currentSortType')) {
-      sortInfo = this.state.sortInfo.currentSortType;
-      currentSortCols = this.state.sortInfo.currentSortCols;
+        if (this.props.filter.has('currentAppliedFilter') && !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))) {
+            this._fetchListViewData(nextProps, nextProps.DEFAULT_PAGE, nextProps.DEFAULT_PAGE_SIZE, nextProps.DEFAULT_SORT_TYPE, nextProps.DEFAULT_SORT_COL);
+        }
     }
 
-    this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);
-  }
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+    }
 
-  _handleSortChange(sortInfo) {
+    _handleRefetch(dataGridProps, page, pageSize) {
 
-    let colRequestSkipped = false;
-    let sortCol = [];
-    let sortType = [];
-
-    sortInfo.map(function (sortColumn, i) {
-
-      let name = selectn('['+i+'].name', sortInfo);
-
-      if (this.props.DISABLED_SORT_COLS.indexOf(name) === -1) {
-
-        let definedCol = this.state.columns.find(function(item) {
-          return item.name === name;
+        this.setState({
+            pageInfo: {
+                page: page,
+                pageSize: pageSize
+            }
         });
 
-        sortCol.push((selectn('sortName', definedCol)) ? selectn('sortName', definedCol) : name);
-        sortType.push((selectn('['+i+'].dir', sortInfo) == -1) ? 'desc' : 'asc');
-      } else {
-        if (i === sortInfo.length-1)
-          colRequestSkipped = true;
-      }
-    }.bind(this));
+        let sortInfo = null;
+        let currentSortCols = null;
 
-    if (sortCol.length == 0) {
-     sortCol = [this.props.DEFAULT_SORT_COL];
-     sortType = [this.props.DEFAULT_SORT_TYPE];
+        if (this.state.hasOwnProperty('sortInfo') && this.state.sortInfo.hasOwnProperty('currentSortType')) {
+            sortInfo = this.state.sortInfo.currentSortType;
+            currentSortCols = this.state.sortInfo.currentSortCols;
+        }
+
+        this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);
     }
 
-    let joinedSortType = sortType.join();
-    let joinedSortCols = sortCol.join();
+    _handleSortChange(sortInfo) {
 
-    // Skip updating if last sort addition is disabled
-    if (colRequestSkipped)
-      return;
+        let colRequestSkipped = false;
+        let sortCol = [];
+        let sortType = [];
 
-    this._fetchListViewData(this.props, this.props.DEFAULT_PAGE, this.props.DEFAULT_PAGE_SIZE, joinedSortType, joinedSortCols);
+        sortInfo.map(function (sortColumn, i) {
 
-    this.setState({
-      sortInfo: {
-        uiSortOrder: sortInfo,
-        currentSortCols: joinedSortCols,
-        currentSortType: joinedSortType
-      }
-    });
-  }
+            let name = selectn('[' + i + '].name', sortInfo);
 
-  _handleColumnOrderChange(index, dropIndex) {
-		var col = this.state.columns[index]
-		this.state.columns.splice(index, 1)
-		this.state.columns.splice(dropIndex, 0, col)
-		this.setState({})
-  }
+            if (this.props.DISABLED_SORT_COLS.indexOf(name) === -1) {
 
-  _resetColumns(props) {
+                let definedCol = this.state.columns.find(function (item) {
+                    return item.name === name;
+                });
 
-    if (this.state.fixedCols || this.state.hideStateColumn) {
-      return;
-    }
+                sortCol.push((selectn('sortName', definedCol)) ? selectn('sortName', definedCol) : name);
+                sortType.push((selectn('[' + i + '].dir', sortInfo) == -1) ? 'desc' : 'asc');
+            } else {
+                if (i === sortInfo.length - 1)
+                    colRequestSkipped = true;
+            }
+        }.bind(this));
 
-    // Toggle 'state' column for section/workspaces view
-    if (this.state.hasOwnProperty('columns')) {
-      if (props.routeParams.area == 'sections') {
-        let stateCol = this.state.columns.findIndex(function(item) {
-            return item.name === 'state';
+        if (sortCol.length == 0) {
+            sortCol = [this.props.DEFAULT_SORT_COL];
+            sortType = [this.props.DEFAULT_SORT_TYPE];
+        }
+
+        let joinedSortType = sortType.join();
+        let joinedSortCols = sortCol.join();
+
+        // Skip updating if last sort addition is disabled
+        if (colRequestSkipped)
+            return;
+
+        this._fetchListViewData(this.props, this.props.DEFAULT_PAGE, this.props.DEFAULT_PAGE_SIZE, joinedSortType, joinedSortCols);
+
+        this.setState({
+            sortInfo: {
+                uiSortOrder: sortInfo,
+                currentSortCols: joinedSortCols,
+                currentSortType: joinedSortType
+            }
         });
-
-        this.state.columns.splice(stateCol, 1);
-      } else {
-        this.state.columns.push({ name: 'state', title: 'State' });
-      }
     }
-  }
 
-  _resetPagination(props) {
-    this.setState({
-      pageInfo: {
-        page: props.DEFAULT_PAGE,
-        pageSize: props.DEFAULT_PAGE_SIZE
-      }
-    })
-  }
+    _handleColumnOrderChange(index, dropIndex) {
+        var col = this.state.columns[index]
+        this.state.columns.splice(index, 1)
+        this.state.columns.splice(dropIndex, 0, col)
+        this.setState({})
+    }
+
+    _resetColumns(props) {
+
+        if (this.state.fixedCols || this.state.hideStateColumn) {
+            return;
+        }
+
+        // Toggle 'state' column for section/workspaces view
+        if (this.state.hasOwnProperty('columns')) {
+            if (props.routeParams.area == 'sections') {
+                let stateCol = this.state.columns.findIndex(function (item) {
+                    return item.name === 'state';
+                });
+
+                this.state.columns.splice(stateCol, 1);
+            } else {
+                this.state.columns.push({name: 'state', title: intl.trans('state', 'State', 'first')});
+            }
+        }
+    }
+
+    _resetPagination(props) {
+        this.setState({
+            pageInfo: {
+                page: props.DEFAULT_PAGE,
+                pageSize: props.DEFAULT_PAGE_SIZE
+            }
+        })
+    }
 }

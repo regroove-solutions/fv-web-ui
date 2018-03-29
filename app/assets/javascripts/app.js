@@ -40,24 +40,24 @@ require("styles/main");
 injectTapEventPlugin();
 
 const context = {
-  providers,
-  /*combinedProviders: [
-    providers // OK for all providers to share the same store for now, make sure actions are unique
-  ],*/
-  providedState: {
-    properties: {
-      title: ConfGlobal.title,
-      pageTitleParams: null,
-      domain: ConfGlobal.domain,
-      theme: {
-        palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
-        id: 'default'
-      }
+    providers,
+    /*combinedProviders: [
+      providers // OK for all providers to share the same store for now, make sure actions are unique
+    ],*/
+    providedState: {
+        properties: {
+            title: ConfGlobal.title,
+            pageTitleParams: null,
+            domain: ConfGlobal.domain,
+            theme: {
+                palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
+                id: 'default'
+            }
+        }
     }
-  }
 };
 
-render(<AppWrapper { ...context } />, document.getElementById('app-wrapper'));
+render(<AppWrapper {...context} />, document.getElementById('app-wrapper'));
 
 /*window.addEventListener("unhandledrejection", function(err, promise) {
 // handle error here, for example log

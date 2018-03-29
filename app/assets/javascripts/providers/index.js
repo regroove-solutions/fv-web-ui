@@ -1,5 +1,5 @@
 import {provide, unshiftMiddleware, createCombinedStore, unshiftEnhancer} from 'react-redux-provide';
-import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page';
+import page, {PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH} from 'provide-page';
 import createLoggerMiddleware from 'redux-logger';
 
 import Document from './Document';
@@ -31,32 +31,34 @@ import tasks from './tasks';
 
 const loggerMiddleware = createLoggerMiddleware();
 
-const providers = { page,
-  connect,
-  navigation,
-  Document,
-  Directory,
-  FVLanguageFamily,
-  FVLanguage,
-  FVDialect,
-  FVPortal,
-  FVPage,
-  FVAudio,
-  FVVideo,
-  FVPicture,
-  FVResources,
-  FVWord,
-  FVPhrase,
-  FVBook,
-  FVCategory,
-  FVContributor,
-  FVLink,
-  FVCharacter,
-  FVGallery,
-  FVUser,
-  reports,
-  search,
-  tasks };
+const providers = {
+    page,
+    connect,
+    navigation,
+    Document,
+    Directory,
+    FVLanguageFamily,
+    FVLanguage,
+    FVDialect,
+    FVPortal,
+    FVPage,
+    FVAudio,
+    FVVideo,
+    FVPicture,
+    FVResources,
+    FVWord,
+    FVPhrase,
+    FVBook,
+    FVCategory,
+    FVContributor,
+    FVLink,
+    FVCharacter,
+    FVGallery,
+    FVUser,
+    reports,
+    search,
+    tasks
+};
 
 // Enable log for specific provider
 //unshiftMiddleware([FVWord], loggerMiddleware);
@@ -71,7 +73,7 @@ const providers = { page,
 
 
 /**
-* These providers will be exposed to each componenet that has the @provide decorator,
-* thus exposing their actions and reducers.
-*/
+ * These providers will be exposed to each componenet that has the @provide decorator,
+ * thus exposing their actions and reducers.
+ */
 export default providers;

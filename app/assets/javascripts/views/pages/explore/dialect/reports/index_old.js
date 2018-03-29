@@ -25,7 +25,9 @@ import DocumentListView from 'views/components/Document/DocumentListView';
 
 import CircularProgress from 'material-ui/lib/circular-progress';
 import Doughnut from 'react-chartjs/lib/doughnut';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const DEFAULT_PAGE = 0;
 const DEFAULT_PAGE_SIZE = 10;
 
