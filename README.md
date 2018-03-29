@@ -19,7 +19,7 @@ This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/g
 
 ## Getting Started ##
 There are several version dependency requirements to properly build and run the project:
--  NodeJS v4.1.2
+-  NodeJS>=v8.10
 -  Gulp CLI v3.9.1
 -  Yarn v0.21.3
 
