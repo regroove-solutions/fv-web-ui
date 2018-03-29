@@ -219,10 +219,10 @@ export default class PageToolbar extends Component {
 
                             <div>
 
-                                <span style={{paddingRight: '15px'}}>{int.trans('request', 'Request', 'first')}: </span>
+                                <span style={{paddingRight: '15px'}}>{intl.trans('request', 'Request', 'first')}: </span>
 
                                 <RaisedButton
-                                    label={intl.trans('enable', 'Enable', first) + " (" + (enableTasks.length + this.state.enableActions) + ")"}
+                                    label={intl.trans('enable', 'Enable', 'first') + " (" + (enableTasks.length + this.state.enableActions) + ")"}
                                     disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'}
                                     style={{marginRight: '5px', marginLeft: '0'}} secondary={true}
                                     onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')}/>
@@ -304,7 +304,7 @@ export default class PageToolbar extends Component {
                                 float: 'left',
                                 paddingTop: '16px'
                             }}>{intl.trans('contact_us_to_publish_x', 'To Publish/Unpublish an Entire '
-                                + intl.searchAndReplace(this.props.label) + ' please contact us.', [intl.searchAndReplace(this.props.label)])}</div>);
+                                + this.props.label + ' please contact us.', 'first', [intl.searchAndReplace(this.props.label)])}</div>);
                         }
                     }
                 })()}
@@ -331,7 +331,7 @@ export default class PageToolbar extends Component {
                         return <AuthorizationFilter
                             filter={{permission: 'Write', entity: selectn('response', computeEntity)}}
                             style={toolbarGroupItem}>
-                            <RaisedButton label={intl.trans('edit', 'Edit', first) + " " + this.props.label}
+                            <RaisedButton label={intl.trans('edit', 'Edit', 'first') + " " + intl.searchAndReplace(this.props.label)}
                                           style={{marginRight: '5px', marginLeft: '0'}} primary={true}
                                           onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')}/>
                         </AuthorizationFilter>;
