@@ -67,8 +67,8 @@ export default class Navigation extends Component {
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,    
-    splitWindowPath: PropTypes.array.isRequired,    
+    replaceWindowPath: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
     toggleMenuAction: PropTypes.func.isRequired,
     countTotalTasks: PropTypes.func.isRequired,
     computeCountTotalTasks: PropTypes.object.isRequired,
@@ -83,24 +83,6 @@ export default class Navigation extends Component {
     frontpage: PropTypes.bool
   };
 
-  /*static childContextTypes = {
-    client: React.PropTypes.object,
-    muiTheme: React.PropTypes.object,
-    siteProps: React.PropTypes.object
-  };
-
-  static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired,
-      siteProps: React.PropTypes.object.isRequired
-  };
-
-  getChildContext() {
-    return {
-      //client: this.props.clientStore.client,
-      muiTheme: this.context.muiTheme,
-      siteProps: this.context.siteProps
-    };
-  }*/
 
   constructor(props, context){
     super(props, context);
@@ -253,19 +235,19 @@ export default class Navigation extends Component {
         searchContextPopoverOpen: false
       });
 
-      let searchQueryParam = this.refs.navigationSearchField.getValue();	  
+      let searchQueryParam = this.refs.navigationSearchField.getValue();
       let path = "/" + this.props.splitWindowPath.join("/");
-      let queryPath = "";    
-      
+      let queryPath = "";
+
       // Do a global search in either the workspace or section
       if(path.includes("/explore/FV/Workspaces/Data")) {
         queryPath = "/explore/FV/Workspaces/Data"
-      }      
+      }
       else if(path.includes("/explore/FV/sections/Data")) {
         queryPath = "/explore/FV/sections/Data"
       }
       else {
-        queryPath = "/explore/FV/sections/Data"    	  
+        queryPath = "/explore/FV/sections/Data"
       }
 
       // Do a dialect search
@@ -277,7 +259,7 @@ export default class Navigation extends Component {
       this.refs.navigationSearchField.setValue("");
 
       if (searchQueryParam && searchQueryParam != '') {
-        this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam); 
+        this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam);
       }
     }
   }
@@ -370,7 +352,7 @@ export default class Navigation extends Component {
                       }.bind(this))}
                     </tbody>
                     </table>
-                  
+
                 </div>
               </div>
             </div>
@@ -379,11 +361,17 @@ export default class Navigation extends Component {
             <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
-              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText="Search:" onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" /> 
+              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText="Search:" onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" />
               <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} style={{color: themePalette.alternateTextColor}} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
             </div>
 
-            <IconButton onTouchTap={this._handleNavigationSearchSubmit} iconClassName="material-icons" style={{position:'relative', top: '7px', padding: '0', left: (this.state.searchBarVisibleInMobile) ? '0' : '-40px'}} iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: themePalette.textColor}}>search</IconButton>
+            <IconButton
+                onTouchTap={this._handleNavigationSearchSubmit}
+                iconClassName="material-icons"
+                style={{position:'relative', top: '7px', padding: '0', left: 0}}
+                iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: '#FFFFFF'}}>
+                search
+            </IconButton>
 
             <Popover
             useLayerForClickAway={false}
@@ -413,7 +401,7 @@ export default class Navigation extends Component {
                   </div>;
                 } else {
                   return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
-                    <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>    
+                    <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>
                   </div>;
                 }
                 })()}
@@ -430,7 +418,7 @@ export default class Navigation extends Component {
           //onRequestChangeLeftNav={this.handleChangeRequestLeftNav}
           //onRequestChangeList={this.handleRequestChangeList}
           docked={false} />
-        
+
         {(() => {
                 if (isDialect) {
                   return <div className="row" style={{backgroundColor: themePalette.primary2Color, minHeight: '64px', margin: '0'}}>
