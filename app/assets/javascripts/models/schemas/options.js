@@ -86,7 +86,7 @@ const RelatedMediaLayout = function (locals) {
                     {item.input}
                     <div style={{textAlign: 'center', marginTop: '-15px', backgroundColor: 'rgba(234, 234, 234, 0.6)', borderRadius: '0 0 10px 10px'}}>
                       {item.buttons.map((button, i) => {
-                        
+
                         let icon = '';
                         let label = '';
 
@@ -286,7 +286,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word actually means.</i>
+        help: <i>Describe what the phrase actually means.</i>
       },
       'fv-phrase:phrase_books' : {
         label: 'Phrase Books',
@@ -373,7 +373,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regardless of context.</i>
+        help: <i>Describe what the song title translates to regardless of context.</i>
       },
       'fvbook:introduction': {
         label: 'Book Introduction',
@@ -403,7 +403,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the word translates to regardless of context.</i>
+        help: <i>Describe what the introduction translates to regardless of context.</i>
       },
       'fvbook:type': {
         label: 'Type',
@@ -453,7 +453,7 @@ const options = {
       },
       'fv:available_in_childrens_archive': {
         label: 'Available in Children\'s Archive'
-      }      
+      }
     },
     i18n: i18nExt
   },
@@ -563,11 +563,11 @@ const options = {
           factory: MediaFactory,
           type: 'FVPicture'
         }
-      }    
+      }
     },
     i18n: i18nExt
-  },  
-  
+  },
+
   FVCategory: {
     order: ['dc:title', 'dc:description', 'fvcategory:parent_category', 'fvcategory:image'],
     fields: {
@@ -594,16 +594,16 @@ const options = {
               folder: 'Categories'
             },
             disableCreateNewButton: true
-          }          
-       },      
+          }
+       },
       'fvcategory:image' : {
         label: 'Category Image',
         factory: MediaFactory,
         type: 'FVPicture'
-      }    
+      }
     },
     i18n: i18nExt
-  }, 
+  },
 
   FVPhraseBook: {
     order: ['dc:title', 'dc:description'],
@@ -622,8 +622,8 @@ const options = {
       }
     },
     i18n: i18nExt
-  },   
-  
+  },
+
   FVContributor: {
     order: ['dc:title', 'dc:description'],
     fields: {
@@ -638,11 +638,11 @@ const options = {
         attrs: {
           placeholder: 'Enter contributor description here'
         }
-      }   
+      }
     },
     i18n: i18nExt
-  }, 
-  
+  },
+
   FVPortal: {
     fields: {
       'fv-portal:greeting': {
