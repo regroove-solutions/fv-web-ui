@@ -353,7 +353,7 @@ const options = {
     fields: {
       'dc:title': {
         label: 'Book Title',
-        help: <i>The title of the song or story</i>
+        help: <i>The title of the book.</i>
        },
       'fvbook:title_literal_translation': {
         label: 'Book Title Translation',
@@ -373,7 +373,7 @@ const options = {
           },
           template: DefinitionsLayout
         },
-        help: <i>Describe what the song title translates to regardless of context.</i>
+        help: <i>Describe what the title translates to regardless of context.</i>
       },
       'fvbook:introduction': {
         label: 'Book Introduction',

@@ -71,7 +71,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    
+
     let currentBook, nextBook;
 
     if (this.state.bookPath != null) {
@@ -99,7 +99,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
-      
+
       case (newProps.computeBook != this.props.computeBook):
         return true;
       break;
@@ -117,7 +117,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     //let properties = '';
     let properties = {};
-    
+
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
@@ -177,7 +177,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>Add New {this.props.typeFilter} Book to <i>{selectn('response.title', computeDialect2)}</i></h1>
+            <h1 style={{ textTransform:'capitalize'}}>Add New {this.props.typeFilter} Book to <i>{selectn('response.title', computeDialect2)}</i></h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 
@@ -190,7 +190,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
                     value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
                     options={FVBookOptions} />
                     <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button> 
+                      <button type="submit" className="btn btn-primary">Save</button>
                     </div>
                 </form>
               </div>
