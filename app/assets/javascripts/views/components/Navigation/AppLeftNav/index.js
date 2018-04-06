@@ -37,7 +37,8 @@ export default class AppLeftNav extends Component {
     logout: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired
+    computeLogin: PropTypes.object.isRequired,
+    computeLoadNavigation: PropTypes.object.isRequired
   };
 
   constructor(props, context) {
@@ -119,7 +120,6 @@ export default class AppLeftNav extends Component {
           path: "/tasks/"
         }));
       }
-
       this.setState({routes: newState});
 
     } else {
@@ -172,6 +172,13 @@ export default class AppLeftNav extends Component {
                   value={d.get('path')}
                   nestedItems={d.get('nestedItems')}
                   primaryText={d.get('label')} />
+            )}
+
+            {(selectn('response.entries', this.props.computeLoadNavigation) || []).map((d, i) => 
+                <ListItem
+                  key={selectn('uid', d)}
+                  value={'/content/' + selectn('properties.fvpage:url', d) + '/'}
+                  primaryText={selectn('properties.dc:title', d)} />
             )}
 
           </SelectableList>

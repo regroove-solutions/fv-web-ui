@@ -24,6 +24,10 @@ const LOAD_GUIDE_STARTED = 'LOAD_GUIDE_STARTED';
 const LOAD_GUIDE_SUCCESS = 'LOAD_GUIDE_SUCCESS';
 const LOAD_GUIDE_ERROR = 'LOAD_GUIDE_ERROR';
 
+const LOAD_NAVIGATION_STARTED = 'LOAD_NAVIGATION_STARTED';
+const LOAD_NAVIGATION_SUCCESS = 'LOAD_NAVIGATION_SUCCESS';
+const LOAD_NAVIGATION_ERROR = 'LOAD_NAVIGATION_ERROR';
+
 const loadGuide = function loadGuide(currentPage, pageMatch) {
   return function (dispatch) {
 
@@ -49,6 +53,20 @@ const loadGuide = function loadGuide(currentPage, pageMatch) {
       dispatch( { type: LOAD_GUIDE_SUCCESS, document: response, page: pageMatch } )
     }).catch((error) => {
         dispatch( { type: LOAD_GUIDE_ERROR, error: error, page: pageMatch } )
+    });
+  }
+};
+
+const loadNavigation = function loadNavigation() {
+  return function (dispatch) {
+
+    dispatch( { type: LOAD_NAVIGATION_STARTED  } );
+
+    return DirectoryOperations.getDocumentByPath2('/FV/sections/Site/Resources', 'FVPage', ' AND fvpage:primary_navigation = 1', { 'X-NXenrichers.document': '' })
+    .then((response) => {
+      dispatch( { type: LOAD_NAVIGATION_SUCCESS, document: response } )
+    }).catch((error) => {
+        dispatch( { type: LOAD_NAVIGATION_ERROR, error: error } )
     });
   }
 };
@@ -89,7 +107,8 @@ const actions = {
     return { type: CHANGE_TITLE_PARAMS, pageTitleParams: titleParams };
   },
   
-  loadGuide
+  loadGuide,
+  loadNavigation
 }
 
 /**
@@ -145,6 +164,28 @@ const reducers = {
 
       default: 
         return Object.assign({}, state, { isFetching: false, page: action.page });
+      break;
+    }
+  },
+
+  computeLoadNavigation(state = { isFetching: false, response: null, success: false }, action) {
+    switch (action.type) {
+      case LOAD_NAVIGATION_STARTED:
+        return Object.assign({}, state, { isFetching: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case LOAD_NAVIGATION_SUCCESS:
+        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
+      break;
+
+      // Send modified document to UI without access REST end-point
+      case LOAD_NAVIGATION_ERROR:
+        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
+      break;
+
+      default: 
+        return Object.assign({}, state, { isFetching: false });
       break;
     }
   },

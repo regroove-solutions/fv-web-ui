@@ -74,7 +74,7 @@ export default class Navigation extends Component {
     computeCountTotalTasks: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    computeLoadGuide: PropTypes.object.isRequired,
+    //computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
     computeDialect2: PropTypes.object,
     fetchDialects: PropTypes.func.isRequired,
@@ -276,7 +276,7 @@ export default class Navigation extends Component {
 
     const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
-    const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
+    //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     let portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal);
     let portalTitle = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || selectn('response.properties.dc:title', computeDialect);
@@ -307,7 +307,7 @@ export default class Navigation extends Component {
               <span>
                 <Badge
                   badgeContent={userTaskCount}
-                  style={{top: '8px', left: '0', padding: '0 0 12px 12px'}}
+                  style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
                   primary={true}
                 >
@@ -316,7 +316,7 @@ export default class Navigation extends Component {
                   </IconButton>
                 </Badge>
 
-                <Badge
+                {/*<Badge
                   badgeContent={guideCount}
                   style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
@@ -325,11 +325,11 @@ export default class Navigation extends Component {
                   <IconButton iconStyle={{fill: '#fff'}} onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
                     <ActionHelp />
                   </IconButton>
-                </Badge>
+                </Badge>*/}
               </span>
             </AuthenticationFilter>
 
-            <Popover
+            {/*<Popover
             open={this.state.guidePopoverOpen}
             anchorEl={this.state.guidePopoverAnchorEl}
             anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
@@ -356,7 +356,7 @@ export default class Navigation extends Component {
                 </div>
               </div>
             </div>
-          </Popover>
+            </Popover>*/}
 
             <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
