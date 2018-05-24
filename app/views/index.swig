@@ -91,7 +91,7 @@ Raven.config('https://9f99c993909b4dda85e7178a0eadc7fa@sentry.io/1212465').insta
     _paq.push(['setTrackerUrl', u+'piwik.php']);
     _paq.push(['setSiteId', '1']);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src='/assets/vendor/piwik.js'; s.parentNode.insertBefore(g,s);
   })();
 </script>
 <!-- End Matomo Code -->
