@@ -1,10 +1,10 @@
 var browserSync  = require('browser-sync');
-var config       = require('../config/html')('development');
+var config       = require('../config/html')('production');
 var gulp         = require('gulp');
 var swig         = require('gulp-swig');
 var handleErrors = require('../lib/handleErrors');
 
-gulp.task('html', function() {
+gulp.task('html:production', function() {
   return gulp.src(config.src)
     .pipe(swig(config.swig))
     .on('error', handleErrors)

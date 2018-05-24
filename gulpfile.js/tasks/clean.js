@@ -1,7 +1,7 @@
 var gulp = require('gulp');
 
 var config = require('../config');
-var htmlConfig = require('../config/html');
+var htmlConfig = require('../config/html')('development');
 var clean = require('gulp-clean');
 
 /**

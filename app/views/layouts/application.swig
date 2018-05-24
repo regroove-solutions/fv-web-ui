@@ -42,7 +42,7 @@
     </script>
 
     <link href="//fonts.googleapis.com/css?family=Roboto:100,400,500,500i,700,900&amp;subset=latin-ext" rel="stylesheet">
-    <script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>
+    {% if buildENV == "production" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
 
     {% block head %}{% endblock %}
 

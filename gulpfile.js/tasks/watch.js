@@ -1,5 +1,5 @@
 var gulp     = require('gulp');
-var html     = require('../config/html');
+var html     = require('../config/html')('development');
 var images   = require('../config/images');
 var less     = require('../config/less');
 var fonts    = require('../config/fonts');
