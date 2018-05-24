@@ -19,7 +19,7 @@ import Navigation from 'views/components/Navigation';
 import KidsNavigation from 'views/components/Kids/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
-import { PageIntro, PageHome, PageTest, PageKidsHome, PageContent, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
+import { PageIntro, PageHome, PageTest, PageError, PageKidsHome, PageContent, PageExploreDialects, PageExploreArchive, PageExploreFamily, PageExploreLanguage, PageExploreDialect } from 'views/pages';
 
 import { PageDialectLearn, PageDialectMedia, PageDialectPlay, PageDialectGalleryView, PageDialectGalleries, PageDialectReports, PageDialectReportsView, PageDialectUsers } from 'views/pages';
 
@@ -743,6 +743,24 @@ export default class AppFrontController extends Component {
 
       this.setState(matchReturn);
     }
+    // No match found (i.e. 404)
+    else {
+
+      let title = "404 Page Not Found";
+      let body = <div><p>Please report this error via the "Provide Feedback" feature so that we can fix it.</p><p>Include what link or action you took to get to this page.</p><p>Thank you!</p></div>;
+
+      let notFoundPage = Immutable.fromJS({
+        title: title,
+        page: <PageError title={title} body={body} />
+      });
+
+      let matchReturn = {
+        matchedPage: notFoundPage,
+        matchedRouteParams: matchedRouteParams
+      };
+
+      this.setState(matchReturn);
+    }
   }
 
   componentWillMount() {
@@ -937,38 +955,34 @@ export default class AppFrontController extends Component {
 
     let footer = <Footer className={'footer-' + theme + '-theme'} />;
 
-    if (!matchedPage) {
-      page = <div><h1>404 - Page Not Found</h1><p>Please report this error via the "Provide Feedback" feature so that we can fix it.</p><p>Include what link or action you took to get to this page.</p><p>Thank you!</p></div>;
+    let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
+
+    // For print view return page only
+    if (print) {
+      return <div style={{margin: '25px'}}>{clonedElement}</div>;
+    }
+
+    // Remove breadcrumbs for Kids portal
+    // TODO: Make more generic if additional themes are added in the future.
+    if (theme == 'kids') {
+      page = clonedElement;
+      navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
     } else {
-
-      let clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams });
-
-      // For print view return page only
-      if (print) {
-        return <div style={{margin: '25px'}}>{clonedElement}</div>;
-      }
-
-      // Remove breadcrumbs for Kids portal
-      // TODO: Make more generic if additional themes are added in the future.
-      if (theme == 'kids') {
+      // Without breadcrumbs
+      if (matchedPage.get('breadcrumbs') === false) {
         page = clonedElement;
-        navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />;
-      } else {
-        // Without breadcrumbs
-        if (matchedPage.get('breadcrumbs') === false) {
-          page = clonedElement;
-        }
-        // With breadcrumbs
-        else {
-          page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props, theme);
-        }
       }
-
-      // Hide navigation
-      if (hideNavigation) {
-        navigation = footer = '';
+      // With breadcrumbs
+      else {
+        page = this._renderWithBreadcrumb(clonedElement, matchedPage, this.props, theme);
       }
     }
+
+    // Hide navigation
+    if (hideNavigation) {
+      navigation = footer = '';
+    }
+
 
     return (
       <div>
