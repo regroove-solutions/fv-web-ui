@@ -11,6 +11,7 @@ import ConfGlobal from 'conf/local.json';
 import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
 import StringHelpers from 'common/StringHelpers';
+import AnalyticsHelpers from 'common/AnalyticsHelpers';
 
 import {Link} from 'provide-page';
 
@@ -772,10 +773,11 @@ export default class AppFrontController extends Component {
     this._updateTitle();
 
     if (prevProps.windowPath != this.props.windowPath) {
-      // Track page view
-      if (window.snowplow) {
-        window.snowplow('trackPageView');
-      }
+      // Track page views when page changes
+      AnalyticsHelpers.trackPageView({
+        referrer: prevProps.windowPath,
+        pageurl: this.props.windowPath
+      });
     }
 
     if(selectn('computeLogin.isConnected', this.props) && selectn('computeLogin.isNewLogin', this.props))
@@ -994,7 +996,7 @@ export default class AppFrontController extends Component {
         }.bind(this))}
 
         <div className="row">{navigation}</div>
-        {page}
+        <div id="pageContainer">{page}</div>
         <div className="row">{footer}</div>
       </div>
     );

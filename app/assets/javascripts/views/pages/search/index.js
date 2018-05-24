@@ -40,6 +40,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
 import StringHelpers from 'common/StringHelpers';
 import FormHelpers from 'common/FormHelpers';
+import AnalyticsHelpers from 'common/AnalyticsHelpers';
 
 import SearchResultTile from './tile';
 
@@ -198,6 +199,21 @@ export default class Search extends DataListView {
 				formValue: this.state.defaultFormValue || null
 			});
 	}
+
+
+  componentDidUpdate(prevProps, prevState) {
+
+	  const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath());
+
+	  if (selectn('response.totalSize', computeSearchDocuments) != undefined) {
+		// Track search event
+		AnalyticsHelpers.trackSiteSearch({
+			keyword: this.props.routeParams.searchTerm,
+			category: false,
+			results: selectn("response.totalSize", computeSearchDocuments)
+		});
+	  }
+  }
 
   render() {
 
