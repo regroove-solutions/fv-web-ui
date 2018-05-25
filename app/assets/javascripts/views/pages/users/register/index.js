@@ -189,6 +189,10 @@ export default class Register extends Component {
             <h1>{selectn('response.title', computeDialect2)} Register</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
+              <p style={{padding: '15px'}}>We are working on fixing some problems with registration of new users.<br/>To register in the meantime, please email alex@fpcc.ca.</p>
+            </div>
+
+            <div className="row" style={{marginTop: '15px', display: 'none'}}>
 
               <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
