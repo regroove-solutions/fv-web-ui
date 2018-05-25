@@ -17,18 +17,18 @@ limitations under the License.
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
-
-var _paq = {
+/*var _paq = {
   "push": function (array) {
     console.log(array);
   }
-}
+}*/
 
 export default {
   trackPageView(payload) {
     // For now track in set timeout with slight delay to capture correct page title
     setTimeout(function(){
-      if (_paq != undefined) {
+      // Only process if piwik code available and do not track page views for search results
+      if (_paq != undefined && selectn("pageurl", payload).indexOf("/search/") == -1) {
         _paq.push(['setReferrerUrl', selectn("referrer", payload)]);
         _paq.push(['setCustomUrl', selectn("pageurl", payload)]);
         _paq.push(['setDocumentTitle', document.title]);
