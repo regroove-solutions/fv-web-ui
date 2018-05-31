@@ -4,6 +4,7 @@ var webpackManifest = require('../lib/webpackManifest')
 
 var WriteFilePlugin = require('write-file-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 var HappyPack = require('happypack');
 var config = require('./')
 
@@ -125,10 +126,20 @@ module.exports = function (env) {
                 },
                 {
                     test: /\.(jpg|jpeg|png|gif)$/,
-                    loader: "file-loader",
-                    options: {
-                        name: config.assetsDirectory + config.imagesDirectory + "[name].[hash].[ext]"
-                    }
+                    use: [
+                        {
+                            loader: "file-loader",
+                            options: {
+                                name: config.assetsDirectory + config.imagesDirectory + "[name].[hash].[ext]"
+                            }
+                        },
+                        {
+                            loader: 'image-webpack-loader',
+                            options: {
+                              bypassOnDebug: true,
+                            },
+                        },
+                    ]
                 },
                 {
                     test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
@@ -223,27 +234,38 @@ module.exports = function (env) {
     }
 
     if (env === 'production') {
+        webpackConfig.devtool = '#nosources-source-map'
         webpackConfig.plugins.push(
             new webpackManifest('/', 'public'),
             new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
                 }
-            })
-        );
-        /*,
-
-        new webpack.optimize.DedupePlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-          sourceMap: false,
-          compress: {
-            warnings: false,
-            drop_debugger: true,
-            drop_console: true
-          }
-        }),
-        new webpack.NoErrorsPlugin()*/
-        // )
+            }),
+            new UglifyJsPlugin({
+                parallel: true,
+                sourceMap: true,
+                exclude: /\/node_modules/,
+                uglifyOptions: {
+                  ecma: 8,
+                  mangle: true,
+                  compress: {
+                    sequences: true,
+                    dead_code: true,
+                    conditionals: true,
+                    booleans: true,
+                    unused: true,
+                    if_return: true,
+                    join_vars: true,
+                    drop_console: true
+                  },
+                  output: {
+                    comments: false,
+                    beautify: false
+                  }
+                }
+              })
+        )
     }
 
     return webpackConfig
