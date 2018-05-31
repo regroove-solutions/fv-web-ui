@@ -89,11 +89,11 @@
 		_paq.push(['trackPageView']);
 		_paq.push(['enableLinkTracking']);
 		(function() {
-			var u="//ec2-35-183-54-153.ca-central-1.compute.amazonaws.com/";
+			var u="//analytics.firstvoices.com/";
 			_paq.push(['setTrackerUrl', u+'piwik.php']);
 			_paq.push(['setSiteId', '1']);
 			var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-			g.type='text/javascript'; g.async=true; g.defer=true; g.src='/assets/vendor/piwik.js'; s.parentNode.insertBefore(g,s);
+			g.type='text/javascript'; g.async=true; g.defer=true; g.src=u + 'piwik.js'; s.parentNode.insertBefore(g,s);
 		})();
 		</script>
 		<!-- End Matomo Code -->

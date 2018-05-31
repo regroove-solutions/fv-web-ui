@@ -9,7 +9,3 @@ gulp.task('copy', function() {
 gulp.task('copy-game-assets',function() {
     return gulp.src(['./app/assets/games/*/assets/**/*']).pipe(gulp.dest(config.publicAssets + '/games'));
 });
-
-gulp.task('copy-piwik-tracker',function() {
-    return gulp.src(['./app/assets/javascripts/piwik.js']).pipe(gulp.dest(config.publicAssets + '/vendor/'));
-});
