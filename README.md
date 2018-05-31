@@ -116,8 +116,7 @@ $ gulp build:production
 ## Contributing ##
 
 ### Adding New Dependencies
-1. Install dependency using `npm install package --save` or `npm install package --save-dev`
-2. When ready, run `npm shrinkwrap` to lock dependencies.
+Install dependencies using `yarn add package` or `yarn add package --dev`
 
 ### Tips
 * Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
