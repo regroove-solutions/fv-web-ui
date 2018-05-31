@@ -47,20 +47,6 @@ const DefaultFetcherParams = { filters: {'properties.dc:title': '', 'dialect': '
 
 const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
 * Explore Archive page shows all the families in the archive
 */
@@ -74,7 +60,9 @@ export default class Test extends Component {
     pushWindowPath: PropTypes.func.isRequired,
     routeParams: PropTypes.object.isRequired,
     fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired
+    computeSharedPictures: PropTypes.object.isRequired,
+    fetchWord: PropTypes.func.isRequired,
+    computeWord: PropTypes.object.isRequired
   };
 
   /*static contextTypes = {
@@ -95,7 +83,7 @@ export default class Test extends Component {
         currentPageIndex: 0,
         pageSize: 10
       }, DefaultFetcherParams),
-      pathOrId: null
+      pathOrId: "/FV/Workspaces/Data/Hebrew/Hebrew/Hebrew/Dictionary/שלום"
     }
 
     this.fetchData = this.fetchData.bind(this);
@@ -108,26 +96,13 @@ export default class Test extends Component {
     });
   }
 
-  fetchData(fetcherParams) {
-
-    /*const pathOrId = "/FV/sections/Data/Wakashan/diidiitidq/diidiitidq/Portal";
-
-    let preparedParams = {
-      currentPageIndex: fetcherParams.currentPageIndex,
-      pageSize: fetcherParams.pageSize,
-      queryParams: [fetcherParams.filters['properties.dc:title'], fetcherParams.filters['dialect']]
-    };
-
-    this.props.fetchSharedPictures('all_shared_pictures', QueryString.stringify(preparedParams), {});
-    this.setState({
-      fetcherParams: fetcherParams,
-      pathOrId: pathOrId
-    });*/
+  fetchData() {
+    this.props.fetchWord(this.state.pathOrId);
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.state.fetcherParams);
+    this.fetchData();
   }
 
   // Refetch data on URL change
@@ -157,7 +132,7 @@ export default class Test extends Component {
 
     const computeEntities = Immutable.fromJS([{
       'id': this.state.pathOrId,
-      'entity': this.props.computeSharedPictures
+      'entity': this.props.computeWord
     }])
 
 
@@ -176,22 +151,10 @@ export default class Test extends Component {
     let portalResponse = selectn('response', portalOperation);*/
 
     return <div className="row">
-
-            <FilteredPaginatedMediaList
-              cols={5}
-              action={this._onNavigateRequest}
-              fetcher={this.fetchData}
-              fetcherParams={this.state.fetcherParams}
-              metadata={selectn('response', this.props.computeSharedPictures)}
-              items={selectn('response.entries', this.props.computeSharedPictures) || []}
-            />
-                  {/*<MediaList
-                    action={this._onNavigateRequest}
-                    tiles={this.state.filteredList || selectn('response.entries', this.props.computeSharedPictures) || []} />*/}
             <pre>
-              {/*<PromiseWrapper computeEntities={computeEntities}>
-                {JSON.stringify(this.props.computePortal, null, '\t')}
-              </PromiseWrapper>*/}
+              <PromiseWrapper computeEntities={computeEntities}>
+                {JSON.stringify(this.props.computeWord, null, '\t')}
+              </PromiseWrapper>
             </pre>
           </div>;
   }
