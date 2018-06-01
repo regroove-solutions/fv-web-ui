@@ -26,6 +26,8 @@ import UIHelpers from 'common/UIHelpers';
 
 import Shepherd from 'tether-shepherd';
 
+import {Link} from 'provide-page';
+
 // Components
 import AppBar from 'material-ui/lib/app-bar';
 
@@ -53,7 +55,6 @@ import Avatar from 'material-ui/lib/avatar';
 
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
 
-import DialectDropDown from 'views/components/Navigation/DialectDropDown';
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
@@ -77,8 +78,6 @@ export default class Navigation extends Component {
     //computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
     computeDialect2: PropTypes.object,
-    fetchDialects: PropTypes.func.isRequired,
-    computeDialects: PropTypes.object.isRequired,
     routeParams: PropTypes.object,
     frontpage: PropTypes.bool
   };
@@ -88,7 +87,6 @@ export default class Navigation extends Component {
     super(props, context);
 
     this.state = {
-      browseDesc: "Dialects...",
       searchBarVisibleInMobile: false,
       guidePopoverOpen: false,
       guidePopoverAnchorEl: null,
@@ -104,11 +102,10 @@ export default class Navigation extends Component {
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
     this._startTour = this._startTour.bind(this);
-    this._fetchData = this._fetchData.bind(this);
     this._removePopoverUnlessOptionSelected = this._removePopoverUnlessOptionSelected.bind(this);
   }
 
-  _fetchData(props = this.props){
+  _setExplorePath(props = this.props){
     let fetchPath = selectn('routeParams.area', props);
 
     if (!fetchPath) {
@@ -122,11 +119,8 @@ export default class Navigation extends Component {
     const pathOrId = '/' + props.properties.domain + '/' + fetchPath;
 
     this.setState({
-      browseDesc: ((fetchPath == 'Workspaces') ? 'Workspace Languages:' : 'Published Languages:'),
       pathOrId: pathOrId
     });
-
-    props.fetchDialects(pathOrId);
   }
 
   componentWillReceiveProps(newProps) {
@@ -137,7 +131,7 @@ export default class Navigation extends Component {
     const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined && this.props.computeLogin.isConnected != undefined);
 
     if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
-      this._fetchData(newProps);
+      this._setExplorePath(newProps);
     }
 
     // Remove popover upon navigation
@@ -149,7 +143,7 @@ export default class Navigation extends Component {
   }
 
   componentDidMount() {
-    this._fetchData();
+    this._setExplorePath();
 
     // Ensure Search Box blur does not remove Popover when focusing on search options (only applies to Dialect pages)
     //document.body.addEventListener('click', this._removePopoverUnlessOptionSelected);
@@ -272,7 +266,6 @@ export default class Navigation extends Component {
     const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-    const computeDialects = ProviderHelpers.getEntry(this.props.computeDialects, this.state.pathOrId);
 
     const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
@@ -289,15 +282,9 @@ export default class Navigation extends Component {
 
           <ToolbarGroup style={{position: 'relative', color: '#fff'}}>
 
-            <DialectDropDown
-              className="hidden-xs"
-              dialects={selectn('response.entries', computeDialects) || []}
-              description={this.state.browseDesc}
-              label="CHOOSE A LANGUAGE"
-              properties={this.props.properties}
-              actionFunc={this.props.pushWindowPath}
-              computeLogin={this.props.computeLogin}
-              routeParams={this.props.routeParams} />
+            <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
+              <Link className="nav_link" href={"/explore" + this.state.pathOrId + '/Data'}>CHOOSE A LANGUAGE</Link>
+            </div>
 
             <Login routeParams={this.props.routeParams} label="Sign in"/>
 
