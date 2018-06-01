@@ -134,7 +134,7 @@ export default class Navigation extends Component {
       this.props.countTotalTasks('count_total_tasks', {'query':'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')', 'language': 'nxql', 'sortOrder': 'ASC'});
     }
 
-    const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined);
+    const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined && this.props.computeLogin.isConnected != undefined);
 
     if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
       this._fetchData(newProps);
