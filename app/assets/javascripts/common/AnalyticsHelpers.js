@@ -23,35 +23,47 @@ import selectn from 'selectn';
   }
 }*/
 
+const hasAnalytics = function () {
+  if (typeof _paq !== 'undefined'){
+    return true;
+  }
+
+  return false;
+}
+
 export default {
   trackPageView(payload) {
-    // For now track in set timeout with slight delay to capture correct page title
-    setTimeout(function(){
-      // Only process if piwik code available and do not track page views for search results
-      if (_paq != undefined && selectn("pageurl", payload).indexOf("/search/") == -1) {
-        _paq.push(['setReferrerUrl', selectn("referrer", payload)]);
-        _paq.push(['setCustomUrl', selectn("pageurl", payload)]);
-        _paq.push(['setDocumentTitle', document.title]);
-  
-        // remove all previously assigned custom variables, requires Matomo (formerly Piwik) 3.0.2
-        _paq.push(['deleteCustomVariables', 'page']); 
-        _paq.push(['setGenerationTimeMs', 0]);
-        _paq.push(['trackPageView']);
-  
-        // make Matomo aware of newly added content
-        var content = document.getElementById('pageContainer');
-        _paq.push(['MediaAnalytics::scanForMedia', content]);
-        _paq.push(['FormAnalytics::scanForForms', content]);
-        _paq.push(['trackContentImpressionsWithinNode', content]);
-        _paq.push(['enableLinkTracking']);
-      }
-    }, 900);
+    if (hasAnalytics()) {
+      // For now track in set timeout with slight delay to capture correct page title
+      setTimeout(function(){
+        // Only process if piwik code available and do not track page views for search results
+        if (selectn("pageurl", payload).indexOf("/search/") == -1) {
+          _paq.push(['setReferrerUrl', selectn("referrer", payload)]);
+          _paq.push(['setCustomUrl', selectn("pageurl", payload)]);
+          _paq.push(['setDocumentTitle', document.title]);
+    
+          // remove all previously assigned custom variables, requires Matomo (formerly Piwik) 3.0.2
+          _paq.push(['deleteCustomVariables', 'page']); 
+          _paq.push(['setGenerationTimeMs', 0]);
+          _paq.push(['trackPageView']);
+    
+          // make Matomo aware of newly added content
+          var content = document.getElementById('pageContainer');
+          _paq.push(['MediaAnalytics::scanForMedia', content]);
+          _paq.push(['FormAnalytics::scanForForms', content]);
+          _paq.push(['trackContentImpressionsWithinNode', content]);
+          _paq.push(['enableLinkTracking']);
+        }
+      }, 900);
+    }
   },
   trackSiteSearch(payload){
-    _paq.push(['trackSiteSearch',
-        selectn("keyword", payload),
-        selectn("category", payload),
-        selectn("results", payload)
-    ]);
+    if (hasAnalytics()) {
+      _paq.push(['trackSiteSearch',
+          selectn("keyword", payload),
+          selectn("category", payload),
+          selectn("results", payload)
+      ]);
+    }
   }
 }
