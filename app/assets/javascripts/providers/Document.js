@@ -10,8 +10,8 @@ import DocumentOperations from 'operations/DocumentOperations';
 const DISMISS_ERROR = 'DISMISS_ERROR';
 
 /**
-* Single Document Actions
-*/
+ * Single Document Actions
+ */
 const DOCUMENT_FETCH_START = "DOCUMENT_FETCH_START";
 const DOCUMENT_FETCH_SUCCESS = "DOCUMENT_FETCH_SUCCESS";
 const DOCUMENT_FETCH_ERROR = "DOCUMENT_FETCH_ERROR";
@@ -43,120 +43,143 @@ const DOCUMENT_ENABLE_ERROR = "DOCUMENT_ENABLE_ERROR";
 };*/
 
 const publishDocument = function publishDocument(workspaceDocPath, sectionTargetPath) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: DOCUMENT_PUBLISH_START } );
+        dispatch({type: DOCUMENT_PUBLISH_START});
 
-    return DocumentOperations.publishDocument(workspaceDocPath, {target: sectionTargetPath, override: "true"})
-    .then((response) => {
-      dispatch( { type: DOCUMENT_PUBLISH_SUCCESS, document: response } )
-    }).catch((error) => {
-        dispatch( { type: DOCUMENT_PUBLISH_ERROR, error: error } )
-    });
-  }
+        return DocumentOperations.publishDocument(workspaceDocPath, {target: sectionTargetPath, override: "true"})
+            .then((response) => {
+                dispatch({type: DOCUMENT_PUBLISH_SUCCESS, document: response})
+            }).catch((error) => {
+                dispatch({type: DOCUMENT_PUBLISH_ERROR, error: error})
+            });
+    }
 };
 
 const disableDocument = function disableDocument(pathOrId) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: DOCUMENT_DISABLE_START } );
+        dispatch({type: DOCUMENT_DISABLE_START});
 
-    return DocumentOperations.disableDocument(pathOrId)
-    .then((response) => {
-      dispatch( { type: DOCUMENT_DISABLE_SUCCESS, document: response } )
-    }).catch((error) => {
-        dispatch( { type: DOCUMENT_DISABLE_ERROR, error: error } )
-    });
+        return DocumentOperations.disableDocument(pathOrId)
+            .then((response) => {
+                dispatch({type: DOCUMENT_DISABLE_SUCCESS, document: response})
+            }).catch((error) => {
+                dispatch({type: DOCUMENT_DISABLE_ERROR, error: error})
+            });
 
-  }
+    }
 };
 
 const enableDocument = function enableDocument(pathOrId) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: DOCUMENT_ENABLE_START } );
+        dispatch({type: DOCUMENT_ENABLE_START});
 
-    return DocumentOperations.enableDocument(pathOrId)
-    .then((response) => {
-      dispatch( { type: DOCUMENT_ENABLE_SUCCESS, document: response } )
-    }).catch((error) => {
-        dispatch( { type: DOCUMENT_ENABLE_ERROR, error: error } )
-    });
+        return DocumentOperations.enableDocument(pathOrId)
+            .then((response) => {
+                dispatch({type: DOCUMENT_ENABLE_SUCCESS, document: response})
+            }).catch((error) => {
+                dispatch({type: DOCUMENT_ENABLE_ERROR, error: error})
+            });
 
-  }
+    }
 };
 
-const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', { headers: { 'X-NXenrichers.document': 'ancestry,permissions,acls' } });
+const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', {headers: {'X-NXenrichers.document': 'ancestry,permissions,acls'}});
 const fetchResultSet = RESTActions.execute('FV_RESULT_SET', 'Repository.ResultSetQuery');
 
 const computeDocumentFetchFactory = RESTReducers.computeFetch('document');
 const computeResultSetOperation = RESTReducers.computeOperation('result_set');
 
-const actions = { fetchDocument, publishDocument, disableDocument, enableDocument, fetchResultSet };
+const actions = {fetchDocument, publishDocument, disableDocument, enableDocument, fetchResultSet};
 
 const reducers = {
-  computeDocument: computeDocumentFetchFactory.computeDocument,
-  computeResultSet: computeResultSetOperation.computeResultSet,
-  computePublish(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case DOCUMENT_PUBLISH_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
+    computeDocument: computeDocumentFetchFactory.computeDocument,
+    computeResultSet: computeResultSetOperation.computeResultSet,
+    computePublish(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case DOCUMENT_PUBLISH_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
 
-      case DOCUMENT_PUBLISH_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
+            case DOCUMENT_PUBLISH_SUCCESS:
+                return Object.assign({}, state, {response: action.document, isFetching: false, success: true});
+                break;
 
-      case DOCUMENT_PUBLISH_ERROR:
-      case DISMISS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
+            case DOCUMENT_PUBLISH_ERROR:
+            case DISMISS_ERROR:
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    isError: true,
+                    error: action.error,
+                    errorDismissed: (action.type === DISMISS_ERROR) ? true : false
+                });
+                break;
 
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
+    },
+    computeDocumentDisable(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case DOCUMENT_DISABLE_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
+
+            case DOCUMENT_DISABLE_SUCCESS:
+                return Object.assign({}, state, {response: action.document, isFetching: false, success: true});
+                break;
+
+            case DOCUMENT_DISABLE_ERROR:
+                return Object.assign({}, state, {isFetching: false, isError: true, error: action.error});
+                break;
+
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
+    },
+    computeDocumentEnable(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case DOCUMENT_ENABLE_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
+
+            case DOCUMENT_ENABLE_SUCCESS:
+                return Object.assign({}, state, {response: action.document, isFetching: false, success: true});
+                break;
+
+            case DOCUMENT_ENABLE_ERROR:
+                return Object.assign({}, state, {isFetching: false, isError: true, error: action.error});
+                break;
+
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
     }
-  },
-  computeDocumentDisable(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case DOCUMENT_DISABLE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case DOCUMENT_DISABLE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
-
-      case DOCUMENT_DISABLE_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  },
-  computeDocumentEnable(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case DOCUMENT_ENABLE_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
-
-      case DOCUMENT_ENABLE_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
-
-      case DOCUMENT_ENABLE_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error });
-      break;
-
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  }
 };
 
 const middleware = [thunk];
 
-export default { actions, reducers, middleware };
+export default {actions, reducers, middleware};

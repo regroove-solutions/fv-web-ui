@@ -7,19 +7,28 @@ import thunk from 'redux-thunk';
 // Operations
 import UserOperations from 'operations/UserOperations';
 
-const approveTask = RESTActions.execute('FV_USER_TASKS_APPROVE', 'WorkflowTask.Complete', { headers: { 'X-NXenrichers.document': 'ancestry' } });
-const rejectTask = RESTActions.execute('FV_USER_TASKS_REJECT', 'WorkflowTask.Complete', { headers: { 'X-NXenrichers.document': 'ancestry' } });
+const approveTask = RESTActions.execute('FV_USER_TASKS_APPROVE', 'WorkflowTask.Complete', {headers: {'X-NXenrichers.document': 'ancestry'}});
+const rejectTask = RESTActions.execute('FV_USER_TASKS_REJECT', 'WorkflowTask.Complete', {headers: {'X-NXenrichers.document': 'ancestry'}});
 
-const approveRegistration = RESTActions.execute('FV_USER_REGISTRATION_APPROVE', 'User.ApproveInvite', { });
-const rejectRegistration = RESTActions.execute('FV_USER_REGISTRATION_REJECT', 'User.RejectInvite', { });
+const approveRegistration = RESTActions.execute('FV_USER_REGISTRATION_APPROVE', 'User.ApproveInvite', {});
+const rejectRegistration = RESTActions.execute('FV_USER_REGISTRATION_REJECT', 'User.RejectInvite', {});
 
 const fetchTasks = RESTActions.execute('FV_TASKS', 'Workflow.GetOpenTasks');
 const fetchUserTasks = RESTActions.execute('FV_USER_TASKS', 'Task.GetAssigned');
-const fetchUserRegistrationTasks = RESTActions.query('FV_USER_REGISTRATION', 'FVUserRegistration', { queryAppend: ' AND ecm:currentLifeCycleState=\'created\'&sortBy=dc:created&sortOrder=DESC' });
+const fetchUserRegistrationTasks = RESTActions.query('FV_USER_REGISTRATION', 'FVUserRegistration', {queryAppend: ' AND ecm:currentLifeCycleState=\'created\'&sortBy=dc:created&sortOrder=DESC'});
 
 const countTotalTasks = RESTActions.execute('FV_COUNT_TOTAL_TASKS', 'Repository.ResultSetQuery');
 
-const actions = { fetchTasks, fetchUserTasks, fetchUserRegistrationTasks, approveTask, rejectTask, approveRegistration, rejectRegistration, countTotalTasks };
+const actions = {
+    fetchTasks,
+    fetchUserTasks,
+    fetchUserRegistrationTasks,
+    approveTask,
+    rejectTask,
+    approveRegistration,
+    rejectRegistration,
+    countTotalTasks
+};
 
 const computeUserTasksOperation = RESTReducers.computeOperation('user_tasks');
 const computeTasksOperation = RESTReducers.computeOperation('tasks');
@@ -31,16 +40,16 @@ const computeUserRegistrationApproveOperation = RESTReducers.computeOperation('u
 const computeUserRegistrationRejectOperation = RESTReducers.computeOperation('user_registration_reject');
 
 const reducers = {
-	computeTasks: computeTasksOperation.computeTasks,
-	computeUserTasks: computeUserTasksOperation.computeUserTasks,
-	computeUserTasksApprove: computeUserTasksApproveOperation.computeUserTasksApprove,
-	computeUserTasksReject: computeUserTasksRejectOperation.computeUserTasksReject,
-	computeCountTotalTasks: computeCountTotalTasksFactory.computeCountTotalTasks,
-	computeUserRegistrationTasks: computeUserRegistrationTasksQueryFactory.computeUserRegistration,
-	computeUserRegistrationApprove: computeUserRegistrationApproveOperation.computeUserRegistrationApprove,
-	computeUserRegistrationReject: computeUserRegistrationRejectOperation.computeUserRegistrationReject
+    computeTasks: computeTasksOperation.computeTasks,
+    computeUserTasks: computeUserTasksOperation.computeUserTasks,
+    computeUserTasksApprove: computeUserTasksApproveOperation.computeUserTasksApprove,
+    computeUserTasksReject: computeUserTasksRejectOperation.computeUserTasksReject,
+    computeCountTotalTasks: computeCountTotalTasksFactory.computeCountTotalTasks,
+    computeUserRegistrationTasks: computeUserRegistrationTasksQueryFactory.computeUserRegistration,
+    computeUserRegistrationApprove: computeUserRegistrationApproveOperation.computeUserRegistrationApprove,
+    computeUserRegistrationReject: computeUserRegistrationRejectOperation.computeUserRegistrationReject
 };
 
 const middleware = [thunk];
 
-export default { actions, reducers, middleware };
+export default {actions, reducers, middleware};

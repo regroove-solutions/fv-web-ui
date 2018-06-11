@@ -34,130 +34,140 @@ import '!style-loader!css-loader!react-datagrid/dist/index.min.css';
 
 const GridViewWithPagination = withPagination(GridView, 8);
 
-function debounce(a,b,c){var d,e;return function(){function h(){d=null,c||(e=a.apply(f,g))}var f=this,g=arguments;return clearTimeout(d),d=setTimeout(h,b),c&&!d&&(e=a.apply(f,g)),e}};
+function debounce(a, b, c) {
+    var d, e;
+    return function () {
+        function h() {
+            d = null, c || (e = a.apply(f, g))
+        }
+
+        var f = this, g = arguments;
+        return clearTimeout(d), d = setTimeout(h, b), c && !d && (e = a.apply(f, g)), e
+    }
+};
 
 export default class DocumentListView extends Component {
 
-  static defaultProps = {
-    pagination: true,
-    usePrevResponse: false
-  };
-
-  constructor(props, context) {
-    super(props, context);
-
-    this.state = {
-      selectedId: null
+    static defaultProps = {
+        pagination: true,
+        usePrevResponse: false
     };
 
-    // Bind methods to 'this'
-    ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', '_gridListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  _handleSelectionChange(newSelectedId, data){
-    this.setState({
-      selectedId: newSelectedId
-    });
+        this.state = {
+            selectedId: null
+        };
 
-    this.props.onSelectionChange(data);
-  }
-
-  _onPageChange = debounce((page) => {
-    // Skip if page hasn't actually changed.
-    if (page == this.props.page){
-      return;
+        // Bind methods to 'this'
+        ['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', '_gridListFetcher'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    this.setState({
-      page: page
-    });
+    _handleSelectionChange(newSelectedId, data) {
+        this.setState({
+            selectedId: newSelectedId
+        });
 
-    this.props.refetcher(this.props, page, this.props.pageSize);
-  },750);
-
-  _onPageSizeChange(pageSize, props) {
-    // Skip if page size hasn't actually changed
-    if (pageSize === this.props.pageSize){
-      return;
+        this.props.onSelectionChange(data);
     }
 
-    let newPage = this.props.page;
+    _onPageChange = debounce((page) => {
+        // Skip if page hasn't actually changed.
+        if (page == this.props.page) {
+            return;
+        }
 
-    if (pageSize > this.props.pageSize){
-        newPage = Math.min(this.props.page, Math.ceil(this.props.data.response.totalSize / pageSize));
+        this.setState({
+            page: page
+        });
+
+        this.props.refetcher(this.props, page, this.props.pageSize);
+    }, 750);
+
+    _onPageSizeChange(pageSize, props) {
+        // Skip if page size hasn't actually changed
+        if (pageSize === this.props.pageSize) {
+            return;
+        }
+
+        let newPage = this.props.page;
+
+        if (pageSize > this.props.pageSize) {
+            newPage = Math.min(this.props.page, Math.ceil(this.props.data.response.totalSize / pageSize));
+        }
+
+        // Refresh data
+        this.props.refetcher(this.props, newPage, pageSize);
     }
 
-    // Refresh data
-    this.props.refetcher(this.props, newPage, pageSize);
-  }
-
-  _gridListFetcher(fetcherParams) {
-    this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data != this.props.data) {
-      this.setState({
-        page: 1
-      });
-    }
-  }
-
-  render() {
-    // Styles
-    var DataGridStyles = {
-      minHeight:"70vh",
-      zIndex: 0
-    };
-
-    if (this.props.gridListView) {
-      let gridViewProps = {
-        style:{overflowY: 'auto', maxHeight: '50vh'},
-        cols:this.props.gridCols,
-        cellHeight:160,
-        fetcher:this._gridListFetcher,
-        type:this.props.type,
-        pagination:this.props.pagination,
-        fetcherParams:{currentPageIndex: this.props.page, pageSize: (this.props.pageSize)},
-        metadata:selectn('response', this.props.data),
-        gridListTile: this.props.gridListTile,
-        items:selectn('response.entries', this.props.data)
-      };
-
-      gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps);
-
-      if (this.props.pagination) {
-        return <GridViewWithPagination {...gridViewProps} />;
-      } else {
-        return <GridView {...gridViewProps} />;
-      }
+    _gridListFetcher(fetcherParams) {
+        this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize);
     }
 
-    return <Paper><ClearFix>
-      <DataGrid
-          idProperty="uid"
-          dataSource={selectn('response.entries', this.props.data)}
-          dataSourceCount={selectn('response.totalSize', this.props.data)}
-          columns={this.props.columns}
-          rowHeight={55}
-          style={DataGridStyles}
-          selected={this.state.selectedId}
-          onSelectionChange={this._handleSelectionChange}
-          //onColumnOrderChange={this.props.onColumnOrderChange}
-          onSortChange={this.props.onSortChange}
-          withColumnMenu={false}
-          pagination={this.props.pagination}
-          paginationToolbarProps={{
-            showRefreshIcon: false,
-            pageSizes: [10, 20, 50],
-          }} 
-          sortInfo={this.props.sortInfo}
-          page={this.props.page}
-          pageSize={this.props.pageSize}
-          onPageChange={this._onPageChange}
-          onPageSizeChange={this._onPageSizeChange}
-          emptyText={'No records'}
-          showCellBorders={true} />
-    </ClearFix></Paper>;
-  }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.data != this.props.data) {
+            this.setState({
+                page: 1
+            });
+        }
+    }
+
+    render() {
+        // Styles
+        var DataGridStyles = {
+            minHeight: "70vh",
+            zIndex: 0
+        };
+
+        if (this.props.gridListView) {
+            let gridViewProps = {
+                style: {overflowY: 'auto', maxHeight: '50vh'},
+                cols: this.props.gridCols,
+                cellHeight: 160,
+                fetcher: this._gridListFetcher,
+                type: this.props.type,
+                pagination: this.props.pagination,
+                fetcherParams: {currentPageIndex: this.props.page, pageSize: (this.props.pageSize)},
+                metadata: selectn('response', this.props.data),
+                gridListTile: this.props.gridListTile,
+                items: selectn('response.entries', this.props.data)
+            };
+
+            gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps);
+
+            if (this.props.pagination) {
+                return <GridViewWithPagination {...gridViewProps} />;
+            } else {
+                return <GridView {...gridViewProps} />;
+            }
+        }
+
+        return <Paper><ClearFix>
+            <DataGrid
+                idProperty="uid"
+                dataSource={selectn('response.entries', this.props.data)}
+                dataSourceCount={selectn('response.totalSize', this.props.data)}
+                columns={this.props.columns}
+                rowHeight={55}
+                style={DataGridStyles}
+                selected={this.state.selectedId}
+                onSelectionChange={this._handleSelectionChange}
+                //onColumnOrderChange={this.props.onColumnOrderChange}
+                onSortChange={this.props.onSortChange}
+                withColumnMenu={false}
+                pagination={this.props.pagination}
+                paginationToolbarProps={{
+                    showRefreshIcon: false,
+                    pageSizes: [10, 20, 50],
+                }}
+                sortInfo={this.props.sortInfo}
+                page={this.props.page}
+                pageSize={this.props.pageSize}
+                onPageChange={this._onPageChange}
+                onPageSizeChange={this._onPageSizeChange}
+                emptyText={intl.trans('no_records', 'No records', 'words')}
+                showCellBorders={true}/>
+        </ClearFix></Paper>;
+    }
 }

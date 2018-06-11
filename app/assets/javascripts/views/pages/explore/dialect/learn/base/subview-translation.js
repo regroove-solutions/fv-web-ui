@@ -21,76 +21,79 @@ import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 export default class SubViewTranslation extends Component {
 
-  /*static containerStyles = {
-    borderWidth: '1px',
-    borderStyle: 'dashed',
-    borderColor: '#efefef',
-    margin: '10px 0',
-    padding: '10px'
-  };*/
+    /*static containerStyles = {
+      borderWidth: '1px',
+      borderStyle: 'dashed',
+      borderColor: '#efefef',
+      margin: '10px 0',
+      padding: '10px'
+    };*/
 
-  static tabsStyles = {
-    tabItemContainerStyle: {
-      backgroundColor: 'transparent'
+    static tabsStyles = {
+        tabItemContainerStyle: {
+            backgroundColor: 'transparent'
+        }
+    };
+
+    static tabStyles = {
+        headline: {
+            fontSize: 15,
+            color: '#666666',
+            paddingTop: 1,
+            paddingBottom: 0,
+            marginBottom: 0,
+            textAlign: 'left'
+        }
+    };
+
+    constructor(props, context) {
+        super(props, context);
     }
-  };
 
-  static tabStyles = {
-    headline: {
-      fontSize: 15,
-      color: '#666666',
-      paddingTop: 1,
-      paddingBottom: 0,
-      marginBottom: 0,
-      textAlign: 'left'
+    render() {
+
+        const _this = this;
+
+        if (!this.props.group)
+            return <div></div>;
+
+        const grouped = _.groupBy(this.props.group, function (obj) {
+            return obj[_this.props.groupByElement];
+        });
+
+        if (!grouped || _.isEmpty(grouped))
+            return <div></div>;
+
+        return <div className="row">
+            <div className={classNames('col-xs-12', 'col-md-2')} style={{marginTop: '10px'}}>
+                {this.props.children}
+            </div>
+
+            <div className={classNames('col-xs-12', 'col-md-10')}>
+                <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
+                    {_.map(grouped, function (group, key) {
+
+                        return <Tab style={SubViewTranslation.tabStyles.headline}
+                                    label={intl.searchAndReplace(key) + ':'} key={key}>
+
+                            <List>
+
+                                {group.map(function (groupValue, key) {
+                                    return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]}/>);
+                                })}
+
+                            </List>
+
+                        </Tab>;
+
+                    })}
+                </Tabs>
+            </div>
+        </div>;
     }
-  };
-
-  constructor(props, context){
-    super(props, context);
-  }
-
-  render() {
-
-    const _this = this;
-
-    if ( !this.props.group )
-      return <div></div>;
-
-    const grouped = _.groupBy(this.props.group, function(obj) {
-      return obj[_this.props.groupByElement];
-    });
-
-    if ( !grouped || _.isEmpty(grouped) )
-      return <div></div>;
-
-    return <div className="row">
-      <div className={classNames('col-xs-12', 'col-md-2')} style={{marginTop: '10px'}}>
-        {this.props.children}
-      </div>
-
-      <div className={classNames('col-xs-12', 'col-md-10')}>
-        <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
-        {_.map(grouped, function(group, key) {
-
-          return <Tab style={SubViewTranslation.tabStyles.headline} label={key + ':'} key={key}>
-
-          <List>
-
-            {group.map(function(groupValue, key) {
-              return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />);
-            })}
-
-          </List>
-
-          </Tab>;
-
-        })}
-        </Tabs>
-      </div>
-    </div>;
-  }
 }

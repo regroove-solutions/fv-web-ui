@@ -35,6 +35,8 @@ import TextField from 'material-ui/lib/text-field';
 
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+import SelectField from 'material-ui/lib/select-field';
+
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
 import RadioButton from 'material-ui/lib/radio-button';
 import RadioButtonGroup from 'material-ui/lib/radio-button-group';
@@ -58,8 +60,12 @@ import AuthenticationFilter from 'views/components/Document/AuthenticationFilter
 import Login from 'views/components/Navigation/Login';
 import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
+import IntlService from 'views/services/intl';
+
 @provide
 export default class Navigation extends Component {
+
+  intl = IntlService.instance;
 
   static defaultProps = {
     frontpage: false
@@ -94,10 +100,12 @@ export default class Navigation extends Component {
       searchContextPopoverAnchorEl: null,
       searchLocal: true,
       userRegistrationTasksPath: '/management/registrationRequests/',
-      pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props)
+      pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props),
+      locale: this.intl.locale
     };
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
+    this._handleChangeLocale = this._handleChangeLocale.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
@@ -125,7 +133,11 @@ export default class Navigation extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
-      this.props.countTotalTasks('count_total_tasks', {'query':'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')', 'language': 'nxql', 'sortOrder': 'ASC'});
+        this.props.countTotalTasks('count_total_tasks', {
+            'query': 'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')',
+            'language': 'nxql',
+            'sortOrder': 'ASC'
+        });
     }
 
     const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined && this.props.computeLogin.isConnected != undefined);
@@ -201,8 +213,8 @@ export default class Navigation extends Component {
 
       (selectn('properties.fvguide:steps', tourContent) || []).map(function(step, i) {
         newTour.addStep('step' + i, {
-          title: selectn('title', step),
-          text: selectn('text', step),
+          title: this.intl.searchAndReplace(selectn('title', step)),
+          text: this.intl.searchAndReplace(selectn('text', step)),
           attachTo: selectn('attachTo', step),
           advanceOn: selectn('advanceOn', step),
           showCancelLink: selectn('showCancelLink', step)
@@ -258,6 +270,16 @@ export default class Navigation extends Component {
     }
   }
 
+  _handleChangeLocale(e, n, v) {
+    if (v !== this.intl.locale) {
+        this.intl.locale = v;
+        setTimeout(function () {
+            // timeout, such that the select box doesn't freeze in a wierd way (looks bad)
+            window.location.reload(true);
+        }, 250);
+    }
+  }
+
   render() {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette;
     const isDialect = this.props.routeParams.hasOwnProperty('dialect_path');
@@ -286,7 +308,11 @@ export default class Navigation extends Component {
               <Link className="nav_link" href={"/explore" + this.state.pathOrId + '/Data'}>CHOOSE A LANGUAGE</Link>
             </div>
 
-            <Login routeParams={this.props.routeParams} label="Sign in"/>
+            <Login routeParams={this.props.routeParams} label={this.intl.translate({
+                key: 'views.pages.users.login.sign_in',
+                default: 'Sign In',
+                case: 'words'
+            })}/>
 
             <ToolbarSeparator className={classNames({'hidden-xs': this.props.computeLogin.isConnected})} style={{float: 'none', marginLeft: 0, marginRight: 0}} />
 
@@ -317,39 +343,54 @@ export default class Navigation extends Component {
             </AuthenticationFilter>
 
             {/*<Popover
-            open={this.state.guidePopoverOpen}
-            anchorEl={this.state.guidePopoverAnchorEl}
-            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-            targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          >
-            <div>
-              <div className={classNames('panel', 'panel-default')} style={{marginBottom: 0}}>
-                <div className="panel-heading">
-                  <h3 className="panel-title">Interactive Guides</h3>
-                </div>
-                <div className="panel-body">
-                  <p>Learn how to use this page quickly and efficiently:</p>
-                  <table>
-                    <tbody>
-                      {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function(guide, i) {
-                        return <tr key={'guide' + i}>
-                        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}</td>
-                        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)} primary={false} label="Launch Guide"/></td>
-                        </tr>;
-                      }.bind(this))}
-                    </tbody>
-                    </table>
+                open={this.state.guidePopoverOpen}
+                anchorEl={this.state.guidePopoverAnchorEl}
+                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+            >
+                <div>
+                    <div className={classNames('panel', 'panel-default')} style={{marginBottom: 0}}>
+                        <div className="panel-heading">
+                            <h3 className="panel-title">{this.intl.translate({
+                                key: 'views.components.navigation.interactive_guides',
+                                default: 'Interactive Guides',
+                                case: 'words'
+                            })}</h3>
+                        </div>
+                        <div className="panel-body">
+                            <p>{this.intl.translate({
+                                key: 'views.components.navigation.learn_how_to_use_this_page',
+                                default: 'Learn how to use this page quickly and efficiently',
+                                case: 'first',
+                                append: ':'
+                            })}</p>
+                            <table>
+                                <tbody>
+                                {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function (guide, i) {
+                                    return <tr key={'guide' + i}>
+                                        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}
+                                        </td>
+                                        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)}
+                                                            primary={false} label={this.intl.translate({
+                                            key: 'views.components.navigation.launch_guide',
+                                            default: 'Launch Guide',
+                                            case: 'words'
+                                        })}/></td>
+                                    </tr>;
+                                }.bind(this))}
+                                </tbody>
+                            </table>
 
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
             </Popover>*/}
 
             <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
 
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
-              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText="Search:" onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" />
-              <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} style={{color: themePalette.alternateTextColor}} label="Cancel" onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
+              <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText={this.intl.translate({key: 'general.search', default: 'Search', case: 'first', append: ':'})} onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" />
+              <FlatButton className={classNames({'hidden': !this.state.searchBarVisibleInMobile})} style={{color: themePalette.alternateTextColor}} label={this.intl.translate({key: 'general.cancel',default: 'Cancel',case: 'first'})} onTouchTap={(e) => {this.setState({searchBarVisibleInMobile: false}); e.preventDefault(); }} />
             </div>
 
             <IconButton
@@ -372,28 +413,85 @@ export default class Navigation extends Component {
                 {(() => {
                 if (isDialect) {
                   return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff', fontSize: '0.95em'}}>
-                    <p style={{padding: 0}}>Select Search Option</p>
+                    <p style={{padding: 0}}>{this.intl.translate({
+                        key: 'general.select_search_option',
+                        default: 'Select Search Option',
+                        case: 'words'
+                    })}</p>
                     <div>
-                      <RadioButtonGroup onChange={() => this.setState({searchLocal: !this.state.searchLocal})} name="searchTarget" defaultSelected="local">
-                        <RadioButton
-                          value="all"
-                          label={(<span style={{fontWeight: '400'}}>FirstVoices.com <br/> <span style={{fontWeight: '300', color: '#959595'}}>All languages &amp; words.</span></span>)}
-                        />
-                        <RadioButton
-                          value="local"
-                          label={(<span style={{fontWeight: '400'}}>{portalTitle || "This Dialect"}<br/> <span style={{fontWeight: '300', color: '#959595'}}>Words, phrases, songs &amp; stories.</span></span>)}
-                        />
-                      </RadioButtonGroup>
+                        <RadioButtonGroup
+                            onChange={() => this.setState({searchLocal: !this.state.searchLocal})}
+                            name="searchTarget" defaultSelected="local">
+                            <RadioButton
+                                value={this.intl.translate({
+                                    key: 'general.all',
+                                    default: 'all',
+                                    case: 'lower'
+                                })}
+                                label={(
+                                    <span style={{fontWeight: '400'}}>FirstVoices.com <br/> <span
+                                        style={{
+                                            fontWeight: '300',
+                                            color: '#959595'
+                                        }}>{this.intl.translate({
+                                        key: 'views.components.navigation.all_languages_and_words',
+                                        default: 'All languages &amp; words',
+                                        case: 'words',
+                                        append: '.'
+                                    })}</span></span>)}
+                            />
+                            <RadioButton
+                                value="local"
+                                label={(<span
+                                    style={{fontWeight: '400'}}>{portalTitle || this.intl.translate({
+                                    key: 'views.components.navigation.this_dialect',
+                                    default: 'This Dialect',
+                                    case: 'words'
+                                })}<br/> <span
+                                    style={{
+                                        fontWeight: '300',
+                                        color: '#959595'
+                                    }}>{this.intl.translate({
+                                    key: 'general.words',
+                                    default: 'Words',
+                                    case: 'first'
+                                })}, {this.intl.translate({
+                                    key: 'general.phrases',
+                                    default: 'Phrases',
+                                    case: 'first'
+                                })}, {this.intl.translate({
+                                    key: 'general.songs_and_stories',
+                                    default: 'Songs &amp; Stories',
+                                    case: 'words',
+                                    append: '.'
+                                })}</span></span>)}
+                            />
+                        </RadioButtonGroup>
                     </div>
                   </div>;
                 } else {
                   return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
-                    <p style={{padding: 0}}>Search all languages &amp; words at FirstVoices.com</p>
+                    <p style={{padding: 0}}>{this.intl.translate({
+                        key: 'views.components.navigation.search_all',
+                        default: 'Search all languages &amp; words at FirstVoices.com',
+                        case: 'words'
+                    })}</p>
                   </div>;
                 }
                 })()}
               </div>
           </Popover>
+
+        {/*Locale selection*/}
+        <SelectField
+        value={this.intl.locale}
+        style={{width: '50px'}}
+        onChange={this._handleChangeLocale}
+        >
+            <MenuItem value="en" primaryText="En"/>
+            <MenuItem value="fr" primaryText="Fr"/>
+            <MenuItem value="sp" primaryText="Sp"/>
+        </SelectField>
 
           </ToolbarGroup>
 
@@ -411,7 +509,7 @@ export default class Navigation extends Component {
                   return <div className="row" style={{backgroundColor: themePalette.primary2Color, minHeight: '64px', margin: '0'}}>
 
                       <div className="col-xs-12">
-                        <h2 style={{fontWeight: '500', margin: '0'}}><a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}><Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px', marginTop: '8px', marginLeft: '3px'}} /> <span style={{verticalAlign: '-5px'}}>{portalTitle}</span></a></h2>
+                        <h2 style={{fontWeight: '500', margin: '0'}}><a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}><Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px', marginTop: '8px', marginLeft: '3px'}} /> <span style={{verticalAlign: '-5px'}}>{this.intl.searchAndReplace(portalTitle)}</span></a></h2>
                       </div>
 
                     </div>;

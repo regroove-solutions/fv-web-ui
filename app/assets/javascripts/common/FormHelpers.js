@@ -16,60 +16,59 @@ limitations under the License.
 import selectn from 'selectn';
 
 export default {
-  // Get properties from form value
-  getProperties: function (form) {
-      let properties = {};
-      let formValue = form.getValue();
+    // Get properties from form value
+    getProperties: function (form) {
+        let properties = {};
+        let formValue = form.getValue();
 
-      for (let key in formValue) {
+        for (let key in formValue) {
             // Treat valued checkboxes differently. Always have value, so skip if unchecked.
             // getComponent does not work with input names that have '.' in them. Access directly.
             // valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
-            
+
             let valuedCheckbox = null;
 
             // Ensure Input for Form Ref is defined
-            if(form.refs.input)
-            {
-              valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;  
+            if (form.refs.input) {
+                valuedCheckbox = form.refs.input.refs[key].refs.valued_checkbox;
             }
 
             if (valuedCheckbox) {
-                  if (!valuedCheckbox.checked) {
-                        continue;
-                  }
+                if (!valuedCheckbox.checked) {
+                    continue;
+                }
             }
 
             if (formValue.hasOwnProperty(key) && key) {
-                  if (formValue[key] && formValue[key] != '') {
-                        properties[key] = formValue[key];
-                  }
+                if (formValue[key] && formValue[key] != '') {
+                    properties[key] = formValue[key];
+                }
             }
-      }
+        }
 
-      return properties;
-  },
-  prepareFilters: function (filters, options, optionsKey) {
+        return properties;
+    },
+    prepareFilters: function (filters, options, optionsKey) {
 
-      let preparedFilters = {};
+        let preparedFilters = {};
 
-      // Test each of the filters against item
-      for (let filterKey in filters) {
+        // Test each of the filters against item
+        for (let filterKey in filters) {
             let filterOptions = selectn([optionsKey, 'fields', filterKey], options);
 
             // Add options to returned filter object
 
             // Filter not prepared
             if (!filters[filterKey].hasOwnProperty('appliedFilter')) {
-                  preparedFilters[filterKey] = {
-                  appliedFilter: filters[filterKey],
-                  filterOptions: filterOptions
-                  }
+                preparedFilters[filterKey] = {
+                    appliedFilter: filters[filterKey],
+                    filterOptions: filterOptions
+                }
             } else {
-                  preparedFilters[filterKey] = filters[filterKey];
+                preparedFilters[filterKey] = filters[filterKey];
             }
-      }
+        }
 
-      return preparedFilters;
-  }
+        return preparedFilters;
+    }
 }

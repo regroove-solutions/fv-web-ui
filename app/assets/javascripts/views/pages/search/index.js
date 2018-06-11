@@ -48,8 +48,10 @@ import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import withToggle from 'views/hoc/view/with-toggle';
+import IntlService from "views/services/intl";
 
 const FiltersWithToggle = withToggle();
+const intl = IntlService.instance;
 
 @provide
 export default class Search extends DataListView {
@@ -235,31 +237,33 @@ export default class Search extends DataListView {
 
     return <div>
 
-			<div className="row">
-				<div className={classNames('col-xs-12', 'col-md-3')}>
-					<div className="col-xs-12">
-						<form onSubmit={this._onSearchSaveForm}>
-							<FiltersWithToggle label="Filter Items" mobileOnly={true}>
-								<t.form.Form
-									ref="search_form"
-									value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
-									type={t.struct(selectn('Search', fields))}
-									options={selectn('Search', options)}
-								/>      
-								<RaisedButton
-									onTouchTap={this._onReset}
-									label="Reset"
-									primary={true} /> &nbsp;
-								<RaisedButton
-									type="submit"
-									label="Search"
-									primary={true} />
-							</FiltersWithToggle>
-						</form>
-					</div>
-				</div>
-				<div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
-					<h1>Search Results - {this.props.routeParams.searchTerm}</h1>
+            <div className="row">
+                <div className={classNames('col-xs-12', 'col-md-3')}>
+                    <div className="col-xs-12">
+                        <form onSubmit={this._onSearchSaveForm}>
+                            <FiltersWithToggle
+                                label={intl.trans('views.pages.search.filter_items', 'Filter Items', 'first')}
+                                mobileOnly={true}>
+                                <t.form.Form
+                                    ref="search_form"
+                                    value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
+                                    type={t.struct(selectn('Search', fields))}
+                                    options={selectn('Search', options)}
+                                />
+                                <RaisedButton
+                                    onTouchTap={this._onReset}
+                                    label={intl.trans('reset', 'Reset', 'first')}
+                                    primary={true}/> &nbsp;
+                                <RaisedButton
+                                    type="submit"
+                                    label={intl.trans('submit', 'Submit', 'first')}
+                                    primary={true}/>
+                            </FiltersWithToggle>
+                        </form>
+                    </div>
+                </div>
+                <div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
+                    <h1>{intl.trans('search_results', 'Search Results', 'words')} - {this.props.routeParams.searchTerm}</h1>
 
 					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 

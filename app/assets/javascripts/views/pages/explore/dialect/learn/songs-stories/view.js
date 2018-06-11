@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -38,137 +38,143 @@ import BookEntryList from 'views/pages/explore/dialect/learn/songs-stories/entry
 
 import withActions from 'views/hoc/view/with-actions';
 import withPagination from 'views/hoc/grid-list/with-pagination';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
-const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 1 };
+const DefaultFetcherParams = {currentPageIndex: 1, pageSize: 1};
 
 const PaginatedBookEntryList = withPagination(BookEntryList, DefaultFetcherParams.pageSize, 100);
 
 const DEFAULT_LANGUAGE = 'english';
 
 /**
-* View Book
-*/
+ * View Book
+ */
 @provide
 export default class View extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchBook: PropTypes.func.isRequired,
-    computeBook: PropTypes.object.isRequired,
-    fetchBookEntries: PropTypes.func.isRequired,
-    computeBookEntries: PropTypes.object.isRequired,
-    deleteBookEntry: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    //typePlural: PropTypes.string,
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        fetchBook: PropTypes.func.isRequired,
+        computeBook: PropTypes.object.isRequired,
+        fetchBookEntries: PropTypes.func.isRequired,
+        computeBookEntries: PropTypes.object.isRequired,
+        deleteBookEntry: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        //typePlural: PropTypes.string,
 
-    deleteBook: PropTypes.func.isRequired,
-    publishBook: PropTypes.func.isRequired,
-    askToPublishBook: PropTypes.func.isRequired,
-    unpublishBook: PropTypes.func.isRequired,
-    askToUnpublishBook: PropTypes.func.isRequired,
-    enableBook: PropTypes.func.isRequired,
-    askToEnableBook: PropTypes.func.isRequired,
-    disableBook: PropTypes.func.isRequired,
-    askToDisableBook: PropTypes.func.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      fetcherParams: DefaultFetcherParams,
-      bookOpen: false
+        deleteBook: PropTypes.func.isRequired,
+        publishBook: PropTypes.func.isRequired,
+        askToPublishBook: PropTypes.func.isRequired,
+        unpublishBook: PropTypes.func.isRequired,
+        askToUnpublishBook: PropTypes.func.isRequired,
+        enableBook: PropTypes.func.isRequired,
+        askToEnableBook: PropTypes.func.isRequired,
+        disableBook: PropTypes.func.isRequired,
+        askToDisableBook: PropTypes.func.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest', 'fetchData', '_fetchListViewData'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(props = this.props) {
-    props.fetchBook(this._getBookPath(props));
-    this._fetchListViewData(this.state.fetcherParams, props);
-    props.fetchDialect2(props.routeParams.dialect_path);
-  }
+        this.state = {
+            fetcherParams: DefaultFetcherParams,
+            bookOpen: false
+        };
 
-  _fetchListViewData(fetcherParams, props = this.props) {
-    this.setState({
-      fetcherParams: fetcherParams
-    });
-
-    props.fetchBookEntries(this._getBookPath(props), 
-    '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) + 
-    '&pageSize=' + fetcherParams.pageSize +
-    '&sortOrder=asc,asc' + 
-    '&sortBy=fvbookentry:sort_map,dc:created');
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
-    }
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
-
-    if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
-      this.props.changeTitleParams({'bookName': title});
-    }
-  }
-
-  _getBookPath(props = null) {
-
-    if (props == null) {
-      props = this.props;
+        // Bind methods to 'this'
+        ['_onNavigateRequest', 'fetchData', '_fetchListViewData'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    return props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName;
-  }
+    fetchData(props = this.props) {
+        props.fetchBook(this._getBookPath(props));
+        this._fetchListViewData(this.state.fetcherParams, props);
+        props.fetchDialect2(props.routeParams.dialect_path);
+    }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
+    _fetchListViewData(fetcherParams, props = this.props) {
+        this.setState({
+            fetcherParams: fetcherParams
+        });
 
-  render() {
+        props.fetchBookEntries(this._getBookPath(props),
+            '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
+            '&pageSize=' + fetcherParams.pageSize +
+            '&sortOrder=asc,asc' +
+            '&sortBy=fvbookentry:sort_map,dc:created');
+    }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this._getBookPath(),
-      'entity': this.props.computeBook
-    },{
-      'id': this._getBookPath(),
-      'entity': this.props.computeBookEntries
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath());
-    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this._getBookPath());
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+    // Refetch data on URL change
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.windowPath !== this.props.windowPath) {
+            this.fetchData(nextProps);
+        }
+    }
 
-    let page;
-    const isKidsTheme = this.props.routeParams.theme === 'kids';
+    componentDidUpdate(prevProps, prevState) {
+        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
 
-    if (!this.state.bookOpen) {
-      page = <BookEntry cover={true} defaultLanguage={DEFAULT_LANGUAGE} pageCount={selectn('response.resultsCount', computeBookEntries)} entry={selectn('response', computeBook)} openBookAction={() => { this.setState({bookOpen: true})}} />
-    } else {
-      page = <PaginatedBookEntryList
+        if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
+            this.props.changeTitleParams({'bookName': title});
+        }
+    }
+
+    _getBookPath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        return props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName;
+    }
+
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
+
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this._getBookPath(),
+            'entity': this.props.computeBook
+        }, {
+            'id': this._getBookPath(),
+            'entity': this.props.computeBookEntries
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath());
+        const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this._getBookPath());
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        let page;
+        const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+        if (!this.state.bookOpen) {
+            page = <BookEntry cover={true} defaultLanguage={DEFAULT_LANGUAGE}
+                              pageCount={selectn('response.resultsCount', computeBookEntries)}
+                              entry={selectn('response', computeBook)} openBookAction={() => {
+                this.setState({bookOpen: true})
+            }}/>
+        } else {
+            page = <PaginatedBookEntryList
                 style={{overflowY: 'auto', maxHeight: '50vh'}}
                 cols={5}
                 cellHeight={150}
@@ -178,33 +184,37 @@ export default class View extends Component {
                 fetcherParams={this.state.fetcherParams}
                 metadata={selectn('response', computeBookEntries) || {}}
                 items={selectn('response.entries', computeBookEntries) || []}
-                appendControls={[(this.state.bookOpen) ? <RaisedButton label="Close Book" key="close" onTouchTap={() => { this.setState({bookOpen: false})}} /> : '']} />
-    }
+                appendControls={[(this.state.bookOpen) ? <RaisedButton
+                    label={intl.trans('views.pages.explore.dialect.learn.songs_stories.close_book', 'Close Book', 'first')}
+                    key="close" onTouchTap={() => {
+                    this.setState({bookOpen: false})
+                }}/> : '']}/>
+        }
 
-    if (isKidsTheme) {
-      return page;
-    }
+        if (isKidsTheme) {
+            return page;
+        }
 
-    return <DetailsViewWithActions labels={{single: "Book"}}
-              itemPath={this._getBookPath()}
-              actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish', 'add-child']}
-              publishAction={this.props.publishBook}
-              unpublishAction={this.props.unpublishBook}
-              askToPublishAction={this.props.askToPublishBook}
-              askToUnpublishAction={this.props.askToUnpublishBook}
-              enableAction={this.props.enableBook}
-              askToEnableAction={this.props.askToEnableBook}
-              disableAction={this.props.disableBook}
-              askToDisableAction={this.props.askToDisableBook}
-              deleteAction={this.props.deleteBook}
-              onNavigateRequest={this._onNavigateRequest}
-              computeItem={computeBook}
-              permissionEntry={computeDialect2}
-              computeEntities={computeEntities}
-              {...this.props}>
+        return <DetailsViewWithActions labels={{single: "Book"}}
+                                       itemPath={this._getBookPath()}
+                                       actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish', 'add-child']}
+                                       publishAction={this.props.publishBook}
+                                       unpublishAction={this.props.unpublishBook}
+                                       askToPublishAction={this.props.askToPublishBook}
+                                       askToUnpublishAction={this.props.askToUnpublishBook}
+                                       enableAction={this.props.enableBook}
+                                       askToEnableAction={this.props.askToEnableBook}
+                                       disableAction={this.props.disableBook}
+                                       askToDisableAction={this.props.askToDisableBook}
+                                       deleteAction={this.props.deleteBook}
+                                       onNavigateRequest={this._onNavigateRequest}
+                                       computeItem={computeBook}
+                                       permissionEntry={computeDialect2}
+                                       computeEntities={computeEntities}
+                                       {...this.props}>
 
-              {page}
+            {page}
 
         </DetailsViewWithActions>;
-  }
+    }
 }

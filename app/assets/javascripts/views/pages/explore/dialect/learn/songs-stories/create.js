@@ -28,7 +28,9 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
 * Create song/story book
 */
@@ -177,25 +179,29 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1 style={{ textTransform:'capitalize'}}>Add New {this.props.typeFilter} Book to <i>{selectn('response.title', computeDialect2)}</i></h1>
+        <h1>{intl.trans('views.pages.explore.dialect.learn.songs_stories.add_new_x_book_to_x',
+            'Add New ' + this.props.typeFilter + ' Book to ' + selectn('response.title', computeDialect2),
+            'first',
+            [this.props.typeFilter, selectn('response.title', computeDialect2)])}</h1>
 
-            <div className="row" style={{marginTop: '15px'}}>
+        <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-8', 'col-md-10')}>
+            <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_book_create"
-                    type={t.struct(selectn("FVBook", fields))}
-                    context={selectn('response', computeDialect2)}
-                    value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
-                    options={FVBookOptions} />
+                    <t.form.Form
+                        ref="form_book_create"
+                        type={t.struct(selectn("FVBook", fields))}
+                        context={selectn('response', computeDialect2)}
+                        value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
+                        options={FVBookOptions}/>
                     <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button>
+                        <button type="submit"
+                                className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
                     </div>
                 </form>
-              </div>
+            </div>
 
-          </div>
-        </PromiseWrapper>;
+        </div>
+    </PromiseWrapper>;
   }
 }

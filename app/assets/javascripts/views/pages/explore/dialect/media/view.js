@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -68,205 +68,219 @@ import WordListView from 'views/pages/explore/dialect/learn/words/list-view';
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* View word entry
-*/
+ * View word entry
+ */
 @provide
 export default class View extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchResource: PropTypes.func.isRequired,
-    computeResource: PropTypes.object.isRequired,
-    publishResource: PropTypes.func.isRequired,
-    askToPublishResource: PropTypes.func.isRequired,
-    unpublishResource: PropTypes.func.isRequired,
-    askToUnpublishResource: PropTypes.func.isRequired,
-    enableResource: PropTypes.func.isRequired,
-    askToEnableResource: PropTypes.func.isRequired,
-    disableResource: PropTypes.func.isRequired,
-    askToDisableResource: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      showThumbnailDialog: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        fetchResource: PropTypes.func.isRequired,
+        computeResource: PropTypes.object.isRequired,
+        publishResource: PropTypes.func.isRequired,
+        askToPublishResource: PropTypes.func.isRequired,
+        unpublishResource: PropTypes.func.isRequired,
+        askToUnpublishResource: PropTypes.func.isRequired,
+        enableResource: PropTypes.func.isRequired,
+        askToEnableResource: PropTypes.func.isRequired,
+        disableResource: PropTypes.func.isRequired,
+        askToDisableResource: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
+        this.state = {
+            showThumbnailDialog: null
+        };
 
-    if (!this.getDialect(newProps)) {
-      newProps.fetchDialect2(newProps.routeParams.dialect_path);
+        // Bind methods to 'this'
+        ['_handleConfirmDelete', '_enableToggleAction', '_publishToggleAction', '_onNavigateRequest', '_publishChangesAction'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    if (!this.getResource(newProps)) {
-      newProps.fetchResource(this._getMediaPath(newProps));
-    }
-  }
+    fetchData(newProps) {
 
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
+        if (!this.getDialect(newProps)) {
+            newProps.fetchDialect2(newProps.routeParams.dialect_path);
+        }
 
-    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
-      this.fetchData(nextProps);
-    }
-    else if (nextProps.routeParams.media !== this.props.routeParams.media) {
-      this.fetchData(nextProps);
-    }
-    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      this.fetchData(nextProps);
-    }
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath()));
-
-    if (title && selectn('pageTitleParams.media', this.props.properties) != title) {
-      this.props.changeTitleParams({'media': title});
-    }
-  }
-
-  getResource(props = this.props) {
-    return ProviderHelpers.getEntry(props.computeResource, this._getMediaPath());
-  }
-
-  getDialect(props = this.props) {
-    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
-  }
-
-  _getMediaPath(props = null) {
-
-    if (props == null) {
-      props = this.props;
+        if (!this.getResource(newProps)) {
+            newProps.fetchResource(this._getMediaPath(newProps));
+        }
     }
 
-    return props.routeParams.dialect_path + '/Resources/' + props.routeParams.media;
-  }
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-  _getMediaRelatedField(type) {
-    switch (type) {
-      case 'FVAudio':
-        return 'fv:related_audio';
-      break;
-
-      case 'FVVideo':
-        return 'fv:related_videos';
-      break;
-
-      case 'FVPicture':
-        return 'fv:related_pictures';
-      break;
-    }
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
-
-  _handleConfirmDelete(item, event) {
-    this.props.deleteResource(item.uid);
-    this.setState({deleteDialogOpen: false});
-  }
-
-  /**
-  * Toggle dialect (enabled/disabled)
-  */
-  _enableToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToEnableResource(this._getMediaPath(), {id: "FVEnableLanguageAsset", start: "true"}, null, "Request to enable resource successfully submitted!", null);
-      }
-      else {
-        this.props.enableResource(this._getMediaPath(), null, null, "Resource enabled!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToDisableResource(this._getMediaPath(), {id: "FVDisableLanguageAsset", start: "true"}, null, "Request to disable resource successfully submitted!", null);
-      }
-      else {
-        this.props.disableResource(this._getMediaPath(), null, null, "Resource disabled!");
-      }
-    }
-  }
-
-  /**
-  * Toggle published dialect
-  */
-  _publishToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToPublishResource(this._getMediaPath(), {id: "FVPublishLanguageAsset", start: "true"}, null, "Request to publish resource successfully submitted!", null);
-      }
-      else {
-        this.props.publishResource(this._getMediaPath(), null, null, "Resource published successfully!");
-      }
-    } else {
-      if (workflow) {
-        this.props.askToUnpublishResource(this._getMediaPath(), {id: "FVUnpublishLanguageAsset", start: "true"}, null, "Request to unpublish resource successfully submitted!", null);
-      }
-      else {
-        this.props.unpublishResource(this._getMediaPath(), null, null, "Resource unpublished successfully!");
-      }
-    }
-  }
-
-  /**
-  * Publish changes
-  */
-  _publishChangesAction() {
-    this.props.publishResource(this._getMediaPath(), null, null, "Resource published successfully!");
-  } 
-
-  render() {
-
-    const tabItemStyles = {
-      userSelect: 'none'
+        if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+            this.fetchData(nextProps);
+        }
+        else if (nextProps.routeParams.media !== this.props.routeParams.media) {
+            this.fetchData(nextProps);
+        }
+        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+            this.fetchData(nextProps);
+        }
     }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this._getMediaPath(),
-      'entity': this.props.computeResource
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-    const computeResource = this.getResource();
-    const computeDialect2 = this.getDialect();
+    componentDidUpdate(prevProps, prevState) {
+        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath()));
 
-    const currentAppliedFilter = new Map({currentAppliedFilter: new Map({startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \''+ selectn('response.uid', computeResource) +'\''})});
+        if (title && selectn('pageTitleParams.media', this.props.properties) != title) {
+            this.props.changeTitleParams({'media': title});
+        }
+    }
+
+    getResource(props = this.props) {
+        return ProviderHelpers.getEntry(props.computeResource, this._getMediaPath());
+    }
+
+    getDialect(props = this.props) {
+        return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
+    }
+
+    _getMediaPath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        return props.routeParams.dialect_path + '/Resources/' + props.routeParams.media;
+    }
+
+    _getMediaRelatedField(type) {
+        switch (type) {
+            case 'FVAudio':
+                return 'fv:related_audio';
+                break;
+
+            case 'FVVideo':
+                return 'fv:related_videos';
+                break;
+
+            case 'FVPicture':
+                return 'fv:related_pictures';
+                break;
+        }
+    }
+
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
+
+    _handleConfirmDelete(item, event) {
+        this.props.deleteResource(item.uid);
+        this.setState({deleteDialogOpen: false});
+    }
 
     /**
-    * Generate definitions body
-    */
-    return <PromiseWrapper computeEntities={computeEntities}>
+     * Toggle dialect (enabled/disabled)
+     */
+    _enableToggleAction(toggled, workflow) {
+        if (toggled) {
+            if (workflow) {
+                this.props.askToEnableResource(this._getMediaPath(), {
+                    id: "FVEnableLanguageAsset",
+                    start: "true"
+                }, null, intl.trans('views.pages.explore.dialect.media.request_to_enable_success', "Request to enable resource successfully submitted!"), null);
+            }
+            else {
+                this.props.enableResource(this._getMediaPath(), null, null, intl.trans('views.pages.explore.dialect.media.resource_enabled', "Resource enabled!"));
+            }
+        } else {
+            if (workflow) {
+                this.props.askToDisableResource(this._getMediaPath(), {
+                    id: "FVDisableLanguageAsset",
+                    start: "true"
+                }, null, intl.trans('views.pages.explore.dialect.media.request_to_disable_success', "Request to disable resource successfully submitted!"), null);
+            }
+            else {
+                this.props.disableResource(this._getMediaPath(), null, null, intl.trans('views.pages.explore.dialect.media.resource_disabled', "Resource disabled!"));
+            }
+        }
+    }
+
+    /**
+     * Toggle published dialect
+     */
+    _publishToggleAction(toggled, workflow) {
+        if (toggled) {
+            if (workflow) {
+                this.props.askToPublishResource(this._getMediaPath(), {
+                    id: "FVPublishLanguageAsset",
+                    start: "true"
+                }, null, intl.trans('views.pages.explore.dialect.media.request_to_publish_success', "Request to publish resource successfully submitted!"), null);
+            }
+            else {
+                this.props.publishResource(this._getMediaPath(), null, null, intl.trans('views.pages.explore.dialect.media.resource_published_success', "Resource published successfully!"));
+            }
+        } else {
+            if (workflow) {
+                this.props.askToUnpublishResource(this._getMediaPath(), {
+                    id: "FVUnpublishLanguageAsset",
+                    start: "true"
+                }, null, intl.trans('views.pages.explore.dialect.media.request_to_unpublic_success', "Request to unpublish resource successfully submitted!"), null);
+            }
+            else {
+                this.props.unpublishResource(this._getMediaPath(), null, null, intl.trans('views.pages.explore.dialect.media.resource_unpublished_success', "Resource unpublished successfully!"));
+            }
+        }
+    }
+
+    /**
+     * Publish changes
+     */
+    _publishChangesAction() {
+        this.props.publishResource(this._getMediaPath(), null, null, intl.trans('views.pages.explore.dialect.media.resource_published_success', "Resource published successfully!"));
+    }
+
+    render() {
+
+        const tabItemStyles = {
+            userSelect: 'none'
+        }
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this._getMediaPath(),
+            'entity': this.props.computeResource
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeResource = this.getResource();
+        const computeDialect2 = this.getDialect();
+
+        const currentAppliedFilter = new Map({currentAppliedFilter: new Map({startsWith: ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys(this._getMediaRelatedField(selectn('response.type', computeResource)), this.props.routeParams.area) + ' = \'' + selectn('response.uid', computeResource) + '\''})});
+
+        /**
+         * Generate definitions body
+         */
+        return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
-              if (this.props.routeParams.area == 'Workspaces') {
+                if (this.props.routeParams.area == 'Workspaces') {
 
-                if (selectn('response', computeResource))
-                  return <PageToolbar
-                            label="Media"
+                    if (selectn('response', computeResource))
+                        return <PageToolbar
+                            label={intl.trans('media', 'Media', 'first')}
                             handleNavigateRequest={this._onNavigateRequest}
                             actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
                             computeEntity={computeResource}
@@ -276,99 +290,125 @@ export default class View extends Component {
                             publishChangesAction={this._publishChangesAction}
                             enableToggleAction={this._enableToggleAction}
                             {...this.props}></PageToolbar>;
-              }
+                }
             })()}
 
             <div className="row">
-              <div className="col-xs-12">
-                <div>
+                <div className="col-xs-12">
+                    <div>
 
-                  <Card>
+                        <Card>
 
-                    <Tabs tabItemContainerStyle={tabItemStyles}>
-                      <Tab label="Overview" >
-                        <div>
-                          <CardText>
+                            <Tabs tabItemContainerStyle={tabItemStyles}>
+                                <Tab label={intl.trans('overview', 'Overview', 'first')}>
+                                    <div>
+                                        <CardText>
 
-                            <div className={classNames('col-md-8', 'col-xs-12')}>
+                                            <div className={classNames('col-md-8', 'col-xs-12')}>
 
-                              <Preview style={{width: 'auto'}} initiallyExpanded={true} metadataListStyles={{maxHeight: 'initial'}} expandedValue={selectn('response', computeResource)} type={selectn('response.type', computeResource)} />
+                                                <Preview style={{width: 'auto'}} initiallyExpanded={true}
+                                                         metadataListStyles={{maxHeight: 'initial'}}
+                                                         expandedValue={selectn('response', computeResource)}
+                                                         type={selectn('response.type', computeResource)}/>
 
-                            </div>
+                                            </div>
 
-                            <div className={classNames('col-md-4', 'hidden-xs')}>
+                                            <div className={classNames('col-md-4', 'hidden-xs')}>
 
-                              {(() => {
+                                                {(() => {
 
-                                const thumbnails = selectn('response.properties.picture:views', computeResource) || [];
+                                                    const thumbnails = selectn('response.properties.picture:views', computeResource) || [];
 
-                                if (thumbnails && thumbnails.length > 0) {
-                                  return <div>
-                                    <ListUI subheader="Available Renditions">
+                                                    if (thumbnails && thumbnails.length > 0) {
+                                                        return <div>
+                                                            <ListUI
+                                                                subheader={intl.trans('views.pages.explore.dialect.media.available_renditions', "Available Renditions")}>
 
-                                      {(thumbnails).map(function(thumbnail, key) {
+                                                                {(thumbnails).map(function (thumbnail, key) {
 
-                                        return <ListItem
-                                                  onTouchTap={() => this.setState({showThumbnailDialog: thumbnail})}
-                                                  key={key}
-                                                  primaryText={thumbnail.title}
-                                                  secondaryText={<p><span style={{color: '#000'}}>{thumbnail.description}</span> -- ({thumbnail.width + 'x' + thumbnail.height})</p>} />;
-                                      }.bind(this))}
+                                                                    return <ListItem
+                                                                        onTouchTap={() => this.setState({showThumbnailDialog: thumbnail})}
+                                                                        key={key}
+                                                                        primaryText={thumbnail.title}
+                                                                        secondaryText={<p><span
+                                                                            style={{color: '#000'}}>{thumbnail.description}</span> --
+                                                                            ({thumbnail.width + 'x' + thumbnail.height})
+                                                                        </p>}/>;
+                                                                }.bind(this))}
 
-                                    </ListUI>
+                                                            </ListUI>
 
-                                    <Dialog
-                                        contentStyle={{textAlign: 'center', height: '500px', maxHeight: '500px'}}
-                                        autoScrollBodyContent={true}
-                                        title={selectn('title', this.state.showThumbnailDialog)}
-                                        actions={[<FlatButton label="Close" secondary={true} onTouchTap={() => this.setState({showThumbnailDialog: null})} />]}
-                                        modal={false}
-                                        open={(this.state.showThumbnailDialog === null) ? false : true}
-                                        onRequestClose={() => this.setState({showThumbnailDialog: null})}>
-                                        <p><img src={selectn('content.data', this.state.showThumbnailDialog)} alt={selectn('title', this.state.showThumbnailDialog)} style={{maxHeight: '500px'}} /></p>
-                                        <p><input readOnly type="text" value={selectn('content.data', this.state.showThumbnailDialog)} style={{width: '100%', padding: '5px'}} /></p>
-                                    </Dialog>
-                                  </div>;
-                                  }
+                                                            <Dialog
+                                                                contentStyle={{
+                                                                    textAlign: 'center',
+                                                                    height: '500px',
+                                                                    maxHeight: '500px'
+                                                                }}
+                                                                autoScrollBodyContent={true}
+                                                                title={selectn('title', this.state.showThumbnailDialog)}
+                                                                actions={[<FlatButton
+                                                                    label={intl.trans('close', 'Close', 'first')}
+                                                                    secondary={true}
+                                                                    onTouchTap={() => this.setState({showThumbnailDialog: null})}/>]}
+                                                                modal={false}
+                                                                open={(this.state.showThumbnailDialog === null) ? false : true}
+                                                                onRequestClose={() => this.setState({showThumbnailDialog: null})}>
+                                                                <p><img
+                                                                    src={selectn('content.data', this.state.showThumbnailDialog)}
+                                                                    alt={selectn('title', this.state.showThumbnailDialog)}
+                                                                    style={{maxHeight: '500px'}}/></p>
+                                                                <p><input readOnly type="text"
+                                                                          value={selectn('content.data', this.state.showThumbnailDialog)}
+                                                                          style={{width: '100%', padding: '5px'}}/></p>
+                                                            </Dialog>
+                                                        </div>;
+                                                    }
 
-                              })()}
+                                                })()}
 
-                            </div>
+                                            </div>
 
-                          </CardText>
-                        </div>
-                      </Tab>
-                      <Tab label={UIHelpers.isViewSize('xs') ? 'Words' : 'Linked Words'} id="find_words">
-                        <div>
-                          <CardText>
-                            <h2>Words Featuring <strong>{selectn('response.title', computeResource)}</strong></h2>
-                            <div className="row">
-                              <WordListView
-                                filter={currentAppliedFilter}
-                                routeParams={this.props.routeParams} />
-                            </div>
-                          </CardText>
-                        </div>
-                      </Tab>
-                      <Tab label={UIHelpers.isViewSize('xs') ? 'Phrases' : 'Linked Phrases'} id="find_phrases">
-                        <div>
-                          <CardText>
-                            <h2>Phrases Featuring with <strong>{selectn('response.title', computeResource)}</strong></h2>
-                            <div className="row">
-                              <PhraseListView
-                                filter={currentAppliedFilter}
-                                routeParams={this.props.routeParams} />
-                            </div>
-                          </CardText>
-                        </div>
-                      </Tab>
-                    </Tabs>
+                                        </CardText>
+                                    </div>
+                                </Tab>
+                                <Tab
+                                    label={UIHelpers.isViewSize('xs') ? intl.trans('words', 'Words', 'first') : intl.trans('linked_words', 'Linked Words', 'words')}
+                                    id="find_words">
+                                    <div>
+                                        <CardText>
+                                            <h2>{intl.trans('views.pages.explore.dialect.media.words_featuring', 'Words Featuring')}
+                                                <strong>{selectn('response.title', computeResource)}</strong>
+                                            </h2>
+                                            <div className="row">
+                                                <WordListView
+                                                    filter={currentAppliedFilter}
+                                                    routeParams={this.props.routeParams}/>
+                                            </div>
+                                        </CardText>
+                                    </div>
+                                </Tab>
+                                <Tab
+                                    label={UIHelpers.isViewSize('xs') ? intl.trans('phrases', 'Phrases', 'first') : intl.trans('linked_phrases', 'Linked Phrases', 'words')}
+                                    id="find_phrases">
+                                    <div>
+                                        <CardText>
+                                            <h2>{intl.trans('views.pages.explore.dialect.media.words_featuring_with', 'Words Featuring with')}
+                                                <strong>{selectn('response.title', computeResource)}</strong></h2>
+                                            <div className="row">
+                                                <PhraseListView
+                                                    filter={currentAppliedFilter}
+                                                    routeParams={this.props.routeParams}/>
+                                            </div>
+                                        </CardText>
+                                    </div>
+                                </Tab>
+                            </Tabs>
 
-                  </Card>
+                        </Card>
 
+                    </div>
                 </div>
-              </div>
             </div>
         </PromiseWrapper>;
-  }
+    }
 }

@@ -36,7 +36,9 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
 import ReportBrowser from './browse-view';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
 * Learn songs
 */

@@ -16,83 +16,87 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import ReactDOM from 'react-dom';
 import Memory from 'games/memory'
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
-* Test game wrapper
-*/
+ * Test game wrapper
+ */
 export default class Game extends Component {
 
-  static propTypes = {
-    cards: PropTypes.array.isRequired
-  }
-
-  /**
-   * Constructor
-   */
-  constructor(props, context) {
-    super(props, context);
-    this.gameContainer = null;
-  }
-
-  /**
-   * componentDidMount
-   */
-  componentDidMount () {
-
-    //Setup default asset paths
-    const defaultAssetsPath = '/assets/games/memory/assets';
-    const defaultLibsPath = `${defaultAssetsPath}/libs`;
-    const defaultImagesPath = `${defaultAssetsPath}/images`;
-
-    //Default game config
-    /**
-     * @todo Setup image paths based on dialect
-     */
-
-
-    let gameConfig = {
-
-        images:{
-            preloaderLoading:`${defaultImagesPath}/loading.png`,
-            preloaderLogo:`${defaultImagesPath}/logo.png`,
-            background:`${defaultImagesPath}/background.png`,
-            card:`${defaultImagesPath}/card.png`,
-            cardFlipped:`${defaultImagesPath}/card_flipped.png`,
-            wellDone:`${defaultImagesPath}/well-done.png`,
-            title:`${defaultImagesPath}/title.png`,
-            time:`${defaultImagesPath}/time.png`
-        },
-
-        cards: this.props.cards
-        
-    };
-
-    /**
-     * Create the game, with container and game config
-     */
-    const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-    Memory.init(gameContainerNode, gameConfig);
-  }
-
-  /**
-   * Component Will Unmount
-   * Cleanup the game / assets for memory management
-   */
-  componentWillUnmount () {
-      Memory.destroy();
-  }
-
-  /**
-   * Render
-   */
-  render() {
-
-    //Setup game styles
-    const gameContainerStyles = {
-      maxWidth:800,
-      margin:'auto'
+    static propTypes = {
+        cards: PropTypes.array.isRequired
     }
 
-    return <div style={gameContainerStyles} ref={(el)=>{this.gameContainer = el}}></div>;
-  }
+    /**
+     * Constructor
+     */
+    constructor(props, context) {
+        super(props, context);
+        this.gameContainer = null;
+    }
+
+    /**
+     * componentDidMount
+     */
+    componentDidMount() {
+
+        //Setup default asset paths
+        const defaultAssetsPath = '/assets/games/memory/assets';
+        const defaultLibsPath = `${defaultAssetsPath}/libs`;
+        const defaultImagesPath = `${defaultAssetsPath}/images`;
+
+        //Default game config
+        /**
+         * @todo Setup image paths based on dialect
+         */
+
+
+        let gameConfig = {
+
+            images: {
+                preloaderLoading: `${defaultImagesPath}/loading.png`,
+                preloaderLogo: `${defaultImagesPath}/logo.png`,
+                background: `${defaultImagesPath}/background.png`,
+                card: `${defaultImagesPath}/card.png`,
+                cardFlipped: `${defaultImagesPath}/card_flipped.png`,
+                wellDone: `${defaultImagesPath}/well-done.png`,
+                title: `${defaultImagesPath}/title.png`,
+                time: `${defaultImagesPath}/time.png`
+            },
+
+            cards: this.props.cards
+
+        };
+
+        /**
+         * Create the game, with container and game config
+         */
+        const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+        Memory.init(gameContainerNode, gameConfig);
+    }
+
+    /**
+     * Component Will Unmount
+     * Cleanup the game / assets for memory management
+     */
+    componentWillUnmount() {
+        Memory.destroy();
+    }
+
+    /**
+     * Render
+     */
+    render() {
+
+        //Setup game styles
+        const gameContainerStyles = {
+            maxWidth: 800,
+            margin: 'auto'
+        }
+
+        return <div style={gameContainerStyles} ref={(el) => {
+            this.gameContainer = el
+        }}></div>;
+    }
 }

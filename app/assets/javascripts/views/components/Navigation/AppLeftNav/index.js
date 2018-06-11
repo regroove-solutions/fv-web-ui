@@ -25,6 +25,7 @@ import IconButton from 'material-ui/lib/icon-button';
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
 
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
+import IntlService from 'views/services/intl';
 
 let SelectableList = SelectableContainerEnhance(List);
 
@@ -40,6 +41,8 @@ export default class AppLeftNav extends Component {
     computeLogin: PropTypes.object.isRequired,
     computeLoadNavigation: PropTypes.object.isRequired
   };
+
+  intl = IntlService.instance;
 
   constructor(props, context) {
     super(props, context);
@@ -57,29 +60,29 @@ export default class AppLeftNav extends Component {
 
     const routes = Immutable.fromJS([
       {
-        id: 'home',
-        label: "Home",
-        path: "/"
+          id: 'home',
+          label: this.intl.translate({key: 'home', default: 'Home', case: 'words'}),
+          path: "/"
       },
       {
-        id: 'get-started',
-        label: "Get Started",
-        path: "/content/get-started/"
-      },     
-      {
-        id: 'explore',
-        label: 'Explore Languages',
-        path: '/explore/FV/sections/Data/',
+          id: 'get-started',
+          label: this.intl.translate({key: 'get_started', default: 'Get Started', case: 'words'}),
+          path: "/content/get-started/"
       },
       {
-        id: 'kids',
-        label: 'Kids',
-        path: '/kids',
+          id: 'explore',
+          label: this.intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'words'}),
+          path: '/explore/FV/sections/Data/',
       },
       {
-        id: 'contribute',
-        label: "Contribute",
-        path: "/content/contribute/"
+          id: 'kids',
+          label: this.intl.translate({key: 'kids', default: 'Kids', case: 'words'}),
+          path: '/kids',
+      },
+      {
+          id: 'contribute',
+          label: this.intl.translate({key: 'contribute', default: 'Contribute', case: 'words'}),
+          path: "/content/contribute/"
       }
     ]);
 
@@ -95,8 +98,25 @@ export default class AppLeftNav extends Component {
     if (selectn("isConnected", this.props.computeLogin)) {
 
       let nestedItems = [
-          <ListItem key="Workspaces" value="/explore/FV/Workspaces/Data/" secondaryText={<p>View work in progress or unpublished content.</p>} secondaryTextLines={2} primaryText="Workspace Dialects" />,
-          <ListItem key="sections" value="/explore/FV/sections/Data/" secondaryText={<p>View dialects as an end user would view them.</p>} secondaryTextLines={2} primaryText="Published Dialects" />
+        <ListItem key="Workspaces" value="/explore/FV/Workspaces/Data/"
+        secondaryText={<p>{this.intl.translate({
+            key: 'views.components.navigation.view_work_in_progress',
+            default: 'View work in progress or unpublished content'
+        })}.</p>} secondaryTextLines={2}
+        primaryText={this.intl.translate({
+            key: 'views.components.navigation.workspace_dialects',
+            default: 'Workspace Dialects'
+        })}/>,
+
+        <ListItem key="sections" value="/explore/FV/sections/Data/"
+        secondaryText={<p>{this.intl.translate({
+            key: 'views.components.navigation.view_dialects_as_end_user',
+            default: 'View dialects as an end user would view them'
+        })}.</p>} secondaryTextLines={2}
+        primaryText={this.intl.translate({
+            key: 'views.components.navigation.published_dialects',
+            default: 'Published Dialects'
+        })}/>
       ];
 
       let exploreEntry = this.state.routes.findEntry(function(value, key) {
@@ -114,9 +134,8 @@ export default class AppLeftNav extends Component {
 
       if (currentTasksEntry == null) {
         newState = newState.insert(exploreEntry[0], new Map({
-
-        id: 'tasks',
-          label: "Tasks",
+          id: 'tasks',
+          label: this.intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
           path: "/tasks/"
         }));
       }
@@ -195,15 +214,23 @@ export default class AppLeftNav extends Component {
                   requestChange: this._onNavigateRequest
               }}>
 
-                <ListItem
+              <ListItem
                   key="profile"
                   value="/profile/"
-                  primaryText="My Profile" />
+                  primaryText={this.intl.translate({
+                      key: 'views.pages.users.profile.my_profile',
+                      default: 'My Profile',
+                      case: 'words'
+                  })}/>
 
-                <ListItem
+              <ListItem
                   key="sign-out"
                   value="/logout/"
-                  primaryText="Sign Out" />
+                  primaryText={this.intl.translate({
+                      key: 'sign_out',
+                      default: 'Sign Out',
+                      case: 'words'
+                  })}/>
 
               </SelectableList>;
 

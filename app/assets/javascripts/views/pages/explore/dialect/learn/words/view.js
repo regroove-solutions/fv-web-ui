@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -51,304 +51,349 @@ import Tab from 'material-ui/lib/tabs/tab';
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
 
 import withActions from 'views/hoc/view/with-actions';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
 /**
-* View word entry
-*/
+ * View word entry
+ */
 @provide
 export default class View extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    deleteWord: PropTypes.func.isRequired,
-    computeDeleteWord: PropTypes.object.isRequired,
-    publishWord: PropTypes.func.isRequired,
-    askToPublishWord: PropTypes.func.isRequired,
-    unpublishWord: PropTypes.func.isRequired,
-    askToUnpublishWord: PropTypes.func.isRequired,
-    enableWord: PropTypes.func.isRequired,
-    askToEnableWord: PropTypes.func.isRequired,
-    disableWord: PropTypes.func.isRequired,
-    askToDisableWord: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        fetchWord: PropTypes.func.isRequired,
+        computeWord: PropTypes.object.isRequired,
+        deleteWord: PropTypes.func.isRequired,
+        computeDeleteWord: PropTypes.object.isRequired,
+        publishWord: PropTypes.func.isRequired,
+        askToPublishWord: PropTypes.func.isRequired,
+        unpublishWord: PropTypes.func.isRequired,
+        askToUnpublishWord: PropTypes.func.isRequired,
+        enableWord: PropTypes.func.isRequired,
+        askToEnableWord: PropTypes.func.isRequired,
+        disableWord: PropTypes.func.isRequired,
+        askToDisableWord: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired
+    };
 
-  constructor(props, context){
-    super(props, context);
+    constructor(props, context) {
+        super(props, context);
 
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
-
-  fetchData(newProps) {
-    newProps.fetchWord(this._getWordPath(newProps));
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-
-    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
-      this.fetchData(nextProps);
-    }
-    else if (nextProps.routeParams.word !== this.props.routeParams.word) {
-      this.fetchData(nextProps);
-    }
-    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      this.fetchData(nextProps);
-    }
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()));
-
-    if (title && selectn('pageTitleParams.word', this.props.properties) != title) {
-      this.props.changeTitleParams({'word': title});
-    }
-  }
-
-  _getWordPath(props = null) {
-
-    if (props == null) {
-      props = this.props;
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word;
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
-
-  render() {
-
-    const tabItemStyles = {
-      userSelect: 'none'
+    fetchData(newProps) {
+        newProps.fetchWord(this._getWordPath(newProps));
+        newProps.fetchDialect2(newProps.routeParams.dialect_path);
     }
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this._getWordPath(),
-      'entity': this.props.computeWord
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-
-    // Photos
-    let photos = [];
-    let photosThumbnails = [];
-
-    (selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function(picture, key) {
-      let image = { original: selectn('views[2].url', picture), thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'), description: picture['dc:description'], key: key, id: picture.uid, object: picture };
-      photos.push(image);
-      photosThumbnails.push(<img key={picture.uid} src={(selectn('views[0].url', picture) || '/assets/images/cover.png')} alt={selectn('title', picture)} style={{margin: '15px', maxWidth: '150px'}} />);
-    })
-
-    // Videos
-    let videos = [];
-    let videoThumbnails = [];
-
-    (selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function(video, key) {
-      let vid = { original: ConfGlobal.baseURL + video.path, thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'), description: video['dc:description'], key: key, id: video.uid, object: video };
-      videos.push(vid);
-      videoThumbnails.push(<video key={video.uid} src={ConfGlobal.baseURL + video.path} controls style={{margin: '15px', maxWidth: '150px'}} />);
-    })
-
-    // Audio
-    let audios = [];
-
-    (selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function(audio, key) {
-      audios.push(<Preview styles={{maxWidth: '350px', padding: '0 10px 0 10px', borderLeft: '1px solid #efefef', marginBottom: '25px'}} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />);
-    })
-
-    // Phrases
-    let phrases = [];
-    let theme = this.props.routeParams.theme;
-
-    (selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function(phrase, key) {
-
-      const phraseDefinitions = selectn('fv:definitions', phrase);
-      const phraseLink = <Link key={selectn('uid', phrase)} href={NavigationHelpers.navigate('/' + theme + selectn('path', phrase).replace("/Dictionary/", "/learn/phrases/"), null, true)}>{selectn('dc:title', phrase)}</Link>;
-
-      if (phraseDefinitions.length == 0) {
-        phrases.push(<p key={key}>{phraseLink}</p>);
-      } else {
-        phrases.push(<SubViewTranslation key={key} group={phraseDefinitions} groupByElement="language" groupValue="translation">
-          <p>{phraseLink}</p>
-        </SubViewTranslation>);
-      }
-    })
-
-    let tabs = [];
-
-    if (photos.length > 0) {
-      tabs.push(<Tab key="pictures" label="Pictures" >
-        <div style={{maxHeight: '400px'}}>
-          {photosThumbnails}
-        </div>
-      </Tab>);
+        if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+            this.fetchData(nextProps);
+        }
+        else if (nextProps.routeParams.word !== this.props.routeParams.word) {
+            this.fetchData(nextProps);
+        }
+        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+            this.fetchData(nextProps);
+        }
     }
 
-    if (videos.length > 0) {
-      tabs.push(<Tab key="videos" label="Videos" >
-        <div>
-          {videoThumbnails}
-        </div>
-      </Tab>);
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
     }
 
-    if (audios.length > 0) {
-      tabs.push(<Tab key="audio" label="Audio" >
-        <div>
-          {audios}
-        </div>
-      </Tab>);
+    componentDidUpdate(prevProps, prevState) {
+        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()));
+
+        if (title && selectn('pageTitleParams.word', this.props.properties) != title) {
+            this.props.changeTitleParams({'word': title});
+        }
     }
 
-    if (phrases.length > 0) {
-      tabs.push(<Tab key="phrases" label="Phrases" >
-        <div>
-          {phrases}
-        </div>
-      </Tab>);
+    _getWordPath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word;
     }
 
-    // Categories
-    let categories = [];
-    
-    {(selectn('response.contextParameters.word.categories', computeWord) || []).map(function(category, key) {
-      categories.push(<span key={key}>{selectn('dc:title', category)}</span>);
-    })};
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
 
-    // Cultural notes
-    let cultural_notes = [];
-    
-    {(selectn('response.properties.fv:cultural_note', computeWord) || []).map(function(cultural_note, key) {
-      cultural_notes.push(<div key={key}>{cultural_note}</div>);
-    })};
+    render() {
+
+        const tabItemStyles = {
+            userSelect: 'none'
+        }
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this._getWordPath(),
+            'entity': this.props.computeWord
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        // Photos
+        let photos = [];
+        let photosThumbnails = [];
+
+        (selectn('response.contextParameters.word.related_pictures', computeWord) || []).map(function (picture, key) {
+            let image = {
+                original: selectn('views[2].url', picture),
+                thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'),
+                description: picture['dc:description'],
+                key: key,
+                id: picture.uid,
+                object: picture
+            };
+            photos.push(image);
+            photosThumbnails.push(<img key={picture.uid}
+                                       src={(selectn('views[0].url', picture) || '/assets/images/cover.png')}
+                                       alt={selectn('title', picture)} style={{margin: '15px', maxWidth: '150px'}}/>);
+        })
+
+        // Videos
+        let videos = [];
+        let videoThumbnails = [];
+
+        (selectn('response.contextParameters.word.related_videos', computeWord) || []).map(function (video, key) {
+            let vid = {
+                original: ConfGlobal.baseURL + video.path,
+                thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'),
+                description: video['dc:description'],
+                key: key,
+                id: video.uid,
+                object: video
+            };
+            videos.push(vid);
+            videoThumbnails.push(<video key={video.uid} src={ConfGlobal.baseURL + video.path} controls
+                                        style={{margin: '15px', maxWidth: '150px'}}/>);
+        })
+
+        // Audio
+        let audios = [];
+
+        (selectn('response.contextParameters.word.related_audio', computeWord) || []).map(function (audio, key) {
+            audios.push(<Preview styles={{
+                maxWidth: '350px',
+                padding: '0 10px 0 10px',
+                borderLeft: '1px solid #efefef',
+                marginBottom: '25px'
+            }} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio"/>);
+        })
+
+        // Phrases
+        let phrases = [];
+        let theme = this.props.routeParams.theme;
+
+        (selectn('response.contextParameters.word.related_phrases', computeWord) || []).map(function (phrase, key) {
+
+            const phraseDefinitions = selectn('fv:definitions', phrase);
+            const phraseLink = <Link key={selectn('uid', phrase)}
+                                     href={NavigationHelpers.navigate('/' + theme + selectn('path', phrase).replace("/Dictionary/", "/learn/phrases/"), null, true)}>{selectn('dc:title', phrase)}</Link>;
+
+            if (phraseDefinitions.length == 0) {
+                phrases.push(<p key={key}>{phraseLink}</p>);
+            } else {
+                phrases.push(<SubViewTranslation key={key} group={phraseDefinitions} groupByElement="language"
+                                                 groupValue="translation">
+                    <p>{phraseLink}</p>
+                </SubViewTranslation>);
+            }
+        })
+
+        let tabs = [];
+
+        if (photos.length > 0) {
+            tabs.push(<Tab key="pictures" label={intl.trans('pictures', 'Pictures', 'first')}>
+                <div style={{maxHeight: '400px'}}>
+                    {photosThumbnails}
+                </div>
+            </Tab>);
+        }
+
+        if (videos.length > 0) {
+            tabs.push(<Tab key="videos" label={intl.trans('videos', 'Videos', 'first')}>
+                <div>
+                    {videoThumbnails}
+                </div>
+            </Tab>);
+        }
+
+        if (audios.length > 0) {
+            tabs.push(<Tab key="audio" label={intl.trans('audio', 'Audio', 'first')}>
+                <div>
+                    {audios}
+                </div>
+            </Tab>);
+        }
+
+        if (phrases.length > 0) {
+            tabs.push(<Tab key="phrases" label={intl.trans('phrases', 'Phrases', 'first')}>
+                <div>
+                    {phrases}
+                </div>
+            </Tab>);
+        }
+
+        // Categories
+        let categories = [];
+
+        {
+            (selectn('response.contextParameters.word.categories', computeWord) || []).map(function (category, key) {
+                categories.push(<span key={key}>{selectn('dc:title', category)}</span>);
+            })
+        }
+        ;
+
+        // Cultural notes
+        let cultural_notes = [];
+
+        {
+            (selectn('response.properties.fv:cultural_note', computeWord) || []).map(function (cultural_note, key) {
+                cultural_notes.push(<div key={key}>{intl.searchAndReplace(cultural_note)}</div>);
+            })
+        }
+        ;
 
 
-    let definitions = selectn('response.properties.fv:definitions', computeWord);
-    let literal_translations = selectn('response.properties.fv:literal_translation', computeWord);
+        let definitions = selectn('response.properties.fv:definitions', computeWord);
+        let literal_translations = selectn('response.properties.fv:literal_translation', computeWord);
 
-    /**
-    * Generate definitions body
-    */
-    return <DetailsViewWithActions
-              labels={{single: "word"}}
-              itemPath={this._getWordPath()}
-              actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
-              publishAction={this.props.publishWord}
-              unpublishAction={this.props.unpublishWord}
-              askToPublishAction={this.props.askToPublishWord}
-              askToUnpublishAction={this.props.askToUnpublishWord}
-              enableAction={this.props.enableWord}
-              askToEnableAction={this.props.askToEnableWord}
-              disableAction={this.props.disableWord}
-              askToDisableAction={this.props.askToDisableWord}
-              deleteAction={this.props.deleteWord}
-              onNavigateRequest={this._onNavigateRequest}
-              computeItem={computeWord}
-              permissionEntry={computeDialect2}
-              tabs={tabs} computeEntities={computeEntities} {...this.props}>
+        /**
+         * Generate definitions body
+         */
+        return <DetailsViewWithActions
+            labels={{single: "word"}}
+            itemPath={this._getWordPath()}
+            actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
+            publishAction={this.props.publishWord}
+            unpublishAction={this.props.unpublishWord}
+            askToPublishAction={this.props.askToPublishWord}
+            askToUnpublishAction={this.props.askToUnpublishWord}
+            enableAction={this.props.enableWord}
+            askToEnableAction={this.props.askToEnableWord}
+            disableAction={this.props.disableWord}
+            askToDisableAction={this.props.askToDisableWord}
+            deleteAction={this.props.deleteWord}
+            onNavigateRequest={this._onNavigateRequest}
+            computeItem={computeWord}
+            permissionEntry={computeDialect2}
+            tabs={tabs} computeEntities={computeEntities} {...this.props}>
 
             <div className="row" style={{marginTop: '15px'}}>
-              <div className={classNames('col-xs-12', 'col-md-7')}>
+                <div className={classNames('col-xs-12', 'col-md-7')}>
 
-                <div>
+                    <div>
 
-                    <TextHeader title={selectn('response.title', computeWord)} tag="h1" properties={this.props.properties} />
+                        <TextHeader title={selectn('response.title', computeWord)} tag="h1"
+                                    properties={this.props.properties}/>
 
-                    <hr/>
+                        <hr/>
 
-                    <p><strong>Part of Speech</strong>: {selectn('response.contextParameters.word.part_of_speech', computeWord)} 
+                        <p>
+                            <strong>{intl.trans('part_of_speech', 'Part of Speech')}</strong>: {selectn('response.contextParameters.word.part_of_speech', computeWord)}
 
-                    {(() => {
-                        if (categories.length > 0) {
-                          return <span> &nbsp;|&nbsp; <strong>Categories</strong>: {categories}</span>;
-                        }
-                    })()}
+                            {(() => {
+                                if (categories.length > 0) {
+                                    return <span> &nbsp;|&nbsp;
+                                        <strong>{intl.trans('categories', 'Categories', 'first')}</strong>: {categories}</span>;
+                                }
+                            })()}
 
-                    </p>
+                        </p>
 
-                    <hr/>
+                        <hr/>
 
-                    {(() => {
-                        let pronunciation = selectn('response.properties.fv-word:pronunciation', computeWord);
-                        if (pronunciation && pronunciation != '') {
-                          return <p><strong>Pronunciation</strong>: {pronunciation}</p>;
-                        }
-                    })()}
+                        {(() => {
+                            let pronunciation = selectn('response.properties.fv-word:pronunciation', computeWord);
+                            if (pronunciation && pronunciation != '') {
+                                return <p>
+                                    <strong>{intl.trans('pronunciation', 'Pronunciation', 'first')}</strong>: {pronunciation}
+                                </p>;
+                            }
+                        })()}
 
-                    {(definitions && definitions.length > 0) ? <hr/> : null}
+                        {(definitions && definitions.length > 0) ? <hr/> : null}
 
-                    <SubViewTranslation group={definitions} groupByElement="language" groupValue="translation">
-                      <p><strong>Definitions:</strong></p>
-                    </SubViewTranslation>
+                        <SubViewTranslation group={definitions} groupByElement="language" groupValue="translation">
+                            <p><strong>Definitions:</strong></p>
+                        </SubViewTranslation>
 
-                    {(literal_translations && literal_translations.length > 0) ? <hr/> : null}
+                        {(literal_translations && literal_translations.length > 0) ? <hr/> : null}
 
-                    <SubViewTranslation group={literal_translations} groupByElement="language" groupValue="translation">
-                      <p><strong>Literal Translations:</strong></p>
-                    </SubViewTranslation>
+                        <SubViewTranslation group={literal_translations} groupByElement="language"
+                                            groupValue="translation">
+                            <p>
+                                <strong>{intl.trans('views.pages.explore.dialect.learn.words.literal_translations', 'Literal Translations', 'words')}:</strong>
+                            </p>
+                        </SubViewTranslation>
 
-                    {(() => {
-                        if (phrases.length > 0) {
-                          return <div>
-                            <hr/>
-                            <p><strong>Related Phrases:</strong></p>
-                            {phrases}
-                          </div>;
-                        }
-                    })()}
+                        {(() => {
+                            if (phrases.length > 0) {
+                                return <div>
+                                    <hr/>
+                                    <p><strong>{intl.trans('related_phrases', 'Related Phrases', 'words')}:</strong></p>
+                                    {phrases}
+                                </div>;
+                            }
+                        })()}
 
-                    {(() => {
-                        if (cultural_notes.length > 0) {
-                          return <div style={{margin: '10px 0'}}>
-                          <hr/>
-                            <p><strong>Cultural Notes:</strong></p>
-                            {cultural_notes}
-                          </div>;
-                        }
-                    })()}
+                        {(() => {
+                            if (cultural_notes.length > 0) {
+                                return <div style={{margin: '10px 0'}}>
+                                    <hr/>
+                                    <p>
+                                        <strong>{intl.trans('views.pages.explore.dialect.learn.words.cultural_notes', 'Cultural Notes', 'words')}:</strong>
+                                    </p>
+                                    {cultural_notes}
+                                </div>;
+                            }
+                        })()}
 
-                    <hr/>
+                        <hr/>
 
-                    {(selectn('response', computeWord)) ? <MetadataPanel properties={this.props.properties} computeEntity={computeWord} /> : ''}
+                        {(selectn('response', computeWord)) ?
+                            <MetadataPanel properties={this.props.properties}
+                                           computeEntity={computeWord}/> : ''}
+
+                    </div>
 
                 </div>
-                
-              </div>
 
-              <div className={classNames('col-xs-12', 'col-md-3')}>
+                <div className={classNames('col-xs-12', 'col-md-3')}>
 
-                <h3>AUDIO</h3>
-                <div>{(audios.length === 0) ? <span>No audio is available yet.</span> : audios}</div>
+                    <h3>{intl.trans('audio', 'AUDIO', 'upper')}</h3>
+                    <div>{(audios.length === 0) ?
+                        <span>{intl.trans('views.pages.explore.dialect.learn.words.no_audio_yet', 'No audio is available yet')}.</span> : audios}</div>
 
-                <MediaPanel label="PHOTO(S)" type="FVPicture" items={photos} />
-                <MediaPanel label="VIDEO(S)" type="FVVideo" items={videos} />
+                    <MediaPanel label={intl.trans('photo_s', 'PHOTO(S)', 'upper')} type="FVPicture" items={photos}/>
+                    <MediaPanel label={intl.trans('video_s', 'VIDEO(S)', 'upper')} type="FVVideo" items={videos}/>
 
-              </div>
+                </div>
 
             </div>
         </DetailsViewWithActions>;
-  }
+    }
 }

@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import ImageGallery from 'react-image-gallery';
 import provide from 'react-redux-provide';
@@ -36,125 +36,127 @@ const DetailsViewWithActions = withActions(PromiseWrapper, true);
 
 //Stylesheet
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 @provide
 export default class Gallery extends React.Component {
 
-  static propTypes = {
-	  splitWindowPath: PropTypes.array.isRequired,
-	  windowPath: PropTypes.string.isRequired,
-	  pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    static propTypes = {
+        splitWindowPath: PropTypes.array.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchGallery: PropTypes.func.isRequired,
+        computeGallery: PropTypes.object.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
 
-    deleteGallery: PropTypes.func.isRequired,
-    publishGallery: PropTypes.func.isRequired,
-    askToPublishGallery: PropTypes.func.isRequired,
-    unpublishGallery: PropTypes.func.isRequired,
-    askToUnpublishGallery: PropTypes.func.isRequired,
-    enableGallery: PropTypes.func.isRequired,
-    askToEnableGallery: PropTypes.func.isRequired,
-    disableGallery: PropTypes.func.isRequired,
-    askToDisableGallery: PropTypes.func.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
+        deleteGallery: PropTypes.func.isRequired,
+        publishGallery: PropTypes.func.isRequired,
+        askToPublishGallery: PropTypes.func.isRequired,
+        unpublishGallery: PropTypes.func.isRequired,
+        askToUnpublishGallery: PropTypes.func.isRequired,
+        enableGallery: PropTypes.func.isRequired,
+        askToEnableGallery: PropTypes.func.isRequired,
+        disableGallery: PropTypes.func.isRequired,
+        askToDisableGallery: PropTypes.func.isRequired
     };
 
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  _getGalleryPath(props = null) {
+        this.state = {
+            galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
+        };
 
-    if (props == null) {
-      props = this.props;
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    return props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName;
-  }
+    _getGalleryPath(props = null) {
 
-  handleImageLoad(event) {
-    console.log('Image loaded ', event.target)
-  }
+        if (props == null) {
+            props = this.props;
+        }
 
-  fetchData(newProps) {
-	  newProps.fetchGallery(this._getGalleryPath());
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
-  }
+        return props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName;
+    }
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
+    handleImageLoad(event) {
+        console.log('Image loaded ', event.target)
+    }
 
-  // Fetch data on initial render
-  componentDidMount() {
-	  this.fetchData(this.props);
-  }
+    fetchData(newProps) {
+        newProps.fetchGallery(this._getGalleryPath());
+        newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    }
 
-  render() {
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
 
-	const images = [];
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-  const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-  const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+    render() {
 
-	(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
-		let image = { original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description'] };
-		images.push(image);
-	});
+        const images = [];
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.galleryPath,
-      'entity': this.props.computeGallery
-    }])
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
 
-    return <DetailsViewWithActions
-              labels={{single: "Gallery"}}
-              itemPath={this._getGalleryPath()}
-              actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
-              publishAction={this.props.publishGallery}
-              unpublishAction={this.props.unpublishGallery}
-              askToPublishAction={this.props.askToPublishGallery}
-              askToUnpublishAction={this.props.askToUnpublishGallery}
-              enableAction={this.props.enableGallery}
-              askToEnableAction={this.props.askToEnableGallery}
-              disableAction={this.props.disableGallery}
-              askToDisableAction={this.props.askToDisableGallery}
-              deleteAction={this.props.deleteGallery}
-              onNavigateRequest={this._onNavigateRequest}
-              computeItem={computeGallery}
-              permissionEntry={computeDialect2}
-              renderOnError={true}
-              computeEntities={computeEntities}
-              {...this.props}>
+        (selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function (picture) {
+            let image = {original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description']};
+            images.push(image);
+        });
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.state.galleryPath,
+            'entity': this.props.computeGallery
+        }])
+
+        return <DetailsViewWithActions
+            labels={{single: "Gallery"}}
+            itemPath={this._getGalleryPath()}
+            actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
+            publishAction={this.props.publishGallery}
+            unpublishAction={this.props.unpublishGallery}
+            askToPublishAction={this.props.askToPublishGallery}
+            askToUnpublishAction={this.props.askToUnpublishGallery}
+            enableAction={this.props.enableGallery}
+            askToEnableAction={this.props.askToEnableGallery}
+            disableAction={this.props.disableGallery}
+            askToDisableAction={this.props.askToDisableGallery}
+            deleteAction={this.props.deleteGallery}
+            onNavigateRequest={this._onNavigateRequest}
+            computeItem={computeGallery}
+            permissionEntry={computeDialect2}
+            renderOnError={true}
+            computeEntities={computeEntities}
+            {...this.props}>
 
             <div className="row">
 
-              <div className="col-xs-12" style={{textAlign: 'center'}}>
-                <h1>{selectn('response.title', computeGallery)}</h1>
-                <p>{selectn('response.properties.dc:description', computeGallery)}</p>
-                <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-4')}>
-                  <div>
-                    <ImageGallery
-                      ref={i => this._imageGallery = i}
-                      items={images}
-                      slideInterval={2000}
-                      showFullscreenButton={true}
-                      handleImageLoad={this.handleImageLoad}
-                      showThumbnails={false}
-                      showBullets={true} />
-                  </div>
-	           	 </div>
-	           </div>
+                <div className="col-xs-12" style={{textAlign: 'center'}}>
+                    <h1>{selectn('response.title', computeGallery)}</h1>
+                    <p>{selectn('response.properties.dc:description', computeGallery)}</p>
+                    <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-4')}>
+                        <div>
+                            <ImageGallery
+                                ref={i => this._imageGallery = i}
+                                items={images}
+                                slideInterval={2000}
+                                showFullscreenButton={true}
+                                handleImageLoad={this.handleImageLoad}
+                                showThumbnails={false}
+                                showBullets={true}/>
+                        </div>
+                    </div>
+                </div>
             </div>
         </DetailsViewWithActions>;
-  }
+    }
 }
