@@ -68,7 +68,7 @@ export default class AppLeftNav extends Component {
       },     
       {
         id: 'explore',
-        label: 'Explore',
+        label: 'Explore Languages',
         path: '/explore/FV/sections/Data/',
       },
       {
