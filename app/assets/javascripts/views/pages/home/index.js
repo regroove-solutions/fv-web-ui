@@ -32,7 +32,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import Paper from 'material-ui/lib/paper';
 import RaisedButton from 'material-ui/lib/raised-button';
 
-import Map from 'views/components/Geo/map';
+//import Map from 'views/components/Geo/map';
 
 import TextField from 'material-ui/lib/text-field';
 
