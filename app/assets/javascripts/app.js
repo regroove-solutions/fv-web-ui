@@ -13,9 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+import 'babel-polyfill';
+
 import React, { Component, PropTypes } from 'react';
 import { render } from 'react-dom'
-import RegisterServiceWorker from './workers/RegisterServiceWorker';
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 

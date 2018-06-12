@@ -28,6 +28,7 @@ module.exports = function (env) {
     var absPublicDirectory   = path.resolve(config.publicDirectory)
     var absJSSourceDirectory = path.resolve(jsSourceDirectory)
     var absJSPublicDirectory = path.resolve(jsPublicDirectory)
+    var absGamesDirectory = path.resolve(gamesSourceDirectory)
 
     var happyPackPlugins = ['transform-react-jsx-component-data-ids', 'transform-decorators-legacy'];
 
@@ -81,22 +82,12 @@ module.exports = function (env) {
         module: {
             rules: [
                 {
-                    test: /\.serviceworker\.js/,
-                    loader: 'service-worker-loader',
-                    options: {
-                        filename: '[name].js',
-                        publicPath: '/',
-                        outputPath: absPublicDirectory
-                    },
-                },
-                {
                     test: /\.js$/,
                     use: ['happypack/loader?id=js'],
                     exclude: [
-                        path.resolve(__dirname, "node_modules"),
-                        /\.serviceworker\.js/
+                        path.resolve(__dirname, "node_modules")
                     ],
-                    include: absJSSourceDirectory
+                    include: [absJSSourceDirectory, absGamesDirectory]
                 },
                 {
                     test: /\.less$/,
@@ -157,7 +148,6 @@ module.exports = function (env) {
                         mimetype:'image/svg+xml'
                     }
                 },
-                //service-worker-loader?publicPath=assets/javascripts/&filename=[name].js!
                 {
                     test: require.resolve("react"), use: "expose-loader?React"
                 },
