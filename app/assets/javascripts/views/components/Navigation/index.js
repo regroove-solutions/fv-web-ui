@@ -62,6 +62,10 @@ import AppLeftNav from 'views/components/Navigation/AppLeftNav';
 
 import IntlService from 'views/services/intl';
 
+import FontIcon from 'material-ui/lib/font-icon';
+import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
+import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title';
+
 @provide
 export default class Navigation extends Component {
 
@@ -99,6 +103,7 @@ export default class Navigation extends Component {
       searchContextPopoverOpen: false,
       searchContextPopoverAnchorEl: null,
       searchLocal: true,
+      localePopoverOpen: false,
       userRegistrationTasksPath: '/management/registrationRequests/',
       pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props),
       locale: this.intl.locale
@@ -106,6 +111,7 @@ export default class Navigation extends Component {
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this);
     this._handleChangeLocale = this._handleChangeLocale.bind(this);
+    this._handleDisplayLocaleOptions = this._handleDisplayLocaleOptions.bind(this);
     this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
     this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
     this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
@@ -270,6 +276,12 @@ export default class Navigation extends Component {
     }
   }
 
+  _handleDisplayLocaleOptions(e) {
+    this.setState({
+      localePopoverOpen: true
+    });
+  }
+
   _handleChangeLocale(e, n, v) {
     if (v !== this.intl.locale) {
         this.intl.locale = v;
@@ -304,8 +316,8 @@ export default class Navigation extends Component {
 
           <ToolbarGroup style={{position: 'relative', color: '#fff'}}>
 
-            <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px'}}>
-              <Link className="nav_link" href={"/explore" + this.state.pathOrId + '/Data'}>CHOOSE A LANGUAGE</Link>
+            <div style={{display: "inline-block", paddingRight: "10px", paddingTop: '15px', textTransform: 'uppercase'}}>
+              <Link className="nav_link" href={"/explore" + this.state.pathOrId + '/Data'}>{intl.trans('choose_lang', 'Choose a Language', 'first')}</Link>
             </div>
 
             <Login routeParams={this.props.routeParams} label={this.intl.translate({
@@ -482,20 +494,30 @@ export default class Navigation extends Component {
               </div>
           </Popover>
 
-        {/*Locale selection*/}
-        <SelectField
-        value={this.intl.locale}
-        style={{width: '50px'}}
-        onChange={this._handleChangeLocale}
-        >
-            <MenuItem value="en" primaryText="En"/>
-            <MenuItem value="fr" primaryText="Fr"/>
-            <MenuItem value="sp" primaryText="Sp"/>
-        </SelectField>
+          <ToolbarSeparator className="locale-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
+
+          <IconButton
+              onTouchTap={this._handleDisplayLocaleOptions}
+              iconClassName="material-icons"
+              style={{position:'relative', top: '7px', padding: '0', left: 0}}
+              iconStyle={{fontSize: '24px', padding: '3px', borderRadius: '20px', color: '#FFFFFF'}}>
+              settings
+          </IconButton>
 
           </ToolbarGroup>
 
         </AppBar>
+
+        <Toolbar style={{display: (this.state.localePopoverOpen) ? 'block' : 'none' }}>
+          <ToolbarGroup firstChild={true} float="right">
+            <ToolbarTitle style={{'color': '#fff', 'padding': '0 0 0 15px', 'fontSize':'15px'}} text={intl.trans('choose_lang', 'Choose a Language', 'first')} />
+            <DropDownMenu value={this.intl.locale} onChange={this._handleChangeLocale} labelStyle={{'color': '#fff'}}>
+              <MenuItem value="en" primaryText="English" />
+              <MenuItem value="fr" primaryText="French" />
+              <MenuItem value="sp" primaryText="Spanish" />
+            </DropDownMenu>
+          </ToolbarGroup>
+        </Toolbar>
 
         <AppLeftNav
           menu={{main: true}}
