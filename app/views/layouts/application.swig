@@ -11,14 +11,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
     <style>
-      /* fallback */
-      @font-face {
-        font-family: 'Material Icons';
-        font-style: normal;
-        font-weight: 400;
-        src: url('/assets/images/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2') format('woff2');
-      }
-
       .material-icons {
         font-family: 'Material Icons';
         font-weight: normal;
@@ -32,8 +24,12 @@
         word-wrap: normal;
         direction: ltr;
         -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
       }
+
     </style>
 
     <script type="text/javascript">
@@ -41,7 +37,9 @@
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
     </script>
 
+    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="//fonts.googleapis.com/css?family=Roboto:100,400,500,500i,700,900&amp;subset=latin-ext" rel="stylesheet">
+
     {% if buildENV == "production" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
 
     {% block head %}{% endblock %}
