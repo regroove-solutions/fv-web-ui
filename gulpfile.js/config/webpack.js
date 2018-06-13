@@ -240,6 +240,7 @@ module.exports = function (env) {
                   ecma: 8,
                   mangle: true,
                   compress: {
+                    ecma: 5,
                     sequences: true,
                     dead_code: true,
                     conditionals: true,
@@ -250,6 +251,7 @@ module.exports = function (env) {
                     drop_console: true
                   },
                   output: {
+                    ecma: 5,
                     comments: false,
                     beautify: false
                   }
