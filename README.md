@@ -1,5 +1,4 @@
 # FirstVoices Dictionary Prototype #
-<a rel="Exploration" href="https://github.com/BCDevExchange/docs/blob/master/discussion/projectstates.md"><img alt="Being designed and built, but in the lab. May change, disappear, or be buggy." style="border-width:0" src="http://bcdevexchange.org/badge/2.svg" title="Being designed and built, but in the lab. May change, disappear, or be buggy." /></a>
 
 This is a responsive dictionary web-application for the FirstVoices language assets that uses [Nuxeo ECM](http://www.nuxeo.com/) as a back-end.
 
@@ -118,6 +117,12 @@ $ gulp build:production
 ### Adding New Dependencies
 1. Install dependency using `npm install package --save` or `npm install package --save-dev`
 2. When ready, run `npm shrinkwrap` to lock dependencies.
+
+### Testing
+
+We use BroswerStack in order to ensure our UI functions in the latest version of all major browsers, and at least 1 version back depending on demand from our users. We will be posting a more detailed and up-to-date compatibility status in the future.
+
+<a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
 ### Tips
 * Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
