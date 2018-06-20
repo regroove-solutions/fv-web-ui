@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -250,7 +251,7 @@ export default class AppWrapper extends Component {
             }
             // Otherwise select first dialect user has a role in
             else {
-                nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + selectn('response.properties.groups', nextProps.computeLogin).join('\',\'') + '\')');
+                nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + StringHelpers.clean(selectn('response.properties.groups', nextProps.computeLogin).join('\',\'')) + '\')');
             }
 
         }
