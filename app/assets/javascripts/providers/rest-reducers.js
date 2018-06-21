@@ -29,7 +29,15 @@ const getListIndexForPushOrReplace = function (s, i) {
 }
 
 const getPreviousResponse = function (s, i) {
-    return (i !== -1 && s.get(i).has('response')) ? s.get(i).get('response') : null;
+    if (i !== -1) {
+        if (s.get(i).has('response')) {
+            return s.get(i).get('response');
+        } else if (s.get(i).has('response_prev')) {
+            return s.get(i).get('response_prev');
+        }
+    }
+
+    return null;
 }
 
 export default {
@@ -114,7 +122,7 @@ export default {
                             isFetching: false,
                             isError: true,
                             success: false,
-                            response: state.get(indexOfEntry).get('response'),
+                            response: state.get(indexOfEntry).get('response') || getPreviousResponse(state, indexOfEntry),
                             response_prev: getPreviousResponse(state, indexOfEntry),
                             message: action.message
                         }));
