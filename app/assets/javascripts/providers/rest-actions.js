@@ -184,7 +184,7 @@ export default {
                     }).catch((error) => {
                         dispatch({
                             type: key + '_UPDATE_ERROR',
-                            message: ((messageError === undefined) ? IntlService.instance.searchAndReplace(error) : messageError),
+                            message: (messageError || IntlService.instance.searchAndReplace(error)),
                             pathOrId: (usePathAsId) ? newDoc.path : newDoc.uid
                         })
                     });
