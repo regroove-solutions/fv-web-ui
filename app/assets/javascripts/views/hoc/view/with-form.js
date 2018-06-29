@@ -163,7 +163,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                                             targetOrigin={{horizontal: 'right', vertical: 'center'}}
                                             onRequestClose={() => this.setState({showCancelWarning: false})}>
                                             <div style={{padding: '10px', margin: '0 15px', borderRadius: '5px'}}>
-                                                {intl.trans('views.hoc.view.discard_warning', 'Are you sure you want to <strong>discard your changes</strong>?', 'first')}
+                                                <span dangerouslySetInnerHTML={{__html: intl.trans('views.hoc.view.discard_warning', 'Are you sure you want to <strong>discard your changes</strong>?', 'first')}}></span>
                                                 <FlatButton style={confirmationButtonsStyle}
                                                             onTouchTap={this._onRequestCancelForm.bind(this, true)}
                                                             label={intl.trans('yes', 'Yes', 'first') + '!'}/>

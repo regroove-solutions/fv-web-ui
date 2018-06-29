@@ -145,7 +145,7 @@ export default class ExploreDialectEdit extends Component {
 
             <h1>{intl.trans('views.pages.explore.dialect.edit_x_community_portal',
                 'Edit ' + selectn('response.title', computeDialect2) + ' Community Portal',
-                'words', [selectn('response.title', computeDialect2)])}</h1>
+                null, [selectn('response.title', computeDialect2)])}</h1>
 
             <EditViewWithForm
                 computeEntities={computeEntities}
