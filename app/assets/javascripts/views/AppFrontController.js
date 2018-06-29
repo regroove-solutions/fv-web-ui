@@ -289,8 +289,7 @@ export default class AppFrontController extends Component {
                 title: this.intl.translate({
                     key: 'x_dialects',
                     default: '{$theme} Dialects',
-                    params: ['{$theme}'],
-                    case: 'words'
+                    params: ['{$theme}']
                 }),
                 // title: '{$theme} Dialects',
                 page: <PageExploreDialects/>,
