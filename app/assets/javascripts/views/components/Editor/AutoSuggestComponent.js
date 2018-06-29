@@ -48,8 +48,7 @@ export default class AutoSuggestComponent extends Component {
     };
 
     static contextTypes = {
-        muiTheme: React.PropTypes.object,
-        kmw: React.PropTypes.object
+        muiTheme: React.PropTypes.object
     };
 
     shouldRenderSuggestions(value) {

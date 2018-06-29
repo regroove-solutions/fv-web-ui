@@ -111,8 +111,6 @@ export default class AppWrapper extends Component {
     static propTypes = {
         connect: PropTypes.func.isRequired,
         getCurrentUser: PropTypes.func.isRequired,
-        fetchDialects: PropTypes.func.isRequired,
-        computeDialects: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
         queryDialect2: PropTypes.func.isRequired,
@@ -125,8 +123,7 @@ export default class AppWrapper extends Component {
     };
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object,
-        kmw: React.PropTypes.object
+        muiTheme: React.PropTypes.object
     };
 
     // react-redux-provide will pass context such as providers (Note: this is only needed for debugging the store atm)
@@ -139,8 +136,7 @@ export default class AppWrapper extends Component {
      */
     getChildContext() {
         let newContext = {
-            muiTheme: this.props.properties.theme.palette,
-            kmw: this.state.kmw
+            muiTheme: this.props.properties.theme.palette
         };
 
         return newContext;
@@ -153,80 +149,22 @@ export default class AppWrapper extends Component {
         this.props.connect();
         this.props.getCurrentUser();
 
-        let kmw = null;
-
-        if (typeof KeymanWeb !== 'undefined') {
-            // Set KeymanWeb to manual mode -- no auto-attaching to inputs
-            KeymanWeb.SetMode('manual');
-            kmw = KeymanWeb;
-        }
-
         this.state = {
-            kmw: kmw,
-            kmwSelectedKeyboard: null,
-            kmwLoadedKeyboards: [],
             adminGuideStarted: false,
             dialect: null
         };
 
         // Bind methods to 'this'
-        ['_KMWSwitchKeyboard', '_KMWToggleKeyboard', '_startAdminGuideAssist'].forEach((method => this[method] = this[method].bind(this)));
-    }
-
-    fetchData(newProps) {
-        newProps.fetchDialects('/FV/Workspaces');
+        ['_startAdminGuideAssist'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     // Fetch data on initial render
     componentDidMount() {
-        this.fetchData(this.props);
 
         window.onscroll = function () {
             if (typeof KeymanWeb !== 'undefined')
                 KeymanWeb.SetHelpPos(window.innerWidth - 500, getPosition().y + 200);
         };
-    }
-
-    /**
-     * Load keymanweb keyboard dynamically
-     */
-    _KMWSwitchKeyboard(event) {
-
-        let index = event.nativeEvent.target.selectedIndex;
-        let newState = {
-            kmwSelectedKeyboard: event.target[index].value
-        };
-
-        if (event.nativeEvent.target[index].dataset.keyboardFile) {
-            const scriptKeymanWebDialect = document.createElement("script");
-
-            // Only load keyboard if it hasn't been loaded before
-            if (this.state.kmwLoadedKeyboards.indexOf(event.target[index].value) === -1) {
-                scriptKeymanWebDialect.src = event.target[index].dataset.keyboardFile;
-                scriptKeymanWebDialect.async = true;
-
-                document.body.appendChild(scriptKeymanWebDialect);
-
-                // Add keyboard to loaded keyboard array
-                newState['kmwLoadedKeyboards'] = this.state.kmwLoadedKeyboards.concat([event.target[index].value]);
-            }
-
-            this.setState(newState);
-        }
-    }
-
-    _KMWToggleKeyboard(event) {
-
-        KeymanWeb.SetActiveKeyboard(this.state.kmwSelectedKeyboard);
-
-        if (KeymanWeb.IsHelpVisible()) {
-            KeymanWeb.HideHelp();
-        }
-        else {
-            KeymanWeb.ShowHelp(window.innerWidth - 500, getPosition().y + 200);
-            KeymanWeb.FocusLastActiveElement();
-        }
-
     }
 
     // Force update of theme if out of sync
@@ -323,64 +261,7 @@ export default class AppWrapper extends Component {
 
     render() {
 
-        let dialectsWithKeyboards;
-        let keyboardPicker;
-
-        const dialects = ProviderHelpers.getEntry(this.props.computeDialects, '/FV/Workspaces');
         const dialectQuery = ProviderHelpers.getEntry(this.props.computeDialect2Query, '/FV/Workspaces');
-
-        if (selectn('success', dialects)) {
-
-            dialectsWithKeyboards = dialects.response.entries.filter(function (dialect) {
-                return selectn('properties.fvdialect:keymanweb.length', dialect) > 0;
-            });
-
-            if (dialectsWithKeyboards.length > 0) {
-                keyboardPicker = <Paper zDepth={1} id="kmw-switcher" style={{
-                    position: 'fixed',
-                    bottom: '0',
-                    right: '0',
-                    zIndex: '9999',
-                    padding: '5px 15px'
-                }}>
-
-                    {this.intl.translate({
-                        key: [this.intlBaseKey, 'select_keyboard'],
-                        default: 'Select Keyboard',
-                        case: 'words'
-                    })}:
-
-                    <select ref="kmw_keyboard_select" style={{marginLeft: '8px'}} id='KWControl'
-                            onChange={this._KMWSwitchKeyboard}>
-
-                        <option>{this.intl.translate({
-                            key: 'select_from_list',
-                            default: 'Select from list',
-                            case: 'first'
-                        })}:
-                        </option>
-
-                        {dialectsWithKeyboards.map(function (dialect) {
-                            let keyboards = selectn('properties.fvdialect:keymanweb', dialect);
-
-                            return keyboards.map(function (keyboard) {
-                                return <option value={keyboard['key']}
-                                               data-keyboard-file={keyboard['jsfile']}>{keyboard['name']}</option>;
-                            });
-                        })}
-
-                    </select>
-
-                    <FlatButton style={{marginLeft: '8px'}} onTouchTap={this._KMWToggleKeyboard}
-                                label={this.intl.translate({
-                                    key: 'show',
-                                    default: 'Show',
-                                    case: 'first'
-                                })}/>
-
-                </Paper>;
-            }
-        }
 
         let controller = null;
 
@@ -421,9 +302,7 @@ export default class AppWrapper extends Component {
 
             <AppFrontController preferences={preferences} warnings={warnings}/>
 
-            {keyboardPicker}
-
-            <AuthorizationFilter filter={{
+            {/*<AuthorizationFilter filter={{
                 role: ['Everything'],
                 entity: selectn('response.entries[0]', dialects),
                 login: this.props.computeLogin
@@ -446,7 +325,7 @@ export default class AppWrapper extends Component {
                     }) : ''}
 
                 </div>
-            </AuthorizationFilter>
+            </AuthorizationFilter>*/}
 
         </div>;
     }
