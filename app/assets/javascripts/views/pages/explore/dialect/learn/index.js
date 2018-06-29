@@ -273,7 +273,7 @@ export default class DialectLearn extends Component {
 
                         <div className={classNames('col-xs-12')}>
                             <TextHeader
-                                title={intl.trans('views.pages.explore.dialect.learn.recent_activity', 'Recent Activity', 'words')}
+                                title={intl.trans('views.pages.explore.dialect.learn.recent_activity', 'Recent Activity', 'upper')}
                                 tag="h2" properties={this.props.properties}/>
                         </div>
 

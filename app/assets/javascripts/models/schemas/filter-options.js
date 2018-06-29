@@ -208,14 +208,14 @@ const options = {
                 label: intl.translate({
                     key: 'title',
                     default: 'Title',
-                    case: 'words'
+                    case: 'first'
                 })
             },
             'properties.fvbook:type': {
                 label: intl.translate({
                     key: 'resource_type',
                     default: 'Resource Type',
-                    case: 'words'
+                    case: 'first'
                 }),
                 factory: t.form.Select
             }
@@ -270,14 +270,14 @@ const options = {
                 label: intl.translate({
                     key: 'search_term',
                     default: 'Search Term',
-                    case: 'words'
+                    case: 'first'
                 }),
                 attrs: {
                     //autoFocus: true,
                 }
             },
             'documentTypes': {
-                label: intl.trans('document_types', 'Doc Types', 'words'),
+                label: intl.trans('document_types', 'Doc Types', 'first'),
                 template: SearchDocumentTypesTemplate
             }
         },

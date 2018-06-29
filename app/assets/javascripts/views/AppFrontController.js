@@ -846,7 +846,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectLearnStoriesAndSongs typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -857,7 +861,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -868,7 +876,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs and Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typePlural="Songs and Stories"/>,
+                page: <PageDialectLearnStoriesAndSongs typePlural={this.intl.translate({
+                    key: 'songs_and_stories',
+                    default: 'Songs and Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -883,7 +895,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -898,7 +914,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -909,7 +929,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectViewBook typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectViewBook typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -924,7 +948,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEdit typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectBookEdit typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -943,7 +971,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -962,7 +994,11 @@ export default class AppFrontController extends Component {
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEntryEdit typeFilter="song" typePlural="songs"/>,
+                page: <PageDialectBookEntryEdit typeFilter="song" typePlural={this.intl.translate({
+                    key: 'songs',
+                    default: 'Songs',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -977,7 +1013,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectViewBook typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectViewBook typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -992,7 +1032,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEdit typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectBookEdit typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -1011,7 +1055,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -1030,7 +1078,11 @@ export default class AppFrontController extends Component {
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEntryEdit typeFilter="story" typePlural="stories"/>,
+                page: <PageDialectBookEntryEdit typeFilter="story" typePlural={this.intl.translate({
+                    key: 'stories',
+                    default: 'Stories',
+                    case: 'words'
+                })}/>,
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
@@ -1219,17 +1271,17 @@ export default class AppFrontController extends Component {
           let body = <div>
               <p>{this.intl.translate({
                 key: 'errors.report_via_feedback',
-                default: 'Please report this error via the "Provide Feedback" feature so that we can fix it',
+                default: 'Please report this error so that we can fix it',
                 case: 'first'
             })}.
             </p><p>{this.intl.translate({
                 key: 'errors.feedback_include_link',
                 default: 'Include what link or action you took to get to this page'
             })}.</p><p>{this.intl.translate({
-                key: 'thank_you',
-                default: 'Thank You',
+                key: 'thank_you!',
+                default: 'Thank You!',
                 case: 'words'
-            })}!</p>
+            })}</p>
           </div>;
     
           let notFoundPage = Immutable.fromJS({

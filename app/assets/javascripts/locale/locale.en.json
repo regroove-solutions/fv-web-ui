@@ -2,7 +2,7 @@
   "errors": {
     "feedback_include_link": "Include what link or action you took to get to this page",
     "page_not_found": "Page Not Found",
-    "report_via_feedback": "Please report this error via the 'Provide Feedback' feature so that we can fix it"
+    "report_via_feedback": "Please report this error so that we can fix it"
   },
   "general": {
     "about": "about",
@@ -311,7 +311,7 @@
     "fish": "fish",
     "font_size": "Font Size",
     "for_the": "for the",
-    "forgot": "forgot",
+    "forgot": "forgot password?",
     "forgot_password": "Forgot Your Password",
     "forgot_your_password": "Forgot Your Password?",
     "found": "Found",
@@ -328,6 +328,7 @@
     "gender": "Gender",
     "generate_reports": "Generate Reports",
     "get_started": "Get Started",
+    "get_started!": "Get Started",
     "go_back": "back",
     "go_to_record": "Go to Record",
     "good_job": "Good Job",
@@ -839,7 +840,7 @@
     "text_for_about_sect": "ENTER TEXT FOR THE 'ABOUT' SECTION",
     "text_for_news_events": "ENTER TEXT FOR THE NEWS &amp, EVENTS SECTION",
     "text_for_related_links": "ENTER LINKS TO RELATED WEB SITES",
-    "thank_you": "Thank you",
+    "thank_you!": "Thank you!",
     "the_answer_is_incorrect": "Sorry, that is not the correct answer.",
     "the_best_geo_region": "Choose the theme that best reflects your geographical region.",
     "the_word_language": "Language",
@@ -937,8 +938,8 @@
     "words": "words",
     "words_de": "Words",
     "words_upper_case": "Words",
-    "workflow": "flux de travail",
-    "workspace": "espace de travail",
+    "workflow": "Workflow",
+    "workspace": "Workspace",
     "workspace_languages": "Workspace Languages",
     "workspaces": "espaces de travail",
     "write": "write",
@@ -1051,7 +1052,7 @@
     "document_deleted_successfully": "Document deleted successfully",
     "document_updated_successfully": "Document updated successfully",
     "document_with_blob_created_successfully": "Document with blob created successfully",
-    "fetch_started": "Fetch started",
+    "fetch_started": "Loading",
     "update_started": "Update started",
     "user_account_created_successfully": "User account created successfully",
     "user_account_updated_successfully": "User account updated successfully"
@@ -1170,7 +1171,7 @@
             "edit_x_gallery": "Edit %s Gallery",
             "x_galleries": "%s Galleries"
           },
-          "kids_portal": "Kids Portal",
+          "for_kids": "for Kids",
           "learn": {
             "about_our_language": "About our Language",
             "alphabet": {

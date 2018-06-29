@@ -166,8 +166,8 @@ export default class PageHome extends Component {
                                 }}></p></div>
                             <div>
                                 <RaisedButton label={this.intl.translate({
-                                    key: 'get_started',
-                                    default: 'Get Started',
+                                    key: 'get_started!',
+                                    default: 'Get Started!',
                                     case: 'words'
                                 }) + '!'} primary={true}
                                               onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')}

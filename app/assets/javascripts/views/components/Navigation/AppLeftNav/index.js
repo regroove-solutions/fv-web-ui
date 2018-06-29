@@ -61,27 +61,27 @@ export default class AppLeftNav extends Component {
     const routes = Immutable.fromJS([
       {
           id: 'home',
-          label: this.intl.translate({key: 'home', default: 'Home', case: 'words'}),
+          label: this.intl.translate({key: 'home', default: 'Home', case: 'first'}),
           path: "/"
       },
       {
           id: 'get-started',
-          label: this.intl.translate({key: 'get_started', default: 'Get Started', case: 'words'}),
+          label: this.intl.translate({key: 'get_started', default: 'Get Started', case: 'first'}),
           path: "/content/get-started/"
       },
       {
           id: 'explore',
-          label: this.intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'words'}),
+          label: this.intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'first'}),
           path: '/explore/FV/sections/Data/',
       },
       {
           id: 'kids',
-          label: this.intl.translate({key: 'kids', default: 'Kids', case: 'words'}),
+          label: this.intl.translate({key: 'kids', default: 'Kids', case: 'first'}),
           path: '/kids',
       },
       {
           id: 'contribute',
-          label: this.intl.translate({key: 'contribute', default: 'Contribute', case: 'words'}),
+          label: this.intl.translate({key: 'contribute', default: 'Contribute', case: 'first'}),
           path: "/content/contribute/"
       }
     ]);

@@ -55,7 +55,7 @@ export default class Footer extends React.Component {
                                     href="/content/conditions/">{this.intl.translate({
                                     key: 'views.components.navigation.conditions_of_use',
                                     default: 'Conditions of Use',
-                                    case: 'words'
+                                    case: 'first'
                                 })}</a> | <a href="mailto:feedback@fpcf.ca">{this.intl.translate({
                                     key: 'general.feedback',
                                     default: 'Feedback',
@@ -70,11 +70,11 @@ export default class Footer extends React.Component {
                                     key: 'general.phone',
                                     default: 'Phone',
                                     case: 'first'
-                                })}: 250-652-5952 · {this.intl.translate({
+                                })} : +1-250-652-5952 · {this.intl.translate({
                                     key: 'general.email',
                                     default: 'Email',
                                     case: 'first'
-                                })}: info@fpcc.ca</p>
+                                })} : info@fpcc.ca</p>
                                 <p>&copy; 2000-{new Date().getFullYear()} FirstVoices</p>
                             </div>
 

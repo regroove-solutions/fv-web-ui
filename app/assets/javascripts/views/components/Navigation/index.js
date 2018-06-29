@@ -486,7 +486,7 @@ export default class Navigation extends Component {
                     <p style={{padding: 0}}>{this.intl.translate({
                         key: 'views.components.navigation.search_all',
                         default: 'Search all languages &amp; words at FirstVoices.com',
-                        case: 'words'
+                        case: 'first'
                     })}</p>
                   </div>;
                 }
@@ -513,8 +513,8 @@ export default class Navigation extends Component {
             <ToolbarTitle style={{'color': '#fff', 'padding': '0 0 0 15px', 'fontSize':'15px'}} text={intl.trans('choose_lang', 'Choose a Language', 'first')} />
             <DropDownMenu value={this.intl.locale} onChange={this._handleChangeLocale} labelStyle={{'color': '#fff'}}>
               <MenuItem value="en" primaryText="English" />
-              <MenuItem value="fr" primaryText="French" />
-              <MenuItem value="sp" primaryText="Spanish" />
+              <MenuItem value="fr" primaryText="Français" />
+              <MenuItem value="sp" primaryText="Español" />
             </DropDownMenu>
           </ToolbarGroup>
         </Toolbar>

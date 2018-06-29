@@ -242,7 +242,7 @@ export default class Search extends DataListView {
                     <div className="col-xs-12">
                         <form onSubmit={this._onSearchSaveForm}>
                             <FiltersWithToggle
-                                label={intl.trans('views.pages.search.filter_items', 'Filter Items', 'first')}
+                                label={intl.trans('views.pages.search.filter_items', 'Filter items', 'first')}
                                 mobileOnly={true}>
                                 <t.form.Form
                                     ref="search_form"
@@ -256,14 +256,14 @@ export default class Search extends DataListView {
                                     primary={true}/> &nbsp;
                                 <RaisedButton
                                     type="submit"
-                                    label={intl.trans('submit', 'Submit', 'first')}
+                                    label={intl.trans('search', 'Search', 'first')}
                                     primary={true}/>
                             </FiltersWithToggle>
                         </form>
                     </div>
                 </div>
                 <div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
-                    <h1>{intl.trans('search_results', 'Search Results', 'words')} - {this.props.routeParams.searchTerm}</h1>
+                    <h1>{intl.trans('search_results', 'Search results', 'first')} - {this.props.routeParams.searchTerm}</h1>
 
 					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 

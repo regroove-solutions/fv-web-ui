@@ -22,8 +22,8 @@ const ResourceTypes = t.enums({
 });
 
 const BookTypes = t.enums({
-    song: intl.trans('song_book', 'Song Book', 'words'),
-    story: intl.trans('story_book', 'Story Book', 'words')
+    song: intl.trans('song_book', 'Song Book', 'first'),
+    story: intl.trans('story_book', 'Story Book', 'first')
 });
 
 const ReportItemTypes = t.enums({

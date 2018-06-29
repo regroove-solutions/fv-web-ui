@@ -172,7 +172,7 @@ export default class Navigation extends Component {
                 title={<a style={{textDecoration: 'none', color: '#fff'}}
                           onTouchTap={this._onNavigateRequest.bind(this, (!this.props.routeParams.dialect_path) ? '/kids' : '/kids' + this.props.routeParams.dialect_path)}>{avatar}
                     <span
-                        className="hidden-xs">{(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' ' + intl.trans('views.pages.explore.dialect.kids_portal', 'Kids Portal', 'words')}</span></a>}
+                        className="hidden-xs">{(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || this.props.properties.title) + ' ' + intl.trans('views.pages.explore.dialect.for_kids', 'for Kids')}</span></a>}
                 iconClassNameRight="muidocs-icon-navigation-expand-more"
                 showMenuIconButton={false}
                 onRightIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>

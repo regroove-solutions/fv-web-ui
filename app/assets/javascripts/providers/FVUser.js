@@ -22,7 +22,7 @@ const fetchUser = function fetch(username, messageStart = null, messageSuccess =
         dispatch({
             type: key + '_FETCH_START',
             pathOrId: username,
-            message: (messageStart || intl.trans('providers.fetch_started', 'Fetch started', 'first') + '...')
+            message: (messageStart || intl.trans('providers.fetch_started', 'Loading', 'first') + '...')
         });
 
         return UserOperations.getUser(username, {headers: {}})

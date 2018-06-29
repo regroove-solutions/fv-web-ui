@@ -81,17 +81,17 @@ export default class PromiseWrapper extends Component {
                         case: 'first'
                     })}</h1><p>{this.intl.translate({
                         key: 'errors.report_via_feedback',
-                        default: 'Please report this error via the "Provide Feedback" feature so that we can fix it',
+                        default: 'Please report this error so that we can fix it',
                         case: 'first'
                     })}.
                     </p><p>{this.intl.translate({
                         key: 'errors.feedback_include_link',
                         default: 'Include what link or action you took to get to this page'
                     })}.</p><p>{this.intl.translate({
-                        key: 'thank_you',
-                        default: 'Thank You',
+                        key: 'thank_you!',
+                        default: 'Thank You!',
                         case: 'words'
-                    })}!</p>
+                    })}</p>
                     </div>;
                 }
 

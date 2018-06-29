@@ -136,6 +136,14 @@ class CardView extends Component {
             audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audioObj) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
         }
 
+        // Translated 'continue' label
+        let entryType = selectn('properties.fvbook:type', this.props.item);
+        let translated_continue_label_key = "views.pages.explore.dialect.learn.songs_stories.continue_to_" + ((entryType) ? entryType : "x");
+        
+        const translated_continue_label = intl.trans(
+            translated_continue_label_key,
+            'Continue to ' + (entryType ? intl.searchAndReplace(entryType) : 'Entry'), 'first', [entryType ? intl.searchAndReplace(entryType) : intl.trans('entry', 'Entry', 'first')]);
+
         return <div style={Object.assign(defaultStyle, this.props.style)} key={this.props.item.uid}
                     className={classNames('col-xs-12', 'col-md-' + Math.ceil(12 / this.props.cols))}>
             <Card style={{minHeight: '260px'}}>
@@ -193,9 +201,9 @@ class CardView extends Component {
                 <CardText style={{padding: '4px'}}>
 
                     <FlatButton
-                        onTouchTap={this.props.action.bind(this, '/' + (this.props.theme || 'explore') + this.props.item.path.replace('Stories & Songs', 'learn/' + (selectn('properties.fvbook:type', this.props.item) == 'story' ? 'stories' : 'songs')))}
+                        onTouchTap={this.props.action.bind(this, '/' + (this.props.theme || 'explore') + this.props.item.path.replace('Stories & Songs', 'learn/' + (entryType == 'story' ? 'stories' : 'songs')))}
                         primary={true}
-                        label={intl.trans('views.pages.explore.dialect.learn.songs_stories.continue_to_x', 'Continue to ' + (selectn('properties.fvbook:type', this.props.item) ? intl.searchAndReplace(selectn('properties.fvbook:type', this.props.item)) : 'Entry'), 'first', [selectn('properties.fvbook:type', this.props.item) ? intl.searchAndReplace(selectn('properties.fvbook:type', this.props.item)) : intl.trans('entry', 'Entry', 'first')])}/>
+                        label={translated_continue_label}/>
 
                     {(() => {
                         if (selectn('properties.fvbook:introduction', this.props.item)) {

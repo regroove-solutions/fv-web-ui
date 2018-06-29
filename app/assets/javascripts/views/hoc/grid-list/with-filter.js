@@ -207,7 +207,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                             <form onSubmit={this._onFilterSaveForm}>
 
                                 <FiltersWithToggle
-                                    label={intl.trans('views.pages.search.filter_items', 'Filter Items', 'words')}
+                                    label={intl.trans('views.pages.search.filter_items', 'Filter items', 'first')}
                                     mobileOnly={true}>
                                     <t.form.Form
                                         ref="filter_form"

@@ -193,10 +193,10 @@ export default class Login extends Component {
                             })} <a style={{"cursor": "pointer", "fontWeight": "100"}}
                                    onTouchTap={this._onNavigateRequest.bind(this, "forgotpassword")}
                                    className="pull-right">{this.intl.translate({
-                                key: 'general.forgot',
-                                default: 'Forgot',
+                                key: 'general.forgot?',
+                                default: 'Forgot?',
                                 case: 'first'
-                            })}?</a></h6>
+                            })}</a></h6>
                             <div><TextField style={Object.assign({}, TextFieldStyle, {"margin": "15px 0"})}
                                             underlineShow={false} ref="username" hintText={this.intl.translate({
                                 key: 'views.pages.explore.dialect.users.username',
@@ -216,12 +216,15 @@ export default class Login extends Component {
                                 "padding": "0 3px"
                             }}>{loginFeedbackMessage}</p>
                             <RaisedButton style={{"width": "100%"}} secondary={true} onTouchTap={this._handleLogin}
-                                          label="Sign in"/>
+                                          label={this.intl.translate({
+                                            key: 'views.pages.users.login.sign_in',
+                                            default: 'Sign In',
+                                            case: 'first'
+                                        })}/>
                             <h6 style={{"fontWeight": "500", "paddingTop": "10px"}}>{this.intl.translate({
                                 key: 'views.components.navigation.new_to_firstvoices',
-                                default: 'New to FirstVoices',
-                                case: 'words'
-                            })}?</h6>
+                                default: 'New to FirstVoices?'
+                            })}</h6>
                             <RaisedButton style={{"width": "100%"}} primary={true}
                                           onTouchTap={this._onNavigateRequest.bind(this, "register")}
                                           label={this.intl.translate({

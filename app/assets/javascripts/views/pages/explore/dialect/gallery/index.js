@@ -162,7 +162,7 @@ export default class PageDialectGalleries extends Component {
 
                 <div className="col-xs-12">
                     <h1>{intl.trans('views.pages.explore.dialect.gallery.x_galleries',
-                        selectn('response.title', computeDialect2) + ' Galleries', 'words',
+                        selectn('response.title', computeDialect2) + ' Galleries', 'first',
                         [selectn('response.title', computeDialect2)])}</h1>
                 </div>
 

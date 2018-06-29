@@ -9,7 +9,7 @@
 		<p>FirstVoices is a suite of web-based tools and services designed to support Indigenous people engaged in language archiving, language teaching and culture revitalization.</p>
 	</div>
 
-	<p>Loading/Chargement...</p>
+	<p>Loading / Chargement / Cargando...</p>
 
 	</div>
   </div>

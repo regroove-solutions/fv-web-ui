@@ -123,6 +123,13 @@ export default class PageContent extends Component {
             var originalContent = selectn('fvpage:blocks[0].text', page);
             var content = intl.trans('views.pages.get_started.page', originalContent)
             page['fvpage:blocks'][0]['text'] = content;
+        } 
+
+        // contribute page translated
+        else if (selectn('dc:title', page) === 'Contribute') {
+            var originalContent = selectn('fvpage:blocks[0].text', page);
+            var content = intl.trans('views.pages.contribute.page', originalContent)
+            page['fvpage:blocks'][0]['text'] = content;
         }
 
         const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
@@ -134,7 +141,7 @@ export default class PageContent extends Component {
             <div className={classNames('row')} style={{margin: '25px 0'}}>
 
                 <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                    <h1 style={{fontWeight: 500}}>{intl.searchAndReplace(selectn('fvpage:blocks[0].title', page))}</h1>
+                    <h1 style={{fontWeight: 500}}>{intl.searchAndReplace(selectn('fvpage:blocks[0].title', page), 'first')}</h1>
                     {selectn('fvpage:blocks[0].summary', page)}
                     <hr style={sectionHrStyle}/>
                     <div dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}}></div>
