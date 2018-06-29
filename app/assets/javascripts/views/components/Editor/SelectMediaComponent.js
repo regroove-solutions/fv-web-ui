@@ -22,6 +22,7 @@ import t from 'tcomb-form';
 import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import {Dialog, FlatButton, RaisedButton} from 'material-ui';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
@@ -150,7 +151,7 @@ export default class SelectMediaComponent extends React.Component {
             this.props.fetchResources('/FV/Workspaces/',
                 ' AND ecm:primaryType ILIKE \'' + this.props.type + '\'' +
                 ' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != \'deleted\' AND ecm:currentLifeCycleState != \'Disabled\'' +
-                ' AND (ecm:path STARTSWITH \'' + selectn('path', this.props.dialect) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) +
+                ' AND (ecm:path STARTSWITH \'' + StringHelpers.clean(selectn('path', this.props.dialect)) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) +
                 '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
                 '&pageSize=' + fetcherParams.pageSize +
                 '&sortBy=dc:created' +
