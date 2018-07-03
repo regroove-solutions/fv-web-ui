@@ -514,7 +514,7 @@ export default class Navigation extends Component {
             <DropDownMenu value={this.intl.locale} onChange={this._handleChangeLocale} labelStyle={{'color': '#fff'}}>
               <MenuItem value="en" primaryText="English" />
               <MenuItem value="fr" primaryText="Français" />
-              <MenuItem value="sp" primaryText="Español" />
+              {/*<MenuItem value="sp" primaryText="Español" />*/}
             </DropDownMenu>
           </ToolbarGroup>
         </Toolbar>
