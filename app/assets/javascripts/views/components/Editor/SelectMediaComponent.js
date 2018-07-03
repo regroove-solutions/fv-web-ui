@@ -233,7 +233,7 @@ export default class SelectMediaComponent extends React.Component {
                         fetcher={this.fetchData}
                         gridListTile={SharedResourceGridTileWithDialect}
                         fetcherParams={this.state.fetcherParams}
-                        formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
+                        initialValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
                         metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
                         items={selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []}/>
 

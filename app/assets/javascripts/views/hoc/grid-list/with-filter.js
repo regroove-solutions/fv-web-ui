@@ -49,6 +49,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
             fixedList: PropTypes.bool,
             fixedListFetcher: PropTypes.func,
             fetcherParams: PropTypes.object,
+            initialValues: PropTypes.object,
             filterOptionsKey: PropTypes.string.isRequired,
             applyDefaultFormValues: PropTypes.bool,
             fullWidth: PropTypes.bool,
@@ -115,12 +116,16 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
         _onReset(event, props = this.props) {
 
+            let form = this.refs["filter_form"];
+
             // Reset all controlled inputs
-            let inputs = selectn('refs.input.refs', this.refs["filter_form"]);
+            let inputs = Object.assign({}, selectn('refs.input.refs', form), selectn('inputRef.childRefs',form));
+
+            let properties = FormHelpers.getProperties(form);
 
             for (let inputKey in inputs) {
-                if (typeof inputs[inputKey].reset === 'function') {
-                    inputs[inputKey].reset();
+                if (typeof inputs[inputKey].forceReset === 'function') {
+                    inputs[inputKey].forceReset();
                 }
             }
 
@@ -212,6 +217,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                                     <t.form.Form
                                         ref="filter_form"
                                         type={t.struct(selectn(this.props.filterOptionsKey, fields))}
+                                        context={this.props.initialValues}
                                         value={this.state.formValue}
                                         options={options.toJS()}/>
                                     <RaisedButton
