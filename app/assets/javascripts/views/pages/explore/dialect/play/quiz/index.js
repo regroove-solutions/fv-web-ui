@@ -337,8 +337,10 @@ export default class Quiz extends Component {
                     <div className={classNames('col-xs-2', 'text-left')}>
                         <IconButton style={{backgroundColor: '#ffffff'}}
                                     onTouchTap={this._handleNavigate.bind(this, 'previous')}
-                                    iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')}
-                                    tooltip={intl.trans('views.pages.explore.dialect.play.quiz.previous_question', 'Previous Question', 'words')}/>
+                                    iconClassName="material-icons"
+                                    tooltip={intl.trans('views.pages.explore.dialect.play.quiz.previous_question', 'Previous Question', 'words')}>
+                        chevron_left
+                        </IconButton>
                     </div>
 
                     <div className={classNames('col-xs-8', 'text-center')}>
@@ -357,8 +359,10 @@ export default class Quiz extends Component {
                         <IconButton style={{backgroundColor: '#ffffff'}}
                                     onTouchTap={this._handleNavigate.bind(this, 'next')}
                                     disabled={!isCorrect || isComplete}
-                                    iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')}
-                                    tooltip={intl.trans('views.pages.explore.dialect.play.quiz.next_question', 'Next Question', 'words')}/>
+                                    iconClassName="material-icons"
+                                    tooltip={intl.trans('views.pages.explore.dialect.play.quiz.next_question', 'Next Question', 'words')}>
+                        chevron_right
+                        </IconButton>
                     </div>
 
                 </div>

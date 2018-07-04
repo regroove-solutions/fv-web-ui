@@ -75,8 +75,7 @@ export default class Statistics extends Component {
                             <strong>{this.props.headerText}</strong>: {dataResponse[docType].total}</div>
 
                         {lifecycleStateDoughnutData.map((slice, i) =>
-                            <div key={slice.label}><span className={'glyphicon glyphicon-stop'}
-                                                         style={{color: slice.color}}/> {slice.label}: {slice.value}
+                            <div key={slice.label}><span style={{color: slice.color}}>&#9632;</span> {slice.label}: {slice.value}
                             </div>
                         )}
                     </div>

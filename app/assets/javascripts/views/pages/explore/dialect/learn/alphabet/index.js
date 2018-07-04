@@ -30,6 +30,8 @@ import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-vi
 
 import Paper from 'material-ui/lib/paper';
 import FlatButton from 'material-ui/lib/flat-button';
+import RaisedButton from 'material-ui/lib/raised-button';
+import FontIcon from 'material-ui/lib/font-icon';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import Header from 'views/pages/explore/dialect/header';
@@ -95,6 +97,11 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
 
     constructor(props, context) {
         super(props, context);
+
+        this.state = {
+            current_char: null
+        };
+
         // Bind methods to 'this'
         ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
@@ -108,8 +115,11 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
         newProps.fetchCharacters(newProps.routeParams.dialect_path + '/Alphabet', '&sortOrder=asc&sortBy=fvcharacter:alphabet_order');
     }
 
-    _onCharAudioTouchTap(charAudioId) {
-        document.getElementById(charAudioId).play();
+    _onCharAudioTouchTap(char) {
+        document.getElementById("charAudio" + char.uid).play();
+        this.setState({
+            current_char: char
+        });
     }
 
     _onNavigateRequest(path) {
@@ -179,12 +189,21 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
             <div className={classNames('row', 'dialect-body-container')} style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-12', 'col-md-7')}>
-                    <TextHeader title={intl.trans('views.pages.explore.dialect.learn.alphabet.x_alphabet',
-                        selectn('response.title', computeDialect2) + ' Alphabet', 'words',
-                        [selectn('response.title', computeDialect2)])} tag="h1"
-                                properties={this.props.properties}
-                                appendToTitle={<a href="alphabet/print" target="_blank"><i
-                                    className="material-icons">print</i></a>}/>
+                    <TextHeader title={intl.trans('views.pages.explore.dialect.learn.alphabet.x_alphabet', selectn('response.title', computeDialect2) + ' Alphabet', 'words', [selectn('response.title', computeDialect2)])}
+                        tag="h1"
+                        properties={this.props.properties}
+                        appendToTitle={<a href="alphabet/print" target="_blank"><i
+                        className="material-icons">print</i></a>}/>
+
+                    {(() => {
+                        if (this.state.current_char !== null) {
+                            return <RaisedButton
+                                primary={true}
+                                label={"View Words and Phrases that start with " + this.state.current_char.title}
+                                onTouchTap={this._onNavigateRequest.bind(this, this.state.current_char.path.split('/')[this.state.current_char.path.split('/').length - 1])}
+                                style={{minWidth: 'inherit', textTransform: 'initial', margin: '10px 0'}}/>;
+                        }
+                    })()}
 
                     {(() => {
 
@@ -197,15 +216,17 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                                             textAlign: 'center',
                                             margin: '5px',
                                             padding: '5px 10px',
+                                            width: '100px',
                                             display: 'inline-block'
                                         }}>
                                             <FlatButton
-                                                onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
+                                             icon={<FontIcon
+                                                className="material-icons">play_arrow</FontIcon>}
+                                                onTouchTap={this._onCharAudioTouchTap.bind(this, char)}
+                                                //onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
                                                 label={char.title} style={{minWidth: 'inherit', textTransform: 'initial'}}/>
                                             {(char.contextParameters.character.related_audio[0]) ?
                                                 <span>
-                                <a className="glyphicon glyphicon-volume-up" style={{textDecoration: 'none'}}
-                                   onTouchTap={this._onCharAudioTouchTap.bind(this, 'charAudio' + char.uid)}/>
                                   <audio id={'charAudio' + char.uid}
                                          src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path}/>
                                 </span>
