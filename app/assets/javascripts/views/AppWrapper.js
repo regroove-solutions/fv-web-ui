@@ -158,15 +158,6 @@ export default class AppWrapper extends Component {
         ['_startAdminGuideAssist'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    // Fetch data on initial render
-    componentDidMount() {
-
-        window.onscroll = function () {
-            if (typeof KeymanWeb !== 'undefined')
-                KeymanWeb.SetHelpPos(window.innerWidth - 500, getPosition().y + 200);
-        };
-    }
-
     // Force update of theme if out of sync
     // This is a fix that may be unecessary in future versions of Material-UI, React, Reat-redux-provide
     componentWillReceiveProps(nextProps) {

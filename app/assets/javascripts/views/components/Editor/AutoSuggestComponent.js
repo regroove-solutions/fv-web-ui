@@ -18,8 +18,6 @@ const theme = {
     suggestionFocused: 'active'
 };
 
-let KeymanWebChangePolling;
-
 let suggestionThrottle;
 
 const intl = IntlService.instance;
@@ -124,10 +122,6 @@ export default class AutoSuggestComponent extends Component {
         }
     }
 
-    componentWillUnmount() {
-        clearInterval(KeymanWebChangePolling);
-    }
-
     loadSuggestions(value) {
         this.setState({isLoading: true});
 
@@ -202,64 +196,6 @@ export default class AutoSuggestComponent extends Component {
                 return this.props.computeSharedLinks;
                 break;
         }
-    }
-
-    componentDidMount() {
-        setTimeout(function () {
-            if (this.refs && this.refs["suggestion_widget"] != undefined) {
-
-                /**
-                 * This is a workaround for Keymanweb modifying the input value directly and not triggering an onChange event.
-                 * The virtual keyboard input will trigger a change on the actual suggest input via polling (see AppWrapper.js).
-                 * KeymanWeb should be patched or replaced in the future eliminating the need for this code.
-                 */
-                let suggestionWidgetDOM = this.refs["suggestion_widget"].input;
-
-                /**
-                 * Stop polling for KeymanWeb value when element blurred
-                 */
-                suggestionWidgetDOM.addEventListener("blur", function (event) {
-                    clearInterval(KeymanWebChangePolling);
-                    return true;
-                }.bind(this));
-
-                /**
-                 * Begin polling for KeymanWeb value when element focused, if keyboard visible
-                 */
-                suggestionWidgetDOM.addEventListener("focus", function (event) {
-
-                    // Always clear previous interval before starting a new one
-                    clearInterval(KeymanWebChangePolling);
-
-                    // Only required if keyboard is visible
-                    if (KeymanWeb.IsHelpVisible()) {
-
-                        KeymanWebChangePolling = setInterval(function () {
-
-                            // If keyboard closed, no need to keep polling
-                            if (!KeymanWeb.IsHelpVisible()) {
-                                clearInterval(KeymanWebChangePolling);
-                                return;
-                            }
-
-                            let keymanWebValue = suggestionWidgetDOM.value;
-
-                            // Update state value if values go out of sync, forcing an auto-suggest change
-                            if (keymanWebValue != this.state.value) {
-
-                                this.setState({value: keymanWebValue});
-                                this.loadSuggestions(keymanWebValue);
-
-                            }
-                        }.bind(this), 1000);
-                    }
-
-                    return true;
-                }.bind(this));
-
-            }
-
-        }.bind(this), 0);
     }
 
     render() {
