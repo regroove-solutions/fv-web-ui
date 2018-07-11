@@ -37,9 +37,7 @@ import MediaList from 'views/components/Browsing/media-list';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
 
-
-
-
+import elasticsearch from 'elasticsearch';
 
 const DefaultFetcherParams = { filters: {'properties.dc:title': '', 'dialect': '78086057-9c34-48f7-995f-9dc3b313231b' } };
 
@@ -83,11 +81,71 @@ export default class Test extends Component {
         currentPageIndex: 0,
         pageSize: 10
       }, DefaultFetcherParams),
-      pathOrId: "/FV/Workspaces/Data/Hebrew/Hebrew/Hebrew/Dictionary/שלום"
+      pathOrId: "/FV/Workspaces/Data/Athabascan/Beaver/Tsaaʔ%20Dane%20-%20Beaver%20People/Dictionary/119430"
     }
 
     this.fetchData = this.fetchData.bind(this);
     this.fixedListFetcher = this.fixedListFetcher.bind(this);
+
+
+    var client = new elasticsearch.Client({
+      host: 'https://preprod.firstvoices.com/nuxeo/site/es',
+      httpAuth: 'null:null',
+      log: 'trace'
+    });
+
+    var test123 = client.search({
+      index: 'nuxeo',
+      'X-NXenrichers.document': 'breadcrumb', // enrichers -- not working here
+      'enrichers.document': 'breadcrumb', // enrichers -- not working here
+      'fetch.document' : 'dc:creator', // marshallers - not working here
+      headers: {
+        'X-NXenrichers.document': 'breadcrumb', // enrichers -- not working here
+        'enrichers.document': 'breadcrumb', // enrichers -- not working here
+        'fetch.document' : 'dc:creator' // marshallers - not working here
+      },
+      body: {
+          "from" : 0,
+          "size" : 100,
+          //"_source": ["dc:title"],
+          "query": {
+            "filtered": {
+              "filter": {
+                  "bool": {
+                      "must": 
+                          [
+                              {
+                                "term": {
+                                  "ecm:primaryType": "FVPortal"
+                                }
+                              },
+                              {
+                                "term": {
+                                  "ecm:isVersion": 0
+                                }
+                              },
+                              {
+                                "prefix": {
+                                  "ecm:path": "/FV/Workspaces/"
+                                }
+                              }
+                          ]
+                      ,
+                      "must_not": [
+                        {"term": {
+                          "ecm:currentLifeCycleState": "deleted"
+                        }}
+                      ]
+                    }
+              }
+            }
+          }
+      }
+    }).then(function (resp) {
+        var hits = resp.hits.hits;
+    }, function (err) {
+        console.trace(err.message);
+    });
   }
 
   fixedListFetcher(list) {
@@ -98,6 +156,8 @@ export default class Test extends Component {
 
   fetchData() {
     this.props.fetchWord(this.state.pathOrId);
+
+
   }
 
   // Fetch data on initial render
