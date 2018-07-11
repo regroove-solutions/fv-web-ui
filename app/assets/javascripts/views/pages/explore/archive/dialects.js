@@ -73,7 +73,7 @@ export default class ExploreDialects extends Component {
     }
 
     fetchData(newProps) {
-        newProps.fetchPortals(this._getParentPath(newProps));
+        newProps.fetchPortals(this._getQueryPath(newProps));
     }
 
     fixedListFetcher(list) {
@@ -102,16 +102,21 @@ export default class ExploreDialects extends Component {
         return '/' + props.properties.domain + '/' + props.routeParams.area;
     }
 
+    _getQueryPath(props = this.props) {
+        // Perform a page provider query
+        return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
+    }
+
     render() {
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
         const computeEntities = Immutable.fromJS([{
-            'id': this._getParentPath(),
+            'id': this._getQueryPath(),
             'entity': this.props.computePortals
         }])
 
-        const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getParentPath());
+        const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getQueryPath());
         let isLoggedIn = this.props.computeLogin.success && this.props.computeLogin.isConnected;
 
         let portalsEntries = selectn('response.entries', computePortals) || [];
