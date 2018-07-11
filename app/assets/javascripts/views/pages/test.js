@@ -37,7 +37,7 @@ import MediaList from 'views/components/Browsing/media-list';
 import withPagination from 'views/hoc/grid-list/with-pagination';
 import withFilter from 'views/hoc/grid-list/with-filter';
 
-import elasticsearch from 'elasticsearch';
+//import elasticsearch from 'elasticsearch';
 
 const DefaultFetcherParams = { filters: {'properties.dc:title': '', 'dialect': '78086057-9c34-48f7-995f-9dc3b313231b' } };
 
@@ -88,7 +88,7 @@ export default class Test extends Component {
     this.fixedListFetcher = this.fixedListFetcher.bind(this);
 
 
-    var client = new elasticsearch.Client({
+    /*var client = new elasticsearch.Client({
       host: 'https://preprod.firstvoices.com/nuxeo/site/es',
       httpAuth: 'null:null',
       log: 'trace'
@@ -145,7 +145,7 @@ export default class Test extends Component {
         var hits = resp.hits.hits;
     }, function (err) {
         console.trace(err.message);
-    });
+    });*/
   }
 
   fixedListFetcher(list) {
