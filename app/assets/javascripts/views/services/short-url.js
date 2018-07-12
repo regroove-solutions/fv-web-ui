@@ -48,7 +48,7 @@ export default class ServiceShortURL extends Component {
   }
 
   fetchData(newProps) {
-    newProps.queryDialect2ByShortURL('/FV/' + newProps.routeParams.area, ' AND (fvdialect:short_url = \'' + newProps.routeParams.dialectFriendlyName + '\' OR ecm:name = \'' + newProps.routeParams.dialectFriendlyName + '\')');
+    newProps.queryDialect2ByShortURL('/FV/' + newProps.routeParams.area, ' AND (fvdialect:short_url = \'' + newProps.routeParams.dialectFriendlyName + '\' OR ecm:name = \'' + newProps.routeParams.dialectFriendlyName + '\') AND ecm:currentLifeCycleState <> \'deleted\' AND ecm:isCheckedInVersion = 0');
   }
 
   componentWillReceiveProps(nextProps) {
