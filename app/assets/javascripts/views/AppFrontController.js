@@ -307,6 +307,16 @@ export default class AppFrontController extends Component {
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
             {
+                path: ['t', new paramMatch('area', WORKSPACE_OR_SECTION), new paramMatch('dialectFriendlyName', ANYTHING_BUT_SLASH), new paramMatch('appendPath', new RegExp("(.*)"))],
+                title: this.intl.translate({
+                    key: 'dialect_short_url',
+                    default: 'Dialect Short Url',
+                    case: 'words'
+                }),
+                page: <ServiceShortURL/>,
+                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+            },
+            {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
                 title: this.intl.translate({
                     key: 'x_dialects',

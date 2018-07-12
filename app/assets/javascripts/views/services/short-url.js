@@ -55,11 +55,17 @@ export default class ServiceShortURL extends Component {
     const dialectQuery = ProviderHelpers.getEntry(nextProps.computeDialect2ByShortURL, '/FV/' + nextProps.routeParams.area);
     const isSection = nextProps.routeParams.area === 'sections';
 
+    let appendPath = '';
+
+    if (nextProps.routeParams.appendPath) {
+      appendPath = '/' + nextProps.routeParams.appendPath.replace(/_/g, "/");
+    }
+
     let dialectFullPath = selectn('response.entries[0].path', dialectQuery);
 
     if (dialectQuery.success) {
       if (dialectFullPath) {
-        nextProps.replaceWindowPath('/explore' + dialectFullPath);
+        nextProps.replaceWindowPath('/explore' + dialectFullPath + appendPath);
       } else {
         nextProps.replaceWindowPath('/404-page-not-found');
       }
