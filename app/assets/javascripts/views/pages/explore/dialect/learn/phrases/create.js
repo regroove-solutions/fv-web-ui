@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
