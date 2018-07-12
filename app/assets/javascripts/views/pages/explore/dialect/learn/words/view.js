@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
 
 import Preview from 'views/components/Editor/Preview';
@@ -130,7 +131,7 @@ export default class View extends Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word;
+        return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.word);
     }
 
     _onNavigateRequest(path) {

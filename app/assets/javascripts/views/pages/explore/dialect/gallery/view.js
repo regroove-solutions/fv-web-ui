@@ -25,6 +25,7 @@ import ConfGlobal from 'conf/local.json';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -80,7 +81,7 @@ export default class Gallery extends React.Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName;
+        return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.galleryName);
     }
 
     handleImageLoad(event) {

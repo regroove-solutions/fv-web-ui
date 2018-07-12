@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -142,7 +143,7 @@ export default class View extends Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase;
+        return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase);
     }
 
     _onNavigateRequest(path) {

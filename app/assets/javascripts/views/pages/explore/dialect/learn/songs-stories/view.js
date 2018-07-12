@@ -23,6 +23,7 @@ import ConfGlobal from 'conf/local.json';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import Paper from 'material-ui/lib/paper';
@@ -140,7 +141,7 @@ export default class View extends Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName;
+        return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName);
     }
 
     _onNavigateRequest(path) {
