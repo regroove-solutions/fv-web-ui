@@ -104,6 +104,28 @@ class paramMatch {
     }
 }
 
+let PAGE_NOT_FOUND_TITLE = "404 - " + IntlService.instance.translate({
+    key: 'errors.page_not_found',
+    default: 'Page Not Found',
+    case: 'first'
+  });
+
+let PAGE_NOT_FOUND_BODY = <div>
+      <p>{IntlService.instance.translate({
+        key: 'errors.report_via_feedback',
+        default: 'Please report this error so that we can fix it',
+        case: 'first'
+    })}.
+    </p><p>{IntlService.instance.translate({
+        key: 'errors.feedback_include_link',
+        default: 'Include what link or action you took to get to this page'
+    })}.</p><p>{IntlService.instance.translate({
+        key: 'thank_you!',
+        default: 'Thank You!',
+        case: 'words'
+    })}</p>
+  </div>;
+
 // Regex helper
 const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH);
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION);
@@ -1111,6 +1133,11 @@ export default class AppFrontController extends Component {
                     case: 'words'
                 }) + ' | {$dialect_name}',
                 page: <PageDialectPhraseBooksCreate/>
+            },
+            {
+                path: '404-page-not-found',
+                title: PAGE_NOT_FOUND_TITLE,
+                page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />
             }
         ]);
 
@@ -1259,33 +1286,10 @@ export default class AppFrontController extends Component {
           this.setState(matchReturn);
         }
         // No match found (i.e. 404)
-        else {
-
-          let title = "404 - " + this.intl.translate({
-            key: 'errors.page_not_found',
-            default: 'Page Not Found',
-            case: 'first'
-          });
-
-          let body = <div>
-              <p>{this.intl.translate({
-                key: 'errors.report_via_feedback',
-                default: 'Please report this error so that we can fix it',
-                case: 'first'
-            })}.
-            </p><p>{this.intl.translate({
-                key: 'errors.feedback_include_link',
-                default: 'Include what link or action you took to get to this page'
-            })}.</p><p>{this.intl.translate({
-                key: 'thank_you!',
-                default: 'Thank You!',
-                case: 'words'
-            })}</p>
-          </div>;
-    
+        else {    
           let notFoundPage = Immutable.fromJS({
-            title: title,
-            page: <PageError title={title} body={body} />
+            title: PAGE_NOT_FOUND_TITLE,
+            page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />
           });
     
           let matchReturn = {

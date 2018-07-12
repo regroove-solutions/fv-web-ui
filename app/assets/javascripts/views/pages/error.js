@@ -21,11 +21,11 @@ import classNames from 'classnames';
 /**
 * Page for displaying error for the user
 */
-export default class PageHome extends Component {
+export default class PageError extends Component {
 
   static propTypes = {
     title: PropTypes.string.isRequired,
-    body: PropTypes.string.isRequired
+    body: PropTypes.object.isRequired
   };
 
   constructor(props, context) {

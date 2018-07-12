@@ -79,6 +79,7 @@ const fetchDialect = function fetchDialect(pathOrId) {
 const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
 const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
 const queryDialect2 = RESTActions.query('FV_DIALECT2_QUERY', 'FVDialect', {});
+const queryDialect2ByShortURL = RESTActions.query('FV_DIALECT2_SHORTURL', 'FVDialect', {});
 const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {});
 const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', {headers: {'X-NXenrichers.document': 'ancestry,dialect'}});
 const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,dialect,permissions,acls'}});
@@ -90,6 +91,7 @@ const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocu
 const actions = {
     fetchDialect,
     queryDialect2,
+    queryDialect2ByShortURL,
     updateDialect2,
     fetchDialect2,
     publishDialect,
@@ -103,6 +105,7 @@ const actions = {
 
 const computeDialectsQuery = RESTReducers.computeQuery('dialects');
 const computeDialectQuery = RESTReducers.computeQuery('dialect2_query');
+const computeDialectByShortURL = RESTReducers.computeQuery('dialect2_shorturl');
 const computeDialectFetch = RESTReducers.computeFetch('dialect2');
 const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats');
 
@@ -145,6 +148,7 @@ const reducers = {
     },
 
     computeDialect2Query: computeDialectQuery.computeDialect2Query,
+    computeDialect2ByShortURL: computeDialectByShortURL.computeDialect2Shorturl,
     computeDialects: computeDialectsQuery.computeDialects,
     computeDialect2: computeDialectFetch.computeDialect2,
     computeDialectStats: computeDialectStatsOperation.computeDialectStats,

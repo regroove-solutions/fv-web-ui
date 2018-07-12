@@ -32,8 +32,8 @@ export default class ServiceShortURL extends Component {
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
-    queryDialect2: PropTypes.func.isRequired,
-    computeDialect2Query: PropTypes.object.isRequired,
+    queryDialect2ByShortURL: PropTypes.func.isRequired,
+    computeDialect2ByShortURL: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired
   };
 
@@ -48,18 +48,23 @@ export default class ServiceShortURL extends Component {
   }
 
   fetchData(newProps) {
-    newProps.queryDialect2('/FV/' + newProps.routeParams.area, ' AND ecm:name = \'' + newProps.routeParams.dialectFriendlyName + '\'');
+    newProps.queryDialect2ByShortURL('/FV/' + newProps.routeParams.area, ' AND (fvdialect:short_url = \'' + newProps.routeParams.dialectFriendlyName + '\' OR ecm:name = \'' + newProps.routeParams.dialectFriendlyName + '\')');
   }
 
-  componentDidUpdate() {
-    const dialectQuery = ProviderHelpers.getEntry(this.props.computeDialect2Query, '/FV/' + this.props.routeParams.area);
-    const isSection = this.props.routeParams.area === 'sections';
+  componentWillReceiveProps(nextProps) {
+    const dialectQuery = ProviderHelpers.getEntry(nextProps.computeDialect2ByShortURL, '/FV/' + nextProps.routeParams.area);
+    const isSection = nextProps.routeParams.area === 'sections';
 
     let dialectFullPath = selectn('response.entries[0].path', dialectQuery);
 
-    if (dialectFullPath) {
-      window.location.replace('/explore' + dialectFullPath);
+    if (dialectQuery.success) {
+      if (dialectFullPath) {
+        nextProps.replaceWindowPath('/explore' + dialectFullPath);
+      } else {
+        nextProps.replaceWindowPath('/404-page-not-found');
+      }
     }
+
   }
 
   render() { return null; }
