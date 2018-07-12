@@ -103,8 +103,13 @@ export default class ExploreDialects extends Component {
     }
 
     _getQueryPath(props = this.props) {
-        // Perform a page provider query
-        return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
+        // Perform a page provider query (currently only for sections)
+        if (props.routeParams.area == 'sections') {
+            return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
+        }
+        else {
+            return '/' + props.properties.domain + '/' + props.routeParams.area;
+        }
     }
 
     render() {
