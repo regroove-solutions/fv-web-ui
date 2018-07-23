@@ -22,6 +22,8 @@ import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
+import StringHelpers from 'common/StringHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -62,7 +64,6 @@ export default class PageDialectPhraseEdit extends Component {
 
         this.state = {
             phrase: null,
-            phrasePath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.phrase,
             formValue: null
         };
 
@@ -72,7 +73,7 @@ export default class PageDialectPhraseEdit extends Component {
 
     fetchData(newProps) {
         newProps.fetchDialect2(this.props.routeParams.dialect_path);
-        newProps.fetchPhrase(this.state.phrasePath);
+        newProps.fetchPhrase(this._getPhrasePath());
     }
 
     // Fetch data on initial render
@@ -85,15 +86,14 @@ export default class PageDialectPhraseEdit extends Component {
 
         let currentPhrase, nextPhrase;
 
-        if (this.state.phrasePath != null) {
-            currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
-            nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath);
+        if (this._getPhrasePath() != null) {
+            currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath());
+            nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this._getPhrasePath());
         }
 
         // 'Redirect' on success
         if (selectn('wasUpdated', currentPhrase) != selectn('wasUpdated', nextPhrase) && selectn('wasUpdated', nextPhrase) === true) {
-            let itemPath = selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases');
-            NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextPhrase), 'phrases'), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -127,6 +127,19 @@ export default class PageDialectPhraseEdit extends Component {
         return false;
     }
 
+    _getPhrasePath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        if (StringHelpers.isUUID(props.routeParams.phrase)){
+            return props.routeParams.phrase;
+        } else {
+            return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase);
+        }
+    }
+
     _handleSave(phrase, formValue) {
 
         let newDocument = new Document(phrase.response, {
@@ -152,14 +165,14 @@ export default class PageDialectPhraseEdit extends Component {
         let context;
 
         const computeEntities = Immutable.fromJS([{
-            'id': this.state.phrasePath,
+            'id': this._getPhrasePath(),
             'entity': this.props.computePhrase
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }])
 
-        const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath);
+        const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath());
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
         // Additional context (in order to store origin), and initial filter value
@@ -180,7 +193,7 @@ export default class PageDialectPhraseEdit extends Component {
             <EditViewWithForm
                 computeEntities={computeEntities}
                 initialValues={context}
-                itemId={this.state.phrasePath}
+                itemId={this._getPhrasePath()}
                 fields={fields}
                 options={options}
                 saveMethod={this._handleSave}

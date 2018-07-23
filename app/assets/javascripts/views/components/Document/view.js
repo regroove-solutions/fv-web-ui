@@ -146,8 +146,7 @@ export default class View extends Component {
                             break;
 
                         case 'FVPhrase':
-                            actionButton = <RaisedButton label={intl.trans('view_phrase', 'View Phrase', 'words')}
-                                                         onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/phrases'))}/>;
+                            actionButton = <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'phrases')}>{intl.trans('view_phrase', 'View Phrase', 'phrases')}</a>
                             break;
                     }
 

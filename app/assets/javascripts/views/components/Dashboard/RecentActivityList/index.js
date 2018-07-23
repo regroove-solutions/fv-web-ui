@@ -35,25 +35,23 @@ export default class RecentActivityList extends Component {
     }
 
     // Convert Nuxeo paths to webui links
-    _formatLink(path, docType) {
+    _formatLink(object, docType) {
 
         switch (docType) {
             case "word":
-                return NavigationHelpers.navigate('/' + this.props.theme + path.replace("/Dictionary/", "/learn/words/"), null, true);
+                return NavigationHelpers.navigate('/' + this.props.theme + selectn("path", object).replace("/Dictionary/", "/learn/words/"), null, true);
                 break;
 
             case "phrase":
-                return NavigationHelpers.navigate('/' + this.props.theme + path.replace("/Dictionary/", "/learn/phrases/"), null, true);
+                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'phrases');
                 break;
 
             case "song":
-                path = path.replace("/Stories & Songs/", "/learn/songs/");
-                return "/explore" + path;
+                return "/" + this.props.theme + selectn("path", object).replace("/Stories & Songs/", "/learn/songs/");
                 break;
 
-            case "story":
-                path = path.replace("/Stories & Songs/", "/learn/stories/");
-                return "/explore" + path;
+            case "stories":
+                return "/" + this.props.theme + selectn("path", object).replace("/Stories & Songs/", "/learn/stories/");
                 break;
         }
     }
@@ -70,7 +68,7 @@ export default class RecentActivityList extends Component {
                 <ul>
                     {this.props.data.entries.map((document, i) =>
                         <li style={{padding: '0 0 5px 0'}} key={document['uid']}><a
-                            href={this._formatLink(document['path'], this.props.docType)}>{document['title']}</a> <br/>
+                            href={this._formatLink(document, this.props.docType)}>{document['title']}</a> <br/>
                             {this._formatDate(document.properties['dc:modified'])} {(document.properties['dc:lastContributor'].indexOf("Administrator") != -1) ? '' :
                                 <span>{intl.trans('by','by','lower')} <strong>{document.properties['dc:lastContributor']}</strong></span>}
                         </li>

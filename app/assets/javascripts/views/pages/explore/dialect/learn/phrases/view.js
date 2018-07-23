@@ -77,6 +77,7 @@ export default class View extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
@@ -103,6 +104,9 @@ export default class View extends Component {
 
         // Bind methods to 'this'
         ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+
+        // Override breadcrumbs to exclude current title (allow GUID access methods)
+        this.props.overrideBreadcrumbs(props.splitWindowPath.slice(0, props.splitWindowPath.length - 1).concat(["view"]));
     }
 
     fetchData(newProps) {
@@ -130,11 +134,16 @@ export default class View extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()));
+        let phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()));
+        let title = selectn('properties.dc:title', phrase);
 
         if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
             this.props.changeTitleParams({'phrase': title});
         }
+    }
+
+    componentWillUnmount() {
+        this.props.overrideBreadcrumbs(null);
     }
 
     _getPhrasePath(props = null) {
@@ -143,7 +152,11 @@ export default class View extends Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase);
+        if (StringHelpers.isUUID(props.routeParams.phrase)){
+            return props.routeParams.phrase;
+        } else {
+            return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase);
+        }
     }
 
     _onNavigateRequest(path) {
@@ -312,7 +325,7 @@ export default class View extends Component {
                                     <p>
                                         <strong>{intl.trans('views.pages.explore.dialect.learn.words.cultural_notes', 'Cultural Notes', 'words')}:</strong>
                                     </p>
-                                    {intl.searchAndReplacE(cultural_notes)}
+                                    {cultural_notes}
                                 </div>;
                             }
                         })()}

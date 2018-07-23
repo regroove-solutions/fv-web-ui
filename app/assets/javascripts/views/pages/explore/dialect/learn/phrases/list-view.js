@@ -167,8 +167,7 @@ export default class ListView extends DataListView {
         if (this.props.action) {
             this.props.action(item);
         } else {
-            let itemPath = item.path.replace('Dictionary', 'learn/phrases');
-            NavigationHelpers.navigate('/' + this.props.routeParams.theme + itemPath, this.props.pushWindowPath, true);
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(this.props.routeParams.theme, item, 'phrases'), this.props.pushWindowPath, true);
         }
     }
 

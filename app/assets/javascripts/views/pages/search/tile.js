@@ -84,7 +84,8 @@ export default class SearchResultTile extends Component {
 
                 desc = p_output.join(', ');
 
-                targetPath = NavigationHelpers.navigate(selectn('path', tile).replace("/Dictionary/", "/learn/phrases/"), null, true);
+                
+                targetPath = NavigationHelpers.navigate(NavigationHelpers.generateUIDPath('explore', tile, 'phrases'), null, true);
                 break;
 
             case 'FVPortal':
@@ -118,7 +119,8 @@ export default class SearchResultTile extends Component {
             style={{borderBottom: '1px solid #e0e0e0', margin: '20px 0', paddingTop: '65px'}}
             key={selectn('uid', tile)}
             title={<a
-                onTouchTap={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null}
+                href={targetPath}
+                //onTouchTap={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null}
                 style={{fontSize: '1.2em', cursor: 'pointer'}}>{title}<strong
                 style={{fontSize: '0.6em'}}> [{type.replace('FV', '')}]</strong></a>}
             actionPosition="right"

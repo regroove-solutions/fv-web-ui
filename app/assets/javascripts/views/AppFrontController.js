@@ -132,7 +132,7 @@ const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTI
 const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE);
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT));
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'edit', 'search'];
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search'];
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
     condition: function (params) {
@@ -1363,7 +1363,7 @@ export default class AppFrontController extends Component {
 
     _renderBreadcrumb(matchedPage, routeParams) {
         let props = this.props;
-        let splitPath = props.splitWindowPath;
+        let splitPath = props.properties.breadcrumbs || props.splitWindowPath;
         let routes = this.state.routes;
 
         let breadcrumb = splitPath.map(function (path, index) {

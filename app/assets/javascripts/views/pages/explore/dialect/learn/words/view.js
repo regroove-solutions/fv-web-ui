@@ -212,7 +212,7 @@ export default class View extends Component {
 
             const phraseDefinitions = selectn('fv:definitions', phrase);
             const phraseLink = <Link key={selectn('uid', phrase)}
-                                     href={NavigationHelpers.navigate('/' + theme + selectn('path', phrase).replace("/Dictionary/", "/learn/phrases/"), null, true)}>{selectn('dc:title', phrase)}</Link>;
+                                     href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}>{selectn('dc:title', phrase)}</Link>;
 
             if (phraseDefinitions.length == 0) {
                 phrases.push(<p key={key}>{phraseLink}</p>);

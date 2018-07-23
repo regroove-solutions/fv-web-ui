@@ -99,8 +99,7 @@ export default class PageDialectPhrasesCreate extends Component {
 
         // 'Redirect' on success
         if (!this.props.embedded && selectn('success', currentPhrase) != selectn('success', nextPhrase) && selectn('success', nextPhrase) === true) {
-            let itemPath = selectn('response.path', nextPhrase).replace('Dictionary', 'learn/phrases');
-            NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextPhrase), 'phrases'), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -151,12 +150,12 @@ export default class PageDialectPhrasesCreate extends Component {
             let now = Date.now();
             this.props.createPhrase(this.props.routeParams.dialect_path + '/Dictionary', {
                 type: 'FVPhrase',
-                name: formValue['dc:title'],
+                name: now.toString(),
                 properties: properties
             }, null, now);
 
             this.setState({
-                phrasePath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
+                phrasePath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now
             });
         } else {
             //let firstError = this.refs["form_word_create"].validate().firstError();

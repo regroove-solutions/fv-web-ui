@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import selectn from 'selectn';
+
 const arrayPopImmutable = function (array) {
     return array.slice(0, array.length - 1);
 }
@@ -52,4 +54,10 @@ export default {
     navigateBack: function () {
         window.history.back();
     },
+    // Generate a UID link from a path
+    generateUIDPath: function (theme, item, pluralPathId) {
+        let path = '/' + theme + selectn('path', item).replace("/Dictionary/", "/learn/" + pluralPathId + "/");
+        return path = path.substring(0, path.lastIndexOf("/") + 1) + selectn('uid', item);
+
+    }
 }

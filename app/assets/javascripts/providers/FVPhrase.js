@@ -65,7 +65,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
 const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
 const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
+const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}}, false);
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
 
 const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
