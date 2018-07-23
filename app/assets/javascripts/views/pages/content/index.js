@@ -119,7 +119,7 @@ export default class PageContent extends Component {
         const page = selectn('response.entries[0].properties', computePage);
 
         // getting started page translated
-        if (selectn('dc:title', page) === 'Get Started') {
+        /*if (selectn('dc:title', page) === 'Get Started') {
             var originalContent = selectn('fvpage:blocks[0].text', page);
             var content = intl.trans('views.pages.get_started.page', originalContent)
             page['fvpage:blocks'][0]['text'] = content;
@@ -130,7 +130,7 @@ export default class PageContent extends Component {
             var originalContent = selectn('fvpage:blocks[0].text', page);
             var content = intl.trans('views.pages.contribute.page', originalContent)
             page['fvpage:blocks'][0]['text'] = content;
-        }
+        }*/
 
         const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
 
