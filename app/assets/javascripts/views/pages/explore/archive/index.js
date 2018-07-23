@@ -88,8 +88,7 @@ export default class ExploreArchive extends Component {
         return <PromiseWrapper computeEntities={computeEntities}>
             <div className="row">
                 <div className="col-md-4 col-xs-12">
-                    <h1>{intl.trans('views.pages.explore.archive.x_archive',
-                        this.props.properties.title + ' Archive', 'words', [this.props.properties.title])}</h1>
+                    <h1>{intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'title'})}</h1>
                 </div>
                 <div className="col-md-8 col-xs-12">
                     <h2>{intl.trans('views.pages.explore.dialect.category.browse_dialects', 'Browse the following Dialects', 'words')}:</h2>
