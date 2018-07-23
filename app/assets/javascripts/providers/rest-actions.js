@@ -51,7 +51,7 @@ export default {
         }
     },
     fetch: function (key, type, properties = {}) {
-        return function fetch(pathOrId, messageStart = null, messageSuccess = null, messageError = null) {
+        return function fetch(pathOrId, messageStart = null, messageSuccess = null, messageError = null, propertiesOverride = {}) {
             messageStart = IntlService.instance.searchAndReplace(messageStart);
             messageSuccess = IntlService.instance.searchAndReplace(messageSuccess);
             messageError = IntlService.instance.searchAndReplace(messageError);
@@ -66,7 +66,7 @@ export default {
                         case: 'words'
                     }) + '...')
                 });
-                return DocumentOperations.getDocument(pathOrId, type, {headers: properties.headers})
+                return DocumentOperations.getDocument(pathOrId, type, {headers: propertiesOverride.headers || properties.headers })
                     .then((response) => {
                         dispatch({
                             type: key + '_FETCH_SUCCESS',
