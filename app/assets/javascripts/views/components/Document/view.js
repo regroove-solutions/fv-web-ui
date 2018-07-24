@@ -141,8 +141,7 @@ export default class View extends Component {
 
                     switch (selectn('response.type', computeDocument)) {
                         case 'FVWord':
-                            actionButton = <RaisedButton label={intl.trans('view_word', 'View Word', 'words')}
-                                                         onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/words'))}/>;
+                            actionButton = <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'words')}>{intl.trans('view_word', 'View Word', 'words')}</a>
                             break;
 
                         case 'FVPhrase':

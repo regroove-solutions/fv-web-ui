@@ -187,8 +187,7 @@ export default class ExploreDialect extends Component {
     }
 
     _handleSelectionChange(itemId, item) {
-        let itemPath = selectn('properties.path', item).replace('Dictionary', 'learn/words');
-        NavigationHelpers.navigate('/' + this.props.routeParams.theme + itemPath, this.props.pushWindowPath, true);
+        NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(this.props.routeParams.theme, selectn('properties', item), 'words'), this.props.pushWindowPath, true);
     }
 
     render() {

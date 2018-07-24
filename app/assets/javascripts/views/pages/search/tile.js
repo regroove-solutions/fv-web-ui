@@ -62,8 +62,7 @@ export default class SearchResultTile extends Component {
                 (categories.length > 0) ? output.push('<em>' + intl.trans('categories', 'Categories', 'first') + '</em>: ' + (categories.map((v, k) => selectn('dc:title', v)).join(', '))) : null;
 
                 desc = output.join(', ');
-                targetPath = NavigationHelpers.navigate(selectn('path', tile).replace("/Dictionary/", "/learn/words/"), null, true);
-
+                targetPath = NavigationHelpers.navigate(NavigationHelpers.generateUIDPath('explore', tile, 'words'), null, true);
                 break;
 
             case 'FVPhrase':

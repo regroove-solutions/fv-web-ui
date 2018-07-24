@@ -56,7 +56,7 @@ const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', {
     }
 });
 const createWord = RESTActions.create('FV_WORD', 'FVWord', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
-const updateWord = RESTActions.update('FV_WORD', 'FVWord', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
+const updateWord = RESTActions.update('FV_WORD', 'FVWord', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}}, false);
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {});
 
 const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});

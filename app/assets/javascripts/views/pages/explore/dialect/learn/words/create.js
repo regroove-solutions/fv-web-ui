@@ -88,8 +88,7 @@ export default class PageDialectWordsCreate extends Component {
 
         // 'Redirect' on success
         if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
-            let itemPath = selectn('response.path', nextWord).replace('Dictionary', 'learn/words');
-            NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextWord), 'words'), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -140,12 +139,12 @@ export default class PageDialectWordsCreate extends Component {
             let now = Date.now();
             this.props.createWord(this.props.routeParams.dialect_path + '/Dictionary', {
                 type: 'FVWord',
-                name: formValue['dc:title'],
+                name: now.toString(),
                 properties: properties
             }, null, now);
 
             this.setState({
-                wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + formValue['dc:title'] + '.' + now
+                wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now
             });
 
         } else {

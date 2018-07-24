@@ -22,6 +22,7 @@ import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
+import StringHelpers from 'common/StringHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import IntlService from 'views/services/intl';
 
@@ -62,7 +63,6 @@ export default class PageDialectWordEdit extends Component {
 
         this.state = {
             word: null,
-            wordPath: props.routeParams.dialect_path + '/Dictionary/' + props.routeParams.word,
             formValue: null
         };
 
@@ -72,7 +72,7 @@ export default class PageDialectWordEdit extends Component {
 
     fetchData(newProps) {
         newProps.fetchDialect2(this.props.routeParams.dialect_path);
-        newProps.fetchWord(this.state.wordPath);
+        newProps.fetchWord(this._getWordPath());
     }
 
     // Fetch data on initial render
@@ -85,15 +85,14 @@ export default class PageDialectWordEdit extends Component {
 
         let currentWord, nextWord;
 
-        if (this.state.wordPath != null) {
-            currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
-            nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath);
+        if (this._getWordPath() != null) {
+            currentWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
+            nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this._getWordPath());
         }
 
         // 'Redirect' on success
         if (selectn('wasUpdated', currentWord) != selectn('wasUpdated', nextWord) && selectn('wasUpdated', nextWord) === true) {
-            let itemPath = selectn('response.path', nextWord).replace('Dictionary', 'learn/words');
-            NavigationHelpers.navigate('/' + nextProps.routeParams.theme + itemPath, nextProps.replaceWindowPath, true);
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextWord), 'words'), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -127,6 +126,19 @@ export default class PageDialectWordEdit extends Component {
         return false;
     }
 
+    _getWordPath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        if (StringHelpers.isUUID(props.routeParams.word)){
+            return props.routeParams.word;
+        } else {
+            return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.word);
+        }
+    }
+
     _handleSave(word, formValue) {
 
         let newDocument = new Document(word.response, {
@@ -152,14 +164,14 @@ export default class PageDialectWordEdit extends Component {
         let context;
 
         const computeEntities = Immutable.fromJS([{
-            'id': this.state.wordPath,
+            'id': this._getWordPath(),
             'entity': this.props.computeWord
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }])
 
-        const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath);
+        const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath());
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
         // Additional context (in order to store origin), and initial filter value
@@ -180,7 +192,7 @@ export default class PageDialectWordEdit extends Component {
             <EditViewWithForm
                 computeEntities={computeEntities}
                 initialValues={context}
-                itemId={this.state.wordPath}
+                itemId={this._getWordPath()}
                 fields={fields}
                 options={options}
                 saveMethod={this._handleSave}

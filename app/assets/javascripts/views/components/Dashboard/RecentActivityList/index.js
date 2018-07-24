@@ -39,7 +39,7 @@ export default class RecentActivityList extends Component {
 
         switch (docType) {
             case "word":
-                return NavigationHelpers.navigate('/' + this.props.theme + selectn("path", object).replace("/Dictionary/", "/learn/words/"), null, true);
+            return NavigationHelpers.generateUIDPath(this.props.theme, object, 'words');
                 break;
 
             case "phrase":

@@ -69,6 +69,7 @@ export default class View extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
@@ -91,6 +92,9 @@ export default class View extends Component {
         super(props, context);
 
         ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+
+        // Override breadcrumbs to exclude current title (allow GUID access methods)
+        this.props.overrideBreadcrumbs(props.splitWindowPath.slice(0, props.splitWindowPath.length - 1).concat(["view"]));
     }
 
     fetchData(newProps) {
@@ -125,13 +129,21 @@ export default class View extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.overrideBreadcrumbs(null);
+    }
+
     _getWordPath(props = null) {
 
         if (props == null) {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.word);
+        if (StringHelpers.isUUID(props.routeParams.word)){
+            return props.routeParams.word;
+        } else {
+            return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.word);
+        }
     }
 
     _onNavigateRequest(path) {
