@@ -62,6 +62,7 @@ export default class View extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
@@ -94,6 +95,9 @@ export default class View extends Component {
 
         // Bind methods to 'this'
         ['_onNavigateRequest', 'fetchData', '_fetchListViewData'].forEach((method => this[method] = this[method].bind(this)));
+
+        // Override breadcrumbs to exclude current title (allow GUID access methods)
+        this.props.overrideBreadcrumbs(props.splitWindowPath.slice(0, props.splitWindowPath.length - 1).concat(["view"]));
     }
 
     fetchData(props = this.props) {
@@ -135,13 +139,21 @@ export default class View extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.props.overrideBreadcrumbs(null);
+    }
+
     _getBookPath(props = null) {
 
         if (props == null) {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName);
+        if (StringHelpers.isUUID(props.routeParams.bookName)){
+            return props.routeParams.bookName;
+        } else {
+            return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName);
+        }
     }
 
     _onNavigateRequest(path) {

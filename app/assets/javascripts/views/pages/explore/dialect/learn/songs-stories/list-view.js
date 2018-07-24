@@ -23,6 +23,7 @@ import DOMPurify from 'dompurify';
 import ConfGlobal from 'conf/local.json';
 
 import UIHelpers from 'common/UIHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import Preview from 'views/components/Editor/Preview';
 
@@ -201,7 +202,7 @@ class CardView extends Component {
                 <CardText style={{padding: '4px'}}>
 
                     <FlatButton
-                        onTouchTap={this.props.action.bind(this, '/' + (this.props.theme || 'explore') + this.props.item.path.replace('Stories & Songs', 'learn/' + (entryType == 'story' ? 'stories' : 'songs')))}
+                        onTouchTap={this.props.action.bind(this, NavigationHelpers.generateUIDPath((this.props.theme || 'explore'), this.props.item, (entryType == 'story' ? 'stories' : 'songs')))}
                         primary={true}
                         label={translated_continue_label}/>
 

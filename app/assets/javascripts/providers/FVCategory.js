@@ -92,7 +92,7 @@ const fetchCategoriesAll = function fetchCategoriesAll(path, type) {
 
         dispatch({type: FV_CATEGORY_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVCategory', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
+        return DirectoryOperations.getDocuments(path, 'FVCategory', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
             .then((response) => {
                 dispatch({type: FV_CATEGORY_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -106,7 +106,7 @@ const fetchCategoriesInPath = function fetchCategoriesInPath(path, queryAppend, 
 
         dispatch({type: FV_CATEGORIES_FETCH_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVCategory', queryAppend, headers, params)
+        return DirectoryOperations.getDocuments(path, 'FVCategory', queryAppend, headers, params)
             .then((response) => {
                 dispatch({type: FV_CATEGORIES_FETCH_SUCCESS, documents: response})
             }).catch((error) => {

@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import DocumentListView from 'views/components/Document/DocumentListView';
@@ -112,7 +113,7 @@ export default class ListViewAlt extends DataListView {
         if (this.props.action) {
             this.props.action(item);
         } else {
-            this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Stories & Songs', 'learn/songs'));
+            this.props.pushWindowPath(NavigationHelpers.generateUIDPath((this.props.theme || 'explore'), item, (selectn('properties.fvbook:type', item) == 'story' ? 'stories' : 'songs')));
         }
     }
 

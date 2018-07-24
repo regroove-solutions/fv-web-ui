@@ -25,22 +25,11 @@ const TIMEOUT = 60000;
 
 export default class DirectoryOperations extends BaseOperations {
 
-    /*constructor(directoryType, directoryTypePlural, client, properties = []){
-      super();
-
-      this.directoryType = directoryType;
-      this.directoryTypePlural = directoryTypePlural;
-      this.client = client;
-      this.properties = properties;
-
-      this.selectDefault = "ecm:currentLifeCycleState <> 'deleted'";
-    }*/
-
     /**
-     * Get a single document of a certain type based on a path and title match
-     * This document may or may not contain children
+     * Gets one or more documents based on a path or id.
+     * Allows for additional complex queries to be executed.
      */
-    static getDocumentByPath2(path = "", type = "Document", queryAppend = " ORDER BY dc:title", headers = null, params = null) {
+    static getDocuments(path = "", type = "Document", queryAppend = " ORDER BY dc:title", headers = null, params = null) {
 
         let defaultParams = {};
         let defaultHeaders = {};
@@ -60,7 +49,14 @@ export default class DirectoryOperations extends BaseOperations {
             // NOTE: Do not escape single quotes in this mode
             requestBody = path.replace('/api/v1', '');
         } else {
-            requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ecm:path STARTSWITH \'' + StringHelpers.clean(path) + '\' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
+
+            let where = 'ecm:path STARTSWITH \'' + StringHelpers.clean(path) + '\'';
+
+            if (StringHelpers.isUUID(path)) {
+                where = 'ecm:parentId = \'' + StringHelpers.clean(path) + '\'';
+            }
+
+            requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ' + where + ' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
         }
 
         return new Promise(
@@ -90,7 +86,7 @@ export default class DirectoryOperations extends BaseOperations {
                 });
 
                 setTimeout(function () {
-                    reject('Server timeout while executing getDocumentByPath2.');
+                    reject('Server timeout while attempting to get documents.');
                 }, TIMEOUT);
             });
     }

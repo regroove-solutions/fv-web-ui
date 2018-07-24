@@ -77,7 +77,7 @@ const fetchContributorsAll = function fetchContributorsAll(path, type) {
 
         dispatch({type: FV_CONTRIBUTOR_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVContributor', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
+        return DirectoryOperations.getDocuments(path, 'FVContributor', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
             .then((response) => {
                 dispatch({type: FV_CONTRIBUTOR_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -91,7 +91,7 @@ const fetchContributorsInPath = function fetchContributorsInPath(path, queryAppe
 
         dispatch({type: FV_CONTRIBUTORS_FETCH_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVContributor', queryAppend, headers, params)
+        return DirectoryOperations.getDocuments(path, 'FVContributor', queryAppend, headers, params)
             .then((response) => {
                 dispatch({type: FV_CONTRIBUTORS_FETCH_SUCCESS, documents: response})
             }).catch((error) => {

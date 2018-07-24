@@ -32,7 +32,7 @@ const querySearchResults = function querySearchResults(queryParam, queryPath, do
 const searchDocuments = RESTActions.query('FV_SEARCH_DOCUMENTS', 'Document', {
     headers: {
         'X-NXenrichers.document': 'ancestry, word, phrase',
-        'X-NXproperties': 'dublincore, fv-word, fvcore, fv-phrase, fv-portal'
+        'X-NXproperties': 'dublincore, fvbook, fv-word, fvcore, fv-phrase, fv-portal'
     }
 });
 

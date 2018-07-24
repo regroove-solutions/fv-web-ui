@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
@@ -87,7 +89,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // 'Redirect' on success
     if (selectn('success', currentBook) != selectn('success', nextBook) && selectn('success', nextBook) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextBook).replace('Stories & Songs', 'learn/' + (this.props.typeFilter === 'story' ? 'stories' : 'songs')));
+        NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextBook), (this.props.typeFilter === 'story' ? 'stories' : 'songs')), nextProps.replaceWindowPath, true);
     }
   }
 
@@ -138,12 +140,12 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       let now = Date.now();
   	  this.props.createBook(this.props.routeParams.dialect_path + '/Stories & Songs', {
   	    type: 'FVBook',
-  	    name: formValue['dc:title'],
+  	    name: now.toString(),
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + formValue['dc:title'] + '.' + now
+        bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + now.toString() + '.' + now
       });
     } else {
       window.scrollTo(0, 0);

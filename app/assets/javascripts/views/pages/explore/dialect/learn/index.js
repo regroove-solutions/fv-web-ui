@@ -375,22 +375,26 @@ export default class DialectLearn extends Component {
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeModifiedSongs)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeModifiedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="song"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeCreatedSongs)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeCreatedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="song"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeUserModifiedSongs)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeUserModifiedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
                                                                 docType="song"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeUserCreatedSongs)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeUserCreatedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
                                                                 docType="song"/>
                                         </div>
@@ -413,22 +417,26 @@ export default class DialectLearn extends Component {
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeModifiedStories)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeModifiedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="stories"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeCreatedStories)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeCreatedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="stories"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeUserModifiedStories)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeUserModifiedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
                                                                 docType="stories"/>
                                         </div>
                                         <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList data={selectn('response', computeUserCreatedStories)}
+                                            <RecentActivityList theme={this.props.routeParams.theme}
+                                                                data={selectn('response', computeUserCreatedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
                                                                 docType="stories"/>
                                         </div>

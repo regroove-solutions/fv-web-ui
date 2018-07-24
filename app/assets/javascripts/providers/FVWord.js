@@ -94,7 +94,7 @@ const fetchWordsAll = function fetchWordsAll(path, type) {
 
         dispatch({type: FV_WORD_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVWord', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
+        return DirectoryOperations.getDocuments(path, 'FVWord', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
             .then((response) => {
                 dispatch({type: FV_WORD_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -120,7 +120,7 @@ const queryUserModifiedWords = function queryUserModifiedWords(pathOrId, user) {
 
         dispatch({type: FV_WORDS_USER_MODIFIED_QUERY_START});
 
-        return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'word,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'word,ancestry,permissions'})
             .then((response) => {
                 dispatch({type: FV_WORDS_USER_MODIFIED_QUERY_SUCCESS, document: response})
             }).catch((error) => {
@@ -134,7 +134,7 @@ const queryUserCreatedWords = function queryUserCreatedWords(pathOrId, user) {
 
         dispatch({type: FV_WORDS_USER_CREATED_QUERY_START});
 
-        return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'word,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVWord', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'word,ancestry,permissions'})
             .then((response) => {
                 dispatch({type: FV_WORDS_USER_CREATED_QUERY_SUCCESS, document: response})
             }).catch((error) => {

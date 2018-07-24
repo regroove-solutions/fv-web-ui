@@ -53,7 +53,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 
         dispatch({type: FV_PHRASE_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocumentByPath2(path, 'FVPhrase', '', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}})
+        return DirectoryOperations.getDocuments(path, 'FVPhrase', '', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}})
             .then((response) => {
                 dispatch({type: FV_PHRASE_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -101,7 +101,7 @@ const queryUserModifiedPhrases = function queryUserModifiedPhrases(pathOrId, use
 
         dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_START});
 
-        return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_SUCCESS, document: response})
             }).catch((error) => {
@@ -115,7 +115,7 @@ const queryUserCreatedPhrases = function queryUserCreatedPhrases(pathOrId, user)
 
         dispatch({type: FV_PHRASES_USER_CREATED_QUERY_START});
 
-        return DirectoryOperations.getDocumentByPath2(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_CREATED_QUERY_SUCCESS, document: response})
             }).catch((error) => {

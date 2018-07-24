@@ -100,7 +100,7 @@ export default {
                     }) + '...')
                 });
 
-                return DirectoryOperations.getDocumentByPath2(pathOrId, type, properties.queryAppend || queryAppend, {headers: properties.headers})
+                return DirectoryOperations.getDocuments(pathOrId, type, properties.queryAppend || queryAppend, {headers: properties.headers})
                     .then((response) => {
                         dispatch({
                             type: key + '_QUERY_SUCCESS',

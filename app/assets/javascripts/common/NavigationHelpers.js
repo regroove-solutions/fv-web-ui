@@ -56,7 +56,7 @@ export default {
     },
     // Generate a UID link from a path
     generateUIDPath: function (theme, item, pluralPathId) {
-        let path = '/' + theme + selectn('path', item).replace("/Dictionary/", "/learn/" + pluralPathId + "/");
+        let path = '/' + theme + selectn('path', item).replace("/Dictionary/", "/learn/" + pluralPathId + "/").replace("/Stories & Songs/", "/learn/" + pluralPathId + "/");
         return path = path.substring(0, path.lastIndexOf("/") + 1) + selectn('uid', item);
 
     }

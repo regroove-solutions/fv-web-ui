@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
@@ -70,7 +72,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
 
     fetchData(newProps) {
 
-        let parentBookPath = newProps.routeParams.dialect_path + '/Stories & Songs/' + newProps.routeParams.parentBookName;
+        let parentBookPath = newProps.routeParams.parentBookName;
 
         newProps.fetchDialect2(newProps.routeParams.dialect_path);
         newProps.fetchBook(parentBookPath);
@@ -89,11 +91,12 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
     // Refetch data on URL change
     componentWillReceiveProps(nextProps) {
 
-        let currentBookEntry, nextBookEntry;
+        let currentBookEntry, nextBookEntry, parentBook;
 
         if (this.state.bookEntryPath != null) {
             currentBookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath);
             nextBookEntry = ProviderHelpers.getEntry(nextProps.computeBookEntry, this.state.bookEntryPath);
+            parentBook = ProviderHelpers.getEntry(nextProps.computeBook, this.state.parentBookPath);
         }
 
         if (nextProps.windowPath !== this.props.windowPath) {
@@ -101,8 +104,8 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
         }
 
         // 'Redirect' on success
-        if (selectn('success', currentBookEntry) != selectn('success', nextBookEntry) && selectn('success', nextBookEntry) === true) {
-            nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + nextProps.routeParams.dialect_path + '/learn/' + nextProps.typePlural + '/' + nextProps.routeParams.parentBookName);
+        if (selectn('success', currentBookEntry) != selectn('success', nextBookEntry) && selectn('success', nextBookEntry) === true && selectn('response', parentBook) !== undefined) {
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', parentBook), nextProps.typePlural.toLowerCase()), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -205,7 +208,7 @@ export default class PageDialectStoriesAndSongsBookEntryCreate extends Component
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
             <h1>{intl.trans('views.pages.explore.dialect.learn.songs_stories.add_new_entry_to_x_book',
-                'Add New Entry to ' + selectn('response.properties.dc:title', computeBook) + ' Book', [selectn('response.properties.dc:title', computeBook)])}</h1>
+                'Add New Entry to ' + selectn('response.properties.dc:title', computeBook) + ' Book', 'words', [selectn('response.properties.dc:title', computeBook)])}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 

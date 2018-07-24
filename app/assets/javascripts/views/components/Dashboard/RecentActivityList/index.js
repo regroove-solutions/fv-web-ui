@@ -39,20 +39,20 @@ export default class RecentActivityList extends Component {
 
         switch (docType) {
             case "word":
-            return NavigationHelpers.generateUIDPath(this.props.theme, object, 'words');
-                break;
+                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'words');
+            break;
 
             case "phrase":
                 return NavigationHelpers.generateUIDPath(this.props.theme, object, 'phrases');
-                break;
+            break;
 
             case "song":
-                return "/" + this.props.theme + selectn("path", object).replace("/Stories & Songs/", "/learn/songs/");
-                break;
+                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'songs');
+            break;
 
             case "stories":
-                return "/" + this.props.theme + selectn("path", object).replace("/Stories & Songs/", "/learn/stories/");
-                break;
+                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'stories');
+            break;
         }
     }
 

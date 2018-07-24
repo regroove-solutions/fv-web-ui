@@ -104,7 +104,7 @@ export default class SearchResultTile extends Component {
                 desc = DOMPurify.sanitize(selectn('dc:description', tile), {ALLOWED_TAGS: []});
                 desc = (desc.length > 300) ? '...' + desc.substr(desc.indexOf(this.props.searchTerm) - 50, 250) + '...' : desc;
 
-                targetPath = selectn('path', tile).replace('/Stories & Songs/', '/learn/stories/');
+                targetPath = NavigationHelpers.navigate(NavigationHelpers.generateUIDPath('explore', tile, (selectn('properties.fvbook:type', tile) == "song") ? 'songs' : 'stories'), null, true);
                 break;
         }
 
