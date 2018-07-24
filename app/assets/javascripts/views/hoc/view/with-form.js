@@ -140,6 +140,19 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                             <div className="form-horizontal" style={{padding: '0 15px'}}>
 
                                 <form onSubmit={this._onRequestSaveForm.bind(this, computeItem)}>
+
+
+                                    <div className="form-group" style={{textAlign: 'right'}}>
+
+                                        <FlatButton onTouchTap={this._onRequestCancelForm} style={{marginRight: '10px'}}
+                                                label={intl.trans('cancel', 'Cancel', 'first')}/>
+                                        <RaisedButton onTouchTap={this._onRequestSaveForm.bind(this, computeItem)}
+                                                primary={true} label={intl.trans('save', 'Save', 'first')}/>
+
+                                    </div>
+
+                                    <hr/>
+
                                     <t.form.Form
                                         ref={"form_" + type}
                                         type={t.struct(selectn(type, fields))}
