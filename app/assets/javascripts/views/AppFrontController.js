@@ -1377,7 +1377,7 @@ export default class AppFrontController extends Component {
                 // Last element (i.e. current page)
                 if (index == splitPath.length - 1) {
                     return <li key={index}
-                               className="active">{this.intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}</li>;
+                               className="active">{decodeURIComponent(pathTitle)}</li>;
                 }
                 else {
                     let hrefPath = "/" + splitPath.slice(0, index + 1).join('/');
