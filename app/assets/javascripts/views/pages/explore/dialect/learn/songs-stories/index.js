@@ -78,7 +78,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', 'fixedListFetcher'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_onEntryNavigateRequest', 'fixedListFetcher'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
@@ -109,8 +109,12 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
         });
     }
 
-    _onNavigateRequest(item) {
+    _onEntryNavigateRequest(item) {
         this.props.pushWindowPath(NavigationHelpers.generateUIDPath((this.props.routeParams.theme || 'explore'), item, (selectn('properties.fvbook:type', item) == 'story' ? 'stories' : 'songs')));
+    }
+
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
     }
 
     render() {
@@ -140,7 +144,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
             formValues: {'properties.fvbook:type': this.props.typeFilter},
             metadata: selectn('response', computeBooks),
             items: selectn('response.entries', computeBooks) || [],
-            action: this._onNavigateRequest
+            action: this._onEntryNavigateRequest
         };
 
         let listView = <FilteredCardList {...listProps} />;
