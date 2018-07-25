@@ -65,7 +65,6 @@ export default class PageDialectPhraseEdit extends Component {
         super(props, context);
 
         this.state = {
-            phrase: null,
             formValue: null
         };
 

@@ -64,7 +64,6 @@ export default class PageDialectWordEdit extends Component {
         super(props, context);
 
         this.state = {
-            word: null,
             formValue: null
         };
 

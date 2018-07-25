@@ -80,7 +80,6 @@ export default class PageDialectBookEdit extends Component {
         super(props, context);
 
         this.state = {
-            book: null,
             editPageDialogOpen: false,
             editPageItem: null,
             formValue: null,
@@ -88,7 +87,7 @@ export default class PageDialectBookEdit extends Component {
         };
 
         // Bind methods to 'this'
-        ['_onRequestSaveForm', '_editPage', '_pageSaved', '_storeSortOrder', '_handleSave', '_handleCancel'].forEach((method => this[method] = this[method].bind(this)));
+        ['_editPage', '_pageSaved', '_storeSortOrder', '_handleSave', '_handleCancel'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
@@ -136,55 +135,6 @@ export default class PageDialectBookEdit extends Component {
 
     _handleCancel() {
         NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.pushWindowPath);
-    }
-
-    _onRequestSaveForm(e) {
-
-        // Prevent default behaviour
-        e.preventDefault();
-
-        let formValue = this.refs["form_book"].getValue();
-
-        // Passed validation
-        if (formValue) {
-            let book = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath());
-
-            // TODO: Find better way to construct object then accessing internal function
-            // Create new document rather than modifying the original document
-            let newDocument = new Document(book.response, {
-                'repository': book.response._repository,
-                'nuxeo': book.response._nuxeo
-            });
-
-            // Set new value property on document
-            newDocument.set(formValue);
-
-            // Save new order for pages
-            if (!this.state.sortedItems.isEmpty()) {
-                this.state.sortedItems.forEach(function (entry, key) {
-
-                    let newPage = new Document(entry, {
-                        'repository': book.response._repository,
-                        'nuxeo': book.response._nuxeo
-                    });
-
-                    // Set new value property on document
-                    newPage.set({'fvbookentry:sort_map': key});
-
-                    // Save document
-                    this.props.updateBookEntry(newPage);
-
-                }.bind(this));
-            }
-
-            // Save document
-            this.props.updateBook(newDocument);
-            this.props.fetchBookEntries(this._getBookPath(), DEFAULT_SORT_ORDER);
-
-            this.setState({formValue: formValue});
-        } else {
-            window.scrollTo(0, 0);
-        }
     }
 
     _storeSortOrder(items) {
@@ -304,59 +254,5 @@ export default class PageDialectBookEdit extends Component {
                         {...this.props} />
                 </Dialog>
         </div>;
-
-
-
-
-        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-
-            <div className="row" style={{marginTop: '15px'}}>
-
-                <div className={classNames('col-xs-8', 'col-md-10')}>
-                    <Tabs>
-                        <Tab label={intl.trans('book', 'Book', 'first')}>
-                            <h1>{intl.trans('views.pages.explore.dialect.learn.songs_stories.edit_x_book',
-                                'Edit ' + selectn("response.properties.dc:title", computeBook) + ' Book', 'words', [selectn("response.properties.dc:title", computeBook)])}</h1>
-                            <form onSubmit={this._onRequestSaveForm}>
-                                <t.form.Form
-                                    ref="form_book"
-                                    type={t.struct(selectn("FVBook", fields))}
-                                    context={selectn("response", computeDialect2)}
-                                    value={this.state.formValue || selectn("response.properties", computeBook)}
-                                    options={selectn("FVBook", options)}/>
-                                <div className="form-group">
-                                    <button type="submit"
-                                            className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
-                                </div>
-                            </form>
-                        </Tab>
-                        <Tab label={intl.trans('pages', 'Pages', 'first')}>
-                            <h1>{intl.trans('', 'Edit ' + selectn("response.properties.dc:title", computeBook) + ' pages', 'first', [selectn("response.properties.dc:title", computeBook)])}</h1>
-                            <BookEntryList
-                                reorder={true}
-                                sortOrderChanged={this._storeSortOrder}
-                                defaultLanguage={DEFAULT_LANGUAGE}
-                                editAction={this._editPage}
-                                innerStyle={{minHeight: 'inherit'}}
-                                metadata={selectn('response', computeBookEntries) || {}}
-                                items={selectn('response.entries', computeBookEntries) || []}/>
-                        </Tab>
-                    </Tabs>
-                </div>
-
-                <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                    <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                        <div className="subheader">{intl.trans('metadata', 'Metadata', 'first')}</div>
-
-                    </Paper>
-
-                </div>
-
-
-
-            </div>
-        </PromiseWrapper>;
     }
 }
