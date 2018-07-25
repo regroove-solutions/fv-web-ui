@@ -70,6 +70,8 @@ export default {
             return (returnObj) ? selectn('properties.file:content.data', imgObj) : selectn('properties.file:content.data', imgObj);
         } else if (selectn('path', imgObj)) {
             return ConfGlobal.baseURL + selectn('path', imgObj);
+        } else if (selectn('data', imgObj)) {
+            return selectn('data', imgObj);
         }
 
         return '/assets/images/cover.png';
