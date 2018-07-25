@@ -33,6 +33,7 @@ import Preview from 'views/components/Editor/Preview';
 import IntlService from 'views/services/intl';
 
 const intl = IntlService.instance;
+
 /**
  * List view for words
  */
@@ -78,12 +79,14 @@ export default class ListView extends DataListView {
     constructor(props, context) {
         super(props, context);
 
+        let currentTheme = this.props.routeParams.theme;
+
         this.state = {
             columns: [
                 {
                     name: 'title', title: intl.trans('word', 'Word', 'first'), render: function (v, data, cellProps) {
-                        //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
-                        return v;
+                        return <a onClick={NavigationHelpers.disable} href={NavigationHelpers.generateUIDPath(currentTheme, data, 'words')}>{v}</a>
+                        //return v;
                     }, sortName: 'fv:custom_order'
                 },
                 /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {

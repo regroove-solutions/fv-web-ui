@@ -79,14 +79,16 @@ export default class ListView extends DataListView {
     constructor(props, context) {
         super(props, context);
 
+        let currentTheme = this.props.routeParams.theme;
+
         this.state = {
             columns: [
                 {
                     name: 'title',
                     title: intl.trans('phrase', 'Phrase', 'first'),
                     render: function (v, data, cellProps) {
-                        //return <a key={data.id} onTouchTap={_this._handleNavigate.bind(this, data.id)}>{v}</a>
-                        return v;
+                        return <a onClick={NavigationHelpers.disable} href={NavigationHelpers.generateUIDPath(currentTheme, data, 'phrases')}>{v}</a>
+                        //return v;
                     },
                     sortName: 'fv:custom_order'
                 },

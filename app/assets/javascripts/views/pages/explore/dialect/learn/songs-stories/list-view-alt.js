@@ -78,11 +78,14 @@ export default class ListViewAlt extends DataListView {
     constructor(props, context) {
         super(props, context);
 
+        let currentTheme = this.props.routeParams.theme;
+
         this.state = {
             columns: [
                 {
                     name: 'title', title: intl.trans('title', 'Title', 'first'), render: function (v, data, cellProps) {
-                        return v;
+                        return <a onClick={NavigationHelpers.disable} href={NavigationHelpers.generateUIDPath((currentTheme || 'explore'), data, (selectn('properties.fvbook:type', data) == 'story' ? 'stories' : 'songs'))}>{v}</a>
+                        //return v;
                     }
                 }
             ],
