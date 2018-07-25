@@ -95,9 +95,6 @@ export default class View extends Component {
 
         // Bind methods to 'this'
         ['_onNavigateRequest', 'fetchData', '_fetchListViewData'].forEach((method => this[method] = this[method].bind(this)));
-
-        // Override breadcrumbs to exclude current title (allow GUID access methods)
-        this.props.overrideBreadcrumbs(props.splitWindowPath.slice(0, props.splitWindowPath.length - 1).concat(["view"]));
     }
 
     fetchData(props = this.props) {
@@ -132,15 +129,14 @@ export default class View extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
+        let book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
+        let title = selectn('properties.dc:title', book);
+        let uid = selectn('uid', book);
 
         if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
             this.props.changeTitleParams({'bookName': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.bookName'});
         }
-    }
-
-    componentWillUnmount() {
-        this.props.overrideBreadcrumbs(null);
     }
 
     _getBookPath(props = null) {

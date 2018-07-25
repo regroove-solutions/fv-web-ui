@@ -92,9 +92,6 @@ export default class View extends Component {
         super(props, context);
 
         ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
-
-        // Override breadcrumbs to exclude current title (allow GUID access methods)
-        this.props.overrideBreadcrumbs(props.splitWindowPath.slice(0, props.splitWindowPath.length - 1).concat(["view"]));
     }
 
     fetchData(newProps) {
@@ -122,15 +119,14 @@ export default class View extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()));
+        let word = selectn('response', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()));
+        let title = selectn('properties.dc:title', word);
+        let uid = selectn('uid', word);
 
         if (title && selectn('pageTitleParams.word', this.props.properties) != title) {
             this.props.changeTitleParams({'word': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.word'});
         }
-    }
-
-    componentWillUnmount() {
-        this.props.overrideBreadcrumbs(null);
     }
 
     _getWordPath(props = null) {

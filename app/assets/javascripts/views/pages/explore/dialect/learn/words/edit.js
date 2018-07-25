@@ -49,6 +49,8 @@ export default class PageDialectWordEdit extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         replaceWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         fetchWord: PropTypes.func.isRequired,
         computeWord: PropTypes.object.isRequired,
         updateWord: PropTypes.func.isRequired,
@@ -157,6 +159,17 @@ export default class PageDialectWordEdit extends Component {
 
     _handleCancel() {
         NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let word = selectn('response', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()));
+        let title = selectn('properties.dc:title', word);
+        let uid = selectn('uid', word);
+
+        if (title && selectn('pageTitleParams.word', this.props.properties) != title) {
+            this.props.changeTitleParams({'word': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.word'});
+        }
     }
 
     render() {

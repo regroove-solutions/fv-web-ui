@@ -24,6 +24,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
@@ -108,8 +109,8 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
         });
     }
 
-    _onNavigateRequest(path) {
-        this.props.pushWindowPath(path);
+    _onNavigateRequest(item) {
+        this.props.pushWindowPath(NavigationHelpers.generateUIDPath((this.props.routeParams.theme || 'explore'), item, (selectn('properties.fvbook:type', item) == 'story' ? 'stories' : 'songs')));
     }
 
     render() {

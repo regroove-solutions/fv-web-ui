@@ -202,7 +202,7 @@ class CardView extends Component {
                 <CardText style={{padding: '4px'}}>
 
                     <FlatButton
-                        onTouchTap={this.props.action.bind(this, NavigationHelpers.generateUIDPath((this.props.theme || 'explore'), this.props.item, (entryType == 'story' ? 'stories' : 'songs')))}
+                        onTouchTap={this.props.action.bind(this, this.props.item)}
                         primary={true}
                         label={translated_continue_label}/>
 

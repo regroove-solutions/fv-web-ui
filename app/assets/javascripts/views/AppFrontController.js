@@ -672,7 +672,7 @@ export default class AppFrontController extends Component {
                     key: 'edit',
                     default: 'Edit',
                     case: 'words'
-                }) + ' {$gallery} | ' + this.intl.translate({
+                }) + ' {$galleryName} | ' + this.intl.translate({
                     key: 'galleries',
                     default: 'Galleries',
                     case: 'words'
@@ -784,7 +784,6 @@ export default class AppFrontController extends Component {
                 title: this.intl.translate({
                     key: 'edit_x_word',
                     default: 'Edit {$word} Word',
-                    case: 'words',
                     params: ['{$word}']
                 }) + ' | ' + this.intl.translate({
                     key: 'words',
@@ -1363,18 +1362,24 @@ export default class AppFrontController extends Component {
 
     _renderBreadcrumb(matchedPage, routeParams) {
         let props = this.props;
-        let splitPath = props.properties.breadcrumbs || props.splitWindowPath;
+        let splitPath = props.splitWindowPath;
         let routes = this.state.routes;
 
         let breadcrumb = splitPath.map(function (path, index) {
             if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
+
+                let pathTitle = path;
+
+                if (this.props.properties.breadcrumbs != null) {
+                    pathTitle = path.replace(this.props.properties.breadcrumbs.find, selectn(this.props.properties.breadcrumbs.replace, this.props.properties))
+                }
+
                 // Last element (i.e. current page)
                 if (index == splitPath.length - 1) {
                     return <li key={index}
-                               className="active">{this.intl.searchAndReplace(decodeURIComponent(path).replace('&amp;', '&'))}</li>;
+                               className="active">{this.intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}</li>;
                 }
                 else {
-
                     let hrefPath = "/" + splitPath.slice(0, index + 1).join('/');
 
                     /**
@@ -1405,7 +1410,7 @@ export default class AppFrontController extends Component {
                     }.bind(this));
 
                     return <li key={index}><Link key={index}
-                                                 href={hrefPath}>{this.intl.searchAndReplace(decodeURIComponent(path).replace('&amp;', '&'))}</Link>
+                                                 href={hrefPath}>{this.intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}</Link>
                     </li>;
                 }
             }

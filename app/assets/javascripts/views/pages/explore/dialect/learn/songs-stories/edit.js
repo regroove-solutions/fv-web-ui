@@ -62,6 +62,8 @@ export default class PageDialectBookEdit extends Component {
     static propTypes = {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         fetchBook: PropTypes.func.isRequired,
         computeBook: PropTypes.object.isRequired,
         fetchBookEntries: PropTypes.func.isRequired,
@@ -214,6 +216,17 @@ export default class PageDialectBookEdit extends Component {
             this.props.fetchBookEntries(this._getBookPath(), DEFAULT_SORT_ORDER);
         }.bind(this), 500);
         this.setState({editPageDialogOpen: false, editPageItem: null});
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
+        let title = selectn('properties.dc:title', book);
+        let uid = selectn('uid', book);
+
+        if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
+            this.props.changeTitleParams({'bookName': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.bookName'});
+        }
     }
 
     render() {

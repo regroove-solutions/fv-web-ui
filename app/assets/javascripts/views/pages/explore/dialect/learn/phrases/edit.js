@@ -50,6 +50,8 @@ export default class PageDialectPhraseEdit extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         replaceWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         fetchPhrase: PropTypes.func.isRequired,
         computePhrase: PropTypes.object.isRequired,
         updatePhrase: PropTypes.func.isRequired,
@@ -158,6 +160,17 @@ export default class PageDialectPhraseEdit extends Component {
 
     _handleCancel() {
         NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        let phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()));
+        let title = selectn('properties.dc:title', phrase);
+        let uid = selectn('uid', phrase);
+
+        if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
+            this.props.changeTitleParams({'phrase': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.phrase'});
+        }
     }
 
     render() {
