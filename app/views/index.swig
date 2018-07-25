@@ -18,25 +18,7 @@
 
 {% block head %}
 
-
 	<style type='text/css'>
-	    /**
-	    * Keyman web css hack
-	    */
-	    a[target="KeymanWebHelp"]{
-	    	display:none!important;
-	    }
-
-	    a[target="KeymanWebHelp"] + div > select {
-	    	left: 0!important;
-	    	z-index:9999;
-	    }
-
-	    a[target="KeymanWebHelp"] + div > a > img {
-	    	width:auto!important;
-	    	height:auto!important;
-	    	z-index:9999;
-	    }
 
 	    /** App Loader **/
         .app-loader {
