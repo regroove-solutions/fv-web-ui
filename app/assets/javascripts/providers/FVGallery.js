@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 const fetchGallery = RESTActions.fetch('FV_GALLERY', 'FVGallery', {headers: {'X-NXenrichers.document': 'ancestry,gallery,permissions'}});
 const fetchGalleries = RESTActions.query('FV_GALLERIES', 'FVGallery', {headers: {'X-NXenrichers.document': 'ancestry,gallery,permissions'}});
 const createGallery = RESTActions.create('FV_GALLERY', 'FVGallery', {headers: {'X-NXenrichers.document': 'ancestry,gallery,permissions'}});
-const updateGallery = RESTActions.update('FV_GALLERY', 'FVGallery', {headers: {'X-NXenrichers.document': 'ancestry,gallery,permissions'}});
+const updateGallery = RESTActions.update('FV_GALLERY', 'FVGallery', {headers: {'X-NXenrichers.document': 'ancestry,gallery,permissions'}}, false);
 const deleteGallery = RESTActions.delete('FV_GALLERY', 'FVGallery', {});
 
 const publishGallery = RESTActions.execute('FV_GALLERY_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,permissions,gallery'}});

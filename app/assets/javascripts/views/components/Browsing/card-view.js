@@ -110,7 +110,7 @@ export default class CardView extends Component {
                 <CardText style={{padding: '4px'}}>
 
                     <FlatButton
-                        onTouchTap={this.props.action.bind(this, '/' + (this.props.theme || 'explore') + this.props.item.path)}
+                        onTouchTap={this.props.action.bind(this, this.props.item)}
                         primary={true} label={this.intl.translate({
                         key: 'views.pages.dialect.learn.songs_stories.continue_to_entry',
                         default: 'Continue to Entry',

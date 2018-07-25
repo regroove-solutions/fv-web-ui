@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -33,9 +35,13 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+import withForm from 'views/hoc/view/with-form';
 import IntlService from 'views/services/intl';
 
 const intl = IntlService.instance;
+
+const EditViewWithForm = withForm(PromiseWrapper, true);
 @provide
 export default class PageDialectGalleryEdit extends Component {
 
@@ -43,6 +49,8 @@ export default class PageDialectGalleryEdit extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         replaceWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         fetchGallery: PropTypes.func.isRequired,
         computeGallery: PropTypes.object.isRequired,
         updateGallery: PropTypes.func.isRequired,
@@ -57,17 +65,16 @@ export default class PageDialectGalleryEdit extends Component {
 
         this.state = {
             gallery: null,
-            galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.gallery,
             formValue: null
         };
 
         // Bind methods to 'this'
-        ['_onRequestSaveForm'].forEach((method => this[method] = this[method].bind(this)));
+        ['_handleSave', '_handleCancel'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
         newProps.fetchDialect2(this.props.routeParams.dialect_path);
-        newProps.fetchGallery(this.state.galleryPath);
+        newProps.fetchGallery(this._getGalleryPath());
     }
 
     // Fetch data on initial render
@@ -80,14 +87,14 @@ export default class PageDialectGalleryEdit extends Component {
 
         let currentGallery, nextGallery;
 
-        if (this.state.galleryPath != null) {
-            currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
-            nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this.state.galleryPath);
+        if (this._getGalleryPath() != null) {
+            currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath());
+            nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this._getGalleryPath());
         }
 
         // 'Redirect' on success
         if (selectn('wasUpdated', currentGallery) != selectn('wasUpdated', nextGallery) && selectn('wasUpdated', nextGallery) === true) {
-            nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextGallery).replace('Portal', 'gallery'));
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextGallery), 'gallery'), nextProps.replaceWindowPath, true);
         }
     }
 
@@ -103,7 +110,7 @@ export default class PageDialectGalleryEdit extends Component {
                 return true;
                 break;
 
-            case (ProviderHelpers.getEntry(newProps.computeGallery, this.state.galleryPath) != ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath)):
+            case (ProviderHelpers.getEntry(newProps.computeGallery, this._getGalleryPath()) != ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())):
                 return true;
                 break;
 
@@ -115,6 +122,39 @@ export default class PageDialectGalleryEdit extends Component {
         return false;
     }
 
+    _getGalleryPath(props = null) {
+
+        if (props == null) {
+            props = this.props;
+        }
+
+        if (StringHelpers.isUUID(props.routeParams.gallery)){
+            return props.routeParams.gallery;
+        } else {
+            return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.gallery);
+        }
+    }
+
+    _handleSave(phrase, formValue) {
+
+        let newDocument = new Document(phrase.response, {
+            'repository': phrase.response._repository,
+            'nuxeo': phrase.response._nuxeo
+        });
+
+        // Set new value property on document
+        newDocument.set(formValue);
+
+        // Save document
+        this.props.updateGallery(newDocument, null, null);
+
+        this.setState({formValue: formValue});
+    }
+
+    _handleCancel() {
+        NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+    }
+
     _onRequestSaveForm(e) {
 
         // Prevent default behaviour
@@ -124,7 +164,7 @@ export default class PageDialectGalleryEdit extends Component {
 
         // Passed validation
         if (formValue) {
-            let gallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+            let gallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath());
 
             // TODO: Find better way to construct object then accessing internal function
             // Create new document rather than modifying the original document
@@ -146,18 +186,64 @@ export default class PageDialectGalleryEdit extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        let gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()));
+        let title = selectn('properties.dc:title', gallery);
+        let uid = selectn('uid', gallery);
+
+        if (title && selectn('pageTitleParams.galleryName', this.props.properties) != title) {
+            this.props.changeTitleParams({'galleryName': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.galleryName'});
+        }
+    }
+
     render() {
 
+        let context;
+
         const computeEntities = Immutable.fromJS([{
-            'id': this.state.galleryPath,
+            'id': this._getGalleryPath(),
             'entity': this.props.computeGallery
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }])
 
-        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath());
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        // Additional context
+        if (selectn("response", computeDialect2) && selectn("response", computeGallery)) {
+            context = Object.assign(selectn("response", computeDialect2), {
+                otherContext: {
+                    'parentId': selectn("response.uid", computeGallery)
+                }
+            });
+        }
+
+        return <div>
+
+            <h1>{intl.trans('views.pages.explore.dialect.gallery.edit_x_gallery',
+                'Edit ' + selectn("response.properties.dc:title", computeGallery) + ' Gallery',
+                'first',
+                [selectn("response.properties.dc:title", computeGallery)])}</h1>
+
+            <EditViewWithForm
+                computeEntities={computeEntities}
+                initialValues={context}
+                itemId={this._getGalleryPath()}
+                fields={fields}
+                options={options}
+                saveMethod={this._handleSave}
+                cancelMethod={this._handleCancel}
+                currentPath={this.props.splitWindowPath}
+                navigationMethod={this.props.replaceWindowPath}
+                type="FVGallery"
+                routeParams={this.props.routeParams}/>
+
+        </div>;
+
+
 
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 

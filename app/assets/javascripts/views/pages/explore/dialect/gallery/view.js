@@ -47,13 +47,14 @@ export default class Gallery extends React.Component {
         splitWindowPath: PropTypes.array.isRequired,
         windowPath: PropTypes.string.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         fetchGallery: PropTypes.func.isRequired,
         computeGallery: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
         routeParams: PropTypes.object.isRequired,
-
         deleteGallery: PropTypes.func.isRequired,
         publishGallery: PropTypes.func.isRequired,
         askToPublishGallery: PropTypes.func.isRequired,
@@ -68,10 +69,6 @@ export default class Gallery extends React.Component {
     constructor(props, context) {
         super(props, context);
 
-        this.state = {
-            galleryPath: props.routeParams.dialect_path + '/Portal/' + props.routeParams.galleryName
-        };
-
         ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
 
@@ -81,11 +78,11 @@ export default class Gallery extends React.Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.galleryName);
-    }
-
-    handleImageLoad(event) {
-        console.log('Image loaded ', event.target)
+        if (StringHelpers.isUUID(props.routeParams.galleryName)){
+            return props.routeParams.galleryName;
+        } else {
+            return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.galleryName);
+        }
     }
 
     fetchData(newProps) {
@@ -102,12 +99,23 @@ export default class Gallery extends React.Component {
         this.fetchData(this.props);
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        let gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()));
+        let title = selectn('properties.dc:title', gallery);
+        let uid = selectn('uid', gallery);
+
+        if (title && selectn('pageTitleParams.galleryName', this.props.properties) != title) {
+            this.props.changeTitleParams({'galleryName': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.galleryName'});
+        }
+    }
+
     render() {
 
         const images = [];
 
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this.state.galleryPath);
+        const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath());
 
         (selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function (picture) {
             let image = {original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description']};
@@ -115,7 +123,7 @@ export default class Gallery extends React.Component {
         });
 
         const computeEntities = Immutable.fromJS([{
-            'id': this.state.galleryPath,
+            'id': this._getGalleryPath(),
             'entity': this.props.computeGallery
         }])
 
@@ -151,7 +159,6 @@ export default class Gallery extends React.Component {
                                 items={images}
                                 slideInterval={2000}
                                 showFullscreenButton={true}
-                                handleImageLoad={this.handleImageLoad}
                                 showThumbnails={false}
                                 showBullets={true}/>
                         </div>
