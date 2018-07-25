@@ -25,13 +25,14 @@ import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import UIHelpers from 'common/UIHelpers';
-import IntlService from "views/services/intl";
+import NavigationHelpers from 'common/NavigationHelpers';
 
 const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
 
 export default class MediaList extends Component {
 
     static propTypes = {
+        theme: PropTypes.string,
         items: PropTypes.oneOfType([
             PropTypes.array,
             PropTypes.instanceOf(List)
@@ -49,6 +50,7 @@ export default class MediaList extends Component {
     };
 
     static defaultProps = {
+        theme: 'explore',
         cols: 3,
         cellHeight: 210,
         style: null
@@ -109,7 +111,7 @@ export default class MediaList extends Component {
             };
         }
 
-        return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+        return <div className="media-list" style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
             <GridList
                 cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
                 cellHeight={this.props.cellHeight}
@@ -130,7 +132,7 @@ export default class MediaList extends Component {
                     return <GridTile
                         onTouchTap={action.bind(this, tile)}
                         key={tile.uid}
-                        title={IntlService.instance.searchAndReplace(tile.title)}
+                        title={<a href={NavigationHelpers.generateUIDPath(this.props.theme, tile, 'media')}>{tile.title}</a>}
                         titlePosition={fileTypeTilePosition}
                         subtitle={
                             <span><strong>{/*tile.properties['dc:description']*/}{Math.round(selectn('properties.common:size', tile) * 0.001)} KB</strong></span>}

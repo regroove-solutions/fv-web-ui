@@ -153,6 +153,7 @@ export default class DialectMedia extends Component {
                         filterOptionsKey="Resources"
                         action={this._onNavigateRequest}
                         fetcher={this.fetchData}
+                        theme={this.props.routeParams.theme}
                         area={this.props.routeParams.area}
                         fetcherParams={this.state.fetcherParams}
                         metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
