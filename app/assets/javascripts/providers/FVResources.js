@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 
 const fetchResource = RESTActions.fetch('FV_RESOURCE', 'FVPicture,FVAudio,FVVideo', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}});
 const fetchResources = RESTActions.query('FV_RESOURCES', 'FVPicture,FVAudio,FVVideo', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}});
-const updateResource = RESTActions.update('FV_RESOURCE', 'FVPicture,FVAudio,FVVideo', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}});
+const updateResource = RESTActions.update('FV_RESOURCE', 'FVPicture,FVAudio,FVVideo', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}}, false);
 
 const publishResource = RESTActions.execute('FV_RESOURCE_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}});
 const askToPublishResource = RESTActions.execute('FV_RESOURCE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {headers: {'X-NXenrichers.document': 'ancestry,media,permissions'}});

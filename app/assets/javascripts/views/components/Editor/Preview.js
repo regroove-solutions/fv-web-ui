@@ -20,6 +20,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
 
@@ -108,12 +109,15 @@ const GetMetaData = function (type, response) {
      * Direct Link
      */
     if (selectn("path", response)) {
+
+        let directLinkValue = ConfGlobal.baseWebUIURL.substring(0, ConfGlobal.baseWebUIURL.length - 1) + NavigationHelpers.generateUIDPath("explore", response, 'media');
+
         metadata.push({
             label: intl.trans('direct_link', 'Direct Link', 'words'),
             value: <span>
               <input type="textbox" readOnly style={{width: '100%', padding: '5px', maxWidth: '650px'}}
-                     value={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}/> <br/>
-              <a href={ConfGlobal.baseWebUIURL + "explore" + selectn("path", response).replace('/Resources/', '/media/')}
+                     value={directLinkValue}/> <br/>
+              <a href={directLinkValue}
                  target="_blank">{intl.trans('go_to_record', 'Go to Record', 'words')}</a>
               </span>
         });

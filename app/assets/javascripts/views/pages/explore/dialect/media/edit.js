@@ -20,7 +20,9 @@ import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
+import NavigationHelpers from 'common/NavigationHelpers';
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Models
@@ -33,15 +35,22 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+
+import withForm from 'views/hoc/view/with-form';
 import IntlService from 'views/services/intl';
 
 const intl = IntlService.instance;
+const EditViewWithForm = withForm(PromiseWrapper, true);
+
 @provide
 export default class PageDialectMediaEdit extends Component {
 
     static propTypes = {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         fetchResource: PropTypes.func.isRequired,
         computeResource: PropTypes.object.isRequired,
         updateResource: PropTypes.func.isRequired,
@@ -55,25 +64,37 @@ export default class PageDialectMediaEdit extends Component {
         super(props, context);
 
         this.state = {
-            resource: null,
-            fields: fields,
-            options: selectn("FVResource", options),
-            resourcePath: props.routeParams.dialect_path + '/Resources/' + props.routeParams.media,
             formValue: null
         };
 
         // Bind methods to 'this'
-        ['_onRequestSaveForm'].forEach((method => this[method] = this[method].bind(this)));
+        ['_handleSave', '_handleCancel'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
         newProps.fetchDialect2(this.props.routeParams.dialect_path);
-        newProps.fetchResource(this.state.resourcePath);
+        newProps.fetchResource(this._getResourcePath());
     }
 
     // Fetch data on initial render
     componentDidMount() {
         this.fetchData(this.props);
+    }
+
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+
+        let currentResource, nextResource;
+
+        if (this._getResourcePath() != null) {
+            currentResource = ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath());
+            nextResource = ProviderHelpers.getEntry(nextProps.computeResource, this._getResourcePath());
+        }
+
+        // 'Redirect' on success
+        if (selectn('wasUpdated', currentResource) != selectn('wasUpdated', nextResource) && selectn('wasUpdated', nextResource) === true) {
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextResource), 'media'), nextProps.replaceWindowPath, true);
+        }
     }
 
     shouldComponentUpdate(newProps, newState) {
@@ -88,7 +109,7 @@ export default class PageDialectMediaEdit extends Component {
                 return true;
                 break;
 
-            case (ProviderHelpers.getEntry(newProps.computeResource, this.state.resourcePath) != ProviderHelpers.getEntry(this.props.computeResource, this.state.resourcePath)):
+            case (ProviderHelpers.getEntry(newProps.computeResource, this._getResourcePath()) != ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath())):
                 return true;
                 break;
 
@@ -100,115 +121,103 @@ export default class PageDialectMediaEdit extends Component {
         return false;
     }
 
-    _navigateToMediaPage() {
-        let mediaPath = '';
+    _handleSave(phrase, formValue) {
 
-        for (let value of this.props.splitWindowPath) {
-            mediaPath += '/' + value;
-            if (value === 'media') {
-                break;
-            }
+        let newDocument = new Document(phrase.response, {
+            'repository': phrase.response._repository,
+            'nuxeo': phrase.response._nuxeo
+        });
+
+        // Set new value property on document
+        newDocument.set(formValue);
+
+        // Save document
+        this.props.updateResource(newDocument, null, null);
+
+        this.setState({formValue: formValue});
+    }
+
+    _handleCancel() {
+        NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
+    }
+
+    _getResourcePath(props = null) {
+
+        if (props == null) {
+            props = this.props;
         }
-        if (mediaPath.length > 0) {
-            this.props.pushWindowPath(mediaPath);
+
+        if (StringHelpers.isUUID(props.routeParams.media)){
+            return props.routeParams.media;
+        } else {
+            return props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(props.routeParams.media);
         }
     }
 
-    _onRequestSaveForm(e) {
+    componentDidUpdate(prevProps, prevState) {
+        let media = selectn('response', ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath()));
+        let title = selectn('properties.dc:title', media);
+        let uid = selectn('uid', media);
 
-        // Prevent default behaviour
-        e.preventDefault();
-
-        let formValue = this.refs["form_resource"].getValue();
-        let resource = ProviderHelpers.getEntry(this.props.computeResource, this.state.resourcePath);
-
-        // Passed validation
-        if (formValue) {
-
-            // TODO: Find better way to construct object then accessing internal function
-            // Create new document rather than modifying the original document
-            let newDocument = new Document(resource.response, {
-                'repository': resource.response._repository,
-                'nuxeo': resource.response._nuxeo
-            });
-
-            // Set new value property on document
-            newDocument.set(formValue);
-
-            // Save document
-            this.props.updateResource(newDocument);
-
-            this.setState({formValue: formValue});
-
-            if (resource.action === "FV_RESOURCE_UPDATE_SUCCESS" || resource.action === "FV_RESOURCE_FETCH_SUCCESS") {
-                this._navigateToMediaPage();
-            }
-
-        } else {
-            //let firstError = this.refs["form_resource_create"].validate().firstError();
-            window.scrollTo(0, 0);
+        if (title && selectn('pageTitleParams.media', this.props.properties) != title) {
+            this.props.changeTitleParams({'media': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.media'});
         }
-
     }
 
     render() {
 
+        let context;
+
         const computeEntities = Immutable.fromJS([{
-            'id': this.state.resourcePath,
+            'id': this._getResourcePath(),
             'entity': this.props.computeResource
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }]);
 
-        const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this.state.resourcePath);
+        const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath());
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+        let type = selectn("response.type", computeResource);
+
+        // Additional context (in order to store file content for display)
+        if (selectn("response", computeDialect2) && selectn("response", computeResource)) {
+            context = Object.assign(selectn("response", computeDialect2), {
+                otherContext: {
+                    'file': selectn("response.properties.file:content", computeResource)
+                }
+            });
+        }
+
+        return <div>
 
             <h1>Edit {selectn("response.properties.dc:title", computeResource)} resource</h1>
 
-            <div className="row" style={{marginTop: '15px'}}>
+            {(() => {
 
-                <div className={classNames('col-xs-8', 'col-md-10')}>
+                if (type) {
 
-                    {(() => {
+                    // Remove file upload for editing...
+                    let modifiedFields = Immutable.fromJS(fields).deleteIn([type, 'file']).toJS();
 
-                        const type = selectn("response.type", computeResource);
+                    return <EditViewWithForm
+                                computeEntities={computeEntities}
+                                initialValues={context}
+                                itemId={this._getResourcePath()}
+                                fields={modifiedFields}
+                                options={options}
+                                saveMethod={this._handleSave}
+                                cancelMethod={this._handleCancel}
+                                currentPath={this.props.splitWindowPath}
+                                navigationMethod={this.props.replaceWindowPath}
+                                type={type}
+                                routeParams={this.props.routeParams}/>;
+                }
 
-                        if (type) {
+            })()}
 
-                            // Disable file upload for editing...
-                            let modifiedFields = Map(selectn(type, this.state.fields)).delete('file').toJS();
-
-                            return <form className="form-horizontal" onSubmit={this._onRequestSaveForm}>
-                                <t.form.Form
-                                    ref="form_resource"
-                                    type={t.struct(modifiedFields)}
-                                    context={selectn("response", computeDialect2)}
-                                    value={this.state.formValue || selectn("response.properties", computeResource)}
-                                    options={this.state.options}/>
-                                <div className="form-group">
-                                    <button type="submit"
-                                            className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
-                                </div>
-                            </form>;
-                        }
-
-                    })()}
-
-                </div>
-
-                <div className={classNames('col-xs-4', 'col-md-2')}>
-
-                    <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-
-                        <div className="subheader">{intl.trans('metadata', 'Metadata', 'first')}</div>
-
-                    </Paper>
-
-                </div>
-            </div>
-        </PromiseWrapper>;
+        </div>;
     }
 }

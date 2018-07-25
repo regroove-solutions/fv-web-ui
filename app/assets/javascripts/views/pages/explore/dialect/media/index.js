@@ -22,6 +22,8 @@ import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 import Header from 'views/pages/explore/dialect/header';
 import PageHeader from 'views/pages/explore/dialect/page-header';
@@ -91,13 +93,8 @@ export default class DialectMedia extends Component {
         ['_onNavigateRequest', 'fetchData'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    _onNavigateRequest(media) {
-        const pathArray = selectn('path', media).split('/');
-        const name = pathArray[pathArray.length - 1];
-        const newPathArray = this.props.splitWindowPath.slice();
-        newPathArray.push(name);
-
-        this.props.pushWindowPath('/' + newPathArray.join('/'));
+    _onNavigateRequest(media) {        
+        this.props.pushWindowPath(NavigationHelpers.generateUIDPath((this.props.routeParams.theme || 'explore'), media, 'media'));
     }
 
     fetchData(fetcherParams, props = this.props) {

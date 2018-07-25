@@ -54,9 +54,33 @@ export default {
     navigateBack: function () {
         window.history.back();
     },
-    // Generate a UID link from a path
+    // Generate a UID link from a Nuxeo document path
     generateUIDPath: function (theme, item, pluralPathId) {
-        let path = '/' + theme + selectn('path', item).replace("/Dictionary/", "/learn/" + pluralPathId + "/").replace("/Stories & Songs/", "/learn/" + pluralPathId + "/").replace("/Portal/", "/" + pluralPathId + "/");
+        let path = '/' + theme + selectn('path', item);
+
+        switch (selectn('type', item)) {
+            case "FVWord":
+            case "FVPhrase":
+                path = path.replace("/Dictionary/", "/learn/" + pluralPathId + "/");
+            break;
+
+            case "FVBook":
+                path = path.replace("/Stories & Songs/", "/learn/" + pluralPathId + "/");
+            break;
+
+            case "FVGallery":
+                path = path.replace("/Portal/", "/" + pluralPathId + "/");
+            break;
+
+            case "FVAudio":
+            case "FVVideo":
+            case "FVPicture":
+                // Resources can be in folders, so ensure everything after 'Resources' is ignored
+                path = path.substring(0, path.lastIndexOf("/Resources/") + 11);
+                path = path.replace("/Resources/", "/" + pluralPathId + "/");
+            break;
+        }
+
         return path = path.substring(0, path.lastIndexOf("/") + 1) + selectn('uid', item);
     },
     // Disable link

@@ -141,6 +141,51 @@ t.String.getValidationErrorMessage = (value, path, context) => {
     }
 };
 
+const FVMedia = {
+    order: ['dc:title', 'dc:description', 'file', 'fvm:shared', 'fvm:child_focused', 'fvm:source', 'fvm:recorder'],
+    fields: {
+        'dc:title': {
+            label: intl.trans("name", 'Name', 'first'),
+            type: 'text'
+        },
+        'dc:description': {
+            label: intl.trans("description", 'Description', 'first'),
+            type: 'textarea'
+        },
+        'file': {
+            label: intl.trans("file", 'File', 'first'),
+            type: 'file'
+        },
+        'fvm:shared': {
+            label: intl.trans("models.shared_accross_dialects", 'Shared Accross Dialects?', 'first')
+        },
+        'fvm:child_focused': {
+            label: intl.trans("models.child_focused", 'Child Focused', 'first')
+        },
+        'fvm:source': {
+            label: intl.trans("source", 'Source', 'first'),
+            item: {
+                factory: SelectSuggestFactory,
+                type: 'FVContributor'
+            }
+        },
+        'fvm:recorder': {
+            label: intl.trans("recorder", 'Recorder', 'first'),
+            item: {
+                factory: SelectSuggestFactory,
+                type: 'FVContributor'
+            }
+        }
+    },
+    config: {
+        horizontal: {
+            md: [3, 9],
+            sm: [6, 6]
+        }
+    },
+    i18n: i18nExt
+};
+
 const options = {
     FVWord: {
         order: ['dc:title', 'fv-word:part_of_speech', 'fv-word:pronunciation', 'fv:definitions', 'fv:literal_translation', 'fv:related_audio', 'fv:related_pictures', 'fv:related_videos', 'fv-word:related_phrases', 'fv-word:categories', 'fv:cultural_note', 'fv:reference', 'fv:source', 'fv:available_in_childrens_archive', 'fv-word:available_in_games'],
@@ -836,51 +881,10 @@ const options = {
         },
         i18n: i18nExt
     },
-
-    FVResource: {
-        order: ['dc:title', 'dc:description', 'file', 'fvm:shared', 'fvm:child_focused', 'fvm:source', 'fvm:recorder'],
-        fields: {
-            'dc:title': {
-                label: intl.trans("name", 'Name', 'first'),
-                type: 'text'
-            },
-            'dc:description': {
-                label: intl.trans("description", 'Description', 'first'),
-                type: 'textarea'
-            },
-            'file': {
-                label: intl.trans("file", 'File', 'first'),
-                type: 'file'
-            },
-            'fvm:shared': {
-                label: intl.trans("models.shared_accross_dialects", 'Shared Accross Dialects?', 'first')
-            },
-            'fvm:child_focused': {
-                label: intl.trans("models.child_focused", 'Child Focused', 'first')
-            },
-            'fvm:source': {
-                label: intl.trans("source", 'Source', 'first'),
-                item: {
-                    factory: SelectSuggestFactory,
-                    type: 'FVContributor'
-                }
-            },
-            'fvm:recorder': {
-                label: intl.trans("recorder", 'Recorder', 'first'),
-                item: {
-                    factory: SelectSuggestFactory,
-                    type: 'FVContributor'
-                }
-            }
-        },
-        config: {
-            horizontal: {
-                md: [3, 9],
-                sm: [6, 6]
-            }
-        },
-        i18n: i18nExt
-    },
+    FVAudio: Object.assign({}, FVMedia),
+    FVPicture: Object.assign({}, FVMedia),
+    FVVideo: Object.assign({}, FVMedia),
+    FVResource: FVMedia,
     FVUser: {
         fields: {
             'userinfo:firstName': {

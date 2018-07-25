@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import Preview from 'views/components/Editor/Preview';
@@ -83,6 +84,7 @@ export default class View extends Component {
         splitWindowPath: PropTypes.array.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
         changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
@@ -141,10 +143,13 @@ export default class View extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        let title = selectn('response.properties.dc:title', ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath()));
+        let media = selectn('response', ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath()));
+        let title = selectn('properties.dc:title', media);
+        let uid = selectn('uid', media);
 
         if (title && selectn('pageTitleParams.media', this.props.properties) != title) {
             this.props.changeTitleParams({'media': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.media'});
         }
     }
 
@@ -162,7 +167,11 @@ export default class View extends Component {
             props = this.props;
         }
 
-        return props.routeParams.dialect_path + '/Resources/' + props.routeParams.media;
+        if (StringHelpers.isUUID(props.routeParams.media)){
+            return props.routeParams.media;
+        } else {
+            return props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(props.routeParams.media);
+        }
     }
 
     _getMediaRelatedField(type) {
