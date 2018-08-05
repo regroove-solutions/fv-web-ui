@@ -374,53 +374,6 @@ export default class DocumentOperations extends BaseOperations {
             });
     }
 
-    /**
-     * TODO: Change to more official method if exists?
-     * Get Blob, Or https://github.com/dcodeIO/protobuf.js/wiki/How-to-read-binary-data-in-the-browser-or-under-node.js%3F
-     * https://github.com/request/request/issues/1796
-     */
-    getMediaBlobById(id, mimeType, xpath = 'file:content') {
-        // Expose fields to promise
-        let client = this.client;
-
-        return new Promise(
-            function (resolve, reject) {
-
-                var request = new XMLHttpRequest();
-
-                request.onload = function (e) {
-                    if (request.readyState == 4) {
-                        var uInt8Array = new Uint8Array(this.response);
-                        var i = uInt8Array.length;
-                        var biStr = new Array(i);
-                        while (i--) {
-                            biStr[i] = String.fromCharCode(uInt8Array[i]);
-                        }
-                        var data = biStr.join('');
-                        var base64 = window.btoa(data);
-
-                        var dataUri = 'data:' + mimeType + ';base64,' + base64;
-                        resolve({dataUri: dataUri, mediaId: id});
-                    } else {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.media_not_found',
-                            default: 'Media not found',
-                            case: 'first',
-                            append: '.'
-                        }));
-                    }
-                }
-
-                request.open("POST", client._baseURL + "/site/automation/Blob.Get", true);
-                request.responseType = "arraybuffer";
-                request.setRequestHeader("authorization", "Basic " + window.btoa(unescape(encodeURIComponent(client._auth.username + ":" + client._auth.password))));
-                request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                request.setRequestHeader("Content-Type", "application/json+nxrequest");
-                request.send(JSON.stringify({input: id, params: {xpath: xpath}}));
-
-            });
-    }
-
     getDocumentsByDialect(client, dialect, query = null, headers = null, params = null) {
 
         // Initialize and empty document list from type
