@@ -74,6 +74,7 @@ export default class DialectLearn extends Component {
         updatePortal: PropTypes.func.isRequired,
         fetchPortal: PropTypes.func.isRequired,
         publishDialectOnly: PropTypes.func.isRequired,
+        fetchDialectStats: PropTypes.func.isRequired,
         queryModifiedWords: PropTypes.func.isRequired,
         computeModifiedWords: PropTypes.object.isRequired,
         queryCreatedWords: PropTypes.func.isRequired,
@@ -115,6 +116,7 @@ export default class DialectLearn extends Component {
 
         this.state = {
             showStats: false,
+            fetchedStats: false,
             fetchedRecentActivityLists: new Set()
         };
 
@@ -157,7 +159,18 @@ export default class DialectLearn extends Component {
     }
 
     _showStats() {
-        this.setState({showStats: !this.state.showStats});
+        
+        if (!this.state.fetchedStats){
+            this.props.fetchDialectStats(this.props.routeParams.dialect_path, {
+                'dialectPath': this.props.routeParams.dialect_path,
+                'docTypes': ["words", "phrases", "songs", "stories"]
+            });
+        }
+
+        this.setState({
+            fetchedStats: true,
+            showStats: !this.state.showStats
+        });
     }
 
     _loadRecentActivity(key){

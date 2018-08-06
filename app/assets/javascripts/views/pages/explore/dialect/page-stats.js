@@ -48,32 +48,19 @@ import IntlService from 'views/services/intl';
 const intl = IntlService.instance;
 
 @provide
-export default class PageToolbar extends Component {
-
-    static defaultProps = {
-        docTypes: ["words", "phrases", "songs", "stories"]
-    };
+export default class PageStats extends Component {
 
     static propTypes = {
         windowPath: PropTypes.string.isRequired,
         handleNavigateRequest: PropTypes.func,
-        fetchDialectStats: PropTypes.func.isRequired,
         computeDialectStats: PropTypes.object.isRequired,
-        dialectPath: PropTypes.string.isRequired,
-        docTypes: PropTypes.array
+        dialectPath: PropTypes.string.isRequired
     };
 
     constructor(props, context) {
         super(props, context);
 
         [].forEach((method => this[method] = this[method].bind(this)));
-    }
-
-    componentDidMount() {
-        this.props.fetchDialectStats(this.props.dialectPath, {
-            'dialectPath': this.props.dialectPath,
-            'docTypes': this.props.docTypes
-        });
     }
 
     render() {
