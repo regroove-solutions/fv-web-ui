@@ -74,6 +74,8 @@ export default class PromiseWrapper extends Component {
 
             if (!reducedOperation || (reducedOperation.isError && selectn('message', reducedOperation))) {
 
+                statusMessage = selectn('message', reducedOperation);
+
                 if (!this.props.renderOnError) {
                     render = <div><h1>404 - {this.intl.translate({
                         key: 'errors.page_not_found',
@@ -81,13 +83,21 @@ export default class PromiseWrapper extends Component {
                         case: 'first'
                     })}</h1><p>{this.intl.translate({
                         key: 'errors.report_via_feedback',
-                        default: 'Please report this error so that we can fix it',
+                        default: 'Please report this error by emailing support@fpcc.ca so that we can fix it',
                         case: 'first'
                     })}.
-                    </p><p>{this.intl.translate({
+                    </p>
+                    <p>{this.intl.translate({
                         key: 'errors.feedback_include_link',
-                        default: 'Include what link or action you took to get to this page'
-                    })}.</p><p>{this.intl.translate({
+                        default: 'Include the link or action you took to get to this page'
+                    })}.</p>
+                    <p>Please also include the following error message:</p>
+                    <p>
+                        <code style={{width: '400px', border: '1px #e0e0e0 solid'}}>
+                            Error message: {statusMessage}
+                        </code>
+                    </p>
+                    <p>{this.intl.translate({
                         key: 'thank_you!',
                         default: 'Thank You!',
                         case: 'words'
@@ -95,7 +105,6 @@ export default class PromiseWrapper extends Component {
                     </div>;
                 }
 
-                statusMessage = selectn('message', reducedOperation);
                 return false;
             }
 
