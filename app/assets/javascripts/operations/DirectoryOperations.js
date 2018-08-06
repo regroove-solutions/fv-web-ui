@@ -16,6 +16,8 @@ limitations under the License.
 import _ from 'underscore';
 import StringHelpers from 'common/StringHelpers';
 
+import request from 'request';
+
 import Nuxeo from 'nuxeo';
 
 import BaseOperations from 'operations/BaseOperations';
@@ -24,6 +26,59 @@ import IntlService from "views/services/intl";
 const TIMEOUT = 60000;
 
 export default class DirectoryOperations extends BaseOperations {
+
+    /**
+     * Gets one or more documents based on a path or id.
+     * Allows for additional complex queries to be executed.
+     */
+    static getDocumentsViaAPI(path = "", headers) {
+
+        let requestBody;
+
+        return new Promise(
+            function (resolve, reject) {
+
+                let options = {
+                    url: path,
+                    headers: headers
+                };
+                
+                request(options, function (error, response, body) {
+ 
+                    if (error || response.statusCode != 200) {
+                        if (error.hasOwnProperty('response')) {
+                            error.response.json().then(
+                                (jsonError) => {
+                                    reject(StringHelpers.extractErrorMessage(jsonError));
+                                }
+                            );
+                        } else {
+                            let errorMessage = "Attempting to retrieve " + path;
+                            
+                            if (error) {
+                                errorMessage += " has resulted in ";
+                            } else {
+                                errorMessage += " - ";
+                            }
+
+                            return reject(errorMessage + (error || IntlService.instance.translate({
+                                key: 'operations.could_not_access_server',
+                                default: 'Could not access server',
+                                case: 'first'
+                            })));
+                        }
+                    } else {
+                        resolve(JSON.parse(body));
+                    }
+
+                    reject('An unknown error has occured.');
+                });
+
+                setTimeout(function () {
+                    reject('Server timeout while attempting to get documents.');
+                }, TIMEOUT);
+            });
+    }
 
     /**
      * Gets one or more documents based on a path or id.
