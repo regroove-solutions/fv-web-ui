@@ -63,7 +63,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 };
 
 const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
+const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', {headers: {'X-NXenrichers.document': 'phrase'}});
 const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
 const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}}, false);
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
@@ -86,13 +86,13 @@ const computePhrasesQueryFactory = RESTReducers.computeQuery('phrases');
 
 const queryModifiedPhrases = RESTActions.query('FV_MODIFIED_PHRASES', 'FVPhrase', {
     queryAppend: '&sortBy=dc:modified&sortOrder=DESC&maxResults=4',
-    headers: {'X-NXenrichers.document': 'phrase,ancestry,permissions'}
+    headers: {'X-NXProperties': 'dublincore'}
 });
 const computeRecentlyModifiedPhrasesQuery = RESTReducers.computeQuery('modified_phrases');
 
 const queryCreatedPhrases = RESTActions.query('FV_CREATED_PHRASES', 'FVPhrase', {
     queryAppend: '&sortBy=dc:created&sortOrder=DESC&maxResults=4',
-    headers: {'X-NXenrichers.document': 'phrase,ancestry,permissions'}
+    headers: {'X-NXProperties': 'dublincore'}
 });
 const computeRecentlyCreatedPhrasesQuery = RESTReducers.computeQuery('created_phrases');
 
@@ -101,7 +101,7 @@ const queryUserModifiedPhrases = function queryUserModifiedPhrases(pathOrId, use
 
         dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_START});
 
-        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&maxResults=4', {'X-NXProperties': 'dublincore'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_SUCCESS, document: response})
             }).catch((error) => {
@@ -115,7 +115,7 @@ const queryUserCreatedPhrases = function queryUserCreatedPhrases(pathOrId, user)
 
         dispatch({type: FV_PHRASES_USER_CREATED_QUERY_START});
 
-        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXenrichers.document': 'phrase,ancestry,permissions'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&maxResults=4', {'X-NXProperties': 'dublincore'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_CREATED_QUERY_SUCCESS, document: response})
             }).catch((error) => {

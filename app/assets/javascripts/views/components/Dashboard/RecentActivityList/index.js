@@ -59,7 +59,7 @@ export default class RecentActivityList extends Component {
     render() {
 
         if (this.props.data == undefined || this.props.data.entries == undefined || this.props.data.entries.length == 0) {
-            return <div></div>;
+            return <div>Loading <strong>{this.props.title}</strong>...</div>;
         }
 
         return (

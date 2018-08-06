@@ -46,6 +46,7 @@ import Link from 'views/components/Document/Link';
 import TextHeader from 'views/components/Document/Typography/text-header';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+import AuthenticationFilter from 'views/components/Document/AuthenticationFilter';
 
 import ToolbarNavigation from 'views/pages/explore/dialect/learn/base/toolbar-navigation';
 import LearningSidebar from 'views/pages/explore/dialect/learn/base/learning-sidebar';
@@ -113,35 +114,16 @@ export default class DialectLearn extends Component {
         super(props, context);
 
         this.state = {
-            showStats: false
+            showStats: false,
+            fetchedRecentActivityLists: new Set()
         };
 
-        ['_showStats', '_publishChangesAction'].forEach((method => this[method] = this[method].bind(this)));
+        ['_showStats', '_publishChangesAction', '_loadRecentActivity'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
         newProps.fetchDialect2(newProps.routeParams.dialect_path);
         newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-
-        newProps.queryModifiedWords(newProps.routeParams.dialect_path);
-        newProps.queryCreatedWords(newProps.routeParams.dialect_path);
-        newProps.queryUserModifiedWords(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-        newProps.queryUserCreatedWords(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-
-        newProps.queryModifiedPhrases(newProps.routeParams.dialect_path);
-        newProps.queryCreatedPhrases(newProps.routeParams.dialect_path);
-        newProps.queryUserModifiedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-        newProps.queryUserCreatedPhrases(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-
-        newProps.queryModifiedStories(newProps.routeParams.dialect_path);
-        newProps.queryCreatedStories(newProps.routeParams.dialect_path);
-        newProps.queryUserModifiedStories(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-        newProps.queryUserCreatedStories(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-
-        newProps.queryModifiedSongs(newProps.routeParams.dialect_path);
-        newProps.queryCreatedSongs(newProps.routeParams.dialect_path);
-        newProps.queryUserModifiedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
-        newProps.queryUserCreatedSongs(newProps.routeParams.dialect_path, selectn("response.properties.username", newProps.computeLogin));
     }
 
     // Fetch data on initial render
@@ -155,16 +137,16 @@ export default class DialectLearn extends Component {
             this.fetchData(nextProps);
         }
 
-        if (selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {
-            nextProps.queryUserModifiedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserCreatedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserModifiedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserCreatedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserModifiedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserCreatedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserModifiedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-            nextProps.queryUserCreatedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
-        }
+        // if (selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {
+        //     nextProps.queryUserModifiedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserCreatedWords(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserModifiedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserCreatedPhrases(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserModifiedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserCreatedStories(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserModifiedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        //     nextProps.queryUserCreatedSongs(nextProps.routeParams.dialect_path, selectn("response.properties.username", nextProps.computeLogin));
+        // }
     }
 
     /**
@@ -176,6 +158,60 @@ export default class DialectLearn extends Component {
 
     _showStats() {
         this.setState({showStats: !this.state.showStats});
+    }
+
+    _loadRecentActivity(key){
+        if (!this.state.fetchedRecentActivityLists.has(key)) {
+
+            let dialectPath = this.props.routeParams.dialect_path;
+            let userName = selectn("response.properties.username", this.props.computeLogin);
+
+            switch (key) {
+                case 'words':
+                    this.props.queryModifiedWords(dialectPath);
+                    this.props.queryCreatedWords(dialectPath);
+
+                    if (userName && userName != 'Guest') {
+                        this.props.queryUserCreatedWords(dialectPath, userName);
+                        this.props.queryUserModifiedWords(dialectPath, userName);
+                    }
+                break;
+
+                case 'phrases':
+                    this.props.queryModifiedPhrases(dialectPath);
+                    this.props.queryCreatedPhrases(dialectPath);
+
+                    if (userName && userName != 'Guest') {
+                        this.props.queryUserCreatedPhrases(dialectPath, userName);
+                        this.props.queryUserModifiedPhrases(dialectPath, userName);
+                    }
+                break;
+
+                case 'stories':
+                    this.props.queryModifiedStories(dialectPath);
+                    this.props.queryCreatedStories(dialectPath);
+
+                    if (userName && userName != 'Guest') {
+                        this.props.queryUserCreatedStories(dialectPath, userName);
+                        this.props.queryUserModifiedStories(dialectPath, userName);
+                    }
+                break;
+
+                case 'songs':
+                    this.props.queryModifiedSongs(dialectPath);
+                    this.props.queryCreatedSongs(dialectPath);
+
+                    if (userName && userName != 'Guest') {
+                        this.props.queryUserCreatedSongs(dialectPath, userName);
+                        this.props.queryUserModifiedSongs(dialectPath, userName);
+                    }
+                break;
+            }
+
+            this.setState({
+                fetchedRecentActivityLists: this.state.fetchedRecentActivityLists.add(key)
+            });
+        }
     }
 
     render() {
@@ -274,7 +310,7 @@ export default class DialectLearn extends Component {
                         </div>
 
                         <div className={classNames('col-xs-12', 'col-md-6')}>
-                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'words')}>
                                 <CardHeader
                                     className="card-header-custom"
                                     title={intl.trans('words', 'WORDS', 'upper')}
@@ -286,37 +322,42 @@ export default class DialectLearn extends Component {
                                 />
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeModifiedWords)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="word"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeCreatedWords)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="word"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserModifiedWords)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
-                                                                docType="word"/>
-                                        </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserCreatedWords)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
-                                                                docType="word"/>
-                                        </div>
+
+                                        <AuthenticationFilter login={this.props.computeLogin} anon={false}>
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserModifiedWords)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
+                                                                    docType="word"/>
+                                            </div>
+
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserCreatedWords)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
+                                                                    docType="word"/>
+
+                                            </div>
+                                        </AuthenticationFilter>
                                     </div>
                                 </CardText>
                             </Card>
                         </div>
 
                         <div className={classNames('col-xs-12', 'col-md-6')}>
-                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'phrases')}>>
                                 <CardHeader
                                     className="card-header-custom"
                                     title={intl.trans('phrases', 'PHRASES', 'upper')}
@@ -328,37 +369,39 @@ export default class DialectLearn extends Component {
                                 />
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeModifiedPhrases)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="phrase"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeCreatedPhrases)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="phrase"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserModifiedPhrases)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
-                                                                docType="phrase"/>
-                                        </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserCreatedPhrases)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
-                                                                docType="phrase"/>
-                                        </div>
+                                        <AuthenticationFilter login={this.props.computeLogin} anon={false}>
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserModifiedPhrases)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
+                                                                    docType="phrase"/>
+                                            </div>
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserCreatedPhrases)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
+                                                                    docType="phrase"/>
+                                            </div>
+                                        </AuthenticationFilter>
                                     </div>
                                 </CardText>
                             </Card>
                         </div>
 
                         <div className={classNames('col-xs-12', 'col-md-6')}>
-                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'songs')}>>
                                 <CardHeader
                                     className="card-header-custom"
                                     title={intl.trans('songs', 'SONGS', 'upper')}
@@ -370,37 +413,39 @@ export default class DialectLearn extends Component {
                                 />
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeModifiedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="song"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeCreatedSongs)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="song"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserModifiedSongs)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
-                                                                docType="song"/>
-                                        </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
-                                            <RecentActivityList theme={this.props.routeParams.theme}
-                                                                data={selectn('response', computeUserCreatedSongs)}
-                                                                title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
-                                                                docType="song"/>
-                                        </div>
+                                        <AuthenticationFilter login={this.props.computeLogin} anon={false}>
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserModifiedSongs)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
+                                                                    docType="song"/>
+                                            </div>
+                                            <div className={classNames('col-xs-6')}>
+                                                <RecentActivityList theme={this.props.routeParams.theme}
+                                                                    data={selectn('response', computeUserCreatedSongs)}
+                                                                    title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
+                                                                    docType="song"/>
+                                            </div>
+                                        </AuthenticationFilter>
                                     </div>
                                 </CardText>
                             </Card>
                         </div>
 
                         <div className={classNames('col-xs-12', 'col-md-6')}>
-                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}}>
+                            <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'stories')}>>
                                 <CardHeader
                                     className="card-header-custom"
                                     title={intl.trans('stories', 'STORIES', 'upper')}
@@ -412,30 +457,32 @@ export default class DialectLearn extends Component {
                                 />
                                 <CardText expandable={true}>
                                     <div className="row" style={{paddingTop: '20px'}}>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeModifiedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_modified', 'Recently Modified', 'words')}
                                                                 docType="stories"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeCreatedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.recently_created', 'Recently Created', 'words')}
                                                                 docType="stories"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <AuthenticationFilter login={this.props.computeLogin} anon={false}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeUserModifiedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_modified', 'My Recently Modified', 'words')}
                                                                 docType="stories"/>
                                         </div>
-                                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                                        <div className={classNames('col-xs-6')}>
                                             <RecentActivityList theme={this.props.routeParams.theme}
                                                                 data={selectn('response', computeUserCreatedStories)}
                                                                 title={intl.trans('views.pages.explore.dialect.learn.my_recently_created', 'My Recently Created', 'words')}
                                                                 docType="stories"/>
                                         </div>
+                                        </AuthenticationFilter>
                                     </div>
                                 </CardText>
                             </Card>
