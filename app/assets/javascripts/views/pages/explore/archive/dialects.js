@@ -16,6 +16,8 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import Immutable, {List, Map} from 'immutable';
 
+import ConfGlobal from 'conf/local.json';
+
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import classNames from 'classnames';
@@ -107,7 +109,7 @@ export default class ExploreDialects extends Component {
         // Perform an API query for sections
         if (props.routeParams.area == 'sections') {
             // From s3 (static) (NOTE: when fetchPortals is fully switched remove headers from FVPortal to save OPTIONS call)
-            return 'https://api.firstvoices.com/v1/s3dialects/?area=' + props.routeParams.area;
+            return ConfGlobal.apiURL + 's3dialects/?area=' + props.routeParams.area;
             
             // Proxy (not cached at the moment)
             //return 'https://api.firstvoices.com/v1/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
