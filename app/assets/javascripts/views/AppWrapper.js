@@ -169,7 +169,7 @@ export default class AppWrapper extends Component {
         //}
 
         // Get user preferences
-        if (nextProps.computeLogin != this.props.computeLogin && selectn('success', nextProps.computeLogin)) {
+        if (nextProps.computeLogin != this.props.computeLogin && selectn('success', nextProps.computeLogin) && selectn('isConnected', nextProps.computeLogin)) {
 
             let userPreferences = getPreferences(nextProps.computeLogin);
 
