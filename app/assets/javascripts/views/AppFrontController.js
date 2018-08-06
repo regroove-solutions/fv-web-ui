@@ -185,8 +185,8 @@ export default class AppFrontController extends Component {
         replaceWindowPath: PropTypes.func.isRequired,
         computeLogin: PropTypes.object.isRequired,
         changeTheme: PropTypes.func.isRequired,
-        /*loadGuide: PropTypes.func.isRequired*/
-        loadNavigation: PropTypes.func.isRequired
+        // loadGuide: PropTypes.func.isRequired,
+        // loadNavigation: PropTypes.func.isRequired
     };
 
     constructor(props, context) {
@@ -1290,7 +1290,7 @@ export default class AppFrontController extends Component {
           //props.loadGuide(props.windowPath, matchReturn);
     
           // Load Navigation
-          props.loadNavigation();
+          //props.loadNavigation();
     
           this.setState(matchReturn);
         }

@@ -85,6 +85,8 @@ export default class Navigation extends Component {
     computeCountTotalTasks: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
+    loadNavigation: PropTypes.func.isRequired,
+    computeLoadNavigation: PropTypes.object.isRequired,
     //computeLoadGuide: PropTypes.object.isRequired,
     computePortal: PropTypes.object,
     computeDialect2: PropTypes.object,
@@ -109,14 +111,8 @@ export default class Navigation extends Component {
       locale: this.intl.locale
     };
 
-    this._handleMenuToggle = this._handleMenuToggle.bind(this);
-    this._handleChangeLocale = this._handleChangeLocale.bind(this);
-    this._handleDisplayLocaleOptions = this._handleDisplayLocaleOptions.bind(this);
-    this.handleChangeRequestLeftNav = this.handleChangeRequestLeftNav.bind(this);
-    this.handleRequestChangeList = this.handleRequestChangeList.bind(this);
-    this._handleNavigationSearchSubmit = this._handleNavigationSearchSubmit.bind(this);
-    this._startTour = this._startTour.bind(this);
-    this._removePopoverUnlessOptionSelected = this._removePopoverUnlessOptionSelected.bind(this);
+    // Bind methods to 'this'
+    ['_handleChangeLocale', '_handleDisplayLocaleOptions', 'handleChangeRequestLeftNav', 'handleRequestChangeList', '_handleNavigationSearchSubmit', '_startTour', '_removePopoverUnlessOptionSelected', '_handleOpenMenuRequest'].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   _setExplorePath(props = this.props){
@@ -177,17 +173,6 @@ export default class Navigation extends Component {
         searchContextPopoverOpen: false
       });
     }
-  }
-
-  _handleMenuToggle (event) {
-    //console.log(event);
-
-    //const test = this.props.toggle("helloworld");
-    //console.log(test);
-
-    /*this.setState({
-      leftNavOpen: !this.state.leftNavOpen,
-    });*/
   }
 
   _onNavigateRequest(path) {
@@ -292,6 +277,16 @@ export default class Navigation extends Component {
     }
   }
 
+  _handleOpenMenuRequest() {
+    
+    // Only load navigation once
+    if (!this.props.computeLoadNavigation.success) {
+      this.props.loadNavigation();
+    }
+
+    this.props.toggleMenuAction("AppLeftNav");
+  }
+
   render() {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette;
     const isDialect = this.props.routeParams.hasOwnProperty('dialect_path');
@@ -312,7 +307,7 @@ export default class Navigation extends Component {
         <AppBar
           title={<span className="hidden-xs"><img src="/assets/images/logo.png" style={{padding: "0 0 5px 0"}} alt={this.props.properties.title} /></span>}
           showMenuIconButton={isDialect ? true : true}
-          onLeftIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}>
+          onLeftIconButtonTouchTap={this._handleOpenMenuRequest}>
 
           <ToolbarGroup style={{position: 'relative', color: '#fff'}}>
 
