@@ -69,7 +69,7 @@ export default class RecentActivityList extends Component {
                     {this.props.data.entries.map((document, i) =>
                         <li style={{padding: '0 0 5px 0'}} key={document['uid']}><a
                             href={this._formatLink(document, this.props.docType)}>{document['title']}</a> <br/>
-                            {this._formatDate(document.properties['dc:modified'])} {(document.properties['dc:lastContributor'].indexOf("Administrator") != -1) ? '' :
+                            {this._formatDate(document.properties['dc:modified'])} {(document.properties['dc:lastContributor'].indexOf("Administrator") != -1 || document.properties['dc:lastContributor'].indexOf("dyona") != -1) ? '' :
                                 <span>{intl.trans('by','by','lower')} <strong>{document.properties['dc:lastContributor']}</strong></span>}
                         </li>
                     )}
