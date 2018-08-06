@@ -127,7 +127,7 @@ export default class Search extends DataListView {
 			// Exclude Demo from search
 			((!props.routeParams.dialect_path) ? ' AND ecm:ancestorId <> \'b482d9df-e71b-40b5-9632-79b1fc2782d7\' AND ecm:ancestorId <> \'732c2ef6-19d3-45a8-97e7-b6cff7d84909\' ' : ' ') + 
 			' AND ecm:primaryType IN (' + documentTypeFilter + ')' +      
-			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm) + '*\'' +    
+			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm, 'fulltext') + '*\'' +    
 			// More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +    
 			'&currentPageIndex=' + (pageIndex - 1) + 
 			'&pageSize=' + pageSize + 

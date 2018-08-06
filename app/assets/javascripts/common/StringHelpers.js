@@ -21,11 +21,13 @@ export default {
             // Escape single quotes and URL decode
             str = decodeURIComponent(str.replace(/'/g, "\\'"));
 
-            // Escape colon
-            str = decodeURIComponent(str.replace(/:/g, "\\:"));
-
             // Escape '&' operator
             str = str.replace(/&/g, "%26")
+        }
+
+        if (mode == 'fulltext') {
+            // Escape colon
+            str = decodeURIComponent(str.replace(/:/g, "\\:"));
         }
 
         return str;
