@@ -108,7 +108,7 @@ export default class DirectoryOperations extends BaseOperations {
             let where = 'ecm:path STARTSWITH \'' + StringHelpers.clean(path) + '\'';
 
             if (StringHelpers.isUUID(path)) {
-                where = 'ecm:parentId = \'' + StringHelpers.clean(path) + '\'';
+                where = 'ecm:parentId = \'' + path + '\'';
             }
 
             requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ' + where + ' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
