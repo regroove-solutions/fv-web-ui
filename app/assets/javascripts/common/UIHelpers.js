@@ -69,7 +69,7 @@ export default {
         } else if (selectn('properties.file:content.data', imgObj)) {
             return (returnObj) ? selectn('properties.file:content.data', imgObj) : selectn('properties.file:content.data', imgObj);
         } else if (selectn('path', imgObj)) {
-            return ConfGlobal.baseURL + selectn('path', imgObj);
+            return ConfGlobal.baseURL + selectn('path', imgObj).replace("nxfile", "nxpicsfile").replace("file:", view + ":");
         } else if (selectn('data', imgObj)) {
             return selectn('data', imgObj);
         }
