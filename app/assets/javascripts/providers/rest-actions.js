@@ -2,6 +2,8 @@ import DocumentOperations from 'operations/DocumentOperations';
 import DirectoryOperations from 'operations/DirectoryOperations';
 import IntlService from "views/services/intl";
 
+import ConfGlobal from 'conf/local.json';
+
 export default {
     create: function (key, type, properties = {}) {
         return function create(parentDoc, docParams, file = null, timestamp) {
@@ -89,6 +91,7 @@ export default {
             messageStart = IntlService.instance.searchAndReplace(messageStart);
             messageSuccess = IntlService.instance.searchAndReplace(messageSuccess);
             messageError = IntlService.instance.searchAndReplace(messageError);
+
             return function (dispatch) {
                 dispatch({
                     type: key + '_QUERY_START',
@@ -100,7 +103,9 @@ export default {
                     }) + '...')
                 });
 
-                return DirectoryOperations.getDocuments(pathOrId, type, properties.queryAppend || queryAppend, {headers: properties.headers})
+                // Switch methods used based on path until everything is converted to use the the new endpoints
+                if (pathOrId.indexOf(ConfGlobal.apiURL) !== -1) {
+                    return DirectoryOperations.getDocumentsViaAPI(pathOrId, properties.headers)
                     .then((response) => {
                         dispatch({
                             type: key + '_QUERY_SUCCESS',
@@ -115,6 +120,23 @@ export default {
                             pathOrId: pathOrId
                         })
                     });
+                } else {
+                    return DirectoryOperations.getDocuments(pathOrId, type, properties.queryAppend || queryAppend, {headers: properties.headers})
+                    .then((response) => {
+                        dispatch({
+                            type: key + '_QUERY_SUCCESS',
+                            message: messageSuccess,
+                            response: response,
+                            pathOrId: pathOrId
+                        })
+                    }).catch((error) => {
+                        dispatch({
+                            type: key + '_QUERY_ERROR',
+                            message: (messageError || IntlService.instance.searchAndReplace(error)),
+                            pathOrId: pathOrId
+                        })
+                    });
+                }
             }
         }
     },

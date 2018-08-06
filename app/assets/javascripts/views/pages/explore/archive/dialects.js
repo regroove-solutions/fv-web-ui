@@ -103,12 +103,18 @@ export default class ExploreDialects extends Component {
     }
 
     _getQueryPath(props = this.props) {
-        // Perform a page provider query (currently only for sections)
+        
+        // Perform an API query for sections
         if (props.routeParams.area == 'sections') {
-            return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
+            // From s3 (static) (NOTE: when fetchPortals is fully switched remove headers from FVPortal to save OPTIONS call)
+            return 'https://api.firstvoices.com/v1/s3dialects/?area=' + props.routeParams.area;
+            
+            // Proxy (not cached at the moment)
+            //return 'https://api.firstvoices.com/v1/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
         }
         else {
-            return '/' + props.properties.domain + '/' + props.routeParams.area;
+            // Direct method
+            return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
         }
     }
 
@@ -126,11 +132,19 @@ export default class ExploreDialects extends Component {
 
         let portalsEntries = selectn('response.entries', computePortals) || [];
 
+        let titleFieldMapping = 'contextParameters.ancestry.dialect.dc:title';
+        let logoFieldMapping = 'contextParameters.portal.fv-portal:logo';
+
+        if (this.props.routeParams.area == 'sections') {
+            titleFieldMapping = 'title';
+            logoFieldMapping = 'logo';
+        }
+
         // Sort based on dialect name (all FVPortals have dc:title 'Portal')
         let sortedPortals = portalsEntries.sort(function (a, b) {
 
-            let a2 = selectn('contextParameters.ancestry.dialect.dc:title', a);
-            let b2 = selectn('contextParameters.ancestry.dialect.dc:title', b);
+            let a2 = selectn(titleFieldMapping, a);
+            let b2 = selectn(titleFieldMapping, b);
 
             if (a2 < b2) return -1;
             if (a2 > b2) return 1;
@@ -145,8 +159,8 @@ export default class ExploreDialects extends Component {
             fixedListFetcher: this.fixedListFetcher,
             filteredItems: this.state.filteredList,
             fieldMapping: {
-                title: 'contextParameters.ancestry.dialect.dc:title',
-                logo: 'contextParameters.portal.fv-portal:logo'
+                title: titleFieldMapping,
+                logo: logoFieldMapping
             },
             metadata: selectn('response', computePortals),
             items: sortedPortals
