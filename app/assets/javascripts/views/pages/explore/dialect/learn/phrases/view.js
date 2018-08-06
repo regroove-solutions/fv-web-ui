@@ -120,9 +120,9 @@ export default class View extends Component {
         else if (nextProps.routeParams.phrase !== this.props.routeParams.phrase) {
             this.fetchData(nextProps);
         }
-        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-            this.fetchData(nextProps);
-        }
+        // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+        //     this.fetchData(nextProps);
+        // }
     }
 
     // Fetch data on initial render

@@ -129,9 +129,9 @@ export default class ExploreDialect extends Component {
             this.fetchData(nextProps);
         }
 
-        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-            this.fetchData(nextProps);
-        }
+        // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+        //     this.fetchData(nextProps);
+        // }
     }
 
     _onNavigateRequest(path) {
