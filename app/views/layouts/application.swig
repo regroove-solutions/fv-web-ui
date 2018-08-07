@@ -53,6 +53,16 @@
         </div>
         <!-- /#page-wrapper -->
 
+        <!--<div style="position: fixed;
+  width: 700px;
+  background: #ffe14f;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  border-radius: 5px 0 0 0;
+  border: 1px solid #dac73f;
+  border-bottom: 0;"><strong>Note</strong>: FirstVoices will be updated on <strong>August 7th @ 9:00 PM</strong> and will be unavailable for 2-3 minutes.</div>-->
+
     </div>
     <!-- /#wrapper -->
 
@@ -60,8 +70,6 @@
     <script src="/assets/javascripts/app.js"></script>
 
     {% block javascript %}{% endblock %}
-
-    <!-- v2.0.1 -->
 
   </body>
 </html>
