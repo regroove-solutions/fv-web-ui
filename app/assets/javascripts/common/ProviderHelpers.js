@@ -17,6 +17,8 @@ limitations under the License.
 import Immutable, {List, Map} from 'immutable';
 import StringHelpers from './StringHelpers'
 
+import selectn from 'selectn';
+
 const toJSKeepId = function (js) {
     return typeof js !== 'object' || js === null ? js :
         Array.isArray(js) ?
@@ -51,21 +53,32 @@ const proxiesKeys = [
     }
 ];
 
-export default {
-    getEntry: function (wordResults, path) {
-        if (!wordResults || wordResults.isEmpty() || !path) {
-            return null;
-        }
-
-        let result = wordResults.find(function (entry) {
-            return entry.get('id') === path;
-        });
-
-        if (result) {
-            return result.toJS();
-        }
-
+const getEntryFunc = function (wordResults, path) {
+    if (!wordResults || wordResults.isEmpty() || !path) {
         return null;
+    }
+
+    let result = wordResults.find(function (entry) {
+        return entry.get('id') === path;
+    });
+
+    if (result) {
+        return result.toJS();
+    }
+
+    return null;
+};
+
+export default {
+    getEntry: getEntryFunc,
+    // Will perform action only if the data is not found in store
+    // @key - the key to look up (or set) in the store for this action/reducer
+    // @action - the action to perform if nothing found in store.
+    // @reducer - the reducer to look for
+    fetchIfMissing: function (key, action, reducer) {
+        if (!selectn('success', getEntryFunc(reducer, key))) {
+            action(key);
+        }
     },
     toJSKeepId: function (js) {
         return toJSKeepId(js)
