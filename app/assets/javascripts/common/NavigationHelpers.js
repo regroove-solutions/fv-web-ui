@@ -16,8 +16,8 @@ limitations under the License.
 
 import selectn from 'selectn';
 
-const arrayPopImmutable = function (array) {
-    return array.slice(0, array.length - 1);
+const arrayPopImmutable = function (array, sizeToPop = 1) {
+    return array.slice(0, array.length - sizeToPop);
 }
 
 export default {
@@ -45,6 +45,10 @@ export default {
     // Navigate forward, replacing the current page within the URL
     navigateForwardReplace: function (currentPathArray, forwardPathArray, navigationFunc) {
         navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
+    },
+    // Navigate forward, replacing the current page within the URL
+    navigateForwardReplaceMultiple: function (currentPathArray, forwardPathArray, navigationFunc) {
+        navigationFunc('/' + arrayPopImmutable(currentPathArray, forwardPathArray.length).concat(forwardPathArray).join('/'));
     },
     // Navigate forward by appending the forward path
     navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
