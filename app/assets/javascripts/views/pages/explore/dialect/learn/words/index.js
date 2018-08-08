@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -46,14 +47,19 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     static propTypes = {
         windowPath: PropTypes.string.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
         fetchDocument: PropTypes.func.isRequired,
         computeDocument: PropTypes.object.isRequired,
         computeLogin: PropTypes.object.isRequired,
+        properties: PropTypes.object.isRequired,
         fetchPortal: PropTypes.func.isRequired,
         computePortal: PropTypes.object.isRequired,
         fetchCategories: PropTypes.func.isRequired,
         computeCategories: PropTypes.object.isRequired,
-        routeParams: PropTypes.object.isRequired
+        overrideBreadcrumbs: PropTypes.func.isRequired,
+        updatePageProperties: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        hasPagination: PropTypes.bool
     };
 
     constructor(props, context) {
@@ -61,28 +67,36 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
         let initialCategories = (props.routeParams.category) ? new Set([props.routeParams.category]) : new Set();
 
-        this.state = {
-            filterInfo: new Map({
-                currentCategoryFilterIds: initialCategories,
-                currentAppliedFilter: new Map({
-                    categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
-                })
+        let filterInfo = new Map({
+            currentCategoryFilterIds: initialCategories,
+            currentAppliedFilter: new Map({
+                categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
             })
+        });
+
+        // If no filters are applied via URL, use props
+        let pagePropertiesFilterInfo = selectn([[this._getPageKey()], 'filterInfo'], props.properties.pageProperties);
+
+        if (filterInfo.get("currentCategoryFilterIds").isEmpty() && pagePropertiesFilterInfo) {
+            filterInfo = pagePropertiesFilterInfo
+        }
+
+        this.state = {
+            filterInfo: filterInfo
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_handlePagePropertiesChange', '_resetURLPagination', '_getPageKey', '_getURLPageProps'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    _onNavigateRequest(path) {
-        this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+    _getPageKey() {
+        return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_words';
     }
 
     fetchData(newProps) {
-        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-        newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-
-        newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children');
+        ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Portal', newProps.fetchPortal, newProps.computePortal);
+        ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Dictionary', newProps.fetchDocument, newProps.computeDocument);
+        ProviderHelpers.fetchIfMissing('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children', newProps.fetchCategories, newProps.computeCategories);
     }
 
     render() {
@@ -103,7 +117,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
-        const wordListView = <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+        const wordListView = <WordListView controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams}/>;
 
         // Render kids view
 

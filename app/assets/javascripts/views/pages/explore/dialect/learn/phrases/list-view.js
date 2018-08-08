@@ -48,7 +48,8 @@ export default class ListView extends DataListView {
         dialect: null,
         filter: new Map(),
         gridListView: false,
-        gridCols: 4
+        gridCols: 4,
+        controlViaURL: false
     }
 
     static propTypes = {
@@ -63,10 +64,14 @@ export default class ListView extends DataListView {
         dialect: PropTypes.object,
         computePhrases: PropTypes.object.isRequired,
         routeParams: PropTypes.object.isRequired,
+        pageProperties: PropTypes.object,
         filter: PropTypes.object,
         data: PropTypes.string,
         gridListView: PropTypes.bool,
         gridCols: PropTypes.number,
+        controlViaURL: PropTypes.bool,
+        onPaginationReset: PropTypes.func,
+        onPagePropertiesChange: PropTypes.func,
         action: PropTypes.func,
 
         DISABLED_SORT_COLS: PropTypes.array,
@@ -212,7 +217,7 @@ export default class ListView extends DataListView {
         const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
         const computeDialect2 = this.props.dialect || this.getDialect();
 
-        return <div renderOnError={true} computeEntities={computeEntities}>
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             {(() => {
                 if (selectn('response.entries', computePhrases)) {
 
@@ -234,6 +239,6 @@ export default class ListView extends DataListView {
                         dialect={selectn('response', computeDialect2)}/>;
                 }
             })()}
-        </div>;
+        </PromiseWrapper>;
     }
 }

@@ -49,7 +49,8 @@ export default class ListView extends DataListView {
         DEFAULT_SORT_TYPE: 'asc',
         dialect: null,
         filter: new Map(),
-        gridListView: false
+        gridListView: false,
+        controlViaURL: false
     }
 
     static propTypes = {
@@ -64,9 +65,13 @@ export default class ListView extends DataListView {
         fetchWords: PropTypes.func.isRequired,
         computeWords: PropTypes.object.isRequired,
         routeParams: PropTypes.object.isRequired,
+        pageProperties: PropTypes.object,
         filter: PropTypes.object,
         data: PropTypes.string,
         gridListView: PropTypes.bool,
+        controlViaURL: PropTypes.bool,
+        onPaginationReset: PropTypes.func,
+        onPagePropertiesChange: PropTypes.func,
         action: PropTypes.func,
 
         DISABLED_SORT_COLS: PropTypes.array,

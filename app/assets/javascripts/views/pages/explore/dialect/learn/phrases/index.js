@@ -22,6 +22,9 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+import UIHelpers from 'common/UIHelpers';
+
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view';
@@ -45,14 +48,19 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     static propTypes = {
         windowPath: PropTypes.string.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
         fetchDocument: PropTypes.func.isRequired,
         computeDocument: PropTypes.object.isRequired,
         computeLogin: PropTypes.object.isRequired,
+        properties: PropTypes.object.isRequired,
         fetchPortal: PropTypes.func.isRequired,
         computePortal: PropTypes.object.isRequired,
         fetchCategories: PropTypes.func.isRequired,
         computeCategories: PropTypes.object.isRequired,
-        routeParams: PropTypes.object.isRequired
+        overrideBreadcrumbs: PropTypes.func.isRequired,
+        updatePageProperties: PropTypes.func.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        hasPagination: PropTypes.bool
     };
 
     constructor(props, context) {
@@ -60,24 +68,37 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
         let initialCategories = (props.routeParams.category) ? new Set([props.routeParams.category]) : new Set();
 
-        this.state = {
-            filterInfo: new Map({
-                currentCategoryFilterIds: initialCategories,
-                currentAppliedFilter: new Map({
-                    categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-phrase:phrase_books', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
-                })
+
+        let filterInfo = new Map({
+            currentCategoryFilterIds: initialCategories,
+            currentAppliedFilter: new Map({
+                categories: (props.routeParams.category) ? ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv-phrase:phrase_books', props.routeParams.area) + '/* IN ("' + props.routeParams.category + '")' : ''
             })
+        });
+
+        // If no filters are applied via URL, use props
+        let pagePropertiesFilterInfo = selectn([[this._getPageKey()], 'filterInfo'], props.properties.pageProperties);
+
+        if (filterInfo.get("currentCategoryFilterIds").isEmpty() && pagePropertiesFilterInfo) {
+            filterInfo = pagePropertiesFilterInfo
+        }
+
+        this.state = {
+            filterInfo: filterInfo
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_handlePagePropertiesChange', '_resetURLPagination', '_getPageKey', '_getURLPageProps'].forEach((method => this[method] = this[method].bind(this)));
+    }
+
+    _getPageKey() {
+        return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_phrases';
     }
 
     fetchData(newProps) {
-        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-        newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-
-        newProps.fetchCategories('/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children');
+        ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Portal', newProps.fetchPortal, newProps.computePortal);
+        ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Dictionary', newProps.fetchDocument, newProps.computeDocument);
+        ProviderHelpers.fetchIfMissing('/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children', newProps.fetchCategories, newProps.computeCategories);
     }
 
     render() {
@@ -98,7 +119,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
-        const phraseListView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+        const phraseListView = <PhraseListView controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams}/>;
 
         // Render kids view
         if (isKidsTheme || isMobile) {
@@ -152,7 +173,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                         facets={selectn('response.entries', computePhraseBooks) || []}/>
                 </div>
                 <div className={classNames('col-xs-12', (computePhraseBooksSize == 0) ? 'col-md-12' : 'col-md-9')}>
-                    <h1>{intl.trans('views.pages.explore.dialect.phrases.x_phrases', selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) + ' Phrases', 'words', [selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)])}</h1>
+                    <h1>{intl.trans('views.pages.explore.dialect.phrases.x_phrases', selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) + ' Phrases', null, [selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)])}</h1>
                     {phraseListView}
                 </div>
             </div>

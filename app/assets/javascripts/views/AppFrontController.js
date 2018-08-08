@@ -94,6 +94,8 @@ import {
 import {ServiceShortURL} from 'views/services';
 import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
+
 /**
  * Parameter matching class
  */
@@ -104,22 +106,22 @@ class paramMatch {
     }
 }
 
-let PAGE_NOT_FOUND_TITLE = "404 - " + IntlService.instance.translate({
+let PAGE_NOT_FOUND_TITLE = "404 - " + intl.translate({
     key: 'errors.page_not_found',
     default: 'Page Not Found',
     case: 'first'
   });
 
 let PAGE_NOT_FOUND_BODY = <div>
-      <p>{IntlService.instance.translate({
+      <p>{intl.translate({
         key: 'errors.report_via_feedback',
         default: 'Please report this error so that we can fix it',
         case: 'first'
     })}.
-    </p><p>{IntlService.instance.translate({
+    </p><p>{intl.translate({
         key: 'errors.feedback_include_link',
         default: 'Include what link or action you took to get to this page'
-    })}.</p><p>{IntlService.instance.translate({
+    })}.</p><p>{intl.translate({
         key: 'thank_you!',
         default: 'Thank You!',
         case: 'words'
@@ -128,6 +130,7 @@ let PAGE_NOT_FOUND_BODY = <div>
 
 // Regex helper
 const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH);
+const NUMBER = new RegExp("([0-9]+)");
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION);
 const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE);
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT));
@@ -152,8 +155,46 @@ const NOT_CONNECTED_REDIRECT = {
     }
 };
 
+// Common Routes
+const DIALECT_LEARN_WORDS = {
+    path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words'],
+    title: intl.translate({
+        key: 'words',
+        default: 'Words',
+        case: 'words'
+    }) + ' | {$dialect_name}',
+    page: <PageDialectLearnWords />,
+    extractPaths: true,
+    redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+}
+
+const DIALECT_LEARN_PHRASES = {
+    path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases'],
+    title: intl.translate({
+        key: 'phrases',
+        default: 'Phrases',
+        case: 'words'
+    }) + ' | {$dialect_name}',
+    page: <PageDialectLearnPhrases/>,
+    extractPaths: true,
+    redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+}
+
+// Common Paths
+const PAGINATION = [new paramMatch('pageSize', NUMBER), new paramMatch('page', NUMBER)];
+
+// Adds a pagination route to an existing route
+const addPagination = function (route) {
+    return Object.assign({}, route, {
+        path: route.path.concat(PAGINATION),
+        page: React.cloneElement(route.page, { hasPagination: true }),
+        breadcrumbPathOverride: function (pathArray) {
+            return pathArray.slice(0, pathArray.length - 2);
+        }
+    });
+};
+
 class Redirecter extends Component {
-    intl = IntlService.instance;
 
     constructor(props, context) {
         super(props, context);
@@ -165,7 +206,7 @@ class Redirecter extends Component {
 
 
     render() {
-        return <div style={{backgroundColor: '#fff', height: '100vh'}}>{this.intl.translate({
+        return <div style={{backgroundColor: '#fff', height: '100vh'}}>{intl.translate({
             key: 'redirecting',
             default: 'Redirecting',
             case: 'first'
@@ -198,8 +239,6 @@ export default class AppFrontController extends Component {
         ['_matchPath', '_route', '_updateTitle'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    intl = IntlService.instance;
-
     _getInitialState() {
 
         const routes = Immutable.fromJS([
@@ -207,7 +246,7 @@ export default class AppFrontController extends Component {
                 path: [],
                 alias: [ANY_LANGUAGE_CODE, 'home'],
                 page: <PageHome/>,
-                title: this.intl.translate({key: 'home', default: 'Home', case: 'first'}),
+                title: intl.translate({key: 'home', default: 'Home', case: 'first'}),
                 breadcrumbs: false,
                 frontpage: true,
                 redirects: [{
@@ -233,13 +272,13 @@ export default class AppFrontController extends Component {
             {
                 path: ['content', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
                 page: <PageContent area="sections"/>,
-                title: '{$pageTitle} | ' + this.intl.translate({key: 'pages', default: 'Pages', case: 'first'}),
+                title: '{$pageTitle} | ' + intl.translate({key: 'pages', default: 'Pages', case: 'first'}),
                 breadcrumbs: false
             },
             {
                 path: ['content-preview', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
                 page: <PageContent area="Workspaces"/>,
-                title: '{$pageTitle} | ' + this.intl.translate({key: 'pages', default: 'Pages', case: 'first'}),
+                title: '{$pageTitle} | ' + intl.translate({key: 'pages', default: 'Pages', case: 'first'}),
                 breadcrumbs: false
             },
             {
@@ -249,38 +288,38 @@ export default class AppFrontController extends Component {
             {
                 path: [new paramMatch('theme', new RegExp("kids"))],
                 frontpage: true,
-                title: this.intl.translate({key: 'kids_home', default: 'Kids Home', case: 'words'}),
+                title: intl.translate({key: 'kids_home', default: 'Kids Home', case: 'words'}),
                 page: <PageKidsHome/>
             },
             {
                 path: ['play'],
-                title: this.intl.translate({key: 'games', default: 'Games', case: 'first'}),
+                title: intl.translate({key: 'games', default: 'Games', case: 'first'}),
                 page: <PagePlay/>
             },
             {
                 path: ['tasks'],
-                title: this.intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
+                title: intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
                 page: <PageTasks/>
             },
             {
                 path: ['register'],
-                title: this.intl.translate({key: 'register', default: 'Register', case: 'first'}),
+                title: intl.translate({key: 'register', default: 'Register', case: 'first'}),
                 page: <PageUsersRegister/>
             },
             {
                 path: ['login'],
-                title: this.intl.translate({key: 'user_login', default: 'User Login', case: 'words'}),
+                title: intl.translate({key: 'user_login', default: 'User Login', case: 'words'}),
                 page: <PageUserLogin/>
             },
             {
                 path: ['profile'],
-                title: this.intl.translate({key: 'user_profile', default: 'User Profile', case: 'words'}),
+                title: intl.translate({key: 'user_profile', default: 'User Profile', case: 'words'}),
                 page: <PageUsersProfile/>,
                 redirects: [NOT_CONNECTED_REDIRECT]
             },
             {
                 path: ['forgotpassword'],
-                title: this.intl.translate({key: 'forgot_password', default: 'Forgot Password', case: 'words'}),
+                title: intl.translate({key: 'forgot_password', default: 'Forgot Password', case: 'words'}),
                 breadcrumbs: false,
                 page: <PageUsersForgotPassword/>
             },
@@ -298,7 +337,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [new paramMatch('area', WORKSPACE_OR_SECTION), new paramMatch('dialectFriendlyName', ANYTHING_BUT_SLASH)],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'dialect_short_url',
                     default: 'Dialect Short Url',
                     case: 'words'
@@ -308,7 +347,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: ['t', new paramMatch('area', WORKSPACE_OR_SECTION), new paramMatch('dialectFriendlyName', ANYTHING_BUT_SLASH), new paramMatch('appendPath', new RegExp("(.*)"))],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'dialect_short_url',
                     default: 'Dialect Short Url',
                     case: 'words'
@@ -318,7 +357,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'x_dialects',
                     default: '{$theme} Dialects',
                     params: ['{$theme}']
@@ -329,7 +368,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
-                title: '\'{$searchTerm}\' ' + this.intl.translate({
+                title: '\'{$searchTerm}\' ' + intl.translate({
                     key: 'views.pages.search.search_results',
                     default: 'Search Results',
                     case: 'words'
@@ -339,7 +378,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'search', new paramMatch('searchTerm', ANYTHING_BUT_SLASH)],
-                title: '\'{$searchTerm}\' ' + this.intl.translate({
+                title: '\'{$searchTerm}\' ' + intl.translate({
                     key: 'views.pages.search.search_results',
                     default: 'Search Results',
                     case: 'words'
@@ -350,7 +389,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'register'],
-                title: '{$dialect_name} ' + this.intl.translate({
+                title: '{$dialect_name} ' + intl.translate({
                     key: 'registration',
                     default: 'Registration',
                     case: 'words'
@@ -361,7 +400,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', new paramMatch('language_family', ANYTHING_BUT_SLASH)],
-                title: '{$language_family_name} ' + this.intl.translate({
+                title: '{$language_family_name} ' + intl.translate({
                     key: 'explore',
                     default: 'Explore',
                     case: 'words'
@@ -372,7 +411,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH],
-                title: '{$language_name} ' + this.intl.translate({
+                title: '{$language_name} ' + intl.translate({
                     key: 'explore',
                     default: 'Explore',
                     case: 'words'
@@ -384,7 +423,7 @@ export default class AppFrontController extends Component {
             {
                 id: 'page_explore_dialect',
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH],
-                title: '{$dialect_name} ' + this.intl.translate({
+                title: '{$dialect_name} ' + intl.translate({
                     key: 'home',
                     default: "Home",
                     case: 'first'
@@ -396,13 +435,13 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'edit'],
-                title: this.intl.translate({key: 'edit', default: 'Edit', case: 'words'}) + ' {$dialect_name}',
+                title: intl.translate({key: 'edit', default: 'Edit', case: 'words'}) + ' {$dialect_name}',
                 page: <PageExploreDialectEdit/>,
                 extractPaths: true
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'learn',
                     default: 'Learn',
                     case: 'words'
@@ -413,7 +452,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'browse_media',
                     default: 'Browse Media',
                     case: 'words'
@@ -424,7 +463,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH)],
-                title: '{$media} | ' + this.intl.translate({
+                title: '{$media} | ' + intl.translate({
                     key: 'media',
                     default: 'Media',
                     case: 'words'
@@ -435,11 +474,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'media', new paramMatch('media', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit',
                     default: 'Edit',
                     case: 'words'
-                }) + ' {$media} | ' + this.intl.translate({
+                }) + ' {$media} | ' + intl.translate({
                     key: 'media',
                     default: 'Media',
                     case: 'words'
@@ -449,7 +488,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'alphabet',
                     default: 'Alphabet',
                     case: 'words'
@@ -459,7 +498,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', 'print'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'print_alphabet',
                     default: 'Print Alphabet',
                     case: 'words'
@@ -469,11 +508,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', new paramMatch('character', ANYTHING_BUT_SLASH)],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'character',
                     default: 'Character',
                     case: 'words'
-                }) + ' - {$character} | ' + this.intl.translate({
+                }) + ' - {$character} | ' + intl.translate({
                     key: 'alphabet',
                     default: 'Alphabet',
                     case: 'words'
@@ -483,15 +522,15 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'alphabet', new paramMatch('character', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit',
                     default: 'Edit',
                     case: 'words'
-                }) + ' {$character} ' + this.intl.translate({
+                }) + ' {$character} ' + intl.translate({
                     key: 'character',
                     default: 'Character',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'print_alphabet',
                     default: 'Print Alphabet',
                     case: 'words'
@@ -501,7 +540,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -512,11 +551,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'jigsaw'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'jigsaw',
                     default: 'Jigsaw',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -527,11 +566,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordsearch'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'word_search',
                     default: 'Word Search',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -542,11 +581,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'colouringbook'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'coloring_book',
                     default: 'Coloring Book',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -557,11 +596,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'concentration'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'memory_game',
                     default: 'Memory Game',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -572,11 +611,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'picturethis'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'picture_this',
                     default: 'Picture This',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -587,11 +626,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'hangman'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'hangman',
                     default: 'Hangman',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -602,11 +641,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'wordscramble'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'word_scramble',
                     default: 'Word Scramble',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -617,11 +656,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'play', 'quiz'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'quiz',
                     default: 'Quiz',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'games',
                     default: 'Games',
                     case: 'words'
@@ -632,7 +671,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'galleries',
                     default: 'Galleries',
                     case: 'words'
@@ -643,11 +682,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create_gallery',
                     default: 'Create Gallery',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'galleries',
                     default: 'Galleries',
                     case: 'words'
@@ -657,7 +696,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('galleryName', ANYTHING_BUT_SLASH)],
-                title: '{$galleryName} | ' + this.intl.translate({
+                title: '{$galleryName} | ' + intl.translate({
                     key: 'galleries',
                     default: 'Galleries',
                     case: 'words'
@@ -668,11 +707,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'gallery', new paramMatch('gallery', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit',
                     default: 'Edit',
                     case: 'words'
-                }) + ' {$galleryName} | ' + this.intl.translate({
+                }) + ' {$galleryName} | ' + intl.translate({
                     key: 'galleries',
                     default: 'Galleries',
                     case: 'words'
@@ -682,7 +721,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'reports',
                     default: 'Reports',
                     case: 'words'
@@ -693,7 +732,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports', new paramMatch('reportName', ANYTHING_BUT_SLASH)],
-                title: '{$reportName} | ' + this.intl.translate({
+                title: '{$reportName} | ' + intl.translate({
                     key: 'reports',
                     default: 'Reports',
                     case: 'words'
@@ -704,7 +743,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'users',
                     default: 'Users',
                     case: 'words'
@@ -713,24 +752,15 @@ export default class AppFrontController extends Component {
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT],
                 extractPaths: true
             },
-            {
-                path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words'],
-                title: this.intl.translate({
-                    key: 'words',
-                    default: 'Words',
-                    case: 'words'
-                }) + ' | {$dialect_name}',
-                page: <PageDialectLearnWords/>,
-                extractPaths: true,
-                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
-            },
+            DIALECT_LEARN_WORDS,
+            addPagination(DIALECT_LEARN_WORDS),
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'categories',
                     default: 'Categories',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'words',
                     default: 'Words',
                     case: 'words'
@@ -741,11 +771,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH)],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'category_view',
                     default: 'Category View',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'words',
                     default: 'Words',
                     case: 'words'
@@ -756,11 +786,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'words',
                     default: 'Words',
                     case: 'words'
@@ -770,7 +800,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', new paramMatch('word', ANYTHING_BUT_SLASH)],
-                title: '{$word} | ' + this.intl.translate({
+                title: '{$word} | ' + intl.translate({
                     key: 'words',
                     default: 'Words',
                     case: 'words'
@@ -781,11 +811,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', new paramMatch('word', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit_x_word',
                     default: 'Edit {$word} Word',
                     params: ['{$word}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'words',
                     default: 'Words',
                     case: 'words'
@@ -793,20 +823,11 @@ export default class AppFrontController extends Component {
                 page: <PageDialectWordEdit/>,
                 extractPaths: true
             },
-            {
-                path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases'],
-                title: this.intl.translate({
-                    key: 'phrases',
-                    default: 'Phrases',
-                    case: 'words'
-                }) + ' | {$dialect_name}',
-                page: <PageDialectLearnPhrases/>,
-                extractPaths: true,
-                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
-            },
+            DIALECT_LEARN_PHRASES,
+            addPagination(DIALECT_LEARN_PHRASES),
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'phrase_categories',
                     default: 'Phrase Categories',
                     case: 'words'
@@ -817,11 +838,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH)],
-                title: '{$category} | ' + this.intl.translate({
+                title: '{$category} | ' + intl.translate({
                     key: 'categories',
                     default: 'Categories',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'phrases',
                     default: 'Phrases',
                     case: 'words'
@@ -832,11 +853,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'phrases',
                     default: 'Phrases',
                     case: 'words'
@@ -846,7 +867,7 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH)],
-                title: '{$phrase} | ' + this.intl.translate({
+                title: '{$phrase} | ' + intl.translate({
                     key: 'phrases',
                     default: 'Phrases',
                     case: 'words'
@@ -857,11 +878,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', new paramMatch('phrase', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'views.pages.explore.dialect.phrases.edit_x_phrase',
                     default: 'Edit {$phrase} Phrase',
                     params: ['{$phrase}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'phrases',
                     default: 'Phrases',
                     case: 'words'
@@ -871,12 +892,12 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectLearnStoriesAndSongs typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -886,12 +907,12 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectLearnStoriesAndSongs typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -901,12 +922,12 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs-stories'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'songs_and_stories',
                     default: 'Songs and Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectLearnStoriesAndSongs typePlural={this.intl.translate({
+                page: <PageDialectLearnStoriesAndSongs typePlural={intl.translate({
                     key: 'songs_and_stories',
                     default: 'Songs and Stories',
                     case: 'words'
@@ -916,16 +937,16 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectStoriesAndSongsCreate typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -935,16 +956,16 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectStoriesAndSongsCreate typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -954,12 +975,12 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH)],
-                title: '{$bookName} | ' + this.intl.translate({
+                title: '{$bookName} | ' + intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectViewBook typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectViewBook typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -969,16 +990,16 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.edit_x_book',
                     default: 'Edit {$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEdit typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectBookEdit typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -988,20 +1009,20 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create_entry',
                     default: 'Create Entry',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.x_book',
                     default: '{$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -1011,20 +1032,20 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'songs', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit_entry',
                     default: 'Edit Entry',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.x_book',
                     default: '{$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEntryEdit typeFilter="song" typePlural={this.intl.translate({
+                page: <PageDialectBookEntryEdit typeFilter="song" typePlural={intl.translate({
                     key: 'songs',
                     default: 'Songs',
                     case: 'words'
@@ -1034,16 +1055,16 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH)],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.x_book',
                     default: '{$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectViewBook typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectViewBook typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -1053,16 +1074,16 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.edit_x_book',
                     default: 'Edit {$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEdit typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectBookEdit typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -1072,20 +1093,20 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create_entry',
                     default: 'Create Entry',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.x_book',
                     default: '{$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectStoriesAndSongsBookEntryCreate typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -1095,20 +1116,20 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'stories', new paramMatch('parentBookName', ANYTHING_BUT_SLASH), new paramMatch('bookName', ANYTHING_BUT_SLASH), 'edit'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'edit_entry',
                     default: 'Edit Entry',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'views.pages.explore.dialect.learn.songs_stories.x_book',
                     default: '{$bookName} Book',
                     params: ['{$bookName}']
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
                 }) + ' | {$dialect_name}',
-                page: <PageDialectBookEntryEdit typeFilter="story" typePlural={this.intl.translate({
+                page: <PageDialectBookEntryEdit typeFilter="story" typePlural={intl.translate({
                     key: 'stories',
                     default: 'Stories',
                     case: 'words'
@@ -1118,11 +1139,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'categories', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'category',
                     default: 'Category',
                     case: 'words'
@@ -1132,11 +1153,11 @@ export default class AppFrontController extends Component {
             },
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrasebooks', 'create'],
-                title: this.intl.translate({
+                title: intl.translate({
                     key: 'create',
                     default: 'Create',
                     case: 'words'
-                }) + ' | ' + this.intl.translate({
+                }) + ' | ' + intl.translate({
                     key: 'phrase_book',
                     default: 'Phrase Book',
                     case: 'words'
@@ -1182,7 +1203,7 @@ export default class AppFrontController extends Component {
         if (title.search(' | ') >= 0) {
             var newTitle = [], parts = title.split('|'), i;
             for (i in parts) {
-                newTitle.push(this.intl.searchAndReplace(parts[i].trim()));
+                newTitle.push(intl.searchAndReplace(parts[i].trim()));
             }
             title = newTitle.join(' | ');
         }
@@ -1365,6 +1386,12 @@ export default class AppFrontController extends Component {
         let splitPath = props.splitWindowPath;
         let routes = this.state.routes;
 
+        let breadcrumbPathOverride = matchedPage.get('breadcrumbPathOverride');
+
+        if (breadcrumbPathOverride) {
+            splitPath = breadcrumbPathOverride(splitPath);
+        }
+
         let breadcrumb = splitPath.map(function (path, index) {
             if (path && path != "" && REMOVE_FROM_BREADCRUMBS.indexOf(path) === -1) {
 
@@ -1410,7 +1437,7 @@ export default class AppFrontController extends Component {
                     }.bind(this));
 
                     return <li key={index}><Link key={index}
-                                                 href={hrefPath}>{this.intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}</Link>
+                                                 href={hrefPath}>{intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}</Link>
                     </li>;
                 }
             }
@@ -1441,14 +1468,14 @@ export default class AppFrontController extends Component {
                                     }}>
                                     <li role="presentation"
                                         className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}>
-                                        <a href={props.windowPath.replace('sections', 'Workspaces')}>{this.intl.translate({
+                                        <a href={props.windowPath.replace('sections', 'Workspaces')}>{intl.translate({
                                             key: 'workspace',
                                             default: 'Workspace',
                                             case: 'words'
                                         })}</a></li>
                                     <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''}
                                         role="presentation"><a
-                                        href={props.windowPath.replace('Workspaces', 'sections')}>{this.intl.translate({
+                                        href={props.windowPath.replace('Workspaces', 'sections')}>{intl.translate({
                                         key: 'public_view',
                                         default: 'Public View',
                                         case: 'words'
@@ -1460,7 +1487,7 @@ export default class AppFrontController extends Component {
                         })()}
 
                         <ol className={classNames('breadcrumb', 'pull-left')}>
-                            <li><Link href="/">{this.intl.translate({
+                            <li><Link href="/">{intl.translate({
                                 key: 'home',
                                 default: 'Home',
                                 case: 'words'
@@ -1571,7 +1598,7 @@ export default class AppFrontController extends Component {
                 if (this.props.warnings.hasOwnProperty(warning) && !this.state.warningsDismissed) {
                     return <div style={{position: 'fixed', bottom: 0, zIndex: 99999}}
                                 className={classNames('alert', 'alert-warning')}>{selectn(warning, this.props.warnings)}
-                        <FlatButton label={this.intl.translate({
+                        <FlatButton label={intl.translate({
                             key: 'dismiss',
                             default: 'Dismiss',
                             case: 'words'

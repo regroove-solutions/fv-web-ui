@@ -20,6 +20,7 @@ const NAVIGATE_PAGE = 'NAVIGATE_PAGE';
 const CHANGE_THEME = 'CHANGE_THEME';
 const CHANGE_TITLE_PARAMS = 'CHANGE_TITLE_PARAMS';
 const OVERRIDE_BREADCRUMBS = 'OVERRIDE_BREADCRUMBS';
+const PAGE_PROPERTIES = 'PAGE_PROPERTIES';
 
 const LOAD_GUIDE_STARTED = 'LOAD_GUIDE_STARTED';
 const LOAD_GUIDE_SUCCESS = 'LOAD_GUIDE_SUCCESS';
@@ -111,6 +112,10 @@ const actions = {
   overrideBreadcrumbs(breadcrumbs) {
     return { type: OVERRIDE_BREADCRUMBS, breadcrumbs: breadcrumbs };
   },
+
+  updatePageProperties(pageProperties) {
+    return { type: PAGE_PROPERTIES, pageProperties };
+  },
   
   loadGuide,
   loadNavigation
@@ -146,11 +151,17 @@ const reducers = {
       		pageTitleParams: action.pageTitleParams
         };
         
-        case OVERRIDE_BREADCRUMBS:
-      	return {
-      		...state,
-      		breadcrumbs: action.breadcrumbs
-      	};
+      case OVERRIDE_BREADCRUMBS:
+      return {
+        ...state,
+        breadcrumbs: action.breadcrumbs
+      };
+
+      case PAGE_PROPERTIES: 
+      return {
+        ...state,
+        pageProperties: action.pageProperties
+      };
 
       default:
         return state;

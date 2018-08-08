@@ -18,6 +18,7 @@ import classNames from 'classnames';
 
 import selectn from 'selectn';
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import IntlService from 'views/services/intl';
 
 const intl = IntlService.instance;
@@ -45,8 +46,16 @@ export default class DataListView extends Component {
 
     // Refetch data on URL change
     componentWillReceiveProps(nextProps) {
-        if (nextProps.windowPath !== this.props.windowPath) {
-            this.fetchData(nextProps);
+
+        if (nextProps.controlViaURL) {
+            if (nextProps.routeParams.page !== this.props.routeParams.page || nextProps.routeParams.pageSize !== this.props.routeParams.pageSize) {
+                this._fetchListViewData(nextProps, nextProps.DEFAULT_PAGE, nextProps.DEFAULT_PAGE_SIZE, nextProps.DEFAULT_SORT_TYPE, nextProps.DEFAULT_SORT_COL);
+                this._resetPagination(nextProps);
+            }
+        } else {
+            if (nextProps.windowPath !== this.props.windowPath) {
+                this.fetchData(nextProps);
+            }
         }
 
         if (nextProps.routeParams.area !== this.props.routeParams.area) {
@@ -80,7 +89,24 @@ export default class DataListView extends Component {
             currentSortCols = this.state.sortInfo.currentSortCols;
         }
 
-        this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);
+        if (!this.props.controlViaURL) {
+            this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);    
+        } else {
+
+            let urlPageSize = selectn('pageSize', this.props.routeParams);
+
+            // If page and pageSize exist, replace; otherwise - add them
+            if (selectn('page', this.props.routeParams) && urlPageSize){
+                NavigationHelpers.navigateForwardReplaceMultiple(this.props.splitWindowPath, [pageSize.toString(), page.toString()], this.props.pushWindowPath);
+            } else {
+                NavigationHelpers.navigateForward(this.props.splitWindowPath, [pageSize.toString(), page.toString()], this.props.pushWindowPath);
+            }
+
+            // If pageSize has changed, reset page
+            if (urlPageSize && pageSize != urlPageSize && this.props.onPaginationReset) {
+                this.props.onPaginationReset(pageSize);
+            }
+        }
     }
 
     _handleSortChange(sortInfo) {
@@ -121,12 +147,17 @@ export default class DataListView extends Component {
 
         this._fetchListViewData(this.props, this.props.DEFAULT_PAGE, this.props.DEFAULT_PAGE_SIZE, joinedSortType, joinedSortCols);
 
+        let newSortInfo = {
+            uiSortOrder: sortInfo,
+            currentSortCols: joinedSortCols,
+            currentSortType: joinedSortType
+        };
+
+        // Update page properties to use when navigating away
+        this.props.onPagePropertiesChange({sortInfo: newSortInfo});
+
         this.setState({
-            sortInfo: {
-                uiSortOrder: sortInfo,
-                currentSortCols: joinedSortCols,
-                currentSortType: joinedSortType
-            }
+            sortInfo: newSortInfo
         });
     }
 
