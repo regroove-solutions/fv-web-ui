@@ -19,6 +19,7 @@ import classNames from 'classnames';
 
 import selectn from 'selectn';
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import IntlService from 'views/services/intl';
 
 const intl = IntlService.instance;
@@ -39,7 +40,20 @@ export default class PageDialectLearnBase extends Component {
     }
 
     _onNavigateRequest(path) {
-        this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+        if (this.props.hasPagination){
+            NavigationHelpers.navigateForward(this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length-2), [path], this.props.pushWindowPath);
+        } else {
+            NavigationHelpers.navigateForward(this.props.splitWindowPath, [path], this.props.pushWindowPath);
+        }
+    }
+
+    _getURLPageProps() {
+        let pageProps = {};
+
+        selectn('page', this.props.routeParams) ? Object.assign(pageProps, {DEFAULT_PAGE: parseInt(selectn('page', this.props.routeParams))}) : null;
+        selectn('pageSize', this.props.routeParams) ? Object.assign(pageProps, {DEFAULT_PAGE_SIZE: parseInt(selectn('pageSize', this.props.routeParams))}) : null;
+
+        return pageProps;
     }
 
     // Fetch data on initial render
@@ -93,6 +107,30 @@ export default class PageDialectLearnBase extends Component {
             return categoryFilter
         });
 
+        // Update page properties to use when navigating away
+        this._handlePagePropertiesChange({filterInfo: newFilter});
+
+        // When facets change, pagination should be reset.
+        // In these pages (words/phrase), list views are controlled via URL
+        this._resetURLPagination();
+
         this.setState({filterInfo: newFilter});
+    }
+
+
+    // Called when facet filters or sort order change.
+    // This needs to be stored in the 'store' so that when people navigate away and back, those filters still apply
+    _handlePagePropertiesChange(changedProperties){
+        this.props.updatePageProperties({[this._getPageKey()]: changedProperties});
+    }
+
+    _resetURLPagination(pageSize = null) {
+
+        let newPageSize = pageSize || selectn('pageSize', this.props.routeParams);
+
+        // If URL pagination exists, reset
+        if (newPageSize) {
+            NavigationHelpers.navigateForwardReplaceMultiple(this.props.splitWindowPath, [newPageSize.toString(), 1], this.props.pushWindowPath);
+        }
     }
 }
