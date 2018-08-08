@@ -176,7 +176,7 @@ export default class PageDialectWordsCreate extends Component {
 
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>{intl.trans('views.pages.explore.dialect.learn.words.add_new_word_to_x', 'Add New Word to ' + selectn('response.title', computeDialect2), 'words', [selectn('response.title', computeDialect2)])}</h1>
+            <h1>{intl.trans('views.pages.explore.dialect.learn.words.add_new_word_to_x', 'Add New Word to ' + selectn('response.title', computeDialect2), null, [selectn('response.title', computeDialect2)])}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 

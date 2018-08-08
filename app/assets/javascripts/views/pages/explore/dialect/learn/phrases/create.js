@@ -186,7 +186,7 @@ export default class PageDialectPhrasesCreate extends Component {
 
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>{intl.trans('', 'Add New Phrase to ' + selectn('response.title', computeDialect2), 'words', [selectn('response.title', computeDialect2)])}</h1>
+            <h1>{intl.trans('', 'Add New Phrase to ' + selectn('response.title', computeDialect2), null, [selectn('response.title', computeDialect2)])}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
 

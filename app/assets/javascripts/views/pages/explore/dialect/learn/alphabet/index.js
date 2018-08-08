@@ -189,7 +189,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
             <div className={classNames('row', 'dialect-body-container')} style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-12', 'col-md-7')}>
-                    <TextHeader title={intl.trans('views.pages.explore.dialect.learn.alphabet.x_alphabet', selectn('response.title', computeDialect2) + ' Alphabet', 'words', [selectn('response.title', computeDialect2)])}
+                    <TextHeader title={intl.trans('views.pages.explore.dialect.learn.alphabet.x_alphabet', selectn('response.title', computeDialect2) + ' Alphabet', null, [selectn('response.title', computeDialect2)])}
                         tag="h1"
                         properties={this.props.properties}
                         appendToTitle={<a href="alphabet/print" target="_blank"><i
