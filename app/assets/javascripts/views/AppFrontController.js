@@ -155,9 +155,15 @@ const NOT_CONNECTED_REDIRECT = {
     }
 };
 
+// Common Paths
+const DIALECT_PATH = [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH];
+const PHRASES_PATH = DIALECT_PATH.concat(['learn', 'phrases']);
+const WORDS_PATH = DIALECT_PATH.concat(['learn', 'words']);
+const PAGINATION_PATH = [new paramMatch('pageSize', NUMBER), new paramMatch('page', NUMBER)];
+
 // Common Routes
 const DIALECT_LEARN_WORDS = {
-    path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words'],
+    path: WORDS_PATH,
     title: intl.translate({
         key: 'words',
         default: 'Words',
@@ -169,7 +175,7 @@ const DIALECT_LEARN_WORDS = {
 }
 
 const DIALECT_LEARN_PHRASES = {
-    path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases'],
+    path: PHRASES_PATH,
     title: intl.translate({
         key: 'phrases',
         default: 'Phrases',
@@ -180,19 +186,28 @@ const DIALECT_LEARN_PHRASES = {
     redirects: [WORKSPACE_TO_SECTION_REDIRECT]
 }
 
-// Common Paths
-const PAGINATION = [new paramMatch('pageSize', NUMBER), new paramMatch('page', NUMBER)];
-
 // Adds a pagination route to an existing route
 const addPagination = function (route) {
     return Object.assign({}, route, {
-        path: route.path.concat(PAGINATION),
+        path: route.path.concat(PAGINATION_PATH),
         page: React.cloneElement(route.page, { hasPagination: true }),
         breadcrumbPathOverride: function (pathArray) {
             return pathArray.slice(0, pathArray.length - 2);
         }
     });
 };
+
+const addCategory = function (route) {
+    return Object.assign({}, route, {
+        path: route.path.concat(['categories', new paramMatch('category', ANYTHING_BUT_SLASH)]),
+        title: intl.translate({
+            key: 'category_view',
+            default: 'Category View',
+            case: 'words'
+        }) + ' | ' + selectn('title', route)
+    });
+};
+
 
 class Redirecter extends Component {
 
@@ -769,21 +784,8 @@ export default class AppFrontController extends Component {
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
-            {
-                path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH)],
-                title: intl.translate({
-                    key: 'category_view',
-                    default: 'Category View',
-                    case: 'words'
-                }) + ' | ' + intl.translate({
-                    key: 'words',
-                    default: 'Words',
-                    case: 'words'
-                }) + ' | {$dialect_name} | {$theme}',
-                page: <PageDialectLearnWords/>,
-                extractPaths: true,
-                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
-            },
+            addCategory(DIALECT_LEARN_WORDS),
+            addPagination(addCategory(DIALECT_LEARN_WORDS)),
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'words', 'create'],
                 title: intl.translate({
@@ -836,21 +838,8 @@ export default class AppFrontController extends Component {
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
-            {
-                path: [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'categories', new paramMatch('category', ANYTHING_BUT_SLASH)],
-                title: '{$category} | ' + intl.translate({
-                    key: 'categories',
-                    default: 'Categories',
-                    case: 'words'
-                }) + ' | ' + intl.translate({
-                    key: 'phrases',
-                    default: 'Phrases',
-                    case: 'words'
-                }) + ' | {$dialect_name}',
-                page: <PageDialectLearnPhrases/>,
-                extractPaths: true,
-                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
-            },
+            addCategory(DIALECT_LEARN_PHRASES),
+            addPagination(addCategory(DIALECT_LEARN_PHRASES)),
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'learn', 'phrases', 'create'],
                 title: intl.translate({
