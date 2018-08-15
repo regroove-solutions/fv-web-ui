@@ -117,12 +117,6 @@ $ gulp build:production
 ### Adding New Dependencies
 Install dependencies using `yarn add package` or `yarn add package --dev`
 
-### Testing
-
-We use BroswerStack in order to ensure our UI functions in the latest version of all major browsers, and at least 1 version back depending on demand from our users. We will be posting a more detailed and up-to-date compatibility status in the future.
-
-<a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
-
 ### Tips
 * Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
 * Get familiar with [ES2015](https://babeljs.io/docs/learn-es2015/) syntax
