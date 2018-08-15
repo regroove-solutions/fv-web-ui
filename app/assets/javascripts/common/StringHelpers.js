@@ -26,8 +26,14 @@ export default {
         }
 
         if (mode == 'fulltext') {
+            // Escape single quotes and URL decode
+            str = str.replace(/'/g, "\\'");
+
+            // Replace colon
+            str = str.replace(/:/g, "\\:");
+
             // Escape colon
-            str = decodeURIComponent(str.replace(/:/g, "\\:"));
+            str = decodeURIComponent(str);
         }
 
         return str;
