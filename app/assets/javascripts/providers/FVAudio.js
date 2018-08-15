@@ -1,4 +1,4 @@
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
@@ -13,8 +13,8 @@ import DocumentOperations from 'operations/DocumentOperations';
 const DISMISS_ERROR = 'DISMISS_ERROR';
 
 /**
-* Multiple Audio Actions
-*/
+ * Multiple Audio Actions
+ */
 const FV_AUDIOS_FETCH_START = "FV_AUDIOS_FETCH_START";
 const FV_AUDIOS_FETCH_SUCCESS = "FV_AUDIOS_FETCH_SUCCESS";
 const FV_AUDIOS_FETCH_ERROR = "FV_AUDIOS_FETCH_ERROR";
@@ -36,8 +36,8 @@ const FV_AUDIOS_SHARED_FETCH_SUCCESS = "FV_AUDIOS_SHARED_FETCH_SUCCESS";
 const FV_AUDIOS_SHARED_FETCH_ERROR = "FV_AUDIOS_SHARED_FETCH_ERROR";
 
 /**
-* Single Audio Actions
-*/
+ * Single Audio Actions
+ */
 const FV_AUDIO_FETCH_START = "FV_AUDIO_FETCH_START";
 const FV_AUDIO_FETCH_SUCCESS = "FV_AUDIO_FETCH_SUCCESS";
 const FV_AUDIO_FETCH_ERROR = "FV_AUDIO_FETCH_ERROR";
@@ -77,40 +77,40 @@ const FV_AUDIO_DELETE_ERROR = "FV_AUDIO_DELETE_ERROR";
 };*/
 
 const updateAudio = function updateAudio(newDoc, field) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    let audios = {};
-    audios[newDoc.id] = {};
+        let audios = {};
+        audios[newDoc.id] = {};
 
-    dispatch( { type: FV_AUDIO_UPDATE_START, audios: audios, pathOrId: newDoc.id } );
+        dispatch({type: FV_AUDIO_UPDATE_START, audios: audios, pathOrId: newDoc.id});
 
-    return DocumentOperations.updateDocument(newDoc)
-      .then((response) => {
+        return DocumentOperations.updateDocument(newDoc)
+            .then((response) => {
 
-        audios[newDoc.id] = { response: response };
+                audios[newDoc.id] = {response: response};
 
-        dispatch( { type: FV_AUDIO_UPDATE_SUCCESS, audios: audios, pathOrId: newDoc.id} );
-      }).catch((error) => {
+                dispatch({type: FV_AUDIO_UPDATE_SUCCESS, audios: audios, pathOrId: newDoc.id});
+            }).catch((error) => {
 
-          audios[newDoc.id] = { error: error };
+                audios[newDoc.id] = {error: error};
 
-          dispatch( { type: FV_AUDIO_UPDATE_ERROR, audios: audios, pathOrId: newDoc.id } )
-    });
-  }
+                dispatch({type: FV_AUDIO_UPDATE_ERROR, audios: audios, pathOrId: newDoc.id})
+            });
+    }
 };
 
 const fetchSharedAudios = function fetchSharedAudios(page_provider, headers = {}, params = {}) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-    dispatch( { type: FV_AUDIOS_SHARED_FETCH_START } );
+        dispatch({type: FV_AUDIOS_SHARED_FETCH_START});
 
-    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVAudio', headers, params)
-    .then((response) => {
-      dispatch( { type: FV_AUDIOS_SHARED_FETCH_SUCCESS, documents: response } )
-    }).catch((error) => {
-        dispatch( { type: FV_AUDIOS_SHARED_FETCH_ERROR, error: error } )
-    });
-  }
+        return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVAudio', headers, params)
+            .then((response) => {
+                dispatch({type: FV_AUDIOS_SHARED_FETCH_SUCCESS, documents: response})
+            }).catch((error) => {
+                dispatch({type: FV_AUDIOS_SHARED_FETCH_ERROR, error: error})
+            });
+    }
 };
 
 /*cosnt fetchAudioAndStats = function fetchAudioWithStats(path) {
@@ -144,48 +144,59 @@ const fetchSharedAudios = function fetchSharedAudios(page_provider, headers = {}
 };*/
 
 const fetchAudioStats = function fetchAudioStats(dialectId) {
-  return function (dispatch) {
+    return function (dispatch) {
 
-  dispatch( { type: FV_AUDIO_FETCH_STATS_START } );
+        dispatch({type: FV_AUDIO_FETCH_STATS_START});
 
-  return DocumentOperations.getAudioStats(dialectId)
-	.then((response) => {
-	  dispatch( { type: FV_AUDIO_FETCH_STATS_SUCCESS, document: response } )
-	  }).catch((error) => {
-	        dispatch( { type: FV_AUDIO_FETCH_STATS_ERROR, error: error } )
-	  });
-	}
+        return DocumentOperations.getAudioStats(dialectId)
+            .then((response) => {
+                dispatch({type: FV_AUDIO_FETCH_STATS_SUCCESS, document: response})
+            }).catch((error) => {
+                dispatch({type: FV_AUDIO_FETCH_STATS_ERROR, error: error})
+            });
+    }
 };
 
-const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry, media' } });
+const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', {headers: {'X-NXenrichers.document': 'ancestry, media'}});
 const createAudio = RESTActions.create('FV_AUDIO', 'FVAudio');
 
-const actions = { fetchSharedAudios, createAudio, fetchAudio, updateAudio, fetchAudioStats };
+const actions = {fetchSharedAudios, createAudio, fetchAudio, updateAudio, fetchAudioStats};
 
 const computeAudioFactory = RESTReducers.computeFetch('audio');
 
 const reducers = {
-  computeSharedAudios(state = { isFetching: false, response: { get: function() { return ''; } }, success: false }, action) {
-    switch (action.type) {
-      case FV_AUDIOS_SHARED_FETCH_START:
-        return Object.assign({}, state, { isFetching: true });
-      break;
+    computeSharedAudios(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case FV_AUDIOS_SHARED_FETCH_START:
+                return Object.assign({}, state, {isFetching: true});
+                break;
 
-      // Send modified document to UI without access REST end-point
-      case FV_AUDIOS_SHARED_FETCH_SUCCESS:
-        return Object.assign({}, state, { response: action.documents, isFetching: false, success: true });
-      break;
+            // Send modified document to UI without access REST end-point
+            case FV_AUDIOS_SHARED_FETCH_SUCCESS:
+                return Object.assign({}, state, {response: action.documents, isFetching: false, success: true});
+                break;
 
-      // Send modified document to UI without access REST end-point
-      case FV_AUDIOS_SHARED_FETCH_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
-      break;
+            // Send modified document to UI without access REST end-point
+            case FV_AUDIOS_SHARED_FETCH_ERROR:
+                return Object.assign({}, state, {
+                    isFetching: false,
+                    isError: true,
+                    error: action.error,
+                    errorDismissed: (action.type === DISMISS_ERROR) ? true : false
+                });
+                break;
 
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
-    }
-  }/*,
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
+    }/*,
   computeAudio(state = { audios: {} }, action) {
     switch (action.type) {
       case FV_AUDIO_FETCH_START:
@@ -245,28 +256,34 @@ const reducers = {
       break;
     }
   }*/,
-  computeAudio: computeAudioFactory.computeAudio,
-  computeAudioStats(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
-    switch (action.type) {
-      case FV_AUDIO_FETCH_STATS_START:
-        return Object.assign({}, state, { isFetching: true, success: false });
-      break;
+    computeAudio: computeAudioFactory.computeAudio,
+    computeAudioStats(state = {
+        isFetching: false, response: {
+            get: function () {
+                return '';
+            }
+        }, success: false
+    }, action) {
+        switch (action.type) {
+            case FV_AUDIO_FETCH_STATS_START:
+                return Object.assign({}, state, {isFetching: true, success: false});
+                break;
 
-      case FV_AUDIO_FETCH_STATS_SUCCESS:
-        return Object.assign({}, state, { response: action.document, isFetching: false, success: true });
-      break;
+            case FV_AUDIO_FETCH_STATS_SUCCESS:
+                return Object.assign({}, state, {response: action.document, isFetching: false, success: true});
+                break;
 
-      case FV_AUDIO_FETCH_STATS_ERROR:
-        return Object.assign({}, state, { isFetching: false, isError: true, error: action.error});
-      break;
+            case FV_AUDIO_FETCH_STATS_ERROR:
+                return Object.assign({}, state, {isFetching: false, isError: true, error: action.error});
+                break;
 
-      default: 
-        return Object.assign({}, state, { isFetching: false });
-      break;
+            default:
+                return Object.assign({}, state, {isFetching: false});
+                break;
+        }
     }
-  }  
 };
 
 const middleware = [thunk];
 
-export default { actions, reducers, middleware };
+export default {actions, reducers, middleware};

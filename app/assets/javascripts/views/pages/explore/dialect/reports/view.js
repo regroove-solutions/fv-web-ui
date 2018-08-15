@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Set, Map } from 'immutable';
+import Immutable, {List, Set, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -40,99 +40,105 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import FacetFilterList from 'views/components/Browsing/facet-filter-list';
+import IntlService from 'views/services/intl';
+
+const intl = IntlService.instance;
 
 @provide
 export default class PageDialectReportsView extends PageDialectLearnBase {
 
-  static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired, 
-    computeLogin: PropTypes.object.isRequired, 
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    computeCategories: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
-
-  constructor(props, context) {
-    super(props, context);
-
-    let reports = Immutable.fromJS(ReportsJson);
-
-    let report = reports.find(function(entry) {
-        return entry.get('name').toLowerCase() === decodeURI(this.props.routeParams.reportName).toLowerCase()
-    }.bind(this));
-
-    this.state = {
-      currentReport: report,
-      filterInfo: new Map({
-        currentAppliedFilter: new Map({
-          reports: report.get('query')
-        })
-      })
+    static propTypes = {
+        windowPath: PropTypes.string.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        fetchDocument: PropTypes.func.isRequired,
+        computeDocument: PropTypes.object.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        fetchPortal: PropTypes.func.isRequired,
+        computePortal: PropTypes.object.isRequired,
+        fetchCategories: PropTypes.func.isRequired,
+        computeCategories: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest', '_handleFacetSelected'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
-  }
+        let reports = Immutable.fromJS(ReportsJson);
 
-  fetchData(newProps) {
-    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
-  }
+        let report = reports.find(function (entry) {
+            return entry.get('name').toLowerCase() === decodeURI(this.props.routeParams.reportName).toLowerCase()
+        }.bind(this));
 
-  render() {
+        this.state = {
+            currentReport: report,
+            filterInfo: new Map({
+                currentAppliedFilter: new Map({
+                    reports: report.get('query')
+                })
+            })
+        };
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computePortal
-    }])
-
-    const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
-    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
-
-    let listView = null;
-
-    switch (this.state.currentReport.get('type')) {
-        case 'words': 
-            listView =  <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
-        break;
-
-        case 'phrases': 
-            listView =  <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
-        break;
-
-        case 'songs': 
-            listView =  <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
-        break;
-
-        case 'stories': 
-            listView =  <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams} />;
-        break;
+        // Bind methods to 'this'
+        ['_onNavigateRequest', '_handleFacetSelected'].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-              <div className="row">
-                <div className={classNames('col-xs-12')}>
-                  <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}: {StringHelpers.toTitleCase(this.state.currentReport.get('name'))}</h1>
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
+    }
 
-                  <div className="row">
-                    <div className={classNames('col-xs-12', 'col-md-3')}>
-                        <ReportBrowser style={{maxHeight: '400px', overflowY: 'scroll'}} routeParams={this.props.routeParams} fullWidth={true} />
+    fetchData(newProps) {
+        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+        newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');
+    }
+
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computePortal
+        }])
+
+        const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.routeParams.dialect_path + '/Dictionary');
+        const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
+
+        let listView = null;
+
+        switch (this.state.currentReport.get('type')) {
+            case 'words':
+                listView = <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                break;
+
+            case 'phrases':
+                listView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                break;
+
+            case 'songs':
+                listView =
+                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                break;
+
+            case 'stories':
+                listView =
+                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                break;
+        }
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+            <div className="row">
+                <div className={classNames('col-xs-12')}>
+                    <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}: {StringHelpers.toTitleCase(intl.searchAndReplace(this.state.currentReport.get('name')))}</h1>
+
+                    <div className="row">
+                        <div className={classNames('col-xs-12', 'col-md-3')}>
+                            <ReportBrowser style={{maxHeight: '400px', overflowY: 'scroll'}}
+                                           routeParams={this.props.routeParams} fullWidth={true}/>
+                        </div>
+                        <div className={classNames('col-xs-12', 'col-md-9')}>
+                            {listView}
+                        </div>
                     </div>
-                    <div className={classNames('col-xs-12', 'col-md-9')}>
-                        {listView}
-                    </div>
-                  </div>
                 </div>
-              </div>
+            </div>
         </PromiseWrapper>;
-  }
+    }
 }

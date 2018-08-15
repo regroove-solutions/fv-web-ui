@@ -21,9 +21,9 @@ import zIndex from 'material-ui/lib/styles/zIndex';
 export default {
   spacing: Spacing,
   zIndex: zIndex,
-  fontFamily: 'Roboto, sans-serif',
+  fontFamily: 'Arial, sans-serif',
   palette: {
-    primary1Color: Colors.red500,
+    primary1Color: "#b40000",
     primary2Color: Colors.cyan700,
     primary3Color: Colors.lightBlack,
     accent1Color: Colors.pinkA200,

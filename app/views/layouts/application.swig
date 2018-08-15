@@ -5,19 +5,12 @@
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <title>{% block title %}FirstVoices{% endblock %}</title>
-    <meta name="description" content=""/>
-    <meta name="author" content=""/>
+    <meta name="description" content="FirstVoices is a suite of web-based tools and services designed to support Indigenous people engaged in language archiving, language teaching and culture revitalization."/>
+    <meta name="author" content="FPCC"/>
+    <meta name="google-site-verification" content="EDJl0zb8mhsF1z_YbnEcdOwKF72uLcZw_3FGbSMVGSM" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
     <style>
-      /* fallback */
-      @font-face {
-        font-family: 'Material Icons';
-        font-style: normal;
-        font-weight: 400;
-        src: url('/assets/images/2fcrYFNaTjcS6g4U3t-Y5UEw0lE80llgEseQY3FEmqw.woff2') format('woff2');
-      }
-
       .material-icons {
         font-family: 'Material Icons';
         font-weight: normal;
@@ -31,8 +24,12 @@
         word-wrap: normal;
         direction: ltr;
         -webkit-font-feature-settings: 'liga';
+        font-feature-settings: 'liga';
         -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        -moz-osx-font-smoothing: grayscale;
       }
+
     </style>
 
     <script type="text/javascript">
@@ -40,7 +37,9 @@
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
     </script>
 
-    <link href="//fonts.googleapis.com/css?family=Roboto:100,400,500,500i,700,900&amp;subset=latin-ext" rel="stylesheet">
+    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    {% if buildENV == "production" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
 
     {% block head %}{% endblock %}
 
@@ -54,6 +53,16 @@
         </div>
         <!-- /#page-wrapper -->
 
+        <!--<div style="position: fixed;
+  width: 700px;
+  background: #ffe14f;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  border-radius: 5px 0 0 0;
+  border: 1px solid #dac73f;
+  border-bottom: 0;"><strong>Note</strong>: FirstVoices will be updated on <strong>August 7th @ 9:00 PM</strong> and will be unavailable for 2-3 minutes.</div>-->
+
     </div>
     <!-- /#wrapper -->
 
@@ -61,8 +70,6 @@
     <script src="/assets/javascripts/app.js"></script>
 
     {% block javascript %}{% endblock %}
-
-    <!-- v2.0.1 -->
 
   </body>
 </html>

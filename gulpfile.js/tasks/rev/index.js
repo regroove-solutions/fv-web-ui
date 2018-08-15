@@ -13,6 +13,5 @@ gulp.task('rev', [
   'rev-assets',
   'rev-update-references',
   'rev-css',
-  'update-html',
   'size-report'
 ]);

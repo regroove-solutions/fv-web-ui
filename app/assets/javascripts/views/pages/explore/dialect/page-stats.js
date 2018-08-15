@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 
 import classNames from 'classnames';
 import ConfGlobal from 'conf/local.json';
@@ -43,174 +43,172 @@ import Statistics from 'views/components/Dashboard/Statistics';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 
+import IntlService from 'views/services/intl';
+
+const intl = IntlService.instance;
+
 @provide
-export default class PageToolbar extends Component {
+export default class PageStats extends Component {
 
-  static defaultProps = {
-    docTypes: ["words", "phrases", "songs", "stories"]
-  };
+    static propTypes = {
+        windowPath: PropTypes.string.isRequired,
+        handleNavigateRequest: PropTypes.func,
+        computeDialectStats: PropTypes.object.isRequired,
+        dialectPath: PropTypes.string.isRequired
+    };
 
-  static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    handleNavigateRequest: PropTypes.func,
-    fetchDialectStats: PropTypes.func.isRequired,
-    computeDialectStats: PropTypes.object.isRequired,
-    dialectPath: PropTypes.string.isRequired,
-    docTypes: PropTypes.array
-  };
+    constructor(props, context) {
+        super(props, context);
 
-  constructor(props, context){
-    super(props, context);
-
-    [].forEach( (method => this[method] = this[method].bind(this)) );
-  }
-
-  componentDidMount() {
-    this.props.fetchDialectStats(this.props.dialectPath, {'dialectPath': this.props.dialectPath, 'docTypes': this.props.docTypes});
-  }
-
-  render() {
-    const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.dialectPath);
-
-    if (!selectn('response', computeDialectStats)) {
-        return <div>Loading...</div>;
+        [].forEach((method => this[method] = this[method].bind(this)));
     }
 
-    return <Tabs>
-                <Tab label="Words" id="statisticsWords">
-                    <Paper style={{padding: '15px'}} zDepth={2}>
-                        <Statistics data={selectn('response', computeDialectStats)} docType="words" headerText="Words" />
-                    </Paper>
-                </Tab>              		
-                
-                <Tab label="Phrases" id="statisticsPhrases">
-                    <Paper style={{padding: '15px'}} zDepth={2}>	              		
-                        <Statistics data={selectn('response', computeDialectStats)} docType="phrases" headerText="Phrases" />
-                    </Paper>
-                </Tab>
-                
-                <Tab label="Songs" id="statisticsSongs">
-                    <Paper style={{padding: '15px'}} zDepth={2}>
-                        <Statistics data={selectn('response', computeDialectStats)} docType="songs" headerText="Songs" />
-                    </Paper>
-                </Tab>
-                
-                <Tab label="Stories" id="statisticsStories">
-                    <Paper style={{padding: '15px'}} zDepth={2}>	              		
-                        <Statistics data={selectn('response', computeDialectStats)} docType="stories" headerText="Stories" />  
-                    </Paper>
-                </Tab>
-          </Tabs>;
+    render() {
+        const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.dialectPath);
 
-    /*return <Toolbar>
+        if (!selectn('response', computeDialectStats)) {
+            return <div>Loading...</div>;
+        }
 
-                  <ToolbarGroup float="left">
+        return <Tabs>
+            <Tab label="Words" id="statisticsWords">
+                <Paper style={{padding: '15px'}} zDepth={2}>
+                    <Statistics data={selectn('response', computeDialectStats)} docType="words"
+                                headerText={intl.trans('words', 'Words', 'first')}/>
+                </Paper>
+            </Tab>
 
-                    {this.props.children}
+            <Tab label="Phrases" id="statisticsPhrases">
+                <Paper style={{padding: '15px'}} zDepth={2}>
+                    <Statistics data={selectn('response', computeDialectStats)} docType="phrases"
+                                headerText={intl.trans('phrases', 'Phrases', 'first')}/>
+                </Paper>
+            </Tab>
 
-                    {(() => {
-                      if (this.props.actions.includes('workflow')) {
+            <Tab label="Songs" id="statisticsSongs">
+                <Paper style={{padding: '15px'}} zDepth={2}>
+                    <Statistics data={selectn('response', computeDialectStats)} docType="songs"
+                                headerText={intl.trans('songs', 'Songs', 'first')}/>
+                </Paper>
+            </Tab>
 
-                          return <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
+            <Tab label="Stories" id="statisticsStories">
+                <Paper style={{padding: '15px'}} zDepth={2}>
+                    <Statistics data={selectn('response', computeDialectStats)} docType="stories"
+                                headerText={intl.trans('stories', 'Stories', 'first')}/>
+                </Paper>
+            </Tab>
+        </Tabs>;
 
-                            <div>
+        /*return <Toolbar>
 
-                              <span style={{paddingRight: '15px'}}>REQUEST: </span>
+                      <ToolbarGroup float="left">
 
-                              <RaisedButton label={"Enable (" + (enableTasks.length + this.state.enableActions ) + ")"} disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
-                              <RaisedButton label={"Disable (" + (disableTasks.length + this.state.disableActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
-                              <RaisedButton label={"Publish (" + (publishTasks.length + this.state.publishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
-                              <RaisedButton label={"Unpublish (" + (unpublishTasks.length + this.state.unpublishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
+                        {this.props.children}
 
-                            </div>
+                        {(() => {
+                          if (this.props.actions.includes('workflow')) {
 
-                          </AuthorizationFilter>;
-                      }
-                    })()}
+                              return <AuthorizationFilter filter={{role: 'Record', entity: selectn('response', permissionEntity), login: computeLogin}} style={toolbarGroupItem}>
 
+                                <div>
 
-                    {(() => {
-                      if (this.props.actions.includes('enable-toggle')) {
+                                  <span style={{paddingRight: '15px'}}>REQUEST: </span>
 
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                            <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                              <Toggle
-                                toggled={documentEnabled || documentPublished}
-                                onToggle={this._documentActionsToggleEnabled}
-                                ref="enabled"
-                                disabled={documentPublished}
-                                name="enabled"
-                                value="enabled"
-                                label="Enabled"/>
-                            </div>
-                          </AuthorizationFilter>;
-                      }
-                    })()}
+                                  <RaisedButton label={"Enable (" + (enableTasks.length + this.state.enableActions ) + ")"} disabled={selectn('response.state', computeEntity) != 'Disabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'enable')} />
+                                  <RaisedButton label={"Disable (" + (disableTasks.length + this.state.disableActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled' && selectn('response.state', computeEntity) != 'New'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'disable')} />
+                                  <RaisedButton label={"Publish (" + (publishTasks.length + this.state.publishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Enabled'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'publish')} />
+                                  <RaisedButton label={"Unpublish (" + (unpublishTasks.length + this.state.unpublishActions) + ")"} disabled={selectn('response.state', computeEntity) != 'Published'} style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._documentActionsStartWorkflow.bind(this, 'unpublish')} />
 
-                    {(() => {
-                      if (this.props.actions.includes('publish-toggle')) {
+                                </div>
 
-                          return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                            <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
-                              <Toggle
-                                toggled={documentPublished}
-                                onToggle={this._documentActionsTogglePublished}
-                                disabled={!documentEnabled && !documentPublished}
-                                name="published"
-                                value="published"
-                                label="Published"/>
-                            </div>
-                          </AuthorizationFilter>;
-                      }
-                    })()}
-
-                  </ToolbarGroup>
-
-                  <ToolbarGroup float="right">
-
-                    {(() => {
-                      if (this.props.actions.includes('publish')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
-                          <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    {(() => {
-                      if (this.props.actions.includes('edit')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                          <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    {(() => {
-                      if (this.props.actions.includes('add-child')) {
-                        return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
-                                <RaisedButton label="Add New Page" style={{marginRight: '5px', marginLeft: '0'}} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
-                        </AuthorizationFilter>;
-                      }
-                    })()}
-
-                    <ToolbarSeparator />
-
-                    {(() => {
-                      if (this.props.actions.includes('more-options')) {
-                        return <IconMenu anchorOrigin={{horizontal: 'right', vertical: 'top'}} targetOrigin={{horizontal: 'right', vertical: 'top'}} iconButtonElement={
-                                <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true}>
-                                  <NavigationExpandMoreIcon />
-                                </IconButton>
-                              }>
-                                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
-                                <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} primaryText="Media Browser" />
-                              </IconMenu>;
-                      }
-                    })()}
+                              </AuthorizationFilter>;
+                          }
+                        })()}
 
 
-                    
-                  </ToolbarGroup>
+                        {(() => {
+                          if (this.props.actions.includes('enable-toggle')) {
 
-                </Toolbar>;*/
-  }
+                              return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                                <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                                  <Toggle
+                                    toggled={documentEnabled || documentPublished}
+                                    onToggle={this._documentActionsToggleEnabled}
+                                    ref="enabled"
+                                    disabled={documentPublished}
+                                    name="enabled"
+                                    value="enabled"
+                                    label="Enabled"/>
+                                </div>
+                              </AuthorizationFilter>;
+                          }
+                        })()}
+
+                        {(() => {
+                          if (this.props.actions.includes('publish-toggle')) {
+
+                              return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                                <div style={{display:'inline-block', float: 'left', margin: '17px 5px 10px 5px', position:'relative'}}>
+                                  <Toggle
+                                    toggled={documentPublished}
+                                    onToggle={this._documentActionsTogglePublished}
+                                    disabled={!documentEnabled && !documentPublished}
+                                    name="published"
+                                    value="published"
+                                    label="Published"/>
+                                </div>
+                              </AuthorizationFilter>;
+                          }
+                        })()}
+
+                      </ToolbarGroup>
+
+                      <ToolbarGroup float="right">
+
+                        {(() => {
+                          if (this.props.actions.includes('publish')) {
+                            return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', permissionEntity)}} style={toolbarGroupItem}>
+                              <RaisedButton data-guide-role="publish-changes" disabled={!documentPublished} label="Publish Changes" style={{marginRight: '5px', marginLeft: '0'}} secondary={true} onTouchTap={this._publishChanges} />
+                            </AuthorizationFilter>;
+                          }
+                        })()}
+
+                        {(() => {
+                          if (this.props.actions.includes('edit')) {
+                            return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                              <RaisedButton label={"Edit " + this.props.label} style={{marginRight: '5px', marginLeft: '0'}} primary={true} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath.replace('sections', 'Workspaces') + '/edit')} />
+                            </AuthorizationFilter>;
+                          }
+                        })()}
+
+                        {(() => {
+                          if (this.props.actions.includes('add-child')) {
+                            return <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeEntity)}} style={toolbarGroupItem}>
+                                    <RaisedButton label="Add New Page" style={{marginRight: '5px', marginLeft: '0'}} onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
+                            </AuthorizationFilter>;
+                          }
+                        })()}
+
+                        <ToolbarSeparator />
+
+                        {(() => {
+                          if (this.props.actions.includes('more-options')) {
+                            return <IconMenu anchorOrigin={{horizontal: 'right', vertical: 'top'}} targetOrigin={{horizontal: 'right', vertical: 'top'}} iconButtonElement={
+                                    <IconButton tooltip="More Options" tooltipPosition="top-center" touch={true}>
+                                      <NavigationExpandMoreIcon />
+                                    </IconButton>
+                                  }>
+                                    <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/reports')} primaryText="Reports" />
+                                    <MenuItem onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')} primaryText="Media Browser" />
+                                  </IconMenu>;
+                          }
+                        })()}
+
+
+
+                      </ToolbarGroup>
+
+                    </Toolbar>;*/
+    }
 }

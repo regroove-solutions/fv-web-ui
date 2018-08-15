@@ -18,9 +18,9 @@ This app has been scaffolded using [gulp-starter](https://github.com/vigetlabs/g
 
 ## Getting Started ##
 There are several version dependency requirements to properly build and run the project:
--  NodeJS v4.1.2
+-  NodeJS>=v8.10
 -  Gulp CLI v3.9.1
--  Yarn v0.21.3
+-  Yarn v1.5.1
 
 Instructions to install specific project dependencies and running the application are described in the *Setting Up and Running* section.
 
@@ -60,10 +60,10 @@ $ git submodule update --init --recursive
 $ git submodule foreach git pull origin master
 ```
 
-5. Install NodeJS v4.8.0 and set it as the active version of NodeJS by running:
+5. Install NodeJS v8.10.0 and set it as the active version of NodeJS by running:
 ```bash
-$ nvm install 4.8.0
-$ nvm use 4.8.0
+$ nvm install 8.10.0
+$ nvm use 8.10.0
 ```
 
 6. Install GULP CLI v3.9.1 by running:
@@ -71,9 +71,9 @@ $ nvm use 4.8.0
 $ npm install -g gulp@3.9.1
 ```
 
-7. Install Yarn v0.21.3 by running:
+7. Install Yarn v1.5.1 by running:
 ```bash
-$ npm install -g yarn@0.21.3
+$ npm install -g yarn@1.5.1
 ```
 
 8. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
@@ -115,8 +115,7 @@ $ gulp build:production
 ## Contributing ##
 
 ### Adding New Dependencies
-1. Install dependency using `npm install package --save` or `npm install package --save-dev`
-2. When ready, run `npm shrinkwrap` to lock dependencies.
+Install dependencies using `yarn add package` or `yarn add package --dev`
 
 ### Testing
 
@@ -127,6 +126,12 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 ### Tips
 * Learn how to work with [React.js](https://facebook.github.io/react/docs/getting-started.html)
 * Get familiar with [ES2015](https://babeljs.io/docs/learn-es2015/) syntax
+
+## Testing ##
+
+We use BroswerStack in order to ensure our UI functions in the latest version of all major browsers, and at least 1 version back depending on demand from our users. We will be posting a more detailed and up-to-date compatibility status in the future.
+
+<a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
 ## Licensing ##
 

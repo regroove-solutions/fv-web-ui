@@ -40,6 +40,7 @@ import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
 import StringHelpers from 'common/StringHelpers';
 import FormHelpers from 'common/FormHelpers';
+import AnalyticsHelpers from 'common/AnalyticsHelpers';
 
 import SearchResultTile from './tile';
 
@@ -47,8 +48,10 @@ import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import DocumentListView from 'views/components/Document/DocumentListView';
 
 import withToggle from 'views/hoc/view/with-toggle';
+import IntlService from "views/services/intl";
 
 const FiltersWithToggle = withToggle();
+const intl = IntlService.instance;
 
 @provide
 export default class Search extends DataListView {
@@ -124,7 +127,7 @@ export default class Search extends DataListView {
 			// Exclude Demo from search
 			((!props.routeParams.dialect_path) ? ' AND ecm:ancestorId <> \'b482d9df-e71b-40b5-9632-79b1fc2782d7\' AND ecm:ancestorId <> \'732c2ef6-19d3-45a8-97e7-b6cff7d84909\' ' : ' ') + 
 			' AND ecm:primaryType IN (' + documentTypeFilter + ')' +      
-			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm) + '*\'' +    
+			' AND ecm:fulltext = \'*' + StringHelpers.clean(props.routeParams.searchTerm, 'fulltext') + '*\'' +    
 			// More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +    
 			'&currentPageIndex=' + (pageIndex - 1) + 
 			'&pageSize=' + pageSize + 
@@ -199,6 +202,21 @@ export default class Search extends DataListView {
 			});
 	}
 
+
+  componentDidUpdate(prevProps, prevState) {
+
+	  const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath());
+
+	  if (selectn('response.totalSize', computeSearchDocuments) != undefined) {
+		// Track search event
+		AnalyticsHelpers.trackSiteSearch({
+			keyword: this.props.routeParams.searchTerm,
+			category: false,
+			results: selectn("response.totalSize", computeSearchDocuments)
+		});
+	  }
+  }
+
   render() {
 
     const computeEntities = Immutable.fromJS([{
@@ -219,31 +237,33 @@ export default class Search extends DataListView {
 
     return <div>
 
-			<div className="row">
-				<div className={classNames('col-xs-12', 'col-md-3')}>
-					<div className="col-xs-12">
-						<form onSubmit={this._onSearchSaveForm}>
-							<FiltersWithToggle label="Filter Items" mobileOnly={true}>
-								<t.form.Form
-									ref="search_form"
-									value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
-									type={t.struct(selectn('Search', fields))}
-									options={selectn('Search', options)}
-								/>      
-								<RaisedButton
-									onTouchTap={this._onReset}
-									label="Reset"
-									primary={true} /> &nbsp;
-								<RaisedButton
-									type="submit"
-									label="Search"
-									primary={true} />
-							</FiltersWithToggle>
-						</form>
-					</div>
-				</div>
-				<div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
-					<h1>Search Results - {this.props.routeParams.searchTerm}</h1>
+            <div className="row">
+                <div className={classNames('col-xs-12', 'col-md-3')}>
+                    <div className="col-xs-12">
+                        <form onSubmit={this._onSearchSaveForm}>
+                            <FiltersWithToggle
+                                label={intl.trans('views.pages.search.filter_items', 'Filter items', 'first')}
+                                mobileOnly={true}>
+                                <t.form.Form
+                                    ref="search_form"
+                                    value={Object.assign({}, this.state.formValue, {searchTerm: this.props.routeParams.searchTerm})}
+                                    type={t.struct(selectn('Search', fields))}
+                                    options={selectn('Search', options)}
+                                />
+                                <RaisedButton
+                                    onTouchTap={this._onReset}
+                                    label={intl.trans('reset', 'Reset', 'first')}
+                                    primary={true}/> &nbsp;
+                                <RaisedButton
+                                    type="submit"
+                                    label={intl.trans('search', 'Search', 'first')}
+                                    primary={true}/>
+                            </FiltersWithToggle>
+                        </form>
+                    </div>
+                </div>
+                <div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
+                    <h1>{intl.trans('search_results', 'Search results', 'first')} - {this.props.routeParams.searchTerm}</h1>
 
 					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 

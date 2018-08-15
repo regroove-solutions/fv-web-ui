@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
 import selectn from 'selectn';
 
 import ConfGlobal from 'conf/local.json';
@@ -25,71 +25,80 @@ import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import UIHelpers from 'common/UIHelpers';
+import IntlService from "views/services/intl";
 
 const defaultStyle = {width: '100%', overflowY: 'auto', marginBottom: 24};
 
 export default class CategoryList extends Component {
 
-  static propTypes = {
-    items: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.instanceOf(List)
-    ]),
-    filteredItems: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.instanceOf(List)
-    ]),
-    type: PropTypes.string,
-    action: PropTypes.func,
-    cols: PropTypes.number,
-    cellHeight: PropTypes.number,
-    style: PropTypes.object
-  };
+    static propTypes = {
+        items: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.instanceOf(List)
+        ]),
+        filteredItems: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.instanceOf(List)
+        ]),
+        type: PropTypes.string,
+        action: PropTypes.func,
+        cols: PropTypes.number,
+        cellHeight: PropTypes.number,
+        style: PropTypes.object
+    };
 
-  static defaultProps = {
-    cols: 3,
-    cellHeight: 210,
-    style: null
-  }
-
-  constructor(props, context){
-    super(props, context);
-  }
-
-  render() {
-
-    let items = this.props.filteredItems || this.props.items;
-
-    if (!items || selectn('length', items) == 0) {
-      return <div style={{margin: '20px 0'}}>No results found.</div>;
+    static defaultProps = {
+        cols: 3,
+        cellHeight: 210,
+        style: null
     }
 
-    // If action is not defined
-    let action;
+    intl = IntlService.instance;
 
-    if (this.props.hasOwnProperty('action') && typeof this.props.action === "function") {
-      action = this.props.action;
-    } else {
-      action = () => {};
+    constructor(props, context) {
+        super(props, context);
     }
 
-    return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                    <GridList
-                      cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
-                      cellHeight={this.props.cellHeight}
-                      style={Object.assign(defaultStyle, this.props.style)}
-                      >
-                        {(items).map(function (tile, i) { 
+    render() {
 
-                          return <GridTile
-                            onTouchTap={action.bind(this, tile)}
-                            key={tile.uid}
-                            title={tile.title}
-                            className="category-grid-tile"
-                            titlePosition='bottom'
-                            ><img src={(selectn('properties.file:content.data', tile) || '/assets/images/cover.png')} /></GridTile>
-                        }.bind(this))}
-                    </GridList>
-                  </div>;
-  }
+        let items = this.props.filteredItems || this.props.items;
+
+        if (!items || selectn('length', items) == 0) {
+            return <div style={{margin: '20px 0'}}>{this.intl.translate({
+                key: 'no_results_found',
+                default: 'No Results Found',
+                append: '.'
+            })}</div>;
+        }
+
+        // If action is not defined
+        let action;
+
+        if (this.props.hasOwnProperty('action') && typeof this.props.action === "function") {
+            action = this.props.action;
+        } else {
+            action = () => {
+            };
+        }
+
+        return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
+            <GridList
+                cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
+                cellHeight={this.props.cellHeight}
+                style={Object.assign(defaultStyle, this.props.style)}
+            >
+                {(items).map(function (tile, i) {
+
+                    return <GridTile
+                        onTouchTap={action.bind(this, tile)}
+                        key={tile.uid}
+                        title={this.intl.searchAndReplace(tile.title)}
+                        className="category-grid-tile"
+                        titlePosition='bottom'
+                    ><img
+                        src={(selectn('properties.file:content.data', tile) || '/assets/images/cover.png')}/></GridTile>
+                }.bind(this))}
+            </GridList>
+        </div>;
+    }
 }

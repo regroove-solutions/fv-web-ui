@@ -27,7 +27,7 @@
 
 .app-wrapper{
   background-color:#fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 400;
   font-size: 18px;
   line-height: 24px;
@@ -48,6 +48,18 @@
       margin:0;
     }
   }
+}
+
+.outage-notice{
+  position: fixed;
+  width: 700px;
+  background: #ffe14f;
+  bottom: 0;
+  right: 0;
+  padding: 5px;
+  border-radius: 5px 0 0 0;
+  border: 1px solid #dac73f;
+  border-bottom: 0;
 }
 
 // Injects all bower_component files automatically
@@ -106,14 +118,14 @@
 }
 
 .display{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 900;
   font-size: 26px;
   line-height: 34px;  
 }
 
 h1{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 900;
   font-size: 24px;
   color: @primary-header-color;
@@ -121,7 +133,7 @@ h1{
 }
 
 h2{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 700;
   font-size: 21px;
   color: @primary-header-color;
@@ -129,7 +141,7 @@ h2{
 }
 
 h3{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 700;
   font-size: 18px;
   line-height: 21px;
@@ -137,7 +149,7 @@ h3{
 }
 
 h4{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 500;
   font-size: 17px;
   line-height: 21px;
@@ -145,7 +157,7 @@ h4{
 }
 
 h6{
-  font-family: 'Roboto', sans-serif;
+  font-family: Arial, sans-serif;
   font-weight: 400;
   font-size: 14px;
   line-height: 16px;
@@ -292,6 +304,27 @@ form.editableComponentForm{
     a{
       color: #ffffff;
     }
+}
+
+// Navigation
+.nav_link{
+  font-size: 14px;
+  color: #fff;
+
+  &:visited{
+    color: #fff;
+  }
+}
+
+// Media list
+.media-list{
+  a{
+    color: #fff;
+
+    &:visited{
+      color: #e4e4e4;
+    }
+  }
 }
 
 /**
@@ -763,7 +796,8 @@ audio::-webkit-media-controls-enclosure {
 
   // Navigation
 
-  .search-bar-seperator{
+  .search-bar-seperator,
+  .locale-seperator{
     margin-right: 15px!important;
   }
 
@@ -878,4 +912,3 @@ audio::-webkit-media-controls-enclosure {
 }
 
 @import "kids";
-@import "jira";

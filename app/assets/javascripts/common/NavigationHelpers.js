@@ -14,42 +14,81 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-const arrayPopImmutable = function (array) {
-  return array.slice(0, array.length - 1);
+import selectn from 'selectn';
+
+const arrayPopImmutable = function (array, sizeToPop = 1) {
+    return array.slice(0, array.length - sizeToPop);
 }
 
 export default {
-  // Navigate to an absolute path, possibly URL encoding the last path part
-  // If no NavigationFunc is provided, will return the path
-  navigate: function (path, navigationFunc, encodeLastPart = false) {
-    let pathArray = path.split('/');
+    // Navigate to an absolute path, possibly URL encoding the last path part
+    // If no NavigationFunc is provided, will return the path
+    navigate: function (path, navigationFunc, encodeLastPart = false) {
+        let pathArray = path.split('/');
 
-    if (encodeLastPart) {
-      pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1]);
-    }
+        if (encodeLastPart) {
+            pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1]);
+        }
 
-    let transformedPath = pathArray.join('/');
+        let transformedPath = pathArray.join('/');
 
-    if (!navigationFunc) {
-        return transformedPath;
-    } else {
-        navigationFunc(transformedPath);
-    }
-  },
-  // Navigate up by removing the last page from the URL
-  navigateUp: function (currentPathArray, navigationFunc) {
-      navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'));
-  },
-  // Navigate forward, replacing the current page within the URL
-  navigateForwardReplace: function (currentPathArray, forwardPathArray, navigationFunc) {
-      navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
-  },
-  // Navigate forward by appending the forward path
-  navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
-      navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
-  },
-  // Navigate back to previous page
-  navigateBack: function () {
+        if (!navigationFunc) {
+            return transformedPath;
+        } else {
+            navigationFunc(transformedPath);
+        }
+    },
+    // Navigate up by removing the last page from the URL
+    navigateUp: function (currentPathArray, navigationFunc) {
+        navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'));
+    },
+    // Navigate forward, replacing the current page within the URL
+    navigateForwardReplace: function (currentPathArray, forwardPathArray, navigationFunc) {
+        navigationFunc('/' + arrayPopImmutable(currentPathArray).concat(forwardPathArray).join('/'));
+    },
+    // Navigate forward, replacing the current page within the URL
+    navigateForwardReplaceMultiple: function (currentPathArray, forwardPathArray, navigationFunc) {
+        navigationFunc('/' + arrayPopImmutable(currentPathArray, forwardPathArray.length).concat(forwardPathArray).join('/'));
+    },
+    // Navigate forward by appending the forward path
+    navigateForward: function (currentPathArray, forwardPathArray, navigationFunc) {
+        navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'));
+    },
+    // Navigate back to previous page
+    navigateBack: function () {
         window.history.back();
-  },
+    },
+    // Generate a UID link from a Nuxeo document path
+    generateUIDPath: function (theme, item, pluralPathId) {
+        let path = '/' + theme + selectn('path', item);
+
+        switch (selectn('type', item)) {
+            case "FVWord":
+            case "FVPhrase":
+                path = path.replace("/Dictionary/", "/learn/" + pluralPathId + "/");
+            break;
+
+            case "FVBook":
+                path = path.replace("/Stories & Songs/", "/learn/" + pluralPathId + "/");
+            break;
+
+            case "FVGallery":
+                path = path.replace("/Portal/", "/" + pluralPathId + "/");
+            break;
+
+            case "FVAudio":
+            case "FVVideo":
+            case "FVPicture":
+                // Resources can be in folders, so ensure everything after 'Resources' is ignored
+                path = path.substring(0, path.lastIndexOf("/Resources/") + 11);
+                path = path.replace("/Resources/", "/" + pluralPathId + "/");
+            break;
+        }
+
+        return path = path.substring(0, path.lastIndexOf("/") + 1) + selectn('uid', item);
+    },
+    // Disable link
+    disable: function (event) {
+        event.preventDefault();
+    }
 }

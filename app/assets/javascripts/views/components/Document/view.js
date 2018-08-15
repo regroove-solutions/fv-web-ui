@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -66,95 +66,97 @@ import Tab from 'material-ui/lib/tabs/tab';
 import CircularProgress from 'material-ui/lib/circular-progress';
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css';
+import IntlService from "views/services/intl";
 
+const intl = IntlService.instance;
 /**
-* View word entry
-*/
+ * View word entry
+ */
 @provide
 export default class View extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    id: PropTypes.string.isRequired
-  };
-
-  constructor(props, context){
-    super(props, context);
-
-    this.state = {
-      deleteDialogOpen: false
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        fetchDocument: PropTypes.func.isRequired,
+        computeDocument: PropTypes.object.isRequired,
+        id: PropTypes.string.isRequired
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
-    newProps.fetchDocument(newProps.id);
-  }
+        this.state = {
+            deleteDialogOpen: false
+        };
 
-  _onNavigateRequest(path) {
-    NavigationHelpers.navigate('/' + path, this.props.pushWindowPath, true);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-
-    /*if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
-      this.fetchData(nextProps);
+        // Bind methods to 'this'
+        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
     }
-    else if (nextProps.routeParams.word !== this.props.routeParams.word) {
-      this.fetchData(nextProps);
+
+    fetchData(newProps) {
+        newProps.fetchDocument(newProps.id);
     }
-    else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-      this.fetchData(nextProps);
-    }*/
-  }
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
+    _onNavigateRequest(path) {
+        NavigationHelpers.navigate('/' + path, this.props.pushWindowPath, true);
+    }
 
-  render() {
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.id,
-      'entity': this.props.computeDocument
-    }])
+        /*if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+          this.fetchData(nextProps);
+        }
+        else if (nextProps.routeParams.word !== this.props.routeParams.word) {
+          this.fetchData(nextProps);
+        }
+        else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
+          this.fetchData(nextProps);
+        }*/
+    }
 
-    const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.id);
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-    return <PromiseWrapper computeEntities={computeEntities}>
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.props.id,
+            'entity': this.props.computeDocument
+        }])
+
+        const computeDocument = ProviderHelpers.getEntry(this.props.computeDocument, this.props.id);
+
+        return <PromiseWrapper computeEntities={computeEntities}>
 
             {(() => {
-              if (selectn('response', computeDocument)) {
+                if (selectn('response', computeDocument)) {
 
-                let actionButton = '';
+                    let actionButton = '';
 
-                switch (selectn('response.type', computeDocument)) {
-                  case 'FVWord':
-                    actionButton = <RaisedButton label="View Word" onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/words'))} />;
-                  break;
+                    switch (selectn('response.type', computeDocument)) {
+                        case 'FVWord':
+                            actionButton = <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'words')}>{intl.trans('view_word', 'View Word', 'words')}</a>
+                            break;
 
-                  case 'FVPhrase':
-                    actionButton = <RaisedButton label="View Phrase" onTouchTap={this._onNavigateRequest.bind(this, 'explore' + selectn('response.path', computeDocument).replace('Dictionary', 'learn/phrases'))} />;
-                  break;
+                        case 'FVPhrase':
+                            actionButton = <a href={NavigationHelpers.generateUIDPath('explore', selectn('response', computeDocument), 'phrases')}>{intl.trans('view_phrase', 'View Phrase', 'phrases')}</a>
+                            break;
+                    }
+
+                    return <div>
+                        <strong>{intl.trans('title', 'Title', 'first')}</strong>: {selectn('response.title', computeDocument)}<br/>
+                        <strong>{intl.trans('type', 'Type', 'first')}</strong>: {selectn('response.type', computeDocument).replace('FV', '')}<br/>
+                        {actionButton}
+                    </div>;
                 }
-
-                return <div>
-                  <strong>Title</strong>: {selectn('response.title', computeDocument)}<br/>
-                  <strong>Type</strong>: {selectn('response.type', computeDocument).replace('FV', '')}<br/>
-                  {actionButton}
-                </div>;
-              }
             })()}
 
         </PromiseWrapper>;
-  }
+    }
 }

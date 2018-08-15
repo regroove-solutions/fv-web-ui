@@ -21,6 +21,8 @@ import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
@@ -28,7 +30,9 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 /**
 * Create song/story book
 */
@@ -71,7 +75,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    
+
     let currentBook, nextBook;
 
     if (this.state.bookPath != null) {
@@ -85,7 +89,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // 'Redirect' on success
     if (selectn('success', currentBook) != selectn('success', nextBook) && selectn('success', nextBook) === true) {
-        nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextBook).replace('Stories & Songs', 'learn/' + (this.props.typeFilter === 'story' ? 'stories' : 'songs')));
+        NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextBook), (this.props.typeFilter === 'story' ? 'stories' : 'songs')), nextProps.replaceWindowPath, true);
     }
   }
 
@@ -99,7 +103,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       case (newProps.computeDialect2 != this.props.computeDialect2):
         return true;
       break;
-      
+
       case (newProps.computeBook != this.props.computeBook):
         return true;
       break;
@@ -117,7 +121,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     //let properties = '';
     let properties = {};
-    
+
 	  for (let key in formValue) {
 	    if (formValue.hasOwnProperty(key) && key) {
 	      if (formValue[key] && formValue[key] != '') {
@@ -136,12 +140,12 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       let now = Date.now();
   	  this.props.createBook(this.props.routeParams.dialect_path + '/Stories & Songs', {
   	    type: 'FVBook',
-  	    name: formValue['dc:title'],
+  	    name: now.toString(),
   	    properties: properties
   	  }, null, now);
 
       this.setState({
-        bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + formValue['dc:title'] + '.' + now
+        bookPath: this.props.routeParams.dialect_path + '/Stories & Songs/' + now.toString() + '.' + now
       });
     } else {
       window.scrollTo(0, 0);
@@ -177,25 +181,29 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-            <h1>Add New {this.props.typeFilter} Book to <i>{selectn('response.title', computeDialect2)}</i></h1>
+        <h1>{intl.trans('views.pages.explore.dialect.learn.songs_stories.add_new_x_book_to_x',
+            'Add New ' + this.props.typeFilter + ' Book to ' + selectn('response.title', computeDialect2),
+            'first',
+            [this.props.typeFilter, selectn('response.title', computeDialect2)])}</h1>
 
-            <div className="row" style={{marginTop: '15px'}}>
+        <div className="row" style={{marginTop: '15px'}}>
 
-              <div className={classNames('col-xs-8', 'col-md-10')}>
+            <div className={classNames('col-xs-8', 'col-md-10')}>
                 <form onSubmit={this._onRequestSaveForm}>
-                  <t.form.Form
-                    ref="form_book_create"
-                    type={t.struct(selectn("FVBook", fields))}
-                    context={selectn('response', computeDialect2)}
-                    value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
-                    options={FVBookOptions} />
+                    <t.form.Form
+                        ref="form_book_create"
+                        type={t.struct(selectn("FVBook", fields))}
+                        context={selectn('response', computeDialect2)}
+                        value={this.state.formValue || {'fvbook:type': this.props.typeFilter}}
+                        options={FVBookOptions}/>
                     <div className="form-group">
-                      <button type="submit" className="btn btn-primary">Save</button> 
+                        <button type="submit"
+                                className="btn btn-primary">{intl.trans('save', 'Save', 'first')}</button>
                     </div>
                 </form>
-              </div>
+            </div>
 
-          </div>
-        </PromiseWrapper>;
+        </div>
+    </PromiseWrapper>;
   }
 }

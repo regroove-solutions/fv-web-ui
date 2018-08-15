@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
@@ -24,6 +24,7 @@ import ConfGlobal from 'conf/local.json';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
@@ -39,132 +40,145 @@ import GeneralList from 'views/components/Browsing/general-list';
 import {CardView} from './list-view';
 
 import withFilter from 'views/hoc/grid-list/with-filter';
+import IntlService from 'views/services/intl';
 
+const intl = IntlService.instance;
 const DEFAULT_LANGUAGE = 'english';
 
 const FilteredCardList = withFilter(GeneralList);
 
 /**
-* Learn songs
-*/
+ * Learn songs
+ */
 @provide
 export default class PageDialectLearnStoriesAndSongs extends Component {
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchBooks: PropTypes.func.isRequired,
-    computeBooks: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
-    routeParams: PropTypes.object.isRequired,
-    typeFilter: PropTypes.string,
-    typePlural: PropTypes.string
-  };
-
-  constructor(props, context) {
-    super(props, context);
-
-    this.state = {
-      filteredList: null
+    static propTypes = {
+        properties: PropTypes.object.isRequired,
+        windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        fetchPortal: PropTypes.func.isRequired,
+        computePortal: PropTypes.object.isRequired,
+        fetchBooks: PropTypes.func.isRequired,
+        computeBooks: PropTypes.object.isRequired,
+        computeLogin: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        typeFilter: PropTypes.string,
+        typePlural: PropTypes.string
     };
 
-    // Bind methods to 'this'
-    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
-    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
+        this.state = {
+            filteredList: null
+        };
 
-    newProps.fetchBooks(newProps.routeParams.dialect_path + '/Stories & Songs',
-    '&sortBy=dc:title' +
-    '&sortOrder=ASC'
-    );
-  }
-
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
+        // Bind methods to 'this'
+        ['_onNavigateRequest', '_onEntryNavigateRequest', 'fixedListFetcher'].forEach((method => this[method] = this[method].bind(this)));
     }
-  }
 
-  fixedListFetcher(list) {
-    this.setState({
-      filteredList: list
-    });
-  }
+    fetchData(newProps) {
+        newProps.fetchDialect2(newProps.routeParams.dialect_path);
+        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
 
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
-  }
-
-  render() {
-
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path + '/Stories & Songs',
-      'entity': this.props.computeBooks
-    },{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
-
-    const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path + '/Stories & Songs');
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-
-    const isKidsTheme = this.props.routeParams.theme === 'kids';
-
-    let listProps = {
-      defaultLanguage: DEFAULT_LANGUAGE,
-      filterOptionsKey:"Books",
-      fixedList:true,
-      fixedListFetcher:this.fixedListFetcher,
-      filteredItems:this.state.filteredList,
-      card: <CardView />,
-      area:this.props.routeParams.area,
-      applyDefaultFormValues:true,
-      formValues: {'properties.fvbook:type': this.props.typeFilter},
-      metadata:selectn('response', computeBooks),
-      items:selectn('response.entries', computeBooks) || [],
-      action: this._onNavigateRequest
-    };
-
-    let listView = <FilteredCardList {...listProps} />;
-
-    if (isKidsTheme) {
-      listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme} />
+        newProps.fetchBooks(newProps.routeParams.dialect_path + '/Stories & Songs',
+            '&sortBy=dc:title' +
+            '&sortOrder=ASC'
+        );
     }
-    
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
-              <div className={classNames('row', 'row-create-wrapper', {'hidden': isKidsTheme})}>
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
+
+    // Refetch data on URL change
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.windowPath !== this.props.windowPath) {
+            this.fetchData(nextProps);
+        }
+    }
+
+    fixedListFetcher(list) {
+        this.setState({
+            filteredList: list
+        });
+    }
+
+    _onEntryNavigateRequest(item) {
+        this.props.pushWindowPath(NavigationHelpers.generateUIDPath((this.props.routeParams.theme || 'explore'), item, (selectn('properties.fvbook:type', item) == 'story' ? 'stories' : 'songs')));
+    }
+
+    _onNavigateRequest(path) {
+        this.props.pushWindowPath(path);
+    }
+
+    render() {
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this.props.routeParams.dialect_path + '/Stories & Songs',
+            'entity': this.props.computeBooks
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }])
+
+        const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path + '/Stories & Songs');
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        const isKidsTheme = this.props.routeParams.theme === 'kids';
+
+        let listProps = {
+            defaultLanguage: DEFAULT_LANGUAGE,
+            filterOptionsKey: "Books",
+            fixedList: true,
+            fixedListFetcher: this.fixedListFetcher,
+            filteredItems: this.state.filteredList,
+            card: <CardView/>,
+            area: this.props.routeParams.area,
+            applyDefaultFormValues: true,
+            formValues: {'properties.fvbook:type': this.props.typeFilter},
+            metadata: selectn('response', computeBooks),
+            items: selectn('response.entries', computeBooks) || [],
+            action: this._onEntryNavigateRequest
+        };
+
+        let listView = <FilteredCardList {...listProps} />;
+
+        if (isKidsTheme) {
+            listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme}/>
+        }
+
+        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+
+            <div className={classNames('row', 'row-create-wrapper', {'hidden': isKidsTheme})}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
-                  <AuthorizationFilter filter={{role: ['Record', 'Approve', 'Everything'], entity: selectn('response', computeDialect2), login: this.props.computeLogin}}>
-                    <RaisedButton label={"Create " + this.props.typeFilter + " Book"} onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')} primary={true} />
-                  </AuthorizationFilter>
+                    <AuthorizationFilter filter={{
+                        role: ['Record', 'Approve', 'Everything'],
+                        entity: selectn('response', computeDialect2),
+                        login: this.props.computeLogin
+                    }}>
+                        <RaisedButton
+                            label={intl.trans('views.pages.explore.dialect.learn.songs_stories.create_x_book', "Create " + this.props.typeFilter + " Book", 'words', [this.props.typeFilter])}
+                            onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')}
+                            primary={true}/>
+                    </AuthorizationFilter>
                 </div>
 
-              </div>
+            </div>
 
-              <div className="row" style={{marginBottom: '20px'}}>
-                
+            <div className="row" style={{marginBottom: '20px'}}>
+
                 <div className={classNames('col-xs-12', {'col-md-8': isKidsTheme, 'col-md-offset-2': isKidsTheme})}>
-                  <h1 className={classNames({'hidden': isKidsTheme})}>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
-                  {listView}
+                    <h1 className={classNames({'hidden': isKidsTheme})}>{selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}</h1>
+                    {listView}
                 </div>
-              </div>
+            </div>
 
         </PromiseWrapper>;
-  }
+    }
 }

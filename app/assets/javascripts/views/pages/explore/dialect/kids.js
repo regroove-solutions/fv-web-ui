@@ -25,6 +25,9 @@ import GridList from 'material-ui/lib/grid-list/grid-list';
 import GridTile from 'material-ui/lib/grid-list/grid-tile';
 
 import UIHelpers from 'common/UIHelpers';
+import IntlService from 'views/services/intl';
+
+const intl = IntlService.instance;
 
 @provide
 export default class Kids extends Component {
@@ -54,6 +57,9 @@ export default class Kids extends Component {
 
   render() {
 
+    const tileTitleStyle = {fontSize: '18px', marginLeft: '-16px'};
+    const tileStyle = {textAlign: 'center', textTransform: 'uppercase'};
+
     return <div>
 
             <div className="row" style={{backgroundSize: 'cover', backgroundPosition: 'center center', backgroundImage: 'url("' + selectn('response.contextParameters.portal.fv-portal:background_top_image.views[3].url', this.props.portal) + '?inline=true")'}}>
@@ -69,7 +75,8 @@ export default class Kids extends Component {
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/words/categories')}
                             key='words'
-                            // title='Words'
+                            title={<span style={tileTitleStyle}>Words</span>}
+                            style={tileStyle}
                             >
                           <div className={classNames('kids-image-grid-container', 'words-main')} />
                       </GridTile>
@@ -77,7 +84,8 @@ export default class Kids extends Component {
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/phrases/categories')}
                             key='phrases'
-                            // title='Phrases'
+                            title={<span style={tileTitleStyle}>Phrases</span>}
+                            style={tileStyle}
                             >
                           <div className={classNames('kids-image-grid-container', 'phrases-main')} />
                       </GridTile>
@@ -85,7 +93,8 @@ export default class Kids extends Component {
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn/songs-stories')}
                             key='songs-stories'
-                            // title='Songs and Stories'
+                            title={<span style={tileTitleStyle}>Songs and Stories</span>}
+                            style={tileStyle}
                             >
                           <div className={classNames('kids-image-grid-container', 'songs-stories-main')} />
                       </GridTile>
@@ -93,7 +102,8 @@ export default class Kids extends Component {
                       <GridTile
                             onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')}
                             key='games'
-                            // title='Games'
+                            title={<span style={tileTitleStyle}>Games</span>}
+                            style={tileStyle}
                             >
                           <div className={classNames('kids-image-grid-container', 'games-main')} />
                       </GridTile>

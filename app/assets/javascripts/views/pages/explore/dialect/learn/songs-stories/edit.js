@@ -14,13 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import Immutable, {List, Map} from 'immutable';
 import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 import t from 'tcomb-form';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import Tabs from 'material-ui/lib/tabs/tabs';
@@ -44,195 +47,212 @@ import Dialog from 'material-ui/lib/dialog';
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
 
+import withForm from 'views/hoc/view/with-form';
+import IntlService from 'views/services/intl';
+
+const intl = IntlService.instance;
 const DEFAULT_LANGUAGE = 'english';
 
 const DEFAULT_SORT_ORDER = '&sortOrder=asc,asc&sortBy=fvbookentry:sort_map,dc:created';
 
+const EditViewWithForm = withForm(PromiseWrapper, true);
 @provide
 export default class PageDialectBookEdit extends Component {
-  
-  static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchBook: PropTypes.func.isRequired,
-    computeBook: PropTypes.object.isRequired,
-    fetchBookEntries: PropTypes.func.isRequired,
-    computeBookEntries: PropTypes.object.isRequired,
-    updateBook: PropTypes.func.isRequired,
-    updateBookEntry: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    book: PropTypes.object
-  };
-  
-  constructor(props, context){
-    super(props, context);
 
-    this.state = {
-      book: null,
-      editPageDialogOpen: false,
-      editPageItem: null,
-      bookPath: props.routeParams.dialect_path + '/Stories & Songs/' + props.routeParams.bookName,
-      formValue: null,
-      sortedItems: List()
+    static propTypes = {
+        splitWindowPath: PropTypes.array.isRequired,
+        pushWindowPath: PropTypes.func.isRequired,
+        changeTitleParams: PropTypes.func.isRequired,
+        overrideBreadcrumbs: PropTypes.func.isRequired,
+        fetchBook: PropTypes.func.isRequired,
+        computeBook: PropTypes.object.isRequired,
+        fetchBookEntries: PropTypes.func.isRequired,
+        computeBookEntries: PropTypes.object.isRequired,
+        updateBook: PropTypes.func.isRequired,
+        updateBookEntry: PropTypes.func.isRequired,
+        fetchDialect2: PropTypes.func.isRequired,
+        computeDialect2: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        book: PropTypes.object
     };
 
-    // Bind methods to 'this'
-    ['_onRequestSaveForm', '_editPage', '_pageSaved', '_storeSortOrder'].forEach( (method => this[method] = this[method].bind(this)) );    
-  }
+    constructor(props, context) {
+        super(props, context);
 
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
-    newProps.fetchBook(this.state.bookPath);
-    newProps.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER);
-  }
+        this.state = {
+            editPageDialogOpen: false,
+            editPageItem: null,
+            formValue: null,
+            sortedItems: List()
+        };
 
-  // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props);
-  }  
+        // Bind methods to 'this'
+        ['_editPage', '_pageSaved', '_storeSortOrder', '_handleSave', '_handleCancel'].forEach((method => this[method] = this[method].bind(this)));
+    }
 
-  _onRequestSaveForm(e) {
+    fetchData(newProps) {
+        newProps.fetchDialect2(newProps.routeParams.dialect_path);
+        newProps.fetchBook(this._getBookPath());
+        newProps.fetchBookEntries(this._getBookPath(), DEFAULT_SORT_ORDER);
+    }
 
-    // Prevent default behaviour
-    e.preventDefault();
+    // Redirect on success
+    componentWillReceiveProps(nextProps) {
 
-    let formValue = this.refs["form_book"].getValue();
+        let currentBook, nextBook;
 
-    // Passed validation
-    if (formValue) {
-      let book = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
+        if (this._getBookPath() != null) {
+            currentBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath());
+            nextBook = ProviderHelpers.getEntry(nextProps.computeBook, this._getBookPath());
+        }
 
-      // TODO: Find better way to construct object then accessing internal function
-      // Create new document rather than modifying the original document
-      let newDocument = new Document(book.response, { 
-        'repository': book.response._repository,
-        'nuxeo': book.response._nuxeo
-      });
+        // 'Redirect' on success
+        if (selectn('wasUpdated', currentBook) != selectn('wasUpdated', nextBook) && selectn('wasUpdated', nextBook) === true) {
+            NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextBook), 'songs-stories'), nextProps.replaceWindowPath, true);
+        }
+    }
 
-      // Set new value property on document
-      newDocument.set(formValue);
+    // Fetch data on initial render
+    componentDidMount() {
+        this.fetchData(this.props);
+    }
 
-      // Save new order for pages
-      if (!this.state.sortedItems.isEmpty()) {
-        this.state.sortedItems.forEach(function (entry, key) {
+    _handleSave(book, formValue) {
 
-          let newPage = new Document(entry, { 
+        let newDocument = new Document(book.response, {
             'repository': book.response._repository,
             'nuxeo': book.response._nuxeo
-          });
+        });
 
-          // Set new value property on document
-          newPage.set({'fvbookentry:sort_map': key});
+        // Set new value property on document
+        newDocument.set(formValue);
 
-          // Save document
-          this.props.updateBookEntry(newPage);
+        // Save document
+        this.props.updateBook(newDocument, null, null);
 
-        }.bind(this));
-      }
-
-      // Save document
-      this.props.updateBook(newDocument);
-      this.props.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER);
-
-      this.setState({ formValue: formValue });
-    } else {
-      window.scrollTo(0, 0);
+        this.setState({formValue: formValue});
     }
-  }  
 
-  _storeSortOrder(items) {
-    this.setState({
-      sortedItems: items
-    });
-  }
+    _handleCancel() {
+        NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.pushWindowPath);
+    }
 
-  _editPage(item) {
-    this.setState({editPageDialogOpen: true, editPageItem: item});
-  }
+    _storeSortOrder(items) {
+        this.setState({
+            sortedItems: items
+        });
+    }
 
-  _pageSaved() {
-    // Ensure update is complete before re-fetch.
-    setTimeout(function(){ this.props.fetchBookEntries(this.state.bookPath, DEFAULT_SORT_ORDER); }.bind(this), 500);
-    this.setState({editPageDialogOpen: false, editPageItem: null});
-  }
+    _editPage(item) {
+        this.setState({editPageDialogOpen: true, editPageItem: item});
+    }
 
-  render() {
+    _getBookPath(props = null) {
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.bookPath,
-      'entity': this.props.computeBook
-    }, {
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }, {
-      'id': this.state.bookPath,
-      'entity': this.props.computeBookEntries
-    }])
+        if (props == null) {
+            props = this.props;
+        }
 
-    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath);
-    const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this.state.bookPath);
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+        if (StringHelpers.isUUID(props.routeParams.bookName)){
+            return props.routeParams.bookName;
+        } else {
+            return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName);
+        }
+    }
 
-    return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+    _pageSaved() {
+        // Ensure update is complete before re-fetch.
+        setTimeout(function () {
+            this.props.fetchBookEntries(this._getBookPath(), DEFAULT_SORT_ORDER);
+        }.bind(this), 500);
+        this.setState({editPageDialogOpen: false, editPageItem: null});
+    }
 
-	    <div className="row" style={{marginTop: '15px'}}>
-	
-	      <div className={classNames('col-xs-8', 'col-md-10')}>
-          <Tabs>
-            <Tab label="Book">
-              <h1>Edit {selectn("response.properties.dc:title", computeBook)} book</h1>
-              <form onSubmit={this._onRequestSaveForm}>
-                <t.form.Form
-                  ref="form_book"
-                  type={t.struct(selectn("FVBook", fields))}
-                  context={selectn("response", computeDialect2)}
-                  value={this.state.formValue || selectn("response.properties", computeBook)}
-                  options={selectn("FVBook", options)} />
-                  <div className="form-group">
-                    <button type="submit" className="btn btn-primary">Save</button> 
-                  </div>
-              </form>
-            </Tab>
-            <Tab label="Pages">
-              <h1>Edit {selectn("response.properties.dc:title", computeBook)} pages</h1>
-              <BookEntryList
-                reorder={true}
-                sortOrderChanged={this._storeSortOrder}
-                defaultLanguage={DEFAULT_LANGUAGE}
-                editAction={this._editPage}
-                innerStyle={{minHeight: 'inherit'}}
-                metadata={selectn('response', computeBookEntries) || {}}
-                items={selectn('response.entries', computeBookEntries) || []} />
-            </Tab>
-          </Tabs>
-	      </div>
-	
-	      <div className={classNames('col-xs-4', 'col-md-2')}>
-	
-	        <Paper style={{padding: '15px', margin: '20px 0'}} zDepth={2}>
-	
-	          <div className="subheader">Metadata</div>
-	
-	        </Paper>
-	
-	      </div>
+    componentDidUpdate(prevProps, prevState) {
+        let book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()));
+        let title = selectn('properties.dc:title', book);
+        let uid = selectn('uid', book);
 
-        <Dialog
-            autoScrollBodyContent={true}
-            style={{zIndex: 0}}
-            overlayStyle={{background: 'none'}}
-            open={this.state.editPageDialogOpen}
-            onRequestClose={() => this.setState({editPageDialogOpen: false})}>
-            <BookEntryEdit
-              entry={this.state.editPageItem}
-              handlePageSaved={this._pageSaved}
-              dialectEntry={computeDialect2}
-              {...this.props} />
-        </Dialog>
+        if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
+            this.props.changeTitleParams({'bookName': title});
+            this.props.overrideBreadcrumbs({find: uid, replace: 'pageTitleParams.bookName'});
+        }
+    }
 
-	  </div>
-	</PromiseWrapper>;
-  }
+    render() {
+
+        let context;
+
+        const computeEntities = Immutable.fromJS([{
+            'id': this._getBookPath(),
+            'entity': this.props.computeBook
+        }, {
+            'id': this.props.routeParams.dialect_path,
+            'entity': this.props.computeDialect2
+        }, {
+            'id': this._getBookPath(),
+            'entity': this.props.computeBookEntries
+        }])
+
+        const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath());
+        const computeBookEntries = ProviderHelpers.getEntry(this.props.computeBookEntries, this._getBookPath());
+        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
+
+        // Additional context (in order to store origin), and initial filter value
+        if (selectn("response", computeDialect2) && selectn("response", computeBook)) {
+            let providedFilter = selectn("response.properties.fv-phrase:definitions[0].translation", computeBook) || selectn("response.properties.fv:literal_translation[0].translation", computeBook);
+            context = Object.assign(selectn("response", computeDialect2), {
+                otherContext: {
+                    'parentId': selectn("response.uid", computeBook),
+                    'providedFilter': providedFilter
+                }
+            });
+        }
+
+        return <div>
+
+                <Tabs>
+                    <Tab label={intl.trans('book', 'Book', 'first')}>
+                        <h1>{intl.trans('views.pages.explore.dialect.learn.songs_stories.edit_x_book',
+                            'Edit ' + selectn("response.properties.dc:title", computeBook) + ' Book', 'words', [selectn("response.properties.dc:title", computeBook)])}</h1>
+                    <EditViewWithForm
+                        computeEntities={computeEntities}
+                        initialValues={context}
+                        itemId={this._getBookPath()}
+                        fields={fields}
+                        options={options}
+                        saveMethod={this._handleSave}
+                        cancelMethod={this._handleCancel}
+                        currentPath={this.props.splitWindowPath}
+                        navigationMethod={this.props.pushWindowPath}
+                        type="FVBook"
+                        routeParams={this.props.routeParams}/>
+                    </Tab>
+                            <Tab label={intl.trans('pages', 'Pages', 'first')}>
+                                <h1>{intl.trans('', 'Edit ' + selectn("response.properties.dc:title", computeBook) + ' pages', 'first', [selectn("response.properties.dc:title", computeBook)])}</h1>
+                                <BookEntryList
+                                    reorder={true}
+                                    sortOrderChanged={this._storeSortOrder}
+                                    defaultLanguage={DEFAULT_LANGUAGE}
+                                    editAction={this._editPage}
+                                    innerStyle={{minHeight: 'inherit'}}
+                                    metadata={selectn('response', computeBookEntries) || {}}
+                                    items={selectn('response.entries', computeBookEntries) || []}/>
+                            </Tab>
+                        </Tabs>
+
+                <Dialog
+                    autoScrollBodyContent={true}
+                    style={{zIndex: 0}}
+                    overlayStyle={{background: 'none'}}
+                    open={this.state.editPageDialogOpen}
+                    onRequestClose={() => this.setState({editPageDialogOpen: false})}>
+                    <BookEntryEdit
+                        entry={this.state.editPageItem}
+                        handlePageSaved={this._pageSaved}
+                        dialectEntry={computeDialect2}
+                        {...this.props} />
+                </Dialog>
+        </div>;
+    }
 }
