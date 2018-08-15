@@ -61,24 +61,25 @@ export default {
     // Generate a UID link from a Nuxeo document path
     generateUIDPath: function (theme, item, pluralPathId) {
         let path = '/' + theme + selectn('path', item);
+        let type = selectn('type', item);
 
-        switch (selectn('type', item)) {
-            case "FVWord":
-            case "FVPhrase":
+        switch (pluralPathId) {
+            case "words":
+            case "phrases":
                 path = path.replace("/Dictionary/", "/learn/" + pluralPathId + "/");
             break;
 
-            case "FVBook":
+            case "songs-stories":
+            case "songs":
+            case "stories":
                 path = path.replace("/Stories & Songs/", "/learn/" + pluralPathId + "/");
             break;
 
-            case "FVGallery":
+            case "gallery":
                 path = path.replace("/Portal/", "/" + pluralPathId + "/");
             break;
 
-            case "FVAudio":
-            case "FVVideo":
-            case "FVPicture":
+            case "media":
                 // Resources can be in folders, so ensure everything after 'Resources' is ignored
                 path = path.substring(0, path.lastIndexOf("/Resources/") + 11);
                 path = path.replace("/Resources/", "/" + pluralPathId + "/");
