@@ -91,14 +91,12 @@ $ yarn
 ```
 Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed.
 
-10. Rename `/app/assets/javascripts/configuration/sample.local.json` to `local.json`.
-
-11. Run GULP build the project and start the Node server by running:
+10. Run GULP build the project and start the Node server by running:
 ```bash
 $ gulp
 ```
 
-12. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
+11. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
 
 
 ## Building for Production ##
