@@ -149,7 +149,7 @@ export default class DialectMedia extends Component {
                     <FilteredPaginatedMediaList
                         cols={5}
                         cellHeight={150}
-                        formValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
+                        initialValues={{'dc:contributors': selectn("response.properties.username", this.props.computeLogin)}}
                         filterOptionsKey="Resources"
                         action={this._onNavigateRequest}
                         fetcher={this.fetchData}

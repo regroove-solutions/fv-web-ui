@@ -3,7 +3,7 @@ var karma = require('karma');
 
 var karmaTask = function(done) {
   karma.server.start({
-    configFile: process.cwd() + '/karma.conf.js',
+    configFile: process.cwd() + '/gulpfile.js/config/karma.js',
     singleRun: true
   }, function(exitStatus) {
     // Karma's return status is not compatible with gulp's streams
