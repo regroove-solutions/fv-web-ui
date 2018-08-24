@@ -123,6 +123,11 @@ Install dependencies using `yarn add package` or `yarn add package --dev`
 
 We use BroswerStack in order to ensure our UI functions in the latest version of all major browsers, and at least 1 version back depending on demand from our users. We will be posting a more detailed and up-to-date compatibility status in the future.
 
+To run functional tests use:
+```
+$ gulp karma
+```
+
 <a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
 ## Licensing ##
