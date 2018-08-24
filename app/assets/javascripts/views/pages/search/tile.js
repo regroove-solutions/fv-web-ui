@@ -95,7 +95,7 @@ export default class SearchResultTile extends Component {
                 desc = DOMPurify.sanitize(selectn('properties.fv-portal:about', tile), {ALLOWED_TAGS: []});
                 desc = (desc.length > 300) ? '...' + desc.substr(desc.indexOf(this.props.searchTerm) - 50, 250) + '...' : desc;
 
-                targetPath = selectn('contextParameters.ancestry.dialect.path', tile);
+                targetPath = '/explore' + selectn('contextParameters.ancestry.dialect.path', tile);
                 break;
 
             case 'FVBook':

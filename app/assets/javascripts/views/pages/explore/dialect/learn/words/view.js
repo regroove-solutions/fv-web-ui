@@ -225,10 +225,9 @@ export default class View extends Component {
             if (phraseDefinitions.length == 0) {
                 phrases.push(<p key={key}>{phraseLink}</p>);
             } else {
-                phrases.push(<SubViewTranslation key={key} group={phraseDefinitions} groupByElement="language"
-                                                 groupValue="translation">
-                    <p>{phraseLink}</p>
-                </SubViewTranslation>);
+                phrases.push(<p key={key}>{phraseLink} <ul>{phraseDefinitions.map(function (groupValue, key) {
+                    return (<li>{groupValue['translation']} ({groupValue['language']})</li>);
+                })}</ul></p>);
             }
         })
 
