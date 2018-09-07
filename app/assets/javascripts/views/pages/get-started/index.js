@@ -39,10 +39,7 @@ export default class GetStarted extends React.Component {
             <div className="col-md-4 col-xs-12">
                 <h2>Contact Us</h2>
                 <p>Aboriginal communities interested in archiving and teaching their languages using the FirstVoices
-                    multimedia language tools are invited to contact the FirstVoices team:</p>
-                <p>Alex Wadsworth, I.T., FirstVoices and Mapping Manager<br/>
-                    Telephone: (250) 652-5952 ext. 205<br/>
-                    Email: (alex@firstvoices.com)</p>
+                    multimedia language tools are invited to contact FPCC at info@fpcc.ca</p>
             </div>
         </div>;
     }

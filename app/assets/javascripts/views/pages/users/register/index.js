@@ -194,7 +194,7 @@ export default class Register extends Component {
             <h1>{selectn('response.title', computeDialect2)} {intl.trans('register', 'Register', 'first')}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
-              <p style={{padding: '15px'}}>We are working on fixing some problems with registration of new users.<br/>To register in the meantime, please email alex@fpcc.ca.</p>
+              <p style={{padding: '15px'}}>We are working on fixing some problems with registration of new users.<br/>To register in the meantime, please email support@fpcc.ca.<br/><br/><strong>Please note</strong>: You do not need to register in order to access and learn the languages. Simply click "<a href="/explore/FV/sections/Data">Choose a Language</a>", pick your language, and then click "Learn Our Language".</p>
             </div>
 
             <div className="row" style={{marginTop: '15px', display: 'none'}}>
