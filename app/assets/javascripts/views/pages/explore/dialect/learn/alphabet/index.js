@@ -103,7 +103,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_onCharAudioTouchTap'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
@@ -116,7 +116,12 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     }
 
     _onCharAudioTouchTap(char) {
-        document.getElementById("charAudio" + char.uid).play();
+        let charElement = document.getElementById("charAudio" + char.uid);
+
+        if (charElement) {
+            document.getElementById("charAudio" + char.uid).play();
+        }
+
         this.setState({
             current_char: char
         });
@@ -210,9 +215,14 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                         const characters = selectn('response.entries', computeCharacters);
 
                         if (characters && characters.length > 0) {
+
+                            let _this = this;
+
                             return <div style={{marginBottom: '20px'}}>
-                                {selectn('response.entries', computeCharacters).map((char, i) =>
-                                        <Paper key={char.uid} style={{
+                                {selectn('response.entries', computeCharacters).map(function (char, i) {
+                                        let audioFile = selectn('contextParameters.character.related_audio[0].path', char);
+
+                                        return <Paper key={char.uid} style={{
                                             textAlign: 'center',
                                             margin: '5px',
                                             padding: '5px 10px',
@@ -220,19 +230,14 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                                             display: 'inline-block'
                                         }}>
                                             <FlatButton
-                                             icon={<FontIcon
-                                                className="material-icons">play_arrow</FontIcon>}
-                                                onTouchTap={this._onCharAudioTouchTap.bind(this, char)}
+                                             icon={(audioFile) ? <FontIcon
+                                                className="material-icons">play_arrow</FontIcon> : ''}
+                                                onTouchTap={_this._onCharAudioTouchTap.bind(this, char)}
                                                 //onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
                                                 label={char.title} style={{minWidth: 'inherit', textTransform: 'initial'}}/>
-                                            {(char.contextParameters.character.related_audio[0]) ?
-                                                <span>
-                                  <audio id={'charAudio' + char.uid}
-                                         src={ConfGlobal.baseURL + char.contextParameters.character.related_audio[0].path}/>
-                                </span>
-                                                : ''}
-                                        </Paper>
-                                )}
+                                            {(audioFile) ? <span><audio id={'charAudio' + char.uid} src={ConfGlobal.baseURL + audioFile}/></span> : ''}
+                                        </Paper>;
+                                })}
                             </div>;
                         }
 
