@@ -32,6 +32,12 @@ export default {
             // Replace colon
             str = str.replace(/:/g, "\\:");
 
+            // Escape double quotes
+            str = str.replace(/"/g, '\\"');
+
+            // Remove parentheses
+            str = str.replace(/[()]/g, '');
+
             // Escape colon
             str = decodeURIComponent(str);
         }
