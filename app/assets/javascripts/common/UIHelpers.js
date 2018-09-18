@@ -25,17 +25,14 @@ export default {
             rows.push(render(entry, i));
         });
 
-        if (dataItems.length > 2) {
-            rows.push(<li key='more'>...</li>);
-        }
-
-        return <ul style={{
+        return <ol style={{
             'fontSize': '0.9em',
             'margin': 0,
-            'padding': '0 15px'
+            'padding': (rows.length == 1) ? '0' : '0 15px',
+            'listStyle': (rows.length == 1) ? 'none' : 'decimal'
         }}>
             {rows}
-        </ul>;
+        </ol>;
     },
     getPreferenceVal(key, preferences) {
         return selectn('preferences.values.' + key + '.' + selectn(key, preferences), ConfGlobal);

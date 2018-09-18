@@ -5,7 +5,7 @@ import classNames from 'classnames';
 
 import Pagination from 'views/components/Navigation/Pagination';
 
-import {IconButton, MenuItem, SelectField} from "material-ui";
+import {IconButton, MenuItem, SelectField, TextField, FlatButton} from "material-ui";
 
 import UIHelpers from 'common/UIHelpers';
 import IntlService from 'views/services/intl';
@@ -38,7 +38,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
                 currentPageIndex: 1
             };
 
-            ['_onPageChange', '_onPageSizeChange'].forEach((method => this[method] = this[method].bind(this)));
+            ['_onPageChange', '_onPageSizeChange', '_onGoToPage'].forEach((method => this[method] = this[method].bind(this)));
         }
 
         _onPageSizeChange(event, index, value) {
@@ -53,16 +53,35 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
             this.setState({currentPageSize: currentPageSize});
         }
 
-        _onPageChange(pagination) {
+        shouldComponentUpdate() {
+            return false;
+        }
 
-            let currentPageIndex = pagination.selected + 1;
-
+        _changePage(newPageIndex) {
             this.props.fetcher(Object.assign({}, this.props.fetcherParams, {
-                currentPageIndex: currentPageIndex,
+                currentPageIndex: newPageIndex,
                 pageSize: this.state.currentPageSize
             }));
 
-            this.setState({currentPageIndex: currentPageIndex});
+            this.setState({currentPageIndex: newPageIndex});
+
+            // For longer pages, user should be taken to the top when changing pages
+            document.body.scrollTop = document.documentElement.scrollTop = 0;
+        }
+
+        _onPageChange(pagination) {
+            this._changePage(pagination.selected + 1);
+        }
+
+        _onGoToPage(event) {
+            let newPageIndex = event.target.value;
+            let maxPageIndex = Math.ceil(selectn('resultsCount', this.props.metadata)/this.state.currentPageSize);
+
+            if (newPageIndex > maxPageIndex) {
+                newPageIndex = maxPageIndex;
+            }
+
+            this._changePage(newPageIndex);
         }
 
         render() {
@@ -70,19 +89,20 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
             const ips = this.state.initialPageSize;
 
             const pageSizeControl = (!this.props.disablePageSize) ? <div>
-                <label style={{verticalAlign: '4px', marginRight: '10px'}}>Page:</label>
-                <span style={{verticalAlign: '4px'}}>{this.props.fetcherParams.currentPageIndex} / </span>
-                <SelectField style={{width: '45px', marginRight: '5px'}} value={this.state.currentPageSize}
+                <label style={{verticalAlign: '4px', marginRight: '8px'}}>Page:</label>
+                <span style={{verticalAlign: '4px'}}>{this.props.fetcherParams.currentPageIndex} / {Math.ceil(selectn('resultsCount', this.props.metadata)/this.state.currentPageSize)}</span>
+                <label style={{verticalAlign: '4px', marginRight: '8px', marginLeft: '8px', paddingLeft: '8px', borderLeft: '1px solid #e0e0e0'}}>Per Page:</label>
+                 <SelectField style={{width: '45px', marginRight: '8px'}} value={this.state.currentPageSize}
                              onChange={this._onPageSizeChange}>
-                    <MenuItem value={Math.ceil(ips / 2)} primaryText={Math.ceil(ips / 2)}/>
-                    <MenuItem value={Math.ceil(ips)} primaryText={Math.ceil(ips)}/>
-                    <MenuItem value={Math.ceil(ips * 2)} primaryText={Math.ceil(ips * 2)}/>
-                    <MenuItem value={Math.ceil(ips * 3)} primaryText={Math.ceil(ips * 3)}/>
-                    <MenuItem value={Math.ceil(ips * 4)} primaryText={Math.ceil(ips * 4)}/>
-                    <MenuItem value={Math.ceil(ips * 5)} primaryText={Math.ceil(ips * 5)}/>
+                    <MenuItem value={10} primaryText={10}/>
+                    <MenuItem value={20} primaryText={20}/>
+                    <MenuItem value={50} primaryText={50}/>
+                    <MenuItem value={100} primaryText={100}/>
+                    <MenuItem value={250} primaryText={250}/>
+                    <MenuItem value={500} primaryText={500}/>
                 </SelectField>
-                <span
-                    style={{verticalAlign: '4px'}}>{intl.trans('results', 'Results', 'first')}: {selectn('resultsCount', this.props.metadata)}</span>
+                <label style={{verticalAlign: '4px', marginRight: '8px', paddingLeft: '8px', borderLeft: '1px solid #e0e0e0'}}>{intl.trans('results', 'Results', 'first')}:</label>
+                <span style={{verticalAlign: '4px'}}>{selectn('resultsCount', this.props.metadata)}</span>
             </div> : '';
 
             return (
@@ -96,8 +116,8 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
                         </div>
                     </div>
 
-                    <div className="row">
-                        <div className={classNames('col-md-9', 'col-xs-12')} style={{paddingBottom: '15px'}}>
+                    <div className="row" style={{marginTop: '15px'}}>
+                        <div className={classNames('col-md-7', 'col-xs-12')} style={{paddingBottom: '15px'}}>
                             <Pagination
                                 forcePage={this.props.fetcherParams.currentPageIndex - 1}
                                 pageCount={selectn('pageCount', this.props.metadata)}
@@ -106,9 +126,14 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
                                 onPageChange={this._onPageChange}/>
                         </div>
 
-                        <div className={classNames('col-md-3', 'col-xs-12')} style={{textAlign: 'right'}}>
+                        <div className={classNames('col-md-5', 'col-xs-12')} style={{textAlign: 'right'}}>
                             {pageSizeControl}
                             {this.props.appendControls}
+                            
+                        </div>
+
+                        <div className={classNames('col-xs-12')} style={{textAlign: 'left', backgroundColor: '#f1f1f1', borderTop: '1px #d8d8d8 solid'}}>
+                            Skip to Page: <TextField style={{paddingLeft: '5px'}} underlineStyle={{width:'80px'}} hintText='Enter #' onEnterKeyDown={this._onGoToPage} />
                         </div>
 
 

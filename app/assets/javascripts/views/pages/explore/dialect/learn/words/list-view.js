@@ -50,7 +50,9 @@ export default class ListView extends DataListView {
         dialect: null,
         filter: new Map(),
         gridListView: false,
-        controlViaURL: false
+        controlViaURL: false,
+        renderSimpleTable: false,
+        disablePageSize: false
     }
 
     static propTypes = {
@@ -70,6 +72,8 @@ export default class ListView extends DataListView {
         data: PropTypes.string,
         gridListView: PropTypes.bool,
         controlViaURL: PropTypes.bool,
+        renderSimpleTable: PropTypes.bool,
+        disablePageSize: PropTypes.bool,
         onPaginationReset: PropTypes.func,
         onPagePropertiesChange: PropTypes.func,
         action: PropTypes.func,
@@ -86,6 +90,20 @@ export default class ListView extends DataListView {
 
         let currentTheme = this.props.routeParams.theme;
 
+
+
+        let language;
+
+        switch (intl.locale) {
+            case 'en':
+                language = 'english'
+            break;
+
+            case 'fr':
+                language = 'french'
+            break;
+        }
+
         this.state = {
             columns: [
                 {
@@ -94,14 +112,28 @@ export default class ListView extends DataListView {
                         //return v;
                     }, sortName: 'fv:custom_order'
                 },
-                /*{ name: 'fv:definitions', title: 'Definitions', render: function(v, data, cellProps) {
-                    return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-                      if (entry.language == DEFAULT_LANGUAGE && i < 2) {
-                        return <li key={i}>{entry.translation}</li>;
-                      }
-                    });
-                  }.bind(this), sortName: 'fv:definitions/0/translation'
-                },*/
+                {
+                    name: 'fv:definitions',
+                    title: intl.trans('definition', 'Definition', 'first'),
+                    render: function (v, data, cellProps) {
+                        let definitions = selectn('properties.' + cellProps.name, data).filter(definition => definition.language == language);
+                        return UIHelpers.renderComplexArrayRow(definitions, function (entry, i) {
+                                return <li key={i}>{entry.translation}</li>;
+                        }.bind(this));
+                    }.bind(this),
+                    sortName: 'fv:definitions/0/translation'
+                },
+                {
+                    name: 'related_audio',
+                    title: intl.trans('audio', 'Audio', 'first'),
+                    render: function (v, data, cellProps) {
+                        let firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
+                        if (firstAudio)
+                            return <Preview minimal={true} tagProps={{preload: 'none'}} tagStyles={{width: '250px', maxWidth: '100%'}}
+                                            key={selectn('uid', firstAudio)} expandedValue={firstAudio}
+                                            type="FVAudio"/>;
+                    }.bind(this)
+                },
                 {
                     name: 'related_pictures',
                     width: 72,
@@ -115,33 +147,10 @@ export default class ListView extends DataListView {
                     }.bind(this)
                 },
                 {
-                    name: 'related_audio',
-                    title: intl.trans('audio', 'Audio', 'first'),
+                    name: 'fv-word:part_of_speech',
+                    title: intl.trans('part_of_speech', 'Part of Speech', 'first'),
                     render: function (v, data, cellProps) {
-                        let firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data);
-                        if (firstAudio)
-                            return <Preview minimal={true} tagStyles={{width: '300px', maxWidth: '100%'}}
-                                            key={selectn('uid', firstAudio)} expandedValue={firstAudio}
-                                            type="FVAudio"/>;
-                    }.bind(this)
-                },
-                {
-                    name: 'fv:definitions',
-                    title: intl.trans('definition', 'Definition', 'first'),
-                    render: function (v, data, cellProps) {
-                        return UIHelpers.renderComplexArrayRow(selectn('properties.' + cellProps.name, data), function (entry, i) {
-                            if (entry.language == this.props.DEFAULT_LANGUAGE && i < 2) {
-                                return <li key={i}>{entry.translation}</li>;
-                            }
-                        }.bind(this));
-                    }.bind(this),
-                    sortName: 'fv:definitions/0/translation'
-                },
-                {
-                    name: 'fv-word:pronunciation',
-                    title: intl.trans('pronunciation', 'Pronunciation', 'first'),
-                    render: function (v, data, cellProps) {
-                        return selectn('properties.fv-word:pronunciation', data);
+                        return selectn('contextParameters.word.part_of_speech', data);
                     }
                 },
                 {
@@ -152,13 +161,6 @@ export default class ListView extends DataListView {
                             return <li key={i}>{selectn('dc:title', entry)}</li>;
                         });
                     }.bind(this)
-                },
-                {
-                    name: 'fv-word:part_of_speech',
-                    title: intl.trans('part_of_speech', 'Part of Speech'),
-                    render: function (v, data, cellProps) {
-                        return selectn('contextParameters.word.part_of_speech', data);
-                    }
                 }
             ],
             sortInfo: {
@@ -179,7 +181,7 @@ export default class ListView extends DataListView {
         }
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns', '_fetchData2'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     fetchData(newProps) {
@@ -219,6 +221,25 @@ export default class ListView extends DataListView {
         return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path);
     }
 
+    _fetchData2(fetcherParams, props = this.props) {
+
+        this.setState({
+            fetcherParams: fetcherParams
+        });
+
+        this._handleRefetch();
+
+        /*props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+            ProviderHelpers.filtersToNXQL(fetcherParams.filters)  +
+            '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
+            '&pageSize=' + fetcherParams.pageSize +
+            '&sortOrder=' + fetcherParams.sortOrder +
+            '&sortBy=' + fetcherParams.sortBy
+        );*/
+
+        //this._fetchListViewData(props, fetcherParams.currentPageIndex, fetcherParams.pageSize, fetcherParams.sortOrder, fetcherParams.sortBy);
+    }
+
     render() {
 
         const computeEntities = Immutable.fromJS([{
@@ -237,25 +258,30 @@ export default class ListView extends DataListView {
         const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
         const computeDialect2 = this.props.dialect || this.getDialect();
 
+
+        let listViewProps = 
+        {objectDescriptions:"words",
+        type:"FVWord",
+        data:computeWords,
+        gridListView: this.props.gridListView,
+        renderSimpleTable: this.props.renderSimpleTable,
+        refetcher:this._handleRefetch,
+        refetcher2:this._handleRefetch,
+        onSortChange:this._handleSortChange,
+        onSelectionChange:this._onEntryNavigateRequest,
+        page:this.state.pageInfo.page,
+        pageSize:this.state.pageInfo.pageSize,
+        disablePageSize: this.props.disablePageSize,
+        onColumnOrderChange:this._handleColumnOrderChange,
+        columns:this.state.columns,
+        sortInfo:this.state.sortInfo.uiSortOrder,
+        className:"browseDataGrid",
+        dialect:selectn('response', computeDialect2)}; 
+
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             {(() => {
                 if (selectn('response.entries', computeWords)) {
-
-                    return <DocumentListView
-                        objectDescriptions="words"
-                        type="FVWord"
-                        data={computeWords}
-                        gridListView={this.props.gridListView}
-                        refetcher={this._handleRefetch}
-                        onSortChange={this._handleSortChange}
-                        onSelectionChange={this._onEntryNavigateRequest}
-                        page={this.state.pageInfo.page}
-                        pageSize={this.state.pageInfo.pageSize}
-                        onColumnOrderChange={this._handleColumnOrderChange}
-                        columns={this.state.columns}
-                        sortInfo={this.state.sortInfo.uiSortOrder}
-                        className="browseDataGrid"
-                        dialect={selectn('response', computeDialect2)}/>;
+                    return <DocumentListView {...listViewProps}/>;
                 }
             })()}
         </PromiseWrapper>;

@@ -93,11 +93,14 @@ export default class DataListView extends Component {
             this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols);    
         } else {
 
+            let urlPage = selectn('page', this.props.routeParams);
             let urlPageSize = selectn('pageSize', this.props.routeParams);
 
-            // If page and pageSize exist, replace; otherwise - add them
-            if (selectn('page', this.props.routeParams) && urlPageSize){
-                NavigationHelpers.navigateForwardReplaceMultiple(this.props.splitWindowPath, [pageSize.toString(), page.toString()], this.props.pushWindowPath);
+            // If page and pageSize exist, and are different, replace them; otherwise - add them
+            if (urlPage && urlPageSize){
+                if (urlPage.toString() != page || urlPageSize.toString() != pageSize) {
+                    NavigationHelpers.navigateForwardReplaceMultiple(this.props.splitWindowPath, [pageSize.toString(), page.toString()], this.props.pushWindowPath);
+                }
             } else {
                 NavigationHelpers.navigateForward(this.props.splitWindowPath, [pageSize.toString(), page.toString()], this.props.pushWindowPath);
             }

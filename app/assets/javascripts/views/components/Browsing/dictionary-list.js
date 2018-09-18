@@ -1,0 +1,109 @@
+/*
+Copyright 2016 First People's Cultural Council
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+import React, {Component, PropTypes} from 'react';
+import Immutable, {List, Map} from 'immutable';
+import classNames from 'classnames';
+import selectn from 'selectn';
+
+import ConfGlobal from 'conf/local.json';
+
+import Preview from 'views/components/Editor/Preview';
+import IntlService from "views/services/intl";
+
+const intl = IntlService.instance;
+
+export default class DictionaryList extends Component {
+
+    static propTypes = {
+        items: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.instanceOf(List)
+        ]),
+        filteredItems: PropTypes.oneOfType([
+            PropTypes.array,
+            PropTypes.instanceOf(List)
+        ]),
+        fields: PropTypes.instanceOf(Map),
+        columns: PropTypes.array.isRequired,
+        type: PropTypes.string,
+        theme: PropTypes.string,
+        action: PropTypes.func,
+        cols: PropTypes.number,
+        cellHeight: PropTypes.number,
+        wrapperStyle: PropTypes.object,
+        style: PropTypes.object
+    };
+
+    static defaultProps = {
+        cols: 3,
+        cellHeight: 210,
+        wrapperStyle: null,
+        style: null
+    }
+
+    intl = IntlService.instance;
+
+    constructor(props, context) {
+        super(props, context);
+    }
+
+
+    _renderCell() {
+        return 'test'; /*{(selectn('properties.fv:definitions', item) || []).map(function (definition, i) {
+            if (selectn('language', definition) == language) {
+                return <span key={i}>{selectn('translation', definition)}<br/></span>
+            }
+        })}*/
+    }
+
+    render() {
+
+        let items = this.props.filteredItems || this.props.items;
+        let columns = this.props.columns;
+
+        if (selectn('length', items) == 0) {
+            return <div style={{margin: '20px 0'}}>{this.intl.translate({
+                key: 'no_results_found',
+                default: 'No Results Found',
+                case: 'first',
+                append: '.'
+            })}</div>;
+        }
+
+        return  <table className="data-table">
+                    <tbody>
+
+                        <tr>
+                            {(columns || []).map(function (column, i) {
+                                return <th key={i} align="left">{selectn('title', column)}</th>;
+                            }.bind(this))}                   
+                        </tr>
+
+                        {(items || []).map(function (item, i) {
+
+                            return <tr key={i} style={{borderBottom: "1px dotted #a8a8a8", margin: "10px", background: (i % 2 ? '#f2f7ff': '#ffffff')}}>
+                                {(columns || []).map(function (column, i) {
+                                    let cellValue = selectn(column.name, item);
+                                    let cellRender = (typeof column.render === "function") ? column.render(cellValue, item, column) : cellValue;
+                                    return <td key={i} align="left">{cellRender}</td>;
+                                }.bind(this))}
+                            </tr>
+                        })}
+
+                    </tbody>
+                </table>;
+    }
+}

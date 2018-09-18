@@ -19,6 +19,7 @@ import selectn from 'selectn';
 import DataGrid from 'react-datagrid';
 
 import GridView from 'views/pages/explore/dialect/learn/base/grid-view';
+import DictionaryList from 'views/components/Browsing/dictionary-list';
 
 import ClearFix from 'material-ui/lib/clearfix';
 import Paper from 'material-ui/lib/paper';
@@ -45,6 +46,9 @@ function debounce(a, b, c) {
         return clearTimeout(d), d = setTimeout(h, b), c && !d && (e = a.apply(f, g)), e
     }
 };
+
+const DefaultFetcherParams = {currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc'};
+const FilteredPaginatedDictionaryList = withPagination(DictionaryList, DefaultFetcherParams.pageSize);
 
 export default class DocumentListView extends Component {
 
@@ -120,20 +124,22 @@ export default class DocumentListView extends Component {
             zIndex: 0
         };
 
-        if (this.props.gridListView) {
-            let gridViewProps = {
-                style: {overflowY: 'auto', maxHeight: '50vh'},
-                cols: this.props.gridCols,
-                cellHeight: 160,
-                fetcher: this._gridListFetcher,
-                type: this.props.type,
-                pagination: this.props.pagination,
-                fetcherParams: {currentPageIndex: this.props.page, pageSize: (this.props.pageSize)},
-                metadata: selectn('response', this.props.data),
-                gridListTile: this.props.gridListTile,
-                items: selectn('response.entries', this.props.data)
-            };
+        let gridViewProps = {
+            style: {overflowY: 'auto', maxHeight: '50vh'},
+            cols: this.props.gridCols,
+            cellHeight: 160,
+            fetcher: this._gridListFetcher,
+            type: this.props.type,
+            pagination: this.props.pagination,
+            fetcherParams: {currentPageIndex: this.props.page, pageSize: (this.props.pageSize)},
+            metadata: selectn('response', this.props.data),
+            gridListTile: this.props.gridListTile,
+            disablePageSize: this.props.disablePageSize,
+            dialect: this.props.dialect,
+            items: selectn('response.entries', this.props.data)
+        };
 
+        if (this.props.gridListView) {
             gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps);
 
             if (this.props.pagination) {
@@ -141,6 +147,10 @@ export default class DocumentListView extends Component {
             } else {
                 return <GridView {...gridViewProps} />;
             }
+        }
+
+        if (this.props.renderSimpleTable) {
+            return <FilteredPaginatedDictionaryList {...gridViewProps} columns={this.props.columns} />;
         }
 
         return <Paper><ClearFix>

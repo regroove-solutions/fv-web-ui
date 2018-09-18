@@ -20,7 +20,8 @@ export default class FacetFilterList extends Component {
         facets: PropTypes.array.isRequired,
         onFacetSelected: PropTypes.func.isRequired,
         facetField: PropTypes.string.isRequired,
-        appliedFilterIds: PropTypes.instanceOf(Set)
+        appliedFilterIds: PropTypes.instanceOf(Set),
+        styles: PropTypes.object
     };
 
     intl = IntlService.instance;
@@ -70,7 +71,7 @@ export default class FacetFilterList extends Component {
 
         const listItemStyle = {fontSize: '13px', fontWeight: 'normal'};
 
-        return <FiltersWithToggle label={this.intl.searchAndReplace(this.props.title)} mobileOnly={true}>
+        return <FiltersWithToggle label={this.intl.searchAndReplace(this.props.title)} mobileOnly={true} style={this.props.styles}>
             <Paper style={{maxHeight: '70vh', overflow: 'auto'}}>
                 <ListUI subheader={this.intl.searchAndReplace(this.props.title)}>
 

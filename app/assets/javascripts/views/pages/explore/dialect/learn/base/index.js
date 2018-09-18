@@ -39,11 +39,16 @@ export default class PageDialectLearnBase extends Component {
         super(props, context);
     }
 
-    _onNavigateRequest(path) {
-        if (this.props.hasPagination){
-            NavigationHelpers.navigateForward(this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length-2), [path], this.props.pushWindowPath);
-        } else {
-            NavigationHelpers.navigateForward(this.props.splitWindowPath, [path], this.props.pushWindowPath);
+    _onNavigateRequest(path, absolute = false) {
+        if (absolute) {
+            NavigationHelpers.navigate(path, this.props.pushWindowPath, false);
+        } else
+        {
+            if (this.props.hasPagination){
+                NavigationHelpers.navigateForward(this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length-2), [path], this.props.pushWindowPath);
+            } else {
+                NavigationHelpers.navigateForward(this.props.splitWindowPath, [path], this.props.pushWindowPath);
+            }
         }
     }
 
@@ -54,6 +59,10 @@ export default class PageDialectLearnBase extends Component {
         selectn('pageSize', this.props.routeParams) ? Object.assign(pageProps, {DEFAULT_PAGE_SIZE: parseInt(selectn('pageSize', this.props.routeParams))}) : null;
 
         return pageProps;
+    }
+
+    _handleFilterChange(visibleFilter) {
+        this.setState({visibleFilter});
     }
 
     // Fetch data on initial render
@@ -106,6 +115,16 @@ export default class PageDialectLearnBase extends Component {
         newFilter = newFilter.updateIn(['currentAppliedFilter', 'categories'], () => {
             return categoryFilter
         });
+
+        // Update filter description based on if categories exist or don't exist
+        if (newList.size > 0) {
+            newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', 'categories'], () => {
+                return ' match the categories you\'ve selected ';
+            });
+        } else {
+            newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories']);
+        }
+
 
         // Update page properties to use when navigating away
         this._handlePagePropertiesChange({filterInfo: newFilter});

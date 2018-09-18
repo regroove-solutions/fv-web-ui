@@ -106,7 +106,7 @@ export default class GridView extends Component {
                 {(items).map(function (tile, i) {
 
                     if (this.props.gridListTile) {
-                        return React.createElement(this.props.gridListTile, {key: i, tile: tile});
+                        return React.createElement(this.props.gridListTile, {key: i, tile: tile, action: this.props.action});
                     }
 
                     let audioIcon, audioCallback = null;

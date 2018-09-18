@@ -23,6 +23,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
+import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -34,19 +35,63 @@ import RaisedButton from 'material-ui/lib/raised-button';
 
 import FacetFilterList from 'views/components/Browsing/facet-filter-list';
 
+import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view';
+
 import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
 import IntlService from 'views/services/intl';
-
+import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import { Paper } from 'material-ui';
 const intl = IntlService.instance;
 /**
  * Learn words
  */
-@provide
+class AlphabetGridTile extends Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let char = selectn('properties.dc:title', this.props.tile);
+        return <GridTile key={selectn('uid', this.props.tile)} style={{
+            border: '3px solid #e0e0e0',
+            borderRadius: '5px',
+            textAlign: 'center',
+            height: 'initial'
+        }}>
+            <a onClick={this.props.action.bind(this, char, 'startsWith', function(letter) {return ' AND dc:title LIKE \'' + letter + '%\''})}>{char}</a>
+        </GridTile>;
+    }
+}
+
+const filterDescriptions = new Map([
+    [
+        'categories', function(test){
+        if (test != '') {
+            return 'filtering categories' + test
+        }}
+    ],
+    [
+        'startsWith', function(test){
+        if (test != '') {
+            return 'starts with ' + test
+        }}
+    ],
+    [
+        'contains', function(test){
+        if (test != '') {
+            return 'contains' + test
+        }}
+    ]
+]);
+
+ @provide
 export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     static propTypes = {
         windowPath: PropTypes.string.isRequired,
         pushWindowPath: PropTypes.func.isRequired,
+        replaceWindowPath: PropTypes.func.isRequired,
         splitWindowPath: PropTypes.array.isRequired,
         fetchDocument: PropTypes.func.isRequired,
         computeDocument: PropTypes.object.isRequired,
@@ -82,11 +127,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         }
 
         this.state = {
-            filterInfo: filterInfo
+            filterInfo: filterInfo,
+            visibleFilter: null,
+            searchTerm: null
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected', '_handlePagePropertiesChange', '_resetURLPagination', '_getPageKey', '_getURLPageProps'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_handlePagePropertiesChange', '_resetURLPagination', '_getPageKey', '_getURLPageProps', '_handleFilterChange', '_changeFilter', '_updateSearchTerm'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     _getPageKey() {
@@ -97,6 +144,69 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Portal', newProps.fetchPortal, newProps.computePortal);
         ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Dictionary', newProps.fetchDocument, newProps.computeDocument);
         ProviderHelpers.fetchIfMissing('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children', newProps.fetchCategories, newProps.computeCategories);
+    }
+
+    _updateSearchTerm(evt) {
+        this.setState({
+            searchTerm: evt.target.value
+        });
+    }
+
+    _resetSearch(evt) {
+
+        let newFilter = this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null);
+        newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null);
+
+        // When facets change, pagination should be reset.
+        // In these pages (words/phrase), list views are controlled via URL
+        this._resetURLPagination();
+
+        this.setState({filterInfo: newFilter, searchTerm: null});
+
+        this.refs.search_term.value = '';
+    }
+
+    _clearAllFilters() {
+        
+    }
+    
+    _changeFilter(value, type, nxql) {
+
+        if (value && value != '') {
+            let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
+                return nxql(value);
+            });
+    
+            newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', type], () => {
+                let filterDesc;
+
+                switch (type) {
+                    case 'contains':
+                        filterDesc = 'contain the search term';
+                    break;
+
+                    case 'startsWith':
+                        filterDesc = 'start with the letter ';
+                    break;
+
+                    case 'categories':
+                        filterDesc = 'have the categories';
+                    break;
+                };
+                return <span>{filterDesc} <strong>{value}</strong></span>;
+            });
+    
+            // When facets change, pagination should be reset.
+            // In these pages (words/phrase), list views are controlled via URL
+            this._resetURLPagination();
+    
+            this.setState({filterInfo: newFilter});
+        }
+    }
+
+    _search (evt) {
+        evt.target.blur();
+        this._changeFilter(evt.target.value, 'contains', function(searchTerm) {return ' AND ecm:fulltext = \'*' + StringHelpers.clean(searchTerm, 'fulltext') + '*\''});
     }
 
     render() {
@@ -117,7 +227,16 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
-        const wordListView = <WordListView controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams}/>;
+        let searchSort = {};
+
+        if (this.state.searchTerm) {
+            searchSort = {
+                DEFAULT_SORT_COL: 'ecm:fulltextScore',
+                DEFAULT_SORT_TYPE: 'desc'
+            }
+        };
+
+        const wordListView = <WordListView renderSimpleTable={true} DEFAULT_PAGE_SIZE={10} controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams} {...searchSort}/>;
 
         // Render kids view
 
@@ -134,10 +253,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             let kidsFilter = this.state.filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1');
 
             return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-                <div className="row">
+                <div className="row" style={{marginTop: '15px'}}>
                     <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
                         {React.cloneElement(wordListView, {
                             gridListView: true,
+                            disablePageSize: true,
                             DEFAULT_PAGE_SIZE: pageSize,
                             filter: kidsFilter
                         })}
@@ -162,15 +282,115 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             </div>
             <div className="row">
                 <div className={classNames('col-xs-12', 'col-md-3', (computeCategoriesSize == 0) ? 'hidden' : null)}>
-                    <FacetFilterList
-                        title={intl.trans('categories', 'Categories', 'first')}
-                        appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
-                        facetField={ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', this.props.routeParams.area)}
-                        onFacetSelected={this._handleFacetSelected}
-                        facets={selectn('response.entries', computeCategories) || []}/>
+<div>
+                        <h3>Words</h3>
+
+                    <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_category', 'Show All Words', 'words')}
+                            onTouchTap={this._clearAllFilters()}/><br/>
+
+                    <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_category', 'Filter by Category', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_category')}/><br/>
+                    {(() => {
+                          if (this.state.visibleFilter === 'find_by_category') {
+                            return <FacetFilterList
+                                title={intl.trans('categories', 'Categories', 'first')}
+                                appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
+                                facetField={ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', this.props.routeParams.area)}
+                                onFacetSelected={this._handleFacetSelected}
+                                facets={selectn('response.entries', computeCategories) || []}/>
+                          }
+                    })()}
+                    <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Skip To Letter', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/><br/>
+                    {(() => {
+                          if (this.state.visibleFilter === 'find_by_alphabet') {
+                            return React.cloneElement(<AlphabetListView pagination={false} routeParams={this.props.routeParams} dialect={selectn('response', computePortal)}/>, {
+                                gridListView: true,
+                                gridViewProps: {cols: 10, cellHeight: 25, action: this._changeFilter, style: {overflowY: 'hidden', padding: '10px'}},
+                                gridListTile: AlphabetGridTile
+                            });
+                          }
+                    })()}
+</div>
+<hr/>
+                    <div>
+                        <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
+
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Phrases', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Songs', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Stories', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Alphabet', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Portal Page', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
+                        <RaisedButton
+                            style={{width: '100%', textAlign: 'left'}}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Language Page', 'words')}
+                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>                        
+                    </div>
+
                 </div>
                 <div className={classNames('col-xs-12', (computeCategoriesSize == 0) ? 'col-md-12' : 'col-md-9')}>
                     <h1>{selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)} {intl.trans('words', 'Words', 'first')}</h1>
+                    
+                    <div style={{marginBottom: '10px'}}>
+
+                    <input type="text" ref="search_term" onBlur={evt => this._updateSearchTerm(evt)} onKeyPress={evt => (evt.key === 'Enter') ? this._search(evt) : null} /> &nbsp;
+
+                    <RaisedButton
+                            label={intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')}
+                            onTouchTap={this._changeFilter.bind(this, this.state.searchTerm, 'contains', function(searchTerm) {return ' AND ecm:fulltext = \'*' + StringHelpers.clean(searchTerm, 'fulltext') + '*\''})} primary={true}/>
+
+                    <RaisedButton
+                            label={intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')} onTouchTap={evt => this._resetSearch()} primary={false}/><br/>
+
+                    </div>
+
+                    <div className={classNames('alert', 'alert-info')}>
+
+                        {(() => {
+                            if (this.state.filterInfo.get('currentAppliedFiltersDesc') && !this.state.filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
+
+                                let appliedFilters = ['Showing words that '];
+                                let i = 0;
+
+                                this.state.filterInfo.get('currentAppliedFiltersDesc').map(function(v, k, t) {
+                                    appliedFilters.push(v);
+
+                                    if (t.size > 1 && t.size -1 != i) {
+                                        appliedFilters.push(<span> <span style={{textDecoration: 'underline'}}>AND</span> </span>);
+                                    }
+
+                                    ++i;
+                                });
+
+                                return appliedFilters;
+                            } else {
+                                return <span>Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.</span>;
+                            }
+                        })()}
+
+                    </div>
+
                     {wordListView}
                 </div>
             </div>

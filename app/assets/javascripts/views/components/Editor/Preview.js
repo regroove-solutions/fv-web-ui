@@ -177,6 +177,7 @@ export default class Preview extends Component {
         expandedValue: PropTypes.object,
         styles: PropTypes.object,
         tagStyles: PropTypes.object,
+        tagProps: PropTypes.object,
         metadataListStyles: PropTypes.object,
         minimal: PropTypes.bool,
         crop: PropTypes.bool,
@@ -462,9 +463,9 @@ export default class Preview extends Component {
 
                 if (audioResponse && audio.success) {
 
-                    audioTag = <audio style={this.props.tagStyles}
+                    audioTag = <audio {...this.props.tagProps} style={this.props.tagStyles}
                                       src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))}
-                                      alt={selectn('title', audioResponse)} controls/>;
+                                      alt={selectn('title', audioResponse)} controls />;
 
                     if (this.props.minimal) {
                         body = audioTag;

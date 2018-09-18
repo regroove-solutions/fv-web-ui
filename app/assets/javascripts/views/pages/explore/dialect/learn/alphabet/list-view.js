@@ -143,9 +143,12 @@ export default class ListView extends DataListView {
     }
 
     fetchData(newProps) {
-        if (newProps.dialect == null) {
-            newProps.fetchDialect2(newProps.routeParams.dialect_path);
-        }
+        ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path, newProps.fetchDialect2);
+
+
+        // if (newProps.dialect == null) {
+        //     newProps.fetchDialect2(newProps.routeParams.dialect_path);
+        // }
 
         this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
     }
