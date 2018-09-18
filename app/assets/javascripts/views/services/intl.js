@@ -255,7 +255,7 @@ export default class IntlService {
 
         }
 
-        console.debug('Not found', originalString);
+        //console.debug('Not found', originalString);
         return this.notFoundPrefix + originalString + this.notFoundSuffix;
     }
 
@@ -306,7 +306,7 @@ export default class IntlService {
             }
         }
 
-        console.debug('Not found', originalString);
+        //console.debug('Not found', originalString);
         return this.notFoundPrefix + originalString + this.notFoundSuffix;
     }
 
