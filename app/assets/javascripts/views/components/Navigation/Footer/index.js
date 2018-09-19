@@ -74,7 +74,7 @@ export default class Footer extends React.Component {
                                     key: 'general.email',
                                     default: 'Email',
                                     case: 'first'
-                                })} : info@fpcc.ca</p>
+                                })} : support@fpcc.ca</p>
                                 <p>&copy; 2000-{new Date().getFullYear()} FirstVoices</p>
                             </div>
 
