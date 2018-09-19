@@ -110,5 +110,15 @@ export default {
     },
     isUUID: function (str) {
         return str.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
+    },
+    queryStringToObject: function(str, skipDecode = false) {
+        str = str.substring(str.indexOf('?')+1).split('&');
+        var params = {}, pair, d = (skipDecode) ? (s) => s : decodeURIComponent;
+        for (var i = str.length - 1; i >= 0; i--) {
+            pair = str[i].split(/=(.+)/);
+            params[d(pair[0])] = d(pair[1] || '');
+        }
+        
+        return params;
     }
 }
