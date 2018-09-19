@@ -22,10 +22,13 @@ import t from 'tcomb-form';
 import {User} from 'nuxeo';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
+
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 // Views
 import RaisedButton from 'material-ui/lib/raised-button';
+import Paper from 'material-ui/lib/paper';
 
 import fields from 'models/schemas/fields';
 import options from 'models/schemas/options';
@@ -194,7 +197,23 @@ export default class Register extends Component {
             <h1>{selectn('response.title', computeDialect2)} {intl.trans('register', 'Register', 'first')}</h1>
 
             <div className="row" style={{marginTop: '15px'}}>
-              <p style={{padding: '15px'}}>We are working on fixing some problems with registration of new users.<br/>To register in the meantime, please email alex@fpcc.ca.</p>
+                <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Paper style={{padding: '15px'}}>
+                        <h2>Do I need to register?</h2>
+                        <p>Registration is intended for individuals who are engaged in language revitalization work.</p>
+                        <p>If you want to learn a language or learn about a community, <strong>most information is available to the public without registration</strong>.</p>
+                        <p>You can get started by clicking "<strong><a href="/explore/FV/sections/Data">Choose a Language</a></strong>", pick your language, and then click "Learn Our Language".</p>
+                        <RaisedButton label={intl.translate('choose_lang', 'Choose a Language', 'first')} primary={true} onClick={(e) => NavigationHelpers.navigate('/explore/FV/sections/Data', this.props.pushWindowPath)}/>
+                    </Paper>
+                </div>
+                <div className={classNames('col-xs-12', 'col-md-6')}>
+                    <Paper style={{padding: '15px'}}>
+                        <h2>Registration</h2>
+                        <p>If you are engaged in language revitalization work or want to join a community as a member, you can do so by using our <strong><a href="https://firstvoices.atlassian.net/servicedesk/customer/portal/1/create/15" target="_blank">registration form</a></strong> (preferred) or by emailing support@fpcc.ca</p>
+                        <p>Your request will need to be approved by the community's language administrator.</p>
+                        <RaisedButton label="Submit Registration Request" primary={true} linkButton={true} href="https://firstvoices.atlassian.net/servicedesk/customer/portal/1/create/15" target="_blank" />
+                    </Paper>
+                </div>
             </div>
 
             <div className="row" style={{marginTop: '15px', display: 'none'}}>

@@ -85,7 +85,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
         newProps.fetchDialect2(newProps.routeParams.dialect_path);
         newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
 
-        newProps.fetchBooks(newProps.routeParams.dialect_path + '/Stories & Songs',
+        newProps.fetchBooks(newProps.routeParams.dialect_path,
             '&sortBy=dc:title' +
             '&sortOrder=ASC'
         );
@@ -120,14 +120,14 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     render() {
 
         const computeEntities = Immutable.fromJS([{
-            'id': this.props.routeParams.dialect_path + '/Stories & Songs',
+            'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeBooks
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }])
 
-        const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path + '/Stories & Songs');
+        const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path);
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';

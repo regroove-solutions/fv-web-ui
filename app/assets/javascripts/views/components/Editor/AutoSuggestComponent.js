@@ -132,22 +132,22 @@ export default class AutoSuggestComponent extends Component {
         suggestionThrottle = setTimeout(function () {
             switch (this.props.type) {
                 case 'FVAudio':
-                    this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+                    this.props.fetchSharedAudios('all_shared_audio', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
                 case 'FVWord':
-                    this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+                    this.props.fetchSharedWords('featured_word_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
                 case 'FVPhrase':
-                    this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+                    this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
                 case 'FVCategory':
-                    this.props.fetchSharedCategories(this.props.provider.name, 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.path + '/' + this.props.provider.folder, {'X-NXenrichers.document': 'breadcrumb'});
+                    this.props.fetchSharedCategories(this.props.provider.name, 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.path + '/' + this.props.provider.folder, {'X-NXenrichers.document': 'breadcrumb'});
                     break;
                 case 'FVContributor':
-                    this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+                    this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
                 case 'FVLink':
-                    this.props.fetchSharedLinks('link_suggestion', 'currentPageIndex=1&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
+                    this.props.fetchSharedLinks('link_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
             }
         }.bind(this), 750);

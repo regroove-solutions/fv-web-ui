@@ -58,8 +58,6 @@ import PageError from './error.js'
 import PageHome from './home'
 import PageContent from './content'
 import PageIntro from './intro'
-import PageGetStarted from './get-started'
-import PageContribute from './contribute'
 import PagePlay from './play'
 import PageSearch from './search'
 import PageTasks from './tasks'
@@ -82,8 +80,6 @@ module.exports = {
   PageExploreFamily,
   PageExploreLanguage,
   PageExploreDialect,
-  PageGetStarted,
-  PageContribute,
   PageDialectLearn,
   PageDialectMedia,
   PageDialectLearnWords,

@@ -268,24 +268,31 @@ export default class Search extends DataListView {
 					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
 						{(() => {
-							if (selectn('response.entries', computeSearchDocuments)) {
 
-								return <DocumentListView
-											objectDescriptions="results" 
-											type="Document"
-											data={computeSearchDocuments}
-											gridCols={1}
-											gridListView={true}
-											gridListTile={SearchResultTileWithProps}
-											gridViewProps={{cellHeight: 170, style: {overflowY: 'hidden', margin:'0 0 30px 0'}}}
-											refetcher={this._handleRefetch}
-											onSortChange={this._handleSortChange}
-											onSelectionChange={this._onEntryNavigateRequest}
-											page={this.state.pageInfo.page}
-											pageSize={this.state.pageInfo.pageSize}
-											onColumnOrderChange={this._handleColumnOrderChange}
-											usePrevResponse={true}
-											className="browseDataGrid" />;
+							let entries = selectn('response.entries', computeSearchDocuments);
+
+							if (entries) {
+
+								if (entries.length == 0) {
+									return <div>Sorry, no results were found for this search.</div>;
+								} else {
+									return <DocumentListView
+									objectDescriptions="results" 
+									type="Document"
+									data={computeSearchDocuments}
+									gridCols={1}
+									gridListView={true}
+									gridListTile={SearchResultTileWithProps}
+									gridViewProps={{cellHeight: 170, style: {overflowY: 'hidden', margin:'0 0 30px 0'}}}
+									refetcher={this._handleRefetch}
+									onSortChange={this._handleSortChange}
+									onSelectionChange={this._onEntryNavigateRequest}
+									page={this.state.pageInfo.page}
+									pageSize={this.state.pageInfo.pageSize}
+									onColumnOrderChange={this._handleColumnOrderChange}
+									usePrevResponse={true}
+									className="browseDataGrid" />;
+								}
 							}
 						})()}
 
