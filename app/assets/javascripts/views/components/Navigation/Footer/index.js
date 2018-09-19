@@ -56,7 +56,7 @@ export default class Footer extends React.Component {
                                     key: 'views.components.navigation.conditions_of_use',
                                     default: 'Conditions of Use',
                                     case: 'first'
-                                })}</a> | <a href="mailto:feedback@fpcf.ca">{this.intl.translate({
+                                })}</a> | <a href="https://firstvoices.atlassian.net/servicedesk/customer/portal/1/create/16">{this.intl.translate({
                                     key: 'general.feedback',
                                     default: 'Feedback',
                                     case: 'first'
