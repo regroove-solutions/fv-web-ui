@@ -103,6 +103,37 @@ export default class DirectoryOperations extends BaseOperations {
         if (path.indexOf('/api') === 0) {
             // NOTE: Do not escape single quotes in this mode
             requestBody = path.replace('/api/v1', '');
+
+            return new Promise(
+                function (resolve, reject) {
+                    properties.client.request(
+                        requestBody,
+                        params
+                    )
+                        .get(headers)
+                        .then((docs) => {
+                            resolve(docs);
+                        }).catch((error) => {
+    
+                        if (error.hasOwnProperty('response')) {
+                            error.response.json().then(
+                                (jsonError) => {
+                                    reject(StringHelpers.extractErrorMessage(jsonError));
+                                }
+                            );
+                        } else {
+                            return reject(error || IntlService.instance.translate({
+                                key: 'operations.could_not_access_server',
+                                default: 'Could not access server',
+                                case: 'first'
+                            }));
+                        }
+                    });
+    
+                    setTimeout(function () {
+                        reject('Server timeout while attempting to get documents.');
+                    }, TIMEOUT);
+                });
         } else {
 
             let where = 'ecm:path STARTSWITH \'' + StringHelpers.clean(path) + '\'';
@@ -111,39 +142,38 @@ export default class DirectoryOperations extends BaseOperations {
                 where = 'ecm:parentId = \'' + path + '\'';
             }
 
-            requestBody = '/query?query=SELECT * FROM ' + type + ' WHERE ' + where + ' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend;
-        }
+            let nxqlQueryParams = Object.assign(params, {
+                language: 'NXQL'
+            }, StringHelpers.queryStringToObject('?query=SELECT * FROM ' + type + ' WHERE ' + where + ' AND ecm:currentLifeCycleState <> \'deleted\'' + queryAppend, true));
 
-        return new Promise(
-            function (resolve, reject) {
-                properties.client.request(
-                    requestBody,
-                    params
-                )
-                    .get(headers)
-                    .then((docs) => {
+            return new Promise(
+                function (resolve, reject) {
+                        properties.client.operation('Document.Query')
+                        .params(nxqlQueryParams)
+                        .execute(headers).then((docs) => {
                         resolve(docs);
-                    }).catch((error) => {
-
-                    if (error.hasOwnProperty('response')) {
-                        error.response.json().then(
-                            (jsonError) => {
-                                reject(StringHelpers.extractErrorMessage(jsonError));
-                            }
-                        );
-                    } else {
-                        return reject(error || IntlService.instance.translate({
-                            key: 'operations.could_not_access_server',
-                            default: 'Could not access server',
-                            case: 'first'
-                        }));
-                    }
+                        }).catch((error) => {
+    
+                        if (error.hasOwnProperty('response')) {
+                            error.response.json().then(
+                                (jsonError) => {
+                                    reject(StringHelpers.extractErrorMessage(jsonError));
+                                }
+                            );
+                        } else {
+                            return reject(error || IntlService.instance.translate({
+                                key: 'operations.could_not_access_server',
+                                default: 'Could not access server',
+                                case: 'first'
+                            }));
+                        }
+                    });
+    
+                    setTimeout(function () {
+                        reject('Server timeout while attempting to get documents.');
+                    }, TIMEOUT);
                 });
-
-                setTimeout(function () {
-                    reject('Server timeout while attempting to get documents.');
-                }, TIMEOUT);
-            });
+        }
     }
 
     static getDocumentsViaPageProvider(page_provider = "", type = "Document", queryAppend = "", headers = null, params = null) {
@@ -193,62 +223,6 @@ export default class DirectoryOperations extends BaseOperations {
                         default: 'Could not retrieve directory',
                         case: 'first'
                     }));
-                });
-            });
-    }
-
-    /**
-     * Get all documents of a certain type based on a path
-     * These documents are expected to contain other entries
-     * E.g. FVFamily, FVLanguage, FVDialect
-     */
-    getDocumentsByPath(path = "", headers = null, params = null) {
-        // Expose fields to promise
-        let client = this.client;
-        let selectDefault = this.selectDefault;
-        let domain = this.properties.domain;
-
-        path = StringHelpers.clean(path);
-
-        // Initialize and empty document list from type
-        let documentList = new this.directoryTypePlural(null);
-
-        return new Promise(
-            // The resolver function is called with the ability to resolve or
-            // reject the promise
-            function (resolve, reject) {
-
-                let defaultParams = {
-                    query:
-                    "SELECT * FROM " + documentList.model.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND " + selectDefault + ") ORDER BY dc:title"
-                };
-
-                let defaultHeaders = {};
-
-                params = Object.assign(defaultParams, params);
-                headers = Object.assign(defaultHeaders, headers);
-
-                client.operation('Document.Query')
-                    .params(params)
-                    .execute(headers).then((response) => {
-
-                    if (response.entries && response.entries.length > 0) {
-
-                        documentList.add(response.entries);
-                        documentList.totalResultSize = response.totalSize;
-
-                        resolve(documentList);
-                    } else {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.no_found',
-                            default: 'No ' + documentList.model.prototype.entityTypeName + ' found',
-                            params: [documentList.model.prototype.entityTypeName],
-                            case: 'first',
-                            append: '!'
-                        }));
-                    }
-                }).catch((error) => {
-                    throw error
                 });
             });
     }
@@ -356,4 +330,62 @@ export default class DirectoryOperations extends BaseOperations {
             });
       });
     }*/
+
+
+    /**
+     * Get all documents of a certain type based on a path
+     * These documents are expected to contain other entries
+     * E.g. FVFamily, FVLanguage, FVDialect
+     */
+    getDocumentsByPath(path = "", headers = null, params = null) {
+        // Expose fields to promise
+        let client = this.client;
+        let selectDefault = this.selectDefault;
+        let domain = this.properties.domain;
+
+        path = StringHelpers.clean(path);
+
+        // Initialize and empty document list from type
+        let documentList = new this.directoryTypePlural(null);
+
+        return new Promise(
+            // The resolver function is called with the ability to resolve or
+            // reject the promise
+            function (resolve, reject) {
+
+                let defaultParams = {
+                    query:
+                    "SELECT * FROM " + documentList.model.prototype.entityTypeName + " WHERE (ecm:path STARTSWITH '/" + domain + path + "' AND " + selectDefault + ") ORDER BY dc:title"
+                };
+
+                let defaultHeaders = {};
+
+                params = Object.assign(defaultParams, params);
+                headers = Object.assign(defaultHeaders, headers);
+
+                client.operation('Document.Query')
+                    .params(params)
+                    .execute(headers).then((response) => {
+
+                    if (response.entries && response.entries.length > 0) {
+
+                        documentList.add(response.entries);
+                        documentList.totalResultSize = response.totalSize;
+
+                        resolve(documentList);
+                    } else {
+                        reject(IntlService.instance.translate({
+                            key: 'operations.no_found',
+                            default: 'No ' + documentList.model.prototype.entityTypeName + ' found',
+                            params: [documentList.model.prototype.entityTypeName],
+                            case: 'first',
+                            append: '!'
+                        }));
+                    }
+                }).catch((error) => {
+                    throw error
+                });
+            });
+    }
+
 }

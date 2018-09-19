@@ -62,8 +62,6 @@ import {
 } from 'views/pages';
 
 import {
-    PageGetStarted,
-    PageContribute,
     PagePlay,
     PageSearch,
     PageTasks,

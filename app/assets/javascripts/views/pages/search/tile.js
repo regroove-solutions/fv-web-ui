@@ -109,7 +109,7 @@ export default class SearchResultTile extends Component {
         }
 
         if (desc) {
-            desc = desc.replace(new RegExp(this.props.searchTerm, 'gi'), '<strong>' + this.props.searchTerm + '</strong>');
+            desc = desc.replace(new RegExp(this.props.searchTerm.replace(/[()]/gi, ''), 'gi'), '<strong>' + this.props.searchTerm + '</strong>');
         }
 
         title = DOMPurify.sanitize(title);
