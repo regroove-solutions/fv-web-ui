@@ -109,6 +109,12 @@ export default {
         return (m[d.getMonth()]) + ' ' + d.getDate() + dayDesc + ', ' + d.getFullYear() + ' @ ' + ("0" + d.getUTCHours()).slice(-2) + ":" + ("0" + d.getUTCMinutes()).slice(-2);
     },
     isUUID: function (str) {
+
+        if (!str) {
+         return false;
+        }
+
+
         return str.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
     },
     queryStringToObject: function(str, skipDecode = false) {

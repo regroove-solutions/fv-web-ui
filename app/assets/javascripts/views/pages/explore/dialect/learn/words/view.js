@@ -225,9 +225,9 @@ export default class View extends Component {
             if (phraseDefinitions.length == 0) {
                 phrases.push(<p key={key}>{phraseLink}</p>);
             } else {
-                phrases.push(<p key={key}>{phraseLink} <ul>{phraseDefinitions.map(function (groupValue, key) {
-                    return (<li>{groupValue['translation']} ({groupValue['language']})</li>);
-                })}</ul></p>);
+                phrases.push(<div key={key}><p>{phraseLink}</p> <ul>{phraseDefinitions.map(function (groupValue, innerKey) {
+                    return (<li key={innerKey}>{groupValue['translation']} ({groupValue['language']})</li>);
+                })}</ul></div>);
             }
         })
 
