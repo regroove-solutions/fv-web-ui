@@ -106,7 +106,12 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         const computeEntities = Immutable.fromJS([{
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computePortal
-        }, {
+        },
+        {
+            'id': this.props.routeParams.dialect_path + '/Dictionary',
+            'entity': this.props.computeDocument
+        },
+        {
             'id': '/api/v1/path/' + this.props.routeParams.dialect_path + '/Phrase Books/@children',
             'entity': this.props.computeCategories
         }])
@@ -119,7 +124,18 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
-        const phraseListView = <PhraseListView controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams}/>;
+        let phraseListView = "";
+
+        if (selectn('response.uid', computeDocument)) {
+            phraseListView = <PhraseListView
+                controlViaURL={true}
+                onPaginationReset={this._resetURLPagination}
+                onPagePropertiesChange={this._handlePagePropertiesChange}
+                parentID={selectn('response.uid', computeDocument)}
+                filter={this.state.filterInfo}
+                {...this._getURLPageProps()}
+                routeParams={this.props.routeParams}/>;
+        }
 
         // Render kids view
         if (isKidsTheme || isMobile) {

@@ -214,7 +214,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         const computeEntities = Immutable.fromJS([{
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computePortal
-        }, {
+        },
+        {
+            'id': this.props.routeParams.dialect_path + '/Dictionary',
+            'entity': this.props.computeDocument
+        },
+        {
             'id': '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
             'entity': this.props.computeCategories
         }])
@@ -236,7 +241,21 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             }
         };
 
-        const wordListView = <WordListView renderSimpleTable={true} DEFAULT_PAGE_SIZE={10} controlViaURL={true} onPaginationReset={this._resetURLPagination} onPagePropertiesChange={this._handlePagePropertiesChange} filter={this.state.filterInfo} {...this._getURLPageProps()} routeParams={this.props.routeParams} {...searchSort}/>;
+        let wordListView = "";
+
+        if (selectn('response.uid', computeDocument)) {
+            wordListView = <WordListView
+            renderSimpleTable={true}
+            DEFAULT_PAGE_SIZE={10}
+            controlViaURL={true}
+            onPaginationReset={this._resetURLPagination}
+            onPagePropertiesChange={this._handlePagePropertiesChange}
+            parentID={selectn('response.uid', computeDocument)}
+            filter={this.state.filterInfo}
+            {...this._getURLPageProps()}
+            routeParams={this.props.routeParams}
+            {...searchSort}/>
+        }
 
         // Render kids view
 

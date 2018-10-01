@@ -70,6 +70,7 @@ export default class ListView extends DataListView {
         gridListView: PropTypes.bool,
         gridCols: PropTypes.number,
         controlViaURL: PropTypes.bool,
+        parentID: PropTypes.string,
         onPaginationReset: PropTypes.func,
         onPagePropertiesChange: PropTypes.func,
         action: PropTypes.func,
@@ -160,7 +161,11 @@ export default class ListView extends DataListView {
         }
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns', '_getPathOrParentID'].forEach((method => this[method] = this[method].bind(this)));
+    }
+
+    _getPathOrParentID(newProps) {
+        return (newProps.parentID) ? newProps.parentID : newProps.routeParams.dialect_path + '/Dictionary';
     }
 
     fetchData(newProps) {
@@ -186,7 +191,7 @@ export default class ListView extends DataListView {
             currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
         }
 
-        props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
+        props.fetchPhrases(this._getPathOrParentID(props),
             currentAppliedFilter +
             '&currentPageIndex=' + (pageIndex - 1) +
             '&pageSize=' + pageSize +
@@ -202,7 +207,7 @@ export default class ListView extends DataListView {
     render() {
 
         let computeEntities = Immutable.fromJS([{
-            'id': this.props.routeParams.dialect_path + '/Dictionary',
+            'id': this._getPathOrParentID(this.props),
             'entity': this.props.computePhrases
         }]);
 
@@ -214,7 +219,7 @@ export default class ListView extends DataListView {
             }));
         }
 
-        const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this.props.routeParams.dialect_path + '/Dictionary');
+        const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this._getPathOrParentID(this.props));
         const computeDialect2 = this.props.dialect || this.getDialect();
 
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
