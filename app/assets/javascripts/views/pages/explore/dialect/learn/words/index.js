@@ -325,7 +325,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                     })()}
                     <RaisedButton
                             style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Skip To Letter', 'words')}
+                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
                             onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/><br/>
                     {(() => {
                           if (this.state.visibleFilter === 'find_by_alphabet') {
@@ -341,30 +341,15 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                     <div>
                         <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
 
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Phrases', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Songs', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Stories', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Alphabet', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Portal Page', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>
-                        <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Language Page', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/>                        
+                        <ul>
+                            <li>Browse Words</li>
+                            <li>Browse Phrases</li>
+                            <li>Browse Songs</li>
+                            <li>Browse Stories</li>
+                            <li>View Alphabet</li>
+                            <li>View Portal Page</li>
+                            <li>View Language Page</li>
+                        </ul>                    
                     </div>
 
                 </div>
