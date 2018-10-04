@@ -38,6 +38,8 @@ import TextField from 'material-ui/lib/text-field';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 
+import TextHeader from 'views/components/Document/Typography/text-header';
+
 import IntroCardView from 'views/components/Browsing/intro-card-view';
 import IntlService from 'views/services/intl';
 
@@ -134,16 +136,15 @@ export default class PageContent extends Component {
 
         const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
 
-        const sectionHrStyle = {backgroundColor: primary1Color, width: '94px', height: '4px', margin: '0 0 15px 0'};
-
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
             <div className={classNames('row')} style={{margin: '25px 0'}}>
 
                 <div className={classNames('col-xs-12')} style={{marginBottom: '15px'}}>
-                    <h1 style={{fontWeight: 500}}>{intl.searchAndReplace(selectn('fvpage:blocks[0].title', page), 'first')}</h1>
-                    {selectn('fvpage:blocks[0].summary', page)}
-                    <hr style={sectionHrStyle}/>
+                    <TextHeader
+                        title={intl.searchAndReplace(selectn('fvpage:blocks[0].title', page), 'first')}
+                        tag="h1" properties={this.props.properties}/>
+
                     <div dangerouslySetInnerHTML={{__html: selectn('fvpage:blocks[0].text', page)}}></div>
                 </div>
 
