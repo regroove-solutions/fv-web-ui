@@ -17,6 +17,7 @@ import {Link} from 'provide-page';
 
 import FlatButton from 'material-ui/lib/flat-button';
 import Navigation from 'views/components/Navigation';
+import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher';
 import KidsNavigation from 'views/components/Kids/Navigation';
 import Footer from 'views/components/Navigation/Footer';
 
@@ -1444,31 +1445,10 @@ export default class AppFrontController extends Component {
                     <div className="clearfix" style={{backgroundColor: themePalette.accent4Color}}>
 
                         {(() => {
-                            if (selectn("routeParams.area", reactElement.props) && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
+                            let area = selectn("routeParams.area", reactElement.props);
 
-                                return <ul
-                                    className={classNames('workspace-switcher', 'nav', 'nav-pills', 'pull-right')}
-                                    style={{
-                                        "display": "inline-block",
-                                        "verticalAlign": "middle",
-                                        "paddingTop": "10px"
-                                    }}>
-                                    <li role="presentation"
-                                        className={(reactElement.props.routeParams.area == 'Workspaces') ? 'active' : ''}>
-                                        <a href={props.windowPath.replace('sections', 'Workspaces')}>{intl.translate({
-                                            key: 'workspace',
-                                            default: 'Workspace',
-                                            case: 'words'
-                                        })}</a></li>
-                                    <li className={(reactElement.props.routeParams.area == 'sections') ? 'active' : ''}
-                                        role="presentation"><a
-                                        href={props.windowPath.replace('Workspaces', 'sections')}>{intl.translate({
-                                        key: 'public_view',
-                                        default: 'Public View',
-                                        case: 'words'
-                                    })}</a></li>
-                                </ul>;
-
+                            if (area && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
+                                return <WorkspaceSwitcher area={area} />;
                             }
 
                         })()}

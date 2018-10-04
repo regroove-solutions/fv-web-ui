@@ -105,7 +105,7 @@ export default {
 
                 // Switch methods used based on path until everything is converted to use the the new endpoints
                 if (pathOrId.indexOf(ConfGlobal.apiURL) !== -1) {
-                    return DirectoryOperations.getDocumentsViaAPI(pathOrId, properties.headers)
+                    return DirectoryOperations.getDocumentsViaAPI(pathOrId)
                     .then((response) => {
                         dispatch({
                             type: key + '_QUERY_SUCCESS',

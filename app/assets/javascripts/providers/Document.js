@@ -88,15 +88,18 @@ const enableDocument = function enableDocument(pathOrId) {
 
 const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', {headers: {'X-NXenrichers.document': 'ancestry,permissions,acls'}});
 const fetchResultSet = RESTActions.execute('FV_RESULT_SET', 'Repository.ResultSetQuery');
+const fetchSourceDocument = RESTActions.execute('FV_SOURCE_DOCUMENT', 'Proxy.GetSourceDocument');
 
 const computeDocumentFetchFactory = RESTReducers.computeFetch('document');
 const computeResultSetOperation = RESTReducers.computeOperation('result_set');
+const computeSourceDocument = RESTReducers.computeOperation('source_document');
 
-const actions = {fetchDocument, publishDocument, disableDocument, enableDocument, fetchResultSet};
+const actions = {fetchDocument, fetchSourceDocument, publishDocument, disableDocument, enableDocument, fetchResultSet};
 
 const reducers = {
     computeDocument: computeDocumentFetchFactory.computeDocument,
     computeResultSet: computeResultSetOperation.computeResultSet,
+    computeSourceDocument: computeSourceDocument.computeSourceDocument,
     computePublish(state = {
         isFetching: false, response: {
             get: function () {

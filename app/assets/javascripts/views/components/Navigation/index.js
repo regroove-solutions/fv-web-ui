@@ -442,7 +442,7 @@ export default class Navigation extends Component {
                                             color: '#959595'
                                         }}>{this.intl.translate({
                                         key: 'views.components.navigation.all_languages_and_words',
-                                        default: 'All languages &amp; words',
+                                        default: 'All languages & words',
                                         case: 'words',
                                         append: '.'
                                     })}</span></span>)}
@@ -480,7 +480,7 @@ export default class Navigation extends Component {
                   return <div style={{marginBottom: 0, padding: '10px 10px 1px 10px', backgroundColor: '#fff'}}>
                     <p style={{padding: 0}}>{this.intl.translate({
                         key: 'views.components.navigation.search_all',
-                        default: 'Search all languages &amp; words at FirstVoices.com',
+                        default: 'Search all languages & words at FirstVoices.com',
                         case: 'first'
                     })}</p>
                   </div>;
