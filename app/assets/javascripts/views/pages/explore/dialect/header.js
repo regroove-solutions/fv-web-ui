@@ -87,28 +87,6 @@ export default class Header extends Component {
 
             <div style={{position: 'absolute', bottom: '80px', right: 0, width: '442px'}}>
 
-                {(() => {
-                    if (selectn("isConnected", login) || selectn('response.properties.fv-portal:greeting', portal.compute) || selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute)) {
-                        return <h1
-                            className={classNames('display', 'dialect-greeting-container', selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute) ? 'has-audio' : '')}>
-                            <AuthorizationFilter
-                                filter={{permission: 'Write', entity: selectn('response', dialect.compute)}}
-                                renderPartial={true}>
-                                <EditableComponentHelper className="fv-portal-greeting" isSection={isSection}
-                                                         computeEntity={portal.compute} updateEntity={portal.update}
-                                                         property="fv-portal:greeting"
-                                                         entity={selectn('response', portal.compute)}/>
-                            </AuthorizationFilter>
-
-                            {(selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute)) ?
-                                <audio id="portalFeaturedAudio"
-                                       src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:featured_audio', portal.compute).path}
-                                       controls/>
-                                : ''}
-                        </h1>;
-                    }
-                })()}
-
                 <div className={classNames('dialect-info-banner')}>
 
                     <div className={classNames('dib-header', 'visible-xs')}>

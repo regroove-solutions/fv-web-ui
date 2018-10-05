@@ -295,6 +295,32 @@ export default class ExploreDialect extends Component {
             <div className={classNames('row', 'dialect-body-container')} style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-12', 'col-md-7')}>
+
+                    <div>
+                        {(() => {
+
+                            if (selectn("isConnected", computeLogin) || selectn('response.properties.fv-portal:greeting', computePortal) || selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) {
+                                return <h1
+                                    className={classNames('display', 'dialect-greeting-container')}>
+                                    <AuthorizationFilter
+                                        filter={{permission: 'Write', entity: selectn('response', computeDialect2)}}
+                                        renderPartial={true}>
+                                        <EditableComponentHelper className="fv-portal-greeting" isSection={isSection}
+                                                                    computeEntity={computePortal} updateEntity={updatePortal}
+                                                                    property="fv-portal:greeting"
+                                                                    entity={selectn('response', computePortal)}/>
+                                    </AuthorizationFilter>
+
+                                    {(selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal)) ?
+                                        <audio id="portalFeaturedAudio"
+                                                src={ConfGlobal.baseURL + selectn('response.contextParameters.portal.fv-portal:featured_audio', computePortal).path}
+                                                controls/>
+                                        : ''}
+                                </h1>;
+                            }
+                        })()}
+                    </div>
+
                     <div>
                         <TextHeader title={intl.trans('views.pages.explore.dialect.about_us', 'ABOUT US', 'upper')}
                                     tag="h2"
