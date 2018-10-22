@@ -214,14 +214,14 @@ export default class AppLeftNav extends Component {
                   requestChange: this._onNavigateRequest
               }}>
 
-              <ListItem
+              {/* <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
                       key: 'views.pages.users.profile.my_profile',
                       default: 'My Profile',
                       case: 'words'
-                  })}/>
+                  })}/> */}
 
               <ListItem
                   key="sign-out"
