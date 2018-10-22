@@ -153,9 +153,7 @@ export default class SelectMediaComponent extends React.Component {
                 ' AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != \'deleted\' AND ecm:currentLifeCycleState != \'Disabled\'' +
                 ' AND (ecm:path STARTSWITH \'' + StringHelpers.clean(selectn('path', this.props.dialect)) + '/Resources/\'' + ProviderHelpers.filtersToNXQL(group1) + ')' + ProviderHelpers.filtersToNXQL(group2) +
                 '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
-                '&pageSize=' + fetcherParams.pageSize +
-                '&sortBy=dc:created' +
-                '&sortOrder=DESC'
+                '&pageSize=' + fetcherParams.pageSize
             );
 
             this.setState({
