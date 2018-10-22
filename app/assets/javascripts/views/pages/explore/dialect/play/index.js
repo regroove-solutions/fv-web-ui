@@ -45,11 +45,11 @@ export default class Play extends Component {
                                 <a href="./play/jigsaw"><img src="/assets/games/jigsaw/assets/images/preview.png"
                                                              className="responsive-image"/></a>
                             </div>
-                            <div className="cell" style={cellStyle}>
+                            {/* <div className="cell" style={cellStyle}>
                                 <a href="./play/colouringbook"><img
                                     src="/assets/games/colouring-book/assets/images/preview.png"
                                     className="responsive-image"/></a>
-                            </div>
+                            </div> */}
                             <div className="cell" style={cellStyle}>
                                 <a href="./play/wordsearch"><img
                                     src="/assets/games/wordsearch/assets/images/preview.png"
@@ -59,11 +59,11 @@ export default class Play extends Component {
                                 <a href="./play/wordscramble"><img src="/assets/images/preview-wordscramble.png"
                                                                    className="responsive-image"/></a>
                             </div>
-                            <div className="cell" style={cellStyle}>
+                            {/* <div className="cell" style={cellStyle}>
                                 <a href="./play/picturethis"><img
                                     src="/assets/games/picturethis/assets/images/preview.png"
                                     className="responsive-image"/></a>
-                            </div>
+                            </div> */}
                             <div className="cell" style={cellStyle}>
                                 <a href="./play/hangman"><img src="/assets/games/hangman/assets/images/preview.png"
                                                               className="responsive-image"/></a>
