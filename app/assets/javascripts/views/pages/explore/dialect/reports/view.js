@@ -105,21 +105,21 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
         switch (this.state.currentReport.get('type')) {
             case 'words':
-                listView = <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                listView = <WordListView filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
                 break;
 
             case 'phrases':
-                listView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                listView = <PhraseListView filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
                 break;
 
             case 'songs':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
                 break;
 
             case 'stories':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
                 break;
         }
 
