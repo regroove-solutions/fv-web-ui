@@ -299,12 +299,19 @@ export default class PageToolbar extends Component {
                             </AuthorizationFilter>;
                         }
                         else {
-                            return (<div style={{
-                                display: 'inline-block',
-                                float: 'left',
-                                paddingTop: '16px'
-                            }}>{intl.trans('contact_us_to_publish_x', 'To Publish/Unpublish an Entire '
-                                + this.props.label + ' please contact us.', 'first', [intl.searchAndReplace(this.props.label)])}</div>);
+                            if (documentPublished) {
+                                return <div style={{
+                                    display: 'inline-block',
+                                    float: 'left',
+                                    paddingTop: '16px'
+                                }}>This dialect is <strong>public</strong>. Contact us to make it private.</div>;
+                            } else {
+                                return <div style={{
+                                    display: 'inline-block',
+                                    float: 'left',
+                                    paddingTop: '16px'
+                                }}>This dialect is <strong>private</strong>. Contact us to make it public.</div>;
+                            }
                         }
                     }
                 })()}
