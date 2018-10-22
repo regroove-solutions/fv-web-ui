@@ -370,15 +370,7 @@ export default class PageToolbar extends Component {
                             <MenuItem
                                 onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')}
                                 key="media"
-                                primaryText={intl.trans('views.pages.explore.dialect.media_browser', 'Media Browser', 'words')}/>,
-                            <AuthorizationFilter key="users" filter={{
-                                permission: 'Write',
-                                entity: selectn('response', computeEntity)
-                            }}>
-                                <MenuItem
-                                    onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')}
-                                    primaryText={intl.trans('users', "Users", 'first')}/>
-                            </AuthorizationFilter>];
+                                primaryText={intl.trans('views.pages.explore.dialect.media_browser', 'Media Browser', 'words')}/>];
 
                         return React.createElement(UIHelpers.isViewSize('xs') ? Menu : IconMenu, {
                             anchorOrigin: {horizontal: 'right', vertical: 'top'},
