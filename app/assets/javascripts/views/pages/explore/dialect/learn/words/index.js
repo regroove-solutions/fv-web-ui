@@ -323,18 +323,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                                 facets={selectn('response.entries', computeCategories) || []}/>
                           }
                     })()}
-                    <RaisedButton
-                            style={{width: '100%', textAlign: 'left'}}
-                            label={intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
-                            onTouchTap={this._handleFilterChange.bind(this, 'find_by_alphabet')}/><br/>
+                    
+                    {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}<br/>
                     {(() => {
-                          if (this.state.visibleFilter === 'find_by_alphabet') {
                             return React.cloneElement(<AlphabetListView pagination={false} routeParams={this.props.routeParams} dialect={selectn('response', computePortal)}/>, {
                                 gridListView: true,
                                 gridViewProps: {cols: 10, cellHeight: 25, action: this._changeFilter, style: {overflowY: 'hidden', padding: '10px'}},
                                 gridListTile: AlphabetGridTile
                             });
-                          }
                     })()}
 </div>
 <hr/>
