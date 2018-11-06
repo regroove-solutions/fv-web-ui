@@ -81,8 +81,8 @@ export default class Navigation extends Component {
     replaceWindowPath: PropTypes.func.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     toggleMenuAction: PropTypes.func.isRequired,
-    countTotalTasks: PropTypes.func.isRequired,
-    computeCountTotalTasks: PropTypes.object.isRequired,
+    // countTotalTasks: PropTypes.func.isRequired,
+    // computeCountTotalTasks: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     loadNavigation: PropTypes.func.isRequired,
@@ -134,13 +134,13 @@ export default class Navigation extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
-        this.props.countTotalTasks('count_total_tasks', {
-            'query': 'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')',
-            'language': 'nxql',
-            'sortOrder': 'ASC'
-        });
-    }
+    // if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
+    //     this.props.countTotalTasks('count_total_tasks', {
+    //         'query': 'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')',
+    //         'language': 'nxql',
+    //         'sortOrder': 'ASC'
+    //     });
+    // }
 
     const USER_LOG_IN_STATUS_CHANGED = (newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected && newProps.computeLogin.isConnected != undefined && this.props.computeLogin.isConnected != undefined);
 
@@ -292,11 +292,11 @@ export default class Navigation extends Component {
     const isDialect = this.props.routeParams.hasOwnProperty('dialect_path');
     const isFrontPage = this.props.frontpage;
 
-    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
+    //const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, 'count_total_tasks');
     const computePortal = ProviderHelpers.getEntry(this.props.computePortal, this.props.routeParams.dialect_path + '/Portal');
     const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
-    const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
+    //const userTaskCount = selectn('response.entries[0].COUNT(ecm:uuid)', computeCountTotalTasks) || 0;
 
     //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
@@ -321,11 +321,11 @@ export default class Navigation extends Component {
                 case: 'words'
             })}/>
 
-            <ToolbarSeparator className={classNames({'hidden-xs': this.props.computeLogin.isConnected})} style={{float: 'none', marginLeft: 0, marginRight: 0}} />
+            <ToolbarSeparator className={classNames({'hidden-xs': this.props.computeLogin.isConnected})} style={{float: 'none', marginLeft: 0, marginRight: 10}} />
 
             <AuthenticationFilter login={this.props.computeLogin} anon={false} routeParams={this.props.routeParams} containerStyle={{display: 'inline'}}>
               <span>
-                <Badge
+                {/* <Badge
                   badgeContent={userTaskCount}
                   style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (userTaskCount == 0) ? 'hidden' : 'visible'}}
@@ -334,7 +334,9 @@ export default class Navigation extends Component {
                   <IconButton iconStyle={{fill: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/tasks/')} disabled={(userTaskCount == 0) ? true : false}>
                     <NotificationsIcon />
                   </IconButton>
-                </Badge>
+                </Badge> */}
+
+                <a href="/tasks/" className="nav_link">View My Tasks</a>
 
                 {/*<Badge
                   badgeContent={guideCount}
@@ -393,7 +395,7 @@ export default class Navigation extends Component {
                 </div>
             </Popover>*/}
 
-            <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 0}} />
+            <ToolbarSeparator className="search-bar-seperator" style={{float: 'none', marginRight: 0, marginLeft: 10}} />
 
             <div style={{background: themePalette.primary1Color, display: 'inline-block'}} className={classNames({'hidden-xs': !this.state.searchBarVisibleInMobile, 'search-bar-mobile': this.state.searchBarVisibleInMobile})}>
               <TextField underlineStyle={{width:'79%'}} style={{marginLeft: (this.state.searchBarVisibleInMobile) ? '15px' : '30px', fontSize: '15px', height: '38px', backgroundColor: '#fff', paddingLeft: '10px', lineHeight: '1', width: (this.state.searchBarVisibleInMobile) ? '214px' : 'inherit', paddingRight: (this.state.searchBarVisibleInMobile) ? '0' : '40px'}} ref="navigationSearchField" hintText={this.intl.translate({key: 'general.search', default: 'Search', case: 'first', append: ':'})} onBlur={() => this.setState({searchContextPopoverOpen: (isDialect) ? true : false })} onFocus={(e) => this.setState({searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target})} onEnterKeyDown={this._handleNavigationSearchSubmit} name="searchbox" />

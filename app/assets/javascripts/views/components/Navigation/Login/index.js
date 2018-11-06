@@ -150,9 +150,7 @@ export default class Login extends Component {
         if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
             return (
                 <div className="hidden-xs" style={{display: "inline-block", paddingRight: '15px'}}>
-                    {this.intl.translate({key: 'general.welcome', default: 'WELCOME', case: 'upper'})}, <a
-                    style={{color: '#fff', textTransform: 'uppercase', cursor: 'pointer'}}
-                    onTouchTap={this._onNavigateRequest.bind(this, 'profile')}>{selectn("response.properties.firstName", this.props.computeLogin)}</a>
+                    {this.intl.translate({key: 'general.welcome', default: 'WELCOME', case: 'upper'})}, {selectn("response.properties.firstName", this.props.computeLogin)}
                 </div>
             );
         } else {

@@ -299,12 +299,19 @@ export default class PageToolbar extends Component {
                             </AuthorizationFilter>;
                         }
                         else {
-                            return (<div style={{
-                                display: 'inline-block',
-                                float: 'left',
-                                paddingTop: '16px'
-                            }}>{intl.trans('contact_us_to_publish_x', 'To Publish/Unpublish an Entire '
-                                + this.props.label + ' please contact us.', 'first', [intl.searchAndReplace(this.props.label)])}</div>);
+                            if (documentPublished) {
+                                return <div style={{
+                                    display: 'inline-block',
+                                    float: 'left',
+                                    paddingTop: '16px'
+                                }}>This dialect is <strong>public</strong>. Contact us to make it private.</div>;
+                            } else {
+                                return <div style={{
+                                    display: 'inline-block',
+                                    float: 'left',
+                                    paddingTop: '16px'
+                                }}>This dialect is <strong>private</strong>. Contact us to make it public.</div>;
+                            }
                         }
                     }
                 })()}
@@ -363,15 +370,7 @@ export default class PageToolbar extends Component {
                             <MenuItem
                                 onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')}
                                 key="media"
-                                primaryText={intl.trans('views.pages.explore.dialect.media_browser', 'Media Browser', 'words')}/>,
-                            <AuthorizationFilter key="users" filter={{
-                                permission: 'Write',
-                                entity: selectn('response', computeEntity)
-                            }}>
-                                <MenuItem
-                                    onTouchTap={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/users')}
-                                    primaryText={intl.trans('users', "Users", 'first')}/>
-                            </AuthorizationFilter>];
+                                primaryText={intl.trans('views.pages.explore.dialect.media_browser', 'Media Browser', 'words')}/>];
 
                         return React.createElement(UIHelpers.isViewSize('xs') ? Menu : IconMenu, {
                             anchorOrigin: {horizontal: 'right', vertical: 'top'},

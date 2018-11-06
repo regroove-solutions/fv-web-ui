@@ -261,9 +261,10 @@ export default class Tasks extends React.Component {
                     <TableBody displayRowCheckbox={false}>
                         {userTasks}
                         {userRegistrationTasks}
-                        {(!userTasks && !userRegistrationTasks) ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.') : ''}
                     </TableBody>
                 </Table>
+
+                <p>{(userTasks.length == 0 && userRegistrationTasks.length == 0) ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.') : ''}</p>
 
                 <Dialog
                     open={this.state.open}
