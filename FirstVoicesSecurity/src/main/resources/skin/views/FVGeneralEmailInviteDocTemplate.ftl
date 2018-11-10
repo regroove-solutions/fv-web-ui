@@ -11,7 +11,7 @@ In order to create a password, please follow this link:<br/>
 Once you create a password, you will be able to login by going to https://www.firstvoices.com and using the SIGN IN option in the top right.<br/><br/>
 If you have an official role working on language revitalization as part of your community, your language administrator may need to approve your request before you gain access to edit/add new entries.<br/><br/>
 
-Please feel free to contact us at support@fpcc.ca for assistance if you have any issues.<br/><br/>
+Please feel free to contact us at support@fpcc.ca for assistance or if you have any issues.<br/><br/>
 
 Regards,<br/>
 The FirstVoices team

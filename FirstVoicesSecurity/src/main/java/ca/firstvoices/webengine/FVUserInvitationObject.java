@@ -23,42 +23,8 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * @author <a href="mailto:akervern@nuxeo.com">Arnaud Kervern</a>
  */
-@Path("/userInvitation")
+@Path("/fv/users")
 @Produces("text/html;charset=UTF-8")
-@WebObject(type = "userRegistration")
+@WebObject(type = "FVUserRegistration", superType = "userRegistration")
 public class FVUserInvitationObject extends UserInvitationObject {
-    private static final Log log = LogFactory.getLog(UserInvitationObject.class);
-
-    protected UserInvitationService fetchService() {
-        UserInvitationService usr = Framework.getLocalService(UserInvitationService.class);
-        return usr;
-    }
-
-    @GET
-    @Path("enterpassword/{configurationName}/{requestId}")
-    public Object validatePasswordForm(@PathParam("requestId") String requestId,
-                                       @PathParam("configurationName") String configurationName) {
-
-        UserInvitationService usr = fetchService();
-        try {
-            usr.checkRequestId(requestId);
-        } catch (AlreadyProcessedRegistrationException ape) {
-            return getView("ValidationErrorTemplate").arg("exceptionMsg",
-                    ctx.getMessage("label.error.requestAlreadyProcessed"));
-        } catch (UserRegistrationException ue) {
-            return getView("ValidationErrorTemplate").arg("exceptionMsg",
-                    ctx.getMessage("label.error.requestNotExisting", requestId));
-        }
-
-        Map<String, String> data = new HashMap<String, String>();
-        data.put("RequestId", requestId);
-        data.put("ConfigurationName", configurationName);
-        String webappName = VirtualHostHelper.getWebAppName(getContext().getRequest());
-        String validationRelUrl = usr.getConfiguration(configurationName).getValidationRelUrl();
-        String valUrl = "/" + webappName + "/" + validationRelUrl;
-        data.put("ValidationUrl", valUrl);
-        return getView("EnterPassword").arg("data", data);
-    }
-
-
 }
