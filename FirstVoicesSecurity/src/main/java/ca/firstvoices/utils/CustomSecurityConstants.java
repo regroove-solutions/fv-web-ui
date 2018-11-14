@@ -9,4 +9,8 @@ public class CustomSecurityConstants {
 	public static final String RECORDERS_GROUP = "recorders";
 	public static final String RECORDERS_APPROVERS_GROUP = "recorders_with_approval";
 	public static final String LANGUAGE_ADMINS_GROUP = "language_administrators";
+
+	// special users
+	public static final String SYSTEM_USER = "system";
+	public static final String ADMINISTRATORS = "administrators";
 }
