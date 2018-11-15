@@ -41,7 +41,8 @@ export default class PortalList extends Component {
         ]),
         action: PropTypes.func,
         cols: PropTypes.number,
-        fieldMapping: PropTypes.object
+        fieldMapping: PropTypes.object,
+        showOnlyUserDialects: PropTypes.bool
     };
 
     static defaultProps = {
@@ -49,7 +50,8 @@ export default class PortalList extends Component {
         fieldMapping: {
             title: 'properties.dc:title',
             logo: 'properties.file:content'
-        }
+        },
+        showOnlyUserDialects: false
     }
 
     constructor(props, context) {
@@ -60,13 +62,18 @@ export default class PortalList extends Component {
 
         let items = this.props.filteredItems || this.props.items;
 
+        if (this.props.showOnlyUserDialects) {
+            items = items.filter((tile) => ProviderHelpers.isActiveRole(selectn('contextParameters.portal.roles', tile)));
+        }
+
         return <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
             <GridList
                 cols={(UIHelpers.isViewSize('xs')) ? 2 : this.props.cols}
                 cellHeight={146}
                 style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
             >
-                {(items).map(function (tile, i) {
+
+                {items.map(function (tile, i) {
 
                     // Switch roles
                     let dialectRoles = selectn('contextParameters.portal.roles', tile);
@@ -91,6 +98,7 @@ export default class PortalList extends Component {
                         subtitle={(IntlService.instance.searchAndReplace(tile.description) || '')}
                     ><img src={UIHelpers.getThumbnail(logo, 'Medium')}
                           alt={title + ' ' + intl.trans('logo', 'Logo', 'first')}/></GridTile>
+
                 }.bind(this))}
             </GridList>
         </div>;

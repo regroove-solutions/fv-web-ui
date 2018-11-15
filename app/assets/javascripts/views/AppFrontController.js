@@ -138,7 +138,12 @@ const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
     condition: function (params) {
-        return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces')
+        // Condition 1: Guest and trying to access Workspaces
+        // Condition 2: User is a site member (not specific dialect) and trying to access Workspaces
+        return (
+            (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') || 
+            (ProviderHelpers.isSiteMember(selectn("response.properties.groups", params.props.computeLogin)) && params.props.splitWindowPath[2] == 'Workspaces')
+        )
     },
     target: function (params) {
         return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections');
@@ -1447,7 +1452,7 @@ export default class AppFrontController extends Component {
                         {(() => {
                             let area = selectn("routeParams.area", reactElement.props);
 
-                            if (area && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
+                            if (area && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true && !ProviderHelpers.isSiteMember(selectn("response.properties.groups", props.computeLogin))) {
                                 return <WorkspaceSwitcher area={area} />;
                             }
 
