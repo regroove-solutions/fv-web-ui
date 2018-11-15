@@ -38,6 +38,9 @@ export default {
             // Remove parentheses
             str = str.replace(/[()]/g, '');
 
+            // Escape single quotes and URL decode
+            str = str.replace(/!/g, "\\!");
+
             // Escape colon
             str = decodeURIComponent(str);
         }
