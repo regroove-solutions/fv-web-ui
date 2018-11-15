@@ -179,8 +179,11 @@ export default class AppWrapper extends Component {
                 this.setState({dialect: userPreferences.primary_dialect});
             }
             // Otherwise select first dialect user has a role in
-            else {
-                nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + StringHelpers.clean(selectn('response.properties.groups', nextProps.computeLogin).join('\',\'')) + '\')');
+            else {                
+                let groups = selectn('response.properties.groups', nextProps.computeLogin);
+                groups = groups.map((group) => StringHelpers.clean(group))
+
+                nextProps.queryDialect2('/FV/Workspaces', ' AND ecm:acl/*/principal IN (\'' + groups.join('\',\'') + '\')');
             }
 
         }
