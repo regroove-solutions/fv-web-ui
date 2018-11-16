@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
@@ -41,12 +42,13 @@ const intl = IntlService.instance;
 export default class ListView extends DataListView {
 
     static defaultProps = {
-        DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
+        DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures', 'dc:modified'],
         DEFAULT_PAGE: 1,
         DEFAULT_PAGE_SIZE: 10,
         DEFAULT_LANGUAGE: 'english',
         DEFAULT_SORT_COL: 'fv:custom_order',
         DEFAULT_SORT_TYPE: 'asc',
+        ENABLED_COLS: ["title", "related_pictures", "related_audio", "fv:definitions", "fv-word:pronunciation", "fv-word:categories", "fv-word:part_of_speech"],
         dialect: null,
         filter: new Map(),
         gridListView: false,
@@ -74,6 +76,7 @@ export default class ListView extends DataListView {
         onPagePropertiesChange: PropTypes.func,
         action: PropTypes.func,
 
+        ENABLED_COLS: PropTypes.array,
         DISABLED_SORT_COLS: PropTypes.array,
         DEFAULT_PAGE: PropTypes.number,
         DEFAULT_PAGE_SIZE: PropTypes.number,
@@ -159,6 +162,14 @@ export default class ListView extends DataListView {
                     render: function (v, data, cellProps) {
                         return selectn('contextParameters.word.part_of_speech', data);
                     }
+                },
+                {
+                    name: 'dc:modified',
+                    width: 210,
+                    title: intl.trans('date_modified', 'Date Modified'),
+                    render: function (v, data, cellProps) {
+                        return StringHelpers.formatUTCDateString(selectn('lastModified', data));
+                    }
                 }
             ],
             sortInfo: {
@@ -176,6 +187,11 @@ export default class ListView extends DataListView {
         if (UIHelpers.isViewSize('xs')) {
             this.state.columns = this.state.columns.filter((v, k) => ['title', 'fv:literal_translation'].indexOf(v.name) != -1);
             this.state['hideStateColumn'] = true;
+        }
+
+        // Only show enabled cols if specified
+        if (this.props.ENABLED_COLS.length > 0) {
+            this.state.columns = this.state.columns.filter((v, k) => this.props.ENABLED_COLS.indexOf(v.name) != -1);
         }
 
         // Bind methods to 'this'

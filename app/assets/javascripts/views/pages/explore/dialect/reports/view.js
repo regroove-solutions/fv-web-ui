@@ -57,6 +57,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         computePortal: PropTypes.object.isRequired,
         fetchCategories: PropTypes.func.isRequired,
         computeCategories: PropTypes.object.isRequired,
+        updatePageProperties: PropTypes.func.isRequired,
         routeParams: PropTypes.object.isRequired
     };
 
@@ -79,7 +80,11 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected', '_getURLPageProps', '_resetURLPagination', '_handlePagePropertiesChange'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_getURLPageProps', '_resetURLPagination', '_handlePagePropertiesChange', '_getPageKey'].forEach((method => this[method] = this[method].bind(this)));
+    }
+
+    _getPageKey() {
+        return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_reports';
     }
 
     _onNavigateRequest(path) {
@@ -106,22 +111,24 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         switch (this.state.currentReport.get('type')) {
             case 'words':
                 listView = <WordListView
-                                onPaginationReset={this._resetURLPagination}
-                                onPagePropertiesChange={this._handlePagePropertiesChange}
-                                {...this._getURLPageProps()}
-                                controlViaURL={true}
-                                filter={this.state.filterInfo}
-                                routeParams={this.props.routeParams}/>;
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        ENABLED_COLS={["title", "related_pictures", "related_audio", "fv:definitions", "fv-word:part_of_speech", "dc:modified"]}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'phrases':
                 listView = <PhraseListView
-                                onPaginationReset={this._resetURLPagination}
-                                onPagePropertiesChange={this._handlePagePropertiesChange}
-                                {...this._getURLPageProps()}
-                                controlViaURL={true}
-                                filter={this.state.filterInfo}
-                                routeParams={this.props.routeParams}/>;
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        ENABLED_COLS={["title", "fv:definitions", "related_pictures", "related_audio", "fv-phrase:phrase_books", "dc:modified"]}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'songs':
@@ -137,7 +144,8 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
             case 'stories':
                 listView =
-                    <SongsStoriesListViewAlt                        onPaginationReset={this._resetURLPagination}
+                    <SongsStoriesListViewAlt
+                        onPaginationReset={this._resetURLPagination}
                         onPagePropertiesChange={this._handlePagePropertiesChange}
                         {...this._getURLPageProps()}
                         controlViaURL={true}
