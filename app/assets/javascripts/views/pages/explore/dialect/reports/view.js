@@ -70,6 +70,25 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             return entry.get('name').toLowerCase() === decodeURI(this.props.routeParams.reportName).toLowerCase()
         }.bind(this));
 
+        if (!report.has("cols")){
+
+            let defaultCols = null;
+
+            switch (report.get('type')) {
+                case "words":
+                    defaultCols = ["title", "related_pictures", "related_audio", "fv:definitions", "fv-word:part_of_speech"];
+                break;
+
+                case "phrases":
+                    defaultCols = ["title", "fv:definitions", "related_pictures", "related_audio", "fv-phrase:phrase_books"];
+                break;                
+            }
+
+            report = report.set("cols", defaultCols);
+        } else {
+            report = report.set("cols", report.get("cols").toJS());
+        }
+
         this.state = {
             currentReport: report,
             filterInfo: new Map({
@@ -115,8 +134,10 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
                         onPagePropertiesChange={this._handlePagePropertiesChange}
                         {...this._getURLPageProps()}
                         controlViaURL={true}
-                        ENABLED_COLS={["title", "related_pictures", "related_audio", "fv:definitions", "fv-word:part_of_speech", "dc:modified"]}
+                        ENABLED_COLS={(this.state.currentReport.has('cols')) ? this.state.currentReport.get('cols') : []}
                         filter={this.state.filterInfo}
+                        DEFAULT_SORT_COL={this.state.currentReport.get('sortCol')}
+                        DEFAULT_SORT_TYPE={this.state.currentReport.get('sortOrder')}
                         routeParams={this.props.routeParams}/>;
                 break;
 
@@ -126,8 +147,10 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
                         onPagePropertiesChange={this._handlePagePropertiesChange}
                         {...this._getURLPageProps()}
                         controlViaURL={true}
-                        ENABLED_COLS={["title", "fv:definitions", "related_pictures", "related_audio", "fv-phrase:phrase_books", "dc:modified"]}
+                        ENABLED_COLS={(this.state.currentReport.has('cols')) ? this.state.currentReport.get('cols') : []}
                         filter={this.state.filterInfo}
+                        DEFAULT_SORT_COL={this.state.currentReport.get('sortCol')}
+                        DEFAULT_SORT_TYPE={this.state.currentReport.get('sortOrder')}
                         routeParams={this.props.routeParams}/>;
                 break;
 

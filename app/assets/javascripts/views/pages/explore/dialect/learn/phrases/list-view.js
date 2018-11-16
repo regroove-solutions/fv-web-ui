@@ -151,6 +151,14 @@ export default class ListView extends DataListView {
                     render: function (v, data, cellProps) {
                         return StringHelpers.formatUTCDateString(selectn('lastModified', data));
                     }
+                },
+                {
+                    name: 'dc:created',
+                    width: 210,
+                    title: intl.trans('date_created', 'Date Created'),
+                    render: function (v, data, cellProps) {
+                        return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data));
+                    }
                 }
             ],
             sortInfo: {
