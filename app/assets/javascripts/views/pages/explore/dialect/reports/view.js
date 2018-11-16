@@ -79,7 +79,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_getURLPageProps', '_resetURLPagination', '_handlePagePropertiesChange'].forEach((method => this[method] = this[method].bind(this)));
     }
 
     _onNavigateRequest(path) {
@@ -105,7 +105,13 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
         switch (this.state.currentReport.get('type')) {
             case 'words':
-                listView = <WordListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                listView = <WordListView
+                                onPaginationReset={this._resetURLPagination}
+                                onPagePropertiesChange={this._handlePagePropertiesChange}
+                                {...this._getURLPageProps()}
+                                controlViaURL={true}
+                                filter={this.state.filterInfo}
+                                routeParams={this.props.routeParams}/>;
                 break;
 
             case 'phrases':
