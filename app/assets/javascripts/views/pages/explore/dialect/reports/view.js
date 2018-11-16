@@ -115,17 +115,34 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
                 break;
 
             case 'phrases':
-                listView = <PhraseListView filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                listView = <PhraseListView
+                                onPaginationReset={this._resetURLPagination}
+                                onPagePropertiesChange={this._handlePagePropertiesChange}
+                                {...this._getURLPageProps()}
+                                controlViaURL={true}
+                                filter={this.state.filterInfo}
+                                routeParams={this.props.routeParams}/>;
                 break;
 
             case 'songs':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt 
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'stories':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
         }
 
