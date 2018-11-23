@@ -104,6 +104,12 @@ export default {
 
         return false;
     },
+    /**
+     * A site member is not associated with any specific dialect, but still has access to site for other functionality. 
+     */
+    isSiteMember: function (groups) {
+        return groups && groups.length === 1 && groups[0] === "members";
+    },
     getDialectPathFromURLArray: function (url) {
         return decodeURI(url.slice(1, 7).join('/'));
     },
