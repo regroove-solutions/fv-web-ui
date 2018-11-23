@@ -122,6 +122,8 @@ export default class ExploreDialects extends Component {
 
     render() {
 
+        let introText1, introText2 = ""; 
+
         const isKidsTheme = this.props.routeParams.theme === 'kids';
 
         const computeEntities = Immutable.fromJS([{
@@ -164,6 +166,7 @@ export default class ExploreDialects extends Component {
                 title: titleFieldMapping,
                 logo: logoFieldMapping
             },
+            showOnlyUserDialects: (isLoggedIn && this.props.routeParams.area == 'Workspaces') ? true : false,
             metadata: selectn('response', computePortals),
             items: sortedPortals
         };
@@ -172,6 +175,15 @@ export default class ExploreDialects extends Component {
 
         if (isKidsTheme) {
             portalList = <PortalList {...portalListProps} cols={6}/>
+        }
+
+        if (this.props.routeParams.area == 'Workspaces') {
+
+            if (isLoggedIn) {
+                introText1 = <p>You are part of the following Workspaces (community portals):</p>;
+            }
+
+            introText2 = <p><a href="/explore/FV/sections/Data">Click here to view all publicly available portals</a> or click on "Public View" (top right).</p>;
         }
 
         return <PromiseWrapper computeEntities={computeEntities}>
@@ -183,7 +195,11 @@ export default class ExploreDialects extends Component {
                         <h1>{intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'title'})}</h1>
                     </div>
 
+                    {introText1}
+
                     {portalList}
+
+                    {introText2}
 
                 </div>
             </div>

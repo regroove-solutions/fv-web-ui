@@ -138,7 +138,12 @@ const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
     condition: function (params) {
-        return (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces')
+        // Condition 1: Guest and trying to access Workspaces
+        // Condition 2: User is a site member (not specific dialect) and trying to access Workspaces
+        return (
+            (selectn("isConnected", params.props.computeLogin) === false && params.props.splitWindowPath[2] == 'Workspaces') || 
+            (ProviderHelpers.isSiteMember(selectn("response.properties.groups", params.props.computeLogin)) && params.props.splitWindowPath[2] == 'Workspaces')
+        )
     },
     target: function (params) {
         return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections');
@@ -158,6 +163,7 @@ const NOT_CONNECTED_REDIRECT = {
 const DIALECT_PATH = [KIDS_OR_DEFAULT, 'FV', new paramMatch('area', WORKSPACE_OR_SECTION), 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH];
 const PHRASES_PATH = DIALECT_PATH.concat(['learn', 'phrases']);
 const WORDS_PATH = DIALECT_PATH.concat(['learn', 'words']);
+const REPORTS_PATH = DIALECT_PATH.concat(['reports']);
 const PAGINATION_PATH = [new paramMatch('pageSize', NUMBER), new paramMatch('page', NUMBER)];
 
 // Common Routes
@@ -184,6 +190,18 @@ const DIALECT_LEARN_PHRASES = {
     extractPaths: true,
     redirects: [WORKSPACE_TO_SECTION_REDIRECT]
 }
+
+const REPORT_VIEW = {
+    path:  REPORTS_PATH.concat(new paramMatch('reportName', ANYTHING_BUT_SLASH)),
+    title: '{$reportName} | ' + intl.translate({
+        key: 'reports',
+        default: 'Reports',
+        case: 'words'
+    }) + ' | {$dialect_name}',
+    page: <PageDialectReportsView/>,
+    extractPaths: true,
+    redirects: [WORKSPACE_TO_SECTION_REDIRECT]
+};
 
 // Adds a pagination route to an existing route
 const addPagination = function (route) {
@@ -734,7 +752,7 @@ export default class AppFrontController extends Component {
                 extractPaths: true
             },
             {
-                path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports'],
+                path: REPORTS_PATH,
                 title: intl.translate({
                     key: 'reports',
                     default: 'Reports',
@@ -744,17 +762,8 @@ export default class AppFrontController extends Component {
                 extractPaths: true,
                 redirects: [WORKSPACE_TO_SECTION_REDIRECT]
             },
-            {
-                path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'reports', new paramMatch('reportName', ANYTHING_BUT_SLASH)],
-                title: '{$reportName} | ' + intl.translate({
-                    key: 'reports',
-                    default: 'Reports',
-                    case: 'words'
-                }) + ' | {$dialect_name}',
-                page: <PageDialectReportsView/>,
-                extractPaths: true,
-                redirects: [WORKSPACE_TO_SECTION_REDIRECT]
-            },
+            REPORT_VIEW,
+            addPagination(REPORT_VIEW),
             {
                 path: [KIDS_OR_DEFAULT, 'FV', 'Workspaces', 'Data', ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, ANYTHING_BUT_SLASH, 'users'],
                 title: intl.translate({
@@ -1447,7 +1456,7 @@ export default class AppFrontController extends Component {
                         {(() => {
                             let area = selectn("routeParams.area", reactElement.props);
 
-                            if (area && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true) {
+                            if (area && selectn("isConnected", props.computeLogin) && matchedPage.get('disableWorkspaceSectionNav') !== true && !ProviderHelpers.isSiteMember(selectn("response.properties.groups", props.computeLogin))) {
                                 return <WorkspaceSwitcher area={area} />;
                             }
 

@@ -22,6 +22,7 @@ import selectn from 'selectn';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import StringHelpers from 'common/StringHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
 import UIHelpers from 'common/UIHelpers';
 
@@ -86,6 +87,22 @@ export default class ListViewAlt extends DataListView {
                     name: 'title', title: intl.trans('title', 'Title', 'first'), render: function (v, data, cellProps) {
                         return <a onClick={NavigationHelpers.disable} href={NavigationHelpers.generateUIDPath((currentTheme || 'explore'), data, (selectn('properties.fvbook:type', data) == 'story' ? 'stories' : 'songs'))}>{v}</a>
                         //return v;
+                    }
+                },
+                {
+                    name: 'dc:modified',
+                    width: 250,
+                    title: intl.trans('date_modified', 'Date Modified'),
+                    render: function (v, data, cellProps) {
+                        return StringHelpers.formatUTCDateString(selectn('lastModified', data));
+                    }
+                },
+                {
+                    name: 'dc:created',
+                    width: 210,
+                    title: intl.trans('date_created', 'Date Created'),
+                    render: function (v, data, cellProps) {
+                        return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data));
                     }
                 }
             ],

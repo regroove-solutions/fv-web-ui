@@ -57,6 +57,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         computePortal: PropTypes.object.isRequired,
         fetchCategories: PropTypes.func.isRequired,
         computeCategories: PropTypes.object.isRequired,
+        updatePageProperties: PropTypes.func.isRequired,
         routeParams: PropTypes.object.isRequired
     };
 
@@ -69,6 +70,25 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             return entry.get('name').toLowerCase() === decodeURI(this.props.routeParams.reportName).toLowerCase()
         }.bind(this));
 
+        if (!report.has("cols")){
+
+            let defaultCols = null;
+
+            switch (report.get('type')) {
+                case "words":
+                    defaultCols = ["title", "related_pictures", "related_audio", "fv:definitions", "fv-word:part_of_speech"];
+                break;
+
+                case "phrases":
+                    defaultCols = ["title", "fv:definitions", "related_pictures", "related_audio", "fv-phrase:phrase_books"];
+                break;                
+            }
+
+            report = report.set("cols", defaultCols);
+        } else {
+            report = report.set("cols", report.get("cols").toJS());
+        }
+
         this.state = {
             currentReport: report,
             filterInfo: new Map({
@@ -79,7 +99,11 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         };
 
         // Bind methods to 'this'
-        ['_onNavigateRequest', '_handleFacetSelected'].forEach((method => this[method] = this[method].bind(this)));
+        ['_onNavigateRequest', '_handleFacetSelected', '_getURLPageProps', '_resetURLPagination', '_handlePagePropertiesChange', '_getPageKey'].forEach((method => this[method] = this[method].bind(this)));
+    }
+
+    _getPageKey() {
+        return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_reports';
     }
 
     _onNavigateRequest(path) {
@@ -105,21 +129,51 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
         switch (this.state.currentReport.get('type')) {
             case 'words':
-                listView = <WordListView filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
+                listView = <WordListView
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        ENABLED_COLS={(this.state.currentReport.has('cols')) ? this.state.currentReport.get('cols') : []}
+                        filter={this.state.filterInfo}
+                        DEFAULT_SORT_COL={this.state.currentReport.get('sortCol')}
+                        DEFAULT_SORT_TYPE={this.state.currentReport.get('sortOrder')}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'phrases':
-                listView = <PhraseListView filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
+                listView = <PhraseListView
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        ENABLED_COLS={(this.state.currentReport.has('cols')) ? this.state.currentReport.get('cols') : []}
+                        filter={this.state.filterInfo}
+                        DEFAULT_SORT_COL={this.state.currentReport.get('sortCol')}
+                        DEFAULT_SORT_TYPE={this.state.currentReport.get('sortOrder')}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'songs':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt 
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
 
             case 'stories':
                 listView =
-                    <SongsStoriesListViewAlt filter={this.state.filterInfo} DEFAULT_SORT_COL="ecm:pos" routeParams={this.props.routeParams}/>;
+                    <SongsStoriesListViewAlt
+                        onPaginationReset={this._resetURLPagination}
+                        onPagePropertiesChange={this._handlePagePropertiesChange}
+                        {...this._getURLPageProps()}
+                        controlViaURL={true}
+                        filter={this.state.filterInfo}
+                        routeParams={this.props.routeParams}/>;
                 break;
         }
 
