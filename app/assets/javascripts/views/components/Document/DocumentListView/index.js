@@ -143,7 +143,7 @@ export default class DocumentListView extends Component {
             }
         }
 
-        return <Paper><ClearFix>
+        return <Paper className="document-list-view"><ClearFix>
             <DataGrid
                 idProperty="uid"
                 dataSource={selectn('response.entries', this.props.data)}
