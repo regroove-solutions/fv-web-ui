@@ -49,6 +49,8 @@ export default class Wordsearch extends Component {
      */
     constructor(props, context) {
         super(props, context);
+
+        this._changeContent = this._changeContent.bind(this);
     }
 
     /**
@@ -56,7 +58,18 @@ export default class Wordsearch extends Component {
      */
     componentDidMount() {
         // Fetch fetch data
-        this.fetchData(this.props);
+        this.fetchData(this.props, 0);
+    }
+
+    _changeContent(pageIndex, pageCount) {
+
+        let nextPage = pageIndex + 1;
+
+        if (pageIndex == pageCount - 1) {
+            nextPage = 0;
+        }
+
+        this.fetchData(this.props, nextPage);
     }
 
     /**
@@ -70,11 +83,12 @@ export default class Wordsearch extends Component {
             '&sortBy=fvcharacter:alphabet_order');
 
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+            ' AND fv:available_in_childrens_archive = 1' + 
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) + '/* IS NOT NULL' +
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) + '/* IS NOT NULL' +
             //' AND fv-word:available_in_games = 1' +
-            '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) +
-            '&pageSize=19' +
+            '&currentPageIndex=' + pageIndex + 
+            '&pageSize=10' +
             '&sortBy=dc:created' +
             '&sortOrder=DESC'
         );
@@ -126,9 +140,12 @@ export default class Wordsearch extends Component {
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
                 <div className="col-xs-12" style={{textAlign: 'center'}}>
+                <a href="#" onTouchTap={this._changeContent.bind(this, selectn('response.currentPageIndex', computeWords), selectn('response.pageCount', computeWords))}>Load More Words!</a>
                     {game}
-                    <small>{intl.trans('views.pages.explore.dialect.play.archive_contains', 'Archive contains', 'first')}
-                        {word_array.length} {intl.trans('views.pages.explore.dialect.play.words_that_met_game_requirements', 'words that met game requirements.')}</small>
+                    <small>{intl.trans('views.pages.explore.dialect.play.archive_contains', 'Archive contains', 'first')} 
+                    &nbsp; {selectn('response.resultsCount', computeWords)} &nbsp;
+                    {intl.trans('views.pages.explore.dialect.play.words_that_met_game_requirements', 'words that met game requirements.')}
+                    </small>
                 </div>
             </div>
         </PromiseWrapper>;
