@@ -1,7 +1,13 @@
+/*
+ * Contributors:
+ *     Kristof Subryan <vtr_monk@mac.com>
+ */
 package ca.firstvoices.operations;
 
 
 import ca.firstvoices.utils.FVRegistrationUtilities;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -30,6 +36,15 @@ public class FVQuickUserRegistration {
     @Context
     protected UserRegistrationService registrationService;
 
+    @Context
+    protected AutomationService autoService;
+
+    @Context
+    OperationContext ctx;
+
+    @Context
+    protected CoreSession session;
+
     @Param(name ="docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;
 
@@ -45,29 +60,37 @@ public class FVQuickUserRegistration {
     @Param(name = "comment", required = false)
     protected String comment;
 
-    @Context
-    protected CoreSession session;
 
     @OperationMethod
     public String run( DocumentModel registrationRequest )
     {
+        session = registrationRequest.getCoreSession();
+
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
-        utilCommon.preCondition( registrationRequest, session );
+        utilCommon.preCondition( registrationRequest, session, userManager, autoService );
 
         autoAccept = utilCommon.QuickUserRegistrationCondition( registrationRequest, session, autoAccept );
 
         String registrationId = utilCommon.postCondition( registrationService,
-                                                            session,
-                                                            registrationRequest,
-                                                            info,
-                                                            comment,
-                                                            validationMethod,
-                                                            autoAccept );
-        // send email to Administrator
-        // send email to LanguageAdministrator
-        // register tasks for registration reminder worker
-        utilCommon.notificationEmailsAndReminderTasks();
+                session,
+                registrationRequest,
+                info,
+                comment,
+                validationMethod,
+                autoAccept );
+        try
+        {
+            // send email to Administrator
+            // send email to LanguageAdministrator
+            // TODO register tasks for registration reminder worker
+
+            utilCommon.notificationEmailsAndReminderTasks( ctx );
+        }
+        catch(Exception e)
+        {
+
+        }
 
         return registrationId;
     }

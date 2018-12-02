@@ -15,10 +15,14 @@
  *
  * Contributors:
  *     Nelson Silva <nsilva@nuxeo.com>
+ *     Kristof Subryan <vtr_monk@mac.com>
  */
 package ca.firstvoices.operations;
 
 import ca.firstvoices.utils.FVRegistrationUtilities;
+import org.nuxeo.ecm.automation.AutomationService;
+import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -28,7 +32,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
-
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 
 import java.io.Serializable;
@@ -46,11 +49,21 @@ public class UserInvite {
 
     public static final String ID = "User.Invite";
 
+
     @Context
     protected UserManager userManager;
 
     @Context
     protected UserRegistrationService registrationService;
+
+    @Context
+    protected CoreSession session;
+
+    @Context
+    protected AutomationService autoService;
+
+    @Context
+    OperationContext ctx;
 
     @Param(name ="docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;
@@ -67,96 +80,23 @@ public class UserInvite {
     @Param(name = "comment", required = false)
     protected String comment;
 
-    @Context
-    protected CoreSession session;
 
     @OperationMethod
     public String run(DocumentModel registrationRequest) {
-
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
-        utilCommon.preCondition( registrationRequest, session );
-
-//        NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
-//
-//        DocumentRegistrationInfo docInfo = new DocumentRegistrationInfo();
-//        FVUserRegistrationInfo userInfo = new FVUserRegistrationInfo();
-//
-//        String requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
-//        String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
-//        String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
-//        String email = (String) registrationRequest.getPropertyValue("userinfo:email");
-//
-//        // Source lookup (unrestricted)
-//        UnrestrictedSourceDocumentResolver usdr = new UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
-//        usdr.runUnrestricted();
-//
-//        // Source document
-//        DocumentModel dialect = usdr.dialect;
-//
-//        String dialectTitle = (String) dialect.getPropertyValue("dc:title");
-//
-//        docInfo.setDocumentId(dialect.getId());
-//
-//        if (dialect.getCurrentLifeCycleState().equals("disabled")) {
-//            throw new UserRegistrationException("Cannot request to join a disabled dialect.");
-//        }
-//
-//        docInfo.setDocumentTitle(dialectTitle);
-
-//        // Group lookup (unrestricted)
-//        UnrestrictedGroupResolver ugdr = new UnrestrictedGroupResolver(session, dialect);
-//        ugdr.runUnrestricted();
-//
-//        // If no group found (somehow), add Read permission directly.
-//        if (!ugdr.member_groups.isEmpty()) {
-//            userInfo.setGroups(ugdr.member_groups);
-//        } else {
-//            docInfo.setPermission("Read");
-//        }
-//
-//        // If authorized, use preset groups
-//        if (currentUser.isAdministrator() || currentUser.isMemberOf(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP)) {
-//            autoAccept = true;
-//
-//            @SuppressWarnings("unchecked")
-//            List<String> preSetGroup = (List<String>) registrationRequest.getPropertyValue("userinfo:groups");
-//
-//            if (!preSetGroup.isEmpty()) {
-//                userInfo.setGroups(preSetGroup);
-//            }
-//        }
-//        // If not authorized, never autoaccept
-//        else {
-//            autoAccept = false;
-//        }
+        utilCommon.preCondition(registrationRequest, session, userManager, autoService);
 
         autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );
 
-//        userInfo.setEmail(email);
-//        userInfo.setFirstName(firstName);
-//        userInfo.setLastName(lastName);
-//        userInfo.setRequestedSpace(requestedSpaceId);
-//
-//        // Additional information from registration
-//        info.put("fvuserinfo:requestedSpaceId", userInfo.getRequestedSpace());
-//        info.put("registration:comment", comment);
-//        info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
-//
-//        String registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(CONFIGURATION_NAME).getName(), userInfo, docInfo, info,
-//                validationMethod, autoAccept, email);
-//
-//        // Set permissions on registration document
-//        UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(session, registrationId, ugdr.language_admin_group);
-//        urpr.runUnrestricted();
+        String registrationId = utilCommon.postCondition(registrationService,
+                session,
+                registrationRequest,
+                info,
+                comment,
+                validationMethod,
+                autoAccept);
 
-        return utilCommon.postCondition( registrationService,
-                                         session,
-                                         registrationRequest,
-                                         info,
-                                         comment,
-                                         validationMethod,
-                                         autoAccept );
+        return registrationId;
     }
-
 }
