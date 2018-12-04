@@ -70,12 +70,8 @@ public class FirstVoicesNativeOrderTest {
     // String[] alphabet = {"a","ʔa","ʕa","aa","ʔaa","ʕaa","e","ʔe","ʕe","ee","ʔee","ʕee","c","c̕","č","č’","h","ḥ","i","ʔi","ʕi","ii","ʔii","ʕii","k","k̕","kʷ","k̕ʷ","ł","ƛ","ƛ̕","m","m̕","n","n̕","p","p̕","q","qʷ","s","š","t","t̕","u","ʔu","ʕu","uu","ʔuu","ʕuu","w","w̕","x","x̣","xʷ","x̣ʷ","y","y̕","ʕ","ʔ"};
 
     // Nisg'a
-    private String[] orderedWords = { "adoḵs", "agwii-gin̓am", "aada gadaalee", "lag̱am-bax̱", "laahitkw" };
-    private String[] alphabet = {"a","aa","b","d","e","ee","g","g̱","gw","h","hl","i","ii","j","k","k'","ḵ","ḵ'","kw","kw'","l","Ì","m","m̓","n","n̓","o","oo","p","p'","s","t","t'","tl'","ts","ts'","u","uu","w","w̓","x","x̱","xw","y","y̓"};
-
-
-
-
+    private String[] orderedWords = { "adoḵs", "agwii-gin̓am", "aada gadaalee", "la'oo'a'a", "lag̱am-bax̱", "laahitkw" };
+    private String[] alphabet = {"a","aa","b","d","e","ee","g","g̱","gw","h","hl","i","ii","j","k","k'","ḵ","ḵ'","kw","kw'","l","Ì","m","m̓","n","n̓","o","oo","p","p'","s","t","t'","tl'","ts","ts'","u","uu","w","w̓","x","x̱","xw","y","y̓","’"};
 
     private String alphaArr;
 
