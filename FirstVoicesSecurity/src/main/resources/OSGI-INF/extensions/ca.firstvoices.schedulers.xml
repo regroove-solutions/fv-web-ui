@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <!-- run every minute 0 0/1 0 ? * * * -->
-<!-- every 12 hrs 0 0 0/12 ? * * * -->
-<!-- every day at 2,12,22 0 0 0,2,12,22 ? * * * -->
+<!-- every 12 hrs -> 0 0 0/12 ? * * * -->
+<!-- every day at 2,12,22 -> 0 0 0,2,12,22 ? * * * -->
 
 <component name="ca.firstvoices.editors.schedulers">
     <extension target="org.nuxeo.ecm.core.scheduler.SchedulerService" point="schedule">
         <schedule id="fv_registration">
             <eventId>checkRegistrationTimeout</eventId>
             <eventCategory>default</eventCategory>
-            <cronExpression>0 0/1 * * * ?</cronExpression>
+            <cronExpression>0 0 0,2,12,22 ? * * *</cronExpression>
         </schedule>
     </extension>
 </component>
