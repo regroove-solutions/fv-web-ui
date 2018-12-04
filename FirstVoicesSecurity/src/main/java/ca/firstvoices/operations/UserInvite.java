@@ -63,7 +63,7 @@ public class UserInvite {
     protected AutomationService autoService;
 
     @Context
-    OperationContext ctx;
+    protected OperationContext ctx;
 
     @Param(name ="docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;

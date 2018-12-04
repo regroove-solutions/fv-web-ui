@@ -40,7 +40,7 @@ public class FVQuickUserRegistration {
     protected AutomationService autoService;
 
     @Context
-    OperationContext ctx;
+    protected OperationContext ctx;
 
     @Context
     protected CoreSession session;
