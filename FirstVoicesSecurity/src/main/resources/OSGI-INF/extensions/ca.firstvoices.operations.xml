@@ -3,13 +3,9 @@
 	<extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations" >
 		<operation class="ca.firstvoices.operations.FVDialectPublishedDocumentPermissions" replace="true" />
 		<operation class="ca.firstvoices.operations.FVDialectRegularDocumentPermissions" replace="true" />
-		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
 		<operation class="ca.firstvoices.operations.FVGenerateJsonStatistics" replace="true" />
+		<operation class="ca.firstvoices.operations.FVPublishParents" replace="true" />
 		<operation class="ca.firstvoices.operations.FVSetListenerFlag" replace="true" />
-		<operation class="ca.firstvoices.operations.UserInvite" replace="true" />
-		<operation class="ca.firstvoices.operations.UserInviteApprove" replace="true" />
-		<operation class="ca.firstvoices.operations.FVQuickUserRegistration" replace="true" />
-		<operation class="ca.firstvoices.operations.FVGetPendingUserRegistrations" replace="true" />
 	</extension>
     
 </component>

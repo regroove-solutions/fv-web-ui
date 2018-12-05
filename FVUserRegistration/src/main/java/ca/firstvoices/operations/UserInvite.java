@@ -20,7 +20,6 @@
 package ca.firstvoices.operations;
 
 import ca.firstvoices.utils.FVRegistrationUtilities;
-import ca.firstvoices.workers.FVRegistrationTimeOutWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;

@@ -1,0 +1,11 @@
+<component name="ca.firstvoices.uregistration.listeners.contrib">
+
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+    <listener enabled="true" name="fvregistrationtimeoutlistener" async="true" postCommit="false"
+              class="FVUserRegistration.src.main.java.ca.firstvoices.listeners.FVRegistrationTimeOutListener" priority="100">
+      <event>checkRegistrationTimeout</event>
+    </listener>
+
+  </extension>
+
+</component>

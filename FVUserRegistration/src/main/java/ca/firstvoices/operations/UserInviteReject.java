@@ -101,7 +101,7 @@ public class UserInviteReject {
         session.saveDocument(registrationDoc);
 
         // Set additional information for email
-        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(CONFIGURATION_NAME).getEnterPasswordUrl());
+        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getEnterPasswordUrl());
 
         // Determine the document url to add it into the email
         String dialectId = (String) registrationDoc.getPropertyValue("docinfo:documentId");

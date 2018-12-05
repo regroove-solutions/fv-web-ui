@@ -34,7 +34,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
-import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURATION_NAME;
 
 import ca.firstvoices.utils.CustomSecurityConstants;
 
@@ -101,7 +100,7 @@ public class UserInviteApprove {
         session.saveDocument(registrationDoc);
 
         // Set additional information for email
-        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(CONFIGURATION_NAME).getEnterPasswordUrl());
+        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getEnterPasswordUrl());
 
         // Determine the document url to add it into the email
         String dialectId = (String) registrationDoc.getPropertyValue("docinfo:documentId");

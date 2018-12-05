@@ -4,7 +4,6 @@
  */
 package ca.firstvoices.utils;
 
-import ca.firstvoices.operations.UserInvite;
 import ca.firstvoices.user.FVUserRegistrationInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -216,7 +215,7 @@ public class FVRegistrationUtilities
         info.put("registration:comment", comment);
         info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
 
-        String registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(CONFIGURATION_NAME).getName(),
+        String registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(),
                 userInfo, docInfo, info,
                 validationMethod, autoAccept, email);
 

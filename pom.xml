@@ -27,6 +27,7 @@
     <module>FirstVoicesPublisher</module>
     <module>FirstVoicesEnrichers</module>
     <module>FirstVoicesSecurity</module>
+    <module>FVUserRegistration</module>
   </modules>
 
   <dependencyManagement>
@@ -44,6 +45,11 @@
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoicesSecurity</artifactId>
+        <version>${fv.plugin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FVUserRegistration</artifactId>
         <version>${fv.plugin.version}</version>
       </dependency>
       <dependency>

@@ -12,8 +12,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -44,7 +42,7 @@ public class FVGetPendingUserRegistrations
             registrations = session.query("Select * from Document where ecm:mixinType = 'UserRegistration'");
 
             // prune all items which are not part of the specific dialect
-            if( !dialectID.toLowerCase().equals("all"))
+            if( !(dialectID.toLowerCase().equals("all") || dialectID.toLowerCase().equals("*")) )
             {
                 for (DocumentModel uReg : registrations)
                 {

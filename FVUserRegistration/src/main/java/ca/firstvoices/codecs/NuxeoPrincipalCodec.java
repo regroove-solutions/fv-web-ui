@@ -16,7 +16,7 @@
  * Contributors:
  *     Nelson Silva <nsilva@nuxeo.com>
  */
-package ca.firstvoices.codecs;
+package FVUserRegistration.src.main.java.ca.firstvoices.codecs;
 
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.automation.io.services.codec.AbstractMarshallingRegistryCodec;

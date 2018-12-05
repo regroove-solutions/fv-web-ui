@@ -7,15 +7,10 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: Nuxeo
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=FVUserRegistration;extends=invite;headless=true
 Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.securitypolicies.g
  roups.xml,OSGI-INF/extensions/ca.firstvoices.securitypolicies.lifecyc
  le.xml,OSGI-INF/extensions/ca.firstvoices.permissions.xml,OSGI-INF/ex
  tensions/ca.firstvoices.filters.xml,OSGI-INF/extensions/ca.firstvoice
  s.operations.xml,OSGI-INF/extensions/ca.firstvoices.listeners.xml,OSG
- I-INF/extensions/ca.firstvoices.auth.xml,OSGI-INF/extensions/ca.first
- voices.codecs.xml,OSGI-INF/extensions/ca.firstvoices.user.xml,OSGI-IN
- F/extensions/ca.firstvoices.usermapping.xml,OSGI-INF/extensions/ca.fi
- rstvoices.workers.regtimeout.xml,OSGI-INF/extensions/ca.firstvoices.s
- chedulers.xml
+ I-INF/extensions/ca.firstvoices.operations.xml
 

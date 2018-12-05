@@ -2,6 +2,7 @@ package ca.firstvoices.workers;
 
 import ca.firstvoices.utils.FVRegistrationConstants;
 import ca.firstvoices.utils.FVRegistrationMailUtilities;
+import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.nuxeo.ecm.core.api.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +12,6 @@ import javax.security.auth.login.LoginContext;
 import java.util.Calendar;
 
 
-import static ca.firstvoices.utils.FVRegistrationUtilities.calculateRegistrationAgeInDays;
 
 
 public class FVRegistrationTimeOutWorker extends AbstractWork {
@@ -36,7 +36,7 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
 
         private int checkRegistrationTimeOut( Calendar dateRegistered )
         {
-            long diffDays = calculateRegistrationAgeInDays( dateRegistered );
+            long diffDays = FVRegistrationUtilities.calculateRegistrationAgeInDays( dateRegistered );
 
             int actionValue = 0;
 
