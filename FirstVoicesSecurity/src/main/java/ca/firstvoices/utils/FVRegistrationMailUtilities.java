@@ -1,6 +1,5 @@
 package ca.firstvoices.utils;
 
-import ca.firstvoices.operations.UserInvite;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -65,6 +64,7 @@ public class FVRegistrationMailUtilities {
         params.put("resolve groups", true );
 
         UserManager um = Framework.getService( UserManager.class);
+        //List<String> users = Arrays.asList(um.getUsersForPermission(SecurityConstants.EVERYTHING, dialect.getACP()));
         AutomationService automationService = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext();
         ctx.setInput( dialect );
