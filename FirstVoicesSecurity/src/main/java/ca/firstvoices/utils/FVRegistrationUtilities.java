@@ -225,7 +225,7 @@ public class FVRegistrationUtilities
         LoginContext lctx = null;
         CoreSession s = null;
         try {
-            lctx = Framework.loginAsUser("Administrator"); // TODO check if system will work
+            lctx = Framework.login();
             s = CoreInstance.openCoreSession("default");
 
             UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId, ugdr.language_admin_group);

@@ -57,7 +57,7 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
 
             try
             {
-                lctx = Framework.loginAsUser("Administrator"); // TODO system does not work ... HAVE TO FIND A SOLUTION FOR LIVE SYSTEM
+                lctx = Framework.login(); // system login
                 s = CoreInstance.openCoreSession("default");
                 session = s;
 
