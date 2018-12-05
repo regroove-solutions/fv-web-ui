@@ -44,14 +44,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+
+//TODO Do we need it? It is an exact copy of the UserInviteAccept
+//
 /**
  * Operation to accept a user invitation.
  */
-@Operation(id = UserInviteReject.ID, category = Constants.CAT_USERS_GROUPS, label = "Approve user invite",
-        description = "Approves a request to join the system.")
+@Operation(id = UserInviteReject.ID, category = Constants.CAT_USERS_GROUPS, label = "Rejects user invite",
+        description = "Rejects a request to join the system.")
 public class UserInviteReject {
 
-    public static final String ID = "User.ApproveInvite";
+    public static final String ID = "User.UserInviteReject";
 
     @Context
     protected UserManager userManager;

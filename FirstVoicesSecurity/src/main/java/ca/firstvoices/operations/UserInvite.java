@@ -20,9 +20,11 @@
 package ca.firstvoices.operations;
 
 import ca.firstvoices.utils.FVRegistrationUtilities;
+import ca.firstvoices.workers.FVRegistrationTimeOutWorker;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -48,7 +50,7 @@ import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 public class UserInvite {
 
     public static final String ID = "User.Invite";
-
+    private static final Log log = LogFactory.getLog(UserInvite.class);
 
     @Context
     protected UserManager userManager;

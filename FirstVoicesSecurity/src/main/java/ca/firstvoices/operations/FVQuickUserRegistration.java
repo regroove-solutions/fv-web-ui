@@ -6,6 +6,8 @@ package ca.firstvoices.operations;
 
 
 import ca.firstvoices.utils.FVRegistrationUtilities;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -29,6 +31,7 @@ import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 public class FVQuickUserRegistration {
 
     public static final String ID = "User.SelfRegistration";
+    private static final Log log = LogFactory.getLog(FVQuickUserRegistration.class);
 
     @Context
     protected UserManager userManager;
@@ -79,18 +82,8 @@ public class FVQuickUserRegistration {
                 comment,
                 validationMethod,
                 autoAccept );
-        try
-        {
-            // send email to Administrator
-            // send email to LanguageAdministrator
-            // TODO register tasks for registration reminder worker
 
-            utilCommon.notificationEmailsAndReminderTasks( ctx );
-        }
-        catch(Exception e)
-        {
-
-        }
+        utilCommon.quickRegistrationFinal( ctx );
 
         return registrationId;
     }

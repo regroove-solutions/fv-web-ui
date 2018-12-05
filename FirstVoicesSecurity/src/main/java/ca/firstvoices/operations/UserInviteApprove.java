@@ -59,6 +59,9 @@ public class UserInviteApprove {
     @Context
     protected UserRegistrationService registrationService;
 
+    @Param(name = "registrationId" )
+    protected String registrationId;
+
     @Param(name = "group", required = false)
     protected String group = "members";
 
@@ -72,7 +75,7 @@ public class UserInviteApprove {
     protected CoreSession session;
 
     @OperationMethod
-    public void run(String registrationId) {
+    public void run() {
 
         Map<String, Serializable> additionalInfo = new HashMap<String, Serializable>();
         DocumentModel registrationDoc = session.getDocument(new IdRef(registrationId));

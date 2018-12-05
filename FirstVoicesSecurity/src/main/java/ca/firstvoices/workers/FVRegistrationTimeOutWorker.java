@@ -1,22 +1,17 @@
 package ca.firstvoices.workers;
 
-import ca.firstvoices.user.FVUserRegistrationInfo;
 import ca.firstvoices.utils.FVRegistrationConstants;
-import ca.firstvoices.utils.FVRegistrationUtilities;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.annotations.Context;
+import ca.firstvoices.utils.FVRegistrationMailUtilities;
 import org.nuxeo.ecm.core.api.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
-
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import java.util.Calendar;
-import java.util.Date;
 
+
+import static ca.firstvoices.utils.FVRegistrationUtilities.calculateRegistrationAgeInDays;
 
 
 public class FVRegistrationTimeOutWorker extends AbstractWork {
@@ -41,24 +36,9 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
 
         private int checkRegistrationTimeOut( Calendar dateRegistered )
         {
-            //
-            // 			long diffSeconds = diff / 1000 % 60;
-            //			long diffMinutes = diff / (60 * 1000) % 60;
-            //			long diffHours = diff / (60 * 60 * 1000) % 24;
-            //			long diffDays = diff / (24 * 60 * 60 * 1000);
-            // total minutes between periods
-            // long diffMinutes = timeDiff / (60 * 1000) % 60 + 60*(( timeDiff / (60 * 60 * 1000) % 24) + (timeDiff / (24 * 60 * 60 * 1000)) * 24)
-
-            long timeDiff = Calendar.getInstance().getTimeInMillis() - dateRegistered.getTimeInMillis();
-            long diffDays = timeDiff / (24 * 60 * 60 * 1000);
+            long diffDays = calculateRegistrationAgeInDays( dateRegistered );
 
             int actionValue = 0;
-
-            // if( diffDays > REGISTRATION_REMINDER_AFTER_DAYS ) actionValue = 1;
-            // if( diffMinutes > LOCK_EXPIRATION_DURATION_IN_DAYS ) actionValue = 2;
-
-            // minutes are used for testing ONLY
-
 
             // currently set to check at2am, 12am, 22pm
             if( diffDays >= 8 ) actionValue = FVRegistrationConstants.REGISTRATION_DELETION;
@@ -73,7 +53,8 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
         {
             LoginContext lctx;
             CoreSession s = null;
-            FVRegistrationUtilities util = new FVRegistrationUtilities();
+            FVRegistrationMailUtilities mailUtil = new FVRegistrationMailUtilities();
+
             try
             {
                 lctx = Framework.loginAsUser("Administrator");
@@ -96,13 +77,13 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                     //     send an email to originator of registration request with information about cancellation
                     // 3-  registration is deleted
                     //
-                    util.emailReminder( regTOType, uReg, s );
+                    mailUtil.emailReminder( regTOType, uReg, s );
 
                     if( regTOType == FVRegistrationConstants.REGISTRATION_DELETION )
                     {
+                        log.info( "Registration period expired for user" + uReg.getPropertyValue("userinfo:firstName") + " " + uReg.getPropertyValue("userinfo:lastName") + ". Registration was deleted");
                         s.removeDocument( uReg.getRef() );
                     }
-
                  }
 
                  s.save();

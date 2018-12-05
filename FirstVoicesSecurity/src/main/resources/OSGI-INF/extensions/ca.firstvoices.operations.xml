@@ -9,6 +9,7 @@
 		<operation class="ca.firstvoices.operations.UserInvite" replace="true" />
 		<operation class="ca.firstvoices.operations.UserInviteApprove" replace="true" />
 		<operation class="ca.firstvoices.operations.FVQuickUserRegistration" replace="true" />
+		<operation class="ca.firstvoices.operations.FVGetPendingUserRegistrations" replace="true" />
 	</extension>
     
 </component>
