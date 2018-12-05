@@ -51,13 +51,13 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
         @Override
         public void work()
         {
-            LoginContext lctx;
+            LoginContext lctx = null;
             CoreSession s = null;
             FVRegistrationMailUtilities mailUtil = new FVRegistrationMailUtilities();
 
             try
             {
-                lctx = Framework.loginAsUser("Administrator");
+                lctx = Framework.loginAsUser("Administrator"); // TODO system does not work ... HAVE TO FIND A SOLUTION FOR LIVE SYSTEM
                 s = CoreInstance.openCoreSession("default");
                 session = s;
 
@@ -93,6 +93,14 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
             }
             finally {
                if( s != null ) s.close();
+                try
+                {
+                    if( s!= null) lctx.logout();
+                }
+                catch( Exception e)
+                {
+                    log.warn(e);
+                }
             }
         }
 
