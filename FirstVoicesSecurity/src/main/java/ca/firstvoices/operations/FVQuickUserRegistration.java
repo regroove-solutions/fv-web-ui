@@ -67,8 +67,6 @@ public class FVQuickUserRegistration {
     @OperationMethod
     public String run( DocumentModel registrationRequest )
     {
-        session = registrationRequest.getCoreSession();
-
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
         utilCommon.preCondition( registrationRequest, session, userManager, autoService );
