@@ -1,4 +1,4 @@
-<component name="ca.firstvoices.schemas.registration.contrib">
+<component name="ca.firstvoices.schemas.uregistration.contrib">
 
   	<require>org.nuxeo.ecm.user.registration.lifecycle.contrib</require>
   	<require>org.nuxeo.ecm.user.registration.core.types.contrib</require>

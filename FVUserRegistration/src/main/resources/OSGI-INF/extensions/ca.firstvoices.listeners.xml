@@ -2,8 +2,13 @@
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
     <listener enabled="true" name="fvregistrationtimeoutlistener" async="true" postCommit="false"
-              class="FVUserRegistration.src.main.java.ca.firstvoices.listeners.FVRegistrationTimeOutListener" priority="100">
+              class="ca.firstvoices.listeners.FVRegistrationTimeOutListener" priority="100">
       <event>checkRegistrationTimeout</event>
+    </listener>
+    <listener enabled="true" name="fvregistrationcompletionlistener" async="true" postCommit="false"
+              class="ca.firstvoices.listeners.FVRegistrationCompletionListener" priority="100">
+      <event>documentRemoved</event>
+      <event>registrationValidated</event>
     </listener>
 
   </extension>
