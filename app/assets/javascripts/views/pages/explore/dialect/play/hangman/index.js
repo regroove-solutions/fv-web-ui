@@ -67,6 +67,7 @@ export default class Hangman extends Component {
 
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
             //' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) +'/* IS NOT NULL' +
+            ' AND fv:available_in_childrens_archive = 1' + 
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) + '/* IS NOT NULL' +
             //' AND fv-word:available_in_games = 1' +
             '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) +

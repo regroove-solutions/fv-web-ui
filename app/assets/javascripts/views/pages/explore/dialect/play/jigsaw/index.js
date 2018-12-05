@@ -49,22 +49,35 @@ export default class Jigsaw extends Component {
      */
     constructor(props, context) {
         super(props, context);
+
+        this._changeContent = this._changeContent.bind(this);
     }
 
     /**
      * componentDidMount
      */
     componentDidMount() {
-        this.fetchData(this.props);
+        this.fetchData(this.props, 0);
+    }
+
+    _changeContent(pageIndex, pageCount) {
+
+        let nextPage = pageIndex + 1;
+
+        if (pageIndex == pageCount - 1) {
+            nextPage = 0;
+        }
+
+        this.fetchData(this.props, nextPage);
     }
 
     fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+            ' AND fv:available_in_childrens_archive = 1' + 
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) + '/* IS NOT NULL' +
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) + '/* IS NOT NULL' +
-            //' AND fv-word:available_in_games = 1' +
-            '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) +
-            '&pageSize=25' +
+            '&currentPageIndex=' + pageIndex + 
+            '&pageSize=4' +
             '&sortBy=dc:created' +
             '&sortOrder=DESC'
         );
@@ -129,9 +142,10 @@ export default class Jigsaw extends Component {
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className="row">
                 <div className="col-xs-12" style={{textAlign: 'center'}}>
+                    <a href="#" onTouchTap={this._changeContent.bind(this, selectn('response.currentPageIndex', computeWords), selectn('response.pageCount', computeWords))}>Load More Words!</a>
                     {game}
-                    <small>{intl.trans('views.pages.explore.dialect.play.archive_contains', 'Archive contains', 'first')}
-                    {selectn('response.resultsCount', computeWords)}
+                    <small>{intl.trans('views.pages.explore.dialect.play.archive_contains', 'Archive contains', 'first')} 
+                    &nbsp; {selectn('response.resultsCount', computeWords)} &nbsp;
                     {intl.trans('views.pages.explore.dialect.play.words_that_met_game_requirements', 'words that met game requirements.')}
                     </small>
                 </div>
