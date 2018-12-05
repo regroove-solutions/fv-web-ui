@@ -196,7 +196,6 @@ public class FVRegistrationUtilities
     }
 
     public String postCondition( UserRegistrationService  registrationService,
-                                 CoreSession              session,
                                  DocumentModel            registrationRequest,
                                  Map<String, Serializable> info,
                                  String                   comment,

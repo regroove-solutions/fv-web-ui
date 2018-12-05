@@ -74,7 +74,6 @@ public class FVQuickUserRegistration {
         autoAccept = utilCommon.QuickUserRegistrationCondition( registrationRequest, session, autoAccept );
 
         String registrationId = utilCommon.postCondition( registrationService,
-                session,
                 registrationRequest,
                 info,
                 comment,
