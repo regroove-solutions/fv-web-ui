@@ -85,22 +85,35 @@ export default class Wordscramble extends Component {
      */
     constructor(props, context) {
         super(props, context);
+
+        this._changeContent = this._changeContent.bind(this);
     }
 
     /**
      * componentDidMount
      */
     componentDidMount() {
-        // Fetch fetch data
-        this.fetchData(this.props);
+        this.fetchData(this.props, 0);
+    }
+
+    _changeContent(pageIndex, pageCount) {
+
+        let nextPage = pageIndex + 1;
+
+        if (pageIndex == pageCount - 1) {
+            nextPage = 0;
+        }
+
+        this.fetchData(this.props, nextPage);
     }
 
     fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
         props.fetchPhrases(props.routeParams.dialect_path + '/Dictionary',
+            ' AND fv:available_in_childrens_archive = 1' + 
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) + '/* IS NOT NULL' +
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) + '/* IS NOT NULL' +
             //' AND fv-word:available_in_games = 1' +
-            '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) +
+            '&currentPageIndex=' + pageIndex +
             '&pageSize=5' +
             '&sortBy=dc:created' +
             '&sortOrder=DESC'
@@ -122,6 +135,7 @@ export default class Wordscramble extends Component {
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities} className="wordscramble-game"
                                style={containerStyle}>
             <h1 style={{...titleStyle, ...titleLogoStyle}}>Word Scramble</h1>
+            <p style={{textAlign: 'center'}}><a href="#" onTouchTap={this._changeContent.bind(this, selectn('response.currentPageIndex', computePhrases), selectn('response.pageCount', computePhrases))}>Load More Words!</a></p>
             {(selectn('response.entries', computePhrases) || []).filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0).map(function (phrase, i) {
                 return <Scramble key={i} sentence={{
                     original: new List(selectn('properties.dc:title', phrase).split(' ')),

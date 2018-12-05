@@ -86,6 +86,45 @@ export default class Game extends Component {
   componentWillUnmount () {
       JigsawGame.destroy();
   }
+  
+  componentWillReceiveProps() {
+    //Setup default asset paths
+    const defaultAssetsPath = '/assets/games/jigsaw/assets';
+    const defaultLibsPath = `${defaultAssetsPath}/libs`;
+    const defaultImagesPath = `${defaultAssetsPath}/images`;
+
+    //Default game config
+    /**
+     * @todo Setup image paths based on dialect
+     */
+    let gameConfig = {
+
+        libs:{
+            bitmapJigsawScript:`${defaultLibsPath}/BitmapDataJigsawCut.js`        
+        },
+        images: Object.assign({
+            preloaderLoading:`${defaultImagesPath}/loading.png`,
+            preloaderLogo:`${defaultImagesPath}/logo.png`,
+            backgroundImage:`${defaultImagesPath}/background.png`,
+            youWin:`${defaultImagesPath}/well-done.png`,
+            easy:`${defaultImagesPath}/easy.png`,
+            medium:`${defaultImagesPath}/medium.png`,
+            hard:`${defaultImagesPath}/hard.png`,
+            cornerTopLeft:`${defaultImagesPath}/corner1a.png`,
+            cornerTopRight:`${defaultImagesPath}/corner1b.png`,
+            cornerBottomLeft:`${defaultImagesPath}/corner1c.png`,
+            cornerBottomRight:`${defaultImagesPath}/corner1d.png`,
+            arrow:`${defaultImagesPath}/blue_arrow.png`
+        }),
+        words: this.props.words
+    };
+
+    /**
+     * Create the game, with container and game config
+     */
+    const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+    JigsawGame.init(gameContainerNode, gameConfig);
+  }
 
   /**
    * Render

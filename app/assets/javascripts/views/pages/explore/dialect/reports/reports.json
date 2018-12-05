@@ -65,6 +65,11 @@
         "query": " AND ecm:primaryType='FVWord' AND fv:available_in_childrens_archive=1"
     },
     { 
+        "name": "Words included in Games",
+        "type": "words",
+        "query": " AND ecm:primaryType='FVWord' AND fv:related_pictures/* IS NOT NULL AND fv:related_audio/* IS NOT NULL AND fv:available_in_childrens_archive=1"
+    },
+    { 
         "name": "Words recently modified",
         "type": "words",
         "query": " AND ecm:primaryType='FVWord'",

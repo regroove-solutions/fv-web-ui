@@ -7,7 +7,7 @@ var sizereport   = require('gulp-sizereport');
 gulp.task('size-report', function() {
   var hashedFiles = '/**/*-' + repeatString('[a-z,0-9]', 8)  + '*.*';
 
-  return gulp.src([config.publicAssets + hashedFiles, '*!rev-manifest.json'])
+  return gulp.src(config.publicDirectory + 'assets/javascripts/*.js')
     .pipe(sizereport({
         gzip: true
     }));

@@ -262,7 +262,7 @@ export default class Search extends DataListView {
                         </form>
                     </div>
                 </div>
-                <div className={classNames('col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
+                <div className={classNames('search-results', 'col-xs-12', 'col-md-6')} style={{borderLeft: '5px solid #f7f7f7'}}>
                     <h1>{intl.trans('search_results', 'Search results', 'first')} - {this.props.routeParams.searchTerm}</h1>
 
 					<PromiseWrapper renderOnError={true} computeEntities={computeEntities}>

@@ -85,7 +85,7 @@ export default class Quiz extends Component {
     constructor(props, context) {
         super(props, context);
 
-        ['_handleNavigate', '_handleAnswerSelected', '_restart'].forEach((method => this[method] = this[method].bind(this)));
+        ['_handleNavigate', '_handleAnswerSelected', '_restart', '_changeContent'].forEach((method => this[method] = this[method].bind(this)));
 
         this.state = this.getDefaultState();
     }
@@ -113,15 +113,28 @@ export default class Quiz extends Component {
     }
 
     componentDidMount() {
-        this.fetchData(this.props);
+        this.fetchData(this.props, 0);
     }
+
+    _changeContent(pageIndex, pageCount) {
+
+        let nextPage = pageIndex + 1;
+
+        if (pageIndex == pageCount - 1) {
+            nextPage = 0;
+        }
+
+        this.fetchData(this.props, nextPage);
+    }
+
 
     fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
         props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+            ' AND fv:available_in_childrens_archive = 1' + 
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_pictures', this.props.routeParams.area) + '/* IS NOT NULL' +
             ' AND ' + ProviderHelpers.switchWorkspaceSectionKeys('fv:related_audio', this.props.routeParams.area) + '/* IS NOT NULL' +
             //' AND fv-word:available_in_games = 1 ' +
-            '&currentPageIndex=' + StringHelpers.randomIntBetween(0, 10) +
+            '&currentPageIndex=' + pageIndex +
             '&pageSize=50'
         );
     }
@@ -156,7 +169,7 @@ export default class Quiz extends Component {
         }.bind(this), e);
 
         this.setState(this.getDefaultState());
-        this.fetchData(this.props);
+        this.fetchData(this.props, 0);
     }
 
     _handleAnswerSelected(word, correct, e) {
@@ -230,6 +243,10 @@ export default class Quiz extends Component {
         }])
 
         const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this.props.routeParams.dialect_path + '/Dictionary');
+
+        if (selectn('response.resultsCount', computeWords) < 40) {
+            return <div>Game not available: At least 40 child-friendly words with photos and audio are required for this game... Found <strong>{selectn('response.resultsCount', computeWords)}</strong> words.</div>;
+        }
 
         // Seperate all correct answers from all wrong answers
         (selectn('response.entries', computeWords) || []).forEach(function (v, i) {
@@ -351,7 +368,7 @@ export default class Quiz extends Component {
                                  'hidden': !isSelected
                              })}>{(isSelected) ? (isCorrect) ?
                             <div>{intl.trans('good_job', 'Good Job', 'words')}! <strong>{selectn('word', selectedAnswer)}</strong> {intl.trans('translates_to', 'translates to')}
-                                <strong>{selectn('translation', selectedAnswer)}</strong>
+                                &nbsp; <strong>{selectn('translation', selectedAnswer)}</strong>
                             </div> : intl.trans('try_again', 'Try again', 'first') + '...' : ''}</div>
                     </div>
 
