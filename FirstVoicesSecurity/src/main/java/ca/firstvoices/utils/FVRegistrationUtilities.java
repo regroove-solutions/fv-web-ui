@@ -19,6 +19,9 @@ import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 import java.io.Serializable;
 import java.util.*;
 
@@ -219,8 +222,24 @@ public class FVRegistrationUtilities
                 validationMethod, autoAccept, email);
 
         // Set permissions on registration document
-        FVRegistrationUtilities.UnrestrictedRequestPermissionResolver urpr = new FVRegistrationUtilities.UnrestrictedRequestPermissionResolver(session, registrationId, ugdr.language_admin_group);
-        urpr.runUnrestricted();
+        LoginContext lctx = null;
+        CoreSession s = null;
+        try {
+            lctx = Framework.loginAsUser("Administrator"); // TODO check if system will work
+            s = CoreInstance.openCoreSession("default");
+
+            UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId, ugdr.language_admin_group);
+            urpr.runUnrestricted();
+            lctx.logout();
+        }
+        catch( Exception e )
+        {
+            log.warn( e );
+        }
+        finally
+        {
+            s.close();
+        }
 
         return registrationId;
     }
