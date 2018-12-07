@@ -59,18 +59,16 @@ public class FVRegistrationMailUtilities {
     {
         Map<String, Object> params = new HashMap<>();
         params.put("permission", "Everything");
-        params.put("variable name", "admin");
-        params.put("prefix identifiers", "user:");
-        params.put("resolve groups", true );
+        params.put("variable name", "emails");
+        params.put("ignore groups", false );
 
-        UserManager um = Framework.getService( UserManager.class);
         //List<String> users = Arrays.asList(um.getUsersForPermission(SecurityConstants.EVERYTHING, dialect.getACP()));
         AutomationService automationService = Framework.getService(AutomationService.class);
         OperationContext ctx = new OperationContext();
         ctx.setInput( dialect );
 
         try {
-            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetUsersGroupIdsWithPermissionOnDoc", params);
+            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetEmailsWithPermissionOnDoc", params);
         } catch( Exception e) {
           log.warn( e );
         }
@@ -79,19 +77,16 @@ public class FVRegistrationMailUtilities {
 
         Map<String, Object> val = (Map<String, Object>) ctx.getVars();
 
-        if( val.containsKey("admin"))
+        if( val.containsKey("emails"))
         {
-            StringList sL = (StringList)val.get("admin");
+            StringList sL = (StringList)val.get("emails");
 
-            for( String name : sL )
+            for( String em : sL )
             {
-                if( name.equals("Administrator")) continue;;
+                if( em.contains("devnull")) continue;
 
-                DocumentModel usr = um.getUserModel( name );
-                String email = (String)usr.getPropertyValue("email");
-
-                if( toStr.isEmpty() ) { toStr = email; }
-                else { toStr = toStr + ", " + email; }
+                if( toStr.isEmpty() ) { toStr = em; }
+                else { toStr = toStr + ", " + em; }
             }
         }
 

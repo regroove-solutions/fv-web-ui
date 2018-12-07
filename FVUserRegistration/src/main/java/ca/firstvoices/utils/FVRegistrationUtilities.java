@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -24,7 +25,6 @@ import javax.security.auth.login.LoginContext;
 import java.io.Serializable;
 import java.util.*;
 
-import static org.nuxeo.ecm.user.registration.UserRegistrationService.CONFIGURATION_NAME;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 
 
@@ -32,6 +32,10 @@ import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 public class FVRegistrationUtilities
 {
     private static final Log log = LogFactory.getLog(FVRegistrationUtilities.class);
+
+    public static final String APPEND = "append";
+    public static final String UPDATE = "update";
+    public static final String REMOVE = "remove";
 
     private DocumentRegistrationInfo    docInfo;
     private FVUserRegistrationInfo      userInfo;
@@ -61,6 +65,44 @@ public class FVRegistrationUtilities
         return docInfo;
     }
 
+    public static ArrayList<String> makeArrayFromStringList( StringList sl)
+    {
+        if( sl == null ) return null;
+
+        ArrayList<String> al = new ArrayList<>();
+        for( String s : sl )
+        {
+            al.add( s );
+        }
+
+        return al;
+    }
+
+    public static void updateFVProperty( String action, DocumentModel doc, StringList data, String schemaName, String field )
+    {
+        ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList( data );
+
+        if( !action.equals(UPDATE) )
+        {
+            ArrayList<String> pA =  (ArrayList<String>)doc.getProperty(schemaName, field);
+
+            for (String g : arrayData) {
+                switch (action) {
+                    case APPEND:
+                        pA.add(g);
+                        break;
+                    case REMOVE:
+                        pA.remove(g);
+                        break;
+                }
+            }
+
+            arrayData = pA;
+        }
+
+        doc.setProperty(schemaName, field, arrayData);
+    }
+
     public static long calculateRegistrationAgeInDays(Calendar dateRegistered )
     {
         //
@@ -83,6 +125,7 @@ public class FVRegistrationUtilities
         session = s;
         userManager = uM;
         autoService = as;
+
         requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
         userInfo = new FVUserRegistrationInfo();
 
@@ -215,14 +258,18 @@ public class FVRegistrationUtilities
         info.put("registration:comment", comment);
         info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
 
-        String registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(),
-                userInfo, docInfo, info,
-                validationMethod, autoAccept, email);
-
         // Set permissions on registration document
         LoginContext lctx = null;
         CoreSession s = null;
-        try {
+        String registrationId = null;
+
+        try
+        {
+             registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(),
+                userInfo, docInfo, info,
+                validationMethod, autoAccept, email);
+
+
             lctx = Framework.login();
             s = CoreInstance.openCoreSession("default");
 
@@ -329,6 +376,43 @@ public class FVRegistrationUtilities
             ACP registrationDocACP = registrationDoc.getACP();
             registrationDocACP.addACE("local", registrationACE);
             registrationDoc.setACP(registrationDocACP, false);
+        }
+
+    }
+
+    public void registrationValidationHandler( DocumentModel ureg )
+    {
+        CoreSession s = null;
+        AutomationService automationService = Framework.getService(AutomationService.class);
+        OperationContext ctx = new OperationContext();
+
+        try
+        {
+            String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
+            String username = (String) ureg.getPropertyValue("userinfo:login");
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("groupname", "members");
+            params.put("members", username );
+            params.put("membersAction", REMOVE );
+
+            automationService.run(ctx, "FVUpdateGroup", params);
+
+            ctx = new OperationContext(); // do I need to do it?
+            params.clear();
+            params.put("username", username);
+            params.put("groups", newUserGroup);
+            params.put("groupsAction", UPDATE);
+            automationService.run(ctx, "FVUpdateUser", params);
+
+
+        }
+        catch( Exception e )
+        {
+            log.warn( e );
+        }
+        finally
+        {
         }
 
     }
