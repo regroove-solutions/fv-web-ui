@@ -14,53 +14,73 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 import java.util.Calendar;
 
-
-import static ca.firstvoices.utils.FVRegistrationUtilities.calculateRegistrationAgeInDays;
+import static ca.firstvoices.utils.FVRegistrationUtilities.*;
 
 @Operation(id = FVGetPendingUserRegistrations.ID, category = Constants.CAT_USERS_GROUPS, label = "Get user registrations.",
-        description = "Get registrations for specific dialect or when input is ALL for the system.")
+        description = "Get registrations for specific dialect or when input is ALL (*) for the system. \n prune action can be 'ignore', 'approved' or 'accepted'\n.")
 public class FVGetPendingUserRegistrations
 {
     public static final String ID = "FVGetPendingUserRegistrations";
     private static final Log log = LogFactory.getLog(FVGetPendingUserRegistrations.class);
 
+    public static final String IGNORE = "ignore";
+    public static final String APPROVED = "approved";
+    public static final String ACCEPTED = "accepted";
+
     @Context
     protected CoreSession session;
 
-    @Param(name = "dialectID", required = true)
+    @Param(name = "dialectID")
     protected String dialectID;
+
+    @Param(name = "pruneAction", required = false, values = { IGNORE, APPROVED, ACCEPTED})
+    protected String pruneAction = IGNORE;
 
 
     @OperationMethod
     public DocumentModelList run()
     {
         DocumentModelList registrations = null;
-        DocumentModelList prunned = new DocumentModelListImpl();
 
         try
         {
-            registrations = session.query("Select * from Document where ecm:mixinType = 'UserRegistration'");
-
             // prune all items which are not part of the specific dialect
             if( !(dialectID.toLowerCase().equals("all") || dialectID.toLowerCase().equals("*")) )
             {
-                for (DocumentModel uReg : registrations)
-                {
-                    Calendar regCreated = (Calendar) uReg.getPropertyValue("dc:created");
-
-                    if( uReg.getPropertyValue("docinfo:documentId").equals(dialectID))
-                    {
-                        long age = calculateRegistrationAgeInDays( regCreated );
-                        prunned.add( uReg );
-                    }
-                }
-
-                if( prunned.isEmpty() ) registrations.clear();
-                else registrations = prunned;
+                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' and %s = '%s'", "docinfo:documentId", dialectID));
+            }
+            else
+            {
+                registrations = session.query("Select * from Document where ecm:mixinType = 'UserRegistration'");
             }
 
+            if( !registrations.isEmpty()) {
+                registrations = pruneRegistrationList(registrations, pruneAction);
+            }
         } catch (Exception e) {
             log.warn(e);
+        }
+
+        return registrations;
+    }
+
+
+    private DocumentModelList pruneRegistrationList( DocumentModelList registrations, String pruneAction )
+    {
+        if( !pruneAction.equals(IGNORE))
+        {
+            DocumentModelList prunned = new DocumentModelListImpl();
+
+            for (DocumentModel uReg : registrations)
+            {
+                if (pruneAction.equals(APPROVED) && uReg.getCurrentLifeCycleState().equals(APPROVED))
+                    prunned.add(uReg);
+                else if (pruneAction.equals(ACCEPTED) && uReg.getCurrentLifeCycleState().equals(ACCEPTED))
+                    prunned.add(uReg);
+            }
+
+            if( prunned.isEmpty() ) registrations.clear();
+            else registrations = prunned;
         }
 
         return registrations;
