@@ -77,20 +77,20 @@ const updateUser = function update(user) {
     }
 };
 
-const inviteUser = RESTActions.execute('FV_USER_INVITE', 'User.Invite', {});
+const selfregisterUser = RESTActions.execute('FV_USER_SELFREGISTER', 'User.SelfRegistration', {});
 const userSuggestion = RESTActions.execute('FV_USER_SUGGESTION', 'UserGroup.Suggestion', {headers: {'X-NXenrichers.document': ''}});
 
 const computeUserFetchFactory = RESTReducers.computeFetch('user');
 const computeUserSuggestion = RESTReducers.computeOperation('user_suggestion');
 
-const computeUserInviteOperation = RESTReducers.computeOperation('user_invite');
+const computeUserSelfregisterOperation = RESTReducers.computeOperation('user_selfregister');
 
-const actions = {fetchUser, userSuggestion, createUser, inviteUser, updateUser};
+const actions = {fetchUser, userSuggestion, createUser, selfregisterUser, updateUser};
 
 const reducers = {
     computeUser: computeUserFetchFactory.computeUser,
     computeUserSuggestion: computeUserSuggestion.computeUserSuggestion,
-    computeUserInvite: computeUserInviteOperation.computeUserInvite
+    computeUserSelfregister: computeUserSelfregisterOperation.computeUserSelfregister
 };
 
 const middleware = [thunk];

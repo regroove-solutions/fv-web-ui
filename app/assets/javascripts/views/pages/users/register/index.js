@@ -48,8 +48,8 @@ export default class Register extends Component {
         replaceWindowPath: PropTypes.func.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
         computeDialect2: PropTypes.object.isRequired,
-        inviteUser: PropTypes.func.isRequired,
-        computeUserInvite: PropTypes.object.isRequired,
+        selfregisterUser: PropTypes.func.isRequired,
+        computeUserSelfregister: PropTypes.object.isRequired,
         computeUser: PropTypes.object.isRequired,
         computeLogin: PropTypes.object.isRequired,
         routeParams: PropTypes.object.isRequired
@@ -84,8 +84,8 @@ export default class Register extends Component {
         let currentWord, nextWord;
 
         if (this.state.userRequest != null) {
-            currentWord = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
-            nextWord = ProviderHelpers.getEntry(nextProps.computeUserInvite, this.state.userRequest);
+            currentWord = ProviderHelpers.getEntry(this.props.computeUserSelfregister, this.state.userRequest);
+            nextWord = ProviderHelpers.getEntry(nextProps.computeUserSelfregister, this.state.userRequest);
         }
 
         if (nextProps.windowPath !== this.props.windowPath) {
@@ -109,7 +109,7 @@ export default class Register extends Component {
                 return true;
                 break;
 
-            case (newProps.computeUserInvite != this.props.computeUserInvite):
+            case (newProps.computeUserSelfregister != this.props.computeUserSelfregister):
                 return true;
                 break;
         }
@@ -151,7 +151,7 @@ export default class Register extends Component {
                 "properties": payload
             };
 
-            this.props.inviteUser(userRequest, null, null, intl.trans('views.pages.users.register.user_request_success', 'User request submitted successfully!'));
+            this.props.selfregisterUser(userRequest, null, null, intl.trans('views.pages.users.register.user_request_success', 'User request submitted successfully!'));
             this.setState({userRequest});
 
         } else {
@@ -169,13 +169,13 @@ export default class Register extends Component {
 
         const computeEntities = ProviderHelpers.toJSKeepId([{
             'id': this.state.userRequest,
-            'entity': this.props.computeUserInvite,
+            'entity': this.props.computeUserSelfregister,
         }, {
             'id': this.props.routeParams.dialect_path,
             'entity': this.props.computeDialect2
         }])
 
-        const computeUserInvite = ProviderHelpers.getEntry(this.props.computeUserInvite, this.state.userRequest);
+        const computeUserSelfregister = ProviderHelpers.getEntry(this.props.computeUserSelfregister, this.state.userRequest);
         const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
 
         // Hide requested space field is pre-set.
@@ -216,7 +216,7 @@ export default class Register extends Component {
                 </div>
             </div>
 
-            <div className="row" style={{marginTop: '15px', display: 'none'}}>
+            <div className="row" style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-8', 'col-md-10')}>
                     <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
