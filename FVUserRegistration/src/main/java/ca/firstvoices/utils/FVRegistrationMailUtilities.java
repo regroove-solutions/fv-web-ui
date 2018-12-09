@@ -9,7 +9,6 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.mail.Message;
@@ -24,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
+
 public class FVRegistrationMailUtilities {
 
     private static final Log log = LogFactory.getLog(FVRegistrationMailUtilities.class);
@@ -32,6 +33,13 @@ public class FVRegistrationMailUtilities {
         return Framework.getProperty("jndi.java.mail", "java:/Mail");
     }
 
+    /**
+     * @param destination
+     * @param copy
+     * @param title
+     * @param content
+     * @throws Exception
+     */
     private void generateMail( String destination,
                                String copy,
                                String title,
@@ -55,6 +63,10 @@ public class FVRegistrationMailUtilities {
         Transport.send(msg);
     }
 
+    /**
+     * @param dialect
+     * @return
+     */
     public String getLanguageAdministratorEmail( DocumentModel dialect )
     {
         Map<String, Object> params = new HashMap<>();
@@ -107,13 +119,13 @@ public class FVRegistrationMailUtilities {
 
             switch( variant)
             {
-                case FVRegistrationConstants.MID_REGISTRATION_PERIOD:
+                case MID_REGISTRATION_PERIOD_ACT:
                     title = "NOTIFICATION User registration will expire soon.";
                     break;
-                case FVRegistrationConstants.REGISTRATION_EXPIRATION:
+                case REGISTRATION_EXPIRATION_ACT:
                     title = "NOTIFICATION User registration was not completed and will be deleted.";
                     break;
-                case FVRegistrationConstants.NEW_USER_SELF_REGISTRATION:
+                case NEW_USER_SELF_REGISTRATION_ACT:
                     title = "NOTIFICATION New user registration";
                     break;
             }
@@ -132,14 +144,15 @@ public class FVRegistrationMailUtilities {
             String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password.";
 
             switch( variant) {
-                case FVRegistrationConstants.MID_REGISTRATION_PERIOD:
+                case MID_REGISTRATION_PERIOD_ACT:
                     body = "Registration for " + options.get("fName") + " " + options.get("lName") + " will expire in 3 days." + s1 +s2 + endStr;
                      break;
-                case FVRegistrationConstants.REGISTRATION_EXPIRATION:
+                case REGISTRATION_EXPIRATION_ACT:
                     body = "Registration period for " + options.get("fName") + " " + options.get("lName") + " EXPIRED."+ s1 + s2 + ex24 + endStr;
                     break;
 
-                case FVRegistrationConstants.NEW_USER_SELF_REGISTRATION:
+                case NEW_USER_SELF_REGISTRATION_ACT:
+
                     body = "New self registration by " + options.get("fName") + " " + options.get("lName") + s1 + s2 + ex7 + endStr;
                     break;
             }
@@ -155,13 +168,13 @@ public class FVRegistrationMailUtilities {
             String title = null;
 
             switch( variant ) {
-                case FVRegistrationConstants.MID_REGISTRATION_PERIOD:
+                case MID_REGISTRATION_PERIOD_ACT:
                     title = "NOTIFICATION Your registration will expire soon.";
                     break;
-                case FVRegistrationConstants.REGISTRATION_EXPIRATION:
+                case REGISTRATION_EXPIRATION_ACT:
                     title = "NOTIFICATION Your registration was not completed and will be deleted.";
                     break;
-                case FVRegistrationConstants.REGISTRATION_DELETION:
+                case REGISTRATION_DELETION_ACT:
                     title = "Your registration to FirstVoices was deleted.";
                     break;
                 default:
@@ -183,13 +196,13 @@ public class FVRegistrationMailUtilities {
             String endStr_D =  "<br> If you do so please complete registration by setting up you account password.";
 
             switch( variant ) {
-                case FVRegistrationConstants.MID_REGISTRATION_PERIOD:
+                case MID_REGISTRATION_PERIOD_ACT:
                     body =  g + e3 + ln + dp + endStr;
                     break;
-                case FVRegistrationConstants.REGISTRATION_EXPIRATION:
+                case REGISTRATION_EXPIRATION_ACT:
                     body =  g + e24 + ln + dp + endStr;
                     break;
-                case FVRegistrationConstants.REGISTRATION_DELETION:
+                case REGISTRATION_DELETION_ACT:
                     body =  g + del + re + endStr_D;
                     break;
                 default:
@@ -199,6 +212,13 @@ public class FVRegistrationMailUtilities {
         }
     }
 
+    /**
+     * @param variant
+     * @param prep
+     * @param options
+     * @param toStr
+     * @throws Exception
+     */
     private void registrationMailSender(int variant, EmailContentAssembler prep, Map<String, String> options, String toStr ) throws Exception
     {
         String title = prep.getEmailTitle( variant, options );
@@ -222,14 +242,25 @@ public class FVRegistrationMailUtilities {
         }
     }
 
+    /**
+     * @param variant
+     * @param options
+     * @param toStr
+     * @throws Exception
+     */
     public void registrationAdminMailSender(int variant, Map<String, String> options, String toStr ) throws Exception
     {
         registrationMailSender( variant, new AdminMailContent(), options, toStr );
     }
 
+    /**
+     * @param variant
+     * @param registrationRequest
+     * @param session
+     * @throws Exception
+     */
     public void emailReminder( int variant, DocumentModel registrationRequest, CoreSession session ) throws Exception
     {
-
         String requestedSpaceId = (String) registrationRequest.getPropertyValue("docinfo:documentId");
 
         // Source lookup (unrestricted)

@@ -25,6 +25,7 @@ import javax.security.auth.login.LoginContext;
 import java.io.Serializable;
 import java.util.*;
 
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 
 
@@ -32,10 +33,6 @@ import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 public class FVRegistrationUtilities
 {
     private static final Log log = LogFactory.getLog(FVRegistrationUtilities.class);
-
-    public static final String APPEND = "append";
-    public static final String UPDATE = "update";
-    public static final String REMOVE = "remove";
 
     private DocumentRegistrationInfo    docInfo;
     private FVUserRegistrationInfo      userInfo;
@@ -45,7 +42,6 @@ public class FVRegistrationUtilities
     private DocumentModel               dialect;
     private UserManager                 userManager;
     private CoreSession                 session;
-    private AutomationService           autoService;
     private FVRegistrationMailUtilities mailUtil = new FVRegistrationMailUtilities();
 
     public DocumentModel getDialect()
@@ -65,19 +61,28 @@ public class FVRegistrationUtilities
         return docInfo;
     }
 
+    /**
+     * @param sl
+     * @return
+     */
     public static ArrayList<String> makeArrayFromStringList( StringList sl)
     {
         if( sl == null ) return null;
 
         ArrayList<String> al = new ArrayList<>();
         for( String s : sl )
-        {
-            al.add( s );
-        }
+            al.add(s);
 
         return al;
     }
 
+    /**
+     * @param action
+     * @param doc
+     * @param data
+     * @param schemaName
+     * @param field
+     */
     public static void updateFVProperty( String action, DocumentModel doc, StringList data, String schemaName, String field )
     {
         ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList( data );
@@ -103,6 +108,10 @@ public class FVRegistrationUtilities
         doc.setProperty(schemaName, field, arrayData);
     }
 
+    /**
+     * @param dateRegistered
+     * @return
+     */
     public static long calculateRegistrationAgeInDays(Calendar dateRegistered )
     {
         //
@@ -120,11 +129,16 @@ public class FVRegistrationUtilities
         return diffDays;
     }
 
-    public void preCondition(DocumentModel registrationRequest, CoreSession s, UserManager uM, AutomationService as )
+    /**
+     * @param registrationRequest
+     * @param s
+     * @param uM
+     * @param as
+     */
+    public void preCondition(DocumentModel registrationRequest, CoreSession s, UserManager uM )
     {
         session = s;
         userManager = uM;
-        autoService = as;
 
         requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
         userInfo = new FVUserRegistrationInfo();
@@ -148,6 +162,12 @@ public class FVRegistrationUtilities
         docInfo.setDocumentTitle(dialectTitle);
     }
 
+    /**
+     * @param registrationRequest
+     * @param session
+     * @param autoAccept
+     * @return
+     */
     public boolean QuickUserRegistrationCondition( DocumentModel registrationRequest, CoreSession session, boolean autoAccept )
     {
         ugdr = new UnrestrictedGroupResolver(session, dialect);
@@ -177,6 +197,10 @@ public class FVRegistrationUtilities
         return true;
     }
 
+    /**
+     * @param ctx
+     * @throws Exception
+     */
     private void notificationEmailsAndReminderTasks( OperationContext ctx )  throws Exception
     {
         Map<String,String> options = new HashMap<>();
@@ -187,9 +211,12 @@ public class FVRegistrationUtilities
 
         ctx.setInput(dialect);
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
-        mailUtil.registrationAdminMailSender(FVRegistrationConstants.NEW_USER_SELF_REGISTRATION, options, adminTO );
+        mailUtil.registrationAdminMailSender(NEW_USER_SELF_REGISTRATION_ACT, options, adminTO );
      }
 
+    /**
+     * @param ctx
+     */
     public void quickRegistrationFinal(  OperationContext ctx )
     {
         try
@@ -204,6 +231,12 @@ public class FVRegistrationUtilities
         }
     }
 
+    /**
+     * @param registrationRequest
+     * @param session
+     * @param autoAccept
+     * @return
+     */
     public boolean UserInviteCondition( DocumentModel registrationRequest, CoreSession session, boolean autoAccept )
     {
         NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
@@ -237,6 +270,15 @@ public class FVRegistrationUtilities
         return autoAccept;
     }
 
+    /**
+     * @param registrationService
+     * @param registrationRequest
+     * @param info
+     * @param comment
+     * @param validationMethod
+     * @param autoAccept
+     * @return
+     */
     public String postCondition( UserRegistrationService  registrationService,
                                  DocumentModel            registrationRequest,
                                  Map<String, Serializable> info,
@@ -259,7 +301,7 @@ public class FVRegistrationUtilities
         info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
 
         // Set permissions on registration document
-        LoginContext lctx = null;
+        LoginContext lctx;
         CoreSession s = null;
         String registrationId = null;
 
@@ -322,8 +364,8 @@ public class FVRegistrationUtilities
         private final CoreSession session;
         private DocumentModel dialect;
 
-        public ArrayList<String> member_groups = new ArrayList<String>();
-        public String language_admin_group;
+        private ArrayList<String> member_groups = new ArrayList<String>();
+        private String language_admin_group;
 
         protected UnrestrictedGroupResolver(CoreSession session, DocumentModel dialect) {
             super(session);
@@ -380,7 +422,10 @@ public class FVRegistrationUtilities
 
     }
 
-    public void registrationValidationHandler( DocumentModel ureg )
+    /**
+     * @param ureg
+     */
+    public void registrationValidationHandler( DocumentModel ureg, CoreSession session )
     {
         CoreSession s = null;
         AutomationService automationService = Framework.getService(AutomationService.class);
@@ -405,7 +450,54 @@ public class FVRegistrationUtilities
             params.put("groupsAction", UPDATE);
             automationService.run(ctx, "FVUpdateUser", params);
 
+            FVUserPreferencesSetup up = new FVUserPreferencesSetup();
 
+            userManager = Framework.getService(UserManager.class);
+            DocumentModel userDoc = userManager.getUserModel( username );
+
+            try
+            {
+                up.updateUserPreferences(userDoc, ureg );
+            }
+            catch ( Exception e)
+            {
+                log.warn("Exception while updating user preferences "+e );
+            }
+
+            params.put("permission", "Everything");
+            params.put("variable name", "login");
+            params.put("ignore groups", true );
+
+              String dialectId = (String) ureg.getPropertyValue("docinfo:documentId");
+              DocumentModel dialect = session.getDocument( new IdRef( dialectId ));
+
+            ctx.setInput( dialect );
+
+            try
+            {
+                DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetUsersGroupIdsWithPermissionOnDoc", params);
+            }
+            catch (Exception e)
+            {
+                log.warn(e);
+            }
+
+            // set contributors to administrator of the
+            Map<String, Object> val = (Map<String, Object>) ctx.getVars();
+//            //DocumentModel contributors = new Do();
+//
+//            if( val.containsKey("login"))
+//            {
+//                Object args = val.get("login");
+//
+//                for( String lg : args )
+//                {
+//                    if( contributors.isEmpty() ) { contributors.add(lg) }
+//                    else { toStr = toStr + ", " + em; }
+//                }
+//            }
+
+            userManager.updateUser(userDoc);
         }
         catch( Exception e )
         {
