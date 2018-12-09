@@ -17,11 +17,14 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-import static ca.firstvoices.utils.FVRegistrationUtilities.APPEND;
-import static ca.firstvoices.utils.FVRegistrationUtilities.REMOVE;
-import static ca.firstvoices.utils.FVRegistrationUtilities.UPDATE;
+import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
+import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
+import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
 import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
 
+/**
+ *
+ */
 @Operation(id = FVUpdateGroup.ID, category = Constants.CAT_USERS_GROUPS, label = "FVUpdateGroup",
         description = "Updates group information. Possible actions are 'update'(default), 'append' and 'remove' .")
 public class FVUpdateGroup

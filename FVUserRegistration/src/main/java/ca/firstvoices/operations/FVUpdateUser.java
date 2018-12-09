@@ -1,20 +1,19 @@
 package ca.firstvoices.operations;
 
-import static ca.firstvoices.utils.FVRegistrationUtilities.*;
+import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
+import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
+import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.COMPANY_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.EMAIL_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.FIRSTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.LASTNAME_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.PASSWORD_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.SCHEMA_NAME;
 
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 
-import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -26,7 +25,11 @@ import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
 
+/**
+ *
+ */
 @Operation(id = FVUpdateUser.ID, aliases = { "Services.UpdateUser" }, category = Constants.CAT_USERS_GROUPS, label = "FVUpdateUser",
                                  description = "Updates user information. Possible actions are 'update'(default), 'append' and 'remove' .")
 public class FVUpdateUser {
@@ -104,7 +107,6 @@ public class FVUpdateUser {
         }
 
         userManager.updateUser(userDoc);
-        userDoc = userManager.getUserModel(username);
     }
 }
 
