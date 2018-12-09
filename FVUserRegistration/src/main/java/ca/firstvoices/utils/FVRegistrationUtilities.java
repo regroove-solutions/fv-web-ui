@@ -129,11 +129,18 @@ public class FVRegistrationUtilities
         return diffDays;
     }
 
+    // provide hrs within the day since registration started
+    public static long calculateRegistrationModHours( Calendar dateRegistered )
+    {
+        long timeDiff = Calendar.getInstance().getTimeInMillis() - dateRegistered.getTimeInMillis();
+        long diffHours = (timeDiff / (60 * 60 * 1000)) % 24;
+        return diffHours;
+    }
+
     /**
      * @param registrationRequest
      * @param s
      * @param uM
-     * @param as
      */
     public void preCondition(DocumentModel registrationRequest, CoreSession s, UserManager uM )
     {
@@ -466,7 +473,7 @@ public class FVRegistrationUtilities
 
             params.put("permission", "Everything");
             params.put("variable name", "login");
-            params.put("ignore groups", true );
+            params.put("ignore groups", false );
 
               String dialectId = (String) ureg.getPropertyValue("docinfo:documentId");
               DocumentModel dialect = session.getDocument( new IdRef( dialectId ));
@@ -498,6 +505,9 @@ public class FVRegistrationUtilities
 //            }
 
             userManager.updateUser(userDoc);
+
+
+            // TODO decide if we need to remove the registration document for created document at this point
         }
         catch( Exception e )
         {

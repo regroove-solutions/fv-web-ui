@@ -10,6 +10,7 @@ import org.nuxeo.runtime.api.Framework;
 import javax.security.auth.login.LoginContext;
 import java.util.Calendar;
 
+import static ca.firstvoices.operations.FVGetPendingUserRegistrations.APPROVED;
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
 
@@ -37,16 +38,18 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
             super("check-registration-timeout");
         }
 
+
         private int checkRegistrationTimeOut( Calendar dateRegistered )
         {
             long diffDays = FVRegistrationUtilities.calculateRegistrationAgeInDays( dateRegistered );
+            long modHours = FVRegistrationUtilities.calculateRegistrationModHours( dateRegistered );
 
             int actionValue = 0;
 
-            // currently set to check at2am, 12am, 22pm
-            if( diffDays >= REGISTRATION_DELETION_IN_DAYS )         actionValue = REGISTRATION_DELETION_ACT;
-            else if( diffDays > REGISTRATION_EXPIRATION_IN_DAYS )   actionValue = REGISTRATION_EXPIRATION_ACT;
-            else if( diffDays >= MID_REGISTRATION_PERIOD_IN_DAYS )  actionValue = MID_REGISTRATION_PERIOD_ACT;
+            // currently set to check at 2am, 10am, 6pm
+            if( diffDays == REGISTRATION_DELETION_IN_DAYS && modHours < 8)         actionValue = REGISTRATION_DELETION_ACT;
+            else if( diffDays == REGISTRATION_EXPIRATION_IN_DAYS && modHours < 8)  actionValue = REGISTRATION_EXPIRATION_ACT;
+            else if( diffDays == MID_REGISTRATION_PERIOD_IN_DAYS && modHours < 8)  actionValue = MID_REGISTRATION_PERIOD_ACT;
 
             return actionValue;
         }
@@ -71,16 +74,27 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                     Calendar regCreated = (Calendar) uReg.getPropertyValue("dc:created");
 
                     int regTOType = checkRegistrationTimeOut( regCreated );
+
                     // regTOType
-                    // 0 - registration still not timed out
-                    // 1 - registration is closing on timeout
-                    //     an email needs to be sent to a user who started registration
-                    //     and email informing LanguageAdministrator that user registration will be deleted with ? days
-                    // 2 - registration timed out and it has to be deleted
-                    //     send an email to originator of registration request with information about cancellation
-                    // 3-  registration is deleted
                     //
-                    mailUtil.emailReminder( regTOType, uReg, s );
+                    // 0 - no action required (either already dealt with or still within no-action period)
+                    //
+                    // MID_REGISTRATION_PERIOD_ACT - registration is closing on timeout
+                    //                               an email needs to be sent to a user who started registration
+                    //                               and email informing LanguageAdministrator that user registration will be deleted in ? days
+                    //
+                    // REGISTRATION_EXPIRATION_ACT - registration timed out and it will be deleted in 24 hrs - last chance to activate account
+                    //                               send an email to originator of registration request with information about cancellation
+                    //
+                    // REGISTRATION_DELETION_ACT -   registration should be deleted
+                    //
+
+                    // if registration has lifecycle set to accepted user already provided password
+                    // and registration is just a reminder of the registration operation
+                    if( uReg.getCurrentLifeCycleState().equals(APPROVED) )
+                    {
+                        mailUtil.emailReminder(regTOType, uReg, s);
+                    }
 
                     if( regTOType == REGISTRATION_DELETION_ACT )
                     {
