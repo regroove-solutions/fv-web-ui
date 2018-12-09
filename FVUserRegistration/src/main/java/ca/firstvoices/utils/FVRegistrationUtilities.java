@@ -450,6 +450,12 @@ public class FVRegistrationUtilities
 
             automationService.run(ctx, "FVUpdateGroup", params);
 
+            params.put("groupname", newUserGroup);
+            params.put("members", username );
+            params.put("membersAction", APPEND );
+
+            automationService.run(ctx, "FVUpdateGroup", params);
+
             ctx = new OperationContext(); // do I need to do it?
             params.clear();
             params.put("username", username);
@@ -471,26 +477,30 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            params.put("permission", "Everything");
-            params.put("variable name", "login");
-            params.put("ignore groups", false );
+            userManager.updateUser(userDoc);
 
-              String dialectId = (String) ureg.getPropertyValue("docinfo:documentId");
-              DocumentModel dialect = session.getDocument( new IdRef( dialectId ));
+            session.save();
 
-            ctx.setInput( dialect );
-
-            try
-            {
-                DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetUsersGroupIdsWithPermissionOnDoc", params);
-            }
-            catch (Exception e)
-            {
-                log.warn(e);
-            }
-
-            // set contributors to administrator of the
-            Map<String, Object> val = (Map<String, Object>) ctx.getVars();
+//            params.put("permission", "Everything");
+//            params.put("variable name", "login");
+//            params.put("ignore groups", false );
+//
+//             String dialectId = (String) ureg.getPropertyValue("docinfo:documentId");
+//             DocumentModel dialect = session.getDocument( new IdRef( dialectId ));
+//
+//            ctx.setInput( dialect );
+//
+//            try
+//            {
+//                DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetUsersGroupIdsWithPermissionOnDoc", params);
+//            }
+//            catch (Exception e)
+//            {
+//                log.warn(e);
+//            }
+//
+//            // set contributors to administrator of the
+//            Map<String, Object> val = (Map<String, Object>) ctx.getVars();
 //            //DocumentModel contributors = new Do();
 //
 //            if( val.containsKey("login"))
@@ -504,7 +514,9 @@ public class FVRegistrationUtilities
 //                }
 //            }
 
-            userManager.updateUser(userDoc);
+
+
+
 
 
             // TODO decide if we need to remove the registration document for created document at this point
