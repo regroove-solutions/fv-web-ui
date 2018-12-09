@@ -1,6 +1,5 @@
 package ca.firstvoices.workers;
 
-import ca.firstvoices.utils.FVRegistrationConstants;
 import ca.firstvoices.utils.FVRegistrationMailUtilities;
 import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.nuxeo.ecm.core.api.*;
@@ -11,10 +10,14 @@ import org.nuxeo.runtime.api.Framework;
 import javax.security.auth.login.LoginContext;
 import java.util.Calendar;
 
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
 
-
+/**
+ *
+ */
 public class FVRegistrationTimeOutWorker extends AbstractWork {
+
 
         private static final Log log = LogFactory.getLog(FVRegistrationTimeOutWorker.class);
 
@@ -41,9 +44,9 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
             int actionValue = 0;
 
             // currently set to check at2am, 12am, 22pm
-            if( diffDays >= 8 ) actionValue = FVRegistrationConstants.REGISTRATION_DELETION;
-            else if( diffDays > 7 ) actionValue =  FVRegistrationConstants.REGISTRATION_EXPIRATION;
-            else if( diffDays >= 4 ) actionValue = FVRegistrationConstants.MID_REGISTRATION_PERIOD;
+            if( diffDays >= REGISTRATION_DELETION_IN_DAYS )         actionValue = REGISTRATION_DELETION_ACT;
+            else if( diffDays > REGISTRATION_EXPIRATION_IN_DAYS )   actionValue = REGISTRATION_EXPIRATION_ACT;
+            else if( diffDays >= MID_REGISTRATION_PERIOD_IN_DAYS )  actionValue = MID_REGISTRATION_PERIOD_ACT;
 
             return actionValue;
         }
@@ -79,7 +82,7 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                     //
                     mailUtil.emailReminder( regTOType, uReg, s );
 
-                    if( regTOType == FVRegistrationConstants.REGISTRATION_DELETION )
+                    if( regTOType == REGISTRATION_DELETION_ACT )
                     {
                         log.info( "Registration period expired for user" + uReg.getPropertyValue("userinfo:firstName") + " " + uReg.getPropertyValue("userinfo:lastName") + ". Registration was deleted");
                         s.removeDocument( uReg.getRef() );
