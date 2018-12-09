@@ -8,7 +8,7 @@
         <schedule id="fv_registration">
             <eventId>checkRegistrationTimeout</eventId>
             <eventCategory>default</eventCategory>
-            <cronExpression>0 0 0,2,12,22 ? * * *</cronExpression>
+            <cronExpression>0 0 0,2,10,18 ? * * *</cronExpression>
         </schedule>
     </extension>
 </component>
