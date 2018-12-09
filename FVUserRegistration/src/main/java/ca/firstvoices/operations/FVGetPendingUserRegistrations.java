@@ -12,10 +12,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
-import java.util.Calendar;
-
-import static ca.firstvoices.utils.FVRegistrationUtilities.*;
-
 @Operation(id = FVGetPendingUserRegistrations.ID, category = Constants.CAT_USERS_GROUPS, label = "Get user registrations.",
         description = "Get registrations for specific dialect or when input is ALL (*) for the system. \n prune action can be 'ignore', 'approved' or 'accepted'\n.")
 public class FVGetPendingUserRegistrations
