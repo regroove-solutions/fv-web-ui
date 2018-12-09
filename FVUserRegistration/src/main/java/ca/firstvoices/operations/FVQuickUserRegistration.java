@@ -69,7 +69,7 @@ public class FVQuickUserRegistration {
     {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
-        utilCommon.preCondition( registrationRequest, session, userManager, autoService );
+        utilCommon.preCondition( registrationRequest, session, userManager );
 
         autoAccept = utilCommon.QuickUserRegistrationCondition( registrationRequest, session, autoAccept );
 

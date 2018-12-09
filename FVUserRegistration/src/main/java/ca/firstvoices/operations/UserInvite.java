@@ -86,7 +86,7 @@ public class UserInvite {
     public String run(DocumentModel registrationRequest) {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
-        utilCommon.preCondition(registrationRequest, session, userManager, autoService);
+        utilCommon.preCondition(registrationRequest, session, userManager );
 
         autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );
 
