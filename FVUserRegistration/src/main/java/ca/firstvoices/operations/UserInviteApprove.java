@@ -43,6 +43,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO Do we need it?
+
 /**
  * Operation to accept a user invitation.
  */

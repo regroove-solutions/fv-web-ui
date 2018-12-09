@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-//TODO Do we need it? It is an exact copy of the UserInviteAccept
+//TODO Do we need it? It is an exact copy of the UserInviteApprove
 //
 /**
  * Operation to accept a user invitation.
