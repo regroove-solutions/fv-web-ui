@@ -9,6 +9,9 @@ import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
+/**
+ *
+ */
 public class FVRegistrationCompletionListener implements EventListener {
 
     private static final Log log = LogFactory.getLog(ca.firstvoices.listeners.FVRegistrationCompletionListener.class);
@@ -22,7 +25,6 @@ public class FVRegistrationCompletionListener implements EventListener {
         if (!(ctx instanceof DocumentEventContext)) return;
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
-        DocumentModel registration = docCtx.getSourceDocument();
 
         FVRegistrationUtilities regUtil = new FVRegistrationUtilities();
 
@@ -42,7 +44,7 @@ public class FVRegistrationCompletionListener implements EventListener {
                     String oT = ureg.getType();
 
                     if (oT.equals("FVUserRegistration")) {
-                        regUtil.registrationValidationHandler(ureg);
+                        regUtil.registrationValidationHandler(ureg, ctx.getCoreSession() );
                     }
                 }
                 break;
