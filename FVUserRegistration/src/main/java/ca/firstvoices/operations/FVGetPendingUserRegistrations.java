@@ -29,8 +29,8 @@ public class FVGetPendingUserRegistrations
     @Param(name = "dialectID")
     protected String dialectID;
 
-    @Param(name = "pruneAction", required = false, values = { IGNORE, APPROVED, ACCEPTED})
-    protected String pruneAction = IGNORE;
+    @Param(name = "pruneAction", required = false, values = { APPROVED, ACCEPTED, IGNORE})
+    protected String pruneAction = APPROVED;
 
 
     @OperationMethod
