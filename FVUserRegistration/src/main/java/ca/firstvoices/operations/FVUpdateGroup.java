@@ -97,8 +97,7 @@ public class FVUpdateGroup
             throw new OperationException("Cannot update non-existent group: " + groupName);
         }
 
-        if( terminateOnInvalidCredentials_GU( session, userManager, groupName ) ) return; // invoking principal has no credentials to invoke operation
-
+        if( terminateOnInvalidCredentials_GU( session, userManager, groupName ) ) return; // invalid credentials
         if( members != null )
         {
             updateFVProperty( membersAction, groupDoc, members, GROUP_SCHEMA, MEMBERS );

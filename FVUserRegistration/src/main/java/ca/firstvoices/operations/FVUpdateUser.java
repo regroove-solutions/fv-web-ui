@@ -81,7 +81,7 @@ public class FVUpdateUser {
             throw new OperationException("Cannot update non-existent user: " + username);
         }
 
-        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return;
+        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return; // invalid credentials
 
         if (groups != null)
         {
