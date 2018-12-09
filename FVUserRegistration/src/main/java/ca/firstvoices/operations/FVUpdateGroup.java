@@ -14,6 +14,7 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -21,6 +22,8 @@ import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
 import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
 import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
 import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GU;
+
 
 /**
  *
@@ -49,6 +52,9 @@ public class FVUpdateGroup
 
     @Context
     protected UserManager userManager;
+
+    @Context
+    protected CoreSession session;
 
     @Param(name = "groupname")
     protected String groupName;
@@ -88,8 +94,10 @@ public class FVUpdateGroup
 
         if (groupDoc == null)
         {
-                throw new OperationException("Cannot update non-existent group: " + groupName);
+            throw new OperationException("Cannot update non-existent group: " + groupName);
         }
+
+        if( terminateOnInvalidCredentials_GU( session, userManager, groupName ) ) return; // invoking principal has no credentials to invoke operation
 
         if( members != null )
         {

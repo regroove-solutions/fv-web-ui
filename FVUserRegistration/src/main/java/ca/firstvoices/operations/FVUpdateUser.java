@@ -1,5 +1,6 @@
 package ca.firstvoices.operations;
 
+
 import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
 import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
 import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
@@ -9,11 +10,9 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.FIRSTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.LASTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.SCHEMA_NAME;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Map.Entry;
-
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -23,9 +22,11 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UU;
 
 /**
  *
@@ -40,6 +41,9 @@ public class FVUpdateUser {
 
     @Context
     protected UserManager userManager;
+
+    @Context
+    protected CoreSession session;
 
     @Param(name = "username")
     protected String username;
@@ -71,10 +75,13 @@ public class FVUpdateUser {
     public void run() throws OperationException
     {
         DocumentModel userDoc = userManager.getUserModel(username);
+
         if (userDoc == null)
         {
             throw new OperationException("Cannot update non-existent user: " + username);
         }
+
+        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return;
 
         if (groups != null)
         {
