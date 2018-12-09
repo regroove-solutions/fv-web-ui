@@ -78,7 +78,13 @@ public class FVUpdateUser {
 
         if (groups != null)
         {
-            updateFVProperty( groupsAction, userDoc, groups, SCHEMA_NAME, GROUPS_COLUMN );
+            StringList alwaysLowerCase = new StringList();
+            for(String gn : groups )
+            {
+                alwaysLowerCase.add( gn.toLowerCase());
+            }
+
+            updateFVProperty( groupsAction, userDoc, alwaysLowerCase, SCHEMA_NAME, GROUPS_COLUMN );
         }
 
         for (Entry<String, String> entry : Arrays.asList( //

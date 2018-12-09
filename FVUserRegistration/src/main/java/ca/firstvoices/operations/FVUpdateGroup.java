@@ -98,12 +98,23 @@ public class FVUpdateGroup
 
         if (subGroups != null)
         {
-            updateFVProperty( subGroupsAction, groupDoc, subGroups, GROUP_SCHEMA, SUB_GROUPS );
+            StringList alwaysLowerCase = new StringList();
+            for(String gn : subGroups )
+            {
+                alwaysLowerCase.add( gn.toLowerCase());
+            }
+
+            updateFVProperty( subGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, SUB_GROUPS );
         }
 
         if (parentGroups != null )
         {
-            updateFVProperty( parentGroupsAction, groupDoc, parentGroups, GROUP_SCHEMA, PARENT_GROUPS );
+            StringList alwaysLowerCase = new StringList();
+            for(String gn : parentGroups )
+            {
+                alwaysLowerCase.add( gn.toLowerCase());
+            }
+            updateFVProperty( parentGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, PARENT_GROUPS );
         }
 
         for (Entry<String, String> entry : Arrays.asList(
