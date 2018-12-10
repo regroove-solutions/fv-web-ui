@@ -58,7 +58,7 @@ public class FVOperationCredentialsVerification
                 NuxeoPrincipal userToChange = userManager.getPrincipal(username);
 
                 int ui = language_admin_group.indexOf("_");
-                String dns = language_admin_group.substring( 0, ui ); // dialect name ending
+                String dns = language_admin_group.substring( 0, ui ); // dialect name
 
                 List<String> upr_groups = userToChange.getGroups();
 
@@ -90,7 +90,7 @@ public class FVOperationCredentialsVerification
                 int ui = language_admin_group.indexOf("_");
                 String dns = language_admin_group.substring( 0, ui ); // dialect name ending
 
-                if( groupName.contains( dns )) return false;
+                if( groupName.contains( dns )) return false; // continue executing command - valid credentials
             }
 
             return true; // invalid credentials
