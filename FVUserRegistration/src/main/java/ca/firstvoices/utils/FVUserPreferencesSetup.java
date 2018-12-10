@@ -1,3 +1,7 @@
+/*
+ * Contributors:
+ *     Kristof Subryan <vtr_monk@mac.com>
+ */
 package ca.firstvoices.utils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;

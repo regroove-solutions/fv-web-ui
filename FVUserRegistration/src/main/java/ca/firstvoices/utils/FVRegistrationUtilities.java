@@ -29,7 +29,6 @@ import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 
 
-
 public class FVRegistrationUtilities
 {
     private static final Log log = LogFactory.getLog(FVRegistrationUtilities.class);
@@ -426,22 +425,26 @@ public class FVRegistrationUtilities
             registrationDocACP.addACE("local", registrationACE);
             registrationDoc.setACP(registrationDocACP, false);
         }
-
     }
 
     /**
      * @param ureg
      */
-    public void registrationValidationHandler( DocumentModel ureg, CoreSession session )
+    public void registrationValidationHandler( DocumentModel ureg )
     {
-        CoreSession s = null;
         AutomationService automationService = Framework.getService(AutomationService.class);
-        OperationContext ctx = new OperationContext();
+        LoginContext lctx;
 
         try
         {
             String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
             String username = (String) ureg.getPropertyValue("userinfo:login");
+
+            lctx = Framework.login();
+
+            userManager = Framework.getService(UserManager.class);
+            session = CoreInstance.openCoreSession("default");
+            OperationContext ctx = new OperationContext(session);
 
             Map<String, Object> params = new HashMap<>();
             params.put("groupname", "members");
@@ -456,7 +459,6 @@ public class FVRegistrationUtilities
 
             automationService.run(ctx, "FVUpdateGroup", params);
 
-            ctx = new OperationContext(); // do I need to do it?
             params.clear();
             params.put("username", username);
             params.put("groups", newUserGroup);
@@ -465,7 +467,6 @@ public class FVRegistrationUtilities
 
             FVUserPreferencesSetup up = new FVUserPreferencesSetup();
 
-            userManager = Framework.getService(UserManager.class);
             DocumentModel userDoc = userManager.getUserModel( username );
 
             try
@@ -478,8 +479,6 @@ public class FVRegistrationUtilities
             }
 
             userManager.updateUser(userDoc);
-
-            session.save();
 
 //            params.put("permission", "Everything");
 //            params.put("variable name", "login");
@@ -514,12 +513,8 @@ public class FVRegistrationUtilities
 //                }
 //            }
 
-
-
-
-
-
             // TODO decide if we need to remove the registration document for created document at this point
+            lctx.logout();
         }
         catch( Exception e )
         {
@@ -527,6 +522,7 @@ public class FVRegistrationUtilities
         }
         finally
         {
+            session.close();
         }
 
     }

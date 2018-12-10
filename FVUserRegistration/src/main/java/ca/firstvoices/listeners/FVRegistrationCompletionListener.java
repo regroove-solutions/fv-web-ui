@@ -44,7 +44,7 @@ public class FVRegistrationCompletionListener implements EventListener {
                     String oT = ureg.getType();
 
                     if (oT.equals("FVUserRegistration")) {
-                        regUtil.registrationValidationHandler(ureg, ctx.getCoreSession() );
+                        regUtil.registrationValidationHandler( ureg );
                     }
                 }
                 break;
