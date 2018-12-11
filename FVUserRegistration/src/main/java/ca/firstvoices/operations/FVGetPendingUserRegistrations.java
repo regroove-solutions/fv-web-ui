@@ -12,7 +12,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
-@Operation(id = FVGetPendingUserRegistrations.ID, category = Constants.CAT_USERS_GROUPS, label = "Get user registrations.",
+@Operation(id = FVGetPendingUserRegistrations.ID, category = Constants.CAT_USERS_GROUPS, label = "FVGetPendingUserRegistrations",
         description = "Get registrations for specific dialect or when input is ALL (*) for the system. \n prune action can be 'ignore', 'approved' or 'accepted'\n.")
 public class FVGetPendingUserRegistrations
 {
