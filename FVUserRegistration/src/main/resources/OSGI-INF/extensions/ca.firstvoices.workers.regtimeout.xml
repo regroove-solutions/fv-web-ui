@@ -7,7 +7,7 @@
             <name>Queue for checking timeout registration requests.</name>>
             <maxThreads>1</maxThreads>
             <capacity>200</capacity>
-            <clearCompletedAfterSeconds>120</clearCompletedAfterSeconds>
+            <clearCompletedAfterSeconds>20</clearCompletedAfterSeconds>
             <category>default</category>
         </queue>
     </extension>

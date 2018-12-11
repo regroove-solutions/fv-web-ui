@@ -141,7 +141,7 @@ public class FVRegistrationMailUtilities {
             String s2 = "<br><br> User registered to participate in " + options.get("dialect") +".";
             String ex7 = "<br> Registration request will expire in 7 days.";
             String ex24 =   "<br><br> Registration request will be deleted in 24 hrs. <br>";
-            String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password.";
+            String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password. <br><br> Regards,<br> The FirstVoices team";
 
             switch( variant) {
                 case MID_REGISTRATION_PERIOD_ACT:
@@ -186,14 +186,14 @@ public class FVRegistrationMailUtilities {
         {
             String body = null;
             String g =  "Dear "+ options.get("fName") +",";
-            String e3 = "<br> Your registration to FirstVoices will expire in 3 days.";
-            String e24 = "<br> Your registration to FirstVoices expired and will be deleted in 24 hrs.";
-            String del = "<br> Your registration to FirstVoices was deleted.";
+            String e3 = "<br> Your registration to FirstVoices.com will expire in 3 days.";
+            String e24 = "<br> Your registration to FirstVoices.com expired and will be deleted in 24 hrs.";
+            String del = "<br> Your registration to FirstVoices.com was deleted.";
             String ln =  "<br><br> Your login name is: " + options.get("email");
             String dp =  "<br><br> You registered to participate in " + options.get("dialect") +". <br>";
             String endStr =  "<br> Please setup account password to complete registration.";
             String re = "<br> In order to participate in FirstVoices you will need to register again.";
-            String endStr_D =  "<br> If you do so please complete registration by setting up you account password.";
+            String endStr_D =  "<br><br> If you do so please complete registration by setting up you account password. <br><br> Regards,<br> The FirstVoices team";
 
             switch( variant ) {
                 case MID_REGISTRATION_PERIOD_ACT:
@@ -279,7 +279,8 @@ public class FVRegistrationMailUtilities {
 
         String toStr = getLanguageAdministratorEmail( dialect );
 
-        registrationMailSender( variant, new AdminMailContent(), options , toStr );
         registrationMailSender( variant, new UserReminderMailContent(), options , "" );
+
+        registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }
