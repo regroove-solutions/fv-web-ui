@@ -609,7 +609,7 @@ export default class Preview extends Component {
 
                 if (contributorResponse && contributor.success) {
                     body = <div>
-                        <span>{selectn('title', contributorResponse) || selectn('dc:title', contributorResponse)}</span>
+                        <span dangerouslySetInnerHTML={{__html: selectn('title', contributorResponse) || selectn('dc:title', contributorResponse)}}/>
                         <span> {selectn('properties.dc:description', contributorResponse) || selectn('dc:description', contributorResponse)}</span>
                     </div>;
                 }
