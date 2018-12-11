@@ -45,7 +45,6 @@ public class FVUserPreferencesSetup {
         ObjectMapper mapper = new ObjectMapper();
 
         String modifiedPreferencesString = mapper.writeValueAsString( userPreferencesObj );
-
         existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
     }
 

@@ -98,6 +98,7 @@ public class FVUpdateGroup
         }
 
         if( terminateOnInvalidCredentials_GU( session, userManager, groupName ) ) return; // invalid credentials
+
         if( members != null )
         {
             updateFVProperty( membersAction, groupDoc, members, GROUP_SCHEMA, MEMBERS );
