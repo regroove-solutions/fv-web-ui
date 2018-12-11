@@ -185,7 +185,7 @@ const options = {
                     default: 'Include Shared from FirstVoices',
                     case: 'words'
                 }),
-                nxql: ' (ecm:path STARTSWITH \'/FV/Workspaces/SharedData/Shared%20Resources/\')',
+                nxql: ' (ecm:path STARTSWITH \'/FV/Workspaces/SharedData/Shared Resources/\')',
                 operator: 'OR'
                 //nxqlGroup: 'search_group1'
             },

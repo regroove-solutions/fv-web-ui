@@ -95,7 +95,8 @@ export default class DirectoryOperations extends BaseOperations {
         let properties = this.properties;
 
         // Replace Percent Sign
-        queryAppend = queryAppend.replace(/%/g, "%25");
+        // This replacement should be done inside StringHelpers -> clean
+        //queryAppend = queryAppend.replace(/%/g, "%25");
 
         let requestBody;
 
