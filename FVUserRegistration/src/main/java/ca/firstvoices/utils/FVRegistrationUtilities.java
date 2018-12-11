@@ -290,11 +290,47 @@ public class FVRegistrationUtilities
                                  Map<String, Serializable> info,
                                  String                   comment,
                                  ValidationMethod         validationMethod,
-                                 boolean                  autoAccept )
+                                 boolean                  autoAccept ) throws UserRegistrationException
     {
         String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
         String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
         String email = (String) registrationRequest.getPropertyValue("userinfo:email");
+        int validationStatus = 0;
+        try
+        {
+            AutomationService automationService = Framework.getService(AutomationService.class);
+            CoreSession cs = CoreInstance.openCoreSession("default");
+            OperationContext ctx = new OperationContext(session);
+            Map<String, Object> params = new HashMap<>();
+            params.put("Login:", email);
+            params.put("email:", email);
+
+            validationStatus = (int)automationService.run(ctx, "FVValidateRegistrationAttempt", params);
+        }
+        catch( Exception e)
+        {
+            log.warn("Exception while validating registration.");
+            throw new UserRegistrationException( "Exception while invoking registration validation. " + e );
+        }
+
+        if( validationStatus != REGISTRATION_CAN_PROCEED )
+        {
+            switch ( validationStatus )
+            {
+                case EMAIL_EXISTS_ERROR:
+                    throw new UserRegistrationException("Exception validation: Login the same as submitted email is present.");
+
+                case LOGIN_EXISTS_ERROR:
+                    throw new UserRegistrationException("Exception validation: Login name already present.");
+
+                case LOGIN_AND_EMAIL_EXIST_ERROR:
+                    throw new UserRegistrationException("Exception validation: Login name and email already present.");
+
+                case REGISTRATION_EXISTS_ERROR:
+                    throw new UserRegistrationException("Exception validation: Pending registration with the same credentials is present.");
+
+            }
+        }
 
         userInfo.setEmail(email);
         userInfo.setFirstName(firstName);
