@@ -83,9 +83,21 @@ public class UserInvite {
 
 
     @OperationMethod
-    public String run(DocumentModel registrationRequest) {
+    public String run(DocumentModel registrationRequest) throws Exception
+    {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
+        /*
+            This operation has for most part similar code to sister operation FVQuickUserRegistration.
+            The main difference is in conditions we apply for both.
+            Common code is split into 2 parts
+            - preCondition
+            - postCondition
+            Each of the operations executes it own, context specific conditions and any other operations
+            following if appropriate.
 
+            In this case email to the user is sent by Nuxeo and since administrator initiated invitation
+            we do not send an email.
+        */
         utilCommon.preCondition(registrationRequest, session, userManager );
 
         autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );

@@ -204,36 +204,34 @@ public class FVRegistrationUtilities
     }
 
     /**
-     * @param ctx
      * @throws Exception
      */
-    private void notificationEmailsAndReminderTasks( OperationContext ctx )  throws Exception
+    private void notificationEmailsAndReminderTasks( DocumentModel dialect, DocumentModel ureg)  throws Exception
     {
         Map<String,String> options = new HashMap<>();
-        options.put("fName", userInfo.getFirstName());
-        options.put("lName", userInfo.getLastName());
-        options.put("email", userInfo.getEmail());
-        options.put("dialect", dialectTitle);
+        options.put("fName", (String) ureg.getPropertyValue("userinfo:firstName"));
+        options.put("lName", (String) ureg.getPropertyValue("userinfo:lastName"));
+        options.put("email", (String) ureg.getPropertyValue("userinfo:email"));
+        options.put("dialect", dialect.getTitle() );
 
-        ctx.setInput(dialect);
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
         mailUtil.registrationAdminMailSender(NEW_USER_SELF_REGISTRATION_ACT, options, adminTO );
      }
 
     /**
-     * @param ctx
      */
-    public void quickRegistrationFinal(  OperationContext ctx )
+    public void quickRegistrationFinal() throws Exception
     {
         try
         {
             // send email to Administrator
             // send email to LanguageAdministrator
-            notificationEmailsAndReminderTasks( ctx );
+            //notificationEmailsAndReminderTasks();
         }
         catch(Exception e)
         {
             log.warn( e );
+            throw e;
         }
     }
 
@@ -290,7 +288,7 @@ public class FVRegistrationUtilities
                                  Map<String, Serializable> info,
                                  String                   comment,
                                  ValidationMethod         validationMethod,
-                                 boolean                  autoAccept ) throws UserRegistrationException
+                                 boolean                  autoAccept ) throws Exception
     {
         String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
         String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
@@ -364,25 +362,26 @@ public class FVRegistrationUtilities
         catch( Exception e )
         {
             log.warn( e );
+            throw e;
         }
-//        finally
-//        {
-//            s.close();
-//        }
+        finally
+        {
+            if( s!= null ) s.close();
+        }
 
         return registrationId;
     }
 
     protected static class UnrestrictedSourceDocumentResolver extends UnrestrictedSessionRunner {
 
-        private final CoreSession session;
+        //private final CoreSession session;
         private final String docid;
 
         public DocumentModel dialect;
 
         protected UnrestrictedSourceDocumentResolver(CoreSession session, String docId ) {
             super(session);
-            this.session = session;
+            //this.session = session;
             docid = docId;
         }
 
@@ -469,33 +468,36 @@ public class FVRegistrationUtilities
 
         try
         {
-            String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
+            //String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
             String username = (String) ureg.getPropertyValue("userinfo:login");
 
             lctx = Framework.login();
 
             userManager = Framework.getService(UserManager.class);
+
             session = CoreInstance.openCoreSession("default");
-            OperationContext ctx = new OperationContext(session);
+            dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 
-            Map<String, Object> params = new HashMap<>();
-            params.put("groupname", "members");
-            params.put("members", username );
-            params.put("membersAction", REMOVE );
-
-            automationService.run(ctx, "FVUpdateGroup", params);
-
-            params.put("groupname", newUserGroup);
-            params.put("members", username );
-            params.put("membersAction", APPEND );
-
-            automationService.run(ctx, "FVUpdateGroup", params);
-
-            params.clear();
-            params.put("username", username);
-            params.put("groups", newUserGroup);
-            params.put("groupsAction", UPDATE);
-            automationService.run(ctx, "FVUpdateUser", params);
+//            OperationContext ctx = new OperationContext(session);
+//
+//            Map<String, Object> params = new HashMap<>();
+//            params.put("groupname", "members");
+//            params.put("members", username );
+//            params.put("membersAction", REMOVE );
+//
+//            automationService.run(ctx, "FVUpdateGroup", params);
+//
+//            params.put("groupname", newUserGroup);
+//            params.put("members", username );
+//            params.put("membersAction", APPEND );
+//
+//            automationService.run(ctx, "FVUpdateGroup", params);
+//
+//            params.clear();
+//            params.put("username", username);
+//            params.put("groups", newUserGroup);
+//            params.put("groupsAction", UPDATE);
+//            automationService.run(ctx, "FVUpdateUser", params);
 
             FVUserPreferencesSetup up = new FVUserPreferencesSetup();
 
@@ -512,38 +514,7 @@ public class FVRegistrationUtilities
 
             userManager.updateUser(userDoc);
 
-//            params.put("permission", "Everything");
-//            params.put("variable name", "login");
-//            params.put("ignore groups", false );
-//
-//             String dialectId = (String) ureg.getPropertyValue("docinfo:documentId");
-//             DocumentModel dialect = session.getDocument( new IdRef( dialectId ));
-//
-//            ctx.setInput( dialect );
-//
-//            try
-//            {
-//                DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetUsersGroupIdsWithPermissionOnDoc", params);
-//            }
-//            catch (Exception e)
-//            {
-//                log.warn(e);
-//            }
-//
-//            // set contributors to administrator of the
-//            Map<String, Object> val = (Map<String, Object>) ctx.getVars();
-//            //DocumentModel contributors = new Do();
-//
-//            if( val.containsKey("login"))
-//            {
-//                Object args = val.get("login");
-//
-//                for( String lg : args )
-//                {
-//                    if( contributors.isEmpty() ) { contributors.add(lg) }
-//                    else { toStr = toStr + ", " + em; }
-//                }
-//            }
+            notificationEmailsAndReminderTasks(dialect, ureg );
 
             // TODO decide if we need to remove the registration document for created document at this point
             lctx.logout();

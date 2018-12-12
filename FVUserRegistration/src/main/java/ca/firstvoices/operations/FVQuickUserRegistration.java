@@ -65,10 +65,22 @@ public class FVQuickUserRegistration {
 
 
     @OperationMethod
-    public String run( DocumentModel registrationRequest )
+    public String run( DocumentModel registrationRequest ) throws Exception
     {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
 
+        /*
+
+            This operation has for most part similar code to sister operation UserInvite.
+            The main difference is in conditions we apply for both.
+            Common code is split into 2 parts
+            - preCondition
+            - postCondition
+            Each of the operations executes it own, context specific conditions and any other operations
+            following if appropriate.
+            In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
+
+         */
         utilCommon.preCondition( registrationRequest, session, userManager );
 
         autoAccept = utilCommon.QuickUserRegistrationCondition( registrationRequest, session, autoAccept );
@@ -79,8 +91,6 @@ public class FVQuickUserRegistration {
                 comment,
                 validationMethod,
                 autoAccept );
-
-        utilCommon.quickRegistrationFinal( ctx );
 
         return registrationId;
     }

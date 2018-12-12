@@ -6,9 +6,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.automation.features.PrincipalHelper;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.security.PermissionProvider;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.mail.Message;
@@ -19,9 +23,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
@@ -63,46 +70,40 @@ public class FVRegistrationMailUtilities {
         Transport.send(msg);
     }
 
+    private String composeEmailString( Set<String> emailSet )
+    {
+        String toStr = new String();
+
+        for( String em : emailSet )
+        {
+            if( em.contains("devnull")) continue;
+
+            if( toStr.isEmpty() ) { toStr = em; }
+            else { toStr = toStr + ", " + em; }
+        }
+
+        return toStr;
+    }
+
     /**
      * @param dialect
      * @return
      */
-    public String getLanguageAdministratorEmail( DocumentModel dialect )
+    public String getLanguageAdministratorEmail( DocumentModel dialect ) throws LoginException
     {
-        Map<String, Object> params = new HashMap<>();
-        params.put("permission", "Everything");
-        params.put("variable name", "emails");
-        params.put("ignore groups", false );
+        LoginContext lctx =  Framework.login();
 
-        //List<String> users = Arrays.asList(um.getUsersForPermission(SecurityConstants.EVERYTHING, dialect.getACP()));
-        AutomationService automationService = Framework.getService(AutomationService.class);
-        OperationContext ctx = new OperationContext();
-        ctx.setInput( dialect );
+        CoreSession session = CoreInstance.openCoreSession("default");
+        UserManager umgr = Framework.getService( UserManager.class );
+        PermissionProvider permissionProvider = Framework.getService( PermissionProvider.class );
 
-        try {
-            DocumentModel doc = (DocumentModel) automationService.run(ctx, "Context.GetEmailsWithPermissionOnDoc", params);
-        } catch( Exception e) {
-          log.warn( e );
-        }
+        PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
+        Set<String> result = ph.getEmailsForPermission(dialect, "Everything", false);
 
-        String toStr = new String();
+        session.close();
+        lctx.logout();
 
-        Map<String, Object> val = (Map<String, Object>) ctx.getVars();
-
-        if( val.containsKey("emails"))
-        {
-            StringList sL = (StringList)val.get("emails");
-
-            for( String em : sL )
-            {
-                if( em.contains("devnull")) continue;
-
-                if( toStr.isEmpty() ) { toStr = em; }
-                else { toStr = toStr + ", " + em; }
-            }
-        }
-
-        return toStr;
+        return composeEmailString( result );
     }
 
     private interface EmailContentAssembler
@@ -138,22 +139,23 @@ public class FVRegistrationMailUtilities {
             String body = null;
 
             String s1 = "<br> Login name: " + options.get("email");
-            String s2 = "<br><br> User registered to participate in " + options.get("dialect") +".";
-            String ex7 = "<br> Registration request will expire in 7 days.";
+            String s2 = "<br><br> User registered and created password to participate in " + options.get("dialect");
+            String ex7 = "<br> Please make the user a member of your dialect.";
             String ex24 =   "<br><br> Registration request will be deleted in 24 hrs. <br>";
-            String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password. <br><br> Regards,<br> The FirstVoices team";
+            String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password.";
+            String thankYou = " <br><br> Regards,<br> The FirstVoices team";
 
             switch( variant) {
                 case MID_REGISTRATION_PERIOD_ACT:
-                    body = "Registration for " + options.get("fName") + " " + options.get("lName") + " will expire in 3 days." + s1 +s2 + endStr;
+                    body = "Registration for " + options.get("fName") + " " + options.get("lName") + " will expire in 3 days." + s1 +s2 + endStr + thankYou;
                      break;
                 case REGISTRATION_EXPIRATION_ACT:
-                    body = "Registration period for " + options.get("fName") + " " + options.get("lName") + " EXPIRED."+ s1 + s2 + ex24 + endStr;
+                    body = "Registration period for " + options.get("fName") + " " + options.get("lName") + " EXPIRED."+ s1 + s2 + ex24 + endStr + thankYou;
                     break;
 
                 case NEW_USER_SELF_REGISTRATION_ACT:
 
-                    body = "New self registration by " + options.get("fName") + " " + options.get("lName") + s1 + s2 + ex7 + endStr;
+                    body = "New self registration by " + options.get("fName") + " " + options.get("lName") + s1 + s2 + ex7 + thankYou;
                     break;
             }
 
@@ -193,17 +195,18 @@ public class FVRegistrationMailUtilities {
             String dp =  "<br><br> You registered to participate in " + options.get("dialect") +". <br>";
             String endStr =  "<br> Please setup account password to complete registration.";
             String re = "<br> In order to participate in FirstVoices you will need to register again.";
-            String endStr_D =  "<br><br> If you do so please complete registration by setting up you account password. <br><br> Regards,<br> The FirstVoices team";
+            String endStr_D =  "<br><br> If you do so please complete registration by setting up you account password.";
+            String thankYou = " <br><br> Regards,<br> The FirstVoices team";
 
             switch( variant ) {
                 case MID_REGISTRATION_PERIOD_ACT:
-                    body =  g + e3 + ln + dp + endStr;
+                    body =  g + e3 + ln + dp + endStr + thankYou;
                     break;
                 case REGISTRATION_EXPIRATION_ACT:
-                    body =  g + e24 + ln + dp + endStr;
+                    body =  g + e24 + ln + dp + endStr + thankYou;
                     break;
                 case REGISTRATION_DELETION_ACT:
-                    body =  g + del + re + endStr_D;
+                    body =  g + del + re + endStr_D + thankYou;
                     break;
                 default:
             }
