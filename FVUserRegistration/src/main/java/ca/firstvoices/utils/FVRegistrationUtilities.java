@@ -365,10 +365,10 @@ public class FVRegistrationUtilities
         {
             log.warn( e );
         }
-        finally
-        {
-            s.close();
-        }
+//        finally
+//        {
+//            s.close();
+//        }
 
         return registrationId;
     }
@@ -393,17 +393,13 @@ public class FVRegistrationUtilities
 
             if (dialect.isProxy()) {
                 dialect = session.getSourceDocument(dialect.getRef());
-
-                if (dialect.isVersion()) {
-                    dialect = session.getSourceDocument(dialect.getRef());
-                }
             }
         }
     }
 
     protected static class UnrestrictedGroupResolver extends UnrestrictedSessionRunner {
 
-        private final CoreSession session;
+        //private final CoreSession session;
         private DocumentModel dialect;
 
         private ArrayList<String> member_groups = new ArrayList<String>();
@@ -411,15 +407,15 @@ public class FVRegistrationUtilities
 
         protected UnrestrictedGroupResolver(CoreSession session, DocumentModel dialect) {
             super(session);
-            this.session = session;
+            //this.session = session;
             this.dialect = dialect;
         }
 
         @Override
         public void run() {
-
+            DocumentModel dialect1 = session.getDocument(new IdRef(dialect.getId()));
             // Add user to relevant group
-            for (ACE ace : dialect.getACP().getACL(ACL.LOCAL_ACL).getACEs()){
+            for (ACE ace : dialect1.getACP().getACL(ACL.LOCAL_ACL).getACEs()){
 
                 String username = ace.getUsername();
 
