@@ -900,13 +900,14 @@ const options = {
                 label: intl.translate({
                     key: "models.dialect_to_join",
                     default: 'Dialect to Join',
-                }),
-                factory: SelectFactory,
-                attrs: {
-                    query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:path STARTSWITH \'/FV/sections\'',
-                    queryId: 'dialect_titles_uids',
-                    label: 'Dialect to Join'
-                }
+                })
+                // factory: SelectFactory,
+                // attrs: {
+                //     query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:path STARTSWITH \'/FV/Workspaces\'',
+                //     queryId: 'dialect_titles_uids',
+                //     label: 'Dialect to Join'
+                // }
+                //3fa236aa-9b6a-410a-9b42-5ec0c30d7396
             }
         }
     },

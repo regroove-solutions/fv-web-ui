@@ -216,7 +216,7 @@ export default class Register extends Component {
                 </div>
             </div>
 
-            <div className="row" style={{marginTop: '15px', display: 'none'}}>
+            <div className="row" style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-8', 'col-md-10')}>
                     <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
