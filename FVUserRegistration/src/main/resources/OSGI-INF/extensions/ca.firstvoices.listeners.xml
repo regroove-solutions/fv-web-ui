@@ -7,7 +7,7 @@
     </listener>
     <listener enabled="true" name="fvregistrationcompletionlistener" async="true" postCommit="false"
               class="ca.firstvoices.listeners.FVRegistrationCompletionListener" priority="240">
-      <event>registrationValidated</event>
+      <event>invitationValidated</event>
       <event>documentRemoved</event>
       <event>newUserApprovedByLanguageAdministrator</event>
     </listener>
