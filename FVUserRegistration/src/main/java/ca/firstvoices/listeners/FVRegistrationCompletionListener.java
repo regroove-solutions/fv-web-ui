@@ -60,7 +60,7 @@ public class FVRegistrationCompletionListener implements EventListener  {
                 // TODO: use it to make sure user name is not left in the system when registration is deleted on time out
                 break;
 
-            case "registrationValidated":
+            case "invitationValidated":
                 args = docCtx.getArguments();
 
                 for (Object o : args)
