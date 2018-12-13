@@ -12,10 +12,8 @@ import javax.security.auth.login.LoginContext;
 
 import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GU;
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UU;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_NewUserHomeChange;
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.SCHEMA_NAME;
 
 public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectService {
 
@@ -26,8 +24,8 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
         CoreSession session = dialect.getCoreSession();
         userManager = Framework.getService( UserManager.class );
 
-        if( terminateOnInvalidCredentials_GU( session, userManager, groupName.toLowerCase() ) ) throw new Exception("No sufficient privileges to modify group: " + groupName);
-        if( terminateOnInvalidCredentials_UU( session, userManager, newUsername ) ) throw new Exception("No sufficient privileges to modify user: " + newUsername);
+        if( terminateOnInvalidCredentials_GU( session, groupName.toLowerCase() ) ) throw new Exception("No sufficient privileges to modify group: " + groupName);
+        if( terminateOnInvalidCredentials_NewUserHomeChange( session, userManager, newUsername, dialect.getId() ) ) throw new Exception("No sufficient privileges to modify user: " + newUsername);
 
         userManager = null;
         LoginContext lctx = Framework.login();
@@ -57,9 +55,9 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
 
         StringList uL = new StringList();
         uL.add(userName);
-        updateFVProperty( REMOVE, membersGroup, uL, GROUP_SCHEMA, MEMBERS );
+        membersGroup = updateFVProperty( REMOVE, membersGroup, uL, GROUP_SCHEMA, MEMBERS );
         userManager.updateGroup( membersGroup );
-        updateFVProperty( APPEND, toGroup, uL, GROUP_SCHEMA, MEMBERS );
+        toGroup = updateFVProperty( APPEND, toGroup, uL, GROUP_SCHEMA, MEMBERS );
         userManager.updateGroup( toGroup );
         userManager = null;
     }

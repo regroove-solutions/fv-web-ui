@@ -8,6 +8,7 @@
 		<operation class="ca.firstvoices.operations.FVValidateRegistrationAttempt" replace="true" />
 		<operation class="ca.firstvoices.operations.FVUpdateGroup" replace="true" />
 		<operation class="ca.firstvoices.operations.FVUpdateUser" replace="true" />
+		<operation class="ca.firstvoices.operations.FVChangeUserGroupToDialectGroup" replace="true" />
 	</extension>
     
 </component>

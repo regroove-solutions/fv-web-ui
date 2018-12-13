@@ -8,8 +8,6 @@ package ca.firstvoices.operations;
 import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -40,12 +38,6 @@ public class FVQuickUserRegistration {
     protected UserRegistrationService registrationService;
 
     @Context
-    protected AutomationService autoService;
-
-    @Context
-    protected OperationContext ctx;
-
-    @Context
     protected CoreSession session;
 
     @Param(name ="docInfo", required = false)
@@ -55,13 +47,14 @@ public class FVQuickUserRegistration {
     protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
 
     @Param(name = "autoAccept", required = false)
-    protected boolean autoAccept = false;
+    protected boolean autoAccept = true; // it is ignored
 
     @Param(name = "info", required = false)
     protected Map<String, Serializable> info = new HashMap<>();
 
     @Param(name = "comment", required = false)
     protected String comment;
+
 
 
     @OperationMethod
@@ -83,14 +76,14 @@ public class FVQuickUserRegistration {
          */
         utilCommon.preCondition( registrationRequest, session, userManager );
 
-        autoAccept = utilCommon.QuickUserRegistrationCondition( registrationRequest, session, autoAccept );
+        utilCommon.QuickUserRegistrationCondition( registrationRequest, session );
 
         String registrationId = utilCommon.postCondition( registrationService,
                 registrationRequest,
                 info,
                 comment,
                 validationMethod,
-                autoAccept );
+                true ); // we always autoAccept quick registration
 
         return registrationId;
     }

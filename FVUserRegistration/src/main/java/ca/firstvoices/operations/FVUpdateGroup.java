@@ -70,7 +70,7 @@ public class FVUpdateGroup
     protected Properties properties = new Properties();
 
     @OperationMethod
-    public void run() throws OperationException
+    public String run() throws OperationException
     {
         DocumentModel groupDoc = userManager.getGroupModel(groupName.toLowerCase());
 
@@ -79,7 +79,7 @@ public class FVUpdateGroup
             throw new OperationException("Cannot update non-existent group: " + groupName);
         }
 
-        if( terminateOnInvalidCredentials_GU( session, userManager, groupName ) ) return; // invalid credentials
+        if( terminateOnInvalidCredentials_GU( session, groupName ) ) return "You do not have permission to change " + groupDoc.getName(); // invalid credentials
 
         if( members != null )
         {
@@ -130,5 +130,7 @@ public class FVUpdateGroup
 
         userManager.updateGroup(groupDoc);
         groupDoc = userManager.getGroupModel(groupName.toLowerCase());
+
+        return "Updated "+ groupDoc.getName();
     }
   }
