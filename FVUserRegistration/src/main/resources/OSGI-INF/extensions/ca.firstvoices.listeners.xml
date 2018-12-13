@@ -9,6 +9,7 @@
               class="ca.firstvoices.listeners.FVRegistrationCompletionListener" priority="240">
       <event>registrationValidated</event>
       <event>documentRemoved</event>
+      <event>newUserApprovedByLanguageAdministrator</event>
     </listener>
 
   </extension>
