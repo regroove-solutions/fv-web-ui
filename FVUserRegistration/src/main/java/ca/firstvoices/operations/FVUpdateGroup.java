@@ -18,11 +18,9 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
-import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
-import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
-import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
-import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
+import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GU;
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
 
 /**
@@ -33,22 +31,6 @@ import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateO
 public class FVUpdateGroup
 {
     public static final String ID = "FVUpdateGroup";
-
-    public static final String GROUP_SCHEMA = "group";
-
-    protected static final String GROUP_COLON = GROUP_SCHEMA + ':';
-
-    public static final String GROUP_NAME = "groupname";
-
-    public static final String GROUP_LABEL = "grouplabel";
-
-    public static final String GROUP_DESCRIPTION = "description";
-
-    public static final String MEMBERS = "members";
-
-    public static final String SUB_GROUPS = "subGroups";
-
-    public static final String PARENT_GROUPS = "parentGroups";
 
     @Context
     protected UserManager userManager;

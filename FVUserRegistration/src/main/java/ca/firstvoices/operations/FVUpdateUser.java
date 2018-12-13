@@ -1,9 +1,8 @@
 package ca.firstvoices.operations;
 
 
-import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
-import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
-import static ca.firstvoices.utils.FVRegistrationConstants.UPDATE;
+import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.COMPANY_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.EMAIL_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.FIRSTNAME_COLUMN;
@@ -25,9 +24,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import static ca.firstvoices.utils.FVRegistrationUtilities.updateFVProperty;
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UU;
-
 /**
  *
  */
@@ -36,8 +33,6 @@ import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateO
 public class FVUpdateUser {
 
     public static final String ID = "FVUpdateUser";
-
-    protected static final String USER_COLON = SCHEMA_NAME + ':';
 
     @Context
     protected UserManager userManager;
