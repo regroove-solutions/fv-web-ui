@@ -19,6 +19,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
@@ -70,13 +71,24 @@ public class FVRegistrationMailUtilities {
         Transport.send(msg);
     }
 
+    private static boolean isValidEmailAddress(String email) {
+        boolean result = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            result = false;
+        }
+        return result;
+    }
+
     private String composeEmailString( Set<String> emailSet )
     {
         String toStr = new String();
 
         for( String em : emailSet )
         {
-            if( em.contains("devnull")) continue;
+            if( !isValidEmailAddress(em) ) continue;
 
             if( toStr.isEmpty() ) { toStr = em; }
             else { toStr = toStr + ", " + em; }
