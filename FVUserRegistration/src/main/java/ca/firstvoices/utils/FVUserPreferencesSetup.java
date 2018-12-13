@@ -21,7 +21,7 @@ public class FVUserPreferencesSetup {
      * @param registration
      * @throws Exception
      */
-    public void updateUserPreferences(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
+    public DocumentModel updateUserPreferences(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
     {
         CustomPreferencesObject userPreferencesObj = new CustomPreferencesObject();
 
@@ -46,6 +46,8 @@ public class FVUserPreferencesSetup {
 
         String modifiedPreferencesString = mapper.writeValueAsString( userPreferencesObj );
         existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
+
+        return existingUserObject;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

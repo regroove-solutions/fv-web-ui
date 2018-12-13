@@ -452,7 +452,7 @@ public class FVRegistrationUtilities
 
             try
             {
-                up.updateUserPreferences(userDoc, ureg );
+                userDoc = up.updateUserPreferences(userDoc, ureg );
             }
             catch ( Exception e)
             {
@@ -474,6 +474,5 @@ public class FVRegistrationUtilities
         {
             session.close();
         }
-
     }
 }
