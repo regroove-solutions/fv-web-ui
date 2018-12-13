@@ -49,15 +49,15 @@
 	          <companyField>userinfo:company</companyField>
 	        </userInfo>
 			<validationEmail>
-				<title>You are invited to access FirstVoices</title>
-				<template>skin/views/FVEmailInviteDocTemplate.ftl</template>
+				<title>You are invited to access FirstVoices.com</title>
+				<template>skin/views/FVGeneralEmailInviteDocTemplate.ftl</template>
 			</validationEmail>
 			<reviveEmail>
-			  <title>You are invited to access FirstVoices</title>
+			  <title>You are invited to access FirstVoices.com</title>
 			  <template>skin/views/FVReviveEmailInviteDocTemplate.ftl</template>
 			</reviveEmail>
-			<enterPasswordUrl>site/userRegistration/enterpassword/</enterPasswordUrl>
-			<validationRelUrl>site/userRegistration/validate</validationRelUrl>
+			<enterPasswordUrl>site/fv/users/enterpassword/</enterPasswordUrl>
+			<validationRelUrl>site/fv/users/validate</validationRelUrl>
 	    </configuration>
 	</extension>
 

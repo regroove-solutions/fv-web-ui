@@ -1,4 +1,5 @@
-<#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")>
+<!--#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")-->
+<#assign siteURL = "https://www.firstvoices.com/">
 
 <!DOCTYPE html>
 <!--[if lte IE 8]>
@@ -44,6 +45,31 @@
 			}
 
 		</style>
+
+		<script type="text/javascript">
+			function validateMyForm() {
+				var passwordFieldInput = document.getElementById("Password");
+				var passwordFieldConfInput = document.getElementById("PasswordConfirmation");
+				var errorMessageBox = document.getElementById("errorMessageJS");
+
+
+				// Check if passwords match
+				if (passwordFieldInput.value != passwordFieldConfInput.value) {
+					errorMessageBox.innerHTML = "Your password and password confirmation do not match."
+					return false;
+				}
+				else {
+					var passMatch = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+					if (!passMatch.test(passwordFieldInput.value)) {
+						errorMessageBox.innerHTML = "Select a strong password at least 8 characters long, with a capital and lowercase letter, number and special character (e.g. $, %, #, etc.)"
+						return false;
+					}
+				}
+
+				return true;
+
+			}
+		</script>
 	</head>
 	<body id="body">
 
@@ -53,26 +79,28 @@
 			<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;padding-top:15px;letter-spacing:0;font-size:24px;font-weight:400;color:#ffffff;line-height:64px;box-flex:1;flex:1;" data-reactid=".0.0.1.0.0.1"><span class="hidden-xs" data-reactid=".0.0.1.0.0.1.0"><img src="${siteURL}/assets/images/logo.png" style="padding:0 0 5px 0;" alt="FirstVoices" data-reactid=".0.0.1.0.0.1.0.0"></span></div>
 		</div>
 
-		<div id="pageContainer">
 
 			<div style="margin-bottom:15px;text-align:center;">
 				<h1 style="font-weight:500;">Choose a Password</h1>
 
 				<div>
-					<form class="fv-form" action="${data['ValidationUrl']}" method="post" enctype="application/x-www-form-urlencoded" name="submitNewPassword">
+					<form class="fv-form" action="${data['ValidationUrl']}" method="post" enctype="application/x-www-form-urlencoded" name="submitNewPassword" onsubmit="return validateMyForm();">
 						<input type="hidden" id="RequestId" value="${data['RequestId']}" name="RequestId"/>
 						<input type="hidden" id="ConfigurationName" value="${data['ConfigurationName']}" name="ConfigurationName"/>
-						<#if err??>
-						<div style="color: red; font-weight: bold;" class="errorMessage">
-							${Context.getMessage("label.connect.trial.form.errvalidation")}
-							${err}
+						<div style="color: red; font-weight: bold;" class="errorMessage" id="errorMessageJS">
 						</div>
-					</#if>
-					<#if info??>
-					<div class="infoMessage">
-						${info}
-					</div>
-				</#if>
+						<div style="color: red; font-weight: bold;" class="errorMessage" id="errorMessage">
+						<#if err??>
+								${Context.getMessage("label.connect.trial.form.errvalidation")}
+							${err}
+
+						</#if>
+						</div>
+						<#if info??>
+						<div class="infoMessage">
+							${info}
+						</div>
+						</#if>
 				<div>
 					<input placeholder="Enter your password" type="password" id="Password" value="${data['Password']}" name="Password" class="login_input" isRequired="true" autofocus required/>
 					<i class="icon-key"></i>
@@ -88,7 +116,7 @@
 
 			<div style="text-align: left;padding-left: 25px;">
 				Pick a password that is at least 8 characters long<br/>
-				Include a capital letter, number and special character (e.g. $, %, #, etc.)
+				Include a capital letter, lowercase letter, number and special character (e.g. $, %, #, etc.)
 			</div>
 		</div>
 
@@ -103,6 +131,8 @@
 		${skinPath}
 		-->
 	</div>
+
+		</div>
 
 	</body>
 	</html>

@@ -1,29 +1,32 @@
 <html>
 <body>
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
+
 <#if documentTitle != "">
-<p>You have been granted permission to access <a href="${info['docUrl']}" target="_blank"><b>${documentTitle}</b></a>.</p>
+    <p>You have been added as a user on FirstVoices.com<br/>
+        Your default community portal has been set to <strong>${documentTitle}</strong>.</p>
 </#if>
+
 <#if comment != "">
 <br/>
 <p>Message from the sender: </p>
 <p>${comment}</p>
 </#if>
 
-Username and password are required for connection:<br/>
-- username already defined is ${userinfo.login}<br/>
+<p>Your username is: ${userinfo.login} (case-sensitive)<br/>
 <#if !userAlreadyExists>
-- password has to be defined by validating your invitation through this <a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">link</a>.<br/>
+Your password can be defined by <a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">validating your invitation here</a>.
 </#if>
 <#if userAlreadyExists>
-- your usual account password.<br/>
+Your password which was selected during registration.<br/>
 You can validate your invitation through this <a href="${info['enterPasswordUrl']}${configurationName}/${userinfo.id}">link</a>.
 </#if>
-<#if documentTitle != "">
-<p>Once your invitation is validated, you'll be able to log in to the application and access <a href="${info['docUrl']}">${documentTitle}</a>.</p>
-<#else>
-<p>Once your invitation is validated, you'll be able to log in to the application and access <b>${productName}</b>.</p>
-</#if>
-The ${productName} Administrators team.
+</p>
+
+<p>In order to login, please go to https://www.firstvoices.com and use the SIGN IN option.<br/>
+Your first login may take up to a minute as important settings are being setup.</p>
+
+<p>Regards,<br/>
+The FirstVoices Team</p>
 </body>
 </html>
