@@ -1,6 +1,7 @@
 package ca.firstvoices.utils;
 
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -43,9 +44,32 @@ public class FVOperationCredentialsVerification
         return GLOBAL_ADMINISTRATOR_OR_SYSTEM;
     }
 
+    public static boolean terminateOnInvalidCredentials_NewUserHomeChange( CoreSession session, UserManager userManager, String username, String dialectGUID )
+    {
+        NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
+
+        int credentialsType = isValidPrincipal( invoking_principal );
+
+        if( credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM )
+        {
+            // language admin can make changes to a user in their dialect
+            if( credentialsType == LANGUAGE_ADMINISTRATOR )
+            {
+                DocumentModel userToChange = userManager.getUserModel(username);
+
+                String userPreferences = (String) userToChange.getPropertyValue("user:preferences");
+
+                if( userPreferences.contains(dialectGUID)) return false; // user preferred dialect has to be included in user preferences
+            }
+
+            return true; // invalid credentials
+        }
+
+        return false; // continue executing command - valid credentials
+    }
+
     public static boolean terminateOnInvalidCredentials_UU( CoreSession session, UserManager userManager, String username )
     {
-        // userManager.getUserModel(session.getPrincipal().getName());
         NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
 
         int credentialsType = isValidPrincipal( invoking_principal );
@@ -77,7 +101,7 @@ public class FVOperationCredentialsVerification
         return false; // continue executing command - valid credentials
     }
 
-    public static boolean terminateOnInvalidCredentials_GU( CoreSession session, UserManager userManager, String groupName )
+    public static boolean terminateOnInvalidCredentials_GU( CoreSession session, String groupName )
     {
         NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
 
@@ -85,7 +109,8 @@ public class FVOperationCredentialsVerification
 
         if( credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM )
         {
-            if( credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM )
+            // language admin can make changes to a group associated with their dialect
+            if( credentialsType == LANGUAGE_ADMINISTRATOR )
             {
                 int ui = language_admin_group.indexOf("_");
                 String dns = language_admin_group.substring( 0, ui ); // dialect name ending

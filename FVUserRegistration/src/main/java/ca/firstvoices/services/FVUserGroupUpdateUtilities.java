@@ -19,7 +19,7 @@ public class FVUserGroupUpdateUtilities {
      * @param schemaName
      * @param field
      */
-    public static void updateFVProperty(String action, DocumentModel doc, StringList data, String schemaName, String field )
+    public static DocumentModel updateFVProperty(String action, DocumentModel doc, StringList data, String schemaName, String field )
     {
         ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList( data );
 
@@ -42,5 +42,7 @@ public class FVUserGroupUpdateUtilities {
         }
 
         doc.setProperty(schemaName, field, arrayData);
+
+        return doc;
     }
 }

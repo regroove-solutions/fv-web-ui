@@ -139,10 +139,9 @@ public class FVRegistrationUtilities
     /**
      * @param registrationRequest
      * @param session
-     * @param autoAccept
      * @return
      */
-    public boolean QuickUserRegistrationCondition( DocumentModel registrationRequest, CoreSession session, boolean autoAccept )
+    public void QuickUserRegistrationCondition( DocumentModel registrationRequest, CoreSession session )
     {
         ugdr = new UnrestrictedGroupResolver(session, dialect);
         ugdr.runUnrestricted();
@@ -167,8 +166,6 @@ public class FVRegistrationUtilities
                 }
             }
         }
-
-        return true;
     }
 
     /**
@@ -185,23 +182,6 @@ public class FVRegistrationUtilities
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
         mailUtil.registrationAdminMailSender(NEW_USER_SELF_REGISTRATION_ACT, options, adminTO );
      }
-
-    /**
-     */
-    public void quickRegistrationFinal() throws Exception
-    {
-        try
-        {
-            // send email to Administrator
-            // send email to LanguageAdministrator
-            //notificationEmailsAndReminderTasks();
-        }
-        catch(Exception e)
-        {
-            log.warn( e );
-            throw e;
-        }
-    }
 
     /**
      * @param registrationRequest
@@ -234,7 +214,7 @@ public class FVRegistrationUtilities
                 userInfo.setGroups(preSetGroup);
             }
         }
-        // If not authorized, never autoaccept
+        // If not authorized, never autoAccept
         else {
             autoAccept = false;
         }

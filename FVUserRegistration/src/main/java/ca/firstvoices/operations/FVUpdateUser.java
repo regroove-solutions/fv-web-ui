@@ -67,7 +67,7 @@ public class FVUpdateUser {
     protected Properties properties = new Properties();
 
     @OperationMethod
-    public void run() throws OperationException
+    public String run() throws OperationException
     {
         DocumentModel userDoc = userManager.getUserModel(username);
 
@@ -76,7 +76,7 @@ public class FVUpdateUser {
             throw new OperationException("Cannot update non-existent user: " + username);
         }
 
-        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return; // invalid credentials
+        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return "You do not have permission to change " + userDoc.getName(); // invalid credentials
 
         if (groups != null)
         {
@@ -115,6 +115,8 @@ public class FVUpdateUser {
         }
 
         userManager.updateUser(userDoc);
+
+        return "Updated "+ userDoc.getName();
     }
 }
 
