@@ -5,7 +5,7 @@
               class="ca.firstvoices.listeners.FVRegistrationTimeOutListener" priority="100">
       <event>checkRegistrationTimeout</event>
     </listener>
-    <listener enabled="true" name="fvregistrationcompletionlistener" async="false" postCommit="true"
+    <listener enabled="true" name="fvregistrationcompletionlistener" async="true" postCommit="true"
               class="ca.firstvoices.listeners.FVRegistrationCompletionListener" priority="240">
       <event>invitationValidated</event>
       <event>documentRemoved</event>
