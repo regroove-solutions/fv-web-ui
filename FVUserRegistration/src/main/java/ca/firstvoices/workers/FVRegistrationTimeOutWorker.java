@@ -65,7 +65,6 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
             {
                 lctx = Framework.login(); // system login
                 s = CoreInstance.openCoreSession("default");
-                session = s;
 
                 DocumentModelList registrations = s.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration'"));
 
@@ -112,7 +111,7 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                if( s != null ) s.close();
                 try
                 {
-                    if( s!= null) lctx.logout();
+                    if( lctx!= null) lctx.logout();
                 }
                 catch( Exception e)
                 {

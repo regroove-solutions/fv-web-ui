@@ -417,29 +417,30 @@ public class FVRegistrationUtilities
         try
         {
             //String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
-            String username = (String) ureg.getPropertyValue("userinfo:login");
 
             lctx = Framework.login();
+            session = CoreInstance.openCoreSession("default");
 
             userManager = Framework.getService(UserManager.class);
 
-            session = CoreInstance.openCoreSession("default");
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 
             FVUserPreferencesSetup up = new FVUserPreferencesSetup();
-
+            String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
 
             try
             {
-                userDoc = up.updateUserPreferences(userDoc, ureg );
-            }
+                String defaultUserPrefs = up.createDefaultUserPreferences( ureg );
+                userDoc.setPropertyValue("user:preferences", defaultUserPrefs);
+                session.saveDocument(userDoc);
+             }
             catch ( Exception e)
             {
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            userManager.updateUser(userDoc);
+            //userManager.updateUser(userDoc);
 
             notificationEmailsAndReminderTasks( dialect, ureg );
 

@@ -20,7 +20,7 @@ import java.util.Map;
  */
 public class FVRegistrationCompletionListener implements EventListener  {
 
-    private static final Log log = LogFactory.getLog(ca.firstvoices.listeners.FVRegistrationCompletionListener.class);
+   private static final Log log = LogFactory.getLog(ca.firstvoices.listeners.FVRegistrationCompletionListener.class);
 
     // accepts documentRemoved && registrationValidated
 
@@ -39,7 +39,7 @@ public class FVRegistrationCompletionListener implements EventListener  {
         DocumentModel dialect;
 
         switch (event.getName()) {
-            case "newUserApprovedByLanguageAdministrator":
+            case "newUserApprovedByLanguageAdministrator": //       <event>newUserApprovedByLanguageAdministrator</event>
                 dialect = docCtx.getSourceDocument();
                 args = docCtx.getArguments();
                 for( Object o : args )

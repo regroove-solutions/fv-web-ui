@@ -23,6 +23,14 @@ public class FVUserPreferencesSetup {
      */
     public DocumentModel updateUserPreferences(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
     {
+        String modifiedPreferencesString = createDefaultUserPreferences( registration );
+        existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
+
+        return existingUserObject;
+    }
+
+    public String createDefaultUserPreferences( DocumentModel registration ) throws Exception
+    {
         CustomPreferencesObject userPreferencesObj = new CustomPreferencesObject();
 
         // Create general preferences
@@ -44,10 +52,7 @@ public class FVUserPreferencesSetup {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        String modifiedPreferencesString = mapper.writeValueAsString( userPreferencesObj );
-        existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
-
-        return existingUserObject;
+        return  new String(mapper.writeValueAsString( userPreferencesObj ));
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)

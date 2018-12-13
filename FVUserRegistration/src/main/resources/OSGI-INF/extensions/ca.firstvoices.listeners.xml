@@ -5,11 +5,10 @@
               class="ca.firstvoices.listeners.FVRegistrationTimeOutListener" priority="100">
       <event>checkRegistrationTimeout</event>
     </listener>
-    <listener enabled="true" name="fvregistrationcompletionlistener" async="true" postCommit="false"
+    <listener enabled="true" name="fvregistrationcompletionlistener" async="false" postCommit="true"
               class="ca.firstvoices.listeners.FVRegistrationCompletionListener" priority="240">
       <event>registrationValidated</event>
       <event>documentRemoved</event>
-      <event>newUserApprovedByLanguageAdministrator</event>
     </listener>
 
   </extension>
