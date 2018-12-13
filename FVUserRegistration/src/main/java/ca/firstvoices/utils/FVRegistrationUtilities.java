@@ -76,38 +76,6 @@ public class FVRegistrationUtilities
     }
 
     /**
-     * @param action
-     * @param doc
-     * @param data
-     * @param schemaName
-     * @param field
-     */
-    public static void updateFVProperty( String action, DocumentModel doc, StringList data, String schemaName, String field )
-    {
-        ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList( data );
-
-        if( !action.equals(UPDATE) )
-        {
-            ArrayList<String> pA =  (ArrayList<String>)doc.getProperty(schemaName, field);
-
-            for (String g : arrayData) {
-                switch (action) {
-                    case APPEND:
-                        pA.add(g);
-                        break;
-                    case REMOVE:
-                        pA.remove(g);
-                        break;
-                }
-            }
-
-            arrayData = pA;
-        }
-
-        doc.setProperty(schemaName, field, arrayData);
-    }
-
-    /**
      * @param dateRegistered
      * @return
      */
@@ -478,27 +446,6 @@ public class FVRegistrationUtilities
             session = CoreInstance.openCoreSession("default");
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 
-//            OperationContext ctx = new OperationContext(session);
-//
-//            Map<String, Object> params = new HashMap<>();
-//            params.put("groupname", "members");
-//            params.put("members", username );
-//            params.put("membersAction", REMOVE );
-//
-//            automationService.run(ctx, "FVUpdateGroup", params);
-//
-//            params.put("groupname", newUserGroup);
-//            params.put("members", username );
-//            params.put("membersAction", APPEND );
-//
-//            automationService.run(ctx, "FVUpdateGroup", params);
-//
-//            params.clear();
-//            params.put("username", username);
-//            params.put("groups", newUserGroup);
-//            params.put("groupsAction", UPDATE);
-//            automationService.run(ctx, "FVUpdateUser", params);
-
             FVUserPreferencesSetup up = new FVUserPreferencesSetup();
 
             DocumentModel userDoc = userManager.getUserModel( username );
@@ -514,7 +461,7 @@ public class FVRegistrationUtilities
 
             userManager.updateUser(userDoc);
 
-            notificationEmailsAndReminderTasks(dialect, ureg );
+            notificationEmailsAndReminderTasks( dialect, ureg );
 
             // TODO decide if we need to remove the registration document for created document at this point
             lctx.logout();
