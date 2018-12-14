@@ -3,7 +3,6 @@ package ca.firstvoices.operations;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
@@ -11,7 +10,6 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -61,35 +59,39 @@ public class FVValidateRegistrationAttempt
 
             user = userManager.getUserModel(login);
 
-            if( email != null )
-            {
-                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ( %s = '%s' OR %s = '%s')", "userinfo:login", login, "userinfo:email", email));
-
-                userE = userManager.getUserModel(email);
-            }
-            else
-            {
-                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND  %s = '%s' ", "userinfo:login", login));
-            }
-
             if( user != null )
             {
                 verificationState = LOGIN_EXISTS_ERROR;
             }
-
-            if( userE != null )
+            else
             {
-                verificationState = LOGIN_AND_EMAIL_EXIST_ERROR;
-            }
+                String querryStr = null;
 
-            if( registrations != null)
-            {
-                for( DocumentModel reg : registrations)
+                if (email != null)
                 {
-                    if( reg.getCurrentLifeCycleState().equals("approved"))
+                    userE = userManager.getUserModel(email);
+
+                    if( userE != null )
+                    {
+                        verificationState = LOGIN_AND_EMAIL_EXIST_ERROR;
+                    }
+                    else
+                    {
+                        querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND ( %s = '%s' OR %s = '%s')", "userinfo:login", login, "userinfo:email", email);
+                    }
+                }
+                else
+                {
+                    querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND  %s = '%s' ", "userinfo:login", login);
+                }
+
+                if( userE == null && querryStr != null )
+                {
+                    registrations = session.query(querryStr );
+
+                    if( registrations != null && !registrations.isEmpty() )
                     {
                         verificationState = REGISTRATION_EXISTS_ERROR;
-                        break;
                     }
                 }
             }
