@@ -116,7 +116,7 @@ public class FVUpdateUser {
 
         userManager.updateUser(userDoc);
 
-        return "Updated "+ userDoc.getName();
+        return "Updated "+ userDoc.getId();
     }
 }
 
