@@ -16,26 +16,14 @@ import java.util.Map;
 
 public class FVUserPreferencesSetup {
 
-    /**
-     * @param existingUserObject
-     * @param registration
-     * @throws Exception
-     */
-    public DocumentModel updateUserPreferences(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
-    {
-        String modifiedPreferencesString = createDefaultUserPreferences( registration );
-        existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
 
-        return existingUserObject;
-    }
-
-    public String createDefaultUserPreferences( DocumentModel registration ) throws Exception
+    public String createDefaultUserPreferencesWithDialectID( String dialectID ) throws Exception
     {
         CustomPreferencesObject userPreferencesObj = new CustomPreferencesObject();
 
         // Create general preferences
         Map<String, Object> generalPreferences = new HashMap<>();
-        generalPreferences.put("primary_dialect", registration.getPropertyValue("docinfo:documentId"));
+        generalPreferences.put("primary_dialect", dialectID );
 
         // Create navigation preferences
         Map<String, Object> navigationPreferences = new HashMap<>();
@@ -53,6 +41,26 @@ public class FVUserPreferencesSetup {
         ObjectMapper mapper = new ObjectMapper();
 
         return  new String(mapper.writeValueAsString( userPreferencesObj ));
+    }
+
+    public String createDefaultUserPreferencesWithRegistration( DocumentModel registration ) throws Exception
+    {
+        String dialectID = (String) registration.getPropertyValue("docinfo:documentId");
+
+        return createDefaultUserPreferencesWithDialectID( dialectID );
+    }
+
+    /**
+     * @param existingUserObject
+     * @param registration
+     * @throws Exception
+     */
+    public DocumentModel updateUserPreferencesWithRegistration(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
+    {
+        String modifiedPreferencesString = createDefaultUserPreferencesWithRegistration( registration );
+        existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
+
+        return existingUserObject;
     }
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
