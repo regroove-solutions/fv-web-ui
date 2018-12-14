@@ -7,11 +7,15 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
@@ -30,11 +34,6 @@ public class FVValidateRegistrationAttempt
     public static final String ID = "FVValidateRegistrationAttempt";
     private static final Log log = LogFactory.getLog(FVValidateRegistrationAttempt.class);
 
-    @Context
-    protected CoreSession session;
-
-    @Context
-    protected UserManager userManager;
 
     @Param(name = "Login:")
     protected String login;
@@ -46,6 +45,9 @@ public class FVValidateRegistrationAttempt
     @OperationMethod
     public int run()
     {
+        LoginContext lctx = null;
+        CoreSession session = null;
+
         DocumentModelList registrations = null;
         DocumentModel userE = null;
         DocumentModel user = null;
@@ -53,6 +55,10 @@ public class FVValidateRegistrationAttempt
 
         try
         {
+            lctx = Framework.login();
+            session = CoreInstance.openCoreSession("default");
+            UserManager userManager = Framework.getService( UserManager.class );
+
             user = userManager.getUserModel(login);
 
             if( email != null )
@@ -80,7 +86,7 @@ public class FVValidateRegistrationAttempt
             {
                 for( DocumentModel reg : registrations)
                 {
-                    if( reg.getLifeCyclePolicy().equals("approved"))
+                    if( reg.getCurrentLifeCycleState().equals("approved"))
                     {
                         verificationState = REGISTRATION_EXISTS_ERROR;
                         break;
@@ -88,10 +94,15 @@ public class FVValidateRegistrationAttempt
                 }
             }
 
+            lctx.logout();
         }
         catch (Exception e)
         {
             log.warn(e);
+        }
+        finally
+        {
+            if( session != null) session.close();
         }
 
         return verificationState;
