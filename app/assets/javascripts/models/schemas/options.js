@@ -66,6 +66,36 @@ const FVPortalTemplate = function template(locals) {
     )
 }
 
+const FVUserRegistrationTemplate = function template(locals) {
+    return (
+        <div>
+            <fieldset>
+                <div className="col-md-6">
+                    {locals.inputs['userinfo:firstName']}
+                </div>
+                <div className="col-md-6">
+                    {locals.inputs['userinfo:lastName']}
+                </div>
+                <div className="col-md-6">
+                    {locals.inputs['userinfo:email']}
+                </div>
+                <div className="col-md-6">
+                    {locals.inputs['fvuserinfo:role']}
+                </div>
+                <div className="col-md-6">
+                    {locals.inputs['fvuserinfo:ageGroup']}
+                </div>
+                <div className="col-md-6">
+                    {locals.inputs['fvuserinfo:requestedSpace']}
+                </div>
+                <div className="col-md-12">
+                    {locals.inputs['registration:comment']}
+                </div>
+            </fieldset>
+        </div>
+    )
+}
+
 const DefinitionsLayout = function (locals) {
     return (
         <div className="table-responsive">
@@ -134,8 +164,8 @@ t.String.getValidationErrorMessage = (value, path, context) => {
     if (!value) {
         return intl.translate({
             key: 'models.value_in_field_x_cannot_be_empty',
-            params: [context.options.label],
-            default: 'Value in field ' + context.options.label + ' cannot be empty.',
+            params: [context.options.label.replace(" *", "")],
+            default: 'Value in field "' + context.options.label + '" cannot be empty.',
             case: 'first'
         });
     }
@@ -886,15 +916,25 @@ const options = {
     FVVideo: Object.assign({}, FVMedia),
     FVResource: FVMedia,
     FVUser: {
+        //http://members.firstvoices.com/cgi-bin/WebObjects/FVLAT.woa/wa/becomeAMember
+        // Age group => DOB
+        // Mark required
+        //<select name="0.58.4.47"><option value="0">0-5</option><option value="1">6-10</option><option value="2">11-15</option><option value="3">16-20</option><option value="4">21-25</option><option value="5">26-30</option><option value="6">31-35</option><option value="7">36-40</option><option value="8">41-45</option><option value="9">46-50</option><option value="10">51-55</option><option value="11">56-60</option><option value="12">61-65</option><option value="13">66-70</option><option value="14">71-75</option><option value="15">76-80</option><option value="16">81-85</option><option value="17">86-90</option><option value="18">91-95</option><option value="19">96-100</option><option value="20">over 100</option><option value="21">&lt;none&gt;</option></select>
         fields: {
             'userinfo:firstName': {
-                label: intl.trans("first_name", 'First Name', 'first')
+                label: intl.trans("first_name", 'First Name', 'first') + " *",
+                error: "Please provide your first name."
             },
             'userinfo:lastName': {
-                label: intl.trans("last_name", 'Last Name', 'first')
+                label: intl.trans("last_name", 'Last Name', 'first') + " *",
+                error: "Please provide your last name."
             },
             'userinfo:email': {
-                label: intl.trans("views.pages.explore.dialect.users.email_address", 'Email Address', 'first')
+                label: intl.trans("views.pages.explore.dialect.users.email_address", 'Email Address', 'first') + " *",
+                error: "Please provide your email."
+            },
+            'fvuserinfo:ageGroup': {
+                label: "Age Group"
             },
             'fvuserinfo:requestedSpace': {
                 label: intl.translate({
@@ -908,8 +948,29 @@ const options = {
                 //     label: 'Dialect to Join'
                 // }
                 //3fa236aa-9b6a-410a-9b42-5ec0c30d7396
+                //6f6828ad-093f-4f65-bda4-5aecc64b3328
+            },
+            'fvuserinfo:role': {
+                label: "Why are you interested in FirstVoices?" + " *",
+                factory: t.form.Select,
+                nullOption: {value: '', text: 'Choose the main reason:'},
+                options: [
+                    {value: 'languagerevitilizer', text: 'I am involved in language revitilization'},
+                    {value: 'teacher', text: 'I am a teacher'},
+                    {value: 'educator', text: 'I am an educator'},
+                    {value: 'student', text: 'I am a learner/student'},
+                    {value: 'learner-1', text: 'I am interested in learning MY language'},
+                    {value: 'learner-2', text: 'I am interested in learning A language'},
+                    {value: 'other', text: 'Other (please mention in comments)'}
+                ],
+                error: "Please let us know or pick the 'other' option."
+            },
+            'registration:comment': {
+                label: "Other Comments",
+                type: "textarea"
             }
-        }
+        },
+        template: FVUserRegistrationTemplate
     },
     FVUserProfile: {
         fields: {
