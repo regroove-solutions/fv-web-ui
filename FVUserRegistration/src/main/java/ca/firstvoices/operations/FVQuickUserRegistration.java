@@ -48,12 +48,6 @@ public class FVQuickUserRegistration {
     @Param(name = "validationMethod", required = false)
     protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
 
-    @Param(name = "ageRange" )
-    protected String ageRange;
-
-    @Param(name = "role" )
-    protected String role;
-
     @Param(name = "info", required = false)
     protected Map<String, Serializable> info = new HashMap<>();
 
@@ -79,23 +73,6 @@ public class FVQuickUserRegistration {
             In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
 
          */
-        String bRange = null;
-
-        // parse age range
-        if( ageRange != null )
-        {
-            String tokens[] = ageRange.split("-");
-            if (tokens.length == 2)
-            {
-                int lAge = Integer.valueOf(tokens[0]);
-                int uAge = Integer.valueOf(tokens[1]);
-
-                int today = Year.now().getValue();
-                int blAge = today - lAge;
-                int buAge = today - uAge;
-                bRange = String.valueOf(blAge) + "-" + String.valueOf(buAge);
-            }
-        }
 
         utilCommon.preCondition( registrationRequest, session, userManager );
 
