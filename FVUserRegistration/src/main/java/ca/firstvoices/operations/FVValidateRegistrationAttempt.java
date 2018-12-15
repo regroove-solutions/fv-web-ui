@@ -3,15 +3,17 @@ package ca.firstvoices.operations;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
@@ -30,11 +32,6 @@ public class FVValidateRegistrationAttempt
     public static final String ID = "FVValidateRegistrationAttempt";
     private static final Log log = LogFactory.getLog(FVValidateRegistrationAttempt.class);
 
-    @Context
-    protected CoreSession session;
-
-    @Context
-    protected UserManager userManager;
 
     @Param(name = "Login:")
     protected String login;
@@ -46,6 +43,9 @@ public class FVValidateRegistrationAttempt
     @OperationMethod
     public int run()
     {
+        LoginContext lctx = null;
+        CoreSession session = null;
+
         DocumentModelList registrations = null;
         DocumentModel userE = null;
         DocumentModel user = null;
@@ -53,45 +53,58 @@ public class FVValidateRegistrationAttempt
 
         try
         {
+            lctx = Framework.login();
+            session = CoreInstance.openCoreSession("default");
+            UserManager userManager = Framework.getService( UserManager.class );
+
             user = userManager.getUserModel(login);
-
-            if( email != null )
-            {
-                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ( %s = '%s' OR %s = '%s')", "userinfo:login", login, "userinfo:email", email));
-
-                userE = userManager.getUserModel(email);
-            }
-            else
-            {
-                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND  %s = '%s' ", "userinfo:login", login));
-            }
 
             if( user != null )
             {
                 verificationState = LOGIN_EXISTS_ERROR;
             }
-
-            if( userE != null )
+            else
             {
-                verificationState = LOGIN_AND_EMAIL_EXIST_ERROR;
-            }
+                String querryStr = null;
 
-            if( registrations != null)
-            {
-                for( DocumentModel reg : registrations)
+                if (email != null)
                 {
-                    if( reg.getLifeCyclePolicy().equals("approved"))
+                    userE = userManager.getUserModel(email);
+
+                    if( userE != null )
+                    {
+                        verificationState = LOGIN_AND_EMAIL_EXIST_ERROR;
+                    }
+                    else
+                    {
+                        querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND ( %s = '%s' OR %s = '%s')", "userinfo:login", login, "userinfo:email", email);
+                    }
+                }
+                else
+                {
+                    querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND  %s = '%s' ", "userinfo:login", login);
+                }
+
+                if( userE == null && querryStr != null )
+                {
+                    registrations = session.query(querryStr );
+
+                    if( registrations != null && !registrations.isEmpty() )
                     {
                         verificationState = REGISTRATION_EXISTS_ERROR;
-                        break;
                     }
                 }
             }
 
+            lctx.logout();
         }
         catch (Exception e)
         {
             log.warn(e);
+        }
+        finally
+        {
+            if( session != null) session.close();
         }
 
         return verificationState;

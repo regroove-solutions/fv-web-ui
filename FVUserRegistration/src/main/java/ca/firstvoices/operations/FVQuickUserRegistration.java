@@ -24,6 +24,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
+import java.time.Year;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -53,14 +55,13 @@ public class FVQuickUserRegistration {
     @Param(name = "validationMethod", required = false)
     protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
 
-    @Param(name = "autoAccept", required = false)
-    protected boolean autoAccept = true; // it is ignored
-
     @Param(name = "info", required = false)
     protected Map<String, Serializable> info = new HashMap<>();
 
     @Param(name = "comment", required = false)
     protected String comment;
+
+    protected String bRange;
 
     @OperationMethod
     public String run( DocumentModel registrationRequest ) throws Exception
@@ -101,6 +102,32 @@ public class FVQuickUserRegistration {
             In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
 
          */
+
+        // parse age range
+
+        String ageGroup = (String) registrationRequest.getPropertyValue("ageGroup");
+
+        if (ageGroup != null) {
+
+            int today = Year.now().getValue();
+
+            if (ageGroup.equals("100+")) {
+                bRange = String.valueOf(today - 101);
+            }
+
+            String tokens[] = ageGroup.split("-");
+            if( tokens.length == 2 )
+            {
+                int lAge = Integer.valueOf(tokens[0]);
+                int uAge = Integer.valueOf(tokens[1]);
+
+
+                int blAge = today - lAge;
+                int buAge = today - uAge;
+                bRange = String.valueOf(buAge) + "-" + String.valueOf(blAge);
+            }
+        }
+
         utilCommon.preCondition( registrationRequest, session, userManager );
 
         utilCommon.QuickUserRegistrationCondition( registrationRequest, session );

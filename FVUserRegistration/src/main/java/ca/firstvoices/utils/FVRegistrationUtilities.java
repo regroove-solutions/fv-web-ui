@@ -241,11 +241,14 @@ public class FVRegistrationUtilities
         String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
         String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
         String email = (String) registrationRequest.getPropertyValue("userinfo:email");
-        int validationStatus = 0;
+        LoginContext lctx = null;
+        CoreSession s = null;
+
+        int validationStatus;
+
         try
         {
             AutomationService automationService = Framework.getService(AutomationService.class);
-            CoreSession cs = CoreInstance.openCoreSession("default");
             OperationContext ctx = new OperationContext(session);
             Map<String, Object> params = new HashMap<>();
             params.put("Login:", email);
@@ -289,8 +292,6 @@ public class FVRegistrationUtilities
         info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
 
         // Set permissions on registration document
-        LoginContext lctx;
-        CoreSession s = null;
         String registrationId = null;
 
         try
@@ -299,14 +300,14 @@ public class FVRegistrationUtilities
                 userInfo, docInfo, info,
                 validationMethod, autoAccept, email);
 
-
             lctx = Framework.login();
             s = CoreInstance.openCoreSession("default");
 
             UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId, ugdr.language_admin_group);
             urpr.runUnrestricted();
+
             lctx.logout();
-        }
+         }
         catch( Exception e )
         {
             log.warn( e );
@@ -315,6 +316,7 @@ public class FVRegistrationUtilities
         finally
         {
             if( s!= null ) s.close();
+
         }
 
         return registrationId;
@@ -431,7 +433,7 @@ public class FVRegistrationUtilities
 
             try
             {
-                String defaultUserPrefs = up.createDefaultUserPreferences( ureg );
+                String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", defaultUserPrefs);
                 userManager.updateUser(userDoc);
              }

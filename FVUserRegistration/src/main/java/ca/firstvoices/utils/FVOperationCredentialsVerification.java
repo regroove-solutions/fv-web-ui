@@ -46,23 +46,31 @@ public class FVOperationCredentialsVerification
 
     public static boolean terminateOnInvalidCredentials_NewUserHomeChange( CoreSession session, UserManager userManager, String username, String dialectGUID )
     {
-        NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
-
-        int credentialsType = isValidPrincipal( invoking_principal );
-
-        if( credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM )
+        try
         {
-            // language admin can make changes to a user in their dialect
-            if( credentialsType == LANGUAGE_ADMINISTRATOR )
+            NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
+
+            int credentialsType = isValidPrincipal(invoking_principal);
+
+            if (credentialsType == GLOBAL_ADMINISTRATOR_OR_SYSTEM)
             {
-                DocumentModel userToChange = userManager.getUserModel(username);
+                // language admin can make changes to a user in their dialect
+                if (credentialsType == GLOBAL_ADMINISTRATOR_OR_SYSTEM) // LANGUAGE_ADMINISTRATOR
+                {
+                    DocumentModel userToChange = userManager.getUserModel(username);
 
-                String userPreferences = (String) userToChange.getPropertyValue("user:preferences");
+                    String userPreferences = (String) userToChange.getPropertyValue("user:preferences");
 
-                if( userPreferences.contains(dialectGUID)) return false; // user preferred dialect has to be included in user preferences
+                    //user preferred dialect has to be included in user preferences
+                    if (userPreferences.contains(dialectGUID)) return false; // valid credentials
+                }
+
+                return true; // invalid credentials
             }
-
-            return true; // invalid credentials
+        }
+        catch( Exception e)
+        {
+            return true;
         }
 
         return false; // continue executing command - valid credentials
@@ -77,7 +85,7 @@ public class FVOperationCredentialsVerification
         if( credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM )
         {
             // language admin can make changes to a user in their dialect
-            if( credentialsType == LANGUAGE_ADMINISTRATOR )
+            if( credentialsType == LANGUAGE_ADMINISTRATOR ) // LANGUAGE_ADMINISTRATOR
             {
                 NuxeoPrincipal userToChange = userManager.getPrincipal(username);
 

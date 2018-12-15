@@ -207,7 +207,7 @@ public class FVRegistrationMailUtilities {
             String dp =  "<br><br> You registered to participate in " + options.get("dialect") +". <br>";
             String endStr =  "<br> Please setup account password to complete registration.";
             String re = "<br> In order to participate in FirstVoices you will need to register again.";
-            String endStr_D =  "<br><br> If you do so please complete registration by setting up you account password.";
+            String endStr_D =  "<br><br> If you do so please complete registration by setting up your account password.";
             String thankYou = " <br><br> Regards,<br> The FirstVoices team";
 
             switch( variant ) {

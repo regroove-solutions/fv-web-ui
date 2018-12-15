@@ -17,8 +17,14 @@
 	      <fieldMapping name="contributors">contributors</fieldMapping>
 	      <fieldMapping name="comments">comments</fieldMapping>
 		  <fieldMapping name="preferences">preferences</fieldMapping>
-	      
-	      <autoincrementIdField>false</autoincrementIdField>
+		  <fieldMapping name="yearBornRange">yearBornRange</fieldMapping>
+		  <fieldMapping name="role">role</fieldMapping>
+		  <fieldMapping name="ip">ip</fieldMapping>
+		  <fieldMapping name="ua">ua</fieldMapping>
+		  <fieldMapping name="referer">referer</fieldMapping>
+		  <fieldMapping name="created">created</fieldMapping>
+
+		<autoincrementIdField>false</autoincrementIdField>
 	      <computeMultiTenantId>false</computeMultiTenantId>
 	      <!--<dataFile>users.csv</dataFile>-->
 	      <createTablePolicy>on_missing_columns</createTablePolicy>
@@ -80,6 +86,12 @@
 	        userAttributes.put("lastName", userObject.lastName);
 	        userAttributes.put("comments", userObject.comments);
 			userAttributes.put("preferences", userObject.preferences);
+			userAttributes.put("yearBornRange", userObject.comments);
+			userAttributes.put("role", userObject.comments);
+			userAttributes.put("ip", userObject.comments);
+			userAttributes.put("ua", userObject.comments);
+			userAttributes.put("referer", userObject.comments);
+			userAttributes.put("created", userObject.comments);
 	        userAttributes.put("contributors", userObject.contributors);
 	    </mapperScript>
 	  </mapper>
