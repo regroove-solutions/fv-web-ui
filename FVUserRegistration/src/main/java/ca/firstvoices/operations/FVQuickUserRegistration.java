@@ -20,6 +20,8 @@ import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 
 import java.io.Serializable;
+import java.time.Year;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -74,6 +76,21 @@ public class FVQuickUserRegistration {
             In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
 
          */
+        String bRange;
+
+        // parse age range
+        String tokens[] = ageRange.split("-");
+        if( tokens.length == 2 )
+        {
+            int lAge = Integer.valueOf(tokens[0]);
+            int uAge = Integer.valueOf(tokens[1]);
+
+            int today = Year.now().getValue();
+            int blAge = today - lAge;
+            int buAge = today - uAge;
+            bRange = String.valueOf(blAge) + "-" + String.valueOf(buAge);
+        }
+
         utilCommon.preCondition( registrationRequest, session, userManager );
 
         utilCommon.QuickUserRegistrationCondition( registrationRequest, session );
