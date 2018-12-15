@@ -6,7 +6,9 @@
     targetNamespace="http://www.nuxeo.org/ecm/project/schemas/First-Voices/fvuserinfo">
 
   	<xs:include schemaLocation="base.xsd" />
-	
+
+	<xs:element name="role" type="xs:string"/>
+	<xs:element name="ageGroup" type="xs:string"/>
 	<xs:element name="requestedSpace" type="xs:string"/>
 
 </xs:schema>

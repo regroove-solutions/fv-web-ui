@@ -9,10 +9,14 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.FIRSTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.LASTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.SCHEMA_NAME;
+
+import java.security.Principal;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.node.ObjectNode;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -21,9 +25,13 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.Properties;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+import org.nuxeo.ecm.core.io.registry.MarshallerHelper;
+import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
+
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UU;
 /**
  *
@@ -66,17 +74,22 @@ public class FVUpdateUser {
     @Param(name = "properties", required = false)
     protected Properties properties = new Properties();
 
+    private ObjectMapper mapper = new ObjectMapper();
+
     @OperationMethod
-    public String run() throws OperationException
+    public DocumentModel run() throws OperationException
     {
         DocumentModel userDoc = userManager.getUserModel(username);
 
         if (userDoc == null)
         {
-            throw new OperationException("Cannot update non-existent user: " + username);
+            throw new DocumentNotFoundException("Cannot update non-existent user: " + username);
         }
 
-        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) return "You do not have permission to change " + userDoc.getName(); // invalid credentials
+        // Invalid credentials
+        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) {
+            throw new DocumentSecurityException("You do not have permission to change " + userDoc.getId());
+        }
 
         if (groups != null)
         {
@@ -116,7 +129,10 @@ public class FVUpdateUser {
 
         userManager.updateUser(userDoc);
 
-        return "Updated "+ userDoc.getName();
+        // Before returning JSON, blank out password
+        userDoc.setProperty(SCHEMA_NAME, "password", null);
+
+        return userDoc;
     }
 }
 

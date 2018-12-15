@@ -7,20 +7,20 @@
   <extension target="org.nuxeo.ecm.directory.sql.SQLDirectoryFactory"
     point="directories">
     <directory name="sqlUserDirectory">
-      <schema>user</schema>
-      <dataSource>jdbc/nxsqldirectory</dataSource>
-	
-	<table>users</table>
-	      <idField>username</idField>
-	      <passwordField>password</passwordField>
+      	<schema>user</schema>
+      	<dataSource>jdbc/nxsqldirectory</dataSource>
+		<table>users</table>
+	    <idField>username</idField>
+	    <passwordField>password</passwordField>
 	      <passwordHashAlgorithm>SSHA</passwordHashAlgorithm>
 	      
 	      <fieldMapping name="contributors">contributors</fieldMapping>
 	      <fieldMapping name="comments">comments</fieldMapping>
+		  <fieldMapping name="preferences">preferences</fieldMapping>
 	      
 	      <autoincrementIdField>false</autoincrementIdField>
 	      <computeMultiTenantId>false</computeMultiTenantId>
-	      <dataFile>users.csv</dataFile>
+	      <!--<dataFile>users.csv</dataFile>-->
 	      <createTablePolicy>on_missing_columns</createTablePolicy>
 	      <querySizeLimit>50</querySizeLimit>
 	      <references>
@@ -34,7 +34,7 @@
 	
 	<table>groups</table>
 	      <idField>groupname</idField>
-	      <dataFile>groups.csv</dataFile>
+	      <!--<dataFile>groups.csv</dataFile>-->
 	      <createTablePolicy>on_missing_columns</createTablePolicy>
 	      <autoincrementIdField>false</autoincrementIdField>
 	      <!-- Add 10 min cache to avoid refetching the groups during login -->
@@ -53,6 +53,22 @@
 	    </directory>
 	  </extension>
 
+	<extension target="org.nuxeo.ecm.platform.usermanager.UserService" point="userManager">
+		<userManager>
+			<users>
+				<directory>sqlUserDirectory</directory>
+				<!-- This is currently defined in Studio; but move here soon. -->
+				<!--<anonymousUser id="Guest">-->
+					<!--<property name="firstName">Guest</property>-->
+					<!--<property name="lastName">User</property>-->
+				<!--</anonymousUser>-->
+			</users>
+			<groups>
+				<directory>sqlGroupDirectory</directory>
+			</groups>
+		</userManager>
+	</extension>
+
 	<extension target="org.nuxeo.usermapper.service.UserMapperComponent" point="mapper">
 	
 	  <mapper name="fv" type="js">
@@ -63,6 +79,7 @@
 	        userAttributes.put("firstName", userObject.firstName);
 	        userAttributes.put("lastName", userObject.lastName);
 	        userAttributes.put("comments", userObject.comments);
+			userAttributes.put("preferences", userObject.preferences);
 	        userAttributes.put("contributors", userObject.contributors);
 	    </mapperScript>
 	  </mapper>

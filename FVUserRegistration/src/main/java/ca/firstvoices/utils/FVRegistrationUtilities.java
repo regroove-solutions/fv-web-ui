@@ -433,14 +433,12 @@ public class FVRegistrationUtilities
             {
                 String defaultUserPrefs = up.createDefaultUserPreferences( ureg );
                 userDoc.setPropertyValue("user:preferences", defaultUserPrefs);
-                session.saveDocument(userDoc);
+                userManager.updateUser(userDoc);
              }
             catch ( Exception e)
             {
                 log.warn("Exception while updating user preferences "+e );
             }
-
-            //userManager.updateUser(userDoc);
 
             notificationEmailsAndReminderTasks( dialect, ureg );
 

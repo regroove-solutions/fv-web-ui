@@ -8,6 +8,7 @@ package ca.firstvoices.operations;
 import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -15,10 +16,13 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
+import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +44,9 @@ public class FVQuickUserRegistration {
     @Context
     protected CoreSession session;
 
+    @Context
+    protected OperationContext operationContext;
+
     @Param(name ="docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;
 
@@ -55,12 +62,32 @@ public class FVQuickUserRegistration {
     @Param(name = "comment", required = false)
     protected String comment;
 
-
-
     @OperationMethod
     public String run( DocumentModel registrationRequest ) throws Exception
     {
+        String ip = null;
+
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
+
+        // Extract additional information from request
+        HttpServletRequest request = (HttpServletRequest) operationContext.get("request");
+
+        // Client IP
+        String ip1 = request.getHeader("Remote_Addr");
+        String ip2 = request.getHeader("X-Forwarded-For");
+
+        if (ip1 == null || ip1.isEmpty()) {
+            ip = ip2;
+        }
+
+        // Referer
+        String referer = request.getHeader("Referer");
+
+        // User-agent
+        String ua = request.getHeader("User-Agent");
+
+        // Time created
+        long created = System.currentTimeMillis();
 
         /*
 

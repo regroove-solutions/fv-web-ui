@@ -59,8 +59,16 @@
 			<enterPasswordUrl>site/fv/users/enterpassword/</enterPasswordUrl>
 			<validationRelUrl>site/fv/users/validate</validationRelUrl>
 	    </configuration>
-	</extension>
 
+		<!-- this is a new configuration for other emails -->
+		<configuration name="admin">
+			<test>test</test>
+			<validationEmail>
+				<title>123</title>
+				<template>skin/views/Test.ftl</template>
+			</validationEmail>
+		</configuration>
+	</extension>
 
 	<!--
 		This extension is to override the default email received from the system
