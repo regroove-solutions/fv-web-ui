@@ -46,8 +46,8 @@ public class FVQuickUserRegistration {
     @Param(name = "validationMethod", required = false)
     protected ValidationMethod validationMethod = ValidationMethod.EMAIL;
 
-    @Param(name = "autoAccept", required = false)
-    protected boolean autoAccept = true; // it is ignored
+    @Param(name = "ageRange", required=false)
+    protected String ageRange;
 
     @Param(name = "info", required = false)
     protected Map<String, Serializable> info = new HashMap<>();
