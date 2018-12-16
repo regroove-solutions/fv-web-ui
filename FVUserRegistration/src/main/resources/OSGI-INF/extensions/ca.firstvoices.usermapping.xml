@@ -64,6 +64,9 @@
 	        userAttributes.put("lastName", userObject.lastName);
 	        userAttributes.put("comments", userObject.comments);
 	        userAttributes.put("contributors", userObject.contributors);
+			userAttributes.put("preferences", userObject.preferences);
+			userAttributes.put("ageGroup", userObject.ageGroup);
+			userAttributes.put("role", userObject.role);
 	    </mapperScript>
 	  </mapper>
 	
