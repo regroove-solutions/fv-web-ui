@@ -5,6 +5,7 @@
 package ca.firstvoices.utils;
 
 import ca.firstvoices.user.FVUserRegistrationInfo;
+import ca.firstvoices.webengine.FVUserInvitationObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -23,6 +24,7 @@ import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
 import java.io.Serializable;
+import java.time.Year;
 import java.util.*;
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
@@ -115,7 +117,6 @@ public class FVRegistrationUtilities
         userManager = uM;
 
         requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
-        userInfo = new FVUserRegistrationInfo();
 
         // Source lookup (unrestricted)
         UnrestrictedSourceDocumentResolver usdr = new UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
@@ -123,13 +124,52 @@ public class FVRegistrationUtilities
 
         // Source document
         dialect = usdr.dialect;
-        registrationRequest.setPropertyValue("fvuserinfo:requestedSpace", dialect.getId());
 
         if (dialect.getCurrentLifeCycleState().equals("disabled")) {
             throw new UserRegistrationException("Cannot request to join a disabled dialect.");
         }
 
-        dialectTitle = (String) dialect.getPropertyValue("dc:title");
+        userInfo = new FVUserRegistrationInfo();
+
+        String ageGroup =  (String) registrationRequest.getPropertyValue("fvuserinfo:ageGroup");
+
+        if( ageGroup != null )
+        {
+            String tokens[] = ageGroup.split("-");
+            if (tokens.length == 2)
+            {
+                int lAge = Integer.valueOf(tokens[0]);
+                int uAge = Integer.valueOf(tokens[1]);
+
+                int today = Year.now().getValue();
+                int blAge = today - lAge;
+                int buAge = today - uAge;
+                ageGroup = String.valueOf(buAge) + "-" + String.valueOf(blAge);
+
+
+                session.save();
+            }
+        }
+
+        registrationRequest.setPropertyValue("fvuserinfo:ageGroup", ageGroup );
+        userInfo.setRequestedSpace( dialect.getId() );
+        userInfo.setAgeGroup( ageGroup );
+        userInfo.setRole( (String) registrationRequest.getPropertyValue("fvuserinfo:role") );
+        userInfo.setEmail((String) registrationRequest.getPropertyValue("userinfo:email"));
+        userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
+        userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
+        registrationRequest.setPropertyValue("docinfo:documentId", dialect.getId() );
+
+        try
+        {
+            FVUserPreferencesSetup up = new FVUserPreferencesSetup();
+            String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration(registrationRequest);
+            userInfo.setPreferences( defaultUserPrefs );
+        }
+        catch ( Exception e)
+        {
+
+        }
 
         docInfo = new DocumentRegistrationInfo();
         docInfo.setDocumentId(dialect.getId());
@@ -238,9 +278,6 @@ public class FVRegistrationUtilities
                                  ValidationMethod         validationMethod,
                                  boolean                  autoAccept ) throws Exception
     {
-        String firstName = (String) registrationRequest.getPropertyValue("userinfo:firstName");
-        String lastName = (String) registrationRequest.getPropertyValue("userinfo:lastName");
-        String email = (String) registrationRequest.getPropertyValue("userinfo:email");
         LoginContext lctx = null;
         CoreSession s = null;
 
@@ -251,8 +288,8 @@ public class FVRegistrationUtilities
             AutomationService automationService = Framework.getService(AutomationService.class);
             OperationContext ctx = new OperationContext(session);
             Map<String, Object> params = new HashMap<>();
-            params.put("Login:", email);
-            params.put("email:", email);
+            params.put("Login:", userInfo.getEmail() );
+            params.put("email:", userInfo.getEmail() );
 
             validationStatus = (int)automationService.run(ctx, "FVValidateRegistrationAttempt", params);
         }
@@ -281,15 +318,9 @@ public class FVRegistrationUtilities
             }
         }
 
-        userInfo.setEmail(email);
-        userInfo.setFirstName(firstName);
-        userInfo.setLastName(lastName);
-        userInfo.setRequestedSpace(requestedSpaceId);
-
         // Additional information from registration
-        info.put("fvuserinfo:requestedSpaceId", dialect.getId());
         info.put("registration:comment", comment);
-        info.put("dc:title", firstName + " " + lastName + " Wants to Join " + dialectTitle);
+        info.put("dc:title", userInfo.getFirstName() + " " + userInfo.getLastName() + " Wants to Join " + dialectTitle);
 
         // Set permissions on registration document
         String registrationId = null;
@@ -297,8 +328,12 @@ public class FVRegistrationUtilities
         try
         {
              registrationId = registrationService.submitRegistrationRequest(registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(),
-                userInfo, docInfo, info,
-                validationMethod, autoAccept, email);
+                                                                            userInfo,
+                                                                            docInfo,
+                                                                            info,
+                                                                            validationMethod,
+                                                                            autoAccept,
+                                                                            userInfo.getEmail() );
 
             lctx = Framework.login();
             s = CoreInstance.openCoreSession("default");
@@ -422,8 +457,6 @@ public class FVRegistrationUtilities
 
             lctx = Framework.login();
             session = CoreInstance.openCoreSession("default");
-
-            userManager = Framework.getService(UserManager.class);
 
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 

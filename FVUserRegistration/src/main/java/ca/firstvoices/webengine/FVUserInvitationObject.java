@@ -14,4 +14,32 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 @Produces("text/html;charset=UTF-8")
 @WebObject(type = "FVUserRegistrationTemplates", superType = "userRegistration")
 public class FVUserInvitationObject extends UserInvitationObject {
+//    protected String requestedSpace;
+//    protected String ageGroup;
+//    protected String role;
+//
+//    public String getRequestedSpace() {
+//        return requestedSpace;
+//    }
+//
+//    public void setRequestedSpace(String requestedSpace) {
+//        this.requestedSpace = requestedSpace;
+//    }
+//
+//    public String getAgeGroup() {
+//        return ageGroup;
+//    }
+//
+//    public void setAgeGroup(String ageGroup) {
+//        this.ageGroup = ageGroup;
+//    }
+//
+//    public String getRole() {
+//        return role;
+//    }
+//
+//    public void setRole(String role) {
+//        this.role = role;
+//    }
+
 }

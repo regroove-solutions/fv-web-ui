@@ -29,7 +29,6 @@
   <xs:element name="referer" type="xs:string" />
   <xs:element name="created" type="xs:date" />
 
-
   <!-- To avoid creating additional tables, use strings for now (should store JSON) -->
   <xs:element name="preferences" type="xs:string" />
 
