@@ -135,30 +135,35 @@ public class FVRegistrationUtilities
 
         if( ageGroup != null )
         {
-            String tokens[] = ageGroup.split("-");
-            if (tokens.length == 2)
+            int today = Year.now().getValue();
+
+            if( ageGroup.contains("100+"))
             {
-                int lAge = Integer.valueOf(tokens[0]);
-                int uAge = Integer.valueOf(tokens[1]);
 
-                int today = Year.now().getValue();
-                int blAge = today - lAge;
-                int buAge = today - uAge;
-                ageGroup = String.valueOf(buAge) + "-" + String.valueOf(blAge);
+                ageGroup = String.valueOf(today - 101);
+            }
+            else
+            {
+                String tokens[] = ageGroup.split("-");
+                if (tokens.length == 2)
+                {
+                    int lAge = Integer.valueOf(tokens[0]);
+                    int uAge = Integer.valueOf(tokens[1]);
 
-
-                session.save();
+                    int blAge = today - lAge;
+                    int buAge = today - uAge;
+                    ageGroup = String.valueOf(buAge) + "-" + String.valueOf(blAge);
+                }
             }
         }
 
-        registrationRequest.setPropertyValue("fvuserinfo:ageGroup", ageGroup );
         userInfo.setRequestedSpace( dialect.getId() );
         userInfo.setAgeGroup( ageGroup );
         userInfo.setRole( (String) registrationRequest.getPropertyValue("fvuserinfo:role") );
         userInfo.setEmail((String) registrationRequest.getPropertyValue("userinfo:email"));
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
-        registrationRequest.setPropertyValue("docinfo:documentId", dialect.getId() );
+        userInfo.setLogin( userInfo.getEmail() );
 
         try
         {
@@ -321,6 +326,10 @@ public class FVRegistrationUtilities
         // Additional information from registration
         info.put("registration:comment", comment);
         info.put("dc:title", userInfo.getFirstName() + " " + userInfo.getLastName() + " Wants to Join " + dialectTitle);
+        info.put("fvuserinfo:role", userInfo.getRole() );
+        info.put("fvuserinfo:ageGroup", userInfo.getAgeGroup() );
+        info.put("fvuserinfo:preferences", userInfo.getPreferences() );
+        info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
 
         // Set permissions on registration document
         String registrationId = null;
@@ -466,8 +475,10 @@ public class FVRegistrationUtilities
 
             try
             {
-                String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
-                userDoc.setPropertyValue("user:preferences", defaultUserPrefs);
+                //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
+                userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
+                userDoc.setPropertyValue("user:yearBornRange", ureg.getPropertyValue("fvuserinfo:ageGroup"));
+                userDoc.setPropertyValue("user:roles", ureg.getPropertyValue("fvuserinfo:roles"));
                 userManager.updateUser(userDoc);
              }
             catch ( Exception e)

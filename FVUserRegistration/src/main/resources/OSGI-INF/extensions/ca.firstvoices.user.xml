@@ -42,17 +42,20 @@
 	    <configuration merge="true">
 	        <requestDocType>FVUserRegistration</requestDocType>
 	        <userInfo>
-	          	<schemaName>fvuserinfo</schemaName>
+	          	<schemaName>userinfo</schemaName>
 				<usernameField>userinfo:login</usernameField>
 				<emailField>userinfo:email</emailField>
 				<firstnameField>userinfo:firstName</firstnameField>
 				<lastnameField>userinfo:lastName</lastnameField>
 				<groupsField>userinfo:groups</groupsField>
 				<companyField>userinfo:company</companyField>
+			</userInfo>
+			<fvuserInfo>
+				<schemaName>fvuserinfo</schemaName>
 				<ageGroupField>fvuserinfo:ageGroup</ageGroupField>
 				<preferencesField>fvuserinfo:preferences</preferencesField>
 				<roleField>fvuserinfo:role</roleField>
-			</userInfo>
+			</fvuserInfo>>
 			<validationEmail>
 				<title>You are invited to access FirstVoices.com</title>
 				<template>skin/views/FVGeneralEmailInviteDocTemplate.ftl</template>

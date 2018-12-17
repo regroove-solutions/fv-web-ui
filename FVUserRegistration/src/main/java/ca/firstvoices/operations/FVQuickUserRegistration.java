@@ -103,31 +103,6 @@ public class FVQuickUserRegistration {
 
          */
 
-        // parse age range
-
-        String ageGroup = (String) registrationRequest.getPropertyValue("ageGroup");
-
-        if (ageGroup != null) {
-
-            int today = Year.now().getValue();
-
-            if (ageGroup.equals("100+")) {
-                bRange = String.valueOf(today - 101);
-            }
-
-            String tokens[] = ageGroup.split("-");
-            if( tokens.length == 2 )
-            {
-                int lAge = Integer.valueOf(tokens[0]);
-                int uAge = Integer.valueOf(tokens[1]);
-
-
-                int blAge = today - lAge;
-                int buAge = today - uAge;
-                bRange = String.valueOf(buAge) + "-" + String.valueOf(blAge);
-            }
-        }
-
         utilCommon.preCondition( registrationRequest, session, userManager );
 
         utilCommon.QuickUserRegistrationCondition( registrationRequest, session );
