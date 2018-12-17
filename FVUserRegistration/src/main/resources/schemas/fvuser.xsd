@@ -19,5 +19,4 @@
   <xs:element name="contributors" type="xs:string" />
   <xs:element name="comments" type="xs:string" />
    <xs:element name="tenantId" type="xs:string"/>
-
 </xs:schema>
