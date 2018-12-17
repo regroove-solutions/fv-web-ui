@@ -478,7 +478,7 @@ public class FVRegistrationUtilities
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
                 userDoc.setPropertyValue("user:yearBornRange", ureg.getPropertyValue("fvuserinfo:ageGroup"));
-                userDoc.setPropertyValue("user:roles", ureg.getPropertyValue("fvuserinfo:roles"));
+                userDoc.setPropertyValue("user:role", ureg.getPropertyValue("fvuserinfo:role"));
                 userManager.updateUser(userDoc);
              }
             catch ( Exception e)
