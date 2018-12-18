@@ -184,7 +184,7 @@ public class FVRegistrationUtilities
 
         docInfo = new DocumentRegistrationInfo();
         docInfo.setDocumentId(dialect.getId());
-        docInfo.setDocumentTitle(dialectTitle);
+        docInfo.setDocumentTitle(dialect.getTitle());
     }
 
     /**
