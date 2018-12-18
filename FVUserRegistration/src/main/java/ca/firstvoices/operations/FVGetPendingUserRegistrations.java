@@ -40,43 +40,26 @@ public class FVGetPendingUserRegistrations
 
         try
         {
+            String query = "Select * from Document where ecm:mixinType = 'UserRegistration'";
+
             // prune all items which are not part of the specific dialect
             if( !(dialectID.toLowerCase().equals("all") || dialectID.toLowerCase().equals("*")) )
             {
-                registrations = session.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration' and %s = '%s'", "docinfo:documentId", dialectID));
-            }
-            else
-            {
-                registrations = session.query("Select * from Document where ecm:mixinType = 'UserRegistration'");
+                query = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' and %s = '%s'", "docinfo:documentId", dialectID);
             }
 
-            if( !registrations.isEmpty()) {
-                registrations = pruneRegistrationList(registrations, pruneAction);
+            if( !pruneAction.equals(IGNORE) ) {
+                if (pruneAction.equals(APPROVED)) {
+                    query += " AND ecm:currentLifeCycleState = 'approved'";
+                }
+                else if (pruneAction.equals(ACCEPTED)) {
+                    query += " AND ecm:currentLifeCycleState = 'accepted'";
+                }
             }
+
+            registrations = session.query(query);
         } catch (Exception e) {
             log.warn(e);
-        }
-
-        return registrations;
-    }
-
-
-    private DocumentModelList pruneRegistrationList( DocumentModelList registrations, String pruneAction )
-    {
-        if( !pruneAction.equals(IGNORE))
-        {
-            DocumentModelList prunned = new DocumentModelListImpl();
-
-            for (DocumentModel uReg : registrations)
-            {
-                if (pruneAction.equals(APPROVED) && uReg.getCurrentLifeCycleState().equals(APPROVED))
-                    prunned.add(uReg);
-                else if (pruneAction.equals(ACCEPTED) && uReg.getCurrentLifeCycleState().equals(ACCEPTED))
-                    prunned.add(uReg);
-            }
-
-            if( prunned.isEmpty() ) registrations.clear();
-            else registrations = prunned;
         }
 
         return registrations;
