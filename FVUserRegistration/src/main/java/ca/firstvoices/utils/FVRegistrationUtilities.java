@@ -120,6 +120,10 @@ public class FVRegistrationUtilities
 
         requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
 
+        if (requestedSpaceId == null) {
+            throw new UserRegistrationException("You must specify a dialect to join.");
+        }
+
         // Source lookup (unrestricted)
         UnrestrictedSourceDocumentResolver usdr = new UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
         usdr.runUnrestricted();
@@ -311,16 +315,16 @@ public class FVRegistrationUtilities
             switch ( validationStatus )
             {
                 case EMAIL_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login the same as submitted email is present.", 422);
+                    throw new RestOperationException("Exception validation: Login the same as submitted email is present.", 400);
 
                 case LOGIN_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login name already present.", 422);
+                    throw new RestOperationException("Exception validation: Login name already present.", 400);
 
                 case LOGIN_AND_EMAIL_EXIST_ERROR:
-                    throw new RestOperationException("Exception validation: Login name and email already present.", 422);
+                    throw new RestOperationException("Exception validation: Login name and email already present.", 400);
 
                 case REGISTRATION_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Pending registration with the same credentials is present.", 422);
+                    throw new RestOperationException("Exception validation: Pending registration with the same credentials is present.", 400);
 
             }
         }
@@ -478,10 +482,18 @@ public class FVRegistrationUtilities
 
             try
             {
+                // Set creation time
+                Calendar cEventDate = Calendar.getInstance();
+                cEventDate.setTime(new Date(System.currentTimeMillis()));
+
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
                 userDoc.setPropertyValue("user:yearBornRange", ureg.getPropertyValue("fvuserinfo:ageGroup"));
                 userDoc.setPropertyValue("user:role", ureg.getPropertyValue("fvuserinfo:role"));
+                userDoc.setPropertyValue("user:ua", ureg.getPropertyValue("fvuserinfo:ua"));
+                userDoc.setPropertyValue("user:ip", ureg.getPropertyValue("fvuserinfo:ip"));
+                userDoc.setPropertyValue("user:referer", ureg.getPropertyValue("fvuserinfo:referer"));
+                userDoc.setPropertyValue("user:created", cEventDate);
                 userManager.updateUser(userDoc);
              }
             catch ( Exception e)

@@ -24,10 +24,10 @@
 
   <!-- Request properties -->
   <!-- These are captured during registration but could be supplemented in future logins -->
-  <!--<xs:element name="ip" type="nxs:stringList" />-->
-  <!--<xs:element name="ua" type="nxs:stringList" />-->
-  <!--<xs:element name="referer" type="xs:string" />-->
-  <!--<xs:element name="created" type="xs:date" />-->
+  <xs:element name="ip" type="xs:string" />
+  <xs:element name="ua" type="xs:string" />
+  <xs:element name="referer" type="xs:string" />
+  <xs:element name="created" type="xs:date" />
 
   <!-- To avoid creating additional tables, use strings for now (should store JSON) -->
   <xs:element name="preferences" type="xs:string" />

@@ -88,10 +88,10 @@
 			userAttributes.put("preferences", userObject.preferences);
 			userAttributes.put("yearBornRange", userObject.comments);
 			userAttributes.put("role", userObject.comments);
-			<!--userAttributes.put("ip", userObject.comments);-->
-			<!--userAttributes.put("ua", userObject.comments);-->
-			<!--userAttributes.put("referer", userObject.comments);-->
-			<!--userAttributes.put("created", userObject.comments);-->
+			userAttributes.put("ip", userObject.comments);
+			userAttributes.put("ua", userObject.comments);
+			userAttributes.put("referer", userObject.comments);
+			userAttributes.put("created", userObject.comments);
 	        userAttributes.put("contributors", userObject.contributors);
 			userAttributes.put("preferences", userObject.preferences);
 			userAttributes.put("ageGroup", userObject.ageGroup);

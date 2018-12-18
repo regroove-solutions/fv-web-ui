@@ -14,18 +14,16 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.platform.ui.web.auth.NuxeoSecuredRequestWrapper;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 import java.io.Serializable;
-import java.time.Year;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -64,7 +62,7 @@ public class FVQuickUserRegistration {
     protected String bRange;
 
     @OperationMethod
-    public String run( DocumentModel registrationRequest ) throws Exception
+    public Object run( DocumentModel registrationRequest ) throws Exception
     {
         String ip = null;
 
@@ -87,8 +85,10 @@ public class FVQuickUserRegistration {
         // User-agent
         String ua = request.getHeader("User-Agent");
 
-        // Time created
-        long created = System.currentTimeMillis();
+        // Add request variables to info object
+        info.put("ip", ip);
+        info.put("referer", referer);
+        info.put("ua", ua);
 
         /*
 
@@ -103,18 +103,25 @@ public class FVQuickUserRegistration {
 
          */
 
-        utilCommon.preCondition( registrationRequest, session, userManager );
+        try {
+            utilCommon.preCondition(registrationRequest, session, userManager);
 
-        utilCommon.QuickUserRegistrationCondition( registrationRequest, session );
+            utilCommon.QuickUserRegistrationCondition(registrationRequest, session);
 
-        String registrationId = utilCommon.postCondition( registrationService,
-                registrationRequest,
-                info,
-                comment,
-                validationMethod,
-                true ); // we always autoAccept quick registration
+            String registrationId = utilCommon.postCondition(registrationService,
+                    registrationRequest,
+                    info,
+                    comment,
+                    validationMethod,
+                    true); // we always autoAccept quick registration
+        } catch (RestOperationException e) {
+            // Pass validation errors back to UI
+            if (e.getStatus() == 400) {
+                return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+            }
+        }
 
-        return registrationId;
+        return Response.status(200).entity("Thank you for registering!").build();
     }
 
 }

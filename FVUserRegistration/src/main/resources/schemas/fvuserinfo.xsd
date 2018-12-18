@@ -15,6 +15,5 @@
 	<xs:element name="ip" type="xs:string" />
 	<xs:element name="ua" type="xs:string" />
 	<xs:element name="referer" type="xs:string" />
-	<xs:element name="created" type="xs:date" />
 
 </xs:schema>
