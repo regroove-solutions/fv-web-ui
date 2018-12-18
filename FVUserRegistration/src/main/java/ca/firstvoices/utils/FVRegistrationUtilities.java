@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -23,6 +24,7 @@ import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
+import javax.security.auth.login.LoginException;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.*;
@@ -281,7 +283,7 @@ public class FVRegistrationUtilities
                                  Map<String, Serializable> info,
                                  String                   comment,
                                  ValidationMethod         validationMethod,
-                                 boolean                  autoAccept ) throws Exception
+                                 boolean                  autoAccept ) throws RestOperationException, Exception
     {
         LoginContext lctx = null;
         CoreSession s = null;
@@ -301,7 +303,7 @@ public class FVRegistrationUtilities
         catch( Exception e)
         {
             log.warn("Exception while validating registration.");
-            throw new UserRegistrationException( "Exception while invoking registration validation. " + e );
+            throw new Exception( "Exception while invoking registration validation. " + e );
         }
 
         if( validationStatus != REGISTRATION_CAN_PROCEED )
@@ -309,16 +311,16 @@ public class FVRegistrationUtilities
             switch ( validationStatus )
             {
                 case EMAIL_EXISTS_ERROR:
-                    throw new UserRegistrationException("Exception validation: Login the same as submitted email is present.");
+                    throw new RestOperationException("Exception validation: Login the same as submitted email is present.", 422);
 
                 case LOGIN_EXISTS_ERROR:
-                    throw new UserRegistrationException("Exception validation: Login name already present.");
+                    throw new RestOperationException("Exception validation: Login name already present.", 422);
 
                 case LOGIN_AND_EMAIL_EXIST_ERROR:
-                    throw new UserRegistrationException("Exception validation: Login name and email already present.");
+                    throw new RestOperationException("Exception validation: Login name and email already present.", 422);
 
                 case REGISTRATION_EXISTS_ERROR:
-                    throw new UserRegistrationException("Exception validation: Pending registration with the same credentials is present.");
+                    throw new RestOperationException("Exception validation: Pending registration with the same credentials is present.", 422);
 
             }
         }
@@ -457,7 +459,8 @@ public class FVRegistrationUtilities
      */
     public void registrationValidationHandler( DocumentModel ureg )
     {
-        AutomationService automationService = Framework.getService(AutomationService.class);
+        UserManager userManager = Framework.getService(UserManager.class);
+
         LoginContext lctx;
 
         try
