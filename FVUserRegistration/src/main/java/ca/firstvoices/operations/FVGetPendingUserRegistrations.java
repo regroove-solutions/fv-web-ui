@@ -57,7 +57,7 @@ public class FVGetPendingUserRegistrations
                 }
             }
 
-            registrations = session.query(query);
+            registrations = session.query(query + " ORDER BY dc:created DESC");
         } catch (Exception e) {
             log.warn(e);
         }
