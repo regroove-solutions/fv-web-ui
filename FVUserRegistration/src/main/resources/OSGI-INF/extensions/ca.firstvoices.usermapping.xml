@@ -26,7 +26,6 @@
 
 		<autoincrementIdField>false</autoincrementIdField>
 	      <computeMultiTenantId>false</computeMultiTenantId>
-	      <!--<dataFile>users.csv</dataFile>-->
 	      <createTablePolicy>on_missing_columns</createTablePolicy>
 	      <querySizeLimit>50</querySizeLimit>
 	      <references>
@@ -40,12 +39,8 @@
 	
 	<table>groups</table>
 	      <idField>groupname</idField>
-	      <!--<dataFile>groups.csv</dataFile>-->
 	      <createTablePolicy>on_missing_columns</createTablePolicy>
 	      <autoincrementIdField>false</autoincrementIdField>
-	      <!-- Add 10 min cache to avoid refetching the groups during login -->
-	      <cacheTimeout>360</cacheTimeout>
-	      <cacheMaxSize>1000</cacheMaxSize>
 	      <references>
 	        <tableReference field="members" directory="multiUserDirectory"
 	          table="user2group" sourceColumn="groupId" targetColumn="userId" schema="user2group"
