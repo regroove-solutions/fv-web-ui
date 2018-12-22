@@ -79,16 +79,22 @@ const updateUser = function update(user) {
 
 const selfregisterUser = RESTActions.execute('FV_USER_SELFREGISTER', 'User.SelfRegistration', {});
 const userSuggestion = RESTActions.execute('FV_USER_SUGGESTION', 'UserGroup.Suggestion', {headers: {'X-NXenrichers.document': ''}});
+const userUpdate = RESTActions.execute('FV_USER_UPDATE', 'FVUpdateUser');
+const userUpgrade = RESTActions.execute('FV_USER_UPGRADE', 'FVChangeUserGroupToDialectGroup');
 
 const computeUserFetchFactory = RESTReducers.computeFetch('user');
 const computeUserSuggestion = RESTReducers.computeOperation('user_suggestion');
 
 const computeUserSelfregisterOperation = RESTReducers.computeOperation('user_selfregister');
+const computeUserUpdate = RESTReducers.computeOperation('user_update');
+const computeUserUpgrade = RESTReducers.computeOperation('user_upgrade');
 
-const actions = {fetchUser, userSuggestion, createUser, selfregisterUser, updateUser};
+const actions = {fetchUser, userSuggestion, createUser, selfregisterUser, updateUser, userUpdate, userUpgrade};
 
 const reducers = {
     computeUser: computeUserFetchFactory.computeUser,
+    computeUserUpdate: computeUserUpdate.computeUserUpdate,
+    computeUserUpgrade: computeUserUpgrade.computeUserUpgrade,
     computeUserSuggestion: computeUserSuggestion.computeUserSuggestion,
     computeUserSelfregister: computeUserSelfregisterOperation.computeUserSelfregister
 };

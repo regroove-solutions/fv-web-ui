@@ -44,11 +44,9 @@ import IntlService from "views/services/intl";
 const intl = IntlService.instance;
 
 @provide
-export default class Tasks extends React.Component {
+export default class UserTasks extends React.Component {
 
     static propTypes = {
-        fetchUserTasks: PropTypes.func.isRequired,
-        computeUserTasks: PropTypes.object.isRequired,
         fetchUserRegistrationTasks: PropTypes.func.isRequired,
         computeUserRegistrationTasks: PropTypes.object.isRequired,
         fetchDialect2: PropTypes.func.isRequired,
@@ -61,7 +59,9 @@ export default class Tasks extends React.Component {
         rejectTask: PropTypes.func.isRequired,
         computeUserTasksReject: PropTypes.object.isRequired,
         rejectRegistration: PropTypes.func.isRequired,
-        computeUserRegistrationReject: PropTypes.object.isRequired
+        computeUserRegistrationReject: PropTypes.object.isRequired,
+        routeParams: PropTypes.object.isRequired,
+        type: PropTypes.String
     };
 
     constructor(props, context) {
@@ -118,9 +118,16 @@ export default class Tasks extends React.Component {
         this.setState({lastActionedTaskId: id});
     }
 
+    _getRoleLabel(role) {
+        let roleLabel = selectn('text', ProviderHelpers.userRegistrationRoles.find((rolesVal) => (rolesVal.value == role)));
+        if (roleLabel && roleLabel != 'undefined') return roleLabel.replace("I am", "");
+    }
+
     fetchData(newProps) {
-        newProps.fetchUserTasks(selectn('response.id', newProps.computeLogin));
-        //newProps.fetchUserRegistrationTasks(this.state.userRegistrationTasksPath);
+        newProps.fetchUserRegistrationTasks(this.state.userRegistrationTasksPath, {
+            dialectID: selectn("routeParams.dialect", newProps),
+            pruneAction: 'accepted'
+        });
     }
 
     componentWillReceiveProps(newProps) {
@@ -180,9 +187,6 @@ export default class Tasks extends React.Component {
         const userID = selectn('response.id', this.props.computeLogin);
 
         const computeEntities = Immutable.fromJS([{
-            'id': userID,
-            'entity': this.props.computeUserTasks
-        }, {
             'id': this.state.userRegistrationTasksPath,
             'entity': this.props.computeUserRegistrationTasks
         }, {
@@ -190,56 +194,36 @@ export default class Tasks extends React.Component {
             'entity': this.props.computeUserTasksReject
         }])
 
-        const computeUserTasks = ProviderHelpers.getEntry(this.props.computeUserTasks, userID);
         const computeUserRegistrationTasks = ProviderHelpers.getEntry(this.props.computeUserRegistrationTasks, this.state.userRegistrationTasksPath);
         const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, selectn('properties.docinfo:documentId', this.state.selectedPreapprovalTask));
 
         let userTasks = [];
         let userRegistrationTasks = [];
 
-        // Compute General Tasks
-        (selectn('response', computeUserTasks) || []).map(function (task, i) {
-
-            let tableRow = <TableRow key={i}>
-                <TableRowColumn>
-                    <a onTouchTap={this._handleOpen.bind(this, task.docref)}>{task.documentTitle}</a>
-                </TableRowColumn>
-                <TableRowColumn>
-                    <span>{intl.searchAndReplace(task.name)}</span>
-                </TableRowColumn>
-                <TableRowColumn>
-                    <RaisedButton label={intl.trans('approve', 'Approve', 'first')} secondary={true}
-                                  onTouchTap={this._handleTaskActions.bind(this, task.id, 'approve')}/> &nbsp;
-                    <RaisedButton label={intl.trans('reject', 'Reject', 'first')} secondary={true}
-                                  onTouchTap={this._handleTaskActions.bind(this, task.id, 'reject')}/>
-                </TableRowColumn>
-                <TableRowColumn>{task.dueDate}</TableRowColumn>
-            </TableRow>;
-
-            userTasks.push(tableRow);
-
-        }.bind(this));
-
         // Compute User Registration Tasks
         (selectn('response.entries', computeUserRegistrationTasks) || []).map(function (task, i) {
 
             let uid = selectn('uid', task);
+            let title = selectn('properties.dc:title', task);
+            let firstName = selectn('properties.userinfo:firstName', task);
+            let lastName = selectn('properties.userinfo:lastName', task);
+            let email = selectn('properties.userinfo:email', task);
+            let role = selectn('properties.fvuserinfo:role', task);
+            let comment = selectn('properties.registration:comment', task);
+            let dateCreated = selectn('properties.dc:created', task);
 
-            let tableRow = <TableRow key={i}>
-                <TableRowColumn>
-                    <a onTouchTap={this._handleOpen.bind(this, uid)}>{selectn('properties.dc:title', task)}</a>
-                </TableRowColumn>
-                <TableRowColumn>
-                    <span>{intl.trans('views.pages.tasks.request_to_join', 'Request to join')} {selectn('properties.docinfo:documentTitle', task)}</span>
-                </TableRowColumn>
-                <TableRowColumn>
-                    <RaisedButton label={intl.trans('approve', 'Approve', 'first')} secondary={true}
-                                  onTouchTap={this._handlePreApprovalOpen.bind(this, task, 'approve')}/> &nbsp;
-                    <RaisedButton label={intl.trans('reject', 'Reject', 'first')} secondary={true}
-                                  onTouchTap={this._handleRegistrationActions.bind(this, uid, 'reject')}/>
-                </TableRowColumn>
-                <TableRowColumn>N/A</TableRowColumn>
-            </TableRow>;
+            let tableRow = <tr style={{borderBottom: '1px solid #000'}} key={i}>
+                <td>{lastName}</td>
+                <td>{firstName}</td>
+                <td>{email}</td>
+                <td>{this._getRoleLabel(role)}</td>
+                <td>{comment}</td>
+                <td>{StringHelpers.formatUTCDateString(dateCreated)}</td>
+                <td>
+                    <RaisedButton label={intl.trans('add_to_group', 'Add to Group', 'first')} secondary={true}
+                                  onTouchTap={this._handlePreApprovalOpen.bind(this, task, 'approve')}/>
+                </td>
+            </tr>;
 
             userRegistrationTasks.push(tableRow);
 
@@ -248,21 +232,26 @@ export default class Tasks extends React.Component {
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
 
             <div>
-                <h1>{intl.trans('tasks', 'Tasks', 'first')}</h1>
-                <Table>
-                    <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                        <TableRow>
-                            <TableHeaderColumn>{intl.trans('document_title', 'Document Title', 'words')}</TableHeaderColumn>
-                            <TableHeaderColumn>{intl.trans('task_type', 'Task Type', 'words')}</TableHeaderColumn>
-                            <TableHeaderColumn>{intl.trans('actions', 'Actions', 'words')}</TableHeaderColumn>
-                            <TableHeaderColumn>{intl.trans('task_due_date', 'Task Due Date', 'words')}</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false}>
+                <h1>User Registration Requests</h1>
+                <p> The following users have marked your community portal / language as as their default language.<br/>
+                    If you want them to see member only content, you can add them as members to your archive by clicking ADD TO GROUP.</p>
+                <table border="1" style={{width: '100%'}}>
+                    <thead adjustForCheckbox={false} displaySelectAll={false}>
+                        <tr style={{borderBottom: '1px solid #000'}}>
+                            <th style={{minWidth: '100px'}}>{intl.trans('last_name', 'Last Name', 'words')}</th>
+                            <th style={{minWidth: '100px'}}>{intl.trans('first_name', 'First Name', 'words')}</th>
+                            <th>{intl.trans('email', 'Email', 'words')}</th>
+                            <th style={{minWidth: '100px'}}>{intl.trans('role', 'Role', 'words')}</th>
+                            <th style={{minWidth: '120px'}}>{intl.trans('comments', 'Comments', 'words')}</th>
+                            <th>{intl.trans('date_created', 'Date Created', 'words')}</th>
+                            <th>{intl.trans('actions', 'Actions', 'words')}</th>
+                        </tr>
+                    </thead>
+                    <tbody displayRowCheckbox={false}>
                         {userTasks}
                         {userRegistrationTasks}
-                    </TableBody>
-                </Table>
+                    </tbody>
+                </table>
 
                 <p>{(userTasks.length == 0 && userRegistrationTasks.length == 0) ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.') : ''}</p>
 
@@ -274,7 +263,7 @@ export default class Tasks extends React.Component {
                 </Dialog>
 
                 <GroupAssignmentDialog
-                    title={intl.trans('approve', 'Approve', 'first')}
+                    title={intl.trans('add_to_group', 'Add to Group', 'first')}
                     fieldMapping={{
                         id: 'uid',
                         title: 'properties.dc:title'

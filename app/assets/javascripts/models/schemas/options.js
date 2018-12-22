@@ -12,6 +12,7 @@ import MediaFactory from 'views/components/Editor/fields/media';
 
 import {FlatButton, IconButton} from 'material-ui';
 import IntlService from "views/services/intl";
+import ProviderHelpers from '../../common/ProviderHelpers';
 
 const intl = IntlService.instance;
 
@@ -916,10 +917,6 @@ const options = {
     FVVideo: Object.assign({}, FVMedia),
     FVResource: FVMedia,
     FVUser: {
-        //http://members.firstvoices.com/cgi-bin/WebObjects/FVLAT.woa/wa/becomeAMember
-        // Age group => DOB
-        // Mark required
-        //<select name="0.58.4.47"><option value="0">0-5</option><option value="1">6-10</option><option value="2">11-15</option><option value="3">16-20</option><option value="4">21-25</option><option value="5">26-30</option><option value="6">31-35</option><option value="7">36-40</option><option value="8">41-45</option><option value="9">46-50</option><option value="10">51-55</option><option value="11">56-60</option><option value="12">61-65</option><option value="13">66-70</option><option value="14">71-75</option><option value="15">76-80</option><option value="16">81-85</option><option value="17">86-90</option><option value="18">91-95</option><option value="19">96-100</option><option value="20">over 100</option><option value="21">&lt;none&gt;</option></select>
         fields: {
             'userinfo:firstName': {
                 label: intl.trans("first_name", 'First Name', 'first') + " *",
@@ -954,15 +951,7 @@ const options = {
                 label: "Why are you interested in FirstVoices?" + " *",
                 factory: t.form.Select,
                 nullOption: {value: '', text: 'Choose the main reason:'},
-                options: [
-                    {value: 'languagerevitilizer', text: 'I am involved in language revitilization'},
-                    {value: 'teacher', text: 'I am a teacher'},
-                    {value: 'educator', text: 'I am an educator'},
-                    {value: 'student', text: 'I am a learner/student'},
-                    {value: 'learner-1', text: 'I am interested in learning MY language'},
-                    {value: 'learner-2', text: 'I am interested in learning A language'},
-                    {value: 'other', text: 'Other (please mention in comments)'}
-                ],
+                options: ProviderHelpers.userRegistrationRoles,
                 error: "Please let us know or pick the 'other' option."
             },
             'registration:comment': {

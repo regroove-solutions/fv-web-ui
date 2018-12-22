@@ -216,5 +216,14 @@ export default {
         ANY_LANGUAGE_CODE: "(en|fr)",
         WORKSPACE_OR_SECTION: "(sections|Workspaces)",
         KIDS_OR_DEFAULT: "(kids|explore)"
-    }
+    },
+    userRegistrationRoles: [
+        {value: 'languagerevitilizer', text: 'I am involved in language revitilization'},
+        {value: 'teacher', text: 'I am a teacher'},
+        {value: 'educator', text: 'I am an educator'},
+        {value: 'student', text: 'I am a learner/student'},
+        {value: 'learner-1', text: 'I am interested in learning MY language'},
+        {value: 'learner-2', text: 'I am interested in learning A language'},
+        {value: 'other', text: 'Other (please mention in comments)'}
+    ]
 }

@@ -80,6 +80,10 @@ export default class GroupAssignmentDialog extends Component {
         saveMethod: PropTypes.func.isRequired,
         closeMethod: PropTypes.func.isRequired,
         selectedItem: PropTypes.object,
+        userUpdate: PropTypes.func.isRequired,
+        computeUser: PropTypes.object.isRequired,
+        userUpgrade: PropTypes.func.isRequired,
+        computeUserUpgrade: PropTypes.object.isRequired,
         dialect: PropTypes.object,
         ref: PropTypes.string,
         title: PropTypes.string,
@@ -107,8 +111,7 @@ export default class GroupAssignmentDialog extends Component {
         e.preventDefault();
 
         // tcomb validation not required, will not work with groups
-        // this.refs["form_group_assignment"].getValue()
-        let formValue = this.refs.form_group_assignment.refs.input.state.value;
+        let formValue = this.refs["form_group_assignment"].getValue();
         let properties = {};
 
         for (let key in formValue) {
@@ -121,7 +124,12 @@ export default class GroupAssignmentDialog extends Component {
 
         // Passed validation
         if (formValue) {
-            this.props.saveMethod(properties, this.props.selectedItem);
+            // this.props.userUpgrade(null, {
+            //     username: 'test123',
+            //     groups: 'test222'
+            // }, null, intl.trans('views.pages.tasks.', 'Request Rejected Successfully', 'words'));
+
+            //this.props.saveMethod(properties, this.props.selectedItem);
             this.props.closeMethod();
         }
     }
@@ -138,8 +146,8 @@ export default class GroupAssignmentDialog extends Component {
 
         let formSchema = t.struct({
             'id': t.String,
-            'group': (dialectGroups.new) ? (!this.isUserRegistration) ? t.list(t.enums(dialectGroups.new)) : t.enums(dialectGroups.new) : t.String,
-            'comment': t.maybe(t.String)
+            'group': (dialectGroups.new) ? (!this.isUserRegistration) ? t.list(t.enums(dialectGroups.new)) : t.enums(dialectGroups.new) : t.String//,
+            //'comment': t.maybe(t.String)
         });
 
         let formOptions = {
@@ -149,8 +157,8 @@ export default class GroupAssignmentDialog extends Component {
                 },
                 'group': {
                     label: (this.isUserRegistration) ? intl.trans('views.pages.users.group.group_to_add_user_to', 'Group to add user to', 'first') + ':' : intl.trans('groups', 'Groups', 'first') + ':',
-                    help: (this.isUserRegistration) ? intl.trans('views.pages.users.group.only_one_per_user', 'Note: Only one group per user (for each dialect) is required due to permission inheritance.', 'first')
-                        : intl.trans('views.pages.users.group.group_permissions', 'Note: Groups with more permissions will inherit permissions from groups with less permissions. Example: \'Recorders with Approval\' get permissions that both \'Recorders\' and a \'Members\' have.)'),
+                    // help: (this.isUserRegistration) ? intl.trans('views.pages.users.group.only_one_per_user', 'Note: Only one group per user (for each dialect) is required due to permission inheritance.', 'first')
+                    //     : intl.trans('views.pages.users.group.group_permissions', 'Note: Groups with more permissions will inherit permissions from groups with less permissions. Example: \'Recorders with Approval\' get permissions that both \'Recorders\' and a \'Members\' have.)'),
                     disableOrder: true,
                     item: {
                         factory: SelectGroupFactory
@@ -160,12 +168,12 @@ export default class GroupAssignmentDialog extends Component {
                         newAvailableGroups: (dialectGroups.new) ? Object.keys(dialectGroups.new) : null
                     },
                     template: (this.isUserRegistration) ? null : list
-                },
-                'comment': {
-                    label: intl.trans('views.pages.users.group.comment_optional', 'Comment (Optional)'),
-                    help: intl.trans('views.pages.users.group.comment_attached', 'Note: Your comment will be attached to the welcome email sent to the user.'),
-                    type: (this.isUserRegistration) ? 'textarea' : 'hidden'
-                }
+                }//,
+                // 'comment': {
+                //     label: intl.trans('views.pages.users.group.comment_optional', 'Comment (Optional)'),
+                //     help: intl.trans('views.pages.users.group.comment_attached', 'Note: Your comment will be attached to the welcome email sent to the user.'),
+                //     type: (this.isUserRegistration) ? 'textarea' : 'hidden'
+                // }
             }
         };
 
