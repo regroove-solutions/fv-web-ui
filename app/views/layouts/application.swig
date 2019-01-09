@@ -65,7 +65,7 @@
 
     </div>
     <!-- /#wrapper -->
-
+    <script src="/assets/javascripts/vendors.js"></script>
     <script src="/assets/javascripts/shared.js"></script>
     <script src="/assets/javascripts/app.js"></script>
 
