@@ -19,7 +19,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
 import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GU;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GroupUpdate;
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
 
@@ -79,7 +79,7 @@ public class FVUpdateGroup
             throw new OperationException("Cannot update non-existent group: " + groupName);
         }
 
-        if( terminateOnInvalidCredentials_GU( session, groupName ) ) return "You do not have permission to change " + groupDoc.getName(); // invalid credentials
+        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName ) ) return "You do not have permission to change " + groupDoc.getName(); // invalid credentials
 
         if( members != null )
         {

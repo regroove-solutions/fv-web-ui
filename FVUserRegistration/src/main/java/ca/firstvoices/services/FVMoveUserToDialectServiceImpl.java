@@ -11,7 +11,7 @@ import org.nuxeo.runtime.api.Framework;
 import javax.security.auth.login.LoginContext;
 
 import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GU;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GroupUpdate;
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_NewUserHomeChange;
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
@@ -24,7 +24,7 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
         CoreSession session = dialect.getCoreSession();
         userManager = Framework.getService( UserManager.class );
 
-        if( terminateOnInvalidCredentials_GU( session, groupName.toLowerCase() ) ) throw new Exception("No sufficient privileges to modify group: " + groupName);
+        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName.toLowerCase() ) ) throw new Exception("No sufficient privileges to modify group: " + groupName);
         if( terminateOnInvalidCredentials_NewUserHomeChange( session, userManager, newUsername, dialect.getId() ) ) throw new Exception("No sufficient privileges to modify user: " + newUsername);
 
         userManager = null;

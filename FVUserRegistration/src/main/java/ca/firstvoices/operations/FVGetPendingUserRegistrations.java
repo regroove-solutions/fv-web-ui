@@ -47,9 +47,10 @@ public class FVGetPendingUserRegistrations
             {
                 query = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' and %s = '%s'", "docinfo:documentId", dialectID);
             }
-
-            if( !pruneAction.equals(IGNORE) ) {
-                if (pruneAction.equals(APPROVED)) {
+            else if( !pruneAction.equals(IGNORE) )
+            {
+                if (pruneAction.equals(APPROVED))
+                {
                     query += " AND ecm:currentLifeCycleState = 'approved'";
                 }
                 else if (pruneAction.equals(ACCEPTED)) {
