@@ -95,9 +95,8 @@ export default class PageDialectLearnBase extends Component {
       if (childrenIdsList.size > 0) {
         newList = newList.merge(childrenIdsList);
       }
-    }
-    // Removing filter
-    else {
+    } else {
+      // Removing filter
       newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(categoryId));
 
       if (childrenIdsList.size > 0) {
@@ -109,12 +108,14 @@ export default class PageDialectLearnBase extends Component {
 
     // Category filter
     if (newList.size > 0) {
-      categoryFilter =
+      categoryFilter = ` AND ${ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area)}/* IN ("${newList.join('","')}")`;
+      /* categoryFilter =
         ' AND ' +
         ProviderHelpers.switchWorkspaceSectionKeys(facetField, this.props.routeParams.area) +
         '/* IN ("' +
         newList.join('","') +
         '")';
+      */
     }
 
     let newFilter = this.state.filterInfo.updateIn(['currentCategoryFilterIds'], () => {
