@@ -5,10 +5,11 @@ import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
-public class FVExportListener
+public class FVExportListener implements EventListener
 {
     private static final Log log = LogFactory.getLog(FVExportListener.class);
 
