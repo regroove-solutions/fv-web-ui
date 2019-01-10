@@ -1,4 +1,5 @@
 package ca.firstvoices.format_producers;
 
-public class FV_AbstractProducer {
+abstract public class FV_AbstractProducer
+{
 }

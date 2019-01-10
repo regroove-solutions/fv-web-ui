@@ -1,4 +1,6 @@
 package ca.firstvoices.services;
 
-public class FVAbstractService {
+
+abstract public class FVAbstractService
+{
 }
