@@ -1,0 +1,12 @@
+<component name="ca.firstvoices.nativeorder.listeners.export">
+    <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+
+        <listener name="FVExportListener" postCommit="false" async="false"
+                  class="ca.firstvoices.listeners.FVExportListener" priority="150">
+            <event></event>
+            <event>documentCreated</event>
+        </listener>
+
+    </extension>
+
+</component>
