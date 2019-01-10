@@ -4,7 +4,8 @@
         <listener name="FVExportListener" postCommit="false" async="false"
                   class="ca.firstvoices.listeners.FVExportListener" priority="150">
             <event></event>
-            <event>documentCreated</event>
+            <event>produceFormattedDocument</event>
+            <event>autoProduceFormattedDocument</event>
         </listener>
 
     </extension>
