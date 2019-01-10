@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, {List, Map} from 'immutable';
+import React, { Component, PropTypes } from 'react';
+import Immutable, { List, Map } from 'immutable';
 
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
@@ -37,79 +37,86 @@ const intl = IntlService.instance;
  */
 @provide
 export default class ExploreArchive extends Component {
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    fetchLanguageFamilies: PropTypes.func.isRequired,
+    computeLanguageFamilies: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+  };
 
-    static propTypes = {
-        properties: PropTypes.object.isRequired,
-        fetchLanguageFamilies: PropTypes.func.isRequired,
-        computeLanguageFamilies: PropTypes.object.isRequired,
-        pushWindowPath: PropTypes.func.isRequired
-    };
-
-    /*static contextTypes = {
+  /*static contextTypes = {
         muiTheme: React.PropTypes.object.isRequired
     };*/
 
-    constructor(props, context) {
-        super(props, context);
+  constructor(props, context) {
+    super(props, context);
 
-        this.state = {
-            pathOrId: null
-        };
+    this.state = {
+      pathOrId: null,
+    };
 
-        // Bind methods to 'this'
-        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
-    }
+    // Bind methods to 'this'
+    ['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)));
+  }
 
-    fetchData(newProps) {
-        const pathOrId = '/' + newProps.properties.domain + '/sections/';
+  fetchData(newProps) {
+    const pathOrId = '/' + newProps.properties.domain + '/sections/';
 
-        this.props.fetchLanguageFamilies(pathOrId);
-        this.setState({pathOrId})
-    }
+    this.props.fetchLanguageFamilies(pathOrId);
+    this.setState({ pathOrId });
+  }
 
-    // Fetch data on initial render
-    componentDidMount() {
-        this.fetchData(this.props);
-    }
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props);
+  }
 
-    _onNavigateRequest(path) {
-        this.props.pushWindowPath('/explore' + path);
-    }
+  _onNavigateRequest(path) {
+    this.props.pushWindowPath('/explore' + path);
+  }
 
-    render() {
+  render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.state.pathOrId,
+        entity: this.props.computeLanguageFamilies,
+      },
+    ]);
 
-        const computeEntities = Immutable.fromJS([{
-            'id': this.state.pathOrId,
-            'entity': this.props.computeLanguageFamilies
-        }])
+    const computeLanguageFamilies = ProviderHelpers.getEntry(this.props.computeLanguageFamilies, this.state.pathOrId);
 
-        const computeLanguageFamilies = ProviderHelpers.getEntry(this.props.computeLanguageFamilies, this.state.pathOrId);
-
-        return <PromiseWrapper computeEntities={computeEntities}>
-            <div className="row">
-                <div className="col-md-4 col-xs-12">
-                    <h1>{intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'title'})}</h1>
-                </div>
-                <div className="col-md-8 col-xs-12">
-                    <h2>{intl.trans('views.pages.explore.dialect.category.browse_dialects', 'Browse the following Dialects', 'words')}:</h2>
-                    <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around'}}>
-                        <GridList
-                            cols={2}
-                            cellHeight={200}
-                            style={{width: '100%', overflowY: 'auto', marginBottom: 24}}
-                        >
-                            {(selectn('response.entries', computeLanguageFamilies) || []).map((tile, i) =>
-                                <GridTile
-                                    onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
-                                    key={tile.uid}
-                                    title={tile.title}
-                                    subtitle={tile.description}
-                                ><img src="/assets/images/cover.png"/></GridTile>
-                            )}
-                        </GridList>
-                    </div>
-                </div>
+    return (
+      <PromiseWrapper computeEntities={computeEntities}>
+        <div className="row">
+          <div className="col-md-4 col-xs-12">
+            <h1>{intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'title' })}</h1>
+          </div>
+          <div className="col-md-8 col-xs-12">
+            <h2>
+              {intl.trans(
+                'views.pages.explore.dialect.category.browse_dialects',
+                'Browse the following Dialects',
+                'words'
+              )}
+              :
+            </h2>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
+              <GridList cols={2} cellHeight={200} style={{ width: '100%', overflowY: 'auto', marginBottom: 24 }}>
+                {(selectn('response.entries', computeLanguageFamilies) || []).map((tile, i) => (
+                  <GridTile
+                    onTouchTap={this._onNavigateRequest.bind(this, tile.path)}
+                    key={tile.uid}
+                    title={tile.title}
+                    subtitle={tile.description}
+                  >
+                    <img src="/assets/images/cover.png" />
+                  </GridTile>
+                ))}
+              </GridList>
             </div>
-        </PromiseWrapper>;
-    }
+          </div>
+        </div>
+      </PromiseWrapper>
+    );
+  }
 }
