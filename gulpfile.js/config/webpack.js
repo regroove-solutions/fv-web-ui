@@ -71,6 +71,7 @@ module.exports = function (env) {
                 conf: path.resolve(jsSourceDirectory + 'configuration/'),
                 operations: path.resolve(jsSourceDirectory + 'operations/'),
                 common: path.resolve(jsSourceDirectory + 'common/'),
+                components: path.resolve(jsSourceDirectory + 'components/'),
                 games: path.resolve(gamesSourceDirectory),
                 phaser: phaser,
                 pixi: pixi,
