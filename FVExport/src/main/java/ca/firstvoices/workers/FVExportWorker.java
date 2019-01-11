@@ -2,18 +2,17 @@ package ca.firstvoices.workers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.work.AbstractWork;
+
+import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
 
 
-public class FVExportWorker extends AbstractWork
+public class FVExportWorker extends FVAbstractWork
 {
     private static final Log log = LogFactory.getLog(FVExportWorker.class);
 
-    public static final String ON_DEMAND_EXPORT_WORKER_ = "demandExportWorker";
-
     @Override
     public String getCategory() {
-        return ON_DEMAND_EXPORT_WORKER_;
+        return ON_DEMAND_WORKER_CATEGORY;
     }
 
     @Override
@@ -21,15 +20,14 @@ public class FVExportWorker extends AbstractWork
         return "Produce formatted document when triggered by user.";
     }
 
-    public FVExportWorker() {
-        super("on-demand-export-worker");
-    }
+    public FVExportWorker( String id ) { super( id );}
 
     @Override
     public void work()
     {
         try
         {
+
             log.warn("FVExportWorker is not implemented yet.");
         }
         catch (Exception e) {

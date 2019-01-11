@@ -10,6 +10,9 @@ abstract public class FVAbstractWork extends AbstractWork
     protected String exportFormat;
     protected String exportQuery;
 
+
+    public FVAbstractWork( String id ) { super( id ); }
+
     public String getInitiatorName() {  return initiatorName; }
     public void setInitiatorName( String name ) { initiatorName = name; }
 

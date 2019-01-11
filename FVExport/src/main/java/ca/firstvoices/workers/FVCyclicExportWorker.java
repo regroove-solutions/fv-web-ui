@@ -4,16 +4,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.work.AbstractWork;
 
+import static ca.firstvoices.utils.FVExportConstants.CYCLIC_EXPORT_WORKER_CATEGORY;
+import static ca.firstvoices.utils.FVExportConstants.CYCLIC_WORKER_ID;
 
-public class FVCyclicExportWorker extends AbstractWork
+
+public class FVCyclicExportWorker extends FVAbstractWork
 {
     private static final Log log = LogFactory.getLog(FVCyclicExportWorker.class);
 
-    public static final String CYCLIC_EXPORT_WORKER = "cyclicExportWorker";
-
     @Override
     public String getCategory() {
-        return CYCLIC_EXPORT_WORKER;
+        return CYCLIC_EXPORT_WORKER_CATEGORY;
     }
 
     @Override
@@ -21,9 +22,7 @@ public class FVCyclicExportWorker extends AbstractWork
         return "Produce formatted document when triggered by cron.";
     }
 
-    public FVCyclicExportWorker() {
-        super("cyclic-export-worker");
-    }
+    public FVCyclicExportWorker() { super( CYCLIC_WORKER_ID ); } // we will not need more than one
 
     @Override
     public void work()
