@@ -3,6 +3,8 @@ package ca.firstvoices.workers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.ArrayList;
+
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
 
 
@@ -22,12 +24,12 @@ public class FVExportWorker extends FVAbstractWork
 
     public FVExportWorker( String id ) { super( id );}
 
+
     @Override
     public void work()
     {
         try
         {
-
             log.warn("FVExportWorker is not implemented yet.");
         }
         catch (Exception e) {

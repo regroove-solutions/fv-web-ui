@@ -2,6 +2,8 @@ package ca.firstvoices.workers;
 
 import org.nuxeo.ecm.core.work.AbstractWork;
 
+import java.util.ArrayList;
+
 abstract public class FVAbstractWork extends AbstractWork
 {
     private String initiatorName;
