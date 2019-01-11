@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const Cover = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280.000000 720.000000">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280.000000 720.000000" style={{ backgroundColor: '#f3efe8' }}>
     <g transform="translate(0.000000,720.000000) scale(0.100000,-0.100000)" fill="#162f35" stroke="none">
       <path
         d="M0 5468 l1 -1733 177 -140 c537 -425 1213 -1020 1892 -1664 96 -92
