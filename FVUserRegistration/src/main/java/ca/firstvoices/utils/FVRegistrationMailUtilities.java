@@ -7,10 +7,7 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.features.PrincipalHelper;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.NuxeoException;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
@@ -112,10 +109,16 @@ public class FVRegistrationMailUtilities {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(dialect, "Everything", false);
 
+        // TODO: Change for production run ... this is done for testing ONLY
+        // TODO: we want to send email only to administrator ... not to languageAdministrator
+        NuxeoPrincipal admin = umgr.getPrincipal("Administrator");
+        String adminEmail = admin.getEmail();
+        // TODO: remove to this place from the first TODO
+
         session.close();
         lctx.logout();
 
-        return composeEmailString( result );
+        return adminEmail; //  composeEmailString( result ); // TODO: remove adminEmail and restore composeEmailString
     }
 
     private interface EmailContentAssembler
@@ -166,7 +169,6 @@ public class FVRegistrationMailUtilities {
                     break;
 
                 case NEW_USER_SELF_REGISTRATION_ACT:
-
                     body = "New self registration by " + options.get("fName") + " " + options.get("lName") + s1 + s2 + ex7 + thankYou;
                     break;
             }
@@ -292,7 +294,8 @@ public class FVRegistrationMailUtilities {
         options.put("email", (String) registrationRequest.getPropertyValue("userinfo:email"));
         options.put("dialect", dialectTitle);
 
-        String toStr = getLanguageAdministratorEmail( dialect );
+        // temporary until
+        String toStr =  getLanguageAdministratorEmail( dialect );
 
         registrationMailSender( variant, new UserReminderMailContent(), options , "" );
 

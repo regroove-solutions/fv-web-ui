@@ -32,7 +32,7 @@ import org.nuxeo.ecm.platform.usermanager.NuxeoPrincipalImpl;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.usermanager.io.NuxeoPrincipalJsonWriter;
 
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UU;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_UserUpdate;
 /**
  *
  */
@@ -87,7 +87,7 @@ public class FVUpdateUser {
         }
 
         // Invalid credentials
-        if( terminateOnInvalidCredentials_UU( session, userManager, username ) ) {
+        if( terminateOnInvalidCredentials_UserUpdate( session, userManager, username ) ) {
             throw new DocumentSecurityException("You do not have permission to change " + userDoc.getId());
         }
 

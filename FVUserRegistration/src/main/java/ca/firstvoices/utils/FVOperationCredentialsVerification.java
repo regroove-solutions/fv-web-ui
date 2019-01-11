@@ -52,10 +52,10 @@ public class FVOperationCredentialsVerification
 
             int credentialsType = isValidPrincipal(invoking_principal);
 
-            if (credentialsType == GLOBAL_ADMINISTRATOR_OR_SYSTEM)
+            if (credentialsType != GLOBAL_ADMINISTRATOR_OR_SYSTEM)
             {
                 // language admin can make changes to a user in their dialect
-                if (credentialsType == GLOBAL_ADMINISTRATOR_OR_SYSTEM) // LANGUAGE_ADMINISTRATOR
+                if (credentialsType == LANGUAGE_ADMINISTRATOR)
                 {
                     DocumentModel userToChange = userManager.getUserModel(username);
 
@@ -76,7 +76,7 @@ public class FVOperationCredentialsVerification
         return false; // continue executing command - valid credentials
     }
 
-    public static boolean terminateOnInvalidCredentials_UU( CoreSession session, UserManager userManager, String username )
+    public static boolean terminateOnInvalidCredentials_UserUpdate( CoreSession session, UserManager userManager, String username )
     {
         NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
 
@@ -109,7 +109,8 @@ public class FVOperationCredentialsVerification
         return false; // continue executing command - valid credentials
     }
 
-    public static boolean terminateOnInvalidCredentials_GU( CoreSession session, String groupName )
+
+    public static boolean terminateOnInvalidCredentials_GroupUpdate( CoreSession session, String groupName )
     {
         NuxeoPrincipal invoking_principal = (NuxeoPrincipal) session.getPrincipal();
 
