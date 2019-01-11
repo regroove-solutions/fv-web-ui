@@ -21,5 +21,7 @@ public class FVExportConstants
     public static final String CYCLIC_EXPORT_WORKER_CATEGORY    = CYCLIC_WORKER_QUEUE_ID;
     public static final String ON_DEMAND_WORKER_QUEUE_ID        = "demandExportWorker";
     public static final String ON_DEMAND_WORKER_CATEGORY        = ON_DEMAND_WORKER_QUEUE_ID;
+    public static final String WORDS_TO_EXPORT                  = "WORDS_TO_EXPORT";
+    public static final String PHRASES_TO_EXPORT                = "PHRASES_TO_EXPORT";
 
 }
