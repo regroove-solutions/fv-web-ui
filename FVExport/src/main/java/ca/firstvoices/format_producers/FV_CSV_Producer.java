@@ -6,4 +6,15 @@ package ca.firstvoices.format_producers;
 
 public class FV_CSV_Producer extends FV_AbstractProducer
 {
+    @Override
+    void writeColumnData( String colStr )
+    {
+
+    }
+
+    @Override
+    void writeRowData( String rowStr )
+    {
+
+    }
 }

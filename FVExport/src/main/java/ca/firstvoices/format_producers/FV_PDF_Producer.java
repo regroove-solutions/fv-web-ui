@@ -6,4 +6,13 @@ package ca.firstvoices.format_producers;
 
 public class FV_PDF_Producer extends FV_AbstractProducer
 {
+    void writeColumnData( String colStr )
+    {
+
+    }
+
+    void writeRowData( String rowStr )
+    {
+
+    }
 }
