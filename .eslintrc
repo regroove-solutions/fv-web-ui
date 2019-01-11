@@ -44,7 +44,7 @@
       }
     ],
     "comma-style": [2, "last"], // http://eslint.org/docs/rules/comma-style
-    "consistent-return": 2, // http://eslint.org/docs/rules/consistent-return
+    "consistent-return": 1, // http://eslint.org/docs/rules/consistent-return
     "curly": 0,
     "default-case": 2, // http://eslint.org/docs/rules/default-case
     "dot-notation": [
