@@ -24,7 +24,7 @@ import classNames from "classnames"
 
 import ProviderHelpers from "common/ProviderHelpers"
 
-import PortalList from "views/components/Browsing/portal-list"
+import PortalListDialects from "views/components/Browsing/portal-list-dialects"
 import PromiseWrapper from "views/components/Document/PromiseWrapper"
 
 // Operations
@@ -41,7 +41,6 @@ import PromiseWrapper from "views/components/Document/PromiseWrapper"
 import IntlService from "views/services/intl"
 
 const intl = IntlService.instance
-//const FilteredPortalList = withFilter(PortalList);
 
 /**
  * Explore Archive page shows all the families in the archive
@@ -69,14 +68,11 @@ export default class ExploreDialects extends Component {
       open: false,
     }
 
-    this.isKidsTheme = false
     this.titleFieldMapping = "contextParameters.ancestry.dialect.dc:title"
     this.logoFieldMapping = "contextParameters.portal.fv-portal:logo"
 
     // Bind methods to 'this'
-    ;["_onNavigateRequest", "_fixedListFetcher", "_getParentPath", "_portalEntriesSort"].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
+    ;["_portalEntriesSort"].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Fetch data on initial render
@@ -87,7 +83,6 @@ export default class ExploreDialects extends Component {
       this.titleFieldMapping = "title"
       this.logoFieldMapping = "logo"
     }
-    this.isKidsTheme = this.props.routeParams.theme === "kids"
   }
 
   // Refetch data on URL change
@@ -108,17 +103,12 @@ export default class ExploreDialects extends Component {
     const isLoggedIn = this.props.computeLogin.success && this.props.computeLogin.isConnected
 
     const portalListProps = {
-      action: this._onNavigateRequest,
-      filterOptionsKey: isLoggedIn ? "Portals" : "Default",
-      fixedList: true,
-      area: this.props.routeParams.area,
-      fixedListFetcher: this._fixedListFetcher,
+      theme: this.props.routeParams.theme,
       filteredItems: this.state.filteredList,
       fieldMapping: {
         title: this.titleFieldMapping,
         logo: this.logoFieldMapping,
       },
-      metadata: selectn("response", computePortals),
       items: sortedPortals,
     }
 
@@ -132,11 +122,11 @@ export default class ExploreDialects extends Component {
       <PromiseWrapper computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12">
-            <div className={classNames({ hidden: this.isKidsTheme })}>
+            <div className={classNames({ hidden: this.props.routeParams.theme === "kids" })}>
               <h1>{intl.translate({ key: "general.explore", default: "Explore Languages", case: "title" })}</h1>
             </div>
 
-            <PortalList {...portalListProps} cols={this.isKidsTheme ? 6 : 4} />
+            <PortalListDialects {...portalListProps} />
           </div>
         </div>
       </PromiseWrapper>
@@ -145,16 +135,6 @@ export default class ExploreDialects extends Component {
 
   _fetchData(newProps) {
     newProps.fetchPortals(this._getQueryPath(newProps))
-  }
-
-  _fixedListFetcher(list) {
-    this.setState({
-      filteredList: list,
-    })
-  }
-
-  _getParentPath(props = this.props) {
-    return "/" + props.properties.domain + "/" + props.routeParams.area
   }
 
   _getQueryPath(props = this.props) {
@@ -169,10 +149,6 @@ export default class ExploreDialects extends Component {
 
     // Direct method
     return "/api/v1/query/get_dialects?queryParams=" + props.routeParams.area
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath("/" + this.props.routeParams.theme + path)
   }
 
   _portalEntriesSort(a, b) {
