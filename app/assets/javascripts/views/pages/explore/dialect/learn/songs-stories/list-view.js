@@ -28,7 +28,10 @@ import AVStop from 'material-ui/lib/svg-icons/av/stop'
 import Card from 'material-ui/lib/card/card'
 import CardTitle from 'material-ui/lib/card/card-title'
 import CardMedia from 'material-ui/lib/card/card-media'
-import CardText from 'material-ui/lib/card/card-text'
+// TODO: the card-actions component from the version of material-ui that's being used
+// TODO: triggers a bug when navigating away, and them coming back
+// TODO: using a temp <div> instead
+// import CardActions from 'material-ui/lib/card/card-actions'
 
 import FlatButton from 'material-ui/lib/flat-button'
 import IconButton from 'material-ui/lib/icon-button'
@@ -36,7 +39,7 @@ import IconButton from 'material-ui/lib/icon-button'
 import Tabs from 'material-ui/lib/tabs/tabs'
 import Tab from 'material-ui/lib/tabs/tab'
 import IntlService from 'views/services/intl'
-
+import { Cover } from 'components/svg/cover'
 const intl = IntlService.instance
 
 class Introduction extends Component {
@@ -54,11 +57,9 @@ class Introduction extends Component {
     const introduction = selectn('properties.fvbook:introduction', this.props.item)
     const introductionTranslations = selectn('properties.fvbook:introduction_literal_translation', this.props.item)
     const introductionDiv = (
-      <div
-        className="IntroductionTab"
-        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(introduction) }}
-        style={this.props.style}
-      />
+      <div className="IntroductionContent">
+        <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(introduction) }} style={this.props.style} />
+      </div>
     )
 
     if (!introductionTranslations || introductionTranslations.length === 0) {
@@ -82,12 +83,16 @@ class Introduction extends Component {
       <Tabs>
         <Tab label={intl.trans('introduction', 'Introduction', 'first')}>{introductionDiv}</Tab>
         <Tab label={intl.searchAndReplace(DEFAULT_LANGUAGE)}>
-          <div className="IntroductionTab" style={this.props.style}>
-            {introductionTranslations.map(function introductionTranslationsMapper(translation, i) {
-              if (translation.language === DEFAULT_LANGUAGE) {
-                return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translation.translation) }} key={i} />
-              }
-            })}
+          <div className="IntroductionContent" style={this.props.style}>
+            <div>
+              {introductionTranslations.map(function introductionTranslationsMapper(translation, i) {
+                if (translation.language === DEFAULT_LANGUAGE) {
+                  return (
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translation.translation) }} key={i} />
+                  )
+                }
+              })}
+            </div>
           </div>
         </Tab>
       </Tabs>
@@ -121,8 +126,20 @@ class CardView extends Component {
 
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
 
+    let cardImage = <Cover />
     const mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item)
-    const coverImage = selectn('url', mediumImage) || '/assets/images/cover.png'
+    if (mediumImage) {
+      const coverImage = selectn('url', mediumImage) || '/assets/images/cover.png'
+      cardImage = (
+        <div
+          className="CardViewMedia"
+          style={{
+            backgroundSize: selectn('width', mediumImage) > 200 ? '100%' : 'cover',
+            backgroundImage: `url('${coverImage}?inline=true')`,
+          }}
+        />
+      )
+    }
     const audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item)
 
     if (audioObj) {
@@ -160,12 +177,11 @@ class CardView extends Component {
         }
       }
     )
-    const cardViewTitle = <CardTitle titleStyle={{ fontSize: '19px' }} title={title} subtitle={subtitle} />
     const cardViewPopover = (
       <div
         className="CardViewPopover"
         style={{
-          zIndex: this.state.showIntro ? 2 : -1,
+          zIndex: 2,
           width: '95%',
           minWidth: 'auto',
         }}
@@ -205,18 +221,11 @@ class CardView extends Component {
     return (
       <div key={this.props.item.uid} className={CardClasses} style={this.props.style}>
         <Card className="CardViewCard">
-          <CardMedia overlay={cardViewTitle}>
-            <div
-              className="CardViewMedia"
-              style={{
-                backgroundSize: selectn('width', mediumImage) > 200 ? '100%' : 'cover',
-                backgroundImage: `url('${coverImage}?inline=true')`,
-              }}
-            />
-            {cardViewPopover}
+          <CardMedia>
+            {cardImage}
           </CardMedia>
-
-          <CardText className="CardViewCardText">
+          <CardTitle title={title} subtitle={subtitle} />
+          <div className="CardViewCardActions">
             <FlatButton
               onTouchTap={this.props.action.bind(this, this.props.item)}
               primary
@@ -238,8 +247,9 @@ class CardView extends Component {
                 flip_to_front
               </IconButton>
             )}
-          </CardText>
+          </div>
         </Card>
+        {this.state.showIntro && cardViewPopover}
       </div>
     )
   }
