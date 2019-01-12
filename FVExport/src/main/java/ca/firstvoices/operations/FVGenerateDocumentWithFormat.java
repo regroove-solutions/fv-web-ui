@@ -26,7 +26,7 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 @Operation(id=FVGenerateDocumentWithFormat.ID, category= Constants.CAT_DOCUMENT, label="Export Document with format", description="Export word or phrase documents with format (CSV or PDF).")
 public class FVGenerateDocumentWithFormat
 {
-    public static final String ID = "Document.ExportDocumentWithFormat";
+    public static final String ID = "Document.FVGenerateDocumentWithFormat";
 
     @Param( name = "query" )
     protected String query;
