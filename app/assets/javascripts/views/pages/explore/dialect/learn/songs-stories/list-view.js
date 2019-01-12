@@ -222,7 +222,7 @@ class CardView extends Component {
       <div key={this.props.item.uid} className={CardClasses} style={this.props.style}>
         <Card className="CardViewCard">
           <CardMedia>
-            {cardImage}
+            <div className="CardViewMediaContainer">{cardImage}</div>
           </CardMedia>
           <CardTitle title={title} subtitle={subtitle} />
           <div className="CardViewCardActions">
