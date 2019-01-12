@@ -1,9 +1,8 @@
-<component name="ca.firstvoices.nativeorder.listeners.export">
+<component name="ca.firstvoices.export.listeners.contrib">
     <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
 
         <listener name="FVExportListener" postCommit="false" async="false"
                   class="ca.firstvoices.listeners.FVExportListener" priority="150">
-            <event></event>
             <event>produceFormattedDocument</event>
             <event>autoProduceFormattedDocument</event>
         </listener>

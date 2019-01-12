@@ -1,4 +1,4 @@
-<component name="ca.firstvoices.auth.contrib">
+<component name="ca.firstvoices.security.auth.contrib">
 
 	<require>org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService</require>
 	<require>org.nuxeo.ecm.restapi.server.auth.config</require>

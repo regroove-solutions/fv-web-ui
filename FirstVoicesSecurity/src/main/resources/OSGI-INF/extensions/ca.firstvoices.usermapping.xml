@@ -1,6 +1,7 @@
-<component name="ca.firstvoices.usermapper.contrib">
-
+<component name="ca.firstvoices.security.usermapper.contrib">
+<!--
   	<require>org.nuxeo.usermapper.service.UserMapperComponent</require>
+  	-->
   	<require>org.nuxeo.ecm.directory.sql.SQLDirectoryFactory</require>
 
   	<implementation class="org.nuxeo.ecm.directory.sql.SQLDirectoryDescriptor" />

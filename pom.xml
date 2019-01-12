@@ -26,7 +26,7 @@
     <module>FirstVoicesPublisher</module>
     <module>FirstVoicesEnrichers</module>
     <module>FirstVoicesSecurity</module>
-    <module>FVExport</module>
+    <module>FirstVoicesExport</module>
   </modules>
 
   <dependencyManagement>
@@ -48,7 +48,7 @@
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
-        <artifactId>FVExport</artifactId>
+        <artifactId>FirstVoicesExport</artifactId>
         <version>${fv.plugin.version}</version>
       </dependency>
       <dependency>

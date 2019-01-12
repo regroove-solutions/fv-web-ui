@@ -8,8 +8,8 @@
         <version>1.0.21-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>FVExport</artifactId>
-    <name>FVExport</name>
+    <artifactId>FirstVoicesExport</artifactId>
+    <name>FirstVoicesExport</name>
     <description/>
     <dependencies>
         <dependency>

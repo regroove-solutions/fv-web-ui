@@ -94,7 +94,7 @@ public class FVGenerateDocumentWithFormat
 
         if( query.equals("*") )
         {
-            docs = session.query("SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dialectID + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name");
+            docs = session.query("SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dialectID + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name"); // TODO: be weary of limits of how many records will be returned
 
             if( docs.size() == 0 ) return null;
         }
