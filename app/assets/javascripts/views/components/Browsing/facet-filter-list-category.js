@@ -54,7 +54,7 @@ export default class FacetFilterListCategory extends Component {
 
       // Remove children
       if (childrenIDs) {
-        childrenIDs.forEach((childId, i) => {
+        childrenIDs.forEach((childId) => {
           newList = newList.delete(newList.keyOf(childId))
         })
       }
@@ -104,65 +104,61 @@ export default class FacetFilterListCategory extends Component {
       >
         <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
           <ListUI>
-            {(this.props.facets || []).map(
-              (facet, i) => {
-                const childrenIds = []
-                const parentFacetChecked = this.state.checked.includes(facet.uid)
+            {(this.props.facets || []).map((facet) => {
+              const childrenIds = []
+              const parentFacetChecked = this.state.checked.includes(facet.uid)
 
-                const nestedItems = []
-                const children = selectn('contextParameters.children.entries', facet).sort((a, b) => {
-                  if (a.title < b.title) return -1
-                  if (a.title > b.title) return 1
-                  return 0
-                })
+              const nestedItems = []
+              const children = selectn('contextParameters.children.entries', facet).sort((a, b) => {
+                if (a.title < b.title) return -1
+                if (a.title > b.title) return 1
+                return 0
+              })
 
-                // Render children if exist
-                if (children.length > 0) {
-                  children.map(
-                    (facetChild, i) => {
-                      childrenIds.push(facetChild.uid)
+              // Render children if exist
+              if (children.length > 0) {
+                children.map((facetChild) => {
+                  childrenIds.push(facetChild.uid)
 
-                      // Mark as checked if parent checked or if it is checked directly.
-                      const checked = this.state.checked.includes(facetChild.uid)
+                  // Mark as checked if parent checked or if it is checked directly.
+                  const checked = this.state.checked.includes(facetChild.uid)
 
-                      nestedItems.push(
-                        <ListItem
-                          key={facetChild.uid}
-                          leftCheckbox={
-                            <Checkbox
-                              checked={checked}
-                              onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)}
-                              style={listItem1CheckboxStyle}
-                            />
-                          }
-                          primaryText={this.intl.searchAndReplace(facetChild.title)}
-                          style={listItem1Style}
+                  nestedItems.push(
+                    <ListItem
+                      key={facetChild.uid}
+                      leftCheckbox={
+                        <Checkbox
+                          checked={checked}
+                          onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)}
+                          style={listItem1CheckboxStyle}
                         />
-                      )
-                    }.bind(this)
+                      }
+                      primaryText={this.intl.searchAndReplace(facetChild.title)}
+                      style={listItem1Style}
+                    />
                   )
-                }
-
-                return (
-                  <ListItem
-                    key={facet.uid}
-                    autoGenerateNestedIndicator={false}
-                    initiallyOpen
-                    leftCheckbox={
-                      <Checkbox
-                        checked={parentFacetChecked}
-                        onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)}
-                        style={listItem0CheckboxStyle}
-                      />
-                    }
-                    nestedItems={nestedItems}
-                    open={parentFacetChecked}
-                    primaryText={facet.title}
-                    style={listItem0Style}
-                  />
-                )
+                })
               }
-            )}
+
+              return (
+                <ListItem
+                  key={facet.uid}
+                  autoGenerateNestedIndicator={false}
+                  initiallyOpen
+                  leftCheckbox={
+                    <Checkbox
+                      checked={parentFacetChecked}
+                      onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)}
+                      style={listItem0CheckboxStyle}
+                    />
+                  }
+                  nestedItems={nestedItems}
+                  open={parentFacetChecked}
+                  primaryText={facet.title}
+                  style={listItem0Style}
+                />
+              )
+            })}
           </ListUI>
         </Paper>
       </FiltersWithToggle>
