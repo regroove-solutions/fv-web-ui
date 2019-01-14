@@ -108,6 +108,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
   }
 
   _onEntryNavigateRequest(item) {
+    // NOTE: generateUIDPath: function (theme, item, pluralPathId)
     this.props.pushWindowPath(
       NavigationHelpers.generateUIDPath(
         this.props.routeParams.theme || 'explore',
@@ -150,6 +151,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
       formValues: { 'properties.fvbook:type': this.props.typeFilter },
       metadata: selectn('response', computeBooks),
       items: selectn('response.entries', computeBooks) || [],
+      theme: this.props.routeParams.theme || 'explore',
       action: this._onEntryNavigateRequest,
     }
 

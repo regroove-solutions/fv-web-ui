@@ -24,16 +24,7 @@ import ConfGlobal from 'conf/local.json'
 import UIHelpers from 'common/UIHelpers'
 import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow'
 import AVStop from 'material-ui/lib/svg-icons/av/stop'
-
-import Card from 'material-ui/lib/card/card'
-import CardTitle from 'material-ui/lib/card/card-title'
-import CardMedia from 'material-ui/lib/card/card-media'
-// TODO: the card-actions component from the version of material-ui that's being used
-// TODO: triggers a bug when navigating away, and them coming back
-// TODO: using a temp <div> instead
-// import CardActions from 'material-ui/lib/card/card-actions'
-
-import FlatButton from 'material-ui/lib/flat-button'
+import NavigationHelpers from 'common/NavigationHelpers'
 import IconButton from 'material-ui/lib/icon-button'
 
 import Tabs from 'material-ui/lib/tabs/tabs'
@@ -54,8 +45,9 @@ class Introduction extends Component {
   }
   render() {
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
-    const introduction = selectn('properties.fvbook:introduction', this.props.item)
-    const introductionTranslations = selectn('properties.fvbook:introduction_literal_translation', this.props.item)
+    const item = this.props.item
+    const introduction = selectn('properties.fvbook:introduction', item)
+    const introductionTranslations = selectn('properties.fvbook:introduction_literal_translation', item)
     const introductionDiv = (
       <div className="IntroductionContent">
         <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(introduction) }} style={this.props.style} />
@@ -107,10 +99,12 @@ class CardView extends Component {
     defaultLanguage: PropTypes.any, // TODO: set correct type
     style: PropTypes.any, // TODO: set correct type
     cols: PropTypes.any, // TODO: set correct type
+    theme: PropTypes.any, // TODO: set correct type
   }
   static defaultProps = {
     action: () => {},
     style: {},
+    theme: 'explore',
   }
   constructor(props, context) {
     super(props, context)
@@ -125,22 +119,23 @@ class CardView extends Component {
     let audioCallback = null
 
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
+    const item = this.props.item
 
     let cardImage = <Cover />
-    const mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item)
+    const mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', item)
     if (mediumImage) {
       const coverImage = selectn('url', mediumImage) || '/assets/images/cover.png'
       cardImage = (
         <div
           className="CardViewMedia"
           style={{
-            backgroundSize: selectn('width', mediumImage) > 200 ? '100%' : 'cover',
+            backgroundSize: selectn('width', mediumImage) > 200 ? 'contain' : 'cover',
             backgroundImage: `url('${coverImage}?inline=true')`,
           }}
         />
       )
     }
-    const audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item)
+    const audioObj = selectn('contextParameters.book.related_audio[0].path', item)
 
     if (audioObj) {
       const stateFunc = function stateFunc(state) {
@@ -159,7 +154,7 @@ class CardView extends Component {
     }
 
     // Translated 'continue' label
-    const entryType = selectn('properties.fvbook:type', this.props.item)
+    const entryType = selectn('properties.fvbook:type', item)
     const translatedContinueLabelKey =
       'views.pages.explore.dialect.learn.songs_stories.continue_to_' + (entryType ? entryType : 'x')
 
@@ -169,14 +164,12 @@ class CardView extends Component {
       'first',
       [entryType ? intl.searchAndReplace(entryType) : intl.trans('entry', 'Entry', 'first')]
     )
-    const title = <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(this.props.item.title) }} />
-    const subtitle = (selectn('properties.fvbook:title_literal_translation', this.props.item) || []).map(
-      (translation, i) => {
-        if (translation.language === DEFAULT_LANGUAGE) {
-          return <span key={i}>{translation.translation}</span>
-        }
+    const title = <span dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(item.title) }} />
+    const subtitle = (selectn('properties.fvbook:title_literal_translation', item) || []).map((translation, i) => {
+      if (translation.language === DEFAULT_LANGUAGE) {
+        return <span key={i}>{translation.translation}</span>
       }
-    )
+    })
     const cardViewPopover = (
       <div
         className="CardViewPopover"
@@ -195,7 +188,7 @@ class CardView extends Component {
           clear
         </IconButton>
 
-        {selectn('properties.fvbook:introduction', this.props.item) && (
+        {selectn('properties.fvbook:introduction', item) && (
           <Introduction
             {...this.props}
             audio={
@@ -218,37 +211,42 @@ class CardView extends Component {
       'col-xs-12': true,
       [`col-md-${Math.ceil(12 / this.props.cols)}`]: true,
     })
+    const href = NavigationHelpers.generateUIDPath(
+      this.props.theme,
+      item,
+      selectn('properties.fvbook:type', item) === 'story' ? 'stories' : 'songs'
+    )
     return (
-      <div key={this.props.item.uid} className={CardClasses} style={this.props.style}>
-        <Card className="CardViewCard">
-          <CardMedia>
-            <div className="CardViewMediaContainer">{cardImage}</div>
-          </CardMedia>
-          <CardTitle title={title} subtitle={subtitle} />
-          <div className="CardViewCardActions">
-            <FlatButton
-              onTouchTap={this.props.action.bind(this, this.props.item)}
-              primary
-              label={translatedContinueLabel}
-            />
-            {selectn('properties.fvbook:introduction', this.props.item) && (
-              <IconButton
-                className="test"
-                iconClassName="material-icons"
-                style={{
-                  padding: '5px',
-                  width: 'auto',
-                  height: 'auto',
-                }}
-                tooltipPosition="top-left"
-                onTouchTap={() => this.setState({ showIntro: !this.state.showIntro })}
-                touch
-              >
-                flip_to_front
-              </IconButton>
-            )}
+      <div key={item.uid} className={CardClasses} style={this.props.style}>
+        <div className="CardViewCard">
+          <div className="CardViewMediaContainer" onTouchTap={this.props.action.bind(this, item)}>{cardImage}</div>
+          <div className="CardViewCopy">
+            <div className="CardViewTitles">
+              <h2 className="CardViewTitle" onTouchTap={this.props.action.bind(this, item)}>{title}</h2>
+              <h3 className="CardViewSubtitle" onTouchTap={this.props.action.bind(this, item)}>{subtitle}</h3>
+            </div>
+            <div className="CardViewCardActions">
+              <a className="FlatButton" href={href}>
+                {translatedContinueLabel}
+              </a>
+              {selectn('properties.fvbook:introduction', item) && (
+                <IconButton
+                  iconClassName="material-icons"
+                  style={{
+                    padding: '0',
+                    width: '24px',
+                    height: '24px',
+                  }}
+                  tooltipPosition="top-left"
+                  onTouchTap={() => this.setState({ showIntro: !this.state.showIntro })}
+                  touch
+                >
+                  flip_to_front
+                </IconButton>
+              )}
+            </div>
           </div>
-        </Card>
+        </div>
         {this.state.showIntro && cardViewPopover}
       </div>
     )
