@@ -69,38 +69,34 @@ export default class DictionaryList extends Component {
       <table className="data-table">
         <tbody>
           <tr>
-            {(columns || []).map((column, i) => {
-              return (
-                <th key={i} align="left">
-                  {selectn('title', column)}
-                </th>
-              )
-            })}
+            {(columns || []).map((column, i) => (
+              <th key={i} align="left">
+                {selectn('title', column)}
+              </th>
+            ))}
           </tr>
 
-          {(items || []).map((item, i) => {
-            return (
-              <tr
-                key={i}
-                style={{
-                  borderBottom: '1px dotted #a8a8a8',
-                  margin: '10px',
-                  background: i % 2 ? '#f2f7ff' : '#ffffff',
-                }}
-              >
-                {(columns || []).map((column, j) => {
-                  const cellValue = selectn(column.name, item)
-                  const cellRender =
-                    typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
-                  return (
-                    <td key={j} align="left">
-                      {cellRender}
-                    </td>
-                  )
-                })}
-              </tr>
-            )
-          })}
+          {(items || []).map((item, i) => (
+            <tr
+              key={i}
+              style={{
+                borderBottom: '1px dotted #a8a8a8',
+                margin: '10px',
+                background: i % 2 ? '#f2f7ff' : '#ffffff',
+              }}
+            >
+              {(columns || []).map((column, j) => {
+                const cellValue = selectn(column.name, item)
+                const cellRender =
+                  typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
+                return (
+                  <td key={j} align="left">
+                    {cellRender}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
         </tbody>
       </table>
     )
