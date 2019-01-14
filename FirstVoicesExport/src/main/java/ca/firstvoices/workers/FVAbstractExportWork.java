@@ -1,7 +1,8 @@
 package ca.firstvoices.workers;
 
-import org.nuxeo.ecm.automation.core.util.StringList;
+
 import org.nuxeo.ecm.core.work.AbstractWork;
+import ca.firstvoices.export.columns.FVExportColumns;
 
 import java.util.ArrayList;
 
@@ -45,9 +46,14 @@ abstract public class FVAbstractExportWork extends AbstractWork
     protected String exportFormat;
     protected String exportQuery;
     protected ArrayList<String> columns;
+    protected FVExportColumns payLoad;
 
 
-    public FVAbstractExportWork( String id ) { super( id ); }
+    public FVAbstractExportWork( String id )
+    {
+        super( id );
+
+    }
 
     public String getInitiatorName() {  return initiatorName; }
     public void setInitiatorName( String name ) { initiatorName = name; }

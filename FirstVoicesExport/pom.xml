@@ -97,6 +97,11 @@
             <groupId>org.nuxeo.ecm.core</groupId>
             <artifactId>nuxeo-core-io</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>3.6</version>
+        </dependency>
     </dependencies>
     <repositories>
         <repository>

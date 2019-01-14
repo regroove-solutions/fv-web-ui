@@ -11,7 +11,7 @@ public class FV_PDF_Producer extends FV_AbstractProducer
 
     }
 
-    void writeRowData( String rowStr )
+    void writeRowData( String[] rowStr, String exception )
     {
 
     }
