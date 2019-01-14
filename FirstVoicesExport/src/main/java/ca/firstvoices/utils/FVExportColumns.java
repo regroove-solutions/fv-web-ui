@@ -1,7 +1,7 @@
 /**
  *
  */
-package ca.firstvoices.export.columns;
+package ca.firstvoices.utils;
 
 import java.util.HashMap;
 
@@ -22,7 +22,7 @@ public final class FVExportColumns
         Object      colID;
         boolean     useForExport;
 
-        void ColumnRecord( Object cID, boolean ufe)
+        ColumnRecord( Object cID, boolean ufe)
         {
             colID = cID;
             useForExport = ufe;
