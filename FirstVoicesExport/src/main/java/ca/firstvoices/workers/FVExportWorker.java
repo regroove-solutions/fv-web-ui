@@ -31,6 +31,7 @@ public class FVExportWorker extends FVAbstractExportWork
     @Override
     public void work()
     {
+        // open output file
         try
         {
             log.warn("FVExportWorker is not implemented yet.");

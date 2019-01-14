@@ -33,6 +33,7 @@ public class FVExportListener implements EventListener
 
                 if( checkForRunningWorkerBeforeProceeding( id ) )
                 {
+                    // TODO: delete old file if exists and create a new one
                     workManager.schedule(produceWorker(ctx, new FVExportWorker( id )), true);
                 }
                 break;
@@ -64,7 +65,7 @@ public class FVExportListener implements EventListener
             work.setExportFormat(ctx.getProperty( EXPORT_FORMAT ).toString());
             work.setExportColumns( (ArrayList<String>) ctx.getProperty( COLUMNS_TO_EXPORT) );
 
-            work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) ); // TODO: pass results from a query
+            work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) );
         }
         else
         {

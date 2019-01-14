@@ -31,6 +31,7 @@ FVCyclicExportWorker - is a more complex version of an exporter. It is not meant
                   This worker will not create any new files.
                   Update of the exported file depends on the parameters contained within meaning the choices made by a language administrator,
                   with regards to format and information to be exported, will be replicated.
+                  A new export file will be generated ONLY if there are words or phrases which changed since the last export.
                   There will be only ONE FVCyclicExportWorker running at a time.
                   To reduce impact on the system cron will trigger start in the least busy server operation times.
 
