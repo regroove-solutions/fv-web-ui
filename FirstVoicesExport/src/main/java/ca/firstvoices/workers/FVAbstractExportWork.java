@@ -16,8 +16,8 @@ import java.util.ArrayList;
                   When created worker id will be defined as <INITIATING_PRINCIPAL> + "-" + <DIALECT_NAME_TO_EXPORT>+"-" + <EXPORT_FORMAT>.
                   Worker id will be used as the file name for the output.
                   Benefits of this approach are:
-                  - only one worker per format, dialect, principal may be running at the time
-                  - there can be only 2 workers, 1 for each format, running at the time
+                  - only one worker per format + dialect + principal may be running at a time
+                  - there can be only 2 workers, 1 for each format, running at a time (based on the previous rule)
                   - exported files are easily identifiable
                   - we can use ACLs associated with each file to restrict access for download
                   Exported files will be placed in Export directory which will be created in each dialect hierarchy.
@@ -31,8 +31,8 @@ FVCyclicExportWorker - is a more complex version of an exporter. It is not meant
                   This worker will not create any new files.
                   Update of the exported file depends on the parameters contained within meaning the choices made by a language administrator,
                   with regards to format and information to be exported, will be replicated.
-                  There will be only ONE FVCyclicExportWorker running at the time.
-                  To reduce impact on the system cron will trigger start in the lest busy times of server operation.
+                  There will be only ONE FVCyclicExportWorker running at a time.
+                  To reduce impact on the system cron will trigger start in the least busy server operation times.
 
 */
 
@@ -43,7 +43,7 @@ abstract public class FVAbstractExportWork extends AbstractWork
     private String dialectGUID;
     protected String exportFormat;
     protected String exportQuery;
-    protected StringList columns;
+    protected ArrayList<String> columns;
 
 
     public FVAbstractExportWork( String id ) { super( id ); }
@@ -63,8 +63,8 @@ abstract public class FVAbstractExportWork extends AbstractWork
     public String getExportQuery() {  return exportQuery; }
     public void setExportQuery( String eQuery ) { exportQuery = eQuery; }
 
-    public StringList getExportColumns() {  return columns; }
-    public void setExportColumns( StringList clist ) { columns = clist; }
+    public ArrayList<String> getExportColumns() {  return columns; }
+    public void setExportColumns( ArrayList<String> clist ) { columns = clist; }
 
 
     /* ABSTRACT */ public Boolean openFile( String fileName ) { return true; };

@@ -62,7 +62,7 @@ public class FVExportListener implements EventListener
             work.setDialectName(ctx.getProperty( DIALECT_NAME_EXPORT ).toString());
             work.setDialectGUID(ctx.getProperty( DIALECT_GUID).toString());
             work.setExportFormat(ctx.getProperty( EXPORT_FORMAT ).toString());
-            work.se
+            work.setExportColumns( (ArrayList<String>) ctx.getProperty( COLUMNS_TO_EXPORT) );
 
             work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) ); // TODO: pass results from a query
         }

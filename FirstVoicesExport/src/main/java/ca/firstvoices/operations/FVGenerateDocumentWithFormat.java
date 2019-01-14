@@ -70,7 +70,7 @@ public class FVGenerateDocumentWithFormat
                 Event event = export_ctx.newEvent( PRODUCE_FORMATTED_DOCUMENT );
                 eventProducer.fireEvent(event);
 
-                parameters.put( "message", "Query to export documents in " + format + " was successfully submitted" );
+                parameters.put( "message", "Request to export documents in " + format + " was successfully submitted" );
             }
             else
             {
