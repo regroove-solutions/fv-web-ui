@@ -7,8 +7,11 @@ import org.nuxeo.ecm.core.work.AbstractWork;
 import static ca.firstvoices.utils.FVExportConstants.CYCLIC_EXPORT_WORKER_CATEGORY;
 import static ca.firstvoices.utils.FVExportConstants.CYCLIC_WORKER_ID;
 
+/*
+   Worker description is in FVAbstractExportWorker file.
+*/
 
-public class FVCyclicExportWorker extends FVAbstractWork
+public class FVCyclicExportWorker extends FVAbstractExportWork
 {
     private static final Log log = LogFactory.getLog(FVCyclicExportWorker.class);
 

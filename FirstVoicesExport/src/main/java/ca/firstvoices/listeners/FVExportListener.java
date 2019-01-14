@@ -1,6 +1,6 @@
 package ca.firstvoices.listeners;
 
-import ca.firstvoices.workers.FVAbstractWork;
+import ca.firstvoices.workers.FVAbstractExportWork;
 import ca.firstvoices.workers.FVCyclicExportWorker;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
@@ -53,7 +53,7 @@ public class FVExportListener implements EventListener
         return true; // worker is not running
     }
 
-    private FVAbstractWork produceWorker( EventContext ctx, FVAbstractWork work )
+    private FVAbstractExportWork produceWorker( EventContext ctx, FVAbstractExportWork work )
     {
         if( ctx.hasProperty( QUERY_TO_PREPARE_WORK_FOR_EXPORT) )
         {
@@ -62,6 +62,7 @@ public class FVExportListener implements EventListener
             work.setDialectName(ctx.getProperty( DIALECT_NAME_EXPORT ).toString());
             work.setDialectGUID(ctx.getProperty( DIALECT_GUID).toString());
             work.setExportFormat(ctx.getProperty( EXPORT_FORMAT ).toString());
+            work.se
 
             work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) ); // TODO: pass results from a query
         }

@@ -7,8 +7,11 @@ import java.util.ArrayList;
 
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
 
+/*
+        Worker description is in FVAbstractExportWorker file.
+*/
 
-public class FVExportWorker extends FVAbstractWork
+public class FVExportWorker extends FVAbstractExportWork
 {
     private static final Log log = LogFactory.getLog(FVExportWorker.class);
 
@@ -36,4 +39,6 @@ public class FVExportWorker extends FVAbstractWork
             log.warn(e);
         }
     }
+
+
 }
