@@ -23,10 +23,7 @@ import IntlService from 'views/services/intl'
 export default class DictionaryList extends Component {
   static propTypes = {
     items: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    filteredItems: PropTypes.oneOfType([
-      PropTypes.array,
-      PropTypes.instanceOf(List),
-    ]),
+    filteredItems: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
     fields: PropTypes.instanceOf(Map),
     columns: PropTypes.array.isRequired,
     type: PropTypes.string,
@@ -91,9 +88,7 @@ export default class DictionaryList extends Component {
               {(columns || []).map((column, j) => {
                 const cellValue = selectn(column.name, item)
                 const cellRender =
-                  typeof column.render === 'function'
-                    ? column.render(cellValue, item, column)
-                    : cellValue
+                  typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
                 return (
                   <td key={j} align="left">
                     {cellRender}
