@@ -14,15 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-// import classNames from 'classnames'
-import selectn from 'selectn'
-import DataGrid from 'react-datagrid'
 
+import selectn from 'selectn'
 import GridView from 'views/pages/explore/dialect/learn/base/grid-view'
 import DictionaryList from 'views/components/Browsing/dictionary-list'
-
-import ClearFix from 'material-ui/lib/clearfix'
-import Paper from 'material-ui/lib/paper'
 
 import withPagination from 'views/hoc/grid-list/with-pagination'
 import IntlService from 'views/services/intl'
@@ -31,11 +26,8 @@ import IntlService from 'views/services/intl'
 //var injectTapEventPlugin = require("react-tap-event-plugin");
 //injectTapEventPlugin();
 
-// Stylesheet
-import '!style-loader!css-loader!react-datagrid/dist/index.min.css'
-
 const GridViewWithPagination = withPagination(GridView, 8)
-
+/*
 function debounce(a, b, c) {
   var d, e // eslint-disable-line
   // eslint-disable-next-line
@@ -47,22 +39,12 @@ function debounce(a, b, c) {
     var f = this // eslint-disable-line
 
     var g = arguments // eslint-disable-line
-    return (
-      clearTimeout(d), (d = setTimeout(h, b)), c && !d && (e = a.apply(f, g)), e
-    ) // eslint-disable-line
+    return clearTimeout(d), (d = setTimeout(h, b)), c && !d && (e = a.apply(f, g)), e // eslint-disable-line
   }
 }
-
-const DefaultFetcherParams = {
-  currentPageIndex: 1,
-  pageSize: 10,
-  sortBy: 'fv:custom_order',
-  sortOrder: 'asc',
-}
-const FilteredPaginatedDictionaryList = withPagination(
-  DictionaryList,
-  DefaultFetcherParams.pageSize
-)
+*/
+const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc' }
+const FilteredPaginatedDictionaryList = withPagination(DictionaryList, DefaultFetcherParams.pageSize)
 
 export default class DocumentListView extends Component {
   static propTypes = {
@@ -102,12 +84,7 @@ export default class DocumentListView extends Component {
 
     // Bind methods to 'this'
     // eslint-disable-next-line
-    ;[
-      '_handleSelectionChange',
-      '_onPageChange',
-      '_onPageSizeChange',
-      '_gridListFetcher',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
+    ;["_gridListFetcher"].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   intl = IntlService.instance
@@ -129,23 +106,13 @@ export default class DocumentListView extends Component {
       gridCols,
       gridListTile,
       gridListView,
-      gridViewProps,
-      onSortChange,
       pagination,
       page,
       pageSize,
-      renderSimpleTable,
-      sortInfo,
       type,
     } = this.props
 
-    // Styles
-    const DataGridStyles = {
-      minHeight: '70vh',
-      zIndex: 0,
-    }
-
-    let _gridViewProps = {
+    let gridViewProps = {
       style: { overflowY: 'auto', maxHeight: '50vh' },
       cols: gridCols,
       cellHeight: 160,
@@ -161,98 +128,18 @@ export default class DocumentListView extends Component {
     }
 
     if (gridListView) {
-      _gridViewProps = Object.assign({}, _gridViewProps, gridViewProps)
+      gridViewProps = Object.assign({}, gridViewProps, this.props.gridViewProps)
 
       if (pagination) {
-        return <GridViewWithPagination {..._gridViewProps} />
+        return <GridViewWithPagination {...gridViewProps} />
       }
-      return <GridView {..._gridViewProps} />
+      return <GridView {...gridViewProps} />
     }
 
-    if (renderSimpleTable) {
-      return (
-        <FilteredPaginatedDictionaryList {...gridViewProps} columns={columns} />
-      )
-    }
-
-    return (
-      <Paper>
-        <ClearFix>
-          <DataGrid
-            idProperty="uid"
-            dataSource={selectn('response.entries', data)}
-            dataSourceCount={selectn('response.totalSize', data)}
-            columns={columns}
-            rowHeight={55}
-            style={DataGridStyles}
-            selected={this.state.selectedId}
-            onSelectionChange={this._handleSelectionChange}
-            onSortChange={onSortChange}
-            withColumnMenu={false}
-            pagination={pagination}
-            paginationToolbarProps={{
-              showRefreshIcon: false,
-              pageSizes: [10, 20, 50],
-            }}
-            sortInfo={sortInfo}
-            page={page}
-            pageSize={pageSize}
-            onPageChange={this._onPageChange}
-            onPageSizeChange={this._onPageSizeChange}
-            emptyText={this.intl.trans('no_records', 'No records', 'words')}
-            showCellBorders
-          />
-        </ClearFix>
-      </Paper>
-    )
+    return <FilteredPaginatedDictionaryList {...gridViewProps} columns={columns} />
   }
 
   _gridListFetcher(fetcherParams) {
-    this.props.refetcher(
-      this.props,
-      fetcherParams.currentPageIndex,
-      fetcherParams.pageSize
-    )
-  }
-
-  _handleSelectionChange(newSelectedId, data) {
-    this.setState({
-      selectedId: newSelectedId,
-    })
-
-    this.props.onSelectionChange(data)
-  }
-
-  _onPageChange = debounce((page) => {
-    // Skip if page hasn't actually changed.
-    if (page === this.props.page) {
-      return
-    }
-
-    this.setState({
-      page: page,
-    })
-
-    this.props.refetcher(this.props, page, this.props.pageSize)
-  }, 750)
-
-  _onPageSizeChange(pageSize) {
-    // Skip if page size hasn't actually changed
-    if (pageSize === this.props.pageSize) {
-      return
-    }
-
-    let newPage = this.props.page
-
-    if (pageSize > this.props.pageSize) {
-      // TODO: use selectn for this.props.data.response.totalSize?
-      newPage = Math.min(
-        this.props.page,
-        Math.ceil(this.props.data.response.totalSize / pageSize)
-      )
-    }
-
-    // Refresh data
-    this.props.refetcher(this.props, newPage, pageSize)
+    this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize)
   }
 }
