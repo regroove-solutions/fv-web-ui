@@ -407,7 +407,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           </div>
           <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1>
-              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal)} ${intl.trans('words', 'Words', 'first')}`}
+              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal) || ''} ${intl.trans('words', 'Words', 'first')}`}
             </h1>
 
             <div style={{ marginBottom: '10px' }}>
@@ -445,9 +445,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   // END render
 
   _changeFilter(value, type, nxql) {
-    // eslint-disable-next-line
-    console.log('!!!', value, type, nxql)
-
     if (value && value !== '') {
       let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
         return nxql(value)
