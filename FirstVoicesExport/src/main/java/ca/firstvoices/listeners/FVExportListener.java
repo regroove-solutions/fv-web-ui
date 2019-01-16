@@ -1,10 +1,12 @@
 package ca.firstvoices.listeners;
 
+import ca.firstvoices.utils.FVExportWordProperties;
 import ca.firstvoices.workers.FVAbstractExportWork;
 import ca.firstvoices.workers.FVCyclicExportWorker;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -12,6 +14,10 @@ import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 import static ca.firstvoices.utils.FVExportConstants.*;
 
@@ -63,7 +69,16 @@ public class FVExportListener implements EventListener
             work.setDialectName(ctx.getProperty( DIALECT_NAME_EXPORT ).toString());
             work.setDialectGUID(ctx.getProperty( DIALECT_GUID).toString());
             work.setExportFormat(ctx.getProperty( EXPORT_FORMAT ).toString());
-            work.setExportColumns( (ArrayList<String>) ctx.getProperty( COLUMNS_TO_EXPORT) );
+            StringList pc = (StringList)ctx.getProperty(COLUMNS_TO_EXPORT);
+
+            if( pc.size() == 1  )
+            {
+                work.setExportColumns( new ArrayList<>() );
+            }
+            else
+            {
+                work.setExportColumns( (ArrayList<String>)ctx.getProperty(COLUMNS_TO_EXPORT));
+            }
 
             work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) );
         }

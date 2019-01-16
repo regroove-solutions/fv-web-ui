@@ -1,10 +1,10 @@
 package ca.firstvoices.workers;
 
 
+import ca.firstvoices.utils.FVExportCSVColumns;
 import org.nuxeo.ecm.core.work.AbstractWork;
-import ca.firstvoices.export.columns.FVExportColumns;
-
 import java.util.ArrayList;
+import java.util.List;
 
 /*
  Exporting FVWords and FVPhrases
@@ -45,8 +45,7 @@ abstract public class FVAbstractExportWork extends AbstractWork
     private String dialectGUID;
     protected String exportFormat;
     protected String exportQuery;
-    protected ArrayList<String> columns;
-    protected FVExportColumns payLoad;
+    protected List<String> columns;
 
 
     public FVAbstractExportWork( String id )
@@ -70,8 +69,8 @@ abstract public class FVAbstractExportWork extends AbstractWork
     public String getExportQuery() {  return exportQuery; }
     public void setExportQuery( String eQuery ) { exportQuery = eQuery; }
 
-    public ArrayList<String> getExportColumns() {  return columns; }
-    public void setExportColumns( ArrayList<String> clist ) { columns = clist; }
+    public List<String> getExportColumns() {  return columns; }
+    public void setExportColumns( List<String> clist ) { columns = clist; }
 
 
     /* ABSTRACT */ public Boolean openFile( String fileName ) { return true; };
