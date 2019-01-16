@@ -23,7 +23,6 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
         String[] culturalNoteCols = {FVExportConstants.ExportCSVLabels.CULTURAL_NOTE, FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_2", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_3", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_4", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_5"};
         String[] NOT_IMPLEMENTED = { "IMPLEMENT" };
 
-        // Will be closed at the end of the software by GC
         try
         {
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.TITLE,                         FVExportConstants.ExportCSVLabels.WORD_VALUE) );
@@ -36,9 +35,12 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.REFERENCE,                     FVExportConstants.ExportCSVLabels.REFERENCE));
             propertyReaders.add(new FV_BooleanPropertyReader(FVExportWordProperties.AVAILABLE_IN_CHILDRENS_ARCHIVE, FVExportConstants.ExportCSVLabels.AVAILABLE_IN_CHILDRENS_ARCHIVE));
             propertyReaders.add(new FV_BooleanPropertyReader(FVExportWordProperties.AVAILABLE_IN_GAMES,     FVExportConstants.ExportCSVLabels.AVAILABLE_IN_GAMES));
-            propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.STATUS_ID,                     FVExportConstants.ExportCSVLabels.WORD_STATUS));
+        //  propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.STATUS_ID,                     FVExportConstants.ExportCSVLabels.WORD_STATUS));
+            propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.TRANSLATION,            NOT_IMPLEMENTED)); // literalTranslationCols
+            propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.DEFINITION,             NOT_IMPLEMENTED)); // definitionCols
 
-            String fileName = "/Users/kristof/Downloads/"+file;
+            String fileName = "/Users/kristof/Downloads/"+file; // TODO: add proper location based on principal's dialect
+
             csvWriter  = new FV_SimpleCSVWriter( new FileWriter(fileName) );
         }
         catch (IOException e)
