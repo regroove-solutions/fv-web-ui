@@ -31,8 +31,6 @@ export default class DirectoryOperations extends BaseOperations {
    * Allows for additional complex queries to be executed.
    */
   static getDocumentsViaAPI(path = '', headers) {
-    // eslint-disable-next-line
-    console.log("1")
     return new Promise((resolve, reject) => {
       const options = {
         url: path,
@@ -82,8 +80,6 @@ export default class DirectoryOperations extends BaseOperations {
    * Allows for additional complex queries to be executed.
    */
   static getDocuments(path = '', type = 'Document', queryAppend = ' ORDER BY dc:title', headers = null, params = null) {
-    // eslint-disable-next-line
-    console.log("2")
     const defaultParams = {}
     const defaultHeaders = {}
 
@@ -185,8 +181,6 @@ export default class DirectoryOperations extends BaseOperations {
     headers = null,
     params = null
   ) {
-    // eslint-disable-next-line
-    console.log("3")
     const defaultParams = {}
     const defaultHeaders = {}
 
@@ -215,8 +209,6 @@ export default class DirectoryOperations extends BaseOperations {
   }
 
   static getDirectory(name = '') {
-    // eslint-disable-next-line
-    console.log("4")
     const properties = this.properties
 
     return new Promise((resolve, reject) => {
@@ -240,8 +232,6 @@ export default class DirectoryOperations extends BaseOperations {
 
   // Unused methods below (needs refactoring or removing soon)
   getSubjects(client) {
-    // eslint-disable-next-line
-    console.log("5")
     return new Promise((resolve, reject) => {
       client.request('directory/subtopic').get((error, data) => {
         if (error) {
@@ -267,8 +257,6 @@ export default class DirectoryOperations extends BaseOperations {
   }
 
   getPartsOfSpeech(client) {
-    // eslint-disable-next-line
-    console.log("6")
     return new Promise((resolve, reject) => {
       client.request('directory/parts_speech').get((error, data) => {
         if (error) {
@@ -343,8 +331,6 @@ export default class DirectoryOperations extends BaseOperations {
    * E.g. FVFamily, FVLanguage, FVDialect
    */
   getDocumentsByPath(path = '', headers = null, params = null) {
-    // eslint-disable-next-line
-    console.log("7")
     // Expose fields to promise
     const client = this.client
     const selectDefault = this.selectDefault
