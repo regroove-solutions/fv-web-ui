@@ -11,7 +11,7 @@ public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
 
     public FV_SimpleListPropertyReader( String ptr, String[] cnfo )
     {
-        super( ptr, "" );
+        super( ptr, "IMPLEMENT" );
         columnList = cnfo;
     }
 

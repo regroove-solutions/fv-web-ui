@@ -23,7 +23,8 @@ public class FV_SimpleCSVWriter
             joiner.add(s);
         }
 
-        fileHandle.write( joiner.toString() );
+        String output = joiner.toString() + "\n";
+        fileHandle.write( output );
     }
 
     public void flush() throws IOException

@@ -21,13 +21,14 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
         String[] definitionCols = {FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION, FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION + "_2", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION + "_3", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION + "_4", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION + "_5"};
         String[] literalTranslationCols = {FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE, FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE + "_2", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE + "_3", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE + "_4", FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE + "_5"};
         String[] culturalNoteCols = {FVExportConstants.ExportCSVLabels.CULTURAL_NOTE, FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_2", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_3", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_4", FVExportConstants.ExportCSVLabels.CULTURAL_NOTE + "_5"};
+        String[] NOT_IMPLEMENTED = { "IMPLEMENT" };
 
         // Will be closed at the end of the software by GC
         try
         {
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.TITLE,                         FVExportConstants.ExportCSVLabels.WORD_VALUE) );
             propertyReaders.add(new FV_PartOfSpeechPropertyReader(FVExportWordProperties.PART_OF_SPEECH_ID, FVExportConstants.ExportCSVLabels.PART_OF_SPEECH));
-            propertyReaders.add(new FV_SimpleListPropertyReader(FVExportWordProperties.CULTURAL_NOTE,       culturalNoteCols));
+            propertyReaders.add(new FV_SimpleListPropertyReader(FVExportWordProperties.CULTURAL_NOTE,       NOT_IMPLEMENTED));
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.PHONETIC_INFO,                 FVExportConstants.ExportCSVLabels.PHONETIC_INFO));
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.ASSIGNED_USR_ID,               FVExportConstants.ExportCSVLabels.ASSIGNED_USR_ID));
             propertyReaders.add(new FV_PropertyReader(FVExportWordProperties.CHANGE_DTTM,                   FVExportConstants.ExportCSVLabels.CHANGE_DTTM));

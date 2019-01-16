@@ -16,20 +16,13 @@ public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
     {
         DocumentModel word = (DocumentModel)o;
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
-        Object prop = word.getPropertyValue(propertyToRead);
+        Boolean prop = (Boolean)word.getPropertyValue(propertyToRead);
 
-        if( prop != null )
-        {
-            Class<?> cl = prop.getClass();
+        if( prop == null ) { prop = false; }
 
-            String propertyValue = (String) word.getPropertyValue(propertyToRead);
+        String propertyValue = prop ? "true" : "false";
 
-            readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
-        }
-        else
-        {
-            readValues.add(new FV_PropertyValueWithColumnName(" ", columnNameForOutput) );
-        }
+        readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
 
         return readValues;
     }

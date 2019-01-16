@@ -1,8 +1,13 @@
 package ca.firstvoices.workers;
 
-import ca.firstvoices.format_producers.FV_CSV_Producer;
+import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
+import ca.firstvoices.format_producers.FV_WordCSVProducer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.runtime.api.Framework;
+
+import javax.security.auth.login.LoginContext;
 import java.util.List;
 
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
@@ -27,34 +32,41 @@ public class FVExportWorker extends FVAbstractExportWork
 
     public FVExportWorker( String id ) { super( id );}
 
-
     @Override
     public void work()
     {
-
-        if( !getDocuments().isEmpty() )
-        {
-            List listToProcess = getDocuments();
-
-            FV_CSV_Producer fileOutputProducer = new FV_CSV_Producer(id);
-
-            while( !listToProcess.isEmpty() )
-            {
-                int size = listToProcess.size();
-
-                String  guid = (String)listToProcess.get( size - 1 );
-                listToProcess.remove( size -1 );
-
-
-            }
-
-
-            fileOutputProducer.close();
-        }
-
         try
         {
-            log.warn("FVExportWorker is not implemented yet.");
+            if( !getDocuments().isEmpty() )
+            {
+                LoginContext lctx = Framework.login();
+                CoreSession session = CoreInstance.openCoreSession("default");
+
+                List listToProcess = getDocuments();
+
+                FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
+                // write header for CSV files
+
+                fileOutputProducer.writeColumnNames();
+
+                while( !listToProcess.isEmpty() )
+                {
+                    int size = listToProcess.size();
+
+                    DocumentLocation docLocation = (DocumentLocation) listToProcess.get( size - 1 );
+                    listToProcess.remove( size -1 );
+                    DocumentModel word = session.getDocument( docLocation.getIdRef() );
+
+                    List<FV_PropertyValueWithColumnName> output = fileOutputProducer.readPropertiesWithReadersFrom( word );
+
+                    fileOutputProducer.writeRowData( output );
+                }
+
+
+                fileOutputProducer.close();
+                lctx.logout();
+                session.close();
+            }
         }
         catch (Exception e) {
             log.warn(e);
