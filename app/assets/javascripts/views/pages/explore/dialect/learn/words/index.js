@@ -27,6 +27,7 @@ import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import RaisedButton from 'material-ui/lib/raised-button'
 import FacetFilterListCategory from 'views/components/Browsing/facet-filter-list-category'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
+import { SearchWordsPhrases } from 'components/SearchWordsPhrases'
 import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
@@ -154,8 +155,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     const routeParamsCategory = props.routeParams.category
     const initialCategories = routeParamsCategory ? new Set([routeParamsCategory]) : new Set()
-    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys('fv-word:categories', props.routeParams.area)
-    const currentAppliedFilterCategories = routeParamsCategory ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")` : ''
+    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys(
+      'fv-word:categories',
+      props.routeParams.area
+    )
+    const currentAppliedFilterCategories = routeParamsCategory
+      ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")`
+      : ''
 
     let filterInfo = new Map({
       currentCategoryFilterIds: initialCategories,
@@ -213,30 +219,29 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   render() {
-    const {computeEntities, filterInfo, isKidsTheme, searchTerm, visibleFilter} = this.state
-    const {routeParams} = this.props
+    const { computeEntities, filterInfo, isKidsTheme, searchTerm, visibleFilter } = this.state
+    const { routeParams } = this.props
 
     const _computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
       `${routeParams.dialect_path}/Dictionary`
     )
 
-    const _computePortal = ProviderHelpers.getEntry(
-      this.props.computePortal,
-      `${routeParams.dialect_path}/Portal`
-    )
+    const _computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
 
     const _computeCategories = ProviderHelpers.getEntry(
       this.props.computeCategories,
-      `/api/v1/path/FV/${routeParams.area}/SharedData/Shared Categories/@children`,
+      `/api/v1/path/FV/${routeParams.area}/SharedData/Shared Categories/@children`
     )
 
     const computeCategoriesSize = selectn('response.entries.length', _computeCategories) || 0
 
-    const searchSort = searchTerm ? {
-      DEFAULT_SORT_COL: 'ecm:fulltextScore',
-      DEFAULT_SORT_TYPE: 'desc',
-    } : {}
+    const searchSort = searchTerm
+      ? {
+        DEFAULT_SORT_COL: 'ecm:fulltextScore',
+        DEFAULT_SORT_TYPE: 'desc',
+      }
+      : {}
 
     const wordListView = selectn('response.uid', _computeDocument) ? (
       <WordListView
@@ -251,18 +256,17 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         {...this._getURLPageProps()}
         {...searchSort}
       />
-    ) : ''
+    ) : (
+      ''
+    )
 
     // Render kids view
 
     // Or Mobile
     if (isKidsTheme || isMobile) {
-      const pageSize = (!isKidsTheme && isMobile) ? 10 : 8
+      const pageSize = !isKidsTheme && isMobile ? 10 : 8
 
-      const kidsFilter = filterInfo.setIn(
-        ['currentAppliedFilter', 'kids'],
-        ' AND fv:available_in_childrens_archive=1'
-      )
+      const kidsFilter = filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1')
 
       return (
         <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -294,7 +298,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         appliedFilters.push(currentValue)
         if (arr.size > 1 && arr.size - 1 !== i) {
           appliedFilters.push(
-            <span> <span style={{textDecoration: 'underline'}}>AND</span></span>
+            <span>
+              {' '}
+              <span style={{ textDecoration: 'underline' }}>AND</span>
+            </span>
           )
         }
         ++i
@@ -386,7 +393,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
               {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
 
-              { browseAlphabetically }
+              {browseAlphabetically}
             </div>
             {/*
               <hr />
@@ -407,34 +414,21 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           </div>
           <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1>
-              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal) || ''} ${intl.trans('words', 'Words', 'first')}`}
+              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal) || ''} ${intl.trans(
+                'words',
+                'Words',
+                'first'
+              )}`}
             </h1>
 
-            <div style={{ marginBottom: '10px' }}>
-              <input
-                type="text"
-                ref="search_term"
-                onChange={this._updateSearchTerm}
-                onKeyPress={this._handleEnterSearch}
-                value={searchTerm}
-              />
-              {' '}
-              <RaisedButton
-                label={intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')}
-                onTouchTap={this._handleSearch}
-                primary
-              />
-              {' '}
-              <RaisedButton
-                label={intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')}
-                onTouchTap={this._resetSearch}
-                primary={false}
-              />
-            </div>
-
-            <div className={classNames('alert', 'alert-info')}>
-              {searchAlertInfo}
-            </div>
+            <SearchWordsPhrases
+              handleEnterSearch={this._handleEnterSearch}
+              handleSearch={this._handleSearch}
+              resetSearch={this._resetSearch}
+              updateSearchTerm={this._updateSearchTerm}
+              searchAlertInfo={searchAlertInfo}
+              searchTerm={searchTerm}
+            />
 
             {wordListView}
           </div>
@@ -494,7 +488,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   _handleSearch() {
-    const {searchTerm} = this.state
+    const { searchTerm } = this.state
     this._changeFilter(searchTerm, 'contains', (term) => {
       return ` AND ecm:fulltext = '*${StringHelpers.clean(term, 'fulltext')}*'`
     })
@@ -523,6 +517,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_words'
   }
 
+  // TODO: _resetSearch needs to also clear Alphabetical Search
   _resetSearch() {
     // TODO: Should `let newFilter = this.state.filterInfo.deleteIn(..`
     // TODO: just be `this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)`?
@@ -534,8 +529,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this._resetURLPagination()
 
     this.setState({ filterInfo: newFilter, searchTerm: null })
-
-    this.refs.search_term.value = ''
   }
 
   _updateSearchTerm(evt) {
