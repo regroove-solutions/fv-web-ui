@@ -101,7 +101,6 @@ export default class DirectoryOperations extends BaseOperations {
 
     // Switch between direct REST access and controlled mode
     if (path.indexOf('/api') === 0) {
-      debugger
       // NOTE: Do not escape single quotes in this mode
       requestBody = path.replace('/api/v1', '')
       return new Promise((resolve, reject) => {
@@ -148,7 +147,6 @@ export default class DirectoryOperations extends BaseOperations {
         true
       )
     )
-    debugger
     return new Promise((resolve, reject) => {
       properties.client
         .operation('Document.Query')
