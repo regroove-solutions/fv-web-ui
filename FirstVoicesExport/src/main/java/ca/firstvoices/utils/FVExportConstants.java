@@ -8,6 +8,7 @@ public final class FVExportConstants
 {
     // Events sent to trigger start of export worker
     public static final String PRODUCE_FORMATTED_DOCUMENT = "produceFormattedDocument";
+    public static final String FINISH_EXPORT_BY_WRAPPING_BLOB = "produceWrappedBlob";
     public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT = "autoProduceFormattedDocument";
 
     // Parameters passed in Export trigger events

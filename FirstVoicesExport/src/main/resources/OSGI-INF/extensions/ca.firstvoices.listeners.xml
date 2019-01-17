@@ -4,9 +4,9 @@
         <listener name="FVExportListener" postCommit="false" async="false"
                   class="ca.firstvoices.listeners.FVExportListener" priority="150">
             <event>produceFormattedDocument</event>
+            <event>produceWrappedBlob</event>>
             <event>autoProduceFormattedDocument</event>
         </listener>
 
     </extension>
-
 </component>
