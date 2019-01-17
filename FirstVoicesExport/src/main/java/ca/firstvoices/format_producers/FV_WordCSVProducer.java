@@ -7,18 +7,22 @@ package ca.firstvoices.format_producers;
 import ca.firstvoices.property_readers.*;
 import ca.firstvoices.utils.FVExportConstants;
 import ca.firstvoices.utils.FVExportWordProperties;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import static ca.firstvoices.utils.FVExportConstants.CSV_FORMAT;
+
 public class FV_WordCSVProducer extends FV_AbstractProducer
 {
+    protected FV_SimpleCSVWriter csvWriter;
+
     public FV_WordCSVProducer(String file)
     {
         super();
-
-        // String[] NOT_IMPLEMENTED = { "IMPLEMENT" };
 
         try
         {
@@ -36,9 +40,14 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.TRANSLATION,            FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE, 6));
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.DEFINITION,             FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION, 6));
 
-            String fileName = "/Users/kristof/Downloads/"+file; // TODO: add proper location based on principal's dialect
-
-            csvWriter  = new FV_SimpleCSVWriter( new FileWriter(fileName) );
+            if( createTemporaryOutputFile( file, CSV_FORMAT ) )
+            {
+                csvWriter = new FV_SimpleCSVWriter(new FileWriter(outputFile));
+            }
+            else
+            {
+                throw new IOException( "FV_WordCSVProducer: error creating temporary file for export of " + file );
+            }
         }
         catch (IOException e)
         {
@@ -46,7 +55,6 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
         }
     }
 
-    @Override
     public void writeColumnNames()
     {
         List<String> outputLine = getColumnNames();
@@ -63,7 +71,6 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
         }
     }
 
-    @Override
     public void writeRowData(List<FV_PropertyValueWithColumnName> data )
     {
         List<String> outputLine = createLineFromData( data );
@@ -81,7 +88,7 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
     }
 
     @Override
-    public void close()
+    public void close(CoreSession session, DocumentModel dialect )
     {
         try
         {
@@ -91,6 +98,9 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
         {
             e.printStackTrace();
         }
+
+        // always call super to generate blob and a wrapper document
+        super.close( session, dialect );
     }
 
 }

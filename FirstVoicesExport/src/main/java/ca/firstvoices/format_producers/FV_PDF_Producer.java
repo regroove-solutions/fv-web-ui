@@ -5,6 +5,8 @@ package ca.firstvoices.format_producers;
 */
 
 import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.List;
 
@@ -21,7 +23,7 @@ public class FV_PDF_Producer extends FV_AbstractProducer
     }
 
     @Override
-    public void close()
+    public void close(CoreSession session, DocumentModel dialect )
     {
 
     }
