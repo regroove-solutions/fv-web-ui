@@ -22,5 +22,12 @@ public class FVExportUtils
 
         return dictionary;
     }
+
+    //ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);
+
+    public static String makeExportFileName( String principalName, String dialectName, String format )
+    {
+        return principalName + "-" + dialectName + "-" + format + ".cvs"; // temporary since we are not supporting pdf
+    }
 }
 

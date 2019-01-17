@@ -20,6 +20,7 @@ import java.util.Map;
 
 
 import static ca.firstvoices.utils.FVExportConstants.*;
+import static ca.firstvoices.utils.FVExportUtils.makeExportFileName;
 
 public class FVExportListener implements EventListener
 {
@@ -35,11 +36,13 @@ public class FVExportListener implements EventListener
         switch( event.getName() )
         {
             case PRODUCE_FORMATTED_DOCUMENT:
-                String id = ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);
+                String id = makeExportFileName( (String)ctx.getProperty(INITIATING_PRINCIPAL),
+                                                (String)ctx.getProperty(DIALECT_NAME_EXPORT),
+                                                (String)ctx.getProperty(EXPORT_FORMAT) );
 
                 if( checkForRunningWorkerBeforeProceeding( id ) )
                 {
-                    // TODO: delete old file if exists and create a new one
+                    // TODO: ??? delete old file if exists and create a new one
                     workManager.schedule(produceWorker(ctx, new FVExportWorker( id )), true);
                 }
                 break;
