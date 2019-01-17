@@ -36,7 +36,7 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.TRANSLATION,            FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE, 6));
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.DEFINITION,             FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION, 6));
 
-            String fileName = "/Users/kristof/Downloads/"+file+".csv"; // TODO: add proper location based on principal's dialect
+            String fileName = "/Users/kristof/Downloads/"+file; // TODO: add proper location based on principal's dialect
 
             csvWriter  = new FV_SimpleCSVWriter( new FileWriter(fileName) );
         }
