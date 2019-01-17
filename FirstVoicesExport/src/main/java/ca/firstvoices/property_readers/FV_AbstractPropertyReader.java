@@ -6,11 +6,18 @@ public abstract class FV_AbstractPropertyReader
 {
     protected String propertyToRead;
     protected String columnNameForOutput;
+    protected Integer maxColumns = 1;
+
 
     public FV_AbstractPropertyReader( String ptr, String cnfo )
     {
         propertyToRead = ptr;
         columnNameForOutput = cnfo;
+    }
+
+    public Integer expectedColumnCount()
+    {
+        return maxColumns;
     }
 
     public String getPropertyToRead() { return propertyToRead; }

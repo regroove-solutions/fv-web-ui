@@ -21,7 +21,7 @@ public class FV_PropertyReader extends FV_AbstractPropertyReader
 
         if( prop != null )
         {
-            String propertyValue = (String) word.getPropertyValue(propertyToRead);
+            String propertyValue = (String) prop;
 
             readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
         }

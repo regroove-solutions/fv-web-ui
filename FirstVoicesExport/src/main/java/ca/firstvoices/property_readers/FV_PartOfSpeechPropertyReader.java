@@ -17,9 +17,16 @@ public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
     {
         DocumentModel word = (DocumentModel)o;
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        Object prop = word.getPropertyValue(propertyToRead);
 
-        readValues.add( new FV_PropertyValueWithColumnName(" ", columnNameForOutput ));
-
+        if( prop instanceof String )
+        {
+            readValues.add(new FV_PropertyValueWithColumnName((String)prop, columnNameForOutput));
+        }
+        else
+        {
+            readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput));
+        }
         return readValues;
     }
 }
