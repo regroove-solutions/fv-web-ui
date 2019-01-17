@@ -47,6 +47,10 @@ public class FVExportListener implements EventListener
                 }
                 break;
 
+
+            case FINISH_EXPORT_BY_WRAPPING_BLOB:
+                break;
+
             case AUTO_PRODUCE_FORMATTED_DOCUMENT:
                 if( checkForRunningWorkerBeforeProceeding( CYCLIC_WORKER_ID ) )
                 {
