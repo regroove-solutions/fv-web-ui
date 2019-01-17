@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
+import static ca.firstvoices.utils.FVExportUtils.findDialectChild;
 
 @Operation(id=FVGenerateDocumentWithFormat.ID, category= Constants.CAT_DOCUMENT, label="Export Document with format", description="Export word or phrase documents with format (CSV or PDF).")
 public class FVGenerateDocumentWithFormat
@@ -53,7 +54,7 @@ public class FVGenerateDocumentWithFormat
 
         try
         {
-            ArrayList<String> docsToProcess = getWordDocumentIDs( "*", input.getId() );
+            ArrayList<String> docsToProcess = getWordDocumentIDs( "*", input );
 
             if( docsToProcess != null )
             {
@@ -88,13 +89,14 @@ public class FVGenerateDocumentWithFormat
     }
 
 
-    private ArrayList<String> getWordDocumentIDs( String query, String dialectID )
+    private ArrayList<String> getWordDocumentIDs( String query, DocumentModel dialect )
     {
         DocumentModelList docs;
+        DocumentModel dictionary = findDialectChild( dialect, "FVDictionary" );
 
         if( query.equals("*") )
         {
-            docs = session.query("SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dialectID + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name"); // TODO: be weary of limits of how many records will be returned
+            docs = session.query("SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name"); // TODO: be weary of limits of how many records will be returned
 
             if( docs.size() == 0 ) return null;
         }
