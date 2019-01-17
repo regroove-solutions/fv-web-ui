@@ -2,24 +2,58 @@ package ca.firstvoices.format_producers;
 
 import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
 import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ca.firstvoices.utils.FVExportConstants.FINISH_EXPORT_BY_WRAPPING_BLOB;
+
 abstract public class FV_AbstractProducer
 {
-    protected FV_SimpleCSVWriter csvWriter;
-
     protected List<FV_AbstractPropertyReader> propertyReaders;
+    File outputFile;
 
     FV_AbstractProducer()
     {
-        propertyReaders = new ArrayList<FV_AbstractPropertyReader>();
+        propertyReaders = new ArrayList<>();
     }
 
     abstract void writeColumnNames();
     abstract void writeRowData( List<FV_PropertyValueWithColumnName> rowData  );
-    abstract public void close();
+
+    // this close has to be called after subclass completes its own close
+    public void close( CoreSession session, DocumentModel input )
+    {
+        EventProducer eventProducer = Framework.getService( EventProducer.class );
+        // finish by generating event for the listener to move created temp file to a blob within Nuxeo data space
+        DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
+
+        Event event = export_ctx.newEvent( FINISH_EXPORT_BY_WRAPPING_BLOB );
+        eventProducer.fireEvent(event);
+    }
+
+    public Boolean createTemporaryOutputFile( String fileName, String suffix )
+    {
+        try
+        {
+            outputFile = File.createTempFile(fileName, "."+suffix.toLowerCase());
+            return true;
+        }
+        catch( IOException e )
+        {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 
     public List<FV_PropertyValueWithColumnName> readPropertiesWithReadersFrom( Object o )
     {
