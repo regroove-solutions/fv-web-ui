@@ -27,7 +27,7 @@ public class FVExportUtils
 
     public static String makeExportFileName( String principalName, String dialectName, String format )
     {
-        return principalName + "-" + dialectName + "-" + format + ".cvs"; // temporary since we are not supporting pdf
+        return principalName + "-" + dialectName + "-" + format;
     }
 }
 

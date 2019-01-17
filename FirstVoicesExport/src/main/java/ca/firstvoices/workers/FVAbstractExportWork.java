@@ -71,9 +71,4 @@ abstract public class FVAbstractExportWork extends AbstractWork
 
     public List<String> getExportColumns() {  return columns; }
     public void setExportColumns( List<String> clist ) { columns = clist; }
-
-
-    /* ABSTRACT */ public Boolean openFile( String fileName ) { return true; };
-    /* ABSTRACT */ public Boolean closeFile() { return true; };
-
 }

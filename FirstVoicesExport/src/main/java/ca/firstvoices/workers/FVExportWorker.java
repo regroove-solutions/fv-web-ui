@@ -62,8 +62,7 @@ public class FVExportWorker extends FVAbstractExportWork
                     fileOutputProducer.writeRowData( output );
                 }
 
-
-                fileOutputProducer.close();
+                fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID() ) ) );
                 lctx.logout();
                 session.close();
             }
