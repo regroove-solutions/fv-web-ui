@@ -58,6 +58,8 @@ public class FVGenerateDocumentWithFormat
 
             if( docsToProcess != null )
             {
+                DocumentModel resourceFolder = findDialectChild( input, RESOURCES );
+
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
                 export_ctx.setProperty( DIALECT_NAME_EXPORT, input.getName() );
@@ -67,6 +69,8 @@ public class FVGenerateDocumentWithFormat
                 export_ctx.setProperty( EXPORT_FORMAT, CSV_FORMAT );
                 export_ctx.setProperty( COLUMNS_TO_EXPORT, columns );
                 export_ctx.setProperty( DIALECT_GUID, input.getId() );
+                export_ctx.setProperty( RESOURCES, resourceFolder.getId() );
+
 
                 Event event = export_ctx.newEvent( PRODUCE_FORMATTED_DOCUMENT );
                 eventProducer.fireEvent(event);

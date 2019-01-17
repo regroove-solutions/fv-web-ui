@@ -13,6 +13,7 @@ public final class FVExportConstants
     // Parameters passed in Export trigger events
     public static final String DIALECT_NAME_EXPORT              = "Dialect";
     public static final String DIALECT_GUID                     = "D_GUID";
+    public static final String RESOURCES                        = "FVResources";
     public static final String QUERY_TO_PREPARE_WORK_FOR_EXPORT = "Query";
     public static final String INHERITED_FROM_OTHER             = "INHERITED";
     public static final String INITIATING_PRINCIPAL             = "Principal";
