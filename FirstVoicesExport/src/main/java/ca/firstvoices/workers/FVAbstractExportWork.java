@@ -2,6 +2,7 @@ package ca.firstvoices.workers;
 
 
 import ca.firstvoices.utils.FVExportCSVColumns;
+import ca.firstvoices.utils.FVExportCompletionInfo;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,4 +72,17 @@ abstract public class FVAbstractExportWork extends AbstractWork
 
     public List<String> getExportColumns() {  return columns; }
     public void setExportColumns( List<String> clist ) { columns = clist; }
+
+    public FVExportCompletionInfo getWorkInfo()
+    {
+        FVExportCompletionInfo info = new FVExportCompletionInfo();
+        info.initiatorName = initiatorName;
+        info.dialectName = dialectName;
+        info.dialectGUID = dialectGUID;
+        info.exportFormat = exportFormat;
+        info.exportQuery = exportQuery;
+        info.columns = columns;
+
+        return info;
+    }
 }

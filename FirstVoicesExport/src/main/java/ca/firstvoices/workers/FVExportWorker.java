@@ -45,7 +45,6 @@ public class FVExportWorker extends FVAbstractExportWork
                 List listToProcess = getDocuments();
 
                 FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
-                // write header for CSV files
 
                 fileOutputProducer.writeColumnNames();
 
@@ -62,7 +61,7 @@ public class FVExportWorker extends FVAbstractExportWork
                     fileOutputProducer.writeRowData( output );
                 }
 
-                fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID() ) ) );
+                fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
                 lctx.logout();
                 session.close();
             }

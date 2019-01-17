@@ -1,8 +1,10 @@
 package ca.firstvoices.listeners;
 
+import ca.firstvoices.utils.FVExportCompletionInfo;
 import ca.firstvoices.utils.FVExportWordProperties;
 import ca.firstvoices.workers.FVAbstractExportWork;
 import ca.firstvoices.workers.FVCyclicExportWorker;
+import ca.firstvoices.workers.FVEXportBlobWorker;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,10 +15,7 @@ import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 import static ca.firstvoices.utils.FVExportConstants.*;
@@ -49,6 +48,7 @@ public class FVExportListener implements EventListener
 
 
             case FINISH_EXPORT_BY_WRAPPING_BLOB:
+                workManager.schedule( produceBlobWorker( ctx ), true);
                 break;
 
             case AUTO_PRODUCE_FORMATTED_DOCUMENT:
@@ -65,6 +65,13 @@ public class FVExportListener implements EventListener
 
         if( workManager.find( workId, null ) != null ) return false; // worker is running
         return true; // worker is not running
+    }
+
+    private FVAbstractExportWork produceBlobWorker( EventContext ctx )
+    {
+        FVExportCompletionInfo info = (FVExportCompletionInfo)ctx.getProperty( BlOB_WORK_INFO );
+        FVEXportBlobWorker work = new FVEXportBlobWorker( String.valueOf(System.nanoTime()), info );
+        return work;
     }
 
     private FVAbstractExportWork produceWorker( EventContext ctx, FVAbstractExportWork work )
