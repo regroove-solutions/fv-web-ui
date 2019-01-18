@@ -21,7 +21,7 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
 {
     protected FV_SimpleCSVWriter csvWriter;
 
-    public FV_WordCSVProducer(String file)
+    public FV_WordCSVProducer(String fileName )
     {
         super();
 
@@ -41,13 +41,13 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.TRANSLATION,            FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_WORD_VALUE, 6));
             propertyReaders.add(new FV_WordTranslationReader(FVExportWordProperties.DEFINITION,             FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION, 6));
 
-            if( createTemporaryOutputFile( file, CSV_FORMAT ) )
+            if( createTemporaryOutputFile( fileName, CSV_FORMAT ) )
             {
                 csvWriter = new FV_SimpleCSVWriter(new FileWriter(outputFile));
             }
             else
             {
-                throw new IOException( "FV_WordCSVProducer: error creating temporary file for export of " + file );
+                throw new IOException( "FV_WordCSVProducer: error creating temporary file for export of " + fileName );
             }
         }
         catch (IOException e)
