@@ -13,7 +13,7 @@
     </extension>
 
     <extension target="org.nuxeo.ecm.core.work.service" point="queues">
-        <queue id="cyclicExportWorker">
+        <queue id="blob_Worker">
             <name>Queue creating formatted export document</name>>
             <maxThreads>1</maxThreads>
             <capacity>10000</capacity>

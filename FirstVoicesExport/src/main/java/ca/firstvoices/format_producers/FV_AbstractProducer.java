@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static ca.firstvoices.utils.FVExportConstants.BlOB_WORK_INFO;
 import static ca.firstvoices.utils.FVExportConstants.FINISH_EXPORT_BY_WRAPPING_BLOB;
 
 abstract public class FV_AbstractProducer
@@ -41,6 +42,8 @@ abstract public class FV_AbstractProducer
         info.fileNameAsSaved  = outputFile.getName();
         info.fileName = originalFileName;
         info.filePath = outputFile.getPath();
+        info.fileLength = outputFile.length();
+        blob_worker_ctx.setProperty( BlOB_WORK_INFO, info );
 
         Event event = blob_worker_ctx.newEvent( FINISH_EXPORT_BY_WRAPPING_BLOB );
         eventProducer.fireEvent(event);
