@@ -16,7 +16,5 @@
   <xs:element name="format" type="xs:string" />
   <!-- Stores the progress of the export as a percent -->
   <xs:element name="progress" type="xs:string" />
-  <!-- Stores the blob with the export -->
-  <xs:element name="file" type="xs:string" />
 
 </xs:schema>
