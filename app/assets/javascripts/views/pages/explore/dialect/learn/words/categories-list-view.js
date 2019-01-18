@@ -13,172 +13,183 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, {List, Map} from 'immutable';
-import classNames from 'classnames';
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import React, { Component, PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import ProviderHelpers from 'common/ProviderHelpers';
-import UIHelpers from 'common/UIHelpers';
+import ProviderHelpers from 'common/ProviderHelpers'
+import DocumentListView from 'views/components/Document/DocumentListView'
 
-import DocumentListView from 'views/components/Document/DocumentListView';
+import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
+import IntlService from 'views/services/intl'
 
-import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view';
-import Preview from 'views/components/Editor/Preview';
-import IntlService from 'views/services/intl';
-
-const intl = IntlService.instance;
+const intl = IntlService.instance
 /**
  * List view for categories
  */
 @provide
 export default class ListView extends DataListView {
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'parent'],
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 100,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc',
+    dialect: null,
+    filter: new Map(),
+    gridListView: false,
+    gridCols: 4,
+  }
 
-    static defaultProps = {
-        DISABLED_SORT_COLS: ['state', 'parent'],
-        DEFAULT_PAGE: 1,
-        DEFAULT_PAGE_SIZE: 100,
-        DEFAULT_LANGUAGE: 'english',
-        DEFAULT_SORT_COL: 'dc:title',
-        DEFAULT_SORT_TYPE: 'asc',
-        dialect: null,
-        filter: new Map(),
-        gridListView: false,
-        gridCols: 4
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    dialect: PropTypes.object,
+    computeCategories: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    categoriesPath: PropTypes.string.isRequired,
+    filter: PropTypes.object,
+    data: PropTypes.string,
+    gridListView: PropTypes.bool,
+    gridCols: PropTypes.number,
+    action: PropTypes.func,
+
+    DISABLED_SORT_COLS: PropTypes.array,
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_COL: PropTypes.string,
+    DEFAULT_SORT_TYPE: PropTypes.string,
+  }
+
+  constructor(props, context) {
+    super(props, context)
+
+    this.state = {
+      columns: [
+        {
+          name: 'title',
+          title: intl.trans('category', 'Category', 'first'),
+          render: (v, data, cellProps) => v,
+        },
+        {
+          name: 'parent',
+          title: intl.trans('views.pages.explore.dialect.learn.words.parent_category', 'Parent Category', 'words'),
+          render: (v, data, cellProps) => {
+            const parentCategory = selectn('contextParameters.parentDoc.title', data)
+            return parentCategory === 'Shared Categories' ? '' : parentCategory
+          },
+        },
+      ],
+      sortInfo: {
+        uiSortOrder: [],
+        currentSortCols: this.props.DEFAULT_SORT_COL,
+        currentSortType: this.props.DEFAULT_SORT_TYPE,
+      },
+      pageInfo: {
+        page: this.props.DEFAULT_PAGE,
+        pageSize: this.props.DEFAULT_PAGE_SIZE,
+      },
     }
 
-    static propTypes = {
-        properties: PropTypes.object.isRequired,
-        windowPath: PropTypes.string.isRequired,
-        splitWindowPath: PropTypes.array.isRequired,
-        pushWindowPath: PropTypes.func.isRequired,
-        computeLogin: PropTypes.object.isRequired,
-        fetchDialect2: PropTypes.func.isRequired,
-        fetchCategories: PropTypes.func.isRequired,
-        computeDialect2: PropTypes.object.isRequired,
-        dialect: PropTypes.object,
-        computeCategories: PropTypes.object.isRequired,
-        routeParams: PropTypes.object.isRequired,
-        categoriesPath: PropTypes.string.isRequired,
-        filter: PropTypes.object,
-        data: PropTypes.string,
-        gridListView: PropTypes.bool,
-        gridCols: PropTypes.number,
-        action: PropTypes.func,
+    // Bind methods to 'this'
+    ;[
+      '_onNavigateRequest',
+      '_onEntryNavigateRequest',
+      '_handleRefetch',
+      '_handleSortChange',
+      '_handleColumnOrderChange',
+      '_resetColumns',
+    ].forEach((method) => (this[method] = this[method].bind(this)))
+  }
+  // NOTE: DataListView calls `fetchData`
+  fetchData(newProps) {
+    if (newProps.dialect === null) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path)
+    }
+    this._fetchListViewData(
+      newProps,
+      newProps.DEFAULT_PAGE,
+      newProps.DEFAULT_PAGE_SIZE,
+      newProps.DEFAULT_SORT_TYPE,
+      newProps.DEFAULT_SORT_COL
+    )
+  }
 
-        DISABLED_SORT_COLS: PropTypes.array,
-        DEFAULT_PAGE: PropTypes.number,
-        DEFAULT_PAGE_SIZE: PropTypes.number,
-        DEFAULT_SORT_COL: PropTypes.string,
-        DEFAULT_SORT_TYPE: PropTypes.string
-    };
+  _onEntryNavigateRequest(item) {
+    if (this.props.action) {
+      this.props.action(item)
+    } else {
+      this.props.pushWindowPath(
+        `/${this.props.routeParams.theme}${item.path.replace('Dictionary', `words/categories/${item.uid}`)}`
+      )
+    }
+  }
 
-    constructor(props, context) {
-        super(props, context);
+  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    let currentAppliedFilter = ''
 
-        this.state = {
-            columns: [
-                {
-                    name: 'title',
-                    title: intl.trans('category', 'Category', 'first'),
-                    render: function (v, data, cellProps) {
-                        return v;
-                    }
-                },
-                {
-                    name: 'parent',
-                    title: intl.trans('views.pages.explore.dialect.learn.words.parent_category', 'Parent Category', 'words'),
-                    render: function (v, data, cellProps) {
-                        let parentCategory = selectn('contextParameters.parentDoc.title', data);
-                        return (parentCategory === 'Shared Categories') ? '' : parentCategory;
-                    }
-                },
-            ],
-            sortInfo: {
-                uiSortOrder: [],
-                currentSortCols: this.props.DEFAULT_SORT_COL,
-                currentSortType: this.props.DEFAULT_SORT_TYPE
-            },
-            pageInfo: {
-                page: this.props.DEFAULT_PAGE,
-                pageSize: this.props.DEFAULT_PAGE_SIZE
-            }
-        };
-
-        // Bind methods to 'this'
-        ['_onNavigateRequest', '_onEntryNavigateRequest', '_handleRefetch', '_handleSortChange', '_handleColumnOrderChange', '_resetColumns'].forEach((method => this[method] = this[method].bind(this)));
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
 
-    fetchData(newProps) {
-        if (newProps.dialect == null) {
-            newProps.fetchDialect2(newProps.routeParams.dialect_path);
-        }
-        this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL);
-    }
+    props.fetchCategories(
+      this.props.categoriesPath,
+      `${currentAppliedFilter}&currentPageIndex=${pageIndex -
+        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+    )
+  }
 
-    _onEntryNavigateRequest(item) {
-        if (this.props.action) {
-            this.props.action(item);
-        } else {
-            this.props.pushWindowPath('/' + this.props.routeParams.theme + item.path.replace('Dictionary', 'words/categories/' + item.uid));
-        }
-    }
+  render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.props.categoriesPath,
+        entity: this.props.computeCategories,
+      },
+      {
+        id: this.props.routeParams.dialect_path,
+        entity: this.props.computeDialect2,
+      },
+    ])
 
-    _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.props.categoriesPath)
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-        let currentAppliedFilter = '';
-
-        if (props.filter.has('currentAppliedFilter')) {
-            currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
-        }
-
-        props.fetchCategories(this.props.categoriesPath,
-            currentAppliedFilter +
-            '&currentPageIndex=' + (pageIndex - 1) +
-            '&pageSize=' + pageSize +
-            '&sortOrder=' + sortOrder +
-            '&sortBy=' + sortBy
-        );
-    }
-
-    render() {
-
-        const computeEntities = Immutable.fromJS([{
-            'id': this.props.categoriesPath,
-            'entity': this.props.computeCategories
-        }, {
-            'id': this.props.routeParams.dialect_path,
-            'entity': this.props.computeDialect2
-        }])
-
-        const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.props.categoriesPath);
-        const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-
-        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-            {(() => {
-                if (selectn('response.entries', computeCategories)) {
-
-                    return <DocumentListView
-                        objectDescriptions="categories"
-                        type="FVCategory"
-                        data={computeCategories}
-                        gridCols={this.props.gridCols}
-                        gridListView={this.props.gridListView}
-                        refetcher={this._handleRefetch}
-                        onSortChange={this._handleSortChange}
-                        onSelectionChange={this._onEntryNavigateRequest}
-                        page={this.state.pageInfo.page}
-                        pageSize={this.state.pageInfo.pageSize}
-                        onColumnOrderChange={this._handleColumnOrderChange}
-                        columns={this.state.columns}
-                        sortInfo={this.state.sortInfo.uiSortOrder}
-                        className="browseDataGrid"
-                        dialect={selectn('response', computeDialect2)}/>;
-                }
-            })()}
-        </PromiseWrapper>;
-    }
+    return (
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
+        {(() => {
+          if (selectn('response.entries', computeCategories)) {
+            return (
+              <DocumentListView
+                objectDescriptions="categories"
+                type="FVCategory"
+                data={computeCategories}
+                gridCols={this.props.gridCols}
+                gridListView={this.props.gridListView}
+                refetcher={this._handleRefetch}
+                onSortChange={this._handleSortChange}
+                onSelectionChange={this._onEntryNavigateRequest}
+                page={this.state.pageInfo.page}
+                pageSize={this.state.pageInfo.pageSize}
+                onColumnOrderChange={this._handleColumnOrderChange}
+                columns={this.state.columns}
+                sortInfo={this.state.sortInfo.uiSortOrder}
+                className="browseDataGrid"
+                dialect={selectn('response', computeDialect2)}
+              />
+            )
+          }
+        })()}
+      </PromiseWrapper>
+    )
+  }
 }

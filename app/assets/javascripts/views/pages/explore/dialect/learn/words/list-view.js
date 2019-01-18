@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {PropTypes} from 'react'
-import Immutable, {Map} from 'immutable'
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
@@ -38,56 +38,56 @@ const intl = IntlService.instance
  */
 @provide
 export default class ListView extends DataListView {
-    static defaultProps = {
-      DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
-      DEFAULT_PAGE: 1,
-      DEFAULT_PAGE_SIZE: 10,
-      DEFAULT_LANGUAGE: 'english',
-      DEFAULT_SORT_COL: 'fv:custom_order',
-      DEFAULT_SORT_TYPE: 'asc',
-      dialect: null,
-      filter: new Map(),
-      gridListView: false,
-      controlViaURL: false,
-      renderSimpleTable: false,
-      disablePageSize: false,
-    }
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 10,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_TYPE: 'asc',
+    dialect: null,
+    filter: new Map(),
+    gridListView: false,
+    controlViaURL: false,
+    renderSimpleTable: false,
+    disablePageSize: false,
+  }
 
-    static propTypes = {
-      properties: PropTypes.object.isRequired,
-      windowPath: PropTypes.string.isRequired,
-      splitWindowPath: PropTypes.array.isRequired,
-      pushWindowPath: PropTypes.func.isRequired,
-      computeLogin: PropTypes.object.isRequired,
-      fetchDialect2: PropTypes.func.isRequired,
-      computeDialect2: PropTypes.object.isRequired,
-      dialect: PropTypes.object,
-      fetchWords: PropTypes.func.isRequired,
-      computeWords: PropTypes.object.isRequired,
-      routeParams: PropTypes.object.isRequired,
-      pageProperties: PropTypes.object,
-      filter: PropTypes.object,
-      data: PropTypes.string,
-      gridListView: PropTypes.bool,
-      controlViaURL: PropTypes.bool,
-      parentID: PropTypes.string,
-      renderSimpleTable: PropTypes.bool,
-      disablePageSize: PropTypes.bool,
-      onPaginationReset: PropTypes.func,
-      onPagePropertiesChange: PropTypes.func,
-      action: PropTypes.func,
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    dialect: PropTypes.object,
+    fetchWords: PropTypes.func.isRequired,
+    computeWords: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    pageProperties: PropTypes.object,
+    filter: PropTypes.object,
+    data: PropTypes.string,
+    gridListView: PropTypes.bool,
+    controlViaURL: PropTypes.bool,
+    parentID: PropTypes.string,
+    renderSimpleTable: PropTypes.bool,
+    disablePageSize: PropTypes.bool,
+    onPaginationReset: PropTypes.func,
+    onPagePropertiesChange: PropTypes.func,
+    action: PropTypes.func,
 
-      DISABLED_SORT_COLS: PropTypes.array,
-      DEFAULT_PAGE: PropTypes.number,
-      DEFAULT_PAGE_SIZE: PropTypes.number,
-      DEFAULT_SORT_COL: PropTypes.string,
-      DEFAULT_SORT_TYPE: PropTypes.string,
-    };
+    DISABLED_SORT_COLS: PropTypes.array,
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_COL: PropTypes.string,
+    DEFAULT_SORT_TYPE: PropTypes.string,
+  }
 
-    constructor(props, context) {
-      super(props, context)
-      // TODO: Remove `let language` below?
-      /*
+  constructor(props, context) {
+    super(props, context)
+    // TODO: Remove `let language` below?
+    /*
       let language
 
       switch (intl.locale) {
@@ -101,154 +101,191 @@ export default class ListView extends DataListView {
       }
       */
 
-      this.state = {
-        columns: [
-          {
-            name: 'title', title: intl.trans('word', 'Word', 'first'), render: (v, data,) => (
-              <a onClick={NavigationHelpers.disable} href={NavigationHelpers.generateUIDPath(this.props.routeParams.theme, data, 'words')}>{v}</a>
-            ),
-            sortName: 'fv:custom_order',
-          },
-          {
-            name: 'fv:definitions',
-            title: intl.trans('definitions', 'Definitions', 'first'),
-            render: (v, data, cellProps) => {
-              return UIHelpers.renderComplexArrayRow(selectn(`properties.${cellProps.name}`, data), (entry, i) => {
-                if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
-                  return <li key={i}>{entry.translation}</li>
-                }
-              })
-            },
-            sortName: 'fv:definitions/0/translation',
-          },
-          {
-            name: 'related_audio',
-            title: intl.trans('audio', 'Audio', 'first'),
-            render: (v, data, cellProps) => {
-              const firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
-              if (firstAudio) {
-                return (
-                  <Preview
-                    key={selectn('uid', firstAudio)}
-                    minimal
-                    tagProps={{preload: 'none'}}
-                    tagStyles={{width: '250px', maxWidth: '100%'}}
-                    expandedValue={firstAudio}
-                    type="FVAudio"
-                  />
-                )
+    this.state = {
+      columns: [
+        {
+          name: 'title',
+          title: intl.trans('word', 'Word', 'first'),
+          render: (v, data) => (
+            <a
+              onClick={NavigationHelpers.disable}
+              href={NavigationHelpers.generateUIDPath(this.props.routeParams.theme, data, 'words')}
+            >
+              {v}
+            </a>
+          ),
+          sortName: 'fv:custom_order',
+        },
+        {
+          name: 'fv:definitions',
+          title: intl.trans('definitions', 'Definitions', 'first'),
+          render: (v, data, cellProps) => {
+            return UIHelpers.renderComplexArrayRow(selectn(`properties.${cellProps.name}`, data), (entry, i) => {
+              if (entry.language === this.props.DEFAULT_LANGUAGE && i < 2) {
+                return <li key={i}>{entry.translation}</li>
               }
-            },
+            })
           },
-          {
-            name: 'related_pictures',
-            width: 72,
-            textAlign: 'center',
-            title: intl.trans('picture', 'Picture', 'first'),
-            render: (v, data, cellProps) => {
-              const firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
-              if (firstPicture) {
-                return (
-                  <img key={selectn('uid', firstPicture)}
-                    style={{maxWidth: '62px', maxHeight: '45px'}}
-                    src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')}
-                    alt=""
-                  />
-                )
-              }
-            },
-          },
-          {
-            name: 'fv-word:part_of_speech',
-            title: intl.trans('part_of_speech', 'Part of Speech', 'first'),
-            render: (v, data) => selectn('contextParameters.word.part_of_speech', data),
-          },
-          {
-            name: 'fv-word:categories',
-            title: intl.trans('categories', 'Categories', 'first'),
-            render: (v, data) => (
-              UIHelpers.renderComplexArrayRow(
-                selectn('contextParameters.word.categories', data),
-                (entry, i) => (<li key={i}>{selectn('dc:title', entry)}</li>)
+          sortName: 'fv:definitions/0/translation',
+        },
+        {
+          name: 'related_audio',
+          title: intl.trans('audio', 'Audio', 'first'),
+          render: (v, data, cellProps) => {
+            const firstAudio = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
+            if (firstAudio) {
+              return (
+                <Preview
+                  key={selectn('uid', firstAudio)}
+                  minimal
+                  tagProps={{ preload: 'none' }}
+                  tagStyles={{ width: '250px', maxWidth: '100%' }}
+                  expandedValue={firstAudio}
+                  type="FVAudio"
+                />
               )
-            )
+            }
           },
-        ],
-        sortInfo: {
-          uiSortOrder: [],
-          currentSortCols: this.props.DEFAULT_SORT_COL,
-          currentSortType: this.props.DEFAULT_SORT_TYPE,
         },
-        pageInfo: {
-          page: this.props.DEFAULT_PAGE,
-          pageSize: this.props.DEFAULT_PAGE_SIZE,
+        {
+          name: 'related_pictures',
+          width: 72,
+          textAlign: 'center',
+          title: intl.trans('picture', 'Picture', 'first'),
+          render: (v, data, cellProps) => {
+            const firstPicture = selectn('contextParameters.word.' + cellProps.name + '[0]', data)
+            if (firstPicture) {
+              return (
+                <img
+                  key={selectn('uid', firstPicture)}
+                  style={{ maxWidth: '62px', maxHeight: '45px' }}
+                  src={UIHelpers.getThumbnail(firstPicture, 'Thumbnail')}
+                  alt=""
+                />
+              )
+            }
+          },
         },
-      }
-
-      // Reduce the number of columns displayed for mobile
-      if (UIHelpers.isViewSize('xs')) {
-        this.state.columns = this.state.columns.filter((v) => ['title', 'fv:literal_translation'].indexOf(v.name) !== -1)
-        this.state.hideStateColumn = true
-      }
-
-      // Bind methods to 'this'
-      [
-        '_onNavigateRequest',
-        '_onEntryNavigateRequest',
-        '_handleRefetch',
-        '_handleSortChange',
-        '_handleColumnOrderChange',
-        '_resetColumns',
-        '_fetchData2',
-        '_getPathOrParentID'
-      ].forEach((method => this[method] = this[method].bind(this))) // eslint-disable-line
+        {
+          name: 'fv-word:part_of_speech',
+          title: intl.trans('part_of_speech', 'Part of Speech', 'first'),
+          render: (v, data) => selectn('contextParameters.word.part_of_speech', data),
+        },
+        {
+          name: 'fv-word:categories',
+          title: intl.trans('categories', 'Categories', 'first'),
+          render: (v, data) =>
+            UIHelpers.renderComplexArrayRow(selectn('contextParameters.word.categories', data), (entry, i) => (
+              <li key={i}>{selectn('dc:title', entry)}</li>
+            )),
+        },
+      ],
+      sortInfo: {
+        uiSortOrder: [],
+        currentSortCols: this.props.DEFAULT_SORT_COL,
+        currentSortType: this.props.DEFAULT_SORT_TYPE,
+      },
+      pageInfo: {
+        page: this.props.DEFAULT_PAGE,
+        pageSize: this.props.DEFAULT_PAGE_SIZE,
+      },
     }
 
-    _getPathOrParentID(newProps) {
-      return (newProps.parentID) ? newProps.parentID : `${newProps.routeParams.dialect_path}/Dictionary`
+    // Reduce the number of columns displayed for mobile
+    if (UIHelpers.isViewSize('xs')) {
+      this.state.columns = this.state.columns.filter((v) => ['title', 'fv:literal_translation'].indexOf(v.name) !== -1)
+      this.state.hideStateColumn = true
     }
 
-    fetchData(newProps) {
-      if (newProps.dialect === null && !this.getDialect(newProps)) {
-        newProps.fetchDialect2(newProps.routeParams.dialect_path)
-      }
+    // Bind methods to 'this'
+    [
+      '_onNavigateRequest',
+      '_onEntryNavigateRequest',
+      '_handleRefetch',
+      '_handleSortChange',
+      '_handleColumnOrderChange',
+      '_resetColumns',
+      '_fetchData2',
+      '_getPathOrParentID',
+    ].forEach((method) => (this[method] = this[method].bind(this))) // eslint-disable-line
+  }
 
-      this._fetchListViewData(newProps, newProps.DEFAULT_PAGE, newProps.DEFAULT_PAGE_SIZE, newProps.DEFAULT_SORT_TYPE, newProps.DEFAULT_SORT_COL)
+  _getPathOrParentID(newProps) {
+    return newProps.parentID ? newProps.parentID : `${newProps.routeParams.dialect_path}/Dictionary`
+  }
+
+  // NOTE: DataListView calls `fetchData`
+  fetchData(newProps) {
+    if (newProps.dialect === null && !this.getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
 
-    _onEntryNavigateRequest(item) {
-      if (this.props.action) {
-        this.props.action(item)
-      } else {
-        NavigationHelpers.navigate(NavigationHelpers.generateUIDPath(this.props.routeParams.theme, item, 'words'), this.props.pushWindowPath, true)
-      }
-    }
+    this._fetchListViewData(
+      newProps,
+      newProps.DEFAULT_PAGE,
+      newProps.DEFAULT_PAGE_SIZE,
+      newProps.DEFAULT_SORT_TYPE,
+      newProps.DEFAULT_SORT_COL
+    )
+  }
 
-    _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-      let currentAppliedFilter = ''
-
-      if (props.filter.has('currentAppliedFilter')) {
-        currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
-      }
-
-      props.fetchWords(
-        this._getPathOrParentID(props),
-        `${currentAppliedFilter}&currentPageIndex=${pageIndex - 1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+  _onEntryNavigateRequest(item) {
+    if (this.props.action) {
+      this.props.action(item)
+    } else {
+      NavigationHelpers.navigate(
+        NavigationHelpers.generateUIDPath(this.props.routeParams.theme, item, 'words'),
+        this.props.pushWindowPath,
+        true
       )
     }
+  }
 
-    getDialect(props = this.props) {
-      return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
+  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    let currentAppliedFilter = ''
+
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
+    /*
+      'dc:title'
+      'fv-word:part_of_speech'
+      'fv-word:pronunciation'
+      'fv:definitions'
+      'fv:literal_translation'
+      'fv:related_audio'
+      'fv:related_pictures'
+      'fv:related_videos'
+      'fv-word:related_phrases'
+      'fv-word:categories'
+      'fv:cultural_note'
+      'fv:reference'
+      'fv:source'
+      'fv:available_in_childrens_archive'
+      'fv-word:available_in_games'
+    */
+    const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex - 1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}` // NOTE: original query
+    //  const nql = `AND ecm:fulltext='*f*'&currentPageIndex=0&pageSize=10&sortOrder=asc&sortBy=ecm:fulltextScore` // NOTE: dev query
+    //  const nql = ` AND ( dc:title ILIKE 'b%' AND fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=dc:title` // NOTE: dev query
+    // const nql = " AND ( dc:title ILIKE 'b%' OR fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=fv-word:part_of_speech"  // NOTE: dev query
+    props.fetchWords(
+      this._getPathOrParentID(props),
+      nql
+    )
+  }
 
-    _fetchData2(fetcherParams, props = this.props) {
-      this.setState({
-        fetcherParams: fetcherParams,
-      })
+  getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
+  }
 
-      this._handleRefetch()
+  _fetchData2(fetcherParams, props = this.props) {
+    this.setState({
+      fetcherParams: fetcherParams,
+    })
 
-      /*props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
+    this._handleRefetch()
+
+    /*props.fetchWords(props.routeParams.dialect_path + '/Dictionary',
           ProviderHelpers.filtersToNXQL(fetcherParams.filters)  +
           '&currentPageIndex=' + (fetcherParams.currentPageIndex - 1) +
           '&pageSize=' + fetcherParams.pageSize +
@@ -256,50 +293,54 @@ export default class ListView extends DataListView {
           '&sortBy=' + fetcherParams.sortBy
       );*/
 
-      //this._fetchListViewData(props, fetcherParams.currentPageIndex, fetcherParams.pageSize, fetcherParams.sortOrder, fetcherParams.sortBy);
-    }
+    //this._fetchListViewData(props, fetcherParams.currentPageIndex, fetcherParams.pageSize, fetcherParams.sortOrder, fetcherParams.sortBy);
+  }
 
-    render() {
-      const computeEntities = Immutable.fromJS([{
-        'id': this._getPathOrParentID(this.props),
-        'entity': this.props.computeWords,
-      }])
+  render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this._getPathOrParentID(this.props),
+        entity: this.props.computeWords,
+      },
+    ])
 
-      // If dialect not supplied, promise wrapper will need to wait for compute dialect
-      if (!this.props.dialect) {
-        computeEntities.push(new Map({
-          'id': this.props.routeParams.dialect_path,
-          'entity': this.props.computeDialect2,
-        }))
-      }
-
-      const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this._getPathOrParentID(this.props))
-      const computeDialect2 = this.props.dialect || this.getDialect()
-
-      const listViewProps = {
-        className: 'browseDataGrid',
-        columns: this.state.columns,
-        data: computeWords,
-        dialect: selectn('response', computeDialect2),
-        disablePageSize: this.props.disablePageSize,
-        gridListView: this.props.gridListView,
-        objectDescriptions: 'words',
-        onColumnOrderChange: this._handleColumnOrderChange,
-        onSelectionChange: this._onEntryNavigateRequest,
-        onSortChange: this._handleSortChange,
-        page: this.state.pageInfo.page,
-        pageSize: this.state.pageInfo.pageSize,
-        refetcher: this._handleRefetch,
-        refetcher2: this._handleRefetch,
-        renderSimpleTable: this.props.renderSimpleTable,
-        sortInfo: this.state.sortInfo.uiSortOrder,
-        type: 'FVWord',
-      }
-
-      return (
-        <PromiseWrapper renderOnError computeEntities={computeEntities}>
-          {selectn('response.entries', computeWords) && <DocumentListView {...listViewProps}/>}
-        </PromiseWrapper>
+    // If dialect not supplied, promise wrapper will need to wait for compute dialect
+    if (!this.props.dialect) {
+      computeEntities.push(
+        new Map({
+          id: this.props.routeParams.dialect_path,
+          entity: this.props.computeDialect2,
+        })
       )
     }
+
+    const computeWords = ProviderHelpers.getEntry(this.props.computeWords, this._getPathOrParentID(this.props))
+    const computeDialect2 = this.props.dialect || this.getDialect()
+
+    const listViewProps = {
+      className: 'browseDataGrid',
+      columns: this.state.columns,
+      data: computeWords,
+      dialect: selectn('response', computeDialect2),
+      disablePageSize: this.props.disablePageSize,
+      gridListView: this.props.gridListView,
+      objectDescriptions: 'words',
+      onColumnOrderChange: this._handleColumnOrderChange,
+      onSelectionChange: this._onEntryNavigateRequest,
+      onSortChange: this._handleSortChange,
+      page: this.state.pageInfo.page,
+      pageSize: this.state.pageInfo.pageSize,
+      refetcher: this._handleRefetch,
+      refetcher2: this._handleRefetch,
+      renderSimpleTable: this.props.renderSimpleTable,
+      sortInfo: this.state.sortInfo.uiSortOrder,
+      type: 'FVWord',
+    }
+
+    return (
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
+        {selectn('response.entries', computeWords) && <DocumentListView {...listViewProps} />}
+      </PromiseWrapper>
+    )
+  }
 }

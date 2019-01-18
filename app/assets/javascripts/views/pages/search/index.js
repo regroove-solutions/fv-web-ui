@@ -115,6 +115,7 @@ export default class Search extends DataListView {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
+  // NOTE: DataListView calls `fetchData`
   fetchData(newProps = this.props) {
     this._fetchListViewData(
       newProps,
@@ -126,7 +127,7 @@ export default class Search extends DataListView {
   }
 
   _fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
-    if (props.routeParams.searchTerm && props.routeParams.searchTerm != '') {
+    if (props.routeParams.searchTerm && props.routeParams.searchTerm !== '') {
       const documentTypeFilter = "'" + formValue.documentTypes.join("','") + "'"
       // const documentTypeFilter = `'${formValue.documentTypes.join("','")}'`
       props.searchDocuments(
@@ -165,13 +166,13 @@ export default class Search extends DataListView {
 
     const properties = FormHelpers.getProperties(form)
 
-    if (Object.keys(properties).length != 0) {
+    if (Object.keys(properties).length !== 0) {
       this.setState({
         formValue: properties,
       })
 
       // If search term didn't change, but facets did - update results
-      if (properties.searchTerm == this.props.routeParams.searchTerm && properties != this.state.formValue) {
+      if (properties.searchTerm === this.props.routeParams.searchTerm && properties !== this.state.formValue) {
         this._fetchListViewData(
           this.props,
           this.state.pageInfo.page,
@@ -187,7 +188,7 @@ export default class Search extends DataListView {
   }
 
   _onEntryNavigateRequest(path) {
-    this.props.pushWindowPath('/' + this.props.routeParams.theme + path)
+    this.props.pushWindowPath(`/${this.props.routeParams.theme}${path}`)
   }
 
   _getQueryPath(props = this.props) {
@@ -228,7 +229,7 @@ export default class Search extends DataListView {
   componentDidUpdate(prevProps, prevState) {
     const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath())
 
-    if (selectn('response.totalSize', computeSearchDocuments) != undefined) {
+    if (selectn('response.totalSize', computeSearchDocuments) !== undefined) {
       // Track search event
       AnalyticsHelpers.trackSiteSearch({
         keyword: this.props.routeParams.searchTerm,
