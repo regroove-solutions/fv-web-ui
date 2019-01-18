@@ -15,22 +15,26 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import Immutable, { Set, Map } from 'immutable'
+
 import classNames from 'classnames'
+import { isMobile } from 'react-device-detect'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
-import PromiseWrapper from 'views/components/Document/PromiseWrapper'
+
+import GridTile from 'material-ui/lib/grid-list/grid-tile'
+import RaisedButton from 'material-ui/lib/raised-button'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
+
+import { SearchWordsPhrases } from 'components/SearchWordsPhrases'
+import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+import FacetFilterListCategory from 'views/components/Browsing/facet-filter-list-category'
+import IntlService from 'views/services/intl'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
-import RaisedButton from 'material-ui/lib/raised-button'
-import FacetFilterListCategory from 'views/components/Browsing/facet-filter-list-category'
-import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
-import { SearchWordsPhrases } from 'components/SearchWordsPhrases'
-import { isMobile } from 'react-device-detect'
-import IntlService from 'views/services/intl'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 // import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 
@@ -74,27 +78,6 @@ class AlphabetGridTile extends Component {
     const { char } = this.state
     this.props.action(char, 'startsWith', (letter) => {
       const query = ` AND dc:title LIKE '${letter}%'`
-      // AND dc:title LIKE 'a%'
-      // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'a%25'"
-      // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:fulltext = '*b*'"
-      // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'b%25'"
-      /*
-      'dc:title'
-      'fv-word:part_of_speech'
-      'fv-word:pronunciation'
-      'fv:definitions'
-      'fv:literal_translation'
-      'fv:related_audio'
-      'fv:related_pictures'
-      'fv:related_videos'
-      'fv-word:related_phrases'
-      'fv-word:categories'
-      'fv:cultural_note'
-      'fv:reference'
-      'fv:source'
-      'fv:available_in_childrens_archive'
-      'fv-word:available_in_games'
-      */
       return query
     })
   }
@@ -184,11 +167,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         entity: this.props.computePortal,
       },
       {
-        id: this.props.routeParams.dialect_path + '/Dictionary',
+        id: `${this.props.routeParams.dialect_path}/Dictionary`,
         entity: this.props.computeDocument,
       },
       {
-        id: '/api/v1/path/FV/' + this.props.routeParams.area + '/SharedData/Shared Categories/@children',
+        id: `/api/v1/path/FV/${this.props.routeParams.area}/SharedData/Shared Categories/@children`,
         entity: this.props.computeCategories,
       },
     ])
@@ -475,6 +458,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       // In these pages (words/phrase), list views are controlled via URL
       this._resetURLPagination()
 
+      // console.log('!!! _changeFilter', newFilter.toJS())
+
       this.setState({ filterInfo: newFilter })
     }
   }
@@ -487,14 +472,39 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
   }
 
+  // AND dc:title LIKE 'a%'
+  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'a%25'"
+  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:fulltext = '*b*'"
+  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'b%25'"
+
+  // SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND (dc:title LIKE 'b%25' OR fv-word:part_of_speech = '')
+
+  /*
+  'dc:title'
+  'fv-word:part_of_speech'
+  'fv-word:pronunciation'
+  'fv:definitions'
+  'fv:literal_translation'
+  'fv:related_audio'
+  'fv:related_pictures'
+  'fv:related_videos'
+  'fv-word:related_phrases'
+  'fv-word:categories'
+  'fv:cultural_note'
+  'fv:reference'
+  'fv:source'
+  'fv:available_in_childrens_archive'
+  'fv-word:available_in_games'
+  */
   _handleSearch() {
     const { searchTerm } = this.state
     this._changeFilter(searchTerm, 'contains', (term) => {
       return ` AND ecm:fulltext = '*${StringHelpers.clean(term, 'fulltext')}*'`
+      // return ` AND dc:title LIKE '${term}%'`
     })
   }
 
-  // TODO: Figure out how `fetchData` is being called
+  // NOTE: PageDialectLearnBase calls `fetchData`
   fetchData(newProps) {
     ProviderHelpers.fetchIfMissing(
       newProps.routeParams.dialect_path + '/Portal',

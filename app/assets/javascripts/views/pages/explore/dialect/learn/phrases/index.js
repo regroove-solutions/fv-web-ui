@@ -90,7 +90,7 @@ constructor(props, context) {
 _getPageKey() {
   return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_phrases'
 }
-
+// NOTE: PageDialectLearnBase calls `fetchData`
 fetchData(newProps) {
   ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Portal', newProps.fetchPortal, newProps.computePortal)
   ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path + '/Dictionary', newProps.fetchDocument, newProps.computeDocument)

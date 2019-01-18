@@ -106,6 +106,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
         ['_onNavigateRequest', '_onCharAudioTouchTap'].forEach((method => this[method] = this[method].bind(this)));
     }
 
+    // NOTE: PageDialectLearnBase calls `fetchData`
     fetchData(newProps) {
         newProps.fetchDialect2(newProps.routeParams.dialect_path);
         newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
