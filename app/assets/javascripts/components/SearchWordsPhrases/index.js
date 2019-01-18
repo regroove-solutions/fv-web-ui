@@ -1,11 +1,16 @@
 import React, { Component } from 'react'
 import { PropTypes } from 'react'
+
+import provide from 'react-redux-provide'
+
 import classNames from 'classnames'
 import RaisedButton from 'material-ui/lib/raised-button'
 import IntlService from 'views/services/intl'
+
 const intl = IntlService.instance
 const { any, func, string } = PropTypes
 
+@provide
 class SearchWordsPhrases extends Component {
   static propTypes = {
     handleEnterSearch: func,
@@ -52,6 +57,33 @@ class SearchWordsPhrases extends Component {
             onTouchTap={this._resetSearch}
             primary={false}
           />
+          <div>
+            <span>
+              <input type="radio" name="searchType" id="searchAll" />
+              <label htmlFor="searchAll">Search all fields</label>
+            </span>
+            <span>
+              <input type="radio" name="searchType" id="searchAdvanced" />
+              <label htmlFor="searchAdvanced">Advanced Search</label>
+            </span>
+
+            <span>
+              <input type="checkbox" id="searchPhrase" />
+              <label htmlFor="searchPhrase">Phrase</label>
+            </span>
+            <span>
+              <input type="checkbox" id="searchWord" />
+              <label htmlFor="searchWord">Word</label>
+            </span>
+            <span>
+              <input type="checkbox" id="searchDefinitions" />
+              <label htmlFor="searchDefinitions">Definitions</label>
+            </span>
+            <span>
+              <input type="checkbox" id="searchPartOfSpeech" />
+              <label htmlFor="searchPartOfSpeech">Part of speech</label>
+            </span>
+          </div>
         </div>
 
         {searchAlertInfo && <div className={classNames('alert', 'alert-info')}>{searchAlertInfo}</div>}
@@ -63,7 +95,6 @@ class SearchWordsPhrases extends Component {
     this.props.updateSearchTerm(evt)
   }
   _handleEnterSearch(evt) {
-    // TODO: when hit enter searchAlertInfo is an array?
     this.props.handleEnterSearch(evt)
   }
 
