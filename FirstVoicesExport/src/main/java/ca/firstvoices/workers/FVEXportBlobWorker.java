@@ -53,13 +53,16 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
             // relocates blob from tmp to data in $NUXEO_HOME/data/binaries/
             // creates 2 subdirectories from the provided digest
             // to keep structure exactly the same as NUXEO is doing
-            String savedBlobDigest = blobRelocator.relocateBlobExportFile();
+            String exportDocDigest = blobRelocator.relocateBlobExportFile();
+
+            // TODO: this is temporary just to check things work correctly
+            // it uses internal blobRelocator digest created during relocation
             Boolean bde = blobRelocator.checkIfDigestExists();
 
             // TODO: COMPLETE HERE!!!!!
             // - create FVExport wrapper
-            // - attach savedBlobDigest to the wrapper
-            // - also workInfo properties need to be saved
+            // - attach exportDocDigest to the wrapper
+            // - attach workInfo properties to the wrapper
 
             lctx.logout();
             session.close();
