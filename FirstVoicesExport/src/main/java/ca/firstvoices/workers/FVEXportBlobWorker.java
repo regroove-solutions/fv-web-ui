@@ -5,14 +5,14 @@ import ca.firstvoices.utils.FVExportCompletionInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.blob.binary.BinaryBlobProvider;
-import org.nuxeo.ecm.core.blob.binary.BinaryManager;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.blob.binary.Binary;
+import org.nuxeo.ecm.core.blob.binary.DefaultBinaryManager;
+import org.nuxeo.ecm.core.blob.binary.LocalBinaryManager;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 
 import static ca.firstvoices.utils.FVExportConstants.BLOB_WORKER;
 
@@ -21,6 +21,7 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
     private FVExportCompletionInfo workInfo;
 
     private static final Log log = LogFactory.getLog(FVExportWorker.class);
+
 
     @Override
     public String getCategory() {
@@ -45,28 +46,41 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
         {
             LoginContext lctx = Framework.login();
             CoreSession session = CoreInstance.openCoreSession("default");
-            DocumentModel doc = session.createDocumentModel("fvexport");
 
-            byte[] blobData = convertFileContentToBlob( workInfo.filePath );
+            // this is a test to get a digest using MD5
+            // I am not sure if this is done automatically later
+//            byte[] blobData = convertFileContentToBlob( workInfo.filePath );
 //            BlobManager.BlobInfo blobInfo = new BlobManager.BlobInfo();
 //            blobInfo.digest = DigestUtils.md5Hex(blobData);
 //            blobInfo.filename = workInfo.filePath;
 //            blobInfo.length = workInfo.fileLength;
 //            blobInfo.mimeType = "text/csv";
 //            blobInfo.encoding = "UTF-8";
-
             File file = new File(workInfo.filePath);
-            Blob blob = Blobs.createBlob( file, "text/csv", "UTF-8", workInfo.filePath );
-            blob.setDigest( DigestUtils.md5Hex(blobData) );
+            //FileInputStream inputStream = new FileInputStream( file );
 
-            BinaryManager blobBinaryManager = Framework.getService(BinaryManager.class);
-            BinaryBlobProvider bp = new BinaryBlobProvider( blobBinaryManager );
+            FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
+            //fileBlob.setDigest( DigestUtils.md5Hex(blobData) );
 
-            //bp.writeBlob();
+            // I am assuming I have to use binaryMgr to bring this into location we want
+            // apparently if the file/document do not exist ... provider has to be used
+            // if document exists manager needs to be used - needs to be understood better
+            // and confirmed
+            // DefaultBinaryManger is suppose deal with large files
+            //TODO: need to get org.nuxeo.ecm.core.storage.binary.BinaryManagerService
+            // I dunno why I cannnot
+            // thought this service we will get default DefaultBinaryManager
 
+            //DefaultBinaryManager defaultBinaryManager; // bmgrs.getBinaryManager("default"); // default is the repository
+            // Binary bin = defaultBinaryManager.getBinary( fileBlob ); // this is the only call which
 
             // DocumentModel doc = session.getDocument( new IdRef(workInfo.dialectGUID));
-            //String key = blobManager. // .writeBlob( blob, doc );
+
+            //  DocumentModel doc = session.createDocumentModel("fvexport");
+
+            // bp.writeBlob();
+
+            // DocumentModel doc = session.getDocument( new IdRef(workInfo.dialectGUID));
             //
 
             lctx.logout();
@@ -78,6 +92,7 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
         }
     }
 
+    // early experiment
     public static byte[] convertFileContentToBlob(String filePath) throws IOException
     {
         // create file object

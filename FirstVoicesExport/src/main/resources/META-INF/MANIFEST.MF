@@ -10,5 +10,6 @@ Bundle-Vendor: Nuxeo
 Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.listeners.xml,
  OSGI-INF/extensions/ca.firstvoices.operations.xml,OSGI-INF/extens
  ions/ca.firstvoices.workers.xml,OSGI-INF/extensions/ca.firstvoice
- s.schedulers.xml,OSGI-INF/extensions/ca.firstvoices.blobmgr.xml
+ s.schedulers.xml,OSGI-INF/extensions/ca.firstvoices.blobmgr.xml,O
+ SGI-INF/extensions/ca.firstvoices.fvexport.xml
 
