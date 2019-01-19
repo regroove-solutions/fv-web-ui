@@ -3,9 +3,7 @@ package ca.firstvoices.utils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -146,13 +144,24 @@ public class FVBlobRelocatorAccessor {
         Files.deleteIfExists(Paths.get(path));
     }
 
-    public File getFileForDigest( String digest )
+    public File getFileForDigest( String digest ) throws NullPointerException
     {
-        return null;
+        String digestPath = getDataDirectoryPathToDigest( digest );
+        File digestFile = new File( digestPath );
+        return digestFile;
     }
 
-    public FileOutputStream getOutputStreamForDigest( String digest )
+    public FileInputStream getInputStreamForDigest( String digest ) throws FileNotFoundException
     {
-        return null;
+        String digestPath = getDataDirectoryPathToDigest( digest );
+        FileInputStream fileStream = new FileInputStream( digestPath );
+        return fileStream;
+    }
+
+    public FileReader getFileReaderForDigest( String digest ) throws FileNotFoundException
+    {
+        String digestPath = getDataDirectoryPathToDigest( digest );
+        FileReader fileReader = new FileReader( digestPath );
+        return fileReader;
     }
 }
