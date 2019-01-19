@@ -67,13 +67,15 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
             // if document exists manager needs to be used - needs to be understood better
             // and confirmed
             // DefaultBinaryManger is suppose deal with large files
+            // there is also LocalBinaryManager which is less desirable to use.
             //TODO: need to get org.nuxeo.ecm.core.storage.binary.BinaryManagerService
-            // I dunno why I cannnot
-            // thought this service we will get default DefaultBinaryManager
+            // I dunno why I cannnot make it happen
+            // through this service we will get DefaultBinaryManager
 
             //DefaultBinaryManager defaultBinaryManager; // bmgrs.getBinaryManager("default"); // default is the repository
-            // Binary bin = defaultBinaryManager.getBinary( fileBlob ); // this is the only call which
+            // Binary bin = defaultBinaryManager.getBinary( fileBlob );
 
+            // this is the only call which saved the data in the location in binaries/data/
             // DocumentModel doc = session.getDocument( new IdRef(workInfo.dialectGUID));
 
             //  DocumentModel doc = session.createDocumentModel("fvexport");
