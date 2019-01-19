@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static ca.firstvoices.utils.FVExportConstants.BlOB_WORK_INFO;
 import static ca.firstvoices.utils.FVExportConstants.FINISH_EXPORT_BY_WRAPPING_BLOB;
+import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
 
 abstract public class FV_AbstractProducer
 {
@@ -53,10 +54,8 @@ abstract public class FV_AbstractProducer
     {
         try
         {
-            Map<String, String> env = System.getenv();
-            String nuxeo_path = env.get("PWD" );
-            nuxeo_path = nuxeo_path + "/nxserver/data/binaries/tmp/"; // TODO: need to find how this is handled in the production
-            File path = new File( nuxeo_path );
+            String nuxeo_temp_path = getTEMPBlobDirectoryPath();
+            File path = new File( nuxeo_temp_path );
             originalFileName = fileName;
             outputFile = File.createTempFile(fileName, "." + suffix.toLowerCase(), path );
 
