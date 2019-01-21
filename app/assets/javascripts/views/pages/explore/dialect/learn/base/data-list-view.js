@@ -22,7 +22,7 @@ const intl = IntlService.instance
 
 /**
  * Data List View
- * NOTE: The `class` that `extends` `DataListView` must define a `fetchData` function
+ * NOTE: The `class` that `extends` `DataListView` must define `fetchData`, `_fetchListViewData` functions
  * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
  */
 export default class DataListView extends Component {
@@ -32,6 +32,11 @@ export default class DataListView extends Component {
     if (typeof this.fetchData === 'undefined') {
       // eslint-disable-next-line
       console.warn("The `class` that `extends` `DataListView` must define a `fetchData` function")
+    }
+
+    if (typeof this._fetchListViewData === 'undefined') {
+      // eslint-disable-next-line
+      console.warn("The `class` that `extends` `DataListView` must define a `_fetchListViewData` function")
     }
   }
 
@@ -52,24 +57,36 @@ export default class DataListView extends Component {
     onPagePropertiesChange: PropTypes.any, // TODO: set appropriate propType
   }
 
+  // NOTE: The `class` that `extends` `DataListView` must define a `fetchData` function
   fetchData() {
     // eslint-disable-next-line
     console.warn("The `class` that `extends` `DataListView` must define a `fetchData` function")
   }
 
+  // NOTE: The `class` that `extends` `DataListView` must define a `_fetchListViewData` function
+  _fetchListViewData() {
+    // eslint-disable-next-line
+    console.warn("The `class` that `extends` `DataListView` must define a `_fetchListViewData` function")
+  }
+
   // Fetch data on initial render
   componentDidMount() {
     this._resetColumns(this.props)
+    // eslint-disable-next-line
+    console.log('!!! DataListView > componentDidMount is calling: fetchData()')
     this.fetchData(this.props)
   }
 
   // Refetch data on URL change
+  // TODO: At minimum, migrate to `getDerivedStateFromProps()` or https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
   componentWillReceiveProps(nextProps) {
     if (nextProps.controlViaURL) {
       if (
         nextProps.routeParams.page !== this.props.routeParams.page ||
         nextProps.routeParams.pageSize !== this.props.routeParams.pageSize
       ) {
+        // eslint-disable-next-line
+        console.log('!!! DataListView > componentWillReceiveProps calling: _fetchListViewData()')
         this._fetchListViewData(
           nextProps,
           nextProps.DEFAULT_PAGE,
@@ -81,6 +98,8 @@ export default class DataListView extends Component {
       }
     } else {
       if (nextProps.windowPath !== this.props.windowPath) {
+        // eslint-disable-next-line
+        console.log('!!! DataListView > componentWillReceiveProps is calling: fetchData()')
         this.fetchData(nextProps)
       }
     }
@@ -94,6 +113,8 @@ export default class DataListView extends Component {
       this.props.filter.has('currentAppliedFilter') &&
       !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))
     ) {
+      // eslint-disable-next-line
+      console.log('!!! DataListView > componentWillReceiveProps calling: _fetchListViewData()')
       this._fetchListViewData(
         nextProps,
         nextProps.DEFAULT_PAGE,
@@ -125,6 +146,8 @@ export default class DataListView extends Component {
     }
 
     if (!this.props.controlViaURL) {
+      // eslint-disable-next-line
+      console.log('!!! DataListView > _handleRefetch calling: _fetchListViewData()')
       this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols)
     } else {
       const urlPage = selectn('page', this.props.routeParams)
@@ -183,6 +206,8 @@ export default class DataListView extends Component {
     // Skip updating if last sort addition is disabled
     if (colRequestSkipped) return
 
+    // eslint-disable-next-line
+    console.log('!!! DataListView > _handleSortChange calling: _fetchListViewData()')
     this._fetchListViewData(
       this.props,
       this.props.DEFAULT_PAGE,

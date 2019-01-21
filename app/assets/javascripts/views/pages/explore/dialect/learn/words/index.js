@@ -27,7 +27,10 @@ import RaisedButton from 'material-ui/lib/raised-button'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
-import { SearchWordsPhrases } from 'components/SearchWordsPhrases'
+import { SearchWordsPhrases } from 'views/components/SearchWordsPhrases'
+import { SEARCH_DEFAULT, SEARCH_ADVANCED } from 'views/components/SearchWordsPhrases/constants'
+// import { SEARCH_ADVANCED } from '../../../../../components/SearchWordsPhrases/constants';
+
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import FacetFilterListCategory from 'views/components/Browsing/facet-filter-list-category'
@@ -70,7 +73,7 @@ class AlphabetGridTile extends Component {
           height: 'initial',
         }}
       >
-        <a onClick={this._handleClick}>{char}</a>
+        <a onClick={this._handleClick} className="AlphabetGridTileLink">{char}</a>
       </GridTile>
     )
   }
@@ -163,16 +166,16 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     const computeEntities = Immutable.fromJS([
       {
-        id: this.props.routeParams.dialect_path,
-        entity: this.props.computePortal,
+        id: props.routeParams.dialect_path,
+        entity: props.computePortal,
       },
       {
-        id: `${this.props.routeParams.dialect_path}/Dictionary`,
-        entity: this.props.computeDocument,
+        id: `${props.routeParams.dialect_path}/Dictionary`,
+        entity: props.computeDocument,
       },
       {
-        id: `/api/v1/path/FV/${this.props.routeParams.area}/SharedData/Shared Categories/@children`,
-        entity: this.props.computeCategories,
+        id: `/api/v1/path/FV/${props.routeParams.area}/SharedData/Shared Categories/@children`,
+        entity: props.computeCategories,
       },
     ])
 
@@ -180,75 +183,94 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       filterInfo,
       visibleFilter: null,
       searchTerm: null,
+      searchType: SEARCH_DEFAULT,
+      searchPhrase: false,
+      searchWord: false,
+      searchDefinitions: false,
+      searchPartOfSpeech: false,
       computeEntities,
-      isKidsTheme: this.props.routeParams.theme === 'kids',
+      isKidsTheme: props.routeParams.theme === 'kids',
     }
 
     // Bind methods to 'this'
     ;[
       '_changeFilter',
       '_getPageKey',
-      '_getURLPageProps',
+      '_getSearchAlertInfo',
+      '_getSearchSort',
       '_handleEnterSearch',
       '_handleFacetSelected',
-      '_handleFilterChange',
-      '_handlePagePropertiesChange',
+      '_handleInputChange',
       '_handleSearch',
-      '_onNavigateRequest',
       '_resetSearch',
-      '_resetURLPagination',
       '_updateSearchTerm',
+      '_getURLPageProps', // NOTE: PageDialectLearnBase provides `_getURLPageProps`
+      '_handleFilterChange', // NOTE: PageDialectLearnBase provides `_handleFilterChange`
+      '_handlePagePropertiesChange', // NOTE: PageDialectLearnBase provides `_handlePagePropertiesChange`
+      '_onNavigateRequest', // NOTE: PageDialectLearnBase provides `_onNavigateRequest`
+      '_resetURLPagination', // NOTE: PageDialectLearnBase provides `_resetURLPagination`
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   render() {
-    const { computeEntities, filterInfo, isKidsTheme, searchTerm, visibleFilter } = this.state
-    const { routeParams } = this.props
+    const {
+      computeEntities,
+      filterInfo,
+      isKidsTheme,
+      searchTerm,
+      searchPhrase,
+      searchWord,
+      searchDefinitions,
+      searchPartOfSpeech,
+      searchType,
+      visibleFilter,
+    } = this.state
 
-    const _computeDocument = ProviderHelpers.getEntry(
+    const { routeParams } = this.props
+    const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
       `${routeParams.dialect_path}/Dictionary`
     )
 
-    const _computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
+    const computePortal = ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
 
-    const _computeCategories = ProviderHelpers.getEntry(
+    const computeCategories = ProviderHelpers.getEntry(
       this.props.computeCategories,
       `/api/v1/path/FV/${routeParams.area}/SharedData/Shared Categories/@children`
     )
+    const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
-    const computeCategoriesSize = selectn('response.entries.length', _computeCategories) || 0
+    const searchSort = this._getSearchSort()
+    const searchAlertInfoOutput = this._getSearchAlertInfo()
 
-    const searchSort = searchTerm
-      ? {
-        DEFAULT_SORT_COL: 'ecm:fulltextScore',
-        DEFAULT_SORT_TYPE: 'desc',
-      }
-      : {}
-
-    const wordListView = selectn('response.uid', _computeDocument) ? (
+    const wordListView = selectn('response.uid', computeDocument) ? (
       <WordListView
         controlViaURL
         DEFAULT_PAGE_SIZE={10}
         filter={filterInfo}
         onPaginationReset={this._resetURLPagination}
         onPagePropertiesChange={this._handlePagePropertiesChange}
-        parentID={selectn('response.uid', _computeDocument)}
+        parentID={selectn('response.uid', computeDocument)}
         renderSimpleTable
         routeParams={this.props.routeParams}
+        // NOTE: PageDialectLearnBase provides `_getURLPageProps`
         {...this._getURLPageProps()}
         {...searchSort}
+        // DEFAULT_PAGE
+        // DEFAULT_PAGE_SIZE
+        // DEFAULT_SORT_TYPE
+        // DEFAULT_SORT_COL
       />
     ) : (
       ''
     )
 
-    // Render kids view
-
-    // Or Mobile
+    // Render kids or mobile view
     if (isKidsTheme || isMobile) {
       const pageSize = !isKidsTheme && isMobile ? 10 : 8
 
+      // eslint-disable-next-line
+      console.log('!!! UPDATING: currentAppliedFilter !!!')
       const kidsFilter = filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1')
 
       return (
@@ -267,37 +289,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       )
     }
 
-    let searchAlertInfo = (
-      <span>
-        Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
-      </span>
-    )
-
-    if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
-      const appliedFilters = ['Showing words that ']
-      let i = 0
-
-      filterInfo.get('currentAppliedFiltersDesc').map((currentValue, index, arr) => {
-        appliedFilters.push(currentValue)
-        if (arr.size > 1 && arr.size - 1 !== i) {
-          appliedFilters.push(
-            <span>
-              {' '}
-              <span style={{ textDecoration: 'underline' }}>AND</span>
-            </span>
-          )
-        }
-        ++i
-      })
-
-      searchAlertInfo = appliedFilters
-    }
-
     const browseAlphabetically = React.cloneElement(
       <AlphabetListView
         pagination={false}
         routeParams={this.props.routeParams}
-        dialect={selectn('response', _computePortal)}
+        dialect={selectn('response', computePortal)}
       />,
       {
         gridListView: true,
@@ -317,7 +313,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
             <AuthorizationFilter
               filter={{
-                entity: selectn('response', _computeDocument),
+                entity: selectn('response', computeDocument),
                 login: this.props.computeLogin,
                 role: ['Record', 'Approve', 'Everything'],
               }}
@@ -370,7 +366,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                     this.props.routeParams.area
                   )}
                   onFacetSelected={this._handleFacetSelected}
-                  facets={selectn('response.entries', _computeCategories) || []}
+                  facets={selectn('response.entries', computeCategories) || []}
                 />
               )}
 
@@ -381,7 +377,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             {/*
               <hr />
               <div>
-              <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal)}</h3>
+              <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
 
               <ul>
               <li>Browse Words</li>
@@ -397,7 +393,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           </div>
           <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1>
-              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', _computePortal) || ''} ${intl.trans(
+              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''} ${intl.trans(
                 'words',
                 'Words',
                 'first'
@@ -405,12 +401,18 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             </h1>
 
             <SearchWordsPhrases
+              handleInputChange={this._handleInputChange}
               handleEnterSearch={this._handleEnterSearch}
               handleSearch={this._handleSearch}
               resetSearch={this._resetSearch}
               updateSearchTerm={this._updateSearchTerm}
-              searchAlertInfo={searchAlertInfo}
+              searchAlertInfo={searchAlertInfoOutput}
               searchTerm={searchTerm}
+              searchType={searchType}
+              searchPhrase={searchPhrase}
+              searchWord={searchWord}
+              searchDefinitions={searchDefinitions}
+              searchPartOfSpeech={searchPartOfSpeech}
             />
 
             {wordListView}
@@ -422,10 +424,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   // END render
 
   _changeFilter(value, type, nxql) {
+    // eslint-disable-next-line
+    console.log("!!! PageDialectLearnWords > _changeFilter()", value, type, nxql)
     if (value && value !== '') {
       let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
         return nxql(value)
       })
+      // eslint-disable-next-line
+      console.log('!!! UPDATED:::::::::: currentAppliedFilter:', this.state.filterInfo.get('currentAppliedFilter').toJS())
 
       newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', type], () => {
         let filterDesc
@@ -457,19 +463,68 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       // When facets change, pagination should be reset.
       // In these pages (words/phrase), list views are controlled via URL
       this._resetURLPagination()
-
-      // console.log('!!! _changeFilter', newFilter.toJS())
-
       this.setState({ filterInfo: newFilter })
     }
   }
 
   _clearAllFilters() {}
 
+  _getSearchAlertInfo() {
+    const {filterInfo} = this.state
+
+    let searchAlertInfo = (
+      <span>
+        Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
+      </span>
+    )
+
+    if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
+      const appliedFilters = ['Showing words that ']
+      let i = 0
+
+      filterInfo.get('currentAppliedFiltersDesc').map((currentValue, index, arr) => {
+        appliedFilters.push(currentValue)
+        if (arr.size > 1 && arr.size - 1 !== i) {
+          appliedFilters.push(
+            <span>
+              {' '}
+              <span style={{ textDecoration: 'underline' }}>AND</span>
+            </span>
+          )
+        }
+        ++i
+      })
+
+      searchAlertInfo = appliedFilters
+    }
+
+    // this.setState({searchAlertInfo})
+    return searchAlertInfo
+  }
+
+  _getSearchSort() {
+    const { searchTerm } = this.state
+    return searchTerm ? {
+      DEFAULT_SORT_COL: 'ecm:fulltextScore',
+      DEFAULT_SORT_TYPE: 'desc',
+    } : {}
+  }
+
   _handleEnterSearch(evt) {
     if (evt.key === 'Enter') {
       this._handleSearch()
     }
+  }
+
+  _handleInputChange(id, checked) {
+    const state = {}
+    if (id === SEARCH_DEFAULT || id === SEARCH_ADVANCED) {
+      state.searchType = id
+    } else {
+      state[id] = checked
+    }
+    this.setState(state)
+
   }
 
   // AND dc:title LIKE 'a%'
@@ -497,7 +552,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   'fv-word:available_in_games'
   */
   _handleSearch() {
+    // eslint-disable-next-line
     const { searchTerm } = this.state
+    console.log("!!! PageDialectLearnWords > _handleSearch: calling _changeFilter()")
+    /*
+      categories: " AND fvproxy:proxied_categories/* IN ("61e20652-96a6-44e8-8b3b-a5e3aac350ea")"
+      contains: " AND ecm:fulltext = '*D*'"
+      startsWith: " AND dc:title LIKE 'ch%'"
+    */
     this._changeFilter(searchTerm, 'contains', (term) => {
       return ` AND ecm:fulltext = '*${StringHelpers.clean(term, 'fulltext')}*'`
       // return ` AND dc:title LIKE '${term}%'`
@@ -524,7 +586,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   _getPageKey() {
-    return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_words'
+    return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 
   // TODO: _resetSearch needs to also clear Alphabetical Search
@@ -539,6 +601,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this._resetURLPagination()
 
     this.setState({ filterInfo: newFilter, searchTerm: null })
+  }
+
+  _setFilter() {
+    // eslint-disable-next-line
+    console.log("!!! PageDialectLearnWords > _setFilter()")
   }
 
   _updateSearchTerm(evt) {
