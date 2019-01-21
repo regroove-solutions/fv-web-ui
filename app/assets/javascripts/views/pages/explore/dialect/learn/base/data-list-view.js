@@ -150,8 +150,10 @@ export default class DataListView extends Component {
       console.log('!!! DataListView > _handleRefetch calling: _fetchListViewData()')
       this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols)
     } else {
-      const urlPage = selectn('page', this.props.routeParams)
-      const urlPageSize = selectn('pageSize', this.props.routeParams)
+      const _urlPage = selectn('page', this.props.routeParams)
+      const _urlPageSize = selectn('pageSize', this.props.routeParams)
+      const urlPage = _urlPage !== undefined ? parseInt(_urlPage, 10) : _urlPage
+      const urlPageSize = _urlPageSize !== undefined ? parseInt(_urlPageSize, 10) : _urlPageSize
 
       // If page and pageSize exist, and are different, replace them; otherwise - add them
       if (urlPage && urlPageSize) {
