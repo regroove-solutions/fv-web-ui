@@ -72,8 +72,6 @@ export default class DataListView extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this._resetColumns(this.props)
-    // eslint-disable-next-line
-    console.log('!!! DataListView > componentDidMount is calling: fetchData()')
     this.fetchData(this.props)
   }
 
@@ -85,8 +83,6 @@ export default class DataListView extends Component {
         nextProps.routeParams.page !== this.props.routeParams.page ||
         nextProps.routeParams.pageSize !== this.props.routeParams.pageSize
       ) {
-        // eslint-disable-next-line
-        console.log('!!! DataListView > componentWillReceiveProps calling: _fetchListViewData()')
         this._fetchListViewData(
           nextProps,
           nextProps.DEFAULT_PAGE,
@@ -98,8 +94,6 @@ export default class DataListView extends Component {
       }
     } else {
       if (nextProps.windowPath !== this.props.windowPath) {
-        // eslint-disable-next-line
-        console.log('!!! DataListView > componentWillReceiveProps is calling: fetchData()')
         this.fetchData(nextProps)
       }
     }
@@ -113,8 +107,6 @@ export default class DataListView extends Component {
       this.props.filter.has('currentAppliedFilter') &&
       !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))
     ) {
-      // eslint-disable-next-line
-      console.log('!!! DataListView > componentWillReceiveProps calling: _fetchListViewData()')
       this._fetchListViewData(
         nextProps,
         nextProps.DEFAULT_PAGE,
@@ -146,28 +138,25 @@ export default class DataListView extends Component {
     }
 
     if (!this.props.controlViaURL) {
-      // eslint-disable-next-line
-      console.log('!!! DataListView > _handleRefetch calling: _fetchListViewData()')
       this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols)
     } else {
       const _urlPage = selectn('page', this.props.routeParams)
       const _urlPageSize = selectn('pageSize', this.props.routeParams)
       const urlPage = _urlPage !== undefined ? parseInt(_urlPage, 10) : _urlPage
       const urlPageSize = _urlPageSize !== undefined ? parseInt(_urlPageSize, 10) : _urlPageSize
-
       // If page and pageSize exist, and are different, replace them; otherwise - add them
       if (urlPage && urlPageSize) {
-        if (urlPage.toString() !== page || urlPageSize.toString() !== pageSize) {
+        if (urlPage !== page || urlPageSize !== pageSize) {
           NavigationHelpers.navigateForwardReplaceMultiple(
             this.props.splitWindowPath,
-            [pageSize.toString(), page.toString()],
+            [pageSize, page],
             this.props.pushWindowPath
           )
         }
       } else {
         NavigationHelpers.navigateForward(
           this.props.splitWindowPath,
-          [pageSize.toString(), page.toString()],
+          [pageSize, page],
           this.props.pushWindowPath
         )
       }
@@ -208,8 +197,6 @@ export default class DataListView extends Component {
     // Skip updating if last sort addition is disabled
     if (colRequestSkipped) return
 
-    // eslint-disable-next-line
-    console.log('!!! DataListView > _handleSortChange calling: _fetchListViewData()')
     this._fetchListViewData(
       this.props,
       this.props.DEFAULT_PAGE,
