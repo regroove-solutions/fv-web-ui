@@ -55,7 +55,7 @@
       }
     ],
     "eol-last": 2, // http://eslint.org/docs/rules/eol-last
-    "eqeqeq": 2, // http://eslint.org/docs/rules/eqeqeq
+    "eqeqeq": 1, // http://eslint.org/docs/rules/eqeqeq
     "func-names": 1, // http://eslint.org/docs/rules/func-names
     "guard-for-in": 0, // http://eslint.org/docs/rules/guard-for-in
     "indent": [2, 2, { "SwitchCase": 1 }], // http://eslint.org/docs/rules/indent
