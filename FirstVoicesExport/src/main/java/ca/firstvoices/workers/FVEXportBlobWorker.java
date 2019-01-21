@@ -45,24 +45,25 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
             LoginContext lctx = Framework.login();
             CoreSession session = CoreInstance.openCoreSession("default");
 
-            Boolean exists = FVBlobRelocatorAccessor.checkIfDigestForFileNameExists( workInfo.fileName );
+            // TODO: this is temporary just to check things work correctly
+            FVBlobRelocatorAccessor.deleteDigestAndPartialDirectoryStructureForName( workInfo.fileName );
 
             File file = new File(workInfo.filePath);
             FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
 
             FVBlobRelocatorAccessor blobRelocator = new FVBlobRelocatorAccessor( fileBlob, workInfo );
 
-            // TODO: this is temporary just to check things work correctly
-            // it uses internal blobRelocator digest created during relocation
 
             // relocates blob from tmp to data in $NUXEO_HOME/data/binaries/
             // creates 2 subdirectories from the provided digest
-            // to keep structure exactly the same as NUXEO is doing
+            // to keep structure exactly the same as NUXEO
             String exportDocDigest = blobRelocator.relocateBlobExportFile();
 
 
             // TODO: COMPLETE HERE!!!!!
             // - create FVExport wrapper
+            DocumentModel dm = session.createDocumentModel("FVExport");
+
             // - attach exportDocDigest to the wrapper
             // - attach workInfo properties to the wrapper
 
