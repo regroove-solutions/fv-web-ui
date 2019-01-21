@@ -84,7 +84,7 @@ class SearchWordsPhrases extends Component {
                 name="searchType"
                 id={SEARCH_DEFAULT}
                 checked={searchType === SEARCH_DEFAULT}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
                 value={SEARCH_DEFAULT}
               />
               <label htmlFor={SEARCH_DEFAULT}>Search all fields</label>
@@ -95,7 +95,7 @@ class SearchWordsPhrases extends Component {
                 name="searchType"
                 id={SEARCH_ADVANCED}
                 checked={searchType === SEARCH_ADVANCED}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
                 value={SEARCH_ADVANCED}
               />
               <label htmlFor={SEARCH_ADVANCED}>Advanced Search</label>
@@ -107,7 +107,7 @@ class SearchWordsPhrases extends Component {
                 id="searchPhrase"
                 name="searchPhrase"
                 checked={searchPhrase}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
               />
               <label htmlFor="searchPhrase">Phrase</label>
             </span>
@@ -117,7 +117,7 @@ class SearchWordsPhrases extends Component {
                 id="searchWord"
                 name="searchWord"
                 checked={searchWord}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
               />
               <label htmlFor="searchWord">Word</label>
             </span>
@@ -127,7 +127,7 @@ class SearchWordsPhrases extends Component {
                 id="searchDefinitions"
                 name="searchDefinitions"
                 checked={searchDefinitions}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
               />
               <label htmlFor="searchDefinitions">Definitions</label>
             </span>
@@ -137,7 +137,7 @@ class SearchWordsPhrases extends Component {
                 id="searchPartOfSpeech"
                 name="searchPartOfSpeech"
                 checked={searchPartOfSpeech}
-                onClick={this._handleCustomSearch}
+                onChange={this._handleCustomSearch}
               />
               <label htmlFor="searchPartOfSpeech">Part of speech</label>
             </span>
