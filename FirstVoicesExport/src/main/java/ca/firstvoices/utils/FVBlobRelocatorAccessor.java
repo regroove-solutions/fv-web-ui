@@ -11,7 +11,8 @@ import java.nio.file.StandardCopyOption;
 
 import static ca.firstvoices.utils.FVExportUtils.getDataBlobDirectoryPath;
 
-public class FVBlobRelocatorAccessor {
+public class FVBlobRelocatorAccessor
+{
     private FileBlob fileBlob;
     private FVExportCompletionInfo exportFileInfo;
     private Path newRelocationPath;
@@ -29,12 +30,23 @@ public class FVBlobRelocatorAccessor {
         fileDigest = digest;
     }
 
-    private String generateDigestFromName()
+    private static String getDigestFromName( String fileName )
     {
-        assert (fileBlob != null) : "Cannot generate from a null fileBlob.";
-        fileBlob.setDigest(DigestUtils.md5Hex(exportFileInfo.fileName));
-        fileDigest = fileBlob.getDigest();
-        return fileBlob.getDigest();
+        return DigestUtils.md5Hex( fileName );
+    }
+
+    public static Boolean checkIfDigestForFileNameExists( String fileName )
+    {
+        String digest = getDigestFromName( fileName );
+
+        return checkIfDigestExists( digest );
+    }
+
+    public static Boolean checkIfDigestExists(String digest)
+    {
+        String path = getDataDirectoryPathToDigest(digest);
+        File digestFile = new File( path );
+        return digestFile.exists();
     }
 
     private static String getSubPathFromDigest(String digest)
@@ -44,13 +56,12 @@ public class FVBlobRelocatorAccessor {
 
         return fDir + "/" + sDir + "/";
     }
-
-    private String getPartialPathToDigest(String digest)
+    private static String getPartialPathToDigest(String digest)
     {
         return getSubPathFromDigest(digest) + digest;
     }
 
-    public String getDataDirectoryPathToDigest(String digest)
+    private static String getDataDirectoryPathToDigest(String digest)
     {
         // fDir + "/" + sDir + "/" + digest;
         String partialPath = getPartialPathToDigest(digest);
@@ -58,6 +69,47 @@ public class FVBlobRelocatorAccessor {
         String nuxeo_path = getDataBlobDirectoryPath();
 
         return nuxeo_path + partialPath;
+    }
+
+    public static String getPathForDigest( String digest )
+    {
+        if( checkIfDigestExists( digest ))
+        {
+            return getDataDirectoryPathToDigest(digest);
+        }
+
+        return null;
+    }
+
+    public static String getPathForFileName( String fileName )
+    {
+        if( checkIfDigestForFileNameExists( fileName ) )
+        {
+            String digest = getDigestFromName( fileName );
+            return getDataDirectoryPathToDigest(digest);
+        }
+
+        return null;
+    }
+
+    public String getPathForDigest()
+    {
+        assert (fileDigest != null) : "Cannot use fileDigest == null to get path to digest.";
+
+        if( checkIfDigestExists() )
+        {
+            return getDataDirectoryPathToDigest( fileDigest );
+        }
+
+        return null;
+    }
+
+    private String generateDigestFromName()
+    {
+        assert (fileBlob != null) : "Cannot generate from a null fileBlob.";
+        fileBlob.setDigest( getDigestFromName(exportFileInfo.fileName) );
+        fileDigest = fileBlob.getDigest();
+        return fileBlob.getDigest();
     }
 
     private void createDirectoryStructureFromDigest(String digest) throws IOException
@@ -103,20 +155,13 @@ public class FVBlobRelocatorAccessor {
         return fileBlob.getDigest();
     }
 
-    public Boolean checkIfDigestExists(String digest)
-    {
-        String path = getDataDirectoryPathToDigest(digest);
-        File digestFile = new File( path );
-        return digestFile.exists();
-    }
-
     public Boolean checkIfDigestExists()
     {
         assert (fileDigest != null ) :  "Cannot check if fileDigest == null exists.";
         return checkIfDigestExists( fileDigest );
     }
 
-    public String deleteDigest( String digest )  throws IOException
+    private static String deleteDigest( String digest )  throws IOException
     {
         String path = getDataDirectoryPathToDigest(digest);
         Files.deleteIfExists( Paths.get(path) );
@@ -130,8 +175,22 @@ public class FVBlobRelocatorAccessor {
         return deleteDigest( fileDigest );
     }
 
+    public static void deleteDigestAndPartialDirectoryStructureForName( String fileName ) throws IOException
+    {
+         if( checkIfDigestForFileNameExists( fileName ))
+         {
+             String digest = getDigestFromName(fileName);
+             deleteDigestAndPartialDirectoryStructure(digest);
+         }
+    }
 
-    public void deleteDigestWithPartialDirectoryStructure(String digest) throws IOException
+    public void deleteDigestAndPartialDirectoryStructure() throws IOException
+    {
+        assert (fileDigest != null) : "Cannot use fileDigest == null to delete digest.";
+        deleteDigestAndPartialDirectoryStructure( fileDigest );
+    }
+
+    private static void deleteDigestAndPartialDirectoryStructure(String digest) throws IOException
     {
         String path = deleteDigest(digest);
 
