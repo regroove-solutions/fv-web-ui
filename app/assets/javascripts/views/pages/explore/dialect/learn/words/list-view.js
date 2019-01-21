@@ -245,7 +245,6 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `_fetchListViewData`
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    debugger;
     // eslint-disable-next-line
     console.log("!!! ListView > _fetchListViewData()")
     let currentAppliedFilter = ''
