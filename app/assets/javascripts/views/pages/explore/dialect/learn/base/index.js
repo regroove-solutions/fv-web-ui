@@ -67,13 +67,15 @@ export default class PageDialectLearnBase extends Component {
 
   _getURLPageProps() {
     const pageProps = {}
+    const page = selectn('page', this.props.routeParams)
+    const pageSize = selectn('pageSize', this.props.routeParams)
 
-    selectn('page', this.props.routeParams)
-      ? Object.assign(pageProps, { DEFAULT_PAGE: parseInt(selectn('page', this.props.routeParams), 10) })
-      : null
-    selectn('pageSize', this.props.routeParams)
-      ? Object.assign(pageProps, { DEFAULT_PAGE_SIZE: parseInt(selectn('pageSize', this.props.routeParams), 10) })
-      : null
+    if (page) {
+      pageProps.DEFAULT_PAGE = parseInt(page, 10)
+    }
+    if (pageSize) {
+      pageProps.DEFAULT_PAGE_SIZE = parseInt(pageSize, 10)
+    }
 
     return pageProps
   }
