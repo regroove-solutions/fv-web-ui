@@ -1,9 +1,0 @@
-<component name="ca.firstvoices.export.schemas.contrib">
-    <require>org.nuxeo.ecm.document.types</require>
-
-    <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
-        <schema name="fvexport" src="schemas/fvexport.xsd" prefix="fvexport" override="true"/>
-    </extension>
-</component>
-
-
