@@ -1,8 +1,6 @@
 package ca.firstvoices.utils;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-
+import org.nuxeo.ecm.core.api.*;
 import java.util.Map;
 
 public class FVExportUtils
@@ -59,6 +57,13 @@ public class FVExportUtils
 
         return nuxeo_data_path;
 
+    }
+
+    public static String getPathToChildInDialect(CoreSession session, DocumentModel dialect, String childType )
+    {
+         DocumentModel resourceFolder =  session.getChild( dialect.getRef(), childType );
+
+         return resourceFolder.getPathAsString() + "/";
     }
 }
 
