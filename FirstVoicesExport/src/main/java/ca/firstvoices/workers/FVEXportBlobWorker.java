@@ -62,7 +62,7 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
 
             // TODO: COMPLETE HERE!!!!!
             // - create FVExport wrapper
-            DocumentModel dm = session.createDocumentModel("FVExport");
+            DocumentModel dm = session.createDocumentModel("File");
 
             // - attach exportDocDigest to the wrapper
             // - attach workInfo properties to the wrapper
