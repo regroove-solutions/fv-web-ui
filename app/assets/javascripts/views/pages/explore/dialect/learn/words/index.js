@@ -28,7 +28,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
 import { SearchWordsPhrases } from 'views/components/SearchWordsPhrases'
-import { SEARCH_DEFAULT, SEARCH_ADVANCED } from 'views/components/SearchWordsPhrases/constants'
+import { SEARCH_ADVANCED, SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchWordsPhrases/constants'
 // import { SEARCH_ADVANCED } from '../../../../../components/SearchWordsPhrases/constants';
 
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
@@ -187,7 +187,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchPhrase: false,
       searchWord: false,
       searchDefinitions: false,
-      searchPartOfSpeech: false,
+      searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
     }
@@ -197,7 +197,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       '_changeFilter',
       '_getPageKey',
       '_getSearchAlertInfo',
-      '_getSearchSort',
+      '_getNxqlBoolCount',
+      '_getNxqlSearchSort',
+      '_generateNxql',
       '_handleEnterSearch',
       '_handleFacetSelected',
       '_handleInputChange',
@@ -240,7 +242,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
     const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
-    const searchSort = this._getSearchSort()
+    const searchSort = this._getNxqlSearchSort()
     const searchAlertInfoOutput = this._getSearchAlertInfo()
 
     const wordListView = selectn('response.uid', computeDocument) ? (
@@ -424,6 +426,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   // END render
 
   _changeFilter(value, type, nxql) {
+    // TODO: UPDATE THE FILTER HERE SINCE BOTH THE SEARCH BOX AND ALPHABET TILES CALL _changeFilter
     // eslint-disable-next-line
     console.log("!!! PageDialectLearnWords > _changeFilter()", value, type, nxql)
     if (value && value !== '') {
@@ -469,6 +472,144 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _clearAllFilters() {}
 
+  /*
+  'dc:title'
+  'fv-word:part_of_speech'
+  'fv-word:pronunciation'
+  'fv:definitions'
+  'fv:literal_translation'
+  'fv:related_audio'
+  'fv:related_pictures'
+  'fv:related_videos'
+  'fv-word:related_phrases'
+  'fv-word:categories'
+  'fv:cultural_note'
+  'fv:reference'
+  'fv:source'
+  'fv:available_in_childrens_archive'
+  'fv-word:available_in_games'
+  */
+  _generateNxql() {
+    const {
+      searchTerm,
+      searchType,
+      searchPhrase,
+      searchWord,
+      searchDefinitions,
+      searchPartOfSpeech,
+    } = this.state
+    // debugger;
+    const search = searchTerm || ''
+    const nxqlTmpl = {
+      // AND ( dc:title ILIKE 'b%' OR fv-word:part_of_speech = 'basic') // sortBy=fv-word:part_of_speech
+      // AND ecm:fulltext = '*b*'"
+      // AND (dc:title LIKE 'b%25' OR fv-word:part_of_speech = '')
+      // AND ( dc:title ILIKE 'b%' AND fv-word:part_of_speech = 'basic')
+      allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`, // sortBy=ecm:fulltextScore
+      searchPhrase: `dc:title ILIKE '${search}%'`, // sortBy=ecm:fulltextScore // TODO: confirm dc:title when searching phrase
+      searchWord: `dc:title ILIKE '${search}%'`, // sortBy=ecm:fulltextScore
+      searchDefinitions: `fv:definitions = '${search}%'`, // TODO: confirm ILIKE instead of alternates like `=`,
+      searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
+    }
+    const nxqlQuery = {
+      allFields: '',
+      searchPhrase: '',
+      searchWord: '',
+      searchDefinitions: '',
+      searchPartOfSpeech: '',
+    }
+    // const boolCount = this._getNxqlBoolCount()
+    const nxqlQueries = []
+    const nxqlQueryJoin = (nxq, join = ' OR ') => {
+      if (nxq.length >= 1) {
+        nxq.push(join)
+      }
+    }
+    if (searchType === SEARCH_ADVANCED) {
+      if (searchPhrase) {
+        // nxqlQueries.push(nxqlTmpl.searchPhrase)
+        nxqlQueries.push(`${nxqlTmpl.searchPhrase}`)
+      }
+      if (searchWord) {
+        // nxqlQueries.push(nxqlTmpl.searchWord)
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchWord}`)
+      }
+      if (searchDefinitions) {
+        // nxqlQueries.push(nxqlTmpl.searchDefinitions)
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchDefinitions}`)
+      }
+      if (searchPartOfSpeech && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
+        // nxqlQueries.push(nxqlTmpl.searchPartOfSpeech)
+        nxqlQueryJoin(nxqlQueries, ' AND ')
+        nxqlQueries.push(`${nxqlTmpl.searchPartOfSpeech}`)
+      }
+    } else {
+      // nxqlQueries.push(nxqlTmpl.allFields)
+      nxqlQueries.push(`${nxqlTmpl.allFields}`)
+    }
+    return `( ${nxqlQueries.join('')} )`
+  }
+
+  _getNxqlSearchSort() {
+    const {
+      searchDefinitions,
+      searchPartOfSpeech,
+      searchPhrase,
+      searchWord,
+      searchTerm,
+    } = this.state
+
+    const check = {
+      searchDefinitions,
+      searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
+      searchPhrase,
+      searchWord,
+    }
+
+    // Default sort
+    let searchSortBy = 'ecm:fulltextScore'
+    // More than 1 option selected ?
+    const boolCount = this._getNxqlBoolCount()
+
+    if (boolCount === 1) {
+      if (check.searchPartOfSpeech) {
+        searchSortBy = 'fv-word:part_of_speech'
+      } else {
+        searchSortBy = 'dc:title'
+      }
+    }
+    if (boolCount > 1) {
+      searchSortBy = 'dc:title'
+    }
+    console.log('!!!', searchTerm ? {
+      DEFAULT_SORT_COL: searchSortBy,
+      DEFAULT_SORT_TYPE: 'asc',
+    } : {})
+    return searchTerm ? {
+      DEFAULT_SORT_COL: searchSortBy,
+      DEFAULT_SORT_TYPE: 'asc',
+    } : {}
+  }
+  _getNxqlBoolCount() {
+    const {
+      searchDefinitions,
+      searchPartOfSpeech,
+      searchPhrase,
+      searchWord,
+    } = this.state
+
+    const check = {
+      searchDefinitions,
+      searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
+      searchPhrase,
+      searchWord,
+    }
+    const boolCount = check.searchPhrase + check.searchWord + check.searchDefinitions + check.searchPartOfSpeech
+    return boolCount
+
+  }
   _getSearchAlertInfo() {
     const {filterInfo} = this.state
 
@@ -502,68 +643,35 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     return searchAlertInfo
   }
 
-  _getSearchSort() {
-    const { searchTerm } = this.state
-    return searchTerm ? {
-      DEFAULT_SORT_COL: 'ecm:fulltextScore',
-      DEFAULT_SORT_TYPE: 'desc',
-    } : {}
-  }
-
   _handleEnterSearch(evt) {
     if (evt.key === 'Enter') {
       this._handleSearch()
     }
   }
 
-  _handleInputChange(id, checked) {
-    const state = {}
-    if (id === SEARCH_DEFAULT || id === SEARCH_ADVANCED) {
-      state.searchType = id
-    } else {
-      state[id] = checked
-    }
-    this.setState(state)
+  _handleInputChange({id, checked, value, type}) {
+    const updateState = {}
 
+    // NOTE: Scripting here is tied to the structure of the html
+
+    // Record changes
+    switch (type) {
+      case 'checkbox':
+        updateState[id] = checked
+        break
+      case 'radio':
+        updateState.searchType = id
+        break
+      default:
+        updateState[id] = value
+    }
+
+    this.setState(updateState)
   }
 
-  // AND dc:title LIKE 'a%'
-  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'a%25'"
-  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:fulltext = '*b*'"
-  // "SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND dc:title LIKE 'b%25'"
-
-  // SELECT * FROM FVWord WHERE ecm:parentId = 'a9de8996-4577-419d-802d-fce139ed3f2d' AND ecm:currentLifeCycleState <> 'deleted' AND (dc:title LIKE 'b%25' OR fv-word:part_of_speech = '')
-
-  /*
-  'dc:title'
-  'fv-word:part_of_speech'
-  'fv-word:pronunciation'
-  'fv:definitions'
-  'fv:literal_translation'
-  'fv:related_audio'
-  'fv:related_pictures'
-  'fv:related_videos'
-  'fv-word:related_phrases'
-  'fv-word:categories'
-  'fv:cultural_note'
-  'fv:reference'
-  'fv:source'
-  'fv:available_in_childrens_archive'
-  'fv-word:available_in_games'
-  */
   _handleSearch() {
-    // eslint-disable-next-line
-    const { searchTerm } = this.state
-    console.log("!!! PageDialectLearnWords > _handleSearch: calling _changeFilter()")
-    /*
-      categories: " AND fvproxy:proxied_categories/* IN ("61e20652-96a6-44e8-8b3b-a5e3aac350ea")"
-      contains: " AND ecm:fulltext = '*D*'"
-      startsWith: " AND dc:title LIKE 'ch%'"
-    */
-    this._changeFilter(searchTerm, 'contains', (term) => {
-      return ` AND ecm:fulltext = '*${StringHelpers.clean(term, 'fulltext')}*'`
-      // return ` AND dc:title LIKE '${term}%'`
-    })
+    const { searchTerm} = this.state
+    this._changeFilter(searchTerm, 'contains', () => ` AND ${this._generateNxql()}`)
   }
 
   // NOTE: PageDialectLearnBase calls `fetchData`

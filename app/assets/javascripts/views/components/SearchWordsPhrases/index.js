@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { PropTypes } from 'react'
-import { SEARCH_DEFAULT, SEARCH_ADVANCED } from './constants'
+import { SEARCH_ADVANCED, SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from './constants'
 import provide from 'react-redux-provide'
 
 import classNames from 'classnames'
@@ -24,7 +24,7 @@ class SearchWordsPhrases extends Component {
     searchPhrase: bool,
     searchWord: bool,
     searchDefinitions: bool,
-    searchPartOfSpeech: bool,
+    searchPartOfSpeech: string,
   }
   static defaultProps = {
     handleInputChange: () => {},
@@ -38,7 +38,7 @@ class SearchWordsPhrases extends Component {
     searchPhrase: false,
     searchWord: false,
     searchDefinitions: false,
-    searchPartOfSpeech: false,
+    searchPartOfSpeech: SEARCH_SORT_DEFAULT,
   }
 
   constructor(props) {
@@ -132,14 +132,12 @@ class SearchWordsPhrases extends Component {
               <label htmlFor="searchDefinitions">Definitions</label>
             </span>
             <span>
-              <input
-                type="checkbox"
-                id="searchPartOfSpeech"
-                name="searchPartOfSpeech"
-                checked={searchPartOfSpeech}
-                onChange={this._handleCustomSearch}
-              />
-              <label htmlFor="searchPartOfSpeech">Part of speech</label>
+              <label htmlFor="searchPartOfSpeech">Part of speech:</label>
+              <select onChange={this._handleCustomSearch} id="searchPartOfSpeech" name="searchPartOfSpeech">
+                <option value={SEARCH_SORT_DEFAULT}>Any</option>
+                <option value="noun">Noun</option>
+                <option value="verb">Verb</option>
+              </select>
             </span>
           </div>
         </div>
@@ -153,43 +151,8 @@ class SearchWordsPhrases extends Component {
     this.props.updateSearchTerm(evt)
   }
   _handleCustomSearch(evt) {
-    const { searchTerm } = this.props
-    const { id, checked } = evt.target
-    const search = searchTerm || ''
-    /*
-    if (name === 'searchType' && id === 'searchAll') {
-      console.log('reset search to standard', id, name)
-    } else {
-      console.log('need to set custom fields', id, name)
-    }
-    */
-    /*
-      'dc:title'
-      'fv-word:part_of_speech'
-      'fv-word:pronunciation'
-      'fv:definitions'
-      'fv:literal_translation'
-      'fv:related_audio'
-      'fv:related_pictures'
-      'fv:related_videos'
-      'fv-word:related_phrases'
-      'fv-word:categories'
-      'fv:cultural_note'
-      'fv:reference'
-      'fv:source'
-      'fv:available_in_childrens_archive'
-      'fv-word:available_in_games'
-    */
-    // const nql = `AND ecm:fulltext='*f*'&currentPageIndex=0&pageSize=10&sortOrder=asc&sortBy=ecm:fulltextScore` // NOTE: dev query
-    // const nql = ` AND ( dc:title ILIKE 'b%' AND fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=dc:title` // NOTE: dev query
-    // const nql = " AND ( dc:title ILIKE 'b%' OR fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=fv-word:part_of_speech"  // NOTE: dev query
-    const nxqlFields = {
-      searchPhrase: `dc:title ILIKE '${search}%'`, // TODO: confirm dc:title when searching phrase
-      searchWord: `dc:title ILIKE '${search}%'`,
-      searchDefinitions: `fv:definitions ILIKE '${search}%'`, // TODO: confirm ILIKE instead of alternates like `=`,
-      searchPartOfSpeech: `fv-word:part_of_speech = '${search}%'`, // TODO: does ILIKE work instead?
-    }
-    this.props.handleInputChange(id, checked)
+    const { id, checked, value, type } = evt.target
+    this.props.handleInputChange({ id, checked, value, type })
   }
   _handleEnterSearch(evt) {
     this.props.handleEnterSearch(evt)
