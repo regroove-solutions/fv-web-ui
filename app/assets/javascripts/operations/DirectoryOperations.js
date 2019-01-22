@@ -80,7 +80,6 @@ export default class DirectoryOperations extends BaseOperations {
    * Allows for additional complex queries to be executed.
    */
   static getDocuments(path = '', type = 'Document', queryAppend = ' ORDER BY dc:title', headers = null, params = null) {
-    // console.log('!!! getDocuments:', { path, type, queryAppend, headers, params })
     const defaultParams = {}
     const defaultHeaders = {}
 
@@ -144,14 +143,6 @@ export default class DirectoryOperations extends BaseOperations {
         true
       )
     )
-    /*
-    console.log('!!! 1 getDocuments > _params:', _params)
-    console.log('!!! 2 getDocuments > StringHelpers.queryStringToObject:', StringHelpers.queryStringToObject(
-      `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:currentLifeCycleState <> 'deleted'${_queryAppend}`,
-      true
-      ))
-    console.log('!!! 3 getDocuments > nxqlQueryParams:', nxqlQueryParams)
-    */
     return new Promise((resolve, reject) => {
       properties.client
         .operation('Document.Query')

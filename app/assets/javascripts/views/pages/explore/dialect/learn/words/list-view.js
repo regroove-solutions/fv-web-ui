@@ -216,8 +216,6 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `fetchData`
   fetchData(newProps) {
-    // eslint-disable-next-line
-    console.log("!!! ListView > fetchData()")
     if (newProps.dialect === null && !this.getDialect(newProps)) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
@@ -245,38 +243,14 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `_fetchListViewData`
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    // eslint-disable-next-line
-    console.log("!!! ListView > _fetchListViewData()")
     let currentAppliedFilter = ''
 
     if (props.filter.has('currentAppliedFilter')) {
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
-    /*
-      'dc:title'
-      'fv-word:part_of_speech'
-      'fv-word:pronunciation'
-      'fv:definitions'
-      'fv:literal_translation'
-      'fv:related_audio'
-      'fv:related_pictures'
-      'fv:related_videos'
-      'fv-word:related_phrases'
-      'fv-word:categories'
-      'fv:cultural_note'
-      'fv:reference'
-      'fv:source'
-      'fv:available_in_childrens_archive'
-      'fv-word:available_in_games'
-    */
     const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-    1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}` // NOTE: original query
-    // const nql = `AND ecm:fulltext='*f*'&currentPageIndex=0&pageSize=10&sortOrder=asc&sortBy=ecm:fulltextScore` // NOTE: dev query
-    // const nql = ` AND ( dc:title ILIKE 'b%' AND fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=dc:title` // NOTE: dev query
-    // const nql = " AND ( dc:title ILIKE 'b%' OR fv-word:part_of_speech = 'basic')&currentPageIndex=0&pageSize=250&sortOrder=asc&sortBy=fv-word:part_of_speech"  // NOTE: dev query
+      1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
     props.fetchWords(this._getPathOrParentID(props), nql)
-    // eslint-disable-next-line
-    console.log('!!! DEBUG', nql)
   }
 
   getDialect(props = this.props) {
@@ -341,7 +315,6 @@ export default class ListView extends DataListView {
       sortInfo: this.state.sortInfo.uiSortOrder,
       type: 'FVWord',
     }
-
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         {selectn('response.entries', computeWords) && <DocumentListView {...listViewProps} />}
