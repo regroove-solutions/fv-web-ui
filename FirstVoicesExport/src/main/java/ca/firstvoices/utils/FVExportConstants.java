@@ -12,14 +12,8 @@ public final class FVExportConstants
     public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT = "autoProduceFormattedDocument";
 
     // Parameters passed in Export trigger events
-    public static final String DIALECT_NAME_EXPORT              = "Dialect";
-    public static final String DIALECT_GUID                     = "D_GUID";
     public static final String RESOURCES                        = "FVResources";
-    public static final String QUERY_TO_PREPARE_WORK_FOR_EXPORT = "Query";
     public static final String INHERITED_FROM_OTHER             = "INHERITED";
-    public static final String INITIATING_PRINCIPAL             = "Principal";
-    public static final String EXPORT_FORMAT                    = "Format";
-    public static final String COLUMNS_TO_EXPORT                = "Columns";
     public static final String CSV_FORMAT                       = "CSV";
     public static final String PDF_FORMAT                       = "PDF";
     public static final String CYCLIC_WORKER_ID                 = "cyclic-export-worker";
