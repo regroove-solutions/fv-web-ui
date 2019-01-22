@@ -1,7 +1,7 @@
 package ca.firstvoices.workers;
 
 import ca.firstvoices.utils.FVBlobRelocatorAccessor;
-import ca.firstvoices.utils.FVExportCompletionInfo;
+import ca.firstvoices.utils.FVExportWorkInfo;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -17,8 +17,6 @@ import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
 
 public class FVEXportBlobWorker  extends FVAbstractExportWork
 {
-    private FVExportCompletionInfo workInfo;
-
     private static final Log log = LogFactory.getLog(FVExportWorker.class);
 
 
@@ -32,10 +30,10 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
         return "Move an export file to blob and create a wrapper.";
     }
 
-    public FVEXportBlobWorker(String id, FVExportCompletionInfo info )
+    public FVEXportBlobWorker( String id, FVExportWorkInfo info )
     {
         super( id );
-        workInfo = info;
+        super.setWorkInfo( info );
     }
 
     @Override
@@ -63,7 +61,7 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
             String pathToNewDocument = getPathToChildInDialect( session,
                                                                 session.getDocument(new IdRef(workInfo.dialectGUID)),
                                                                 "Resources" );
-            DocumentModel wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" );
+            DocumentModel wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" ); // TODO: DOES NOT WORK
             wrapper = session.createDocument( wrapper );
 
             // exportDocDigest -> digest
