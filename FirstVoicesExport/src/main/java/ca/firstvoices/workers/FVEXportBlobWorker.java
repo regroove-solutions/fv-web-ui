@@ -13,6 +13,7 @@ import javax.security.auth.login.LoginContext;
 import java.io.*;
 
 import static ca.firstvoices.utils.FVExportConstants.BLOB_WORKER;
+import static ca.firstvoices.utils.FVExportUtils.findDialectChild;
 
 public class FVEXportBlobWorker  extends FVAbstractExportWork
 {
@@ -59,7 +60,8 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
             // to keep structure exactly the same as NUXEO
             String exportDocDigest = blobRelocator.relocateBlobExportFile();
 
-
+            DocumentModel resourceFolder = findDialectChild( session.getDocument(new IdRef(workInfo.dialectGUID)),  "Resources" );
+            // DocumentModel dm = session.createDocumentModel("FVExport");
             // TODO: COMPLETE HERE!!!!!
             // - create FVExport wrapper
             DocumentModel dm = session.createDocumentModel("File");
