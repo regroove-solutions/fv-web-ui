@@ -3,6 +3,8 @@ bin/
 .settings/
 .classpath
 .DS_Store
+**/*.ipr
+**/nashorn_code_cache
 **/.project
 nashorn_code_cache
 *.ipr

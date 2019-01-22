@@ -7,6 +7,7 @@ Bundle-ActivationPolicy: lazy
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: Nuxeo
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=FVUserRegistration;extends=invite;headless=true
 Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.securitypolicies.g
  roups.xml,OSGI-INF/extensions/ca.firstvoices.securitypolicies.lifecyc
  le.xml,OSGI-INF/extensions/ca.firstvoices.permissions.xml,OSGI-INF/ex
