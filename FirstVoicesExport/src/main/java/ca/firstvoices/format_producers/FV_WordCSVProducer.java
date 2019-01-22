@@ -5,7 +5,7 @@ package ca.firstvoices.format_producers;
 */
 
 import ca.firstvoices.property_readers.*;
-import ca.firstvoices.utils.FVExportCompletionInfo;
+import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.utils.FVExportConstants;
 import ca.firstvoices.utils.FVExportWordProperties;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -89,7 +89,7 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
     }
 
     @Override
-    public void close(CoreSession session, DocumentModel dialect, FVExportCompletionInfo info )
+    public void close(CoreSession session, DocumentModel dialect, FVExportWorkInfo info )
     {
         try
         {

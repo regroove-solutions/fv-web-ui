@@ -1,9 +1,9 @@
 package ca.firstvoices.workers;
 
 
-import ca.firstvoices.utils.FVExportCSVColumns;
-import ca.firstvoices.utils.FVExportCompletionInfo;
+import ca.firstvoices.utils.FVExportWorkInfo;
 import org.nuxeo.ecm.core.work.AbstractWork;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,48 +41,32 @@ FVCyclicExportWorker - is a more complex version of an exporter. It is not meant
 
 abstract public class FVAbstractExportWork extends AbstractWork
 {
-    private String initiatorName;
-    private String dialectName;
-    private String dialectGUID;
-    protected String exportFormat;
-    protected String exportQuery;
-    protected List<String> columns;
-
+    protected FVExportWorkInfo workInfo;
 
     public FVAbstractExportWork( String id )
     {
         super( id );
-
+        workInfo = new FVExportWorkInfo();
     }
 
-    public String getInitiatorName() {  return initiatorName; }
-    public void setInitiatorName( String name ) { initiatorName = name; }
+    public FVExportWorkInfo getWorkInfo() { return workInfo; }
+    public void setWorkInfo( FVExportWorkInfo workInfo ) { this.workInfo = workInfo; }
 
-    public String getDialectName() {  return dialectName; }
-    public void setDialectName( String dname ) { dialectName = dname; }
+    public String getInitiatorName() {  return workInfo.initiatorName; }
+    public void setInitiatorName( String name ) { workInfo.initiatorName = name; }
 
-    public String getDialectGUID() {  return dialectGUID; }
-    public void setDialectGUID( String dguid ) { dialectGUID = dguid; }
+    public String getDialectName() {  return workInfo.dialectName; }
+    public void setDialectName( String dname ) { workInfo.dialectName = dname; }
 
-    public String getExportFormat() {  return exportFormat; }
-    public void setExportFormat( String eFormat ) { exportFormat = eFormat; }
+    public String getDialectGUID() {  return workInfo.dialectGUID; }
+    public void setDialectGUID( String dguid ) { workInfo.dialectGUID = dguid; }
 
-    public String getExportQuery() {  return exportQuery; }
-    public void setExportQuery( String eQuery ) { exportQuery = eQuery; }
+    public String getExportFormat() {  return workInfo.exportFormat; }
+    public void setExportFormat( String eFormat ) { workInfo.exportFormat = eFormat; }
 
-    public List<String> getExportColumns() {  return columns; }
-    public void setExportColumns( List<String> clist ) { columns = clist; }
+    public String getExportQuery() {  return workInfo.exportQuery; }
+    public void setExportQuery( String eQuery ) { workInfo.exportQuery = eQuery; }
 
-    public FVExportCompletionInfo getWorkInfo()
-    {
-        FVExportCompletionInfo info = new FVExportCompletionInfo();
-        info.initiatorName = initiatorName;
-        info.dialectName = dialectName;
-        info.dialectGUID = dialectGUID;
-        info.exportFormat = exportFormat;
-        info.exportQuery = exportQuery;
-        info.columns = columns;
-
-        return info;
-    }
+    public List<String> getExportColumns() {  return workInfo.columns; }
+    public void setExportColumns( List<String> clist ) { workInfo.columns = clist; }
 }

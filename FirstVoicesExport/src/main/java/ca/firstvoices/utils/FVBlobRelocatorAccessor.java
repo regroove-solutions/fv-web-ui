@@ -14,12 +14,12 @@ import static ca.firstvoices.utils.FVExportUtils.getDataBlobDirectoryPath;
 public class FVBlobRelocatorAccessor
 {
     private FileBlob fileBlob;
-    private FVExportCompletionInfo exportFileInfo;
+    private FVExportWorkInfo exportFileInfo;
     private Path newRelocationPath;
     private String fileDigest;
 
     // NOTE: use this initializer when creating and moving new blob
-    public FVBlobRelocatorAccessor(FileBlob fb, FVExportCompletionInfo info) {
+    public FVBlobRelocatorAccessor(FileBlob fb, FVExportWorkInfo info) {
         fileBlob = fb;
         exportFileInfo = info;
     }

@@ -2,7 +2,7 @@ package ca.firstvoices.format_producers;
 
 import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
 import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
-import ca.firstvoices.utils.FVExportCompletionInfo;
+import ca.firstvoices.utils.FVExportWorkInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
@@ -14,10 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import static ca.firstvoices.utils.FVExportConstants.BlOB_WORK_INFO;
-import static ca.firstvoices.utils.FVExportConstants.FINISH_EXPORT_BY_WRAPPING_BLOB;
+import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
 
 abstract public class FV_AbstractProducer
@@ -35,7 +33,7 @@ abstract public class FV_AbstractProducer
     abstract void writeRowData( List<FV_PropertyValueWithColumnName> rowData  );
 
     // this close has to be called after subclass completes its own close
-    public void close( CoreSession session, DocumentModel input, FVExportCompletionInfo info )
+    public void close( CoreSession session, DocumentModel input, FVExportWorkInfo info )
     {
         EventProducer eventProducer = Framework.getService( EventProducer.class );
         // finish by generating event for the listener to move created temp file to a blob within Nuxeo data space
@@ -44,7 +42,7 @@ abstract public class FV_AbstractProducer
         info.fileName = originalFileName;
         info.filePath = outputFile.getPath();
         info.fileLength = outputFile.length();
-        blob_worker_ctx.setProperty( BlOB_WORK_INFO, info );
+        blob_worker_ctx.setProperty( EXPORT_WORK_INFO, info );
 
         Event event = blob_worker_ctx.newEvent( FINISH_EXPORT_BY_WRAPPING_BLOB );
         eventProducer.fireEvent(event);

@@ -30,7 +30,7 @@ public final class FVExportConstants
     public static final String ON_DEMAND_WORKER_CATEGORY        = ON_DEMAND_WORKER_QUEUE_ID;
     public static final String WORDS_TO_EXPORT                  = "WORDS_TO_EXPORT";
     public static final String PHRASES_TO_EXPORT                = "PHRASES_TO_EXPORT";
-    public static final String BlOB_WORK_INFO                   = "BLOB_WORK_INFO";
+    public static final String EXPORT_WORK_INFO                 = "EXPORT_WORK_INFO";
 
     // CSV Columns to be placed in exported document
     public final class ExportCSVLabels
