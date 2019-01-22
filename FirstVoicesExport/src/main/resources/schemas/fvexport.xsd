@@ -9,7 +9,7 @@
   <!-- Stores the GUID of the dialect where the export is requested -->
   <xs:element name="dialect" type="xs:string" />
   <!-- Stores the path to the blob -->
-  <xs:element name="path" type="xs:string" />
+  <!--xs:element name="path" type="xs:string" />
   <!-- Stores the digest ie. key to retrieve the blob -->
   <xs:element name="digest" type="xs:string" />
   <!-- Stores the query that was requested -->
@@ -19,6 +19,6 @@
   <!-- Stores the format that was requested, for example PDF/CSV -->
   <xs:element name="format" type="xs:string" />
   <!-- Stores the progress of the export as a percent -->
-  <xs:element name="progress" type="xs:string" />
+  <!-- xs:element name="progress" type="xs:string" />
 
 </xs:schema>
