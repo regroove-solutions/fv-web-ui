@@ -51,7 +51,7 @@ class AlphabetGridTile extends Component {
     action: () => {},
   }
   static propTypes = {
-    action: PropTypes.any, // TODO: set appropriate propType
+    action: PropTypes.func,
     tile: PropTypes.any, // TODO: set appropriate propType
   }
   constructor(props) {
@@ -79,41 +79,13 @@ class AlphabetGridTile extends Component {
   }
   _handleClick() {
     const { char } = this.state
+
     this.props.action(char, 'startsWith', (letter) => {
       const query = ` AND dc:title LIKE '${letter}%'`
       return query
     })
   }
 }
-
-/*
-const filterDescriptions = new Map([
-  [
-    'categories',
-    (test) => {
-      if (test != '') {
-        return 'filtering categories' + test
-      }
-    },
-  ],
-  [
-    'startsWith',
-    (test) => {
-      if (test != '') {
-        return 'starts with ' + test
-      }
-    },
-  ],
-  [
-    'contains',
-    (test) => {
-      if (test != '') {
-        return 'contains' + test
-      }
-    },
-  ],
-])
-*/
 
 @provide
 export default class PageDialectLearnWords extends PageDialectLearnBase {
@@ -184,9 +156,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       visibleFilter: null,
       searchTerm: null,
       searchType: SEARCH_DEFAULT,
-      searchPhrase: false,
-      searchWord: false,
+      searchAlphabet: false,
+      searchTitle: false,
       searchDefinitions: false,
+      searchTranslations: false,
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
@@ -200,6 +173,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       '_getNxqlBoolCount',
       '_getNxqlSearchSort',
       '_generateNxql',
+      '_handleAlphabetClick',
       '_handleEnterSearch',
       '_handleFacetSelected',
       '_handleInputChange',
@@ -220,9 +194,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       filterInfo,
       isKidsTheme,
       searchTerm,
-      searchPhrase,
-      searchWord,
+      searchTitle,
       searchDefinitions,
+      searchTranslations,
       searchPartOfSpeech,
       searchType,
       visibleFilter,
@@ -270,9 +244,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     // Render kids or mobile view
     if (isKidsTheme || isMobile) {
       const pageSize = !isKidsTheme && isMobile ? 10 : 8
-
-      // eslint-disable-next-line
-      console.log('!!! UPDATING: currentAppliedFilter !!!')
       const kidsFilter = filterInfo.setIn(['currentAppliedFilter', 'kids'], ' AND fv:available_in_childrens_archive=1')
 
       return (
@@ -302,13 +273,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridViewProps: {
           cols: 10,
           cellHeight: 25,
-          action: this._changeFilter,
+          // action: this._changeFilter,
+          action: this._handleAlphabetClick,
           style: { overflowY: 'hidden', padding: '10px' },
         },
         gridListTile: AlphabetGridTile,
       }
     )
-
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -411,9 +382,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               searchAlertInfo={searchAlertInfoOutput}
               searchTerm={searchTerm}
               searchType={searchType}
-              searchPhrase={searchPhrase}
-              searchWord={searchWord}
+              searchTitleText="Word"
+              searchTitle={searchTitle}
               searchDefinitions={searchDefinitions}
+              searchTranslations={searchTranslations}
               searchPartOfSpeech={searchPartOfSpeech}
             />
 
@@ -426,167 +398,133 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   // END render
 
   _changeFilter(value, type, nxql) {
-    // TODO: UPDATE THE FILTER HERE SINCE BOTH THE SEARCH BOX AND ALPHABET TILES CALL _changeFilter
-    // eslint-disable-next-line
-    console.log("!!! PageDialectLearnWords > _changeFilter()", value, type, nxql)
-    if (value && value !== '') {
-      let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
-        return nxql(value)
-      })
-      // eslint-disable-next-line
-      console.log('!!! UPDATED:::::::::: currentAppliedFilter:', this.state.filterInfo.get('currentAppliedFilter').toJS())
+    let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
+      return nxql(value)
+    })
 
-      newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', type], () => {
-        let filterDesc
+    newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', type], () => {
+      let filterDesc
 
-        switch (type) {
-          case 'contains':
-            filterDesc = 'contain the search term'
-            break
+      switch (type) {
+        case 'contains':
+          filterDesc = 'contain the search term'
+          break
 
-          case 'startsWith':
-            filterDesc = 'start with the letter '
-            break
+        case 'startsWith':
+          filterDesc = 'start with the letter '
+          break
 
-          case 'categories':
-            filterDesc = 'have the categories'
-            break
+        case 'categories':
+          filterDesc = 'have the categories'
+          break
 
-          default:
-            filterDesc = null
-        }
+        default:
+          filterDesc = null
+      }
 
-        return (
-          <span>
-            {filterDesc} <strong>{value}</strong>
-          </span>
-        )
-      })
+      return (
+        <span>
+          {filterDesc} <strong>{value}</strong>
+        </span>
+      )
+    })
 
-      // When facets change, pagination should be reset.
-      // In these pages (words/phrase), list views are controlled via URL
-      this._resetURLPagination()
-      this.setState({ filterInfo: newFilter })
-    }
+    // When facets change, pagination should be reset.
+    // In these pages (words/phrase), list views are controlled via URL
+    this._resetURLPagination()
+    this.setState({ filterInfo: newFilter })
   }
 
   _clearAllFilters() {}
 
-  /*
-  'dc:title'
-  'fv-word:part_of_speech'
-  'fv-word:pronunciation'
-  'fv:definitions'
-  'fv:literal_translation'
-  'fv:related_audio'
-  'fv:related_pictures'
-  'fv:related_videos'
-  'fv-word:related_phrases'
-  'fv-word:categories'
-  'fv:cultural_note'
-  'fv:reference'
-  'fv:source'
-  'fv:available_in_childrens_archive'
-  'fv-word:available_in_games'
-  */
   _generateNxql() {
     const {
       searchTerm,
       searchType,
-      searchPhrase,
-      searchWord,
+      searchTitle,
+      searchAlphabet,
       searchDefinitions,
+      searchTranslations,
       searchPartOfSpeech,
     } = this.state
-    // debugger;
+
     const search = searchTerm || ''
     const nxqlTmpl = {
-      // AND ( dc:title ILIKE 'b%' OR fv-word:part_of_speech = 'basic') // sortBy=fv-word:part_of_speech
-      // AND ecm:fulltext = '*b*'"
-      // AND (dc:title LIKE 'b%25' OR fv-word:part_of_speech = '')
-      // AND ( dc:title ILIKE 'b%' AND fv-word:part_of_speech = 'basic')
-      allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`, // sortBy=ecm:fulltextScore
-      searchPhrase: `dc:title ILIKE '${search}%'`, // sortBy=ecm:fulltextScore // TODO: confirm dc:title when searching phrase
-      searchWord: `dc:title ILIKE '${search}%'`, // sortBy=ecm:fulltextScore
-      searchDefinitions: `fv:definitions = '${search}%'`, // TODO: confirm ILIKE instead of alternates like `=`,
+      allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
+      searchTitle: `dc:title ILIKE '%${search}%'`,
+      searchAlphabet: `dc:title ILIKE '${search}%'`,
+      searchDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
+      searchTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
       searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
     }
-    const nxqlQuery = {
-      allFields: '',
-      searchPhrase: '',
-      searchWord: '',
-      searchDefinitions: '',
-      searchPartOfSpeech: '',
-    }
-    // const boolCount = this._getNxqlBoolCount()
+
     const nxqlQueries = []
+    let nxqlQuerySpeech = ''
     const nxqlQueryJoin = (nxq, join = ' OR ') => {
       if (nxq.length >= 1) {
         nxq.push(join)
       }
     }
     if (searchType === SEARCH_ADVANCED) {
-      if (searchPhrase) {
-        // nxqlQueries.push(nxqlTmpl.searchPhrase)
-        nxqlQueries.push(`${nxqlTmpl.searchPhrase}`)
-      }
-      if (searchWord) {
-        // nxqlQueries.push(nxqlTmpl.searchWord)
+      /* if (searchAlphabet) {
         nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchWord}`)
+        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+      } */
+      if (searchTitle) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+      }
+      if (searchTranslations) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchTranslations}`)
       }
       if (searchDefinitions) {
-        // nxqlQueries.push(nxqlTmpl.searchDefinitions)
         nxqlQueryJoin(nxqlQueries)
         nxqlQueries.push(`${nxqlTmpl.searchDefinitions}`)
       }
       if (searchPartOfSpeech && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
-        // nxqlQueries.push(nxqlTmpl.searchPartOfSpeech)
-        nxqlQueryJoin(nxqlQueries, ' AND ')
-        nxqlQueries.push(`${nxqlTmpl.searchPartOfSpeech}`)
+        if (!searchTitle && search) {
+          nxqlQueryJoin(nxqlQueries)
+          nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+        }
+        nxqlQuerySpeech = `${nxqlQueries.length > 0 ? ' AND ' : ''} ${nxqlTmpl.searchPartOfSpeech}`
       }
     } else {
-      // nxqlQueries.push(nxqlTmpl.allFields)
-      nxqlQueries.push(`${nxqlTmpl.allFields}`)
+      if (searchAlphabet) {
+        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+      } else {
+        nxqlQueries.push(`${nxqlTmpl.allFields}`)
+      }
     }
-    return `( ${nxqlQueries.join('')} )`
+    let nxqlQueryCollection = ''
+    if (nxqlQueries.length > 0) {
+      nxqlQueryCollection = `( ${nxqlQueries.join('')} )`
+    }
+    return `${nxqlQueryCollection}${nxqlQuerySpeech}`
   }
 
   _getNxqlSearchSort() {
     const {
-      searchDefinitions,
+      searchAlphabet,
       searchPartOfSpeech,
-      searchPhrase,
-      searchWord,
       searchTerm,
     } = this.state
 
-    const check = {
-      searchDefinitions,
-      searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
-      searchPhrase,
-      searchWord,
-    }
-
     // Default sort
     let searchSortBy = 'ecm:fulltextScore'
-    // More than 1 option selected ?
-    const boolCount = this._getNxqlBoolCount()
 
-    if (boolCount === 1) {
-      if (check.searchPartOfSpeech) {
-        searchSortBy = 'fv-word:part_of_speech'
-      } else {
+    if (searchAlphabet) {
+      searchSortBy = 'dc:title'
+    } else {
+      const boolCount = this._getNxqlBoolCount()
+      if (boolCount > 0) {
         searchSortBy = 'dc:title'
       }
+      if (boolCount === 1 && searchPartOfSpeech) {
+        searchSortBy = 'fv-word:part_of_speech'
+      }
     }
-    if (boolCount > 1) {
-      searchSortBy = 'dc:title'
-    }
-    console.log('!!!', searchTerm ? {
-      DEFAULT_SORT_COL: searchSortBy,
-      DEFAULT_SORT_TYPE: 'asc',
-    } : {})
+
     return searchTerm ? {
       DEFAULT_SORT_COL: searchSortBy,
       DEFAULT_SORT_TYPE: 'asc',
@@ -595,20 +533,19 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   _getNxqlBoolCount() {
     const {
       searchDefinitions,
+      searchTranslations,
       searchPartOfSpeech,
-      searchPhrase,
-      searchWord,
+      searchTitle,
     } = this.state
 
     const check = {
       searchDefinitions,
+      searchTranslations,
       searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
-      searchPhrase,
-      searchWord,
+      searchTitle,
     }
-    const boolCount = check.searchPhrase + check.searchWord + check.searchDefinitions + check.searchPartOfSpeech
+    const boolCount = check.searchTitle + check.searchDefinitions + check.searchTranslations + check.searchPartOfSpeech
     return boolCount
-
   }
   _getSearchAlertInfo() {
     const {filterInfo} = this.state
@@ -643,6 +580,18 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     return searchAlertInfo
   }
 
+  _handleAlphabetClick(startsWith) {
+    this.setState({
+      searchTerm: startsWith,
+      searchType: SEARCH_DEFAULT,
+      searchAlphabet: true,
+      searchTitle: false,
+      searchDefinitions: false,
+      searchTranslations: false,
+      searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+    }, this._handleSearch)
+
+  }
   _handleEnterSearch(evt) {
     if (evt.key === 'Enter') {
       this._handleSearch()
@@ -651,7 +600,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _handleInputChange({id, checked, value, type}) {
     const updateState = {}
-
     // NOTE: Scripting here is tied to the structure of the html
 
     // Record changes
@@ -670,7 +618,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   _handleSearch() {
-    const { searchTerm} = this.state
+    const { searchTerm } = this.state
     this._changeFilter(searchTerm, 'contains', () => ` AND ${this._generateNxql()}`)
   }
 
@@ -712,8 +660,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   _setFilter() {
-    // eslint-disable-next-line
-    console.log("!!! PageDialectLearnWords > _setFilter()")
   }
 
   _updateSearchTerm(evt) {

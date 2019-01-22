@@ -21,9 +21,10 @@ class SearchWordsPhrases extends Component {
     searchAlertInfo: any, // TODO: sometimes element, sometimes array
     searchTerm: string,
     searchType: string,
-    searchPhrase: bool,
-    searchWord: bool,
+    searchTitleText: string,
+    searchTitle: bool,
     searchDefinitions: bool,
+    searchTranslations: bool,
     searchPartOfSpeech: string,
   }
   static defaultProps = {
@@ -35,9 +36,9 @@ class SearchWordsPhrases extends Component {
     searchAlertInfo: null,
     searchTerm: '',
     searchType: SEARCH_ADVANCED,
-    searchPhrase: false,
-    searchWord: false,
+    searchTitle: false,
     searchDefinitions: false,
+    searchTranslations: false,
     searchPartOfSpeech: SEARCH_SORT_DEFAULT,
   }
 
@@ -53,9 +54,10 @@ class SearchWordsPhrases extends Component {
       searchAlertInfo,
       searchTerm,
       searchType,
-      searchPhrase,
-      searchWord,
+      searchTitle,
+      searchTitleText,
       searchDefinitions,
+      searchTranslations,
       searchPartOfSpeech,
     } = this.props
     return (
@@ -104,22 +106,12 @@ class SearchWordsPhrases extends Component {
             <span>
               <input
                 type="checkbox"
-                id="searchPhrase"
-                name="searchPhrase"
-                checked={searchPhrase}
+                id="searchTitle"
+                name="searchTitle"
+                checked={searchTitle}
                 onChange={this._handleCustomSearch}
               />
-              <label htmlFor="searchPhrase">Phrase</label>
-            </span>
-            <span>
-              <input
-                type="checkbox"
-                id="searchWord"
-                name="searchWord"
-                checked={searchWord}
-                onChange={this._handleCustomSearch}
-              />
-              <label htmlFor="searchWord">Word</label>
+              <label htmlFor="searchTitle">{searchTitleText}</label>
             </span>
             <span>
               <input
@@ -132,8 +124,23 @@ class SearchWordsPhrases extends Component {
               <label htmlFor="searchDefinitions">Definitions</label>
             </span>
             <span>
+              <input
+                type="checkbox"
+                id="searchTranslations"
+                name="searchTranslations"
+                checked={searchTranslations}
+                onChange={this._handleCustomSearch}
+              />
+              <label htmlFor="searchTranslations">Literal Translations</label>
+            </span>
+            <span>
               <label htmlFor="searchPartOfSpeech">Part of speech:</label>
-              <select onChange={this._handleCustomSearch} id="searchPartOfSpeech" name="searchPartOfSpeech">
+              <select
+                onChange={this._handleCustomSearch}
+                id="searchPartOfSpeech"
+                name="searchPartOfSpeech"
+                value={searchPartOfSpeech}
+              >
                 <option value={SEARCH_SORT_DEFAULT}>Any</option>
                 <option value="noun">Noun</option>
                 <option value="verb">Verb</option>
