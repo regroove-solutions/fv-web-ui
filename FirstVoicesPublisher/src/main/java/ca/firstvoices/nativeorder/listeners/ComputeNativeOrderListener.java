@@ -12,6 +12,7 @@ import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.api.model.DocumentPart;
 import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
@@ -26,57 +27,80 @@ public class ComputeNativeOrderListener implements EventListener {
 
     protected NativeOrderComputeService service = Framework.getService(NativeOrderComputeService.class);
 
+    /**
+     * Checks if title was modified, but not custom order
+     * @return
+     */
+    private Boolean titleModifiedButNotCustomOrder(DocumentModel doc) {
+
+        int found = 0;
+
+        Boolean titleModified = false;
+        Boolean customOrderModified = false;
+
+        DocumentPart[] docParts = doc.getParts();
+        for (DocumentPart docPart : docParts) {
+            Iterator<Property> dirtyChildrenIterator = docPart.getDirtyChildren();
+
+            while (dirtyChildrenIterator.hasNext()) {
+                Property property = dirtyChildrenIterator.next();
+                String propertyName = property.getField().getName().toString();
+
+                if (propertyName.equals("dc:title") && property.isDirty()) {
+                    titleModified = true;
+                    ++found;
+                }
+
+                if (propertyName.equals("fv:custom_order") && property.isDirty()) {
+                    customOrderModified = true;
+                    ++found;
+                }
+
+                // No need to keep checking
+                if (found == 2) {
+                    break;
+                }
+            }
+        }
+
+        return (titleModified && !customOrderModified);
+    }
+
 	@Override
     public void handleEvent(Event event) {
-
-        if (!(event.getName().equals(DocumentEventTypes.DOCUMENT_CREATED)) &&
-                !(event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE))) {
+        EventContext ctx = event.getContext();
+        if (!(ctx instanceof DocumentEventContext)) {
             return;
         }
 
-        if (!(event.getContext() instanceof DocumentEventContext)) {
+        DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
+
+        if (doc == null ) {
             return;
         }
-        DocumentEventContext ctx = (DocumentEventContext) event.getContext();
-        DocumentModel doc = ctx.getSourceDocument();
 
-        if (doc == null) {
+        // Skip proxies and versions
+        if (doc.isProxy() || doc.isVersion()) {
             return;
         }
 
         // Handle language assets (Words and Phrases)
-        if ((doc.getType().equals("FVWord") || doc.getType().equals("FVPhrase")) && !doc.isProxy()) {
+        if ((doc.getType().equals("FVWord") || doc.getType().equals("FVPhrase"))) {
 
-            // When modifying, only recompute if dc:title has changed.
-            // If custom order modified, change is via service - so skip.
-            if (event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
+            switch (event.getName()){
 
-                Boolean titleModified = false;
-                Boolean customOrderModified = false;
+                // Creation
+                case DocumentEventTypes.DOCUMENT_CREATED:
+                    service.computeAssetNativeOrderTranslation(doc);
+                break;
 
-                DocumentPart[] docParts = doc.getParts();
-                for (DocumentPart docPart : docParts) {
-                    Iterator<Property> dirtyChildrenIterator = docPart.getDirtyChildren();
-
-                    while (dirtyChildrenIterator.hasNext()) {
-                        Property property = dirtyChildrenIterator.next();
-                        String propertyName = property.getField().getName().toString();
-
-                        if (propertyName.equals("dc:title") && property.isDirty()) {
-                            titleModified = true;
-                        } else if (propertyName.equals("fv:custom_order") && property.isDirty()) {
-                            customOrderModified = true;
-                        }
+                // Modification
+                case DocumentEventTypes.BEFORE_DOC_UPDATE:
+                    if (titleModifiedButNotCustomOrder(doc)) {
+                        service.computeAssetNativeOrderTranslation(doc);
                     }
-                }
-
-                if (!titleModified || customOrderModified) {
-                    return;
-                }
+                break;
             }
-
-            // Will always run when creating
-            service.computeAssetNativeOrderTranslation(doc);
         }
     }
 }

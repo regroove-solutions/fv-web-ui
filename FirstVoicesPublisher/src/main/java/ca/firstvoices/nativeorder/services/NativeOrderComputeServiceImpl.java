@@ -17,8 +17,7 @@ import ca.firstvoices.services.AbstractService;
 public class NativeOrderComputeServiceImpl extends AbstractService implements NativeOrderComputeService {
 
     private DocumentModel[] loadAlphabet(CoreSession session, DocumentModel dialect) {
-        // TODO Know how the Alphabet is ordered
-        DocumentModelList chars = session.query("SELECT * FROM FVCharacter WHERE ecm:ancestorId='"+dialect.getId()+"' ORDER BY fvcharacter:alphabet_order");
+        DocumentModelList chars = session.query("SELECT * FROM FVCharacter WHERE ecm:ancestorId='"+dialect.getId()+ "' AND ecm:currentLifeCycleState <> 'deleted' ORDER BY fvcharacter:alphabet_order");
         DocumentModel[] models = new DocumentModel[chars.size()];
 
         models = chars.toArray(models);
@@ -58,36 +57,6 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
         }
 
         return sortedModels;
-//        try {
-//        Arrays.sort(models, new Comparator<DocumentModel>() {
-//
-//            @Override
-//            public int compare(DocumentModel o1, DocumentModel o2) {
-//                String title1 = (String) o1.getPropertyValue("dc:title");
-//                String title2 = (String) o2.getPropertyValue("dc:title");
-//                if (title1 == title2 && title1 == null) {
-//                    return 0;
-//                }
-//                if (title2 == null) {
-//                    return -1;
-//                }
-//                if (title1 == null) {
-//                    return 1;
-//                }
-//                if (title1.length() < title2.length()) {
-//                    return 1;
-//                } else if (title1.length() > title2.length()) {
-//                    return -1;
-//                } else {
-//                    return 0;
-//                }
-//            }
-//
-//        });
-//        } catch( Exception e ) {
-//        	e.printStackTrace();
-//        }
-//        return models;
     }
 
     /* (non-Javadoc)
@@ -130,7 +99,12 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
         String nativeTitle = "";
         while (title.length() > 0) {
             boolean found = false;
-            for (DocumentModel charDoc : chars) {
+
+            // Evaluate characters in reverse to find 'double' chars (e.g. 'aa' vs. 'a') before single ones
+            int i;
+
+            for (i = chars.length - 1; i >= 0; --i) {
+                DocumentModel charDoc = chars[i];
                 String charValue = (String) charDoc.getPropertyValue("dc:title");
                 String ucCharValue = (String) charDoc.getPropertyValue("fvcharacter:upper_case_character");
                 if ((charValue != null && title.startsWith(charValue)) || (ucCharValue != null && title.startsWith(ucCharValue))) {

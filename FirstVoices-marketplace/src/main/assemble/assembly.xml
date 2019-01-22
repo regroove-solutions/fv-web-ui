@@ -22,7 +22,7 @@
       <fileset dir="src/main/resources"/>
       <filterset>
         <filter token="VERSION" value="${maven.project.version}"/>
-        <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}"/>
+        <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version.base}"/>
       </filterset>
     </copy>
     <copy file="${outdir}/artifacts.properties" todir="${outdir}/marketplace/install"/>

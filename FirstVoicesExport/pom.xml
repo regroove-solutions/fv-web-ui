@@ -5,7 +5,7 @@
     <parent>
         <groupId>ca.firstvoices</groupId>
         <artifactId>firstvoices-modules-parent</artifactId>
-        <version>1.0.21-SNAPSHOT</version>
+        <version>1.0.22-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>FirstVoicesExport</artifactId>
@@ -101,10 +101,6 @@
         <dependency>
             <groupId>org.nuxeo.ecm.core</groupId>
             <artifactId>nuxeo-core-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.derby</groupId>
-            <artifactId>derby</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.derby</groupId>

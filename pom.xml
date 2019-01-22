@@ -4,22 +4,23 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
-    <fv.studio.version>0.0.57</fv.studio.version>
-    <fv.plugin.version>1.0.21-SNAPSHOT</fv.plugin.version>
+    <nuxeo.distribution.version.base>7.10</nuxeo.distribution.version.base>
+    <nuxeo.distribution.version>7.10-HF46</nuxeo.distribution.version>
+    <fv.studio.version>0.0.80</fv.studio.version>
+    <fv.plugin.version>1.0.22-SNAPSHOT</fv.plugin.version>
   </properties>
 
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>7.10</version>
+    <version>7.10-HF46</version>
   </parent>
 
   <groupId>ca.firstvoices</groupId>
   <artifactId>firstvoices-modules-parent</artifactId>
   <name>First Voices Project Parent</name>
   <packaging>pom</packaging>
-  <version>1.0.21-SNAPSHOT</version>
+  <version>1.0.22-SNAPSHOT</version>
 
   <modules>
     <module>FirstVoices-marketplace</module>
@@ -109,8 +110,19 @@
       </snapshots>
     </repository>
     <repository>
-      <id>public-eu</id>
-      <url>http://maven-eu.nuxeo.org/nexus/content/groups/public</url>
+      <id>nuxeo-studio</id>
+      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <!-- Hotfix Repositories For Nuxeo Customers Only -->
+    <repository>
+      <id>hotfix-releases</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-releases</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -119,12 +131,13 @@
       </snapshots>
     </repository>
     <repository>
-      <id>nuxeo-studio</id>
-      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <id>hotfix-snapshots</id>
+      <url>https://maven.nuxeo.org/nexus/content/repositories/hotfix-snapshots</url>
       <releases>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </releases>
       <snapshots>
+        <updatePolicy>always</updatePolicy>
         <enabled>true</enabled>
       </snapshots>
     </repository>

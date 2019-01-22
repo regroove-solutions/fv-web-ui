@@ -3,7 +3,7 @@ package ca.firstvoices.listeners;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.workers.FVAbstractExportWork;
 import ca.firstvoices.workers.FVCyclicExportWorker;
-import ca.firstvoices.workers.FVEXportBlobWorker;
+import ca.firstvoices.workers.FVExportBlobWorker;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -70,7 +70,7 @@ public class FVExportListener implements EventListener
     private FVAbstractExportWork produceBlobWorker( EventContext ctx )
     {
         FVExportWorkInfo info = (FVExportWorkInfo)ctx.getProperty( EXPORT_WORK_INFO );
-        FVEXportBlobWorker work = new FVEXportBlobWorker( String.valueOf(System.nanoTime()), info );
+        FVExportBlobWorker work = new FVExportBlobWorker( String.valueOf(System.nanoTime()), info );
         return work;
     }
 

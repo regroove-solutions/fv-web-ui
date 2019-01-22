@@ -15,7 +15,7 @@ import java.io.*;
 import static ca.firstvoices.utils.FVExportConstants.BLOB_WORKER;
 import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
 
-public class FVEXportBlobWorker  extends FVAbstractExportWork
+public class FVExportBlobWorker extends FVAbstractExportWork
 {
     private static final Log log = LogFactory.getLog(FVExportWorker.class);
 
@@ -30,7 +30,7 @@ public class FVEXportBlobWorker  extends FVAbstractExportWork
         return "Move an export file to blob and create a wrapper.";
     }
 
-    public FVEXportBlobWorker( String id, FVExportWorkInfo info )
+    public FVExportBlobWorker(String id, FVExportWorkInfo info )
     {
         super( id );
         super.setWorkInfo( info );
