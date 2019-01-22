@@ -76,7 +76,7 @@ public class FVExportListener implements EventListener
 
     private FVAbstractExportWork produceWorker( EventContext ctx, FVAbstractExportWork work )
     {
-        if( ctx.hasProperty( QUERY_TO_PREPARE_WORK_FOR_EXPORT) )
+        if( ctx.hasProperty( EXPORT_WORK_INFO) )
         {
             work.setWorkInfo( (FVExportWorkInfo)ctx.getProperty( EXPORT_WORK_INFO ) );
 
