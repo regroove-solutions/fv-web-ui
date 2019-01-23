@@ -5,22 +5,46 @@ import java.util.Map;
 
 public class FVExportUtils
 {
-    public static DocumentModel findDialectChild(DocumentModel dialect, String dialectChildType )
+    public static DocumentModel findDialectChildWithRef( CoreSession session, DocumentRef dialectRef, String dialectChildType )
     {
-        DocumentModelList children = dialect.getCoreSession().getChildren(dialect.getRef());
+        DocumentModelList children = session.getChildren( dialectRef );
 
-        DocumentModel dictionary = null;
+        DocumentModel foundChild = null;
 
         for (DocumentModel child : children)
         {
             if (child.getType().equals(dialectChildType))
             {
-                dictionary = child;
+                foundChild = child;
                 break;
             }
         }
 
-        return dictionary;
+        return foundChild;
+    }
+
+    public static DocumentModel findDialectChild( DocumentModel dialect, String dialectChildType )
+    {
+       return findDialectChildWithRef( dialect.getCoreSession(), dialect.getRef(), dialectChildType );
+    }
+
+    //TODO: replace with query
+    public static DocumentModel findChildWithName( CoreSession session, DocumentRef parentRef, String childName )
+    {
+        DocumentModelList children = session.getChildren( parentRef );
+
+        DocumentModel foundChild = null;
+
+        for (DocumentModel child : children)
+        {
+            if (child.getName().equals(childName))
+            {
+                foundChild = child;
+                break;
+            }
+        }
+
+        return foundChild;
     }
 
     //ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);

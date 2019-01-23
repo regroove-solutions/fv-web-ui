@@ -11,6 +11,7 @@ import javax.security.auth.login.LoginContext;
 import java.util.List;
 
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
+import static ca.firstvoices.utils.UtilityTestWordGenerator.createWords;
 
 /*
         Worker description is in FVAbstractExportWorker file.
@@ -42,6 +43,8 @@ public class FVExportWorker extends FVAbstractExportWork
                 LoginContext lctx = Framework.login();
                 CoreSession session = CoreInstance.openCoreSession("default");
                 List listToProcess = getDocuments();
+
+                // createWords( session ); // TODO: Place to add more words to Dictionary
 
                 FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
 

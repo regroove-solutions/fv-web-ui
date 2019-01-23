@@ -12,21 +12,12 @@ public class UtilityTestWordGenerator
 
     static private String path = "/FV/Workspaces/Data/Test-Language-Familiy-2/Test-language-2/Test-Dialect-2/Dictionary";
 
-    static private DocumentModel createDocument(CoreSession session, DocumentModel model)
-    {
-        model.setPropertyValue("dc:title", model.getName());
-        DocumentModel newDoc = session.createDocument(model);
-        session.save();
-
-        return newDoc;
-    }
-
     static public void createWords( CoreSession session )
     {
         // "/FV/Family/Language/Dialect/Dictionary"
         String testWord = "Test_Word_";
 
-        for (int i = 0; i < 15000; i++ )
+        for (int i = 0; i < 100; i++ )
         {
             String wordValue = testWord +  i ;
             DocumentModel word = session.createDocumentModel( path, wordValue, "FVWord");
@@ -39,9 +30,14 @@ public class UtilityTestWordGenerator
             word.setPropertyValue( "fvcore:definitions", definitionsList );
             word.setPropertyValue("fv:reference", wordValue );
             word.setPropertyValue("fv-word:part_of_speech", "Basic" );
+            word.setPropertyValue("dc:title", wordValue+"#" );
 
-            createDocument(session, word );
+            word = session.createDocument(word);
+
+            if( i % 20 == 0 ) {session.save(); }
         }
+
+        session.save();
     }
 
 }
