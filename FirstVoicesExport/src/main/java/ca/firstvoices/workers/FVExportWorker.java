@@ -42,9 +42,9 @@ public class FVExportWorker extends FVAbstractExportWork
             {
                 LoginContext lctx = Framework.login();
                 CoreSession session = CoreInstance.openCoreSession("default");
-                List listToProcess = getDocuments();
+//createWords( session );
 
-                // createWords( session ); // TODO: Place to add more words to Dictionary
+                List listToProcess = getDocuments();
 
                 FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
 
