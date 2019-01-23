@@ -65,8 +65,6 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             {
                 String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), RESOURCES );
 
-
-                wrapper = session.createDocumentModel(pathToNewDocument, workInfo.fileName, "FVExport");
                 wrapper = session.createDocument(wrapper);
             }
 
@@ -76,6 +74,7 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             wrapper.setPropertyValue( "fvexport:query",    workInfo.exportQuery );
             wrapper.setPropertyValue( "fvexport:columns", "*" ); // TODO: replace with string list rolled into a CSV string
 
+            session.saveDocument( wrapper );
             session.save();
 
             lctx.logout();
