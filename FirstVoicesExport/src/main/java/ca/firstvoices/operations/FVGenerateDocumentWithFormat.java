@@ -64,16 +64,16 @@ public class FVGenerateDocumentWithFormat
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
 
-                FVExportWorkInfo payload = new FVExportWorkInfo();
-                payload.columns = columns;
-                payload.dialectGUID = input.getId();
-                payload.resourcesFolderGUID = resourceFolder.getId();
-                payload.dialectName = input.getName();
-                payload.exportFormat = format;
-                payload.exportQuery = query;
-                payload.initiatorName = session.getPrincipal().getName();
+                FVExportWorkInfo workInfo = new FVExportWorkInfo();
+                workInfo.columns = columns;
+                workInfo.dialectGUID = input.getId();
+                workInfo.resourcesFolderGUID = resourceFolder.getId();
+                workInfo.dialectName = input.getName();
+                workInfo.exportFormat = format;
+                workInfo.exportQuery = query;
+                workInfo.initiatorName = session.getPrincipal().getName();
 
-                export_ctx.setProperty( EXPORT_WORK_INFO, payload );
+                export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
                 export_ctx.setProperty( WORDS_TO_EXPORT, docsToProcess );
 
                 Event event = export_ctx.newEvent( PRODUCE_FORMATTED_DOCUMENT );

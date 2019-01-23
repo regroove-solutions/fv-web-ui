@@ -41,7 +41,6 @@ public class FVExportWorker extends FVAbstractExportWork
             {
                 LoginContext lctx = Framework.login();
                 CoreSession session = CoreInstance.openCoreSession("default");
-
                 List listToProcess = getDocuments();
 
                 FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
@@ -66,7 +65,8 @@ public class FVExportWorker extends FVAbstractExportWork
                 session.close();
             }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             log.warn(e);
         }
     }
