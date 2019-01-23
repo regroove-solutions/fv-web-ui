@@ -13,7 +13,8 @@ import javax.security.auth.login.LoginContext;
 import java.io.*;
 
 import static ca.firstvoices.utils.FVExportConstants.BLOB_WORKER;
-import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
+import static ca.firstvoices.utils.FVExportConstants.RESOURCES;
+import static ca.firstvoices.utils.FVExportUtils.*;
 
 public class FVExportBlobWorker extends FVAbstractExportWork
 {
@@ -50,28 +51,30 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             File file = new File(workInfo.filePath);
             FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
 
-            FVBlobRelocatorAccessor blobRelocator = new FVBlobRelocatorAccessor( fileBlob, workInfo );
-
-
             // relocates blob from tmp to data in $NUXEO_HOME/data/binaries/
             // creates 2 subdirectories from the provided digest
             // to keep structure exactly the same as NUXEO
+            FVBlobRelocatorAccessor blobRelocator = new FVBlobRelocatorAccessor( fileBlob, workInfo );
             String exportDocDigest = blobRelocator.relocateBlobExportFile();
 
-            String pathToNewDocument = getPathToChildInDialect( session,
-                                                                session.getDocument(new IdRef(workInfo.dialectGUID)),
-                                                                "Resources" );
-            DocumentModel wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" ); // TODO: DOES NOT WORK
-            wrapper = session.createDocument( wrapper );
+            // check if wrapper already exists
+            DocumentModel resFolder = findDialectChildWithRef( session, new IdRef(workInfo.dialectGUID), RESOURCES );
+            DocumentModel wrapper = findChildWithName( session, resFolder.getRef(), workInfo.fileName);
 
-            // exportDocDigest -> digest
-            // workInfo.dialectGUID -> dialect
-            // workInfo.exportQuery -> query
-            // workInfo.columns -> columns
-            // workInfo.exportFormat -> format;
-            //
+            if( wrapper == null )
+            {
+                String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), RESOURCES );
 
-            //wrapper.setPropertyValue( );
+
+                wrapper = session.createDocumentModel(pathToNewDocument, workInfo.fileName, "FVExport");
+                wrapper = session.createDocument(wrapper);
+            }
+
+            wrapper.setPropertyValue( "fvexport:dialect",  workInfo.dialectGUID );
+            wrapper.setPropertyValue( "fvexport:format",   workInfo.exportFormat );
+            wrapper.setPropertyValue( "fvexport:digest",   exportDocDigest );
+            wrapper.setPropertyValue( "fvexport:query",    workInfo.exportQuery );
+            wrapper.setPropertyValue( "fvexport:columns", "*" ); // TODO: replace with string list rolled into a CSV string
 
             session.save();
 
@@ -82,38 +85,5 @@ public class FVExportBlobWorker extends FVAbstractExportWork
         {
             e.printStackTrace();
         }
-    }
-
-    // early experiment - leave it here
-    public static byte[] experiment(String filePath) throws IOException
-    {
-        // create file object
-        File file = new File(filePath);
-        // initialize a byte array of size of the file
-        byte[] fileContent = new byte[(int) file.length()];
-        FileInputStream inputStream = null;
-
-        try
-        {
-            // create an input stream pointing to the file
-            inputStream = new FileInputStream(file);
-
-            // read the contents of file into byte array
-            inputStream.read(fileContent);
-        }
-        catch (IOException e)
-        {
-            throw new IOException("Unable to convert file to byte array. " + e.getMessage());
-        }
-        finally
-        {
-            // close input stream
-            if (inputStream != null)
-            {
-                inputStream.close();
-            }
-        }
-
-        return fileContent;
     }
 }
