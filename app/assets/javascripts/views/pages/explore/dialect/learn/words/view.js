@@ -32,7 +32,7 @@ import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
 import TextHeader from 'views/components/Document/Typography/text-header';
-
+import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import {Link} from 'provide-page';
 
 //import Header from 'views/pages/explore/dialect/header';
@@ -288,7 +288,7 @@ export default class View extends Component {
 
         let definitions = selectn('response.properties.fv:definitions', computeWord);
         let literal_translations = selectn('response.properties.fv:literal_translation', computeWord);
-
+        const dialectClassName = getDialectClassname(computeDialect2)
         /**
          * Generate definitions body
          */
@@ -315,8 +315,9 @@ export default class View extends Component {
 
                     <div>
 
-                        <TextHeader title={selectn('response.title', computeWord)} tag="h1"
-                                    properties={this.props.properties}/>
+                        <div className={dialectClassName}>
+                          <TextHeader title={selectn('response.title', computeWord)} tag="h1" properties={this.props.properties}/>
+                        </div>
 
                         <hr/>
 

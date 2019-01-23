@@ -38,7 +38,7 @@ import MenuItem from 'material-ui/lib/menus/menu-item'
 
 import GeneralList from 'views/components/Browsing/general-list'
 import { CardView } from './list-view'
-
+import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import withFilter from 'views/hoc/grid-list/with-filter'
 import IntlService from 'views/services/intl'
 
@@ -160,7 +160,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
     if (isKidsTheme) {
       listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme} />
     }
-
+    const dialectClassName = getDialectClassname(computeDialect2)
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper', { hidden: isKidsTheme })}>
@@ -188,7 +188,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
 
         <div className="row" style={{ marginBottom: '20px' }}>
           <div className={classNames('col-xs-12', { 'col-md-8': isKidsTheme, 'col-md-offset-2': isKidsTheme })}>
-            <h1 className={classNames({ hidden: isKidsTheme })}>
+            <h1 className={classNames(dialectClassName, { hidden: isKidsTheme })}>
               {selectn('response.title', computeDialect2)} {StringHelpers.toTitleCase(this.props.typePlural)}
             </h1>
             {listView}

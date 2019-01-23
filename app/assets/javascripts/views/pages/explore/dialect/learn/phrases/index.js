@@ -33,7 +33,7 @@ import CircularProgress from 'material-ui/lib/circular-progress';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import FacetFilterList from 'views/components/Browsing/facet-filter-list';
-
+import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
 import IntlService from 'views/services/intl';
 
@@ -165,6 +165,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
             </PromiseWrapper>;
         }
 
+        const dialectClassName = getDialectClassname(computeDocument)
+
         return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
             <div className={classNames('row', 'row-create-wrapper')}>
                 <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
@@ -190,7 +192,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 </div>
                 <div className={classNames('col-xs-12', (computePhraseBooksSize == 0) ? 'col-md-12' : 'col-md-9')}>
                     <h1>{intl.trans('views.pages.explore.dialect.phrases.x_phrases', selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) + ' Phrases', null, [selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)])}</h1>
-                    {phraseListView}
+                    <div className={dialectClassName}>{phraseListView}</div>
                 </div>
             </div>
         </PromiseWrapper>;
