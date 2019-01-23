@@ -278,7 +278,7 @@ export default class Navigation extends Component {
   }
 
   _handleOpenMenuRequest() {
-    
+
     // Only load navigation once
     if (!this.props.computeLoadNavigation.success) {
       this.props.loadNavigation();
@@ -526,7 +526,7 @@ export default class Navigation extends Component {
                   return <div className="row" style={{backgroundColor: themePalette.primary2Color, minHeight: '64px', margin: '0'}}>
 
                       <div className="col-xs-12">
-                        <h2 style={{fontWeight: '500', margin: '0'}}><a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}><Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px', marginTop: '8px', marginLeft: '3px'}} /> <span style={{verticalAlign: '-5px'}}>{this.intl.searchAndReplace(portalTitle)}</span></a></h2>
+                        <h2 style={{fontWeight: '500', margin: '0'}} className="fontAboriginalSans"><a style={{textDecoration: 'none', color: '#fff'}} onTouchTap={this._onNavigateRequest.bind(this, '/explore' + this.props.routeParams.dialect_path)}><Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} style={{marginRight: '10px', marginTop: '8px', marginLeft: '3px'}} /> <span style={{verticalAlign: '-5px'}}>{this.intl.searchAndReplace(portalTitle)}</span></a></h2>
                       </div>
 
                     </div>;
