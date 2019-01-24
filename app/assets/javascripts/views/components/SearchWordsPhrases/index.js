@@ -16,31 +16,31 @@ const { any, func, string, bool } = PropTypes
 class SearchWordsPhrases extends Component {
   static propTypes = {
     filterInfo: any, // TODO: set appropriate propType
-    updateStatePageDialectLearnWords: func,
+    updateStateOfParentComponent: func,
     // ^ new
     handleSearch: func,
     resetSearch: func,
-    searchAlphabet: bool,
+    searchByAlphabet: bool,
     searchTerm: string,
     searchType: string,
-    searchTitleText: string,
-    searchTitle: bool,
-    searchDefinitions: bool,
-    searchTranslations: bool,
+    searchByTitleText: string,
+    searchByTitle: bool,
+    searchByDefinitions: bool,
+    searchByTranslations: bool,
     searchPartOfSpeech: string,
   }
   static defaultProps = {
     filterInfo: new Map({}),
-    updateStatePageDialectLearnWords: () => {},
+    updateStateOfParentComponent: () => {},
     // ^ new
     handleSearch: () => {},
     resetSearch: () => {},
-    searchAlphabet: false,
+    searchByAlphabet: false,
     searchTerm: '',
     searchType: SEARCH_ADVANCED,
-    searchTitle: false,
-    searchDefinitions: false,
-    searchTranslations: false,
+    searchByTitle: false,
+    searchByDefinitions: false,
+    searchByTranslations: false,
     searchPartOfSpeech: SEARCH_SORT_DEFAULT,
   }
 
@@ -48,9 +48,9 @@ class SearchWordsPhrases extends Component {
     super(props)
     ;[
       '_getSearchInfo',
-      '_generateNxql',
       '_getNxqlSearchSort',
       '_getNxqlBoolCount',
+      '_generateNxql',
       '_handleCustomSearch',
       '_handleEnterSearch',
       '_handleSearch',
@@ -62,17 +62,17 @@ class SearchWordsPhrases extends Component {
   componentDidUpdate() {
     const searchNxqlQuery = this._generateNxql()
     const searchNxqlSort = this._getNxqlSearchSort()
-    this.props.updateStatePageDialectLearnWords({ searchNxqlQuery, searchNxqlSort })
+    this.props.updateStateOfParentComponent({ searchNxqlQuery, searchNxqlSort })
   }
 
   render() {
     const {
       searchTerm,
       searchType,
-      searchTitle,
-      searchTitleText,
-      searchDefinitions,
-      searchTranslations,
+      searchByTitle,
+      searchByTitleText,
+      searchByDefinitions,
+      searchByTranslations,
       searchPartOfSpeech,
     } = this.props
 
@@ -124,32 +124,32 @@ class SearchWordsPhrases extends Component {
             <span>
               <input
                 type="checkbox"
-                id="searchTitle"
-                name="searchTitle"
-                checked={searchTitle}
+                id="searchByTitle"
+                name="searchByTitle"
+                checked={searchByTitle}
                 onChange={this._handleCustomSearch}
               />
-              <label htmlFor="searchTitle">{searchTitleText}</label>
+              <label htmlFor="searchByTitle">{searchByTitleText}</label>
             </span>
             <span>
               <input
                 type="checkbox"
-                id="searchDefinitions"
-                name="searchDefinitions"
-                checked={searchDefinitions}
+                id="searchByDefinitions"
+                name="searchByDefinitions"
+                checked={searchByDefinitions}
                 onChange={this._handleCustomSearch}
               />
-              <label htmlFor="searchDefinitions">Definitions</label>
+              <label htmlFor="searchByDefinitions">Definitions</label>
             </span>
             <span>
               <input
                 type="checkbox"
-                id="searchTranslations"
-                name="searchTranslations"
-                checked={searchTranslations}
+                id="searchByTranslations"
+                name="searchByTranslations"
+                checked={searchByTranslations}
                 onChange={this._handleCustomSearch}
               />
-              <label htmlFor="searchTranslations">Literal Translations</label>
+              <label htmlFor="searchByTranslations">Literal Translations</label>
             </span>
             <span>
               <label htmlFor="searchPartOfSpeech">Part of speech:</label>
@@ -171,6 +171,7 @@ class SearchWordsPhrases extends Component {
       </div>
     )
   }
+
   _getSearchInfo() {
     const { filterInfo } = this.props
     let searchInfo = (
@@ -203,11 +204,11 @@ class SearchWordsPhrases extends Component {
   }
 
   _getNxqlSearchSort() {
-    const { searchAlphabet, searchPartOfSpeech, searchTerm } = this.props
+    const { searchByAlphabet, searchPartOfSpeech, searchTerm } = this.props
     // Default sort
     let searchSortBy = 'ecm:fulltextScore'
 
-    if (searchAlphabet) {
+    if (searchByAlphabet) {
       searchSortBy = 'dc:title'
     } else {
       const boolCount = this._getNxqlBoolCount()
@@ -226,36 +227,39 @@ class SearchWordsPhrases extends Component {
       }
       : {}
   }
+
   _getNxqlBoolCount() {
-    const { searchDefinitions, searchTranslations, searchPartOfSpeech, searchTitle } = this.props
+    const { searchByDefinitions, searchByTranslations, searchPartOfSpeech, searchByTitle } = this.props
 
     const check = {
-      searchDefinitions,
-      searchTranslations,
+      searchByDefinitions,
+      searchByTranslations,
       searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
-      searchTitle,
+      searchByTitle,
     }
-    const boolCount = check.searchTitle + check.searchDefinitions + check.searchTranslations + check.searchPartOfSpeech
+    const boolCount =
+      check.searchByTitle + check.searchByDefinitions + check.searchByTranslations + check.searchPartOfSpeech
     return boolCount
   }
+
   _generateNxql() {
     const {
       searchTerm,
       searchType,
-      searchTitle,
-      searchAlphabet,
-      searchDefinitions,
-      searchTranslations,
+      searchByTitle,
+      searchByAlphabet,
+      searchByDefinitions,
+      searchByTranslations,
       searchPartOfSpeech,
     } = this.props
 
     const search = searchTerm || ''
     const nxqlTmpl = {
       allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
-      searchTitle: `dc:title ILIKE '%${search}%'`,
-      searchAlphabet: `dc:title ILIKE '${search}%'`,
-      searchDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
-      searchTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
+      searchByTitle: `dc:title ILIKE '%${search}%'`,
+      searchByAlphabet: `dc:title ILIKE '${search}%'`,
+      searchByDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
+      searchByTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
       searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
     }
 
@@ -267,32 +271,32 @@ class SearchWordsPhrases extends Component {
       }
     }
     if (searchType === SEARCH_ADVANCED) {
-      /* if (searchAlphabet) {
+      /* if (searchByAlphabet) {
         nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+        nxqlQueries.push(`${nxqlTmpl.searchByAlphabet}`)
       } */
-      if (searchTitle) {
+      if (searchByTitle) {
         nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+        nxqlQueries.push(`${nxqlTmpl.searchByTitle}`)
       }
-      if (searchTranslations) {
+      if (searchByTranslations) {
         nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchTranslations}`)
+        nxqlQueries.push(`${nxqlTmpl.searchByTranslations}`)
       }
-      if (searchDefinitions) {
+      if (searchByDefinitions) {
         nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchDefinitions}`)
+        nxqlQueries.push(`${nxqlTmpl.searchByDefinitions}`)
       }
       if (searchPartOfSpeech && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
-        if (!searchTitle && search) {
+        if (!searchByTitle && search) {
           nxqlQueryJoin(nxqlQueries)
-          nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+          nxqlQueries.push(`${nxqlTmpl.searchByTitle}`)
         }
         nxqlQuerySpeech = `${nxqlQueries.length > 0 ? ' AND ' : ''} ${nxqlTmpl.searchPartOfSpeech}`
       }
     } else {
-      if (searchAlphabet) {
-        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+      if (searchByAlphabet) {
+        nxqlQueries.push(`${nxqlTmpl.searchByAlphabet}`)
       } else {
         nxqlQueries.push(`${nxqlTmpl.allFields}`)
       }
@@ -301,10 +305,9 @@ class SearchWordsPhrases extends Component {
     if (nxqlQueries.length > 0) {
       nxqlQueryCollection = `( ${nxqlQueries.join('')} )`
     }
-    // this.props.updateNxqlQuery(`${nxqlQueryCollection}${nxqlQuerySpeech}`)
-    // this.props.updateStatePageDialectLearnWords({ searchNxqlQuery: `${nxqlQueryCollection}${nxqlQuerySpeech}` })
     return `${nxqlQueryCollection}${nxqlQuerySpeech}`
   }
+
   _handleCustomSearch(evt) {
     const { id, checked, value, type } = evt.target
 
@@ -323,7 +326,7 @@ class SearchWordsPhrases extends Component {
         updateState[id] = value
     }
 
-    this.props.updateStatePageDialectLearnWords(updateState)
+    this.props.updateStateOfParentComponent(updateState)
   }
 
   _handleEnterSearch(evt) {
@@ -335,12 +338,13 @@ class SearchWordsPhrases extends Component {
   _handleSearch() {
     this.props.handleSearch()
   }
+
   _resetSearch() {
     this.props.resetSearch()
   }
 
   _updateSearchTerm(evt) {
-    this.props.updateStatePageDialectLearnWords({
+    this.props.updateStateOfParentComponent({
       searchTerm: evt.target.value,
     })
   }

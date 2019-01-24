@@ -157,12 +157,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       visibleFilter: null,
       searchTerm: '',
       searchType: SEARCH_DEFAULT,
-      searchAlphabet: false,
-      searchTitle: false,
-      searchDefinitions: false,
+      searchByAlphabet: false,
+      searchByDefinitions: false,
+      searchByTitle: false,
+      searchByTranslations: false,
       searchNxqlQuery: '',
       searchNxqlSort: {},
-      searchTranslations: false,
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
@@ -172,7 +172,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     ;[
       'handleSearch',
       'resetSearch',
-      'updateStatePageDialectLearnWords',
+      'updateState',
       '_changeFilter',
       '_getPageKey',
       '_handleAlphabetClick',
@@ -191,11 +191,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       filterInfo,
       isKidsTheme,
       searchNxqlSort,
-      searchAlphabet,
+      searchByAlphabet,
+      searchByDefinitions,
+      searchByTitle,
+      searchByTranslations,
       searchTerm,
-      searchTitle,
-      searchDefinitions,
-      searchTranslations,
       searchPartOfSpeech,
       searchType,
       visibleFilter,
@@ -268,7 +268,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridViewProps: {
           cols: 10,
           cellHeight: 25,
-          // action: this._changeFilter,
           action: this._handleAlphabetClick,
           style: { overflowY: 'hidden', padding: '10px' },
         },
@@ -370,18 +369,17 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
             <SearchWordsPhrases
               filterInfo={filterInfo}
-              searchAlphabet={searchAlphabet}
-              updateStatePageDialectLearnWords={this.updateStatePageDialectLearnWords}
               handleSearch={this.handleSearch}
-              // ^ new
               resetSearch={this.resetSearch}
+              searchByAlphabet={searchByAlphabet}
+              searchByTitleText="Word"
+              searchByTitle={searchByTitle}
+              searchByDefinitions={searchByDefinitions}
+              searchByTranslations={searchByTranslations}
+              searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               searchType={searchType}
-              searchTitleText="Word"
-              searchTitle={searchTitle}
-              searchDefinitions={searchDefinitions}
-              searchTranslations={searchTranslations}
-              searchPartOfSpeech={searchPartOfSpeech}
+              updateStateOfParentComponent={this.updateState}
             />
 
             {wordListView}
@@ -411,7 +409,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.setState({ filterInfo: newFilter, searchTerm: null })
   }
 
-  updateStatePageDialectLearnWords(stateObj) {
+  updateState(stateObj) {
     this.setState(stateObj)
   }
 
@@ -479,10 +477,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       {
         searchTerm: startsWith,
         searchType: SEARCH_DEFAULT,
-        searchAlphabet: true,
-        searchTitle: false,
-        searchDefinitions: false,
-        searchTranslations: false,
+        searchByAlphabet: true,
+        searchByTitle: false,
+        searchByDefinitions: false,
+        searchByTranslations: false,
         searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       },
       this.handleSearch
