@@ -8,7 +8,7 @@
   <!-- Stores the path to the blob -->
   <!-- <xs:element name="path" type="xs:string" /> -->
   <!-- Stores the digest ie. key to retrieve the blob -->
-  <xs:element name="digest" type="xs:string" />
+  <!--xs:element name="digest" type="xs:string" -->
   <!-- Stores the query that was requested -->
   <xs:element name="query" type="xs:string" />
   <!-- Stores the columns that were requested -->
