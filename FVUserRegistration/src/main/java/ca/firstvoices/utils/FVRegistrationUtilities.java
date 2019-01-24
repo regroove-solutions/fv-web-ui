@@ -501,7 +501,10 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            notificationEmailsAndReminderTasks( dialect, ureg );
+            // Only email language admins if requested role is involved in language revitalization
+            if (userDoc.getPropertyValue("user:role").equals("languagerevitalizer")) {
+                notificationEmailsAndReminderTasks( dialect, ureg );
+            }
 
             // TODO decide if we need to remove the registration document for created document at this point
             lctx.logout();

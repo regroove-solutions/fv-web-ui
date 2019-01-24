@@ -109,16 +109,10 @@ public class FVRegistrationMailUtilities {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(dialect, "Everything", false);
 
-        // TODO: Change for production run ... this is done for testing ONLY
-        // TODO: we want to send email only to administrator ... not to languageAdministrator
-        NuxeoPrincipal admin = umgr.getPrincipal("Administrator");
-        String adminEmail = admin.getEmail();
-        // TODO: remove to this place from the first TODO
-
         session.close();
         lctx.logout();
 
-        return adminEmail; //  composeEmailString( result ); // TODO: remove adminEmail and restore composeEmailString
+        return composeEmailString( result );
     }
 
     private interface EmailContentAssembler
@@ -294,11 +288,11 @@ public class FVRegistrationMailUtilities {
         options.put("email", (String) registrationRequest.getPropertyValue("userinfo:email"));
         options.put("dialect", dialectTitle);
 
-        // temporary until
         String toStr =  getLanguageAdministratorEmail( dialect );
 
         registrationMailSender( variant, new UserReminderMailContent(), options , "" );
 
-        registrationMailSender( variant, new AdminMailContent(), options , toStr );
+        // TODO Decide if we need to send reminders to admins
+        //registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }
