@@ -54,6 +54,7 @@
 				<schemaName>fvuserinfo</schemaName>
 				<ageGroupField>fvuserinfo:ageGroup</ageGroupField>
 				<preferencesField>fvuserinfo:preferences</preferencesField>
+				<commentField>fvuserinfo:comment</commentField>
 				<roleField>fvuserinfo:role</roleField>
 			</fvuserInfo>>
 			<validationEmail>

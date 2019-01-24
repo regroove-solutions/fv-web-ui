@@ -8,6 +8,7 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
     protected String preferences;
     protected String ageGroup;
     protected String role;
+    protected String comment;
 
     public FVUserRegistrationInfo() {}
 
@@ -40,6 +41,14 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
 }

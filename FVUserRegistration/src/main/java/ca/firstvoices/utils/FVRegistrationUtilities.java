@@ -18,10 +18,12 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
@@ -169,6 +171,7 @@ public class FVRegistrationUtilities
         userInfo.setEmail((String) registrationRequest.getPropertyValue("userinfo:email"));
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
+        userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
         userInfo.setLogin( userInfo.getEmail() );
 
         try
@@ -228,6 +231,8 @@ public class FVRegistrationUtilities
         options.put("fName", (String) ureg.getPropertyValue("userinfo:firstName"));
         options.put("lName", (String) ureg.getPropertyValue("userinfo:lastName"));
         options.put("email", (String) ureg.getPropertyValue("userinfo:email"));
+        options.put("comment", (String) ureg.getPropertyValue("fvuserinfo:comment"));
+        options.put("dialectId", dialect.getId() );
         options.put("dialect", dialect.getTitle() );
 
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
@@ -330,12 +335,12 @@ public class FVRegistrationUtilities
         }
 
         // Additional information from registration
-        info.put("registration:comment", comment);
         info.put("dc:title", userInfo.getFirstName() + " " + userInfo.getLastName() + " Wants to Join " + dialectTitle);
         info.put("fvuserinfo:role", userInfo.getRole() );
         info.put("fvuserinfo:ageGroup", userInfo.getAgeGroup() );
         info.put("fvuserinfo:preferences", userInfo.getPreferences() );
         info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
+        info.put("fvuserinfo:comment", userInfo.getComment());
 
         // Set permissions on registration document
         String registrationId = null;

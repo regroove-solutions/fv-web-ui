@@ -24,6 +24,7 @@
 
 	<xs:element name="preferences" type="xs:string"/>
 	<xs:element name="requestedSpace" type="xs:string"/>
+	<xs:element name="comment" type="xs:string"/>
 
 	<!-- Request properties -->
 	<xs:element name="ip" type="xs:string" />
