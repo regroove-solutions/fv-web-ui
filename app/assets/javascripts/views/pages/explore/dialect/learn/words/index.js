@@ -25,10 +25,9 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import RaisedButton from 'material-ui/lib/raised-button'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
 
 import { SearchWordsPhrases } from 'views/components/SearchWordsPhrases'
-import { SEARCH_ADVANCED, SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchWordsPhrases/constants'
+import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchWordsPhrases/constants'
 // import { SEARCH_ADVANCED } from '../../../../../components/SearchWordsPhrases/constants';
 
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
@@ -73,7 +72,9 @@ class AlphabetGridTile extends Component {
           height: 'initial',
         }}
       >
-        <a onClick={this._handleClick} className="AlphabetGridTileLink">{char}</a>
+        <a onClick={this._handleClick} className="AlphabetGridTileLink">
+          {char}
+        </a>
       </GridTile>
     )
   }
@@ -154,11 +155,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.state = {
       filterInfo,
       visibleFilter: null,
-      searchTerm: null,
+      searchTerm: '',
       searchType: SEARCH_DEFAULT,
       searchAlphabet: false,
       searchTitle: false,
       searchDefinitions: false,
+      searchNxqlQuery: '',
+      searchNxqlSort: {},
       searchTranslations: false,
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
@@ -167,19 +170,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     // Bind methods to 'this'
     ;[
+      'handleSearch',
+      'resetSearch',
+      'updateStatePageDialectLearnWords',
       '_changeFilter',
       '_getPageKey',
-      '_getSearchAlertInfo',
-      '_getNxqlBoolCount',
-      '_getNxqlSearchSort',
-      '_generateNxql',
       '_handleAlphabetClick',
-      '_handleEnterSearch',
-      '_handleFacetSelected',
-      '_handleInputChange',
-      '_handleSearch',
-      '_resetSearch',
-      '_updateSearchTerm',
+      '_handleFacetSelected', // TODO: where does this come from?
       '_getURLPageProps', // NOTE: PageDialectLearnBase provides `_getURLPageProps`
       '_handleFilterChange', // NOTE: PageDialectLearnBase provides `_handleFilterChange`
       '_handlePagePropertiesChange', // NOTE: PageDialectLearnBase provides `_handlePagePropertiesChange`
@@ -193,6 +190,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       computeEntities,
       filterInfo,
       isKidsTheme,
+      searchNxqlSort,
+      searchAlphabet,
       searchTerm,
       searchTitle,
       searchDefinitions,
@@ -201,7 +200,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchType,
       visibleFilter,
     } = this.state
-
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
@@ -216,9 +214,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
     const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
-    const searchSort = this._getNxqlSearchSort()
-    const searchAlertInfoOutput = this._getSearchAlertInfo()
-
     const wordListView = selectn('response.uid', computeDocument) ? (
       <WordListView
         controlViaURL
@@ -231,7 +226,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         routeParams={this.props.routeParams}
         // NOTE: PageDialectLearnBase provides `_getURLPageProps`
         {...this._getURLPageProps()}
-        {...searchSort}
+        {...searchNxqlSort}
         // DEFAULT_PAGE
         // DEFAULT_PAGE_SIZE
         // DEFAULT_SORT_TYPE
@@ -374,12 +369,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             </h1>
 
             <SearchWordsPhrases
-              handleInputChange={this._handleInputChange}
-              handleEnterSearch={this._handleEnterSearch}
-              handleSearch={this._handleSearch}
-              resetSearch={this._resetSearch}
-              updateSearchTerm={this._updateSearchTerm}
-              searchAlertInfo={searchAlertInfoOutput}
+              filterInfo={filterInfo}
+              searchAlphabet={searchAlphabet}
+              updateStatePageDialectLearnWords={this.updateStatePageDialectLearnWords}
+              handleSearch={this.handleSearch}
+              // ^ new
+              resetSearch={this.resetSearch}
               searchTerm={searchTerm}
               searchType={searchType}
               searchTitleText="Word"
@@ -396,6 +391,48 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
   }
   // END render
+
+
+  handleSearch() {
+    const { searchTerm, searchNxqlQuery } = this.state
+    this._changeFilter(searchTerm, 'contains', () => ` AND ${searchNxqlQuery}`)
+  }
+
+  // TODO: resetSearch needs to also clear Alphabetical Search
+  resetSearch() {
+    // TODO: Should `let newFilter = this.state.filterInfo.deleteIn(..`
+    // TODO: just be `this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)`?
+    let newFilter = this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)
+    newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null)
+
+    // When facets change, pagination should be reset.
+    // In these pages (words/phrase), list views are controlled via URL
+    this._resetURLPagination()
+    this.setState({ filterInfo: newFilter, searchTerm: null })
+  }
+
+  updateStatePageDialectLearnWords(stateObj) {
+    this.setState(stateObj)
+  }
+
+  // NOTE: PageDialectLearnBase calls `fetchData`
+  fetchData(newProps) {
+    ProviderHelpers.fetchIfMissing(
+      newProps.routeParams.dialect_path + '/Portal',
+      newProps.fetchPortal,
+      newProps.computePortal
+    )
+    ProviderHelpers.fetchIfMissing(
+      newProps.routeParams.dialect_path + '/Dictionary',
+      newProps.fetchDocument,
+      newProps.computeDocument
+    )
+    ProviderHelpers.fetchIfMissing(
+      '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children',
+      newProps.fetchCategories,
+      newProps.computeCategories
+    )
+  }
 
   _changeFilter(value, type, nxql) {
     let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
@@ -437,207 +474,18 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _clearAllFilters() {}
 
-  _generateNxql() {
-    const {
-      searchTerm,
-      searchType,
-      searchTitle,
-      searchAlphabet,
-      searchDefinitions,
-      searchTranslations,
-      searchPartOfSpeech,
-    } = this.state
-
-    const search = searchTerm || ''
-    const nxqlTmpl = {
-      allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
-      searchTitle: `dc:title ILIKE '%${search}%'`,
-      searchAlphabet: `dc:title ILIKE '${search}%'`,
-      searchDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
-      searchTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
-      searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
-    }
-
-    const nxqlQueries = []
-    let nxqlQuerySpeech = ''
-    const nxqlQueryJoin = (nxq, join = ' OR ') => {
-      if (nxq.length >= 1) {
-        nxq.push(join)
-      }
-    }
-    if (searchType === SEARCH_ADVANCED) {
-      /* if (searchAlphabet) {
-        nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
-      } */
-      if (searchTitle) {
-        nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
-      }
-      if (searchTranslations) {
-        nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchTranslations}`)
-      }
-      if (searchDefinitions) {
-        nxqlQueryJoin(nxqlQueries)
-        nxqlQueries.push(`${nxqlTmpl.searchDefinitions}`)
-      }
-      if (searchPartOfSpeech && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
-        if (!searchTitle && search) {
-          nxqlQueryJoin(nxqlQueries)
-          nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
-        }
-        nxqlQuerySpeech = `${nxqlQueries.length > 0 ? ' AND ' : ''} ${nxqlTmpl.searchPartOfSpeech}`
-      }
-    } else {
-      if (searchAlphabet) {
-        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
-      } else {
-        nxqlQueries.push(`${nxqlTmpl.allFields}`)
-      }
-    }
-    let nxqlQueryCollection = ''
-    if (nxqlQueries.length > 0) {
-      nxqlQueryCollection = `( ${nxqlQueries.join('')} )`
-    }
-    return `${nxqlQueryCollection}${nxqlQuerySpeech}`
-  }
-
-  _getNxqlSearchSort() {
-    const {
-      searchAlphabet,
-      searchPartOfSpeech,
-      searchTerm,
-    } = this.state
-
-    // Default sort
-    let searchSortBy = 'ecm:fulltextScore'
-
-    if (searchAlphabet) {
-      searchSortBy = 'dc:title'
-    } else {
-      const boolCount = this._getNxqlBoolCount()
-      if (boolCount > 0) {
-        searchSortBy = 'dc:title'
-      }
-      if (boolCount === 1 && searchPartOfSpeech) {
-        searchSortBy = 'fv-word:part_of_speech'
-      }
-    }
-
-    return searchTerm ? {
-      DEFAULT_SORT_COL: searchSortBy,
-      DEFAULT_SORT_TYPE: 'asc',
-    } : {}
-  }
-  _getNxqlBoolCount() {
-    const {
-      searchDefinitions,
-      searchTranslations,
-      searchPartOfSpeech,
-      searchTitle,
-    } = this.state
-
-    const check = {
-      searchDefinitions,
-      searchTranslations,
-      searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
-      searchTitle,
-    }
-    const boolCount = check.searchTitle + check.searchDefinitions + check.searchTranslations + check.searchPartOfSpeech
-    return boolCount
-  }
-  _getSearchAlertInfo() {
-    const {filterInfo} = this.state
-
-    let searchAlertInfo = (
-      <span>
-        Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
-      </span>
-    )
-
-    if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
-      const appliedFilters = ['Showing words that ']
-      let i = 0
-
-      filterInfo.get('currentAppliedFiltersDesc').map((currentValue, index, arr) => {
-        appliedFilters.push(currentValue)
-        if (arr.size > 1 && arr.size - 1 !== i) {
-          appliedFilters.push(
-            <span>
-              {' '}
-              <span style={{ textDecoration: 'underline' }}>AND</span>
-            </span>
-          )
-        }
-        ++i
-      })
-
-      searchAlertInfo = appliedFilters
-    }
-
-    // this.setState({searchAlertInfo})
-    return searchAlertInfo
-  }
-
   _handleAlphabetClick(startsWith) {
-    this.setState({
-      searchTerm: startsWith,
-      searchType: SEARCH_DEFAULT,
-      searchAlphabet: true,
-      searchTitle: false,
-      searchDefinitions: false,
-      searchTranslations: false,
-      searchPartOfSpeech: SEARCH_SORT_DEFAULT,
-    }, this._handleSearch)
-
-  }
-  _handleEnterSearch(evt) {
-    if (evt.key === 'Enter') {
-      this._handleSearch()
-    }
-  }
-
-  _handleInputChange({id, checked, value, type}) {
-    const updateState = {}
-    // NOTE: Scripting here is tied to the structure of the html
-
-    // Record changes
-    switch (type) {
-      case 'checkbox':
-        updateState[id] = checked
-        break
-      case 'radio':
-        updateState.searchType = id
-        break
-      default:
-        updateState[id] = value
-    }
-
-    this.setState(updateState)
-  }
-
-  _handleSearch() {
-    const { searchTerm } = this.state
-    this._changeFilter(searchTerm, 'contains', () => ` AND ${this._generateNxql()}`)
-  }
-
-  // NOTE: PageDialectLearnBase calls `fetchData`
-  fetchData(newProps) {
-    ProviderHelpers.fetchIfMissing(
-      newProps.routeParams.dialect_path + '/Portal',
-      newProps.fetchPortal,
-      newProps.computePortal
-    )
-    ProviderHelpers.fetchIfMissing(
-      newProps.routeParams.dialect_path + '/Dictionary',
-      newProps.fetchDocument,
-      newProps.computeDocument
-    )
-    ProviderHelpers.fetchIfMissing(
-      '/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children',
-      newProps.fetchCategories,
-      newProps.computeCategories
+    this.setState(
+      {
+        searchTerm: startsWith,
+        searchType: SEARCH_DEFAULT,
+        searchAlphabet: true,
+        searchTitle: false,
+        searchDefinitions: false,
+        searchTranslations: false,
+        searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+      },
+      this.handleSearch
     )
   }
 
@@ -645,26 +493,5 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 
-  // TODO: _resetSearch needs to also clear Alphabetical Search
-  _resetSearch() {
-    // TODO: Should `let newFilter = this.state.filterInfo.deleteIn(..`
-    // TODO: just be `this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)`?
-    let newFilter = this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)
-    newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null)
-
-    // When facets change, pagination should be reset.
-    // In these pages (words/phrase), list views are controlled via URL
-    this._resetURLPagination()
-
-    this.setState({ filterInfo: newFilter, searchTerm: null })
-  }
-
-  _setFilter() {
-  }
-
-  _updateSearchTerm(evt) {
-    this.setState({
-      searchTerm: evt.target.value,
-    })
-  }
+  _setFilter() {}
 }

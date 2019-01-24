@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
+import Immutable, { Set, Map } from 'immutable'
 import { PropTypes } from 'react'
 import { SEARCH_ADVANCED, SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from './constants'
 import provide from 'react-redux-provide'
+import StringHelpers from 'common/StringHelpers'
 
 import classNames from 'classnames'
 import RaisedButton from 'material-ui/lib/raised-button'
@@ -13,12 +15,12 @@ const { any, func, string, bool } = PropTypes
 @provide
 class SearchWordsPhrases extends Component {
   static propTypes = {
-    handleEnterSearch: func,
-    handleInputChange: func,
+    filterInfo: any, // TODO: set appropriate propType
+    updateStatePageDialectLearnWords: func,
+    // ^ new
     handleSearch: func,
     resetSearch: func,
-    updateSearchTerm: func,
-    searchAlertInfo: any, // TODO: sometimes element, sometimes array
+    searchAlphabet: bool,
     searchTerm: string,
     searchType: string,
     searchTitleText: string,
@@ -28,12 +30,12 @@ class SearchWordsPhrases extends Component {
     searchPartOfSpeech: string,
   }
   static defaultProps = {
-    handleInputChange: () => {},
-    handleEnterSearch: () => {},
+    filterInfo: new Map({}),
+    updateStatePageDialectLearnWords: () => {},
+    // ^ new
     handleSearch: () => {},
     resetSearch: () => {},
-    updateSearchTerm: () => {},
-    searchAlertInfo: null,
+    searchAlphabet: false,
     searchTerm: '',
     searchType: SEARCH_ADVANCED,
     searchTitle: false,
@@ -44,14 +46,27 @@ class SearchWordsPhrases extends Component {
 
   constructor(props) {
     super(props)
-    ;['_handleCustomSearch', '_handleEnterSearch', '_handleSearch', '_resetSearch', '_updateSearchTerm'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
+    ;[
+      '_getSearchInfo',
+      '_generateNxql',
+      '_getNxqlSearchSort',
+      '_getNxqlBoolCount',
+      '_handleCustomSearch',
+      '_handleEnterSearch',
+      '_handleSearch',
+      '_resetSearch',
+      '_updateSearchTerm',
+    ].forEach((method) => (this[method] = this[method].bind(this)))
+  }
+
+  componentDidUpdate() {
+    const searchNxqlQuery = this._generateNxql()
+    const searchNxqlSort = this._getNxqlSearchSort()
+    this.props.updateStatePageDialectLearnWords({ searchNxqlQuery, searchNxqlSort })
   }
 
   render() {
     const {
-      searchAlertInfo,
       searchTerm,
       searchType,
       searchTitle,
@@ -60,6 +75,9 @@ class SearchWordsPhrases extends Component {
       searchTranslations,
       searchPartOfSpeech,
     } = this.props
+
+    const searchInfoOutput = this._getSearchInfo()
+
     return (
       <div>
         <div>
@@ -149,20 +167,169 @@ class SearchWordsPhrases extends Component {
           </div>
         </div>
 
-        {searchAlertInfo && <div className={classNames('alert', 'alert-info')}>{searchAlertInfo}</div>}
+        {searchInfoOutput}
       </div>
     )
   }
+  _getSearchInfo() {
+    const { filterInfo } = this.props
+    let searchInfo = (
+      <span>
+        Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
+      </span>
+    )
 
-  _updateSearchTerm(evt) {
-    this.props.updateSearchTerm(evt)
+    if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
+      const appliedFilters = ['Showing words that ']
+      let i = 0
+
+      filterInfo.get('currentAppliedFiltersDesc').map((currentValue, index, arr) => {
+        appliedFilters.push(currentValue)
+        if (arr.size > 1 && arr.size - 1 !== i) {
+          appliedFilters.push(
+            <span>
+              {' '}
+              <span style={{ textDecoration: 'underline' }}>AND</span>
+            </span>
+          )
+        }
+        ++i
+      })
+
+      searchInfo = appliedFilters
+    }
+
+    return <div className={classNames('alert', 'alert-info')}>{searchInfo}</div>
+  }
+
+  _getNxqlSearchSort() {
+    const { searchAlphabet, searchPartOfSpeech, searchTerm } = this.props
+    // Default sort
+    let searchSortBy = 'ecm:fulltextScore'
+
+    if (searchAlphabet) {
+      searchSortBy = 'dc:title'
+    } else {
+      const boolCount = this._getNxqlBoolCount()
+      if (boolCount > 0) {
+        searchSortBy = 'dc:title'
+      }
+      if (boolCount === 1 && searchPartOfSpeech) {
+        searchSortBy = 'fv-word:part_of_speech'
+      }
+    }
+
+    return searchTerm
+      ? {
+        DEFAULT_SORT_COL: searchSortBy,
+        DEFAULT_SORT_TYPE: 'asc',
+      }
+      : {}
+  }
+  _getNxqlBoolCount() {
+    const { searchDefinitions, searchTranslations, searchPartOfSpeech, searchTitle } = this.props
+
+    const check = {
+      searchDefinitions,
+      searchTranslations,
+      searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
+      searchTitle,
+    }
+    const boolCount = check.searchTitle + check.searchDefinitions + check.searchTranslations + check.searchPartOfSpeech
+    return boolCount
+  }
+  _generateNxql() {
+    const {
+      searchTerm,
+      searchType,
+      searchTitle,
+      searchAlphabet,
+      searchDefinitions,
+      searchTranslations,
+      searchPartOfSpeech,
+    } = this.props
+
+    const search = searchTerm || ''
+    const nxqlTmpl = {
+      allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
+      searchTitle: `dc:title ILIKE '%${search}%'`,
+      searchAlphabet: `dc:title ILIKE '${search}%'`,
+      searchDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
+      searchTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
+      searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
+    }
+
+    const nxqlQueries = []
+    let nxqlQuerySpeech = ''
+    const nxqlQueryJoin = (nxq, join = ' OR ') => {
+      if (nxq.length >= 1) {
+        nxq.push(join)
+      }
+    }
+    if (searchType === SEARCH_ADVANCED) {
+      /* if (searchAlphabet) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+      } */
+      if (searchTitle) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+      }
+      if (searchTranslations) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchTranslations}`)
+      }
+      if (searchDefinitions) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchDefinitions}`)
+      }
+      if (searchPartOfSpeech && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
+        if (!searchTitle && search) {
+          nxqlQueryJoin(nxqlQueries)
+          nxqlQueries.push(`${nxqlTmpl.searchTitle}`)
+        }
+        nxqlQuerySpeech = `${nxqlQueries.length > 0 ? ' AND ' : ''} ${nxqlTmpl.searchPartOfSpeech}`
+      }
+    } else {
+      if (searchAlphabet) {
+        nxqlQueries.push(`${nxqlTmpl.searchAlphabet}`)
+      } else {
+        nxqlQueries.push(`${nxqlTmpl.allFields}`)
+      }
+    }
+    let nxqlQueryCollection = ''
+    if (nxqlQueries.length > 0) {
+      nxqlQueryCollection = `( ${nxqlQueries.join('')} )`
+    }
+    // this.props.updateNxqlQuery(`${nxqlQueryCollection}${nxqlQuerySpeech}`)
+    // this.props.updateStatePageDialectLearnWords({ searchNxqlQuery: `${nxqlQueryCollection}${nxqlQuerySpeech}` })
+    return `${nxqlQueryCollection}${nxqlQuerySpeech}`
   }
   _handleCustomSearch(evt) {
     const { id, checked, value, type } = evt.target
-    this.props.handleInputChange({ id, checked, value, type })
+
+    const updateState = {}
+    // NOTE: Scripting here is tied to the structure of the html
+
+    // Record changes
+    switch (type) {
+      case 'checkbox':
+        updateState[id] = checked
+        break
+      case 'radio':
+        updateState.searchType = id
+        break
+      default:
+        updateState[id] = value
+    }
+
+    this.props.updateStatePageDialectLearnWords(updateState)
   }
+
   _handleEnterSearch(evt) {
-    this.props.handleEnterSearch(evt)
+    if (evt.key === 'Enter') {
+      this.props.handleSearch()
+    }
   }
 
   _handleSearch() {
@@ -170,6 +337,12 @@ class SearchWordsPhrases extends Component {
   }
   _resetSearch() {
     this.props.resetSearch()
+  }
+
+  _updateSearchTerm(evt) {
+    this.props.updateStatePageDialectLearnWords({
+      searchTerm: evt.target.value,
+    })
   }
 }
 
