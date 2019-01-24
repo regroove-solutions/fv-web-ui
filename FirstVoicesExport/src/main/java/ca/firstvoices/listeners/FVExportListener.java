@@ -17,7 +17,7 @@ import java.util.*;
 
 
 import static ca.firstvoices.utils.FVExportConstants.*;
-import static ca.firstvoices.utils.FVExportUtils.makeExportFileName;
+import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
 
 public class FVExportListener implements EventListener
 {
@@ -35,7 +35,7 @@ public class FVExportListener implements EventListener
             case PRODUCE_FORMATTED_DOCUMENT:
                 FVExportWorkInfo info = (FVExportWorkInfo) ctx.getProperty( EXPORT_WORK_INFO );
 
-                String id = makeExportFileName( info.initiatorName,
+                String id = makeExportWorkerID( info.initiatorName,
                                                 info.dialectName,
                                                 info.exportFormat );
 

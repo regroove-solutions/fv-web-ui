@@ -1,9 +1,10 @@
 package ca.firstvoices.utils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 
-import java.io.File;
+import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 
 import static ca.firstvoices.utils.FVExportConstants.DIALECT_RESOURCES_TYPE;
@@ -60,10 +61,9 @@ public class FVExportUtils
         return exportDoc;
     }
 
-
     //ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);
 
-    public static String makeExportFileName( String principalName, String dialectName, String format )
+    public static String makeExportWorkerID( String principalName, String dialectName, String format )
     {
         return principalName + "-" + dialectName + "-" + format;
     }
@@ -102,6 +102,36 @@ public class FVExportUtils
          DocumentModel resourceFolder =  findDialectChildWithRef( session, dialect.getRef(), childType );
 
          return resourceFolder.getPathAsString() + "/";
+    }
+
+    public static String makeExportDigest(Principal p, String query, List<String> columns )
+    {
+        String colStr = "";
+
+        for(String s : columns )
+        {
+            colStr = colStr + s;
+        }
+
+        colStr = colStr + query + makePrincipalWorkDigest( p );
+
+
+        return makeDigestHash( colStr );
+    }
+
+    public static String makePrincipalWorkDigest( Principal p)
+    {
+        String pName = p.getName();
+        String pHashS = String.valueOf( p.hashCode() );
+        pName = pName+pHashS;
+
+        return makeDigestHash( pName );
+    }
+
+    public static String makeDigestHash( String hashCandidate )
+    {
+        String md5Hex = DigestUtils.md5Hex(hashCandidate).toUpperCase();
+        return  md5Hex;
     }
 }
 

@@ -1,5 +1,6 @@
 package ca.firstvoices.operations;
 
+import ca.firstvoices.utils.FVExportUtils;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -23,11 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
-import static ca.firstvoices.utils.FVExportUtils.findDialectChild;
+
 
 @Operation(id=FVGenerateDocumentWithFormat.ID, category= Constants.CAT_DOCUMENT, label="Export Document with format", description="Export word or phrase documents with format (CSV or PDF). ")
 public class FVGenerateDocumentWithFormat
 {
+    private class GeneratedQueryArguments
+    {
+        ArrayList<String> docsToProcess;
+        String actualQuery;
+    }
+
     public static final String ID = "Document.FVGenerateDocumentWithFormat";
 
     @Param( name = "query" )
@@ -55,11 +62,11 @@ public class FVGenerateDocumentWithFormat
 
         try
         {
-            ArrayList<String> docsToProcess = getWordDocumentIDs( "*", input );
+            GeneratedQueryArguments workParams = getWordDocumentIDs( "*", input );
 
-            if( docsToProcess != null )
+            if( workParams != null )
             {
-                DocumentModel resourceFolder = findDialectChild( input, DIALECT_RESOURCES_TYPE );
+                DocumentModel resourceFolder = FVExportUtils.findDialectChild( input, DIALECT_RESOURCES_TYPE );
 
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
@@ -70,11 +77,14 @@ public class FVGenerateDocumentWithFormat
                 workInfo.resourcesFolderGUID = resourceFolder.getId();
                 workInfo.dialectName = input.getName();
                 workInfo.exportFormat = format;
-                workInfo.exportQuery = query;
+                workInfo.exportQuery = workParams.actualQuery;
                 workInfo.initiatorName = session.getPrincipal().getName();
+                workInfo.workDigest = FVExportUtils.makePrincipalWorkDigest(session.getPrincipal());
+                workInfo.exportDigest = FVExportUtils.makeExportDigest( session.getPrincipal(), workParams.actualQuery, columns );
+                workInfo.fileName = workInfo.getWrapperName();
 
                 export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
-                export_ctx.setProperty( WORDS_TO_EXPORT, docsToProcess );
+                export_ctx.setProperty( WORDS_TO_EXPORT, workParams.docsToProcess );
 
                 Event event = export_ctx.newEvent( PRODUCE_FORMATTED_DOCUMENT );
                 eventProducer.fireEvent(event);
@@ -97,16 +107,19 @@ public class FVGenerateDocumentWithFormat
     }
 
 
-    private ArrayList<String> getWordDocumentIDs( String query, DocumentModel dialect )
+    private GeneratedQueryArguments getWordDocumentIDs( String query, DocumentModel dialect )
     {
         DocumentModelList docs;
-        DocumentModel dictionary = findDialectChild( dialect, DIALECT_DICTIONARY_TYPE );
+        GeneratedQueryArguments returnArgs = new GeneratedQueryArguments();
+        DocumentModel dictionary = FVExportUtils.findDialectChild( dialect, DIALECT_DICTIONARY_TYPE );
+        String generatedQuery = "SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
 
         if( query.equals("*") )
         {
-            docs = session.query("SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name"); // TODO: be weary of limits of how many records will be returned
+            docs = session.query( generatedQuery ); // TODO: be weary of limits of how many records will be returned
 
             if( docs.size() == 0 ) return null;
+
         }
         else
         {
@@ -120,6 +133,9 @@ public class FVGenerateDocumentWithFormat
             docsToProcess.add( word.getId() );
         }
 
-        return docsToProcess;
+        returnArgs.docsToProcess = docsToProcess;
+        returnArgs.actualQuery = generatedQuery;
+
+        return returnArgs;
     }
 }

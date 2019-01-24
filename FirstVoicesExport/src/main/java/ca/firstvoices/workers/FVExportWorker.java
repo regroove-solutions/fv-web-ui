@@ -46,7 +46,7 @@ public class FVExportWorker extends FVAbstractExportWork
 
                 List listToProcess = getDocuments();
 
-                FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer(id);
+                FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer( workInfo.fileName );
 
                 fileOutputProducer.writeColumnNames();
 

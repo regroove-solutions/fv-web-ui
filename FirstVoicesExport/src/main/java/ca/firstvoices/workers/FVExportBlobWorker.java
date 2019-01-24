@@ -9,6 +9,7 @@ import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.runtime.api.Framework;
 
+import javax.print.Doc;
 import javax.security.auth.login.LoginContext;
 import java.io.*;
 import java.util.HashMap;
@@ -50,8 +51,7 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
 
             // check if wrapper already exists
-            DocumentModel resFolder = findDialectChildWithRef( session, new IdRef(workInfo.dialectGUID), DIALECT_RESOURCES_TYPE );
-            DocumentModel wrapper = findChildWithName( session, resFolder.getRef(), workInfo.fileName);
+            DocumentModel wrapper = findWrapper( session );
 
             if( wrapper != null )
             {
@@ -67,6 +67,8 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             wrapper.setPropertyValue( "fvexport:format",   workInfo.exportFormat );
             wrapper.setPropertyValue( "fvexport:query",    workInfo.exportQuery );
             wrapper.setPropertyValue( "fvexport:columns", "*" ); // TODO: replace with string list rolled into a CSV string
+            wrapper.setPropertyValue( "fvexport:workdigest", workInfo.workDigest );
+            wrapper.setPropertyValue( "fvexport:exportdigest", workInfo.exportDigest );
 
             wrapper.setPropertyValue( "file:content", fileBlob );
 
@@ -80,5 +82,20 @@ public class FVExportBlobWorker extends FVAbstractExportWork
         {
             e.printStackTrace();
         }
+    }
+
+    private DocumentModel findWrapper( CoreSession session)
+    {
+        DocumentModel wrapper = null;
+
+        String wrapperQ = "SELECT * FROM FVExport WHERE ecm:ancestorId = '" + workInfo.resourcesFolderGUID + "' AND fvexport:workdigest = '" + workInfo.workDigest + "' AND fvexport:exportdigest = '" + workInfo.exportDigest + "'";
+        DocumentModelList docs = session.query( wrapperQ );
+
+        if( docs != null && docs.size() > 0)
+        {
+            wrapper = docs.get( 0 );
+        }
+
+        return wrapper;
     }
 }

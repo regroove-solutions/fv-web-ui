@@ -17,7 +17,7 @@ public class UtilityTestWordGenerator
         // "/FV/Family/Language/Dialect/Dictionary"
         String testWord = "Test_Word_";
 
-        for (int i = 501; i < 1001; i++ )
+        for (int i = 1002; i < 2001; i++ )
         {
             String wordValue = testWord +  i ;
             DocumentModel word = session.createDocumentModel( path, wordValue, "FVWord");

@@ -15,6 +15,8 @@ public class FVExportWorkInfo implements Serializable
     public String exportFormat;
     public String exportQuery;
     public long fileLength;
+    public String workDigest;       // connects principal with export query based on  MD5( principal.name + principal.hash )
+    public String exportDigest;     // identifies export based on query, columns and principal info ( MD5 hash )
     public List<String> columns;
 
     public String getFullFileName()
@@ -22,5 +24,10 @@ public class FVExportWorkInfo implements Serializable
         if( filePath == null || fileNameAsSaved == null) return null;
 
         return filePath + fileNameAsSaved;
+    }
+
+    public String getWrapperName()
+    {
+        return "Export-" + exportDigest;
     }
 }
