@@ -11,9 +11,9 @@ import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
 import java.io.*;
+import java.util.HashMap;
 
-import static ca.firstvoices.utils.FVExportConstants.BLOB_WORKER;
-import static ca.firstvoices.utils.FVExportConstants.RESOURCES;
+import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.*;
 
 public class FVExportBlobWorker extends FVAbstractExportWork
@@ -45,34 +45,30 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             LoginContext lctx = Framework.login();
             CoreSession session = CoreInstance.openCoreSession("default");
 
-            // TODO: this is temporary just to check things work correctly
-            FVBlobRelocatorAccessor.deleteDigestAndPartialDirectoryStructureForName( workInfo.fileName );
 
             File file = new File(workInfo.filePath);
             FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
 
-            // relocates blob from tmp to data in $NUXEO_HOME/data/binaries/
-            // creates 2 subdirectories from the provided digest
-            // to keep structure exactly the same as NUXEO
-            FVBlobRelocatorAccessor blobRelocator = new FVBlobRelocatorAccessor( fileBlob, workInfo );
-            String exportDocDigest = blobRelocator.relocateBlobExportFile();
-
             // check if wrapper already exists
-            DocumentModel resFolder = findDialectChildWithRef( session, new IdRef(workInfo.dialectGUID), RESOURCES );
+            DocumentModel resFolder = findDialectChildWithRef( session, new IdRef(workInfo.dialectGUID), DIALECT_RESOURCES_TYPE );
             DocumentModel wrapper = findChildWithName( session, resFolder.getRef(), workInfo.fileName);
 
-            if( wrapper == null )
+            if( wrapper != null )
             {
-                String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), RESOURCES );
-
-                wrapper = session.createDocument(wrapper);
+                session.removeDocument( wrapper.getRef() );
             }
+
+            String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), DIALECT_RESOURCES_TYPE );
+            wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" );
+
+            wrapper = session.createDocument(wrapper);
 
             wrapper.setPropertyValue( "fvexport:dialect",  workInfo.dialectGUID );
             wrapper.setPropertyValue( "fvexport:format",   workInfo.exportFormat );
-            wrapper.setPropertyValue( "fvexport:digest",   exportDocDigest );
             wrapper.setPropertyValue( "fvexport:query",    workInfo.exportQuery );
             wrapper.setPropertyValue( "fvexport:columns", "*" ); // TODO: replace with string list rolled into a CSV string
+
+            wrapper.setPropertyValue( "file:content", fileBlob );
 
             session.saveDocument( wrapper );
             session.save();
