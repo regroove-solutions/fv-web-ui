@@ -12,7 +12,9 @@ public final class FVExportConstants
     public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT = "autoProduceFormattedDocument";
 
     // Parameters passed in Export trigger events
-    public static final String RESOURCES                        = "FVResources";
+    public static final String DIALECT_RESOURCES_NAME           = "Resources";
+    public static final String DIALECT_RESOURCES_TYPE           = "FVResources";
+    public static final String DIALECT_DICTIONARY_TYPE          = "FVDictionary";
     public static final String INHERITED_FROM_OTHER             = "INHERITED";
     public static final String CSV_FORMAT                       = "CSV";
     public static final String PDF_FORMAT                       = "PDF";

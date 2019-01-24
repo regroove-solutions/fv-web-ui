@@ -1,7 +1,12 @@
 package ca.firstvoices.utils;
 
 import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+
+import java.io.File;
 import java.util.Map;
+
+import static ca.firstvoices.utils.FVExportConstants.DIALECT_RESOURCES_TYPE;
 
 public class FVExportUtils
 {
@@ -47,6 +52,15 @@ public class FVExportUtils
         return foundChild;
     }
 
+    public static DocumentModel findExportFileWithName( CoreSession session, DocumentRef dialectRef, String exportFileName )
+    {
+        DocumentModel resDoc = findDialectChildWithRef( session, dialectRef, DIALECT_RESOURCES_TYPE );
+        DocumentModel exportDoc = findChildWithName( session, resDoc.getRef(), exportFileName );
+
+        return exportDoc;
+    }
+
+
     //ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);
 
     public static String makeExportFileName( String principalName, String dialectName, String format )
@@ -85,7 +99,7 @@ public class FVExportUtils
 
     public static String getPathToChildInDialect(CoreSession session, DocumentModel dialect, String childType )
     {
-         DocumentModel resourceFolder =  session.getChild( dialect.getRef(), childType );
+         DocumentModel resourceFolder =  findDialectChildWithRef( session, dialect.getRef(), childType );
 
          return resourceFolder.getPathAsString() + "/";
     }

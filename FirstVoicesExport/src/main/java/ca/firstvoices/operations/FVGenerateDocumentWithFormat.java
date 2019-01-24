@@ -59,7 +59,7 @@ public class FVGenerateDocumentWithFormat
 
             if( docsToProcess != null )
             {
-                DocumentModel resourceFolder = findDialectChild( input, RESOURCES );
+                DocumentModel resourceFolder = findDialectChild( input, DIALECT_RESOURCES_TYPE );
 
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
@@ -100,7 +100,7 @@ public class FVGenerateDocumentWithFormat
     private ArrayList<String> getWordDocumentIDs( String query, DocumentModel dialect )
     {
         DocumentModelList docs;
-        DocumentModel dictionary = findDialectChild( dialect, "FVDictionary" );
+        DocumentModel dictionary = findDialectChild( dialect, DIALECT_DICTIONARY_TYPE );
 
         if( query.equals("*") )
         {

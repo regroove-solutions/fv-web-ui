@@ -30,17 +30,6 @@ public class FVBlobRelocatorAccessor
         fileDigest = digest;
     }
 
-    private static String getDigestFromName( String fileName )
-    {
-        return DigestUtils.md5Hex( fileName );
-    }
-
-    public static Boolean checkIfDigestForFileNameExists( String fileName )
-    {
-        String digest = getDigestFromName( fileName );
-
-        return checkIfDigestExists( digest );
-    }
 
     public static Boolean checkIfDigestExists(String digest)
     {
@@ -81,17 +70,6 @@ public class FVBlobRelocatorAccessor
         return null;
     }
 
-    public static String getPathForFileName( String fileName )
-    {
-        if( checkIfDigestForFileNameExists( fileName ) )
-        {
-            String digest = getDigestFromName( fileName );
-            return getDataDirectoryPathToDigest(digest);
-        }
-
-        return null;
-    }
-
     public String getPathForDigest()
     {
         assert (fileDigest != null) : "Cannot use fileDigest == null to get path to digest.";
@@ -102,57 +80,6 @@ public class FVBlobRelocatorAccessor
         }
 
         return null;
-    }
-
-    private String generateDigestFromName()
-    {
-        assert (fileBlob != null) : "Cannot generate from a null fileBlob.";
-        fileBlob.setDigest( getDigestFromName(exportFileInfo.fileName) );
-        fileDigest = fileBlob.getDigest();
-        return fileBlob.getDigest();
-    }
-
-    private void createDirectoryStructureFromDigest(String digest) throws IOException
-    {
-        String newFilePath = getDataBlobDirectoryPath() + getSubPathFromDigest(digest);
-
-        try
-        {
-            newRelocationPath = Paths.get(newFilePath);
-            Files.createDirectories(newRelocationPath);
-        }
-        catch (IOException e)
-        {
-            // TODO log exception
-            newRelocationPath = null;
-            throw e;
-        }
-    }
-
-    public String relocateBlobExportFile() throws IOException
-    {
-        assert(fileBlob != null) : "Cannot relocate if fileBlob == null";
-
-        try
-        {
-            String digest = generateDigestFromName();
-
-            createDirectoryStructureFromDigest(digest);
-
-            String newPath = newRelocationPath.toString();
-            newPath = newPath + "/" + digest;
-
-            newRelocationPath = Paths.get(newPath);
-
-            Files.move(Paths.get(exportFileInfo.filePath), newRelocationPath, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (IOException e)
-        {
-            // TODO log exception
-            throw e;
-        }
-
-        return fileBlob.getDigest();
     }
 
     public Boolean checkIfDigestExists()
@@ -169,28 +96,7 @@ public class FVBlobRelocatorAccessor
         return path;
     }
 
-    public String deleteDigest() throws IOException
-    {
-        assert (fileDigest != null) : "Cannot use fileDigest == null to delete digest.";
-        return deleteDigest( fileDigest );
-    }
-
-    public static void deleteDigestAndPartialDirectoryStructureForName( String fileName ) throws IOException
-    {
-         if( checkIfDigestForFileNameExists( fileName ))
-         {
-             String digest = getDigestFromName(fileName);
-             deleteDigestAndPartialDirectoryStructure(digest);
-         }
-    }
-
-    public void deleteDigestAndPartialDirectoryStructure() throws IOException
-    {
-        assert (fileDigest != null) : "Cannot use fileDigest == null to delete digest.";
-        deleteDigestAndPartialDirectoryStructure( fileDigest );
-    }
-
-    private static void deleteDigestAndPartialDirectoryStructure(String digest) throws IOException
+    public static void deleteDigestAndPartialDirectoryStructure(String digest) throws IOException
     {
         String path = deleteDigest(digest);
 

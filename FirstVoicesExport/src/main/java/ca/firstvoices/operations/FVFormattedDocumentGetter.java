@@ -15,7 +15,7 @@ import org.nuxeo.runtime.api.Framework;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ca.firstvoices.utils.FVExportUtils.makeExportFileName;
+import static ca.firstvoices.utils.FVExportUtils.*;
 
 @Operation(id=FVFormattedDocumentGetter.ID, category= Constants.CAT_DOCUMENT, label="Get formatted document", description="Retrieve formatted (CSV or PDF) document from principals home directory.")
 
@@ -35,21 +35,29 @@ public class FVFormattedDocumentGetter
     protected OperationContext ctx;
 
 
+    // input should be DocumentModel for a dialect where we will check for existence of exported files
     @OperationMethod
-    public String run( DocumentModel input)
+    public DocumentModel run( DocumentModel input)
     {
         Map<String, Object> parameters = new HashMap<String, Object>();
-        String result = "";
+        DocumentModel result = null;
 
         try
         {
-            String exportFileName = makeExportFileName(session.getPrincipal().getName(), input.getName(), format );
+            String exportFileName = makeExportFileName( session.getPrincipal().getName(), input.getName(), format );
 
-            // TODO: and now what????
+            DocumentModel exportFileDoc = findExportFileWithName( session, input.getRef(), exportFileName );
 
-            parameters.put("message", "Error: While attempting to retrieve formatted documents from your ("+ ctx.getPrincipal().getName() + ") home directory." );
+            if( exportFileDoc != null )
+            {
+                result = exportFileDoc; //"fileName:" + exportFileName + ", documentId:" + exportFileDoc.getId() ;
+            }
+            else
+            {
+                parameters.put("message", "Error: While attempting to retrieve formatted documents from your (" + ctx.getPrincipal().getName() + ") home directory.");
 
-            automation.run(ctx, "WebUI.AddInfoMessage", parameters);
+                automation.run(ctx, "WebUI.AddInfoMessage", parameters);
+            }
         }
         catch (OperationException e)
         {
