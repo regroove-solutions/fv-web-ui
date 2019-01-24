@@ -218,7 +218,7 @@ export default {
         KIDS_OR_DEFAULT: "(kids|explore)"
     },
     userRegistrationRoles: [
-        {value: 'languagerevitilizer', text: 'I am involved in language revitilization'},
+        {value: 'languagerevitalizer', text: 'I am involved in language revitalization'},
         {value: 'teacher', text: 'I am a teacher'},
         {value: 'educator', text: 'I am an educator'},
         {value: 'student', text: 'I am a learner/student'},
