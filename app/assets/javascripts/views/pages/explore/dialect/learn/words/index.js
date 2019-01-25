@@ -41,6 +41,7 @@ import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detec
 import IntlService from 'views/services/intl'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import { Paper } from 'material-ui'
+import ExportDialect from 'views/components/ExportDialect'
 const intl = IntlService.instance
 /**
  * Learn words
@@ -349,174 +350,181 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
     const dialectClassName = getDialectClassname(computeDocument)
     return (
-        <PromiseWrapper renderOnError computeEntities={computeEntities}>
-          <div className={classNames('row', 'row-create-wrapper')}>
-            <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
-              <AuthorizationFilter
-                hideFromSections
-                routeParams={this.props.routeParams}
-                filter={{
-                  role: ['Record', 'Approve', 'Everything'],
-                  entity: selectn('response', computeDocument),
-                  login: this.props.computeLogin,
-                }}
-              >
-                <RaisedButton
-                  label={intl.trans(
-                    'views.pages.explore.dialect.learn.words.create_new_word',
-                    'Create New Word',
-                    'words'
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
+        <div className={classNames('row', 'row-create-wrapper')}>
+          <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
+            <AuthorizationFilter
+              hideFromSections
+              routeParams={this.props.routeParams}
+              filter={{
+                role: ['Record', 'Approve', 'Everything'],
+                entity: selectn('response', computeDocument),
+                login: this.props.computeLogin,
+              }}
+            >
+              <RaisedButton
+                label={intl.trans(
+                  'views.pages.explore.dialect.learn.words.create_new_word',
+                  'Create New Word',
+                  'words'
+                )}
+                onTouchTap={this._onNavigateRequest.bind(this, 'create')}
+                primary
+              />
+            </AuthorizationFilter>
+          </div>
+        </div>
+        <div className="row">
+          <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize == 0 ? 'hidden' : null)}>
+            <ExportDialect
+              fileName="File name.csv"
+              fileUrl="//google.ca"
+              isErrored={false}
+              isReady={false}
+              isProcessing={false}
+              dialectId="someSHA"
+            />
+            <div>
+              <h3>Words</h3>
+
+              <RaisedButton
+                style={{ width: '100%', textAlign: 'left' }}
+                label={intl.trans(
+                  'views.pages.explore.dialect.learn.words.find_by_category',
+                  'Show All Words',
+                  'words'
+                )}
+                onTouchTap={this._clearAllFilters()}
+              />
+              <br />
+
+              <RaisedButton
+                style={{ width: '100%', textAlign: 'left' }}
+                label={intl.trans(
+                  'views.pages.explore.dialect.learn.words.find_by_category',
+                  'Filter by Category',
+                  'words'
+                )}
+                onTouchTap={this._handleFilterChange.bind(this, 'find_by_category')}
+              />
+              <br />
+              {this.state.visibleFilter === 'find_by_category' && (
+                <FacetFilterListCategory
+                  title={intl.trans('categories', 'Categories', 'first')}
+                  appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
+                  facetField={ProviderHelpers.switchWorkspaceSectionKeys(
+                    'fv-word:categories',
+                    this.props.routeParams.area
                   )}
-                  onTouchTap={this._onNavigateRequest.bind(this, 'create')}
-                  primary
+                  onFacetSelected={this._handleFacetSelected}
+                  facets={selectn('response.entries', computeCategories) || []}
                 />
-              </AuthorizationFilter>
+              )}
+              {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
+              <br />
+              {(() => {
+                return React.cloneElement(
+                  <AlphabetListView
+                    pagination={false}
+                    routeParams={this.props.routeParams}
+                    dialect={selectn('response', computePortal)}
+                  />,
+                  {
+                    gridListView: true,
+                    gridViewProps: {
+                      className: dialectClassName,
+                      cols: 10,
+                      cellHeight: 25,
+                      action: this._changeFilter,
+                      style: { overflowY: 'hidden', padding: '10px' },
+                    },
+                    gridListTile: AlphabetGridTile,
+                  }
+                )
+              })()}
+            </div>
+            <hr />
+            <div>
+              <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
+
+              <ul>
+                <li>Browse Words</li>
+                <li>Browse Phrases</li>
+                <li>Browse Songs</li>
+                <li>Browse Stories</li>
+                <li>View Alphabet</li>
+                <li>View Portal Page</li>
+                <li>View Language Page</li>
+              </ul>
             </div>
           </div>
-          <div className="row">
-            <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize == 0 ? 'hidden' : null)}>
-              <div>
-                <h3>Words</h3>
+          <div className={classNames('col-xs-12', computeCategoriesSize == 0 ? 'col-md-12' : 'col-md-9')}>
+            <h1>
+              {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}{' '}
+              {intl.trans('words', 'Words', 'first')}
+            </h1>
 
-                <RaisedButton
-                  style={{ width: '100%', textAlign: 'left' }}
-                  label={intl.trans(
-                    'views.pages.explore.dialect.learn.words.find_by_category',
-                    'Show All Words',
-                    'words'
-                  )}
-                  onTouchTap={this._clearAllFilters()}
-                />
-                <br />
-
-                <RaisedButton
-                  style={{ width: '100%', textAlign: 'left' }}
-                  label={intl.trans(
-                    'views.pages.explore.dialect.learn.words.find_by_category',
-                    'Filter by Category',
-                    'words'
-                  )}
-                  onTouchTap={this._handleFilterChange.bind(this, 'find_by_category')}
-                />
-                <br />
-                {this.state.visibleFilter === 'find_by_category' && (
-                  <FacetFilterListCategory
-                    title={intl.trans('categories', 'Categories', 'first')}
-                    appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
-                    facetField={ProviderHelpers.switchWorkspaceSectionKeys(
-                      'fv-word:categories',
-                      this.props.routeParams.area
-                    )}
-                    onFacetSelected={this._handleFacetSelected}
-                    facets={selectn('response.entries', computeCategories) || []}
-                  />
-                )}
-                {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
-                <br />
-                {(() => {
-                  return React.cloneElement(
-                    <AlphabetListView
-                      pagination={false}
-                      routeParams={this.props.routeParams}
-                      dialect={selectn('response', computePortal)}
-                    />,
-                    {
-                      gridListView: true,
-                      gridViewProps: {
-                        className: dialectClassName,
-                        cols: 10,
-                        cellHeight: 25,
-                        action: this._changeFilter,
-                        style: { overflowY: 'hidden', padding: '10px' },
-                      },
-                      gridListTile: AlphabetGridTile,
-                    }
-                  )
-                })()}
-              </div>
-              <hr />
-              <div>
-                <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
-
-                <ul>
-                  <li>Browse Words</li>
-                  <li>Browse Phrases</li>
-                  <li>Browse Songs</li>
-                  <li>Browse Stories</li>
-                  <li>View Alphabet</li>
-                  <li>View Portal Page</li>
-                  <li>View Language Page</li>
-                </ul>
-              </div>
-            </div>
-            <div className={classNames('col-xs-12', computeCategoriesSize == 0 ? 'col-md-12' : 'col-md-9')}>
-              <h1>
-                {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}{' '}
-                {intl.trans('words', 'Words', 'first')}
-              </h1>
-
-              <div style={{ marginBottom: '10px' }}>
-                <input
-                  type="text"
-                  ref="search_term"
-                  onBlur={(evt) => this._updateSearchTerm(evt)}
-                  onKeyPress={(evt) => (evt.key === 'Enter' ? this._search(evt) : null)}
-                />{' '}
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="text"
+                ref="search_term"
+                onBlur={(evt) => this._updateSearchTerm(evt)}
+                onKeyPress={(evt) => (evt.key === 'Enter' ? this._search(evt) : null)}
+              />{' '}
               &nbsp;
-                <RaisedButton
-                  label={intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')}
-                  onTouchTap={this._changeFilter.bind(this, this.state.searchTerm, 'contains', function(searchTerm) {
-                    return " AND ecm:fulltext = '*" + StringHelpers.clean(searchTerm, 'fulltext') + "*'"
-                  })}
-                  primary
-                />
-                <RaisedButton
-                  label={intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')}
-                  onTouchTap={(evt) => this._resetSearch()}
-                  primary={false}
-                />
-                <br />
-              </div>
+              <RaisedButton
+                label={intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')}
+                onTouchTap={this._changeFilter.bind(this, this.state.searchTerm, 'contains', function(searchTerm) {
+                  return " AND ecm:fulltext = '*" + StringHelpers.clean(searchTerm, 'fulltext') + "*'"
+                })}
+                primary
+              />
+              <RaisedButton
+                label={intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')}
+                onTouchTap={(evt) => this._resetSearch()}
+                primary={false}
+              />
+              <br />
+            </div>
 
-              <div className={classNames('alert', 'alert-info')}>
-                {(() => {
-                  if (
-                    this.state.filterInfo.get('currentAppliedFiltersDesc') &&
+            <div className={classNames('alert', 'alert-info')}>
+              {(() => {
+                if (
+                  this.state.filterInfo.get('currentAppliedFiltersDesc') &&
                   !this.state.filterInfo.get('currentAppliedFiltersDesc').isEmpty()
-                  ) {
-                    const appliedFilters = ['Showing words that ']
+                ) {
+                  const appliedFilters = ['Showing words that ']
                   let i = 0
 
                   this.state.filterInfo.get('currentAppliedFiltersDesc').map(function(v, k, t) {
-                      appliedFilters.push(v)
+                    appliedFilters.push(v)
 
                     if (t.size > 1 && t.size - 1 != i) {
-                        appliedFilters.push(
-                          <span>
-                            {' '}
-                            <span style={{ textDecoration: 'underline' }}>AND</span>{' '}
-                          </span>
-                        )
+                      appliedFilters.push(
+                        <span>
+                          {' '}
+                          <span style={{ textDecoration: 'underline' }}>AND</span>{' '}
+                        </span>
+                      )
                     }
 
-                      ++i
+                    ++i
                   })
 
                   return appliedFilters
                 }
-                  return (
-                    <span>
+                return (
+                  <span>
                       Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
-                    </span>
-                  )
-
+                  </span>
+                )
               })()}
-              </div>
-
-              <div className={dialectClassName}>{wordListView}</div>
             </div>
+
+            <div className={dialectClassName}>{wordListView}</div>
           </div>
-        </PromiseWrapper>
+        </div>
+      </PromiseWrapper>
     )
   }
 }
