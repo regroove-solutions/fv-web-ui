@@ -26,9 +26,8 @@ import RaisedButton from 'material-ui/lib/raised-button'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
-import { SearchWordsPhrases } from 'views/components/SearchWordsPhrases'
-import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchWordsPhrases/constants'
-// import { SEARCH_ADVANCED } from '../../../../../components/SearchWordsPhrases/constants';
+import { SearchDialect } from 'views/components/SearchDialect'
+import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
 
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
@@ -367,19 +366,18 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               )}`}
             </h1>
 
-            <SearchWordsPhrases
+            <SearchDialect
               filterInfo={filterInfo}
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
               searchByAlphabet={searchByAlphabet}
-              searchByTitleText="Word"
               searchByTitle={searchByTitle}
               searchByDefinitions={searchByDefinitions}
               searchByTranslations={searchByTranslations}
               searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               searchType={searchType}
-              updateStateOfParentComponent={this.updateState}
+              updateAncestorState={this.updateState}
             />
 
             {wordListView}
@@ -406,7 +404,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
     this._resetURLPagination()
-    this.setState({ filterInfo: newFilter, searchTerm: null })
+    this.setState({ filterInfo: newFilter })
   }
 
   updateState(stateObj) {

@@ -13,39 +13,46 @@ const intl = IntlService.instance
 const { any, func, string, bool } = PropTypes
 
 @provide
-class SearchWordsPhrases extends Component {
+class SearchDialect extends Component {
   static propTypes = {
+    isSearchingPhrases: bool,
+    searchButtonText: string,
+    resetButtonText: string,
     filterInfo: any, // TODO: set appropriate propType
-    updateStateOfParentComponent: func,
-    // ^ new
+    updateAncestorState: func,
     handleSearch: func,
     resetSearch: func,
     searchByAlphabet: bool,
+    searchByCulturalNotes: bool,
     searchTerm: string,
     searchType: string,
-    searchByTitleText: string,
     searchByTitle: bool,
     searchByDefinitions: bool,
     searchByTranslations: bool,
     searchPartOfSpeech: string,
   }
   static defaultProps = {
+    isSearchingPhrases: false,
     filterInfo: new Map({}),
-    updateStateOfParentComponent: () => {},
-    // ^ new
+    updateAncestorState: () => {},
     handleSearch: () => {},
     resetSearch: () => {},
     searchByAlphabet: false,
-    searchTerm: '',
-    searchType: SEARCH_ADVANCED,
+    searchByCulturalNotes: false,
     searchByTitle: false,
     searchByDefinitions: false,
     searchByTranslations: false,
+    searchTerm: '',
+    searchType: SEARCH_ADVANCED,
     searchPartOfSpeech: SEARCH_SORT_DEFAULT,
   }
 
   constructor(props) {
     super(props)
+
+    this.state = {
+      userInteracted: false,
+    }
     ;[
       '_getSearchInfo',
       '_getNxqlSearchSort',
@@ -62,15 +69,16 @@ class SearchWordsPhrases extends Component {
   componentDidUpdate() {
     const searchNxqlQuery = this._generateNxql()
     const searchNxqlSort = this._getNxqlSearchSort()
-    this.props.updateStateOfParentComponent({ searchNxqlQuery, searchNxqlSort })
+    this.props.updateAncestorState({ searchNxqlQuery, searchNxqlSort })
   }
 
   render() {
     const {
+      isSearchingPhrases,
       searchTerm,
       searchType,
+      searchByCulturalNotes,
       searchByTitle,
-      searchByTitleText,
       searchByDefinitions,
       searchByTranslations,
       searchPartOfSpeech,
@@ -78,25 +86,41 @@ class SearchWordsPhrases extends Component {
 
     const searchInfoOutput = this._getSearchInfo()
 
+    let searchButtonText = ''
+    let resetButtonText = ''
+    let searchByTitleText = ''
+    if (isSearchingPhrases) {
+      searchByTitleText = 'Phrases'
+      searchButtonText = '(Phrases) Search'
+      resetButtonText = '(Phrases) Reset'
+    } else {
+      searchByTitleText = 'Words'
+      searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
+      resetButtonText = intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')
+    }
     return (
       <div>
-        <div>
-          <input
-            type="text"
-            onChange={this._updateSearchTerm}
-            onKeyPress={this._handleEnterSearch}
-            value={searchTerm}
-          />{' '}
-          <RaisedButton
-            label={intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')}
-            onTouchTap={this._handleSearch}
-            primary
-          />{' '}
-          <RaisedButton
-            label={intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')}
-            onTouchTap={this._resetSearch}
-            primary={false}
-          />
+        <form
+          className={classNames({
+            SearchDialectDisplayAdvanced: this.state.userInteracted,
+          })}
+        >
+          <div>
+            <input
+              type="text"
+              onChange={this._updateSearchTerm}
+              onKeyPress={this._handleEnterSearch}
+              value={searchTerm}
+            />{' '}
+            <RaisedButton
+              disabled={searchTerm === ''}
+              label={searchButtonText}
+              onTouchTap={this._handleSearch}
+              primary
+            />{' '}
+            <RaisedButton label={resetButtonText} onTouchTap={this._resetSearch} primary={false} />
+          </div>
+
           <div>
             <span>
               <input
@@ -120,7 +144,9 @@ class SearchWordsPhrases extends Component {
               />
               <label htmlFor={SEARCH_ADVANCED}>Advanced Search</label>
             </span>
+          </div>
 
+          <div className="SearchDialectAdvancedSettings">
             <span>
               <input
                 type="checkbox"
@@ -131,6 +157,7 @@ class SearchWordsPhrases extends Component {
               />
               <label htmlFor="searchByTitle">{searchByTitleText}</label>
             </span>
+
             <span>
               <input
                 type="checkbox"
@@ -141,6 +168,21 @@ class SearchWordsPhrases extends Component {
               />
               <label htmlFor="searchByDefinitions">Definitions</label>
             </span>
+
+            {isSearchingPhrases && (
+            <span>
+              <input
+                type="checkbox"
+                id="searchByCulturalNotes"
+                name="searchByCulturalNotes"
+                checked={searchByCulturalNotes}
+                onChange={this._handleCustomSearch}
+              />
+              <label htmlFor="searchByCulturalNotes">Cultural Notes</label>
+            </span>
+            )}
+
+            {isSearchingPhrases === false && (
             <span>
               <input
                 type="checkbox"
@@ -151,6 +193,9 @@ class SearchWordsPhrases extends Component {
               />
               <label htmlFor="searchByTranslations">Literal Translations</label>
             </span>
+            )}
+
+            {isSearchingPhrases === false && (
             <span>
               <label htmlFor="searchPartOfSpeech">Part of speech:</label>
               <select
@@ -164,8 +209,9 @@ class SearchWordsPhrases extends Component {
                 <option value="verb">Verb</option>
               </select>
             </span>
+            )}
           </div>
-        </div>
+        </form>
 
         {searchInfoOutput}
       </div>
@@ -173,15 +219,20 @@ class SearchWordsPhrases extends Component {
   }
 
   _getSearchInfo() {
-    const { filterInfo } = this.props
-    let searchInfo = (
+    const { filterInfo, isSearchingPhrases } = this.props
+
+    let searchInfo = isSearchingPhrases ? (
+      <span>
+        Showing <strong>all phrases</strong> in the phrase books <strong>listed alphabetically</strong>.
+      </span>
+    ) : (
       <span>
         Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
       </span>
     )
 
     if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
-      const appliedFilters = ['Showing words that ']
+      const appliedFilters = isSearchingPhrases ? ['Showing phrases that '] : ['Showing words that ']
       let i = 0
 
       filterInfo.get('currentAppliedFiltersDesc').map((currentValue, index, arr) => {
@@ -229,16 +280,17 @@ class SearchWordsPhrases extends Component {
   }
 
   _getNxqlBoolCount() {
-    const { searchByDefinitions, searchByTranslations, searchPartOfSpeech, searchByTitle } = this.props
+    const { searchByCulturalNotes, searchByDefinitions, searchByTranslations, searchPartOfSpeech, searchByTitle } = this.props
 
     const check = {
+      searchByCulturalNotes,
       searchByDefinitions,
       searchByTranslations,
       searchPartOfSpeech: searchPartOfSpeech !== SEARCH_SORT_DEFAULT,
       searchByTitle,
     }
     const boolCount =
-      check.searchByTitle + check.searchByDefinitions + check.searchByTranslations + check.searchPartOfSpeech
+      check.searchByTitle + check.searchByDefinitions + check.searchByTranslations + check.searchPartOfSpeech + check.searchByCulturalNotes
     return boolCount
   }
 
@@ -248,6 +300,7 @@ class SearchWordsPhrases extends Component {
       searchType,
       searchByTitle,
       searchByAlphabet,
+      searchByCulturalNotes,
       searchByDefinitions,
       searchByTranslations,
       searchPartOfSpeech,
@@ -258,6 +311,7 @@ class SearchWordsPhrases extends Component {
       allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
       searchByTitle: `dc:title ILIKE '%${search}%'`,
       searchByAlphabet: `dc:title ILIKE '${search}%'`,
+      searchByCulturalNotes: `fv:cultural_note ILIKE '%${search}%'`,
       searchByDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
       searchByTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
       searchPartOfSpeech: `fv-word:part_of_speech = '${searchPartOfSpeech}'`,
@@ -270,11 +324,16 @@ class SearchWordsPhrases extends Component {
         nxq.push(join)
       }
     }
-    if (searchType === SEARCH_ADVANCED) {
+    const boolCount = this._getNxqlBoolCount()
+    if (searchType === SEARCH_ADVANCED && boolCount !== 0) {
       /* if (searchByAlphabet) {
         nxqlQueryJoin(nxqlQueries)
         nxqlQueries.push(`${nxqlTmpl.searchByAlphabet}`)
       } */
+      if (searchByCulturalNotes) {
+        nxqlQueryJoin(nxqlQueries)
+        nxqlQueries.push(`${nxqlTmpl.searchByCulturalNotes}`)
+      }
       if (searchByTitle) {
         nxqlQueryJoin(nxqlQueries)
         nxqlQueries.push(`${nxqlTmpl.searchByTitle}`)
@@ -312,21 +371,30 @@ class SearchWordsPhrases extends Component {
     const { id, checked, value, type } = evt.target
 
     const updateState = {}
-    // NOTE: Scripting here is tied to the structure of the html
 
-    // Record changes
-    switch (type) {
-      case 'checkbox':
-        updateState[id] = checked
-        break
-      case 'radio':
-        updateState.searchType = id
-        break
-      default:
-        updateState[id] = value
+    if (value === SEARCH_DEFAULT) {
+      // Reset everything
+      updateState.searchType = SEARCH_DEFAULT
+      updateState.searchByAlphabet = false
+      updateState.searchByCulturalNotes = false
+      updateState.searchByTitle = false
+      updateState.searchByDefinitions = false
+      updateState.searchByTranslations = false
+      updateState.searchPartOfSpeech = SEARCH_SORT_DEFAULT
+    } else {
+      this.setState({ userInteracted: true })
+      updateState.searchType = SEARCH_ADVANCED
+      // Record changes
+      switch (type) {
+        case 'checkbox':
+          updateState[id] = checked
+          break
+        default:
+          updateState[id] = value
+      }
     }
 
-    this.props.updateStateOfParentComponent(updateState)
+    this.props.updateAncestorState(updateState)
   }
 
   _handleEnterSearch(evt) {
@@ -340,14 +408,25 @@ class SearchWordsPhrases extends Component {
   }
 
   _resetSearch() {
+    const updateState = {
+      searchTerm: null,
+      searchType: SEARCH_DEFAULT,
+      searchByAlphabet: false,
+      searchByCulturalNotes: false,
+      searchByTitle: false,
+      searchByDefinitions: false,
+      searchByTranslations: false,
+      searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+    }
+    this.props.updateAncestorState(updateState)
     this.props.resetSearch()
   }
 
   _updateSearchTerm(evt) {
-    this.props.updateStateOfParentComponent({
+    this.props.updateAncestorState({
       searchTerm: evt.target.value,
     })
   }
 }
 
-export { SearchWordsPhrases }
+export { SearchDialect }
