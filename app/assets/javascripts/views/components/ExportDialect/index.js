@@ -27,6 +27,8 @@ export default class ExportDialect extends Component {
     this.state = {
       initiateCsvRequestSent: false,
       initiateCsvRequestErrored: false,
+      CSV_URL: null,
+      dialectId: null,
     }
 
     // Bind methods to 'this'
@@ -34,7 +36,7 @@ export default class ExportDialect extends Component {
   }
 
   render() {
-    const { isProcessing, isReady, isErrored } = this.props
+    const { dialectId, isProcessing, isReady, isErrored } = this.props
     const { initiateCsvRequestSent, initiateCsvRequestErrored } = this.state
     let content = this._stateIsDefault()
     if (isProcessing || initiateCsvRequestSent) {
@@ -49,13 +51,64 @@ export default class ExportDialect extends Component {
     return (
       <div>
         <h2>Export</h2>
+
+        <div  style={{border: '1px dotted red', margin: '5px 0', padding: '5px', fontSize: '11px'}}>
+          <h3 style={{fontSize: '12px', margin: '0'}}>TEMP FOR DEV</h3>
+
+          {(this.state.CSV_URL || this.state.dialectId) && (
+            <button type="button"  style={{fontSize: '11px', display: 'block', margin: '2px'}} onClick={()=>{
+              this.setState({
+                dialectId: this.props.dialectId,
+                CSV_URL,
+              })
+            }}>Reset vaules</button>
+          )}
+
+          URL:
+          <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
+            this.setState({CSV_URL: evt.target.value})
+          }} value={this.state.CSV_URL || CSV_URL} />
+
+          Document ID:
+          <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
+            this.setState({dialectId: evt.target.value})
+          }} value={this.state.dialectId || dialectId} />
+
+          <hr />
+
+          <button type="button" style={{
+            fontSize: '11px',
+            display: 'block',
+            width: '100%',
+            margin: '2px',
+            lineHeight: '1.3',
+            wordBreak: 'break-word',
+            textAlign: 'left',
+          }} onClick={this._initiateCsvRequest}>
+            {`${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`}
+          </button>
+
+          <button type="button" style={{
+            fontSize: '11px',
+            display: 'block',
+            width: '100%',
+            margin: '2px',
+            lineHeight: '1.3',
+            wordBreak: 'break-word',
+            textAlign: 'left',
+          }} onClick={this._requestCsvDownload}>
+            {`${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`}
+          </button>
+        </div>
+
         {content}
       </div>
     )
   }
   _stateIsDefault() {
     const { dialectId } = this.props
-    if (dialectId === undefined) {
+    const id = this.state.dialectId || dialectId
+    if (id === undefined) {
       return null
     }
     return (
@@ -71,11 +124,6 @@ export default class ExportDialect extends Component {
     return (
       <div>
         <p>The export file is being created.</p>
-        <button onClick={this._requestCsvDownload}>
-          <strong>TEMP FOR DEV</strong>
-          <br />
-          CALL Document.GetFormattedDocument
-        </button>
       </div>
     )
   }
@@ -108,11 +156,12 @@ export default class ExportDialect extends Component {
   }
   _initiateCsvRequest() {
     const { dialectId } = this.props
-    if (dialectId === undefined) {
+    const id = this.state.dialectId || dialectId
+    if (id === undefined ) {
       return
     }
     const reqBody = {
-      input: dialectId,
+      input: id,
       params: {
         columns: '*',
         format: 'CSV',
@@ -121,7 +170,7 @@ export default class ExportDialect extends Component {
     }
     Request(
       {
-        url: `${CSV_URL}${CSV_URL_INITIATE}`,
+        url: `${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`,
         method: 'POST',
         body: reqBody,
         json: true,
@@ -145,18 +194,19 @@ export default class ExportDialect extends Component {
   }
   _requestCsvDownload() {
     const { dialectId } = this.props
-    if (dialectId === undefined) {
+    const id = this.state.dialectId || dialectId
+    if (id === undefined) {
       return
     }
     const reqBody = {
-      input: dialectId,
+      input: id,
       params: {
         format: 'CSV',
       },
     }
     Request(
       {
-        url: `${CSV_URL}${CSV_URL_DOWNLOAD}`,
+        url: `${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`,
         method: 'POST',
         body: reqBody,
         json: true,

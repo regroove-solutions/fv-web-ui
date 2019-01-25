@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Set, Map } from 'immutable'
+import Immutable, { Set, Map } from 'immutable'
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
@@ -276,6 +276,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       this.props.computeDocument,
       this.props.routeParams.dialect_path + '/Dictionary'
     )
+    const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
+
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + '/Portal'
@@ -376,13 +378,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         </div>
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize == 0 ? 'hidden' : null)}>
+
             <ExportDialect
-              fileName="File name.csv"
-              fileUrl="//google.ca"
-              isErrored={false}
-              isReady={false}
-              isProcessing={false}
-              dialectId="someSHA"
+              // fileName="File name.csv"
+              // fileUrl="//google.ca"
+              // isErrored={false}
+              // isReady={false}
+              // isProcessing={false}
+              dialectId={fvaDialectId}
             />
             <div>
               <h3>Words</h3>
