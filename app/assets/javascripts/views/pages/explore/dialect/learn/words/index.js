@@ -380,10 +380,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize == 0 ? 'hidden' : null)}>
 
             <ExportDialect
+              displayDebug
               // fileName="File name.csv"
               // fileUrl="//google.ca"
               // isErrored={false}
-              // isReady={false}
+              // isReady
               // isProcessing={false}
               dialectId={fvaDialectId}
             />

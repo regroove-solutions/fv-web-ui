@@ -7,6 +7,7 @@ import { CSV_URL, CSV_URL_INITIATE, CSV_URL_DOWNLOAD } from './constants'
 
 export default class ExportDialect extends Component {
   static propTypes = {
+    displayDebug: bool,
     dialectId: string,
     fileName: string,
     fileUrl: string,
@@ -15,6 +16,7 @@ export default class ExportDialect extends Component {
     isErrored: bool,
   }
   static defaultProps = {
+    displayDebug: false,
     dialectId: undefined,
     fileName: '',
     fileUrl: '',
@@ -36,7 +38,7 @@ export default class ExportDialect extends Component {
   }
 
   render() {
-    const { dialectId, isProcessing, isReady, isErrored } = this.props
+    const { displayDebug, dialectId, isProcessing, isReady, isErrored } = this.props
     const { initiateCsvRequestSent, initiateCsvRequestErrored } = this.state
     let content = this._stateIsDefault()
     if (isProcessing || initiateCsvRequestSent) {
@@ -48,59 +50,61 @@ export default class ExportDialect extends Component {
     if (isReady) {
       content = this._stateIsReady()
     }
+    const debug =  (displayDebug) ? (
+      <div style={{border: '1px dotted red', margin: '5px 0', padding: '5px', fontSize: '11px'}}>
+        <h3 style={{fontSize: '12px', margin: '0'}}>TEMP FOR DEV</h3>
+
+        {(this.state.CSV_URL || this.state.dialectId) && (
+          <button type="button"  style={{fontSize: '11px', display: 'block', margin: '2px'}} onClick={()=>{
+            this.setState({
+              dialectId: this.props.dialectId,
+              CSV_URL,
+            })
+          }}>Reset vaules</button>
+        )}
+
+          URL:
+        <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
+          this.setState({CSV_URL: evt.target.value})
+        }} value={this.state.CSV_URL || CSV_URL} />
+
+          Document ID:
+        <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
+          this.setState({dialectId: evt.target.value})
+        }} value={this.state.dialectId || dialectId} />
+
+        <hr />
+
+        <button type="button" style={{
+          fontSize: '11px',
+          display: 'block',
+          width: '100%',
+          margin: '2px',
+          lineHeight: '1.3',
+          wordBreak: 'break-word',
+          textAlign: 'left',
+        }} onClick={this._initiateCsvRequest}>
+          {`${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`}
+        </button>
+
+        <button type="button" style={{
+          fontSize: '11px',
+          display: 'block',
+          width: '100%',
+          margin: '2px',
+          lineHeight: '1.3',
+          wordBreak: 'break-word',
+          textAlign: 'left',
+        }} onClick={this._requestCsvDownload}>
+          {`${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`}
+        </button>
+      </div>
+    ) : null
+
     return (
       <div>
         <h2>Export</h2>
-
-        <div  style={{border: '1px dotted red', margin: '5px 0', padding: '5px', fontSize: '11px'}}>
-          <h3 style={{fontSize: '12px', margin: '0'}}>TEMP FOR DEV</h3>
-
-          {(this.state.CSV_URL || this.state.dialectId) && (
-            <button type="button"  style={{fontSize: '11px', display: 'block', margin: '2px'}} onClick={()=>{
-              this.setState({
-                dialectId: this.props.dialectId,
-                CSV_URL,
-              })
-            }}>Reset vaules</button>
-          )}
-
-          URL:
-          <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
-            this.setState({CSV_URL: evt.target.value})
-          }} value={this.state.CSV_URL || CSV_URL} />
-
-          Document ID:
-          <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
-            this.setState({dialectId: evt.target.value})
-          }} value={this.state.dialectId || dialectId} />
-
-          <hr />
-
-          <button type="button" style={{
-            fontSize: '11px',
-            display: 'block',
-            width: '100%',
-            margin: '2px',
-            lineHeight: '1.3',
-            wordBreak: 'break-word',
-            textAlign: 'left',
-          }} onClick={this._initiateCsvRequest}>
-            {`${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`}
-          </button>
-
-          <button type="button" style={{
-            fontSize: '11px',
-            display: 'block',
-            width: '100%',
-            margin: '2px',
-            lineHeight: '1.3',
-            wordBreak: 'break-word',
-            textAlign: 'left',
-          }} onClick={this._requestCsvDownload}>
-            {`${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`}
-          </button>
-        </div>
-
+        {debug}
         {content}
       </div>
     )
