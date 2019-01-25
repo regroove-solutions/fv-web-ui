@@ -115,7 +115,7 @@ const fields = {
         'fvuserinfo:role': t.String,
         'fvuserinfo:ageGroup': t.maybe(AgeRanges),
         'fvuserinfo:phone': t.maybe(t.String),
-        'registration:comment': t.maybe(t.String)
+        'fvuserinfo:comment': t.maybe(t.String)
     },
     FVUserProfile: {
         'firstName': t.String,

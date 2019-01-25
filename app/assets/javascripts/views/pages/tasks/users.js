@@ -209,7 +209,7 @@ export default class UserTasks extends React.Component {
             let lastName = selectn('properties.userinfo:lastName', task);
             let email = selectn('properties.userinfo:email', task);
             let role = selectn('properties.fvuserinfo:role', task);
-            let comment = selectn('properties.registration:comment', task);
+            let comment = selectn('properties.fvuserinfo:comment', task);
             let dateCreated = selectn('properties.dc:created', task);
 
             let tableRow = <tr style={{borderBottom: '1px solid #000'}} key={i}>

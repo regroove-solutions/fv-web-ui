@@ -90,7 +90,7 @@ const FVUserRegistrationTemplate = function template(locals) {
                     {locals.inputs['fvuserinfo:requestedSpace']}
                 </div>
                 <div className="col-md-12">
-                    {locals.inputs['registration:comment']}
+                    {locals.inputs['fvuserinfo:comment']}
                 </div>
             </fieldset>
         </div>
@@ -936,16 +936,15 @@ const options = {
             'fvuserinfo:requestedSpace': {
                 label: intl.translate({
                     key: "models.dialect_to_join",
-                    default: 'Dialect to Join',
-                })
-                // factory: SelectFactory,
-                // attrs: {
-                //     query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:path STARTSWITH \'/FV/Workspaces\'',
-                //     queryId: 'dialect_titles_uids',
-                //     label: 'Dialect to Join'
-                // }
-                //3fa236aa-9b6a-410a-9b42-5ec0c30d7396
-                //6f6828ad-093f-4f65-bda4-5aecc64b3328
+                    default: 'Your FirstVoices community/language',
+                }),
+                factory: SelectFactory,
+                attrs: {
+                    query: 'SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:currentLifeCycleState <> \'deleted\' AND ecm:isLatestVersion = 1 ORDER BY dc:title ASC',
+                    queryId: 'dialect_titles_uids',
+                    label: 'Your FirstVoices community/language',
+                    fancy: false
+                }
             },
             'fvuserinfo:role': {
                 label: "Why are you interested in FirstVoices?" + " *",
@@ -954,7 +953,7 @@ const options = {
                 options: ProviderHelpers.userRegistrationRoles,
                 error: "Please let us know or pick the 'other' option."
             },
-            'registration:comment': {
+            'fvuserinfo:comment': {
                 label: "Other Comments",
                 type: "textarea"
             }
