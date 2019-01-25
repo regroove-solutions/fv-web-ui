@@ -5,7 +5,7 @@ import java.util.List;
 
 public class FVExportWordProperties
 {
-    public List<String> wordProperties;
+    public static List<String> wordProperties;
 
     public FVExportWordProperties()
     {

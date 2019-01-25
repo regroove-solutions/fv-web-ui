@@ -8,9 +8,9 @@ import java.util.List;
 public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_PartOfSpeechPropertyReader( String ptr, String cnfo )
+    public FV_PartOfSpeechPropertyReader( String ptr, String cnfo, Integer mc )
     {
-        super( ptr, cnfo );
+        super( ptr, cnfo, mc );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)

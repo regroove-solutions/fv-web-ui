@@ -63,12 +63,12 @@ public class FVExportBlobWorker extends FVAbstractExportWork
 
             wrapper = session.createDocument(wrapper);
 
-            wrapper.setPropertyValue( "fvexport:dialect",  workInfo.dialectGUID );
-            wrapper.setPropertyValue( "fvexport:format",   workInfo.exportFormat );
-            wrapper.setPropertyValue( "fvexport:query",    workInfo.exportQuery );
-            wrapper.setPropertyValue( "fvexport:columns", "*" ); // TODO: replace with string list rolled into a CSV string
-            wrapper.setPropertyValue( "fvexport:workdigest", workInfo.workDigest );
-            wrapper.setPropertyValue( "fvexport:exportdigest", workInfo.exportDigest );
+            wrapper.setPropertyValue( "fvexport:dialect",       workInfo.dialectGUID );
+            wrapper.setPropertyValue( "fvexport:format",        workInfo.exportFormat );
+            wrapper.setPropertyValue( "fvexport:query",         workInfo.exportQuery );
+            wrapper.setPropertyValue( "fvexport:columns",       workInfo.columns.toString() );
+            wrapper.setPropertyValue( "fvexport:workdigest",    workInfo.workDigest );
+            wrapper.setPropertyValue( "fvexport:exportdigest",  workInfo.exportDigest );
 
             wrapper.setPropertyValue( "file:content", fileBlob );
 

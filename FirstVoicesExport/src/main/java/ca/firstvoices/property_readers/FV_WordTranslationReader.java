@@ -6,10 +6,9 @@ import java.util.*;
 
 public class FV_WordTranslationReader extends FV_AbstractPropertyReader
 {
-    public FV_WordTranslationReader( String ptr, String cnfo, int mc )
+    public FV_WordTranslationReader( String ptr, String cnfo, Integer mc )
     {
-        super( ptr, cnfo );
-        maxColumns = mc;
+        super( ptr, cnfo, mc );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)

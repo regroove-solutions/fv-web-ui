@@ -2,6 +2,7 @@ package ca.firstvoices.workers;
 
 
 import ca.firstvoices.utils.FVExportWorkInfo;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.work.AbstractWork;
 
 import java.util.ArrayList;
@@ -67,6 +68,6 @@ abstract public class FVAbstractExportWork extends AbstractWork
     public String getExportQuery() {  return workInfo.exportQuery; }
     public void setExportQuery( String eQuery ) { workInfo.exportQuery = eQuery; }
 
-    public List<String> getExportColumns() {  return workInfo.columns; }
-    public void setExportColumns( List<String> clist ) { workInfo.columns = clist; }
+    public StringList getExportColumns() {  return workInfo.columns; }
+    public void setExportColumns( StringList clist ) { workInfo.columns = clist; }
 }

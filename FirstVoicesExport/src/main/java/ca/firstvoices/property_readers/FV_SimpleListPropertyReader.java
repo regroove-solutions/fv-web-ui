@@ -8,10 +8,9 @@ import java.util.List;
 public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_SimpleListPropertyReader( String ptr, String cnfo, int mc )
+    public FV_SimpleListPropertyReader( String ptr, String cnfo, Integer mc )
     {
-        super( ptr, cnfo );
-        maxColumns = mc;
+        super( ptr, cnfo, mc );
     }
 
     public List<FV_PropertyValueWithColumnName>readPropertyFromObject(Object o)

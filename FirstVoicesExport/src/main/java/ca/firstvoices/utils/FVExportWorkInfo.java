@@ -1,5 +1,7 @@
 package ca.firstvoices.utils;
 
+import org.nuxeo.ecm.automation.core.util.StringList;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,7 +19,7 @@ public class FVExportWorkInfo implements Serializable
     public long fileLength;
     public String workDigest;       // connects principal with export query based on  MD5( principal.name + principal.hash )
     public String exportDigest;     // identifies export based on query, columns and principal info ( MD5 hash )
-    public List<String> columns;
+    public StringList columns;
 
     public String getFullFileName()
     {

@@ -7,9 +7,9 @@ import java.util.List;
 
 public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
 {
-    public FV_BooleanPropertyReader( String ptr, String cnfo )
+    public FV_BooleanPropertyReader( String ptr, String cnfo, Integer mc )
     {
-        super( ptr, cnfo );
+        super( ptr, cnfo, mc );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)

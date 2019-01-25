@@ -7,6 +7,7 @@ import ca.firstvoices.workers.FVExportBlobWorker;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -80,12 +81,9 @@ public class FVExportListener implements EventListener
         {
             work.setWorkInfo( (FVExportWorkInfo)ctx.getProperty( EXPORT_WORK_INFO ) );
 
-            List pc = work.getExportColumns();
+            StringList pc = work.getExportColumns();
 
-            if( pc.size() == 1  )
-            {
-                work.setExportColumns( new ArrayList<>() );
-            }
+            work.setExportColumns( pc );
 
             work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) );
         }
