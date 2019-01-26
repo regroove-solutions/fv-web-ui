@@ -137,6 +137,9 @@ public class FVRegistrationUtilities
             throw new UserRegistrationException("Cannot request to join a disabled dialect.");
         }
 
+        // Set Workspace document as requested space
+        registrationRequest.setPropertyValue("fvuserinfo:requestedSpace", dialect.getId());
+
         userInfo = new FVUserRegistrationInfo();
 
         String ageGroup =  (String) registrationRequest.getPropertyValue("fvuserinfo:ageGroup");
@@ -320,16 +323,12 @@ public class FVRegistrationUtilities
             switch ( validationStatus )
             {
                 case EMAIL_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login the same as submitted email is present.", 400);
-
                 case LOGIN_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login name already present.", 400);
-
                 case LOGIN_AND_EMAIL_EXIST_ERROR:
-                    throw new RestOperationException("Exception validation: Login name and email already present.", 400);
+                    throw new RestOperationException("This email address is already in use.", 400);
 
                 case REGISTRATION_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Pending registration with the same credentials is present.", 400);
+                    throw new RestOperationException("A pending registration with the same credentials is present. Please check your email (including SPAM folder) for a message with instructions or contact us for help.", 400);
 
             }
         }
@@ -481,7 +480,6 @@ public class FVRegistrationUtilities
 
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 
-            FVUserPreferencesSetup up = new FVUserPreferencesSetup();
             String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
 
