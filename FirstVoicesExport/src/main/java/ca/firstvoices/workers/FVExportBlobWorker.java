@@ -51,28 +51,12 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
 
             // check if wrapper already exists
-            DocumentModel wrapper = findWrapper( session );
-
-            if( wrapper != null )
-            {
-                session.removeDocument( wrapper.getRef() );
-            }
-
-            String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), DIALECT_RESOURCES_TYPE );
-            wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" );
-
-            wrapper = session.createDocument(wrapper);
-
-            wrapper.setPropertyValue( "fvexport:dialect",       workInfo.dialectGUID );
-            wrapper.setPropertyValue( "fvexport:format",        workInfo.exportFormat );
-            wrapper.setPropertyValue( "fvexport:query",         workInfo.exportQuery );
-            wrapper.setPropertyValue( "fvexport:columns",       workInfo.columns.toString() );
-            wrapper.setPropertyValue( "fvexport:workdigest",    workInfo.workDigest );
-            wrapper.setPropertyValue( "fvexport:exportdigest",  workInfo.exportDigest );
+            DocumentModel wrapper =  workInfo.wrapper; // findWrapper( session );
 
             wrapper.setPropertyValue( "file:content", fileBlob );
+            wrapper.setPropertyValue( "fvexport:progress",  "FINISHED" );
 
-            session.saveDocument( wrapper );
+            session.saveDocument( wrapper ); // ?
             session.save();
 
             lctx.logout();

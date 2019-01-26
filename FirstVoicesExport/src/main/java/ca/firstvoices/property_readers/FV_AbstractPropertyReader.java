@@ -1,5 +1,7 @@
 package ca.firstvoices.property_readers;
 
+import org.nuxeo.ecm.core.api.CoreSession;
+
 import java.util.List;
 
 public abstract class FV_AbstractPropertyReader
@@ -7,6 +9,7 @@ public abstract class FV_AbstractPropertyReader
     protected String propertyToRead;
     protected String columnNameForOutput;
     protected Integer maxColumns = 1;
+    public CoreSession session;
 
 
     public FV_AbstractPropertyReader( String ptr, String cnfo, Integer mc )
@@ -14,6 +17,7 @@ public abstract class FV_AbstractPropertyReader
         propertyToRead = ptr;
         columnNameForOutput = cnfo;
         maxColumns = mc;
+        session = null;
     }
 
     public Integer expectedColumnCount()

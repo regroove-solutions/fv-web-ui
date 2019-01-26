@@ -42,17 +42,32 @@ public class FVExportWorker extends FVAbstractExportWork
             {
                 LoginContext lctx = Framework.login();
                 CoreSession session = CoreInstance.openCoreSession("default");
-//createWords( session );
 
                 List listToProcess = getDocuments();
 
                 FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer( workInfo.fileName,  workInfo.columns );
+                fileOutputProducer.session = session;
 
                 fileOutputProducer.writeColumnNames();
 
+                int size = listToProcess.size();
+                double originalSize = size;
+                int counter = 1;
+
+                workInfo.wrapper.setPropertyValue( "fvexport:progress",  "Exporting... " + size + " words.");
+
                 while( !listToProcess.isEmpty() )
                 {
-                    int size = listToProcess.size();
+                    size = listToProcess.size();
+
+                    if( counter % 51 == 0)
+                    {
+                        counter = 0;
+                        double currentSize = size;
+                        double percent = round (100 * (1 - (currentSize / originalSize) ), 1);
+
+                        workInfo.wrapper.setPropertyValue( "fvexport:progress",  percent + "% done.");
+                    }
 
                     DocumentLocation docLocation = (DocumentLocation) listToProcess.get( size - 1 );
                     listToProcess.remove( size -1 );
@@ -61,6 +76,7 @@ public class FVExportWorker extends FVAbstractExportWork
                     List<FV_PropertyValueWithColumnName> output = fileOutputProducer.readPropertiesWithReadersFrom( word );
 
                     fileOutputProducer.writeRowData( output );
+                    counter++;
                 }
 
                 fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
@@ -72,5 +88,11 @@ public class FVExportWorker extends FVAbstractExportWork
         {
             log.warn(e);
         }
+    }
+
+    private static double round (double value, int precision)
+    {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
     }
 }

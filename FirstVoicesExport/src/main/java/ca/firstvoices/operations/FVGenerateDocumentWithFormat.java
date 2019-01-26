@@ -14,6 +14,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
@@ -24,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
+import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
 
 
 @Operation(id=FVGenerateDocumentWithFormat.ID, category= Constants.CAT_DOCUMENT, label="Export Document with format", description="Export word or phrase documents with format (CSV or PDF). ")
@@ -56,9 +58,10 @@ public class FVGenerateDocumentWithFormat
 
 
     @OperationMethod
-    public void run(DocumentModel input)
+    public DocumentModel run(DocumentModel input)
     {
         Map<String, Object> parameters = new HashMap<String, Object>();
+        DocumentModel wrapper = null;
 
         try
         {
@@ -83,6 +86,29 @@ public class FVGenerateDocumentWithFormat
                 workInfo.exportDigest = FVExportUtils.makeExportDigest( session.getPrincipal(), workParams.actualQuery, columns );
                 workInfo.fileName = workInfo.getWrapperName();
 
+                // check if wrapper already exists
+                wrapper = findWrapper( session, workInfo );
+
+                if( wrapper != null )
+                {
+                    session.removeDocument( wrapper.getRef() );
+                }
+
+                String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), DIALECT_RESOURCES_TYPE );
+                wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" );
+
+                wrapper.setPropertyValue( "fvexport:dialect",       workInfo.dialectGUID );
+                wrapper.setPropertyValue( "fvexport:format",        workInfo.exportFormat );
+                wrapper.setPropertyValue( "fvexport:query",         workInfo.exportQuery );
+                wrapper.setPropertyValue( "fvexport:columns",       workInfo.columns.toString() );
+                wrapper.setPropertyValue( "fvexport:workdigest",    workInfo.workDigest );
+                wrapper.setPropertyValue( "fvexport:exportdigest",  workInfo.exportDigest );
+                wrapper.setPropertyValue( "fvexport:progress",  "Started.... " );
+
+                workInfo.wrapper = wrapper;
+                wrapper = session.createDocument(wrapper);
+                session.save();
+
                 export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
                 export_ctx.setProperty( WORDS_TO_EXPORT, workParams.docsToProcess );
 
@@ -104,6 +130,8 @@ public class FVGenerateDocumentWithFormat
         {
             e.printStackTrace();
         }
+
+        return wrapper;
     }
 
 
@@ -137,5 +165,20 @@ public class FVGenerateDocumentWithFormat
         returnArgs.actualQuery = generatedQuery;
 
         return returnArgs;
+    }
+
+    private DocumentModel findWrapper( CoreSession session, FVExportWorkInfo workInfo )
+    {
+        DocumentModel wrapper = null;
+
+        String wrapperQ = "SELECT * FROM FVExport WHERE ecm:ancestorId = '" + workInfo.resourcesFolderGUID + "' AND fvexport:workdigest = '" + workInfo.workDigest + "' AND fvexport:exportdigest = '" + workInfo.exportDigest + "'";
+        DocumentModelList docs = session.query( wrapperQ );
+
+        if( docs != null && docs.size() > 0)
+        {
+            wrapper = docs.get( 0 );
+        }
+
+        return wrapper;
     }
 }

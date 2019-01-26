@@ -27,6 +27,7 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
     public FV_WordCSVProducer(String fileName, StringList columns )
     {
         super();
+
         FV_WordExportCSVColumns wordColPropMapper = new FV_WordExportCSVColumns();
 
         try
@@ -42,20 +43,25 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
                 {
                     FV_WordExportCSVColumns.ColumnRecord colR = wordColPropMapper.columnRecordHashMap.get( col );
 
-                    if( colR.useForExport )
+                    if( colR != null && colR.useForExport )
                     {
                         try
                         {
                             Class<?> clazz = colR.requiredPropertyReader;
                             Constructor<?> constructor = clazz.getConstructor(String.class, String.class, Integer.class );
-                            Object instance = constructor.newInstance( colR.property, colR.colID, colR.numCols );
+                            FV_AbstractPropertyReader instance = (FV_AbstractPropertyReader)constructor.newInstance( colR.property, colR.colID, colR.numCols );
+                            instance.session = session;
 
-                            propertyReaders.add( (FV_AbstractPropertyReader)instance );
+                            propertyReaders.add( instance );
                         }
                         catch( Exception e )
                         {
                             e.printStackTrace();
                         }
+                    }
+                    else
+                    {
+                        // record wrong column
                     }
                 }
             }

@@ -101,7 +101,7 @@ public class FVExportUtils
     {
          DocumentModel resourceFolder =  findDialectChildWithRef( session, dialect.getRef(), childType );
 
-         return resourceFolder.getPathAsString() + "/";
+         return resourceFolder.getPathAsString();
     }
 
     public static String makeExportDigest(Principal p, String query, List<String> columns )

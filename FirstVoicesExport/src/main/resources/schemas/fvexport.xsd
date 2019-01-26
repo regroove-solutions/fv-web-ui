@@ -11,6 +11,8 @@
   <xs:element name="workdigest" type="xs:string" />
   <!-- Stores the key to match with type of export -->
   <xs:element name="exportdigest" type="xs:string" />
+  <!-- Stores the progress string of the export -->
+  <xs:element name="progress" type="xs:string" />
   <!-- Stores the query that was requested -->
   <xs:element name="query" type="xs:string" />
   <!-- Stores the columns that were requested -->
