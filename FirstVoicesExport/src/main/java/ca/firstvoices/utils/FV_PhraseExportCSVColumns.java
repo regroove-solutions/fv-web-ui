@@ -22,7 +22,7 @@ public class FV_PhraseExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( AUDIO,                         new ExportColumnRecord( AUDIO,                           FVExportProperties.AUDIO_COMPUND, false, 0,      FV_CompoundPropertyReader.class, FVExportProperties.audioCompoundMap ) );
         columnRecordHashMap.put( VIDEO,                         new ExportColumnRecord( VIDEO,                           FVExportProperties.VIDEO_COMPUND, false, 0,      FV_CompoundPropertyReader.class, FVExportProperties.videoCompoundMap ) );
 
-        // AUDIO COMPUND
+        // AUDIO COMPOUND
         columnRecordHashMap.put( AUDIO_TITLE,                   new ExportColumnRecord( AUDIO_TITLE,                     FVExportProperties.TITLE, false, 1,                FV_PropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_FILENAME,                new ExportColumnRecord( AUDIO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 1,                FV_PropertyReader.class, null) );
@@ -32,7 +32,7 @@ public class FV_PhraseExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( AUDIO_RECORDER,                new ExportColumnRecord( AUDIO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
 
 
-        // IMAGE COMPUND
+        // IMAGE COMPOUND
         columnRecordHashMap.put( IMG_TITLE,                   new ExportColumnRecord( IMG_TITLE,                        FVExportProperties.TITLE, false, 1,                 FV_PropertyReader.class, null) );
         columnRecordHashMap.put( IMG_FILENAME,                new ExportColumnRecord( IMG_FILENAME,                     FVExportProperties.MEDIA_FILENAME, false, 1,        FV_PropertyReader.class, null) );
         columnRecordHashMap.put( IMG_DESCRIPTION,             new ExportColumnRecord( IMG_DESCRIPTION,                  FVExportProperties.DESCR, false, 1,                 FV_PropertyReader.class, null) );
@@ -41,7 +41,7 @@ public class FV_PhraseExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( IMG_CHILD_FOCUSED,           new ExportColumnRecord( IMG_CHILD_FOCUSED,                FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,   FV_BooleanPropertyReader.class, null) );
         columnRecordHashMap.put( IMG_RECORDER,                new ExportColumnRecord( IMG_RECORDER,                     FVExportProperties.MEDIA_RECORDER, false, 2,        FV_SimpleListPropertyReader.class, null) );
 
-        // VIDEO COMPUND
+        // VIDEO COMPOUND
         columnRecordHashMap.put( VIDEO_TITLE,                   new ExportColumnRecord( VIDEO_TITLE,                     FVExportProperties.TITLE, false, 1,                FV_PropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_FILENAME,                new ExportColumnRecord( VIDEO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 0,                FV_PropertyReader.class, null) );

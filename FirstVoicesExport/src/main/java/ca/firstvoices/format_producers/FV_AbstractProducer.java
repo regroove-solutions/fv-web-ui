@@ -5,7 +5,6 @@ import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
 import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.utils.FV_CSVExportColumns;
-import ca.firstvoices.utils.FV_WordExportCSVColumns;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;

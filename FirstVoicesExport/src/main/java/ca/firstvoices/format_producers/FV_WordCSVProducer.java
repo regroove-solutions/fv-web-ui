@@ -7,12 +7,10 @@ package ca.firstvoices.format_producers;
 import ca.firstvoices.property_readers.*;
 import ca.firstvoices.utils.*;
 import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+
 import java.util.List;
 
 import static ca.firstvoices.utils.FVExportConstants.CSV_FORMAT;
