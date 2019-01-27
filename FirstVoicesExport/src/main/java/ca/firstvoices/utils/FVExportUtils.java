@@ -63,9 +63,9 @@ public class FVExportUtils
 
     //ctx.getProperty(INITIATING_PRINCIPAL)+"-"+ctx.getProperty(DIALECT_NAME_EXPORT)+"-"+ctx.getProperty(EXPORT_FORMAT);
 
-    public static String makeExportWorkerID( String principalName, String dialectName, String format )
+    public static String makeExportWorkerID( FVExportWorkInfo info )
     {
-        return principalName + "-" + dialectName + "-" + format;
+        return info.initiatorName + "-" + info.dialectGUID + "-" + info.exportElement + "-" + info.exportFormat;
     }
 
     // TODO: need to find how this is handled in the production
