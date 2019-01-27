@@ -1,5 +1,7 @@
 package ca.firstvoices.workers;
 
+import ca.firstvoices.format_producers.FV_AbstractProducer;
+import ca.firstvoices.format_producers.FV_PhraseCSVProducer;
 import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
 import ca.firstvoices.format_producers.FV_WordCSVProducer;
 import org.apache.commons.logging.Log;
@@ -11,7 +13,6 @@ import javax.security.auth.login.LoginContext;
 import java.util.List;
 
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
-import static ca.firstvoices.utils.UtilityTestWordGenerator.createWords;
 
 /*
         Worker description is in FVAbstractExportWorker file.
@@ -45,7 +46,17 @@ public class FVExportWorker extends FVAbstractExportWork
 
                 List listToProcess = getDocuments();
 
-                FV_WordCSVProducer fileOutputProducer = new FV_WordCSVProducer( workInfo.fileName,  workInfo.columns );
+                FV_AbstractProducer fileOutputProducer;
+
+                if( workInfo.exportElement.equals("WORD") )
+                {
+                    fileOutputProducer = new FV_WordCSVProducer(workInfo.fileName, workInfo.columns);
+                }
+                else
+                {
+                    fileOutputProducer = new FV_PhraseCSVProducer(workInfo.fileName, workInfo.columns);
+                }
+
                 fileOutputProducer.session = session;
 
                 fileOutputProducer.writeColumnNames();
@@ -88,11 +99,5 @@ public class FVExportWorker extends FVAbstractExportWork
         {
             log.warn(e);
         }
-    }
-
-    private static double round (double value, int precision)
-    {
-        int scale = (int) Math.pow(10, precision);
-        return (double) Math.round(value * scale) / scale;
     }
 }
