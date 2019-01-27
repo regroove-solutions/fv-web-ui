@@ -18,14 +18,15 @@ public class FV_PDF_Producer extends FV_AbstractProducer
     {
     }
 
-    @Override
-    public void writeColumnNames()
+    public void writeLine( List<String> outputLine )
     {
     }
 
-    @Override
-    public void close(CoreSession session, DocumentModel dialect, FVExportWorkInfo info )
+    protected void endProduction()
     {
+    }
 
+    protected void createDefaultPropertyReaders()
+    {
     }
 }
