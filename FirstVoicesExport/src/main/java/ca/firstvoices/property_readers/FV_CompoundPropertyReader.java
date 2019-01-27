@@ -1,5 +1,6 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.utils.ExportColumnRecord;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -12,13 +13,15 @@ import java.util.List;
 public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_CompoundPropertyReader(String ptr, String cnfo, Integer mc )
+    public FV_CompoundPropertyReader(ExportColumnRecord spec )
     {
-        super( ptr, cnfo, mc );
+        super( spec );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
     {
+        DocumentModel doc = (DocumentModel)o;
+
         return null;
     }
 }

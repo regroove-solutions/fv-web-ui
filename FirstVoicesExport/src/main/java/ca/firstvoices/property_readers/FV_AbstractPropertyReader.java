@@ -1,5 +1,6 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,17 +12,20 @@ public abstract class FV_AbstractPropertyReader
 {
     protected static final Log log = LogFactory.getLog(FVExportWorker.class);
 
-    protected String propertyToRead;
-    protected String columnNameForOutput;
-    protected Integer maxColumns = 1;
+    protected ExportColumnRecord spec;
+
+    protected String    propertyToRead;
+    protected String    columnNameForOutput;
+    protected Integer   maxColumns;
+
     public CoreSession session;
 
-
-    public FV_AbstractPropertyReader( String ptr, String cnfo, Integer mc )
+    public FV_AbstractPropertyReader( ExportColumnRecord spec )
     {
-        propertyToRead = ptr;
-        columnNameForOutput = cnfo;
-        maxColumns = mc;
+        propertyToRead = spec.property;
+        columnNameForOutput = spec.colID;
+        maxColumns = spec.numCols;
+        this.spec = spec;
         session = null;
     }
 
@@ -29,7 +33,6 @@ public abstract class FV_AbstractPropertyReader
     {
         return maxColumns;
     }
-
     public String getPropertyToRead() { return propertyToRead; }
     public String getColumnNameForOutput() { return columnNameForOutput; }
 

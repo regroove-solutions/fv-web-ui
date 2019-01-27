@@ -1,5 +1,6 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.utils.ExportColumnRecord;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.ArrayList;
@@ -8,9 +9,9 @@ import java.util.List;
 public class FV_PropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_PropertyReader( String ptr, String cnfo, Integer mc )
+    public FV_PropertyReader( ExportColumnRecord spec )
     {
-        super( ptr, cnfo, mc );
+        super( spec );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)

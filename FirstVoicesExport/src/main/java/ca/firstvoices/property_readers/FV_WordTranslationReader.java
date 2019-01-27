@@ -1,14 +1,15 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.utils.ExportColumnRecord;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.*;
 
 public class FV_WordTranslationReader extends FV_AbstractPropertyReader
 {
-    public FV_WordTranslationReader( String ptr, String cnfo, Integer mc )
+    public FV_WordTranslationReader( ExportColumnRecord spec )
     {
-        super( ptr, cnfo, mc );
+        super( spec );
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
