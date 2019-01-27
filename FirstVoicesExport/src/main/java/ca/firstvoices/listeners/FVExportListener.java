@@ -36,17 +36,13 @@ public class FVExportListener implements EventListener
             case PRODUCE_FORMATTED_DOCUMENT:
                 FVExportWorkInfo info = (FVExportWorkInfo) ctx.getProperty( EXPORT_WORK_INFO );
 
-                String id = makeExportWorkerID( info.initiatorName,
-                                                info.dialectName,
-                                                info.exportFormat );
+                String id = makeExportWorkerID( info );
 
                 if( checkForRunningWorkerBeforeProceeding( id ) )
                 {
-                    // TODO: ??? delete old file if exists and create a new one
                     workManager.schedule(produceWorker(ctx, new FVExportWorker( id )), true);
                 }
                 break;
-
 
             case FINISH_EXPORT_BY_WRAPPING_BLOB:
                 workManager.schedule( produceBlobWorker( ctx ), true);
