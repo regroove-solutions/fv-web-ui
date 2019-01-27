@@ -48,6 +48,10 @@ public class FVGenerateDocumentWithFormat
     @Param( name = "format", values = {"CSV", "PDF"} )
     protected String format = "CSV";
 
+    @Param( name = "exportElement", values = {"WORD", "PHRASE"} )
+    protected String exportElement = "WORD";
+
+
     protected AutomationService automation = Framework.getService(AutomationService.class);
 
     @Context
@@ -65,7 +69,7 @@ public class FVGenerateDocumentWithFormat
 
         try
         {
-            GeneratedQueryArguments workParams = getWordDocumentIDs( "*", input );
+            GeneratedQueryArguments workParams = getDocumentIDs( "*", input );
 
             if( workParams != null )
             {
@@ -85,6 +89,7 @@ public class FVGenerateDocumentWithFormat
                 workInfo.workDigest = FVExportUtils.makePrincipalWorkDigest(session.getPrincipal());
                 workInfo.exportDigest = FVExportUtils.makeExportDigest( session.getPrincipal(), workParams.actualQuery, columns );
                 workInfo.fileName = workInfo.getWrapperName();
+                workInfo.exportElement = exportElement;
 
                 // check if wrapper already exists
                 wrapper = findWrapper( session, workInfo );
@@ -111,8 +116,11 @@ public class FVGenerateDocumentWithFormat
 
                 export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
                 export_ctx.setProperty( WORDS_TO_EXPORT, workParams.docsToProcess );
+                Event event;
 
-                Event event = export_ctx.newEvent( PRODUCE_FORMATTED_DOCUMENT );
+                event = export_ctx.newEvent(PRODUCE_FORMATTED_DOCUMENT);
+
+
                 eventProducer.fireEvent(event);
 
                 parameters.put( "message", "Request to export documents in " + format + " was successfully submitted" );
@@ -135,30 +143,41 @@ public class FVGenerateDocumentWithFormat
     }
 
 
-    private GeneratedQueryArguments getWordDocumentIDs( String query, DocumentModel dialect )
+    private GeneratedQueryArguments getDocumentIDs( String query, DocumentModel dialect )
     {
         DocumentModelList docs;
         GeneratedQueryArguments returnArgs = new GeneratedQueryArguments();
         DocumentModel dictionary = FVExportUtils.findDialectChild( dialect, DIALECT_DICTIONARY_TYPE );
-        String generatedQuery = "SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
+        String generatedQuery;
+
+        if( exportElement.equals("WORD") )
+        {
+            generatedQuery = "SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
+        }
+        else
+        {
+            generatedQuery = "SELECT * FROM FVPhrase WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
+
+        }
 
         if( query.equals("*") )
         {
             docs = session.query( generatedQuery ); // TODO: be weary of limits of how many records will be returned
 
             if( docs.size() == 0 ) return null;
-
         }
         else
         {
-            return null; // one day there will be a user query here
+            docs = session.query( query );
+
+            if( docs.size() == 0 ) return null;
         }
 
         ArrayList<String> docsToProcess = new ArrayList<>();
 
-        for( DocumentModel word: docs )
+        for( DocumentModel doc: docs )
         {
-            docsToProcess.add( word.getId() );
+            docsToProcess.add( doc.getId() );
         }
 
         returnArgs.docsToProcess = docsToProcess;
