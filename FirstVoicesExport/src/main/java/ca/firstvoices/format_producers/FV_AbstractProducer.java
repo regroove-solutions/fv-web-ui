@@ -132,7 +132,6 @@ abstract public class FV_AbstractProducer
 
         for( FV_AbstractPropertyReader pr : propertyReaders )
         {
-
             List<FV_PropertyValueWithColumnName> listToAdd = pr.readPropertyFromObject( o );
 
             listToReturn.addAll( listToAdd );
