@@ -71,24 +71,24 @@ public class FV_WordCSVProducer extends FV_AbstractProducer
     protected void createDefaultPropertyReaders()
     {
 
-        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.WORD_VALUE) ) );
-        propertyReaders.add( new FV_PartOfSpeechPropertyReader(  spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PART_OF_SPEECH )));
-        propertyReaders.add( new FV_SimpleListPropertyReader(    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE )));
+        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.TITLE) ) );
+        propertyReaders.add( new FV_PartOfSpeechPropertyReader(  spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PART_OF_SPEECH_ID )));
         propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PHONETIC_INFO )));
-        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.ASSIGNED_USR_ID )));
-        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CHANGE_DTTM )));
-        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.WORD_ID )));
+        propertyReaders.add( new FV_WordTranslationReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION )));
+        propertyReaders.add( new FV_WordTranslationReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.LITERAL_TRANSLATION )));
+        propertyReaders.add( new FV_CategoryPropertyReader(      spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REALTED_PHRASE )));
+        propertyReaders.add( new FV_SimpleListPropertyReader(    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE )));
+        propertyReaders.add( new FV_CategoryPropertyReader(      spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CATEGORIES )));
         propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REFERENCE )));
         propertyReaders.add( new FV_BooleanPropertyReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AVAILABLE_IN_CHILDRENS_ARCHIVE )));
         propertyReaders.add( new FV_BooleanPropertyReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AVAILABLE_IN_GAMES )));
-        propertyReaders.add( new FV_WordTranslationReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.LITERAL_TRANSLATION )));
-        propertyReaders.add( new FV_WordTranslationReader(       spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION )));
-        propertyReaders.add( new FV_CategoryPropertyReader(      spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CATEGORIES )));
-        propertyReaders.add( new FV_CategoryPropertyReader(      spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REALTED_PHRASE )));
+        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.ASSIGNED_USR_ID )));
+        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.WORD_STATUS )));
+        propertyReaders.add( new FV_SimpleListPropertyReader(    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CONTRIBUTOR )));
+        propertyReaders.add( new FV_PropertyReader(              spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CHANGE_DTTM )));
 
-
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ) ) );
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ) ) );
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ) ) );
+        //propertyReaders.add( new FV_CompoundPropertyReader(      spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ) ) );
+        //propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ) ) );
+        //propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ) ) );
     }
 }

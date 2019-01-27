@@ -12,7 +12,6 @@ import java.util.List;
 
 public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 {
-
     public FV_CompoundPropertyReader(ExportColumnRecord spec )
     {
         super( spec );
@@ -23,5 +22,11 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
         DocumentModel doc = (DocumentModel)o;
 
         return null;
+    }
+
+    @Override
+    public String getColumnNameForOutput()
+    {
+        return columnNameForOutput;
     }
 }

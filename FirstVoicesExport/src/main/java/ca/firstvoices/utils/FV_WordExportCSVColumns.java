@@ -69,10 +69,8 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( VIDEO_RECORDER,                new ExportColumnRecord( VIDEO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
 
         // not done
-        columnRecordHashMap.put( RECORDER,                      new ExportColumnRecord( RECORDER,                        FVExportProperties.MEDIA_RECORDER, false, 1,    null, null) );
         columnRecordHashMap.put( CONTRIBUTER,                   new ExportColumnRecord( CONTRIBUTER,                    "?", false, 1,       null, null) );
         columnRecordHashMap.put( PHRASE_BOOKS_C,                new ExportColumnRecord( PHRASE_BOOKS_C,                  FVExportProperties.PHRASE_BOOKS, false, 1, null, null) );
-        columnRecordHashMap.put( PART_OF_SPEECH,                new ExportColumnRecord( PART_OF_SPEECH_ID,               "?", false, 0, null, null) );
         columnRecordHashMap.put( WORD_ID,                       new ExportColumnRecord( WORD_ID,                         "?", false, 0, null, null) );
         columnRecordHashMap.put( CATEGORY_ID,                   new ExportColumnRecord( CATEGORY_ID,                     "?", false, 0, null, null) );
         columnRecordHashMap.put( ID,                            new ExportColumnRecord( ID,                              "?", false, 0, null, null) );
