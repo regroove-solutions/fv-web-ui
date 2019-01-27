@@ -70,4 +70,11 @@ abstract public class FVAbstractExportWork extends AbstractWork
 
     public StringList getExportColumns() {  return workInfo.columns; }
     public void setExportColumns( StringList clist ) { workInfo.columns = clist; }
+
+    protected static double round (double value, int precision)
+    {
+        int scale = (int) Math.pow(10, precision);
+        return (double) Math.round(value * scale) / scale;
+    }
+
 }
