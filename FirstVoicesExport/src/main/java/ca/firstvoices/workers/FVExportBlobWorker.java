@@ -15,8 +15,7 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 
 public class FVExportBlobWorker extends FVAbstractExportWork
 {
-    private static final Log log = LogFactory.getLog(FVExportWorker.class);
-
+    private static final Log log = LogFactory.getLog(FVExportBlobWorker.class);
 
     @Override
     public String getCategory() {
@@ -49,11 +48,12 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             DocumentModel wrapper =  workInfo.wrapper;
 
             wrapper.setPropertyValue( "file:content", fileBlob );
-            wrapper.setPropertyValue( "fvexport:progress",  "FINISHED" );
+            workInfo.setExportProgress( "EXPORT: Total work time : " + workInfo.workDuration + "seconds while processing " + workInfo.originalWorkloadSize + " documents." );
 
             session.saveDocument( wrapper ); // ?
             session.save();
 
+            workInfo.workDuration = (System.currentTimeMillis() - workInfo.workDuration) / 1000;
             lctx.logout();
             session.close();
         }
