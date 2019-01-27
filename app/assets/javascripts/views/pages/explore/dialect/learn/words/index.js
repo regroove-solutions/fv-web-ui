@@ -175,12 +175,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       '_changeFilter',
       '_getPageKey',
       '_handleAlphabetClick',
-      '_handleFacetSelected', // TODO: where does this come from?
-      '_getURLPageProps', // NOTE: PageDialectLearnBase provides `_getURLPageProps`
-      '_handleFilterChange', // NOTE: PageDialectLearnBase provides `_handleFilterChange`
-      '_handlePagePropertiesChange', // NOTE: PageDialectLearnBase provides `_handlePagePropertiesChange`
-      '_onNavigateRequest', // NOTE: PageDialectLearnBase provides `_onNavigateRequest`
-      '_resetURLPagination', // NOTE: PageDialectLearnBase provides `_resetURLPagination`
+      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
+      '_getURLPageProps', // NOTE: Comes from PageDialectLearnBase
+      '_handleFilterChange', // NOTE: Comes from PageDialectLearnBase
+      '_handlePagePropertiesChange', // NOTE: Comes from PageDialectLearnBase
+      '_onNavigateRequest', // NOTE: Comes from PageDialectLearnBase
+      '_resetURLPagination', // NOTE: Comes from PageDialectLearnBase
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
@@ -331,7 +331,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                     'fv-word:categories',
                     this.props.routeParams.area
                   )}
-                  onFacetSelected={this._handleFacetSelected}
+                  onFacetSelected={this._handleFacetSelected} // NOTE: Comes from PageDialectLearnBase
                   facets={selectn('response.entries', computeCategories) || []}
                 />
               )}

@@ -105,7 +105,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       'updateState',
       '_changeFilter',
       '_onNavigateRequest',
-      '_handleFacetSelected',
+      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
       '_handlePagePropertiesChange',
       '_resetURLPagination',
       '_getPageKey',
@@ -237,7 +237,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 'fv-phrase:phrase_books',
                 this.props.routeParams.area
               )}
-              onFacetSelected={this._handleFacetSelected}
+              onFacetSelected={this._handleFacetSelected}  // NOTE: Comes from PageDialectLearnBase
               facets={selectn('response.entries', computePhraseBooks) || []}
             />
           </div>
