@@ -9,9 +9,9 @@ import org.nuxeo.ecm.core.api.IdRef;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FV_CategoryPropertReader extends FV_AbstractPropertyReader
+public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 {
-    public FV_CategoryPropertReader( String ptr, String cnfo, Integer mc )
+    public FV_CategoryPropertyReader(String ptr, String cnfo, Integer mc )
     {
         super( ptr, cnfo, mc );
     }
