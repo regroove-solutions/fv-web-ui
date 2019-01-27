@@ -29,6 +29,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
         {
             if (categoryId == null)
             {
+                log.warn("Null Category in FV_CategoryPropertyReader");
                 continue;
             }
 
@@ -42,9 +43,10 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
                     prePend = " | ";
                 }
             }
-            catch(DocumentNotFoundException | DocumentSecurityException de)
+            catch( Exception e )
             {
-                de.printStackTrace();
+                log.warn("Null category document in FV_CategoryPropertyReader.");
+                e.printStackTrace();
             }
         }
 
