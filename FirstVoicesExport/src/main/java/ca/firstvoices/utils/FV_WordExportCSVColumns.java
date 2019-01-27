@@ -14,7 +14,7 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
     {
         super();
 
-        //                       IDENTIFIER from UI                                     COLUMN NAME                      PROPERTY
+        //                       IDENTIFIER from UI                                     COLUMN NAME                      PROPERTY                                                  READER TO CREATE
         columnRecordHashMap.put( TITLE,                         new ExportColumnRecord( WORD_VALUE,                      FVExportProperties.TITLE, true, 1,              FV_PropertyReader.class, null ) );
         columnRecordHashMap.put( DOMINANT_LANGUAGE,             new ExportColumnRecord( DOMINANT_LANGUAGE,               FVExportProperties.LANGUAGE, true, 1,           FV_PropertyReader.class, null) );
 
@@ -49,7 +49,6 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( AUDIO_SOURCE,                  new ExportColumnRecord( AUDIO_SOURCE,                    FVExportProperties.MEDIA_SOURCE, false, 2,         FV_SimpleListPropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_CHILD_FOCUSED,           new ExportColumnRecord( AUDIO_CHILD_FOCUSED,             FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,  FV_BooleanPropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_RECORDER,                new ExportColumnRecord( AUDIO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
-
 
         // IMAGE COMPUND
         columnRecordHashMap.put( IMG_TITLE,                   new ExportColumnRecord( IMG_TITLE,                        FVExportProperties.TITLE, false, 1,                 FV_PropertyReader.class, null) );
