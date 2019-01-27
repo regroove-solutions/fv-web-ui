@@ -18,6 +18,8 @@ public class FVExportWorkInfo implements Serializable
     public String exportFormat;
     public String exportQuery;
     public String exportElement;
+    public Long workDuration;
+    public int originalWorkloadSize;
     public long fileLength;
     public String workDigest;       // connects principal with export query based on  MD5( principal.name + principal.hash )
     public String exportDigest;     // identifies export based on query, columns and principal info ( MD5 hash )
