@@ -5,6 +5,7 @@ import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
 import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.utils.FV_CSVExportColumns;
+import ca.firstvoices.utils.FV_WordExportCSVColumns;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -27,12 +28,15 @@ abstract public class FV_AbstractProducer
     protected List<FV_AbstractPropertyReader> propertyReaders;
     protected File outputFile;
     protected String originalFileName;
+    protected FV_CSVExportColumns spec;
+
     public CoreSession session;
 
-    FV_AbstractProducer()
+    FV_AbstractProducer( FV_CSVExportColumns spec )
     {
         propertyReaders = new ArrayList<>();
         session = null;
+        this.spec = spec;
     }
 
     abstract void writeLine( List<String> outputLine );
@@ -85,13 +89,13 @@ abstract public class FV_AbstractProducer
 
                 if (colR != null && colR.useForExport)
                 {
+
                     try
                     {
                         Class<?> clazz = colR.requiredPropertyReader;
-                        Constructor<?> constructor = clazz.getConstructor(String.class, String.class, Integer.class);
-                        FV_AbstractPropertyReader instance = (FV_AbstractPropertyReader) constructor.newInstance(colR.property, colR.colID, colR.numCols);
+                        Constructor<?> constructor = clazz.getConstructor( ExportColumnRecord.class );
+                        FV_AbstractPropertyReader instance = (FV_AbstractPropertyReader) constructor.newInstance( colR );
                         instance.session = session;
-
                         propertyReaders.add(instance);
                     }
                     catch (Exception e)

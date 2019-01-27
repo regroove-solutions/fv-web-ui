@@ -1,11 +1,8 @@
 package ca.firstvoices.format_producers;
 
+import ca.firstvoices.property_readers.FV_CompoundPropertyReader;
 import ca.firstvoices.property_readers.FV_PropertyReader;
-import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
-import ca.firstvoices.property_readers.FV_SimpleListPropertyReader;
-import ca.firstvoices.property_readers.FV_WordTranslationReader;
 import ca.firstvoices.utils.FVExportConstants;
-import ca.firstvoices.utils.FVExportProperties;
 import ca.firstvoices.utils.FV_PhraseExportCSVColumns;
 import org.nuxeo.ecm.automation.core.util.StringList;
 
@@ -22,13 +19,11 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
     public FV_PhraseCSVProducer(String fileName, StringList columns )
     {
-        super();
-
-        FV_PhraseExportCSVColumns phraseExportCSVColumns = new FV_PhraseExportCSVColumns();
+        super( new FV_PhraseExportCSVColumns() );
 
         try
         {
-            addReaders( phraseExportCSVColumns, columns );
+            addReaders( spec, columns );
 
             if( createTemporaryOutputFile( fileName, CSV_FORMAT ) )
             {
@@ -74,10 +69,14 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
     protected void createDefaultPropertyReaders()
     {
-        propertyReaders.add(new FV_PropertyReader(FVExportProperties.TITLE,                         FVExportConstants.ExportCSVLabels.PHRASE, 1) );
-        propertyReaders.add(new FV_PropertyReader(FVExportProperties.DESCR,                         FVExportConstants.ExportCSVLabels.DESCR, 1) );
-        propertyReaders.add(new FV_WordTranslationReader(FVExportProperties.DEFINITION,             FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION, 4) );
-        propertyReaders.add(new FV_SimpleListPropertyReader(FVExportProperties.CULTURAL_NOTE,       FVExportConstants.ExportCSVLabels.CULTURAL_NOTE, 4) );
-        propertyReaders.add(new FV_PropertyReader(FVExportProperties.REFERENCE,                     FVExportConstants.ExportCSVLabels.REFERENCE, 1) );
+        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PHRASE ) ) );
+        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DESCR ) ) );
+        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION ) ) );
+        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE ) ) );
+        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REFERENCE ) ) );
+
+        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ) ) );
+        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ) ) );
+        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ) ) );
     }
 }
