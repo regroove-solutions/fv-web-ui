@@ -18,7 +18,10 @@ public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
         Boolean prop = (Boolean)word.getPropertyValue(propertyToRead);
 
-        if( prop == null ) { prop = false; }
+        if( prop == null )
+        {
+            prop = false;
+        }
 
         String propertyValue = prop ? "true" : "false";
 

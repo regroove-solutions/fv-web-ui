@@ -1,11 +1,16 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.workers.FVExportWorker;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 
 import java.util.List;
 
 public abstract class FV_AbstractPropertyReader
 {
+    protected static final Log log = LogFactory.getLog(FVExportWorker.class);
+
     protected String propertyToRead;
     protected String columnNameForOutput;
     protected Integer maxColumns = 1;
