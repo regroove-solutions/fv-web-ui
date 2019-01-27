@@ -69,6 +69,9 @@ public class FVGenerateDocumentWithFormat
 
         try
         {
+            FVExportWorkInfo workInfo = new FVExportWorkInfo();
+            workInfo.workDuration = System.currentTimeMillis();;
+
             GeneratedQueryArguments workParams = getDocumentIDs( "*", input );
 
             if( workParams != null )
@@ -78,7 +81,6 @@ public class FVGenerateDocumentWithFormat
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
 
-                FVExportWorkInfo workInfo = new FVExportWorkInfo();
                 workInfo.columns = columns;
                 workInfo.dialectGUID = input.getId();
                 workInfo.resourcesFolderGUID = resourceFolder.getId();
@@ -90,6 +92,7 @@ public class FVGenerateDocumentWithFormat
                 workInfo.exportDigest = FVExportUtils.makeExportDigest( session.getPrincipal(), workParams.actualQuery, columns );
                 workInfo.fileName = workInfo.getWrapperName();
                 workInfo.exportElement = exportElement;
+                workInfo.originalWorkloadSize = workParams.docsToProcess.size();
 
                 // check if wrapper already exists
                 wrapper = findWrapper( session, workInfo );
