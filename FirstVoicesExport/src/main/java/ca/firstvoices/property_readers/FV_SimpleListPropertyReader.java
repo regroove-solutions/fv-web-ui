@@ -20,33 +20,38 @@ public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
 
         Object prop = word.getPropertyValue(propertyToRead);
 
-        if( prop instanceof String[] )
+        if( prop != null )
         {
-            String[] stl = (String[])prop;
-            String modColumnName = columnNameForOutput;
-            Integer counter = 1;
-            Integer stlCounter = -1;
-
-            for( Integer c = 0; c < maxColumns; c++ )
+            if (prop instanceof String[])
             {
-                if( c < stl.length )
-                {
-                    stlCounter++;
-                    readValues.add(new FV_PropertyValueWithColumnName( stl[stlCounter], modColumnName) );
-                }
-                else
-                {
-                    readValues.add(new FV_PropertyValueWithColumnName(" ", modColumnName));
-                }
+                String[] stl = (String[]) prop;
+                String modColumnName = columnNameForOutput;
+                Integer counter = 1;
+                Integer stlCounter = -1;
 
-                modColumnName = columnNameForOutput + "_" + counter.toString();
-                counter++;
+                for (Integer c = 0; c < maxColumns; c++)
+                {
+                    if (c < stl.length)
+                    {
+                        stlCounter++;
+                        readValues.add(new FV_PropertyValueWithColumnName(stl[stlCounter], modColumnName));
+                    } else
+                    {
+                        readValues.add(new FV_PropertyValueWithColumnName(" ", modColumnName));
+                    }
 
+                    modColumnName = columnNameForOutput + "_" + counter.toString();
+                    counter++;
+
+                }
+            } else
+            {
+                readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput));
             }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput ));
+            readValues.add(new FV_PropertyValueWithColumnName(" ", columnNameForOutput) );
         }
 
         return readValues;
