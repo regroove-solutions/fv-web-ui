@@ -5,85 +5,83 @@ package ca.firstvoices.utils;
 
 import ca.firstvoices.property_readers.*;
 
-import java.util.HashMap;
-
 import static ca.firstvoices.utils.FVExportConstants.ExportCSVLabels.*;
-import static ca.firstvoices.utils.FVExportWordProperties.MEDIA_RECORDER;
-import static ca.firstvoices.utils.FVExportWordProperties.MEDIA_STATUS;
-
-/**
- * @author dyona
- *
- */
 
 // headers for CSV file
-public final class FV_WordExportCSVColumns
+public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
 {
-
-    public  HashMap<String, ColumnRecord > columnRecordHashMap;
-
-    public final class ColumnRecord
-    {
-        public String      colID;          // column label as received from UI to identify property
-        public String      property;       // property string to retrieve value
-        public Boolean     useForExport;   // set to true if it is ready to be used for export
-        public Integer     numCols;        // max number of columns we want to allow in csv
-        public Class       requiredPropertyReader;
-
-        ColumnRecord( String cID, String prop, Boolean ufe, Integer nc, Class rpr )
-        {
-            colID = cID;
-            property = prop;
-            useForExport = ufe;
-            numCols = nc;
-            requiredPropertyReader = rpr;
-        }
-    }
-
     public FV_WordExportCSVColumns()
     {
-        columnRecordHashMap = new HashMap<>();
+        super();
 
-        columnRecordHashMap.put( TITLE,                         new ColumnRecord( WORD_VALUE,                      FVExportWordProperties.TITLE, true, 1, FV_PropertyReader.class ) );
-        columnRecordHashMap.put( DOMINANT_LANGUAGE,             new ColumnRecord( DOMINANT_LANGUAGE,               FVExportWordProperties.LANGUAGE, true, 1, FV_PropertyReader.class) );
+        //                       IDENTIFIER from UI                                     COLUMN NAME                      PROPERTY
+        columnRecordHashMap.put( TITLE,                         new ExportColumnRecord( WORD_VALUE,                      FVExportProperties.TITLE, true, 1,              FV_PropertyReader.class, null ) );
+        columnRecordHashMap.put( DOMINANT_LANGUAGE,             new ExportColumnRecord( DOMINANT_LANGUAGE,               FVExportProperties.LANGUAGE, true, 1,           FV_PropertyReader.class, null) );
 
-        columnRecordHashMap.put( PART_OF_SPEECH_ID,             new ColumnRecord( PART_OF_SPEECH,                  FVExportWordProperties.PART_OF_SPEECH_ID, true, 1 , FV_PartOfSpeechPropertyReader.class ) );
-        columnRecordHashMap.put( CULTURAL_NOTE,                 new ColumnRecord( CULTURAL_NOTE,                   FVExportWordProperties.CULTURAL_NOTE, true, 6,      FV_SimpleListPropertyReader.class ) );
-        columnRecordHashMap.put( PHONETIC_INFO,                 new ColumnRecord( PHONETIC_INFO,                   FVExportWordProperties.PHONETIC_INFO ,true, 1,      FV_PropertyReader.class ) );
-        columnRecordHashMap.put( ASSIGNED_USR_ID,               new ColumnRecord( ASSIGNED_USR_ID,                 FVExportWordProperties.ASSIGNED_USR_ID, true, 1,    FV_PropertyReader.class ) );
-        columnRecordHashMap.put( CHANGE_DTTM,                   new ColumnRecord( CHANGE_DTTM,                     FVExportWordProperties.CHANGE_DTTM, true, 1,        FV_PropertyReader.class ) );
-        columnRecordHashMap.put( DOMINANT_LANGUAGE_WORD_VALUE,  new ColumnRecord( DOMINANT_LANGUAGE_WORD_VALUE,    FVExportWordProperties.TRANSLATION, true, 6,        FV_WordTranslationReader.class ) );
-        columnRecordHashMap.put( DOMINANT_LANGUAGE_DEFINITION,  new ColumnRecord( DOMINANT_LANGUAGE_DEFINITION,    FVExportWordProperties.DEFINITION, true, 6,         FV_WordTranslationReader.class ) );
-        columnRecordHashMap.put( AVAILABLE_IN_GAMES,            new ColumnRecord( AVAILABLE_IN_GAMES,              FVExportWordProperties.AVAILABLE_IN_GAMES, true, 1, FV_BooleanPropertyReader.class ) );
-        columnRecordHashMap.put( AVAILABLE_IN_CHILDRENS_ARCHIVE, new ColumnRecord( AVAILABLE_IN_CHILDRENS_ARCHIVE, FVExportWordProperties.AVAILABLE_IN_CHILDRENS_ARCHIVE, true, 1, FV_BooleanPropertyReader.class ) );
-        columnRecordHashMap.put( REFERENCE,                     new ColumnRecord( REFERENCE,                       FVExportWordProperties.REFERENCE, true, 1,          FV_PropertyReader.class) );
-        columnRecordHashMap.put( CATEGORIES,                    new ColumnRecord( CATEGORIES,                      FVExportWordProperties.WORD_CATEGORIES, true,1 ,    FV_CategoryPropertReader.class ) );
-        columnRecordHashMap.put( CHILD_FOCUSED,                 new ColumnRecord( CHILD_FOCUSED,                   FVExportWordProperties.CHILD_FOCUSED, true, 1,      FV_BooleanPropertyReader.class ) );
+        columnRecordHashMap.put( PART_OF_SPEECH_ID,             new ExportColumnRecord( PART_OF_SPEECH,                  FVExportProperties.PART_OF_SPEECH_ID, true, 1 , FV_PartOfSpeechPropertyReader.class, null ) );
+        columnRecordHashMap.put( CULTURAL_NOTE,                 new ExportColumnRecord( CULTURAL_NOTE,                   FVExportProperties.CULTURAL_NOTE, true, 6,      FV_SimpleListPropertyReader.class, null ) );
+        columnRecordHashMap.put( PHONETIC_INFO,                 new ExportColumnRecord( PHONETIC_INFO,                   FVExportProperties.PHONETIC_INFO ,true, 1,      FV_PropertyReader.class, null ) );
+        columnRecordHashMap.put( ASSIGNED_USR_ID,               new ExportColumnRecord( ASSIGNED_USR_ID,                 FVExportProperties.ASSIGNED_USR_ID, true, 1,    FV_PropertyReader.class, null ) );
+        columnRecordHashMap.put( CHANGE_DTTM,                   new ExportColumnRecord( CHANGE_DTTM,                     FVExportProperties.CHANGE_DTTM, true, 1,        FV_PropertyReader.class, null ) );
+        columnRecordHashMap.put( LITERAL_TRANSLATION,           new ExportColumnRecord( LITERAL_TRANSLATION,             FVExportProperties.TRANSLATION, true, 6,        FV_WordTranslationReader.class, null ) );
+        columnRecordHashMap.put( DOMINANT_LANGUAGE_DEFINITION,  new ExportColumnRecord( DOMINANT_LANGUAGE_DEFINITION,    FVExportProperties.DEFINITION, true, 6,         FV_WordTranslationReader.class, null ) );
+        columnRecordHashMap.put( AVAILABLE_IN_GAMES,            new ExportColumnRecord( AVAILABLE_IN_GAMES,              FVExportProperties.AVAILABLE_IN_GAMES, true, 1, FV_BooleanPropertyReader.class, null ) );
+        columnRecordHashMap.put( AVAILABLE_IN_CHILDRENS_ARCHIVE, new ExportColumnRecord( AVAILABLE_IN_CHILDRENS_ARCHIVE, FVExportProperties.AVAILABLE_IN_CHILDRENS_ARCHIVE, true, 1, FV_BooleanPropertyReader.class, null ) );
+        columnRecordHashMap.put( REFERENCE,                     new ExportColumnRecord( REFERENCE,                       FVExportProperties.REFERENCE, true, 1,          FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( CATEGORIES,                    new ExportColumnRecord( CATEGORIES,                      FVExportProperties.WORD_CATEGORIES, true,1 ,    FV_CategoryPropertyReader.class, null ) );
+        columnRecordHashMap.put( CHILD_FOCUSED,                 new ExportColumnRecord( CHILD_FOCUSED,                   FVExportProperties.CHILD_FOCUSED, true, 1,      FV_BooleanPropertyReader.class, null ) );
 
-        columnRecordHashMap.put( DOMINANT_LANGUAGE_SENTENCE,    new ColumnRecord( PHRASE_COLUMN,                   FVExportWordProperties.RELATED_PHRASES, true, 6,    FV_CategoryPropertReader.class ) );
+        columnRecordHashMap.put( REALTED_PHRASE,                new ExportColumnRecord( PHRASE_COLUMN,                   FVExportProperties.RELATED_PHRASES, true, 6,    FV_CategoryPropertyReader.class, null ) );
 
-        columnRecordHashMap.put( WORD_STATUS,                   new ColumnRecord( WORD_STATUS,                     FVExportWordProperties.STATUS_ID, true, 1,          FV_PropertyReader.class ) );
-        columnRecordHashMap.put( CONTRIBUTOR,                   new ColumnRecord( CONTRIBUTOR,                     FVExportWordProperties.CONTRIBUTORS, true, 1,       FV_SimpleListPropertyReader.class ) );
-        columnRecordHashMap.put( SOURCE,                        new ColumnRecord( SOURCE,                          FVExportWordProperties.MEDIA_SOURCE, true, 1,      null) );
+        columnRecordHashMap.put( WORD_STATUS,                   new ExportColumnRecord( WORD_STATUS,                     FVExportProperties.STATUS_ID, true, 1,          FV_PropertyReader.class, null ) );
+        columnRecordHashMap.put( CONTRIBUTOR,                   new ExportColumnRecord( CONTRIBUTOR,                     FVExportProperties.CONTRIBUTORS, true, 1,       FV_SimpleListPropertyReader.class, null ) );
 
-        columnRecordHashMap.put( STATUS,                        new ColumnRecord( STATUS,                          MEDIA_STATUS, false, 1,      null) );
-        columnRecordHashMap.put( RECORDER,                      new ColumnRecord( RECORDER,                        MEDIA_RECORDER, false, 1,    null) );
-        columnRecordHashMap.put( CONTRIBUTER,                   new ColumnRecord( CONTRIBUTER,                     CONTRIBUTER, false, 1,       null) );
+        // COMPOUND READERS
+        columnRecordHashMap.put( IMAGE,                         new ExportColumnRecord( IMAGE,                           FVExportProperties.IMAGE_COMPUND, false, 0,      FV_CompoundPropertyReader.class, FVExportProperties.imgCompoundMap ) );
+        columnRecordHashMap.put( AUDIO,                         new ExportColumnRecord( AUDIO,                           FVExportProperties.AUDIO_COMPUND, false, 0,      FV_CompoundPropertyReader.class, FVExportProperties.audioCompoundMap ) );
+        columnRecordHashMap.put( VIDEO,                         new ExportColumnRecord( VIDEO,                           FVExportProperties.VIDEO_COMPUND, false, 0,      FV_CompoundPropertyReader.class, FVExportProperties.videoCompoundMap ) );
+
+        // AUDIO COMPUND
+        columnRecordHashMap.put( AUDIO_TITLE,                   new ExportColumnRecord( AUDIO_TITLE,                     FVExportProperties.TITLE, false, 1,                FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_FILENAME,                new ExportColumnRecord( AUDIO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 1,                FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( AUDIO_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,    FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_SOURCE,                  new ExportColumnRecord( AUDIO_SOURCE,                    FVExportProperties.MEDIA_SOURCE, false, 2,         FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_CHILD_FOCUSED,           new ExportColumnRecord( AUDIO_CHILD_FOCUSED,             FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,  FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_RECORDER,                new ExportColumnRecord( AUDIO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
 
 
-        columnRecordHashMap.put( PART_OF_SPEECH,                new ColumnRecord( PART_OF_SPEECH_ID,               "?", false, 0, null) );
-        columnRecordHashMap.put( WORD_ID,                       new ColumnRecord( WORD_ID,                         "?", false, 0, null) );
-        columnRecordHashMap.put( CATEGORY_ID,                   new ColumnRecord( CATEGORY_ID,                     "?", false, 0, null) );
-        columnRecordHashMap.put( ID,                            new ColumnRecord( ID,                              "?", false, 0, null) );
-        columnRecordHashMap.put( FILENAME,                      new ColumnRecord( FILENAME,                        "?", false, 0, null) );
-        columnRecordHashMap.put( DESCR,                         new ColumnRecord( DESCR,                           "?", false, 0, null) );
-        columnRecordHashMap.put( SHARED,                        new ColumnRecord( SHARED,                          "?", false, 0, null) );
-        columnRecordHashMap.put( USER_ID,                       new ColumnRecord( USER_ID,                         "?", false, 0, null) );
-        columnRecordHashMap.put( CODE,                          new ColumnRecord( CODE,                            "?", false, 0, null) );
-        columnRecordHashMap.put( USERNAME,                      new ColumnRecord( USERNAME,                        "?", false, 0, null) );
-        columnRecordHashMap.put( PHRASE,                        new ColumnRecord( PHRASE,                          "?", false, 0, null) );
-        columnRecordHashMap.put( PHRASE_ID,                     new ColumnRecord( PHRASE_ID,                       "?", false, 0, null) );
-        columnRecordHashMap.put( PHRASE_STATUS,                 new ColumnRecord( PHRASE_STATUS,                   "?", false, 0, null) );
-        columnRecordHashMap.put( DOMINANT_LANGUAGE_PHRASE,      new ColumnRecord( DOMINANT_LANGUAGE_PHRASE,        "?", false, 0, null) );
-    }
+        // IMAGE COMPUND
+        columnRecordHashMap.put( IMG_TITLE,                   new ExportColumnRecord( IMG_TITLE,                        FVExportProperties.TITLE, false, 1,                 FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_FILENAME,                new ExportColumnRecord( IMG_FILENAME,                     FVExportProperties.MEDIA_FILENAME, false, 1,        FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_DESCRIPTION,             new ExportColumnRecord( IMG_DESCRIPTION,                  FVExportProperties.DESCR, false, 1,                 FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( IMG_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,        FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_SOURCE,                  new ExportColumnRecord( IMG_SOURCE,                       FVExportProperties.MEDIA_SOURCE, false, 2,          FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_CHILD_FOCUSED,           new ExportColumnRecord( IMG_CHILD_FOCUSED,                FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,   FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_RECORDER,                new ExportColumnRecord( IMG_RECORDER,                     FVExportProperties.MEDIA_RECORDER, false, 2,        FV_SimpleListPropertyReader.class, null) );
+
+        // VIDEO COMPUND
+        columnRecordHashMap.put( VIDEO_TITLE,                   new ExportColumnRecord( VIDEO_TITLE,                     FVExportProperties.TITLE, false, 1,                FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_FILENAME,                new ExportColumnRecord( VIDEO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 0,                FV_PropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( VIDEO_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,    FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_SOURCE,                  new ExportColumnRecord( VIDEO_SOURCE,                    FVExportProperties.MEDIA_SOURCE, false, 2,         FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_CHILD_FOCUSED,           new ExportColumnRecord( VIDEO_CHILD_FOCUSED,             FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,  FV_BooleanPropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_RECORDER,                new ExportColumnRecord( VIDEO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
+
+        // not done
+        columnRecordHashMap.put( RECORDER,                      new ExportColumnRecord( RECORDER,                        FVExportProperties.MEDIA_RECORDER, false, 1,    null, null) );
+        columnRecordHashMap.put( CONTRIBUTER,                   new ExportColumnRecord( CONTRIBUTER,                    "?", false, 1,       null, null) );
+        columnRecordHashMap.put( PHRASE_BOOKS_C,                new ExportColumnRecord( PHRASE_BOOKS_C,                  FVExportProperties.PHRASE_BOOKS, false, 1, null, null) );
+        columnRecordHashMap.put( PART_OF_SPEECH,                new ExportColumnRecord( PART_OF_SPEECH_ID,               "?", false, 0, null, null) );
+        columnRecordHashMap.put( WORD_ID,                       new ExportColumnRecord( WORD_ID,                         "?", false, 0, null, null) );
+        columnRecordHashMap.put( CATEGORY_ID,                   new ExportColumnRecord( CATEGORY_ID,                     "?", false, 0, null, null) );
+        columnRecordHashMap.put( ID,                            new ExportColumnRecord( ID,                              "?", false, 0, null, null) );
+        columnRecordHashMap.put( FILENAME,                      new ExportColumnRecord( FILENAME,                        "?", false, 0, null, null) );
+        columnRecordHashMap.put( DESCR,                         new ExportColumnRecord( DESCR,                           "?", false, 0, null, null) );
+        columnRecordHashMap.put( SHARED,                        new ExportColumnRecord( SHARED,                          "?", false, 0, null, null) );
+        columnRecordHashMap.put( USER_ID,                       new ExportColumnRecord( USER_ID,                         "?", false, 0, null, null) );
+        columnRecordHashMap.put( CODE,                          new ExportColumnRecord( CODE,                            "?", false, 0, null, null) );
+        columnRecordHashMap.put( USERNAME,                      new ExportColumnRecord( USERNAME,                        "?", false, 0, null, null) );
+     }
 }

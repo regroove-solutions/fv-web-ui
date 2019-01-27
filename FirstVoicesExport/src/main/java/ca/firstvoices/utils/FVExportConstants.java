@@ -1,15 +1,17 @@
 package ca.firstvoices.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
+import java.util.AbstractMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class FVExportConstants
 {
     // Events sent to trigger start of export worker
-    public static final String PRODUCE_FORMATTED_DOCUMENT = "produceFormattedDocument";
-    public static final String FINISH_EXPORT_BY_WRAPPING_BLOB = "produceWrappedBlob";
-    public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT = "autoProduceFormattedDocument";
+    public static final String PRODUCE_FORMATTED_DOCUMENT           = "produceFormattedDocument";
+    public static final String FINISH_EXPORT_BY_WRAPPING_BLOB       = "produceWrappedBlob";
+    public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT      = "autoProduceFormattedDocument";
 
     // Parameters passed in Export trigger events
     public static final String DIALECT_RESOURCES_NAME           = "Resources";
@@ -27,6 +29,8 @@ public final class FVExportConstants
     public static final String WORDS_TO_EXPORT                  = "WORDS_TO_EXPORT";
     public static final String PHRASES_TO_EXPORT                = "PHRASES_TO_EXPORT";
     public static final String EXPORT_WORK_INFO                 = "EXPORT_WORK_INFO";
+
+
 
     // CSV Columns to be placed in exported document
     public final class ExportCSVLabels
@@ -47,9 +51,10 @@ public final class FVExportConstants
         public static final String AVAILABLE_IN_GAMES               = "INCLUDE_IN_GAMES";
         public static final String CHILD_FOCUSED                    = "CHILD_FOCUSED";
         public static final String DOMINANT_LANGUAGE_DEFINITION     = "DEFINITION";
-        public static final String DOMINANT_LANGUAGE_WORD_VALUE     = "LITERAL_TRANSLATION";
-        public static final String DOMINANT_LANGUAGE_SENTENCE       = "RELATED_PHRASE_LITERAL_TRANSLATION";
-        public static final String DOMINANT_LANGUAGE_SENTENCE_DEFINITION = "RELATED_PHRASE_DEFINITION";
+        public static final String LITERAL_TRANSLATION              = "LITERAL_TRANSLATION";
+        public static final String REALTED_PHRASE                   = "REALTED_PHRASE";
+        public static final String RELATED_PHRASE_LITERAL_TRANSLATION = "RELATED_PHRASE_LITERAL_TRANSLATION";
+        public static final String RELATED_PHRASE_DEFINITION        = "RELATED_PHRASE_DEFINITION";
         public static final String CATEGORY_ID                      = "CATEGORY_ID";
         public static final String CATEGORY_NAME                    = "CATEGORY_NAME";
         public static final String CATEGORIES                       = "CATEGORIES";
@@ -66,10 +71,48 @@ public final class FVExportConstants
         public static final String TITLE                            = "TITLE";
         public static final String CODE                             = "CODE";
         public static final String USERNAME                         = "USERNAME";
+        public static final String DESCRIPTION                      = "DESCRIPTION";
+        public static final String AUDIO                            = "AUDIO";                      // compound descriptor
+        public static final String AUDIO_TITLE                      = "AUDIO_TITLE";
+        public static final String AUDIO_FILENAME                   = "AUDIO_FILENAME";
+        public static final String AUDIO_DESCRIPTION                = "AUDIO_DESCRIPTION";
+        public static final String AUDIO_SHARED_WITH_OTHER_DIALECTS = "AUDIO_SHARED_WITH_OTHER_DIALECTS";
+        public static final String AUDIO_SOURCE                     = "AUDIO_SOURCE";
+        public static final String AUDIO_RECORDER                   = "AUDIO_RECORDER";
+        public static final String AUDIO_CHILD_FOCUSED              = "AUDIO_CHILD_FOCUSED";
+        public static final String IMAGE                            = "IMAGE";                      // compound descriptor
+        public static final String IMG_TITLE                        = "IMG_TITLE";
+        public static final String IMG_FILENAME                     = "IMG_FILENAME";
+        public static final String IMG_DESCRIPTION                  = "IMG_DESCRIPTION";
+        public static final String IMG_SHARED_WITH_OTHER_DIALECTS   = "IMG_SHARED_WITH_OTHER_DIALECTS";
+        public static final String IMG_SOURCE                       = "IMG_SOURCE";
+        public static final String IMG_RECORDER                     = "IMG_RECORDER";
+        public static final String IMG_CHILD_FOCUSED                = "IMG_CHILD_FOCUSED";
+        public static final String VIDEO                            = "VIDEO";                       // compound descriptor
+        public static final String VIDEO_TITLE                      = "VIDEO_TITLE";
+        public static final String VIDEO_FILENAME                   = "VIDEO_FILENAME";
+        public static final String VIDEO_DESCRIPTION                = "VIDEO_DESCRIPTION";
+        public static final String VIDEO_SHARED_WITH_OTHER_DIALECTS = "VIDEO_SHARED_WITH_OTHER_DIALECTS";
+        public static final String VIDEO_SOURCE                     = "VIDEO_SOURCE";
+        public static final String VIDEO_RECORDER                   = "VIDEO_RECORDER";
+        public static final String VIDEO_CHILD_FOCUSED              = "VIDEO_CHILD_FOCUSED";
+
+
+
+        // public static final String
+
 
         public static final String PHRASE                           = "PHRASE";
         public static final String PHRASE_ID                        = "PHRASE_ID";
         public static final String PHRASE_STATUS                    = "PHRASE_STATUS";
-        public static final String DOMINANT_LANGUAGE_PHRASE         = "DOMINANT_LANGUAGE_PHRASE";
+        public static final String DOMINANT_LANGUAGE_PHRASE_C       = "DOMINANT_LANGUAGE_PHRASE";
+        public static final String LAST_CONTRIBUTOR_C               = "LAST_CONTRIBUTOR";
+        public static final String PHRASE_BOOKS_C                   = "PHRASE_BOOKS";
+
     }
+
+    public static final String[] imageCompund = { ExportCSVLabels.IMG_TITLE, ExportCSVLabels.IMG_FILENAME, ExportCSVLabels.IMG_DESCRIPTION, ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.IMG_SOURCE, ExportCSVLabels.IMG_RECORDER };
+    public static final String[] videoCompund = { ExportCSVLabels.VIDEO_TITLE, ExportCSVLabels.VIDEO_FILENAME, ExportCSVLabels.VIDEO_DESCRIPTION, ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.VIDEO_SOURCE, ExportCSVLabels.VIDEO_RECORDER};
+    public static final String[] audioCompund = { ExportCSVLabels.AUDIO_TITLE, ExportCSVLabels.AUDIO_FILENAME, ExportCSVLabels.AUDIO_DESCRIPTION, ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.AUDIO_SOURCE, ExportCSVLabels.AUDIO_RECORDER };
+
 }
