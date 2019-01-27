@@ -19,14 +19,21 @@ public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
         Object prop = word.getPropertyValue(propertyToRead);
 
-        if( prop instanceof String )
+        if( prop != null )
         {
-            readValues.add(new FV_PropertyValueWithColumnName((String)prop, columnNameForOutput));
+            if (prop instanceof String)
+            {
+                readValues.add(new FV_PropertyValueWithColumnName((String) prop, columnNameForOutput));
+            } else
+            {
+                readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput));
+            }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput));
+            readValues.add(new FV_PropertyValueWithColumnName("*null*", columnNameForOutput) );
         }
+
         return readValues;
     }
 }
