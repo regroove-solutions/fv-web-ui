@@ -65,7 +65,7 @@ public class FVExportWorker extends FVAbstractExportWork
                 double originalSize = size;
                 int counter = 1;
 
-                workInfo.wrapper.setPropertyValue( "fvexport:progress",  "Exporting... " + size + " words.");
+                workInfo.setExportProgress( "Exporting... " + size + " words." );
 
                 while( !listToProcess.isEmpty() )
                 {
@@ -77,17 +77,33 @@ public class FVExportWorker extends FVAbstractExportWork
                         double currentSize = size;
                         double percent = round (100 * (1 - (currentSize / originalSize) ), 1);
 
-                        workInfo.wrapper.setPropertyValue( "fvexport:progress",  percent + "% done.");
+                        workInfo.setExportProgress( percent + "% done." );
                     }
 
                     DocumentLocation docLocation = (DocumentLocation) listToProcess.get( size - 1 );
                     listToProcess.remove( size -1 );
-                    DocumentModel word = session.getDocument( docLocation.getIdRef() );
 
-                    List<FV_PropertyValueWithColumnName> output = fileOutputProducer.readPropertiesWithReadersFrom( word );
+                    if( docLocation != null )
+                    {
+                        DocumentModel doc = session.getDocument( docLocation.getIdRef() );
 
-                    fileOutputProducer.writeRowData( output );
-                    counter++;
+                        if (doc != null)
+                        {
+                            List<FV_PropertyValueWithColumnName> output = fileOutputProducer.readPropertiesWithReadersFrom(doc);
+
+                            assert (output != null) : "Null output from producer";
+
+                            if (output != null)
+                            {
+                                fileOutputProducer.writeRowData(output);
+                                counter++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        log.warn("NUll docLocation in FVExportWorker.");
+                    }
                 }
 
                 fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
@@ -98,6 +114,7 @@ public class FVExportWorker extends FVAbstractExportWork
         catch (Exception e)
         {
             log.warn(e);
+            e.printStackTrace();
         }
     }
 }
