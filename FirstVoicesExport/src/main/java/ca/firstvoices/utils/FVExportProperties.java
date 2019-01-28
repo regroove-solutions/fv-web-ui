@@ -42,14 +42,14 @@ public class FVExportProperties
 
 
     // FV:
-    public static final String TRANSLATION =                    "fv:literal_translation";
-    public static final String CULTURAL_NOTE =                  "fv:cultural_note";
+    public static final String TRANSLATION =                    "fv:literal_translation";               // complex, FV_WordTranslationReader
+    public static final String CULTURAL_NOTE =                  "fv:cultural_note";                     // String[]
     public static final String PART_OF_SPEECH_ID =              "fv-word:part_of_speech";
-    public static final String PHONETIC_INFO =                  "fv-word:pronunciation";
+    public static final String PHONETIC_INFO =                  "fv-word:pronunciation";                // String
     public static final String REFERENCE =                      "fv:reference";
-    public static final String AVAILABLE_IN_CHILDRENS_ARCHIVE = "fv:available_in_childrens_archive";
-    public static final String AVAILABLE_IN_GAMES =             "fv-word:available_in_games";
-    public static final String CHILD_FOCUSED =                  "fv:child_focused";
+    public static final String AVAILABLE_IN_CHILDRENS_ARCHIVE = "fv:available_in_childrens_archive";    // Boolean
+    public static final String AVAILABLE_IN_GAMES =             "fv-word:available_in_games";           // Boolean
+    public static final String CHILD_FOCUSED =                  "fv:child_focused";                     // Boolean
     public static final String DEFINITION =                     "fv:definitions";
     public static final String RELATED_PHRASES =                "fv-word:related_phrases";
     public static final String WORD_CATEGORIES =                "fv-word:categories";
@@ -67,12 +67,12 @@ public class FVExportProperties
     public static final String CHANGE_DTTM =        "fvl:change_date";
 
     // FVM:
-    public static final String MEDIA_SHARED =           "fvm:shared"; // Boolean
-    public static final String MEDIA_RECORDER =         "fvm:recorder"; // String[]
-    public static final String MEDIA_SOURCE =           "fvm:source"; // String[],
-    public static final String MEDIA_CHILD_FOCUSED =    "fvm:child_focused"; // Boolean
-    public static final String MEDIA_ORIGIN =           "fvm:origin"; // String
-    public static final String MEDIA_FILENAME =         "file:filename"; // String
+    public static final String MEDIA_SHARED =           "fvm:shared";           // Boolean
+    public static final String MEDIA_RECORDER =         "fvm:recorder";         // String[]
+    public static final String MEDIA_SOURCE =           "fvm:source";           // String[]
+    public static final String MEDIA_CHILD_FOCUSED =    "fvm:child_focused";    // Boolean
+    public static final String MEDIA_ORIGIN =           "fvm:origin";           // String
+    public static final String MEDIA_FILENAME =         "file:filename";        // String
 
 
     public static final String IMAGE_COMPUND =          "fv:related_pictures";

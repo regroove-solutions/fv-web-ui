@@ -10,6 +10,44 @@ import static ca.firstvoices.utils.FVExportConstants.ExportCSVLabels.*;
 // headers for CSV file
 public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
 {
+    /*
+        WARNING: Unless you really understand what you are doing please do not change anything here.
+
+        FV_WordExportCSVColumns and corresponding FV_PhraseExportCSVColumns are THE MAIN binding between request for
+        export, column names in export file, db properties which need to be read and data readers to do that.
+
+        Key labeled 'IDENTIFIER from UI' is provided from front-end and serves as a selector of the records to initiate
+        CSV or PDF exports.
+        FVSupportedExportColumns endpoint returns all valid keys ('IDENTIFIER from UI') for FVWord and FVPhrase exports.
+
+        ExportColumnRecord class binds export 'COLUMN NAME', name written to an export file as a column header,
+        to database object property defined in 'PROPERTY' and which will be read during export.
+        'READER TO CREATE' is a class which will be created to read 'PROPERTY'. Each reader class encapsulates
+        information about property type and what needs to be done to properly produce it during export.
+
+        Additional attributes which have to be populated (but are not labeled with column description).
+        'ufe:" - stands for 'use-for-export' is either true or false and determines if ExportColumnRecord can be used
+                 in requested export. If true 'IDENTIFIER from UI' will be returned in FVSupportedExportColumns response
+                 and property reader to be used to export property.
+        'nc:'  - stand for 'number-columns' and defines number of columns to be created for a specific property.
+                 Some properties will have multiple columns but only one name 'COLUMN NAME' to define the output.
+                 In such a case, when 'nc:' > 1, export will generate additional column headers by appending a number
+                 to declared column name.
+        'c:'   - stands for 'compound' and provides input for compound properties which can generate multiple rows,
+                 for each column. Compounds are defined as FV_PropertyValueWithColumnName[]. This class is used
+                 universally to bind 2 entities together. Compounds are defined in FVExportProperties and apply to
+                 properties describing media type properties with multiple attributes.
+                 Compunds do need to have 'nc:' defined as they are deduced from other factors.
+                 NOTE: there are records below which are labeled as 'AUDIO COMPOUND', 'IMAGE COMPOUND', 'VIDEO COMPOUND'
+                 which should always have 'ufe:' set to false as they cannot read properties without being a part of compound.
+                 Label 'not done' designed property readers which are not completed yet.
+
+
+        NOTE: the same format is followed in defining mapping in FV_PhraseExportCSVColumns to support export
+              of phrases.
+    */
+
+
     public FV_WordExportCSVColumns()
     {
         super();

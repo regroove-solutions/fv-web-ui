@@ -5,6 +5,22 @@ import ca.firstvoices.property_readers.*;
 import static ca.firstvoices.utils.FVExportConstants.ExportCSVLabels.*;
 import static ca.firstvoices.utils.FVExportConstants.ExportCSVLabels.CULTURAL_NOTE;
 
+
+
+
+/*
+
+        WARNING: Unless you really understand what you are doing please do not change anything here.
+
+
+
+
+        Read full description provided in FV_WORDExportCSVColumns before any attempt to change settings in this setup.
+
+ */
+
+
+
 public class FV_PhraseExportCSVColumns extends FV_CSVExportColumns
 {
     public FV_PhraseExportCSVColumns()
