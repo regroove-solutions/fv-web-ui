@@ -70,7 +70,14 @@ public class FVGenerateDocumentWithFormat
         try
         {
             FVExportWorkInfo workInfo = new FVExportWorkInfo();
+
             workInfo.workDuration = System.currentTimeMillis();;
+            workInfo.columns = columns;
+            workInfo.dialectGUID = input.getId();
+            workInfo.dialectName = input.getName();
+            workInfo.exportFormat = format;
+            workInfo.initiatorName = session.getPrincipal().getName();
+            workInfo.exportElement = exportElement;
 
             GeneratedQueryArguments workParams = getDocumentIDs( "*", input );
 
@@ -81,18 +88,12 @@ public class FVGenerateDocumentWithFormat
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext export_ctx =  new DocumentEventContext( session, session.getPrincipal(), input );
 
-                workInfo.columns = columns;
-                workInfo.dialectGUID = input.getId();
                 workInfo.resourcesFolderGUID = resourceFolder.getId();
-                workInfo.dialectName = input.getName();
-                workInfo.exportFormat = format;
-                workInfo.exportQuery = workParams.actualQuery;
-                workInfo.initiatorName = session.getPrincipal().getName();
-                workInfo.workDigest = FVExportUtils.makePrincipalWorkDigest(session.getPrincipal());
                 workInfo.exportDigest = FVExportUtils.makeExportDigest( session.getPrincipal(), workParams.actualQuery, columns );
-                workInfo.fileName = workInfo.getWrapperName();
-                workInfo.exportElement = exportElement;
+                workInfo.workDigest = FVExportUtils.makePrincipalWorkDigest(session.getPrincipal());
+                workInfo.exportQuery = workParams.actualQuery;
                 workInfo.originalWorkloadSize = workParams.docsToProcess.size();
+                workInfo.fileName = workInfo.getWrapperName();
 
                 // check if wrapper already exists
                 wrapper = findWrapper( session, workInfo );
@@ -118,7 +119,7 @@ public class FVGenerateDocumentWithFormat
                 session.save();
 
                 export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
-                export_ctx.setProperty( WORDS_TO_EXPORT, workParams.docsToProcess );
+                export_ctx.setProperty( DOCS_TO_EXPORT, workParams.docsToProcess );
                 Event event;
 
                 event = export_ctx.newEvent(PRODUCE_FORMATTED_DOCUMENT);
