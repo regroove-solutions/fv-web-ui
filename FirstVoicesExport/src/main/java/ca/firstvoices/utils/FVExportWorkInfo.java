@@ -36,7 +36,7 @@ public class FVExportWorkInfo implements Serializable
     public String getWrapperName()
     {
         if( exportDigest == null ) return null;
-        return "Export-" + exportDigest;
+        return "Export-" + exportElement + "-" + exportDigest;
     }
 
     public void setExportProgress( String progress )
