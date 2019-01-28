@@ -4,7 +4,9 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.io.Serializable;
-import java.util.List;
+
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_PROGRESS_STRING;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_PROGRESS_VALUE;
 
 public class FVExportWorkInfo implements Serializable
 {
@@ -42,6 +44,11 @@ public class FVExportWorkInfo implements Serializable
     public void setExportProgress( String progress )
     {
         if( wrapper == null ) return;
-        wrapper.setPropertyValue( "fvexport:progress",  progress);
+        wrapper.setPropertyValue( FVEXPORT_PROGRESS_STRING,  progress);
+    }
+
+    public void setExportProgressValue( double progress )
+    {
+        wrapper.setPropertyValue( FVEXPORT_PROGRESS_VALUE,  progress);
     }
 }
