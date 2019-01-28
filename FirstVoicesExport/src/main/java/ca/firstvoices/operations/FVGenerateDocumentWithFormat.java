@@ -45,11 +45,11 @@ public class FVGenerateDocumentWithFormat
     @Param( name = "columns" )
     protected StringList columns;
 
-    @Param( name = "format", values = {"CSV", "PDF"} )
-    protected String format = "CSV";
+    @Param( name = "format", values = {CSV_FORMAT, PDF_FORMAT} )
+    protected String format = CSV_FORMAT;
 
-    @Param( name = "exportElement", values = {"WORD", "PHRASE"} )
-    protected String exportElement = "WORD";
+    @Param( name = "exportElement", values = {FVWORD, FVPHRASE} )
+    protected String exportElement = FVWORD;
 
 
     protected AutomationService automation = Framework.getService(AutomationService.class);
@@ -104,7 +104,7 @@ public class FVGenerateDocumentWithFormat
                 }
 
                 String pathToNewDocument = getPathToChildInDialect(session, session.getDocument(new IdRef(workInfo.dialectGUID)), DIALECT_RESOURCES_TYPE );
-                wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, "FVExport" );
+                wrapper = session.createDocumentModel( pathToNewDocument, workInfo.fileName, FVEXPORT );
 
                 wrapper.setPropertyValue( "fvexport:dialect",       workInfo.dialectGUID );
                 wrapper.setPropertyValue( "fvexport:format",        workInfo.exportFormat );
@@ -154,7 +154,7 @@ public class FVGenerateDocumentWithFormat
         DocumentModel dictionary = FVExportUtils.findDialectChild( dialect, DIALECT_DICTIONARY_TYPE );
         String generatedQuery;
 
-        if( exportElement.equals("WORD") )
+        if( exportElement.equals(FVWORD) )
         {
             generatedQuery = "SELECT * FROM FVWord WHERE ecm:ancestorId = '" + dictionary.getId() + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
         }

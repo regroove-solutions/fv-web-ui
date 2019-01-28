@@ -8,26 +8,33 @@ import java.util.stream.Stream;
 
 public final class FVExportConstants
 {
-    // Events sent to trigger start of export worker
-    public static final String PRODUCE_FORMATTED_DOCUMENT           = "produceFormattedDocument";
-    public static final String FINISH_EXPORT_BY_WRAPPING_BLOB       = "produceWrappedBlob";
-    public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT      = "autoProduceFormattedDocument";
+    // support for FVSupportedExportColumns endpoint
+    public static final String FVWORD   = "FVWORD";
+    public static final String FVPHRASE = "FVPHRASE";
+
+    // Events sent to trigger start of export workers
+    public static final String PRODUCE_FORMATTED_DOCUMENT           = "produceFormattedDocument";       // start of worker by user action
+    public static final String FINISH_EXPORT_BY_WRAPPING_BLOB       = "produceWrappedBlob";             // trigger event for starting of export worker
+    public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT      = "autoProduceFormattedDocument";   // cron event to trigger cyclic worker
+
+    public static final String FVEXPORT                         = "FVExport";                           // export document type
+    public static final String DIALECT_RESOURCES_TYPE           = "FVResources";                        // Resource folder type
+    public static final String DIALECT_DICTIONARY_TYPE          = "FVDictionary";                       // Dictionary type
 
     // Parameters passed in Export trigger events
+
     public static final String DIALECT_RESOURCES_NAME           = "Resources";
-    public static final String DIALECT_RESOURCES_TYPE           = "FVResources";
-    public static final String DIALECT_DICTIONARY_TYPE          = "FVDictionary";
-    public static final String INHERITED_FROM_OTHER             = "INHERITED";
+     public static final String INHERITED_FROM_OTHER             = "INHERITED";                         // Cyclic worker param specification
     public static final String CSV_FORMAT                       = "CSV";
     public static final String PDF_FORMAT                       = "PDF";
-    public static final String CYCLIC_WORKER_ID                 = "cyclic-export-worker";
+    public static final String CYCLIC_WORKER_ID                 = "cyclic-export-worker";               // id for cyclic worker
     public static final String CYCLIC_WORKER_QUEUE_ID           = "cyclicExportWorker";
     public static final String CYCLIC_EXPORT_WORKER_CATEGORY    = CYCLIC_WORKER_QUEUE_ID;
-    public static final String ON_DEMAND_WORKER_QUEUE_ID        = "demandExportWorker";
-    public static final String BLOB_WORKER                      = "blob_Worker";
-    public static final String ON_DEMAND_WORKER_CATEGORY        = ON_DEMAND_WORKER_QUEUE_ID;
-    public static final String DOCS_TO_EXPORT                   = "DOCS_TO_EXPORT";
-    public static final String EXPORT_WORK_INFO                 = "EXPORT_WORK_INFO";
+    public static final String ON_DEMAND_WORKER_QUEUE_ID        = "demandExportWorker";                 // queue id for user triggered worker
+    public static final String BLOB_WORKER                      = "blob_Worker";                        // listener triggered completion worker
+    public static final String ON_DEMAND_WORKER_CATEGORY        = ON_DEMAND_WORKER_QUEUE_ID;            // queue ID for user triggered worker
+    public static final String DOCS_TO_EXPORT                   = "DOCS_TO_EXPORT";                     // context property key to pass IDs of docs to process
+    public static final String EXPORT_WORK_INFO                 = "EXPORT_WORK_INFO";                   // workInfo record key to pass in context
 
 
 
@@ -110,8 +117,8 @@ public final class FVExportConstants
 
     }
 
-    public static final String[] imageCompund = { ExportCSVLabels.IMG_TITLE, ExportCSVLabels.IMG_FILENAME, ExportCSVLabels.IMG_DESCRIPTION, ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.IMG_SOURCE, ExportCSVLabels.IMG_RECORDER };
-    public static final String[] videoCompund = { ExportCSVLabels.VIDEO_TITLE, ExportCSVLabels.VIDEO_FILENAME, ExportCSVLabels.VIDEO_DESCRIPTION, ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.VIDEO_SOURCE, ExportCSVLabels.VIDEO_RECORDER};
-    public static final String[] audioCompund = { ExportCSVLabels.AUDIO_TITLE, ExportCSVLabels.AUDIO_FILENAME, ExportCSVLabels.AUDIO_DESCRIPTION, ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.AUDIO_SOURCE, ExportCSVLabels.AUDIO_RECORDER };
+//    public static final String[] imageCompund = { ExportCSVLabels.IMG_TITLE, ExportCSVLabels.IMG_FILENAME, ExportCSVLabels.IMG_DESCRIPTION, ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.IMG_SOURCE, ExportCSVLabels.IMG_RECORDER };
+//    public static final String[] videoCompund = { ExportCSVLabels.VIDEO_TITLE, ExportCSVLabels.VIDEO_FILENAME, ExportCSVLabels.VIDEO_DESCRIPTION, ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.VIDEO_SOURCE, ExportCSVLabels.VIDEO_RECORDER};
+//    public static final String[] audioCompund = { ExportCSVLabels.AUDIO_TITLE, ExportCSVLabels.AUDIO_FILENAME, ExportCSVLabels.AUDIO_DESCRIPTION, ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS, ExportCSVLabels.AUDIO_SOURCE, ExportCSVLabels.AUDIO_RECORDER };
 
 }

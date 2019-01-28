@@ -12,6 +12,7 @@ import org.nuxeo.runtime.api.Framework;
 import javax.security.auth.login.LoginContext;
 import java.util.List;
 
+import static ca.firstvoices.utils.FVExportConstants.FVWORD;
 import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
 
 /*
@@ -48,7 +49,7 @@ public class FVExportWorker extends FVAbstractExportWork
 
                 FV_AbstractProducer fileOutputProducer;
 
-                if( workInfo.exportElement.equals("WORD") )
+                if( workInfo.exportElement.equals(FVWORD) )
                 {
                     fileOutputProducer = new FV_WordCSVProducer( session, workInfo.fileName, workInfo.columns);
                 }

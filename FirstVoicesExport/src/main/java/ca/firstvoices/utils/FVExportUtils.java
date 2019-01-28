@@ -65,7 +65,7 @@ public class FVExportUtils
 
     public static String makeExportWorkerID( FVExportWorkInfo info )
     {
-        return info.initiatorName + "-" + info.dialectGUID + "-" + info.exportElement + "-" + info.exportFormat;
+        return info.initiatorName + "-" + info.dialectGUID + "-" + info.exportFormat;
     }
 
     // TODO: need to find how this is handled in the production
