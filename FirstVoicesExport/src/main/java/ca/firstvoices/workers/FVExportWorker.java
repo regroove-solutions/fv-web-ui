@@ -50,14 +50,12 @@ public class FVExportWorker extends FVAbstractExportWork
 
                 if( workInfo.exportElement.equals("WORD") )
                 {
-                    fileOutputProducer = new FV_WordCSVProducer(workInfo.fileName, workInfo.columns);
+                    fileOutputProducer = new FV_WordCSVProducer( session, workInfo.fileName, workInfo.columns);
                 }
                 else
                 {
-                    fileOutputProducer = new FV_PhraseCSVProducer(workInfo.fileName, workInfo.columns);
+                    fileOutputProducer = new FV_PhraseCSVProducer( session, workInfo.fileName, workInfo.columns);
                 }
-
-                fileOutputProducer.session = session;
 
                 fileOutputProducer.writeColumnNames();
 
