@@ -81,7 +81,7 @@ public class FVExportListener implements EventListener
 
             work.setExportColumns( pc );
 
-            work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( WORDS_TO_EXPORT ) );
+            work.setDocuments("FV", (ArrayList<String>) ctx.getProperty( DOCS_TO_EXPORT ) );
         }
         else
         {
