@@ -5,6 +5,8 @@ import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
 import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.utils.FV_CSVExportColumns;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -24,17 +26,18 @@ import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
 
 abstract public class FV_AbstractProducer
 {
+    protected static final Log log = LogFactory.getLog(FV_AbstractProducer.class);
     protected List<FV_AbstractPropertyReader> propertyReaders;
     protected File outputFile;
     protected String originalFileName;
     protected FV_CSVExportColumns spec;
 
-    public CoreSession session;
+    protected CoreSession session;
 
-    FV_AbstractProducer( FV_CSVExportColumns spec )
+    FV_AbstractProducer( CoreSession session, FV_CSVExportColumns spec )
     {
-        propertyReaders = new ArrayList<>();
-        session = null;
+        this.propertyReaders = new ArrayList<>();
+        this.session = session;
         this.spec = spec;
     }
 
@@ -104,7 +107,7 @@ abstract public class FV_AbstractProducer
                 }
                 else
                 {
-                    // record wrong column
+                   // log.warn
                 }
             }
         }
@@ -161,25 +164,10 @@ abstract public class FV_AbstractProducer
 
         for( FV_AbstractPropertyReader reader : propertyReaders )
         {
-            Integer colCount = reader.expectedColumnCount();
+            StringList columnNames = reader.getColumnNameForOutput();
 
-            if( colCount > 1 )
-            {
-                String modColumnName = reader.getColumnNameForOutput();
-                Integer counter = 1;
-
-                for( Integer col = 0; col < colCount; col++ )
-                {
-                    output.add(modColumnName);
-                    modColumnName = reader.getColumnNameForOutput() + "_" + counter.toString();
-                    counter++;
-                }
-            }
-            else
-            {
-                output.add(reader.getColumnNameForOutput());
-            }
-        }
+            output.addAll(columnNames);
+         }
 
         return  output;
     }

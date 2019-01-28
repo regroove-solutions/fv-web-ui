@@ -2,9 +2,12 @@ package ca.firstvoices.format_producers;
 
 import ca.firstvoices.property_readers.FV_CompoundPropertyReader;
 import ca.firstvoices.property_readers.FV_PropertyReader;
+import ca.firstvoices.property_readers.FV_SimpleListPropertyReader;
+import ca.firstvoices.property_readers.FV_WordTranslationReader;
 import ca.firstvoices.utils.FVExportConstants;
 import ca.firstvoices.utils.FV_PhraseExportCSVColumns;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.CoreSession;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,9 +20,9 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
     protected FV_SimpleCSVWriter csvWriter;
 
-    public FV_PhraseCSVProducer(String fileName, StringList columns )
+    public FV_PhraseCSVProducer(CoreSession session, String fileName, StringList columns )
     {
-        super( new FV_PhraseExportCSVColumns() );
+        super( session, new FV_PhraseExportCSVColumns() );
 
         try
         {
@@ -69,14 +72,14 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
     protected void createDefaultPropertyReaders()
     {
-        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PHRASE ) ) );
-        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DESCR ) ) );
-        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION ) ) );
-        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE ) ) );
-        propertyReaders.add( new FV_PropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REFERENCE ) ) );
+        propertyReaders.add( new FV_PropertyReader(         session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PHRASE ) ) );
+        propertyReaders.add( new FV_PropertyReader(         session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DESCR ) ) );
+        propertyReaders.add( new FV_WordTranslationReader(  session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION ) ) );
+        propertyReaders.add( new FV_SimpleListPropertyReader(session,   spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE ) ) );
+        propertyReaders.add( new FV_PropertyReader(         session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REFERENCE ) ) );
 
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ) ) );
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ) ) );
-        propertyReaders.add( new FV_CompoundPropertyReader( spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ) ) );
+        propertyReaders.add( new FV_CompoundPropertyReader( session, spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ) ) );
+        propertyReaders.add( new FV_CompoundPropertyReader( session, spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ) ) );
+        propertyReaders.add( new FV_CompoundPropertyReader( session, spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ) ) );
     }
 }

@@ -18,7 +18,7 @@ public class FV_PDF_Producer extends FV_AbstractProducer
 
     FV_PDF_Producer(String fileName, StringList columns  )
     {
-        super( null );
+        super( null, null );
     }
 
     @Override
