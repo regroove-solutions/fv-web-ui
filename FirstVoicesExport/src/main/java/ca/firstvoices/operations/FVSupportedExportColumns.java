@@ -12,17 +12,19 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.HashMap;
 
-@Operation(id=FVSupportedQueries.ID, category= Constants.CAT_DOCUMENT, label="Get list of supported export columns.", description="Returns column options supported in export to CSV or PDF. ")
-public class FVSupportedQueries
+import static ca.firstvoices.utils.FVExportConstants.*;
+
+@Operation(id= FVSupportedExportColumns.ID, category= Constants.CAT_DOCUMENT, label="Get list of supported export columns.", description="Returns supported column labels in export to CSV or PDF. ")
+public class FVSupportedExportColumns
 {
 
-    public static final String ID = "Document.FVSupportedQueries";
+    public static final String ID = "Document.FVSupportedExportColumns";
 
-    @Param( name = "format", values = {"CSV", "PDF"} )
-    protected String format = "CSV";
+    @Param( name = "format", values = {CSV_FORMAT, PDF_FORMAT} )
+    protected String format = CSV_FORMAT;
 
-    @Param( name = "exportElement", values = {"WORD", "PHRASE"} )
-    protected String exportElement = "WORD";
+    @Param( name = "exportElement", values = { FVWORD, FVPHRASE} )
+    protected String exportElement = FVPHRASE;
 
 
     @OperationMethod
@@ -32,7 +34,7 @@ public class FVSupportedQueries
 
         StringList returnList;
 
-        if( exportElement.equals("WORD") )
+        if( exportElement.equals(FVWORD) )
         {
             returnList = supportedWordQueries_CSV();
         }
