@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import Immutable, {List, Map} from 'immutable';
+import classNames from "classnames";
 import selectn from 'selectn';
 
 function deepAssignPropsToChildren(children, cb) {
@@ -24,13 +25,15 @@ export default class AuthorizationFilter extends Component {
         children: PropTypes.node,
         hideFromSections: PropTypes.bool,
         renderPartial: PropTypes.bool,
+        showAuthError: PropTypes.bool,
         routeParams: PropTypes.object,
         key: PropTypes.string
     };
 
     static defaultProps = {
         hideFromSections: false,
-        renderPartial: false
+        renderPartial: false,
+        showAuthError: false
     };
 
     static contextTypes = {
@@ -68,12 +71,14 @@ export default class AuthorizationFilter extends Component {
             ...other,
         } = this.props;
 
+        let authErrorObj = <div className={classNames("alert", "alert-warning")} role="alert">You are not authorized to view this content.</div>;
+
         let isSection = (selectn('area', routeParams) == 'sections');
 
         let currentUserEntityPermissions = selectn('contextParameters.permissions', filter.entity);
 
         if (hideFromSections && isSection) {
-            return null;
+            return (this.props.showAuthError) ? authErrorObj : null;
         }
 
         if (filter.hasOwnProperty('permission')) {
@@ -112,11 +117,11 @@ export default class AuthorizationFilter extends Component {
                     return this._renderHelper();
                 }
             } else {
-                return null;
+                return (this.props.showAuthError) ? authErrorObj : null;
             }
 
         } else {
-            return null;
+            return (this.props.showAuthError) ? authErrorObj : null;
         }
 
         let combinedProps = {key: this.props.key, style: Object.assign({}, this.props.style, children.props.style)};
