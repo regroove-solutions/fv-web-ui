@@ -16,7 +16,7 @@ import org.nuxeo.runtime.api.Framework;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ca.firstvoices.utils.FVExportConstants.DIALECT_RESOURCES_TYPE;
+import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.*;
 
 @Operation(id=FVFormattedDocumentGetter.ID, category= Constants.CAT_DOCUMENT, label="Get formatted document", description="Retrieve formatted (CSV or PDF) document from principals home directory.")
@@ -27,8 +27,8 @@ public class FVFormattedDocumentGetter
 
     protected AutomationService automation = Framework.getService(AutomationService.class);
 
-    @Param( name = "format", values = {"CSV", "PDF"} )
-    protected String format = "CSV";
+    @Param( name = "format", values = {CSV_FORMAT, PDF_FORMAT} )
+    protected String format = CSV_FORMAT;
 
     @Context
     protected CoreSession session;
