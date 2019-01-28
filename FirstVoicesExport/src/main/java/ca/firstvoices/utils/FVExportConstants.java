@@ -11,8 +11,8 @@ public final class FVExportConstants
     public static final long MILLISECONDS = 1000;
 
     // support for FVSupportedExportColumns endpoint
-    public static final String FVWORD   = "FVWORD";
-    public static final String FVPHRASE = "FVPHRASE";
+    public static final String FVWORD   = "FVWord";
+    public static final String FVPHRASE = "FVPhrase";
 
     // Events sent to trigger start of export workers
     public static final String PRODUCE_FORMATTED_DOCUMENT           = "produceFormattedDocument";       // start of worker by user action
