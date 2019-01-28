@@ -1,6 +1,7 @@
 package ca.firstvoices.operations;
 
 import ca.firstvoices.services.FVMoveUserToDialectServiceImpl;
+import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -44,6 +45,10 @@ public class FVChangeUserGroupToDialectGroup
                 util.placeNewUserInGroup(dialect, groupName, uName);
                 log.info("Moved user " + uName +" to group " + groupName );
             }
+
+            // Remove registration request as it has been dealt with
+            // Future user modifications should be done via other look-ups
+            FVRegistrationUtilities.removeRegistrationsForUsers(session, userNames);
         }
         catch( Exception e)
         {
@@ -51,6 +56,6 @@ public class FVChangeUserGroupToDialectGroup
             return e.getMessage();
         }
 
-        return Response.status(200).entity("Thank you for registering!").build();
+        return Response.status(200).entity("User(s) updated successfully.").build();
     }
 }

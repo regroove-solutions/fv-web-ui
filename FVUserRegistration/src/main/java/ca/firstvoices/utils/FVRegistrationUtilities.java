@@ -30,10 +30,11 @@ import javax.security.auth.login.LoginException;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
-
 
 public class FVRegistrationUtilities
 {
@@ -454,11 +455,37 @@ public class FVRegistrationUtilities
         public void run() {
             DocumentModel registrationDoc = session.getDocument(new IdRef(registrationDocId));
 
-            ACE registrationACE = new ACE(language_admin_group, "Everything");
+            ACE registrationACE = new ACE(language_admin_group, SecurityConstants.EVERYTHING);
+            ACE registrationContainerACE = new ACE(language_admin_group, SecurityConstants.REMOVE_CHILDREN);
 
             ACP registrationDocACP = registrationDoc.getACP();
             registrationDocACP.addACE("local", registrationACE);
             registrationDoc.setACP(registrationDocACP, false);
+
+            // Apply REMOVE CHILD permission to parent so that registration requests can be removed.
+            DocumentModel registrationContainer = session.getDocument(registrationDoc.getParentRef());
+            ACP registrationContainerDocACP = registrationContainer.getACP();
+            registrationContainerDocACP.addACE("local", registrationContainerACE);
+
+            registrationContainer.setACP(registrationContainerDocACP, false);
+        }
+    }
+
+    /**
+     * Removes registration request for users
+     * @param users list of users to remove registration requests for
+     */
+    public static void removeRegistrationsForUsers(CoreSession session, StringList users) {
+        String query = String.format(
+                "SELECT * FROM FVUserRegistration " +
+                "WHERE userinfo:email IN ('%s') " +
+                "ORDER BY dc:created DESC",
+                String.join("','", users));
+
+        DocumentModelList docs = session.query(query);
+
+        for (DocumentModel doc : docs) {
+            session.removeDocument(doc.getRef());
         }
     }
 
@@ -509,7 +536,6 @@ public class FVRegistrationUtilities
                 notificationEmailsAndReminderTasks( dialect, ureg );
             }
 
-            // TODO decide if we need to remove the registration document for created document at this point
             lctx.logout();
         }
         catch( Exception e )

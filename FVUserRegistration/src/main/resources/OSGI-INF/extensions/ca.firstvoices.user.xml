@@ -28,19 +28,30 @@
 	     <facet>HasRelatedText</facet>
 	     <facet>UserRegistration</facet>
 	   </doctype>
+
+		<doctype name="FVUserRegistrationContainer" extends="UserRegistrationContainer">
+			<facet name="HiddenInNavigation"/>
+		</doctype>
 	   
 	</extension>
 	
 	<extension target="org.nuxeo.ecm.core.lifecycle.LifeCycleService" point="types">
 	    <types>
 	      <type name="FVUserRegistration">registrationRequest</type>
-	    </types>
+		  <type name="FVUserRegistrationContainer">default</type>
+		</types>
 	</extension>
   
 	<extension target="org.nuxeo.ecm.user.registration.UserRegistrationService"
 	    point="configuration">
 	    <configuration merge="true">
 	        <requestDocType>FVUserRegistration</requestDocType>
+			<container>
+				<docType>FVUserRegistrationContainer</docType>
+				<parentPath>/management/</parentPath>
+				<name>FVRegistrationRequests</name>
+				<title>FV UserRegistration Requests Container</title>
+			</container>
 	        <userInfo>
 	          	<schemaName>userinfo</schemaName>
 				<usernameField>userinfo:login</usernameField>
