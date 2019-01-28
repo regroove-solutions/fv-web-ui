@@ -30,6 +30,9 @@ export default class FacetFilterListCategory extends Component {
 
   intl = IntlService.instance
 
+  title = ''
+  titleUpdate = memoize(() => this.intl.searchAndReplace(this.props.title))
+
   facetTitle = {}
   facetTitleUpdate = memoize((facets) => {
     return facets.map((facet) => {
@@ -60,12 +63,13 @@ export default class FacetFilterListCategory extends Component {
     }
 
     this.listItems = this._constructListItems(props.appliedFilterIds, props.facets)
-
+    this.title = this.titleUpdate()
     ;['_constructListItems', '_toggleCheckbox'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentDidUpdate() {
     this.listItems = this._constructListItems(this.props.appliedFilterIds, this.props.facets)
+    this.title = this.titleUpdate()
   }
 
   _constructListItems = memoize((appliedFilterIds, facets) => {
@@ -181,12 +185,7 @@ export default class FacetFilterListCategory extends Component {
 
   render() {
     return (
-      <FiltersWithToggle
-        className="panel-category"
-        label={this.intl.searchAndReplace(this.props.title)}
-        mobileOnly
-        style={this.props.styles}
-      >
+      <FiltersWithToggle className="panel-category" label={this.title} mobileOnly style={this.props.styles}>
         <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
           <ListUI>{this.listItems}</ListUI>
         </Paper>
