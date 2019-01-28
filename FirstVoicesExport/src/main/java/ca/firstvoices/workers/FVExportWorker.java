@@ -75,7 +75,7 @@ public class FVExportWorker extends FVAbstractExportWork
                         counter = 0;
                         double currentSize = size;
                         double percent = round (100 * (1 - (currentSize / originalSize) ), 1);
-
+                        workInfo.setExportProgressValue( percent );
                         workInfo.setExportProgress( percent + "% done." );
                     }
 
@@ -104,6 +104,7 @@ public class FVExportWorker extends FVAbstractExportWork
                         log.warn("NUll docLocation in FVExportWorker.");
                     }
                 }
+
 
                 fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
                 lctx.logout();

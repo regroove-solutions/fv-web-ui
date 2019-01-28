@@ -49,8 +49,9 @@ public class FVExportBlobWorker extends FVAbstractExportWork
 
             wrapper.setPropertyValue( "file:content", fileBlob );
 
-            workInfo.workDuration = (System.currentTimeMillis() - workInfo.workDuration) / 1000;
+            workInfo.workDuration = (System.currentTimeMillis() - workInfo.workDuration) / MILLISECONDS;
             workInfo.setExportProgress( "EXPORT: Total work time : " + workInfo.workDuration + "seconds while processing " + workInfo.originalWorkloadSize + " documents." );
+            workInfo.setExportProgressValue( 100.0 );
 
             session.saveDocument( wrapper ); // ?
             session.save();
