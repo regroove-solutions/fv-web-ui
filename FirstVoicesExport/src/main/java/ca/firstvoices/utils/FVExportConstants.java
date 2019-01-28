@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 public final class FVExportConstants
 {
+    public static final long MILLISECONDS = 1000;
+
     // support for FVSupportedExportColumns endpoint
     public static final String FVWORD   = "FVWORD";
     public static final String FVPHRASE = "FVPHRASE";
