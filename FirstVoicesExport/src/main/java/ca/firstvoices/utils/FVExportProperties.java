@@ -11,25 +11,22 @@ import java.util.stream.Stream;
 
 public class FVExportProperties
 {
-    public static List<String> wordProperties;
-
     public FVExportProperties()
     {
-        wordProperties = Arrays.asList(
-                LANGUAGE, TRANSLATION, TITLE, DESCR, CULTURAL_NOTE, PART_OF_SPEECH_ID, PHONETIC_INFO,
-                ASSIGNED_USR_ID, CHANGE_DTTM, IMPORT_ID, STATUS_ID, REFERENCE, AVAILABLE_IN_CHILDRENS_ARCHIVE,
-                AVAILABLE_IN_GAMES, CHILD_FOCUSED, DEFINITION, RELATED_PHRASES, WORD_CATEGORIES, CONTRIBUTER,
-                MEDIA_SHARED, MEDIA_RECORDER, MEDIA_SOURCE, MEDIA_STATUS, RELATED_VIDEOS, RELATED_AUDIO,
-                RELATED_PICTURES, CREATOR, CONTRIBUTORS );
     }
-
-    public List<String> getWordProperties()
-    {
-        return wordProperties;
-    }
-
 
     public static final String LANGUAGE = "language"; // ??????
+
+    // FVEXPORT:
+    public static final String FVEXPORT_PROGRESS_STRING =   "fvexport:progressString";
+    public static final String FVEXPORT_PROGRESS_VALUE =    "fvexport:progressValue";
+    public static final String FVEXPORT_DIALECT =           "fvexport:dialect";
+    public static final String FVEXPORT_FORMAT =            "fvexport:format";
+    public static final String FVEXPORT_QUERY =             "fvexport:query";
+    public static final String FVEXPORT_COLUMNS =           "fvexport:columns";
+    public static final String FVEXPORT_WORK_DIGEST =       "fvexport:workdigest";
+    public static final String FVEXPORT_DIGEST =            "fvexport:exportdigest";
+
 
     // FVA:
     public static final String FV_LANGUAGE =    "fva:language";
