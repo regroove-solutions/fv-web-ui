@@ -273,6 +273,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridListTile: AlphabetGridTile,
       }
     )
+
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -310,7 +311,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                   'Show All Words',
                   'words'
                 )}
-                onTouchTap={this._clearAllFilters()}
+                onTouchTap={this._clearAllFilters}
               />
 
               <RaisedButton
@@ -320,7 +321,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                   'Filter by Category',
                   'words'
                 )}
-                onTouchTap={this._handleFilterChange.bind(this, 'find_by_category')}
+                onTouchTap={() => {
+                  this._handleFilterChange('find_by_category') // NOTE: Comes from PageDialectLearnBase
+                }}
               />
 
               {visibleFilter === 'find_by_category' && (
@@ -387,7 +390,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
   }
   // END render
-
 
   handleSearch() {
     const { searchTerm, searchNxqlQuery } = this.state

@@ -96,23 +96,26 @@ export default class PageDialectLearnBase extends Component {
     }
   }
 
-  _handleFacetSelected(facetField, categoryId, childrenIds, event, checked) {
+  _handleFacetSelected(facetField, checkedFacetUid, childrenIds, checked, parentFacetUid) {
     const currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
-
     let categoryFilter = ''
     let newList
     const childrenIdsList = new Set(childrenIds)
 
     // Adding filter
     if (checked) {
-      newList = currentCategoryFilterIds.add(categoryId)
+      newList = currentCategoryFilterIds.add(checkedFacetUid)
 
       if (childrenIdsList.size > 0) {
         newList = newList.merge(childrenIdsList)
       }
     } else {
       // Removing filter
-      newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(categoryId))
+      newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(checkedFacetUid))
+
+      if (parentFacetUid) {
+        newList = newList.delete(currentCategoryFilterIds.keyOf(parentFacetUid))
+      }
 
       if (childrenIdsList.size > 0) {
         newList = newList.filter((v) => {
