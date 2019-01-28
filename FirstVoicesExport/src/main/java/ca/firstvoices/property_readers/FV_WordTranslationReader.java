@@ -1,15 +1,21 @@
 package ca.firstvoices.property_readers;
 
 import ca.firstvoices.utils.ExportColumnRecord;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.*;
 
 public class FV_WordTranslationReader extends FV_AbstractPropertyReader
 {
-    public FV_WordTranslationReader( ExportColumnRecord spec )
+    public FV_WordTranslationReader(CoreSession session, ExportColumnRecord spec )
     {
-        super( spec );
+        super( session, spec );
+    }
+
+    public ReaderType readerType()
+    {
+        return ReaderType.WORD_TRANSLATION;
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
@@ -39,11 +45,11 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
                         output = output + " (" + iter.next() + ")";
                     }
 
-                    readValues.add(new FV_PropertyValueWithColumnName( output, columnLabel));
+                    readValues.add( new FV_PropertyValueWithColumnName( columnLabel, output));
                 }
                 else
                 {
-                    readValues.add(new FV_PropertyValueWithColumnName(" ", columnLabel));
+                    readValues.add( new FV_PropertyValueWithColumnName( columnLabel," "));
                 }
 
                 columnLabel = columnNameForOutput + "_" + counter.toString();
@@ -66,7 +72,7 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
 
         for( Integer i = 0; i < maxColumns; i++ )
         {
-            readValues.add(new FV_PropertyValueWithColumnName("UNKNOWN TYPE", columnLabel));
+            readValues.add(new FV_PropertyValueWithColumnName( columnLabel, "UNKNOWN TYPE"));
             columnLabel = columnNameForOutput + "_" + counter.toString();
             counter++;
         }

@@ -1,6 +1,7 @@
 package ca.firstvoices.property_readers;
 
 import ca.firstvoices.utils.ExportColumnRecord;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.ArrayList;
@@ -9,9 +10,14 @@ import java.util.List;
 public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_PartOfSpeechPropertyReader( ExportColumnRecord spec )
+    public FV_PartOfSpeechPropertyReader(CoreSession session, ExportColumnRecord spec )
     {
-        super( spec );
+        super( session, spec );
+    }
+
+    public ReaderType readerType()
+    {
+        return ReaderType.SPEECH_PART;
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
@@ -24,15 +30,15 @@ public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
         {
             if (prop instanceof String)
             {
-                readValues.add(new FV_PropertyValueWithColumnName((String) prop, columnNameForOutput));
+                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, (String) prop));
             } else
             {
-                readValues.add(new FV_PropertyValueWithColumnName("unknown", columnNameForOutput));
+                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, "unknown instance" ));
             }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName("*null*", columnNameForOutput) );
+            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, "" ) );
         }
 
         return readValues;

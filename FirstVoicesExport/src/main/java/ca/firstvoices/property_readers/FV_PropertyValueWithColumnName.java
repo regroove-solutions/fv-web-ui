@@ -5,7 +5,7 @@ public class FV_PropertyValueWithColumnName
     protected String readPropertyValue;
     protected String outputColumnName;
 
-    public FV_PropertyValueWithColumnName(String rp, String ocn )
+    public FV_PropertyValueWithColumnName(String ocn, String rp )
     {
         readPropertyValue = rp;
         outputColumnName = ocn;

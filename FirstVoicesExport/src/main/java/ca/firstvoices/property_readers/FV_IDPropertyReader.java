@@ -1,6 +1,7 @@
 package ca.firstvoices.property_readers;
 
 import ca.firstvoices.utils.ExportColumnRecord;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
 
@@ -9,9 +10,14 @@ import java.util.List;
 
 public class FV_IDPropertyReader extends FV_AbstractPropertyReader
 {
-    public FV_IDPropertyReader( ExportColumnRecord spec )
+    public FV_IDPropertyReader(CoreSession session, ExportColumnRecord spec )
     {
-        super( spec );
+        super( session, spec );
+    }
+
+    public ReaderType readerType()
+    {
+        return ReaderType.ID_PROP;
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
@@ -27,16 +33,16 @@ public class FV_IDPropertyReader extends FV_AbstractPropertyReader
 
             if( refDoc != null )
             {
-                readValues.add(new FV_PropertyValueWithColumnName( (String)refDoc.getPropertyValue( "dc:title"), columnNameForOutput));
+                readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, (String)refDoc.getPropertyValue( "dc:title")));
             }
             else
             {
-                readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
+                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, "Invalid UUID: "+propertyValue ));
             }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName(" ", columnNameForOutput) );
+            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput," ") );
         }
 
         return readValues;

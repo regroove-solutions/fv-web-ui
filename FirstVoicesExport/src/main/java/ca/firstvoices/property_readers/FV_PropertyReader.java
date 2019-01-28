@@ -1,6 +1,7 @@
 package ca.firstvoices.property_readers;
 
 import ca.firstvoices.utils.ExportColumnRecord;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.ArrayList;
@@ -9,9 +10,14 @@ import java.util.List;
 public class FV_PropertyReader extends FV_AbstractPropertyReader
 {
 
-    public FV_PropertyReader( ExportColumnRecord spec )
+    public FV_PropertyReader(CoreSession session, ExportColumnRecord spec )
     {
-        super( spec );
+        super( session, spec );
+    }
+
+    public ReaderType readerType()
+    {
+        return ReaderType.PROPERTY;
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
@@ -24,11 +30,11 @@ public class FV_PropertyReader extends FV_AbstractPropertyReader
         {
             String propertyValue = (String) prop;
 
-            readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
+            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, propertyValue ));
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName(" ", columnNameForOutput) );
+            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput," ") );
         }
 
         return readValues;

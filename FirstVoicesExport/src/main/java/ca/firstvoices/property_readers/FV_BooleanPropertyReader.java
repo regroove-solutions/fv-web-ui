@@ -1,6 +1,7 @@
 package ca.firstvoices.property_readers;
 
 import ca.firstvoices.utils.ExportColumnRecord;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import java.util.ArrayList;
@@ -8,9 +9,14 @@ import java.util.List;
 
 public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
 {
-    public FV_BooleanPropertyReader( ExportColumnRecord spec )
+    public FV_BooleanPropertyReader(CoreSession session, ExportColumnRecord spec )
     {
-        super( spec );
+        super( session, spec );
+    }
+
+    public ReaderType readerType()
+    {
+        return ReaderType.BOOLEAN;
     }
 
     public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
@@ -26,7 +32,7 @@ public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
 
         String propertyValue = prop ? "true" : "false";
 
-        readValues.add(new FV_PropertyValueWithColumnName(propertyValue, columnNameForOutput));
+        readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, propertyValue));
 
         return readValues;
     }
