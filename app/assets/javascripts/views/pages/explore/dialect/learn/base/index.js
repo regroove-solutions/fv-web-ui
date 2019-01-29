@@ -21,8 +21,9 @@ import NavigationHelpers from 'common/NavigationHelpers'
 
 /**
  * Learn Base Page
- * NOTE: The `class` that `extends` `PageDialectLearnBase` must define a `fetchData` function
  * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
+ * NOTE: The `class` that `extends` `PageDialectLearnBase` must define a `fetchData` function
+ * NOTE: The `class` that `extends` `PageDialectLearnBase` should NOT define: `componentDidMount`, `componentWillReceiveProps`
  */
 export default class PageDialectLearnBase extends Component {
   static defaultProps = {}
@@ -40,7 +41,7 @@ export default class PageDialectLearnBase extends Component {
 
     if (typeof this.fetchData === 'undefined') {
       // eslint-disable-next-line
-      console.warn("The `class` that `extends` `PageDialectLearnBase` must define a `fetchData` function")
+      console.warn("The class that extends 'PageDialectLearnBase' must define a 'fetchData' function")
     }
   }
 
