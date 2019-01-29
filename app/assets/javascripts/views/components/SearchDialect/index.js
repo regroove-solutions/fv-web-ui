@@ -51,7 +51,7 @@ class SearchDialect extends Component {
     super(props)
 
     this.state = {
-      userInteracted: false,
+      userInteractedWithSearchDialectAdvanced: false,
     }
     ;[
       '_getSearchInfo',
@@ -83,135 +83,167 @@ class SearchDialect extends Component {
       searchByTranslations,
       searchPartOfSpeech,
     } = this.props
-
     const searchInfoOutput = this._getSearchInfo()
 
     let searchButtonText = ''
-    let resetButtonText = ''
+    const resetButtonText = 'Reset search'
+    // resetButtonText = intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')
     let searchByTitleText = ''
     if (isSearchingPhrases) {
       searchByTitleText = 'Phrases'
-      searchButtonText = '(Phrases) Search'
-      resetButtonText = '(Phrases) Reset'
+      searchButtonText = 'Search'
     } else {
       searchByTitleText = 'Words'
       searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
-      resetButtonText = intl.trans('views.pages.explore.dialect.learn.words.reset_search', 'Clear Search', 'words')
     }
+    const disableButtons = searchTerm === '' || searchTerm === null
     return (
-      <div>
-        <form
+      <div className="SearchDialect">
+        <div
           className={classNames({
-            SearchDialectDisplayAdvanced: this.state.userInteracted,
+            SearchDialectDisplayAdvanced: this.state.userInteractedWithSearchDialectAdvanced,
           })}
         >
-          <div>
+          <div className="SearchDialectMain">
             <input
+              className="SearchDialectMainInput"
               type="text"
               onChange={this._updateSearchTerm}
               onKeyPress={this._handleEnterSearch}
               value={searchTerm}
-            />{' '}
+            />
+
             <RaisedButton
-              disabled={searchTerm === ''}
+              className="SearchDialectMainBtn"
+              disabled={disableButtons}
               label={searchButtonText}
               onTouchTap={this._handleSearch}
               primary
-            />{' '}
-            <RaisedButton label={resetButtonText} onTouchTap={this._resetSearch} primary={false} />
+            />
+
+            <RaisedButton
+              className="SearchDialectMainBtn SearchDialectMainBtnReset"
+              disabled={disableButtons}
+              label={resetButtonText}
+              onTouchTap={this._resetSearch}
+              primary={false}
+              style={{ marginLeft: '20px' }}
+            />
           </div>
 
-          <div>
-            <span>
+          <div className="SearchDialectMode">
+            <span className="SearchDialectModeSet">
               <input
-                type="radio"
-                name="searchType"
-                id={SEARCH_DEFAULT}
                 checked={searchType === SEARCH_DEFAULT}
+                className="SearchDialectModeOption"
+                id={SEARCH_DEFAULT}
+                name="searchType"
                 onChange={this._handleCustomSearch}
+                type="radio"
                 value={SEARCH_DEFAULT}
               />
-              <label htmlFor={SEARCH_DEFAULT}>Search all fields</label>
+              <label className="SearchDialectModeLabel" htmlFor={SEARCH_DEFAULT}>
+                Search all fields
+              </label>
             </span>
-            <span>
+
+            <span className="SearchDialectModeSet">
               <input
-                type="radio"
-                name="searchType"
-                id={SEARCH_ADVANCED}
                 checked={searchType === SEARCH_ADVANCED}
+                className="SearchDialectModeOption"
+                id={SEARCH_ADVANCED}
+                name="searchType"
                 onChange={this._handleCustomSearch}
+                type="radio"
                 value={SEARCH_ADVANCED}
               />
-              <label htmlFor={SEARCH_ADVANCED}>Advanced Search</label>
+              <label className="SearchDialectModeLabel" htmlFor={SEARCH_ADVANCED}>
+                Advanced search
+              </label>
             </span>
           </div>
 
-          <div className="SearchDialectAdvancedSettings">
-            <span>
+          <div className="SearchDialectAdvanced">
+            <span className="SearchDialectAdvancedSet">
               <input
-                type="checkbox"
+                checked={searchByTitle}
+                className="SearchDialectAdvancedOption"
                 id="searchByTitle"
                 name="searchByTitle"
-                checked={searchByTitle}
                 onChange={this._handleCustomSearch}
+                type="checkbox"
               />
-              <label htmlFor="searchByTitle">{searchByTitleText}</label>
+              <label className="SearchDialectAdvancedLabel" htmlFor="searchByTitle">
+                {searchByTitleText}
+              </label>
             </span>
 
-            <span>
+            <span className="SearchDialectAdvancedSet">
               <input
-                type="checkbox"
+                checked={searchByDefinitions}
+                className="SearchDialectAdvancedOption"
                 id="searchByDefinitions"
                 name="searchByDefinitions"
-                checked={searchByDefinitions}
                 onChange={this._handleCustomSearch}
+                type="checkbox"
               />
-              <label htmlFor="searchByDefinitions">Definitions</label>
+              <label className="SearchDialectAdvancedLabel" htmlFor="searchByDefinitions">
+                Definitions
+              </label>
             </span>
 
             {isSearchingPhrases && (
-            <span>
-              <input
-                type="checkbox"
-                id="searchByCulturalNotes"
-                name="searchByCulturalNotes"
-                checked={searchByCulturalNotes}
-                onChange={this._handleCustomSearch}
-              />
-              <label htmlFor="searchByCulturalNotes">Cultural Notes</label>
-            </span>
+              <span className="SearchDialectAdvancedSet">
+                <input
+                  checked={searchByCulturalNotes}
+                  className="SearchDialectAdvancedOption"
+                  id="searchByCulturalNotes"
+                  name="searchByCulturalNotes"
+                  onChange={this._handleCustomSearch}
+                  type="checkbox"
+                />
+                <label className="SearchDialectAdvancedLabel" htmlFor="searchByCulturalNotes">
+                  Cultural notes
+                </label>
+              </span>
             )}
 
             {isSearchingPhrases === false && (
-            <span>
-              <input
-                type="checkbox"
-                id="searchByTranslations"
-                name="searchByTranslations"
-                checked={searchByTranslations}
-                onChange={this._handleCustomSearch}
-              />
-              <label htmlFor="searchByTranslations">Literal Translations</label>
-            </span>
+              <span className="SearchDialectAdvancedSet">
+                <input
+                  checked={searchByTranslations}
+                  className="SearchDialectAdvancedOption"
+                  id="searchByTranslations"
+                  name="searchByTranslations"
+                  onChange={this._handleCustomSearch}
+                  type="checkbox"
+                />
+                <label className="SearchDialectAdvancedLabel" htmlFor="searchByTranslations">
+                  Literal translations
+                </label>
+              </span>
             )}
 
             {isSearchingPhrases === false && (
-            <span>
-              <label htmlFor="searchPartOfSpeech">Part of speech:</label>
-              <select
-                onChange={this._handleCustomSearch}
-                id="searchPartOfSpeech"
-                name="searchPartOfSpeech"
-                value={searchPartOfSpeech}
-              >
-                <option value={SEARCH_SORT_DEFAULT}>Any</option>
-                <option value="noun">Noun</option>
-                <option value="verb">Verb</option>
-              </select>
-            </span>
+              <span className="SearchDialectAdvancedSet">
+                <label className="SearchDialectAdvancedLabel" htmlFor="searchPartOfSpeech">
+                  Parts of speech:
+                </label>
+                <select
+                  className="SearchDialectAdvancedOption SearchDialectAdvancedPartsOfSpeech"
+                  id="searchPartOfSpeech"
+                  name="searchPartOfSpeech"
+                  onChange={this._handleCustomSearch}
+                  value={searchPartOfSpeech}
+                >
+                  <option value={SEARCH_SORT_DEFAULT}>Any</option>
+                  <option value="noun">Noun</option>
+                  <option value="verb">Verb</option>
+                </select>
+              </span>
             )}
           </div>
-        </form>
+        </div>
 
         {searchInfoOutput}
       </div>
@@ -241,7 +273,7 @@ class SearchDialect extends Component {
           appliedFilters.push(
             <span>
               {' '}
-              <span style={{ textDecoration: 'underline' }}>AND</span>
+              <span style={{ textDecoration: 'underline' }}>AND</span>{' '}
             </span>
           )
         }
@@ -251,7 +283,7 @@ class SearchDialect extends Component {
       searchInfo = appliedFilters
     }
 
-    return <div className={classNames('alert', 'alert-info')}>{searchInfo}</div>
+    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{searchInfo}</div>
   }
 
   _getNxqlSearchSort() {
@@ -280,7 +312,13 @@ class SearchDialect extends Component {
   }
 
   _getNxqlBoolCount() {
-    const { searchByCulturalNotes, searchByDefinitions, searchByTranslations, searchPartOfSpeech, searchByTitle } = this.props
+    const {
+      searchByCulturalNotes,
+      searchByDefinitions,
+      searchByTranslations,
+      searchPartOfSpeech,
+      searchByTitle,
+    } = this.props
 
     const check = {
       searchByCulturalNotes,
@@ -290,7 +328,11 @@ class SearchDialect extends Component {
       searchByTitle,
     }
     const boolCount =
-      check.searchByTitle + check.searchByDefinitions + check.searchByTranslations + check.searchPartOfSpeech + check.searchByCulturalNotes
+      check.searchByTitle +
+      check.searchByDefinitions +
+      check.searchByTranslations +
+      check.searchPartOfSpeech +
+      check.searchByCulturalNotes
     return boolCount
   }
 
@@ -371,18 +413,20 @@ class SearchDialect extends Component {
     const { id, checked, value, type } = evt.target
 
     const updateState = {}
+    // always reset alphabet search
+    updateState.searchByAlphabet = false
 
     if (value === SEARCH_DEFAULT) {
       // Reset everything
       updateState.searchType = SEARCH_DEFAULT
-      updateState.searchByAlphabet = false
+
       updateState.searchByCulturalNotes = false
       updateState.searchByTitle = false
       updateState.searchByDefinitions = false
       updateState.searchByTranslations = false
       updateState.searchPartOfSpeech = SEARCH_SORT_DEFAULT
     } else {
-      this.setState({ userInteracted: true })
+      this.setState({ userInteractedWithSearchDialectAdvanced: true })
       updateState.searchType = SEARCH_ADVANCED
       // Record changes
       switch (type) {
@@ -404,6 +448,8 @@ class SearchDialect extends Component {
   }
 
   _handleSearch() {
+    const updateState = {searchByAlphabet: false}
+    this.props.updateAncestorState(updateState)
     this.props.handleSearch()
   }
 
