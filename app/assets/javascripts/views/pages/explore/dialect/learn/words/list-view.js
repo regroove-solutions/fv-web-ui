@@ -39,6 +39,7 @@ const intl = IntlService.instance
 @provide
 export default class ListView extends DataListView {
   static defaultProps = {
+    disableWordClick: true,
     DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
@@ -54,66 +55,72 @@ export default class ListView extends DataListView {
   }
 
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    pageProperties: PropTypes.object,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    controlViaURL: PropTypes.bool,
-    parentID: PropTypes.string,
-    renderSimpleTable: PropTypes.bool,
-    disablePageSize: PropTypes.bool,
-    onPaginationReset: PropTypes.func,
-    onPagePropertiesChange: PropTypes.func,
     action: PropTypes.func,
-
+    computeDialect2: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    computeWords: PropTypes.object.isRequired,
+    controlViaURL: PropTypes.bool,
+    data: PropTypes.string,
+    disableWordClick: PropTypes.bool,
+    dialect: PropTypes.object,
     DISABLED_SORT_COLS: PropTypes.array,
     DEFAULT_PAGE: PropTypes.number,
     DEFAULT_PAGE_SIZE: PropTypes.number,
     DEFAULT_SORT_COL: PropTypes.string,
     DEFAULT_SORT_TYPE: PropTypes.string,
+    disablePageSize: PropTypes.bool,
+    fetchWords: PropTypes.func.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    filter: PropTypes.object,
+    gridListView: PropTypes.bool,
+    onPaginationReset: PropTypes.func,
+    onPagePropertiesChange: PropTypes.func,
+    pageProperties: PropTypes.object,
+    parentID: PropTypes.string,
+    properties: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    renderSimpleTable: PropTypes.bool,
+    splitWindowPath: PropTypes.array.isRequired,
+    windowPath: PropTypes.string.isRequired,
   }
 
   constructor(props, context) {
     super(props, context)
     // TODO: Remove `let language` below?
     /*
-      let language
+    let language
 
-      switch (intl.locale) {
-      case 'en':
-        language = 'english'
-        break
+    switch (intl.locale) {
+    case 'en':
+      language = 'english'
+      break
 
-          case 'fr':
-        language = 'french'
-        break
-      }
-      */
-
+        case 'fr':
+      language = 'french'
+      break
+    }
+    */
     this.state = {
       columns: [
         {
           name: 'title',
           title: intl.trans('word', 'Word', 'first'),
-          render: (v, data) => (
-            <a
-              onClick={NavigationHelpers.disable}
-              href={NavigationHelpers.generateUIDPath(this.props.routeParams.theme, data, 'words')}
-            >
-              {v}
-            </a>
-          ),
+          render: (v, data) => {
+            const href = NavigationHelpers.generateUIDPath(this.props.routeParams.theme, data, 'words')
+            const clickHandler = props.disableWordClick ? NavigationHelpers.disable : (e)=> {
+              e.preventDefault()
+              NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+            }
+            return (
+              <a
+                onClick={clickHandler}
+                href={href}
+              >
+                {v}
+              </a>
+            )
+          },
           sortName: 'fv:custom_order',
         },
         {
