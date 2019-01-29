@@ -37,8 +37,6 @@
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
     </script>
 
-    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
     {% if buildENV == "production" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
 
     {% block head %}{% endblock %}
@@ -68,7 +66,14 @@
 
     <script src="/assets/javascripts/shared.js"></script>
     <script src="/assets/javascripts/app.js"></script>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js"></script>
+    <script>
+      WebFont.load({
+        google: {
+          families: ['Material Icons']
+        }
+      });
+    </script>
     {% block javascript %}{% endblock %}
 
   </body>
