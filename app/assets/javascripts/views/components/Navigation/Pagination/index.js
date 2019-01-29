@@ -13,34 +13,39 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
+import React, { Component, PropTypes } from 'react'
+import classNames from 'classnames'
 
-import ReactPaginate from 'react-paginate';
+import ReactPaginate from 'react-paginate'
 
-import ChevronLeft from 'material-ui/lib/svg-icons/navigation/chevron-left';
-import ChevronRight from 'material-ui/lib/svg-icons/navigation/chevron-right';
+import ChevronLeft from 'material-ui/lib/svg-icons/navigation/chevron-left'
+import ChevronRight from 'material-ui/lib/svg-icons/navigation/chevron-right'
 
 export default class Pagination extends Component {
+  static defaultProps = {}
+  static propTypes = {
+    forcePage: PropTypes.any, // TODO: set appropriate propType
+    onPageChange: PropTypes.func,
+  }
+  constructor(props, context) {
+    super(props, context)
+  }
 
-    constructor(props, context) {
-        super(props, context);
-    }
-
-    render() {
-        return (
-            <ReactPaginate
-                previousLabel={<ChevronLeft/>}
-                nextLabel={<ChevronRight/>}
-                forcePage={this.props.forcePage}
-                breakLabel={<a style={{paddingBottom: '7px'}}>...</a>}
-                breakClassName={"pagination-page"}
-                pageLinkClassName={"pagination-page"}
-                containerClassName={"pagination"}
-                subContainerClassName={"pages pagination"}
-                activeClassName={"active"}
-                onPageChange={this.props.onPageChange}
-                {...this.props} />
-        );
-    }
+  render() {
+    return (
+      <ReactPaginate
+        previousLabel={<ChevronLeft />}
+        nextLabel={<ChevronRight />}
+        forcePage={this.props.forcePage}
+        breakLabel={<a style={{ paddingBottom: '7px' }}>...</a>}
+        breakClassName={'pagination-page'}
+        pageLinkClassName={'pagination-page'}
+        containerClassName={'pagination'}
+        subContainerClassName={'pages pagination'}
+        activeClassName={'active'}
+        onPageChange={this.props.onPageChange}
+        {...this.props}
+      />
+    )
+  }
 }
