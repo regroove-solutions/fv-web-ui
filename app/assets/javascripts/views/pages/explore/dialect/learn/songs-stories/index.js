@@ -20,21 +20,15 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 
 import RaisedButton from 'material-ui/lib/raised-button'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-
-import DropDownMenu from 'material-ui/lib/DropDownMenu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
 
 import GeneralList from 'views/components/Browsing/general-list'
 import { CardView } from './list-view'

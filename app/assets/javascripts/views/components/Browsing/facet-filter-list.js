@@ -1,124 +1,145 @@
-import React, {Component, PropTypes} from 'react';
-import Immutable, {List, Set, Map} from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Set, Map } from 'immutable'
 
-import selectn from 'selectn';
+import selectn from 'selectn'
+import { debounce } from 'debounce'
+import memoize from 'memoize-one'
+import Paper from 'material-ui/lib/paper'
+import ListUI from 'material-ui/lib/lists/list'
+import ListItem from 'material-ui/lib/lists/list-item'
+import Checkbox from 'material-ui/lib/checkbox'
+import withToggle from 'views/hoc/view/with-toggle'
+import IntlService from 'views/services/intl'
 
-import Paper from 'material-ui/lib/paper';
-import ListUI from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import ActionGrade from 'material-ui/lib/svg-icons/action/grade';
-import Checkbox from 'material-ui/lib/checkbox';
-import withToggle from 'views/hoc/view/with-toggle';
-import IntlService from "views/services/intl";
-
-const FiltersWithToggle = withToggle();
+const FiltersWithToggle = withToggle()
 
 export default class FacetFilterList extends Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    facets: PropTypes.array.isRequired,
+    onFacetSelected: PropTypes.func.isRequired,
+    facetField: PropTypes.string.isRequired,
+    appliedFilterIds: PropTypes.instanceOf(Set),
+    styles: PropTypes.object,
+  }
 
-    static propTypes = {
-        title: PropTypes.string.isRequired,
-        facets: PropTypes.array.isRequired,
-        onFacetSelected: PropTypes.func.isRequired,
-        facetField: PropTypes.string.isRequired,
-        appliedFilterIds: PropTypes.instanceOf(Set),
-        styles: PropTypes.object
-    };
+  intl = IntlService.instance
 
-    intl = IntlService.instance;
+  title = ''
+  titleUpdate = memoize(() => this.intl.searchAndReplace(this.props.title))
 
-    constructor(props, context) {
-        super(props, context);
+  facetTitle = {}
+  facetTitleUpdate = memoize((facets) => {
+    return facets.map((facet) => {
+      this.facetTitle[facet.uid] = facet.title
 
-        this.state = {
-            checked: props.appliedFilterIds
-        };
+      const children = selectn('contextParameters.children.entries', facet)
+      // Render children if exist
+      if (children.length > 0) {
+        const childrenSort = children.sort((a, b) => {
+          if (a.title < b.title) return -1
+          if (a.title > b.title) return 1
+          return 0
+        })
 
-        ['_toggleCheckbox'].forEach((method => this[method] = this[method].bind(this)));
-    }
+        childrenSort.map((facetChild) => {
+          // NOTE: this.intl.searchAndReplace is a bit slow
+          this.facetTitle[facetChild.uid] = this.intl.searchAndReplace(facetChild.title)
+        })
+      }
+    })
+  })
 
-    _toggleCheckbox(facetId, childrenIDs = [], event, checked) {
-        this.props.onFacetSelected(this.props.facetField, facetId, childrenIDs, event, checked);
+  constructor(props, context) {
+    super(props, context)
+    this.listItems = this._constructListItems(props.appliedFilterIds, props.facets)
+    this.title = this.titleUpdate()
+    ;['_constructListItems', '_toggleCheckbox'].forEach((method) => (this[method] = this[method].bind(this)))
+  }
 
-        let newList;
+  componentDidUpdate() {
+    this.listItems = this._constructListItems(this.props.appliedFilterIds, this.props.facets)
+    this.title = this.titleUpdate()
+  }
 
-        // Checking
-        if (checked) {
-            newList = this.state.checked.add(facetId);
+  _toggleCheckbox = debounce((checkedFacetUid, childrenIds = [], isChecked, facetUidParent) => {
+    this.props.onFacetSelected(this.props.facetField, checkedFacetUid, childrenIds, isChecked, facetUidParent)
+  }, 200)
 
-            // Add all children
-            if (childrenIDs) {
-                childrenIDs.forEach((childId, i) => {
-                    newList = newList.add(childId)
-                });
-            }
-        }
-        // Unchecking
-        else {
-            newList = this.state.checked.delete(this.state.checked.keyOf(facetId));
+  _constructListItems = memoize((appliedFilterIds, facets) => {
+    // Update titles in this.facetTitle
+    this.facetTitleUpdate(facets)
 
-            // Remove children
-            if (childrenIDs) {
-                childrenIDs.forEach((childId, i) => {
-                    newList = newList.delete(newList.keyOf(childId))
-                });
-            }
-        }
+    const listItemStyle = { fontSize: '13px', fontWeight: 'normal' }
+    return facets.map((facet) => {
+      const childrenIds = []
+      const facetUidParent = facet.uid
+      const checkedParent = appliedFilterIds.includes(facetUidParent)
 
-        this.setState({checked: newList});
-    }
+      const nestedItems = []
+      const children = selectn('contextParameters.children.entries', facet)
 
-    render() {
+      // Render children if exist
+      if (children.length > 0) {
+        const childrenSort = children.sort((a, b) => {
+          if (a.title < b.title) return -1
+          if (a.title > b.title) return 1
+          return 0
+        })
+        childrenSort.map((facetChild, i) => {
+          const facetUidChild = facetChild.uid
+          childrenIds.push(facetUidChild)
 
-        const listItemStyle = {fontSize: '13px', fontWeight: 'normal'};
+          // Mark as checked if parent checked or if it is checked directly.
+          const checkedChild = appliedFilterIds.includes(facetUidChild)
 
-        return <FiltersWithToggle label={this.intl.searchAndReplace(this.props.title)} mobileOnly={true} style={this.props.styles}>
-            <Paper style={{maxHeight: '70vh', overflow: 'auto'}}>
-                <ListUI subheader={this.intl.searchAndReplace(this.props.title)}>
+          nestedItems.push(
+            <ListItem
+              key={facetChild.uid}
+              leftCheckbox={
+                <Checkbox
+                  checked={checkedChild}
+                  onCheck={() => {
+                    this._toggleCheckbox(facetUidChild, null, !checkedChild, facetUidParent)
+                  }}
+                />
+              }
+              style={listItemStyle}
+              primaryText={this.facetTitle[facetUidChild]}
+            />
+          )
+        })
+      }
 
-                    {(this.props.facets || []).map(function (facet, i) {
+      return (
+        <ListItem
+          style={listItemStyle}
+          key={facet.uid}
+          leftCheckbox={
+            <Checkbox
+              checked={checkedParent}
+              onCheck={() => {
+                this._toggleCheckbox(facetUidParent, childrenIds, !checkedParent)
+              }}
+            />
+          }
+          primaryText={this.facetTitle[facetUidParent]}
+          open={checkedParent}
+          initiallyOpen
+          autoGenerateNestedIndicator={false}
+          nestedItems={nestedItems}
+        />
+      )
+    })
+  })
 
-                        let childrenIds = [];
-                        let parentFacetChecked = this.state.checked.includes(facet.uid)
-
-                        let nestedItems = [];
-                        let children = selectn('contextParameters.children.entries', facet).sort(function (a, b) {
-                            if (a.title < b.title) return -1;
-                            if (a.title > b.title) return 1;
-                            return 0;
-                        });
-
-                        // Render children if exist 
-                        if (children.length > 0) {
-                            children.map(function (facetChild, i) {
-
-                                childrenIds.push(facetChild.uid);
-
-                                // Mark as checked if parent checked or if it is checked directly.
-                                let checked = this.state.checked.includes(facetChild.uid);
-
-                                nestedItems.push(<ListItem
-                                    key={facetChild.uid}
-                                    leftCheckbox={<Checkbox checked={checked}
-                                                            onCheck={this._toggleCheckbox.bind(this, facetChild.uid, null)}/>}
-                                    style={listItemStyle}
-                                    primaryText={this.intl.searchAndReplace(facetChild.title)}/>);
-                            }.bind(this));
-                        }
-
-                        return <ListItem
-                            style={listItemStyle}
-                            key={facet.uid}
-                            leftCheckbox={<Checkbox checked={parentFacetChecked}
-                                                    onCheck={this._toggleCheckbox.bind(this, facet.uid, childrenIds)}/>}
-                            primaryText={facet.title}
-                            open={parentFacetChecked}
-                            initiallyOpen={true}
-                            autoGenerateNestedIndicator={false}
-                            nestedItems={nestedItems}/>
-                    }.bind(this))}
-
-                </ListUI>
-            </Paper>
-        </FiltersWithToggle>;
-    }
+  render() {
+    return (
+      <FiltersWithToggle label={this.title} mobileOnly style={this.props.styles}>
+        <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
+          <ListUI subheader={this.title}>{this.listItems}</ListUI>
+        </Paper>
+      </FiltersWithToggle>
+    )
+  }
 }

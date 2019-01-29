@@ -13,38 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable from 'immutable'
 
-import classNames from 'classnames';
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+import ProviderHelpers from 'common/ProviderHelpers'
+import ReportBrowser from './browse-view'
 
-import ConfGlobal from 'conf/local.json';
-import ReportsJson from './reports.json';
-
-import ProviderHelpers from 'common/ProviderHelpers';
-import StringHelpers from 'common/StringHelpers';
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
-
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
-
-import MenuItem from 'material-ui/lib/menus/menu-item';
-
-import ReportBrowser from './browse-view';
-import IntlService from 'views/services/intl';
-
-const intl = IntlService.instance;
 /**
-* Learn songs
-*/
+ * Learn songs
+ */
 @provide
 export default class PageDialectReports extends Component {
-
   static propTypes = {
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
@@ -56,55 +38,56 @@ export default class PageDialectReports extends Component {
     computePortal: PropTypes.object.isRequired,
     fetchBooks: PropTypes.func.isRequired,
     computeBooks: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
-    routeParams: PropTypes.object.isRequired
-  };
+    computeLogin: PropTypes.object.isRequired,
+    routeParams: PropTypes.object.isRequired,
+  }
 
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
 
     this.state = {
-      filteredList: null
-    };
+      filteredList: null,
+    }
 
     // Bind methods to 'this'
     //[].forEach( (method => this[method] = this[method].bind(this)) );
   }
 
   fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path);
+    newProps.fetchDialect2(newProps.routeParams.dialect_path)
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.props);
+    this.fetchData(this.props)
   }
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps);
+      this.fetchData(nextProps)
     }
   }
 
   render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.props.routeParams.dialect_path,
+        entity: this.props.computeDialect2,
+      },
+    ])
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.props.routeParams.dialect_path,
-      'entity': this.props.computeDialect2
-    }])
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path);
-
-    return <div>
-
-              <div className="row" style={{marginBottom: '20px'}}>
-                <div className={classNames('col-xs-12', 'col-md-8')}>
-                  <h1>{selectn('response.title', computeDialect2)} Reports</h1>
-                  <ReportBrowser routeParams={this.props.routeParams} />
-                </div>
-              </div>
-
-        </div>;
+    return (
+      <div>
+        <div className="row" style={{ marginBottom: '20px' }}>
+          <div className={classNames('col-xs-12', 'col-md-8')}>
+            <h1>{selectn('response.title', computeDialect2)} Reports</h1>
+            <ReportBrowser routeParams={this.props.routeParams} />
+          </div>
+        </div>
+      </div>
+    )
   }
 }

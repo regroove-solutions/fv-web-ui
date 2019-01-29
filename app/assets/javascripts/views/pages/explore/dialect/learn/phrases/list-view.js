@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
-// import classNames from 'classnames'
+
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
@@ -191,6 +191,7 @@ export default class ListView extends DataListView {
     return newProps.parentID ? newProps.parentID : newProps.routeParams.dialect_path + '/Dictionary'
   }
 
+  // NOTE: DataListView calls `fetchData`
   fetchData(newProps) {
     if (newProps.dialect === null && !this.getDialect(newProps)) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
