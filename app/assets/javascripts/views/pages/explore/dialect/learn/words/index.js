@@ -111,22 +111,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   constructor(props, context) {
     super(props, context)
 
-    const routeParamsCategory = props.routeParams.category
-    const initialCategories = routeParamsCategory ? new Set([routeParamsCategory]) : new Set()
-    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys(
-      'fv-word:categories',
-      props.routeParams.area
-    )
-    const currentAppliedFilterCategories = routeParamsCategory
-      ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")`
-      : ''
-
-    let filterInfo = new Map({
-      currentCategoryFilterIds: initialCategories,
-      currentAppliedFilter: new Map({
-        categories: currentAppliedFilterCategories,
-      }),
-    })
+    let filterInfo = this._initialFilterInfo()
 
     // If no filters are applied via URL, use props
     if (filterInfo.get('currentCategoryFilterIds').isEmpty()) {
@@ -153,7 +138,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     this.state = {
       filterInfo,
-      visibleFilter: null,
       searchTerm: '',
       searchType: SEARCH_DEFAULT,
       searchByAlphabet: false,
@@ -165,10 +149,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
+      clickedFilterByCategory: false,
     }
 
     // Bind methods to 'this'
     ;[
+      'clearCategoryFilter',
       'handleSearch',
       'resetSearch',
       'updateState',
@@ -176,6 +162,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       '_getPageKey',
       '_handleAlphabetClick',
       '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
+      '_initialFilterInfo',
       '_getURLPageProps', // NOTE: Comes from PageDialectLearnBase
       '_handleFilterChange', // NOTE: Comes from PageDialectLearnBase
       '_handlePagePropertiesChange', // NOTE: Comes from PageDialectLearnBase
@@ -197,7 +184,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchTerm,
       searchPartOfSpeech,
       searchType,
-      visibleFilter,
     } = this.state
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
@@ -302,33 +288,31 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null)}>
             <div>
-              <h3>Words</h3>
+              <h2>Words</h2>
 
-              <RaisedButton
-                style={{ width: '100%', textAlign: 'left' }}
-                label={intl.trans(
-                  'views.pages.explore.dialect.learn.words.find_by_category',
-                  'Show All Words',
-                  'words'
-                )}
-                onTouchTap={this._clearAllFilters}
-              />
+              {this.state.clickedFilterByCategory === false && (
+                <RaisedButton
+                  style={{ margin: '0 0 10px 0' }}
+                  label={intl.trans(
+                    'views.pages.explore.dialect.learn.words.find_by_category',
+                    'Filter by Category',
+                    'words'
+                  )}
+                  onTouchTap={() => {
+                    this.setState({clickedFilterByCategory: true})
+                    this._handleFilterChange('find_by_category') // NOTE: Comes from PageDialectLearnBase
+                  }}
+                />
+              )}
 
-              <RaisedButton
-                style={{ width: '100%', textAlign: 'left' }}
-                label={intl.trans(
-                  'views.pages.explore.dialect.learn.words.find_by_category',
-                  'Filter by Category',
-                  'words'
-                )}
-                onTouchTap={() => {
-                  this._handleFilterChange('find_by_category') // NOTE: Comes from PageDialectLearnBase
-                }}
-              />
-
-              {visibleFilter === 'find_by_category' && (
+              {this.state.clickedFilterByCategory && (
                 <FacetFilterListCategory
-                  title={intl.trans('categories', 'Categories', 'first')}
+                  // title={intl.trans('categories', 'Categories', 'first')}
+                  title={intl.trans(
+                    'views.pages.explore.dialect.learn.words.find_by_category',
+                    'Filter by Category',
+                    'words'
+                  )}
                   appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
                   facetField={ProviderHelpers.switchWorkspaceSectionKeys(
                     'fv-word:categories',
@@ -336,12 +320,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                   )}
                   onFacetSelected={this._handleFacetSelected} // NOTE: Comes from PageDialectLearnBase
                   facets={selectn('response.entries', computeCategories) || []}
+                  clearCategoryFilter={this.clearCategoryFilter}
                 />
               )}
 
-              {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
-
-              {browseAlphabetically}
+              <div style={{clear: 'both'}}>
+                <h3>{intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}</h3>
+                {browseAlphabetically}
+              </div>
             </div>
             {/*
               <hr />
@@ -390,6 +376,30 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
   }
   // END render
+
+  clearCategoryFilter() {
+    // this.state.filterInfo.get('currentCategoryFilterIds')
+    this.setState({filterInfo: this._initialFilterInfo()})
+  }
+
+  _initialFilterInfo = () => {
+    const routeParamsCategory = this.props.routeParams.category
+    const initialCategories = routeParamsCategory ? new Set([routeParamsCategory]) : new Set()
+    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys(
+      'fv-word:categories',
+      this.props.routeParams.area
+    )
+    const currentAppliedFilterCategories = routeParamsCategory
+      ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")`
+      : ''
+
+    return new Map({
+      currentCategoryFilterIds: initialCategories,
+      currentAppliedFilter: new Map({
+        categories: currentAppliedFilterCategories,
+      }),
+    })
+  }
 
   handleSearch() {
     const { searchTerm, searchNxqlQuery } = this.state
@@ -470,8 +480,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.setState({ filterInfo: newFilter })
   }
 
-  _clearAllFilters() {}
-
   _handleAlphabetClick(startsWith) {
     this.setState(
       {
@@ -490,6 +498,4 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   _getPageKey() {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
-
-  _setFilter() {}
 }

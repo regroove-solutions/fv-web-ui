@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react'
 import Immutable, { Set } from 'immutable'
 
+import RaisedButton from 'material-ui/lib/raised-button'
 import memoize from 'memoize-one'
 import selectn from 'selectn'
 
@@ -11,7 +12,6 @@ import ListItem from 'material-ui/lib/lists/list-item'
 import Checkbox from 'material-ui/lib/checkbox'
 import withToggle from 'views/hoc/view/with-toggle'
 import IntlService from 'views/services/intl'
-
 const FiltersWithToggle = withToggle()
 
 export default class FacetFilterListCategory extends Component {
@@ -29,6 +29,8 @@ export default class FacetFilterListCategory extends Component {
   }
 
   intl = IntlService.instance
+
+  checkedCount = 0
 
   title = ''
   titleUpdate = memoize(() => this.intl.searchAndReplace(this.props.title))
@@ -64,12 +66,38 @@ export default class FacetFilterListCategory extends Component {
 
     this.listItems = this._constructListItems(props.appliedFilterIds, props.facets)
     this.title = this.titleUpdate()
-    ;['_constructListItems', '_toggleCheckbox'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_clearCategoryFilter', '_constructListItems', '_toggleCheckbox'].forEach(
+      (method) => (this[method] = this[method].bind(this))
+    )
   }
 
   componentDidUpdate() {
     this.listItems = this._constructListItems(this.props.appliedFilterIds, this.props.facets)
     this.title = this.titleUpdate()
+  }
+
+  render() {
+    return (
+      <div>
+        <RaisedButton
+          disabled={this.checkedCount === 0}
+          style={{ margin: '0 0 10px 0' }}
+          // label={this.intl.trans('views.pages.explore.dialect.learn.words.find_by_category', 'Show All Words', 'words')}
+          label={this.checkedCount > 1 ? 'Clear Category Filters' : 'Clear Category Filter'}
+          onTouchTap={this._clearCategoryFilter}
+        />
+        <FiltersWithToggle className="panel-category" label={this.title} mobileOnly style={this.props.styles}>
+          <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
+            <ListUI>{this.listItems}</ListUI>
+          </Paper>
+        </FiltersWithToggle>
+      </div>
+    )
+  }
+
+  _clearCategoryFilter() {
+    console.log('_clearCategoryFilter')
+    this.props.clearCategoryFilter()
   }
 
   _constructListItems = memoize((appliedFilterIds, facets) => {
@@ -107,13 +135,14 @@ export default class FacetFilterListCategory extends Component {
       left: 0,
     }
 
+    this.checkedCount = 0
+
     return facets.map((facet) => {
       const childrenIds = []
       const facetUidParent = facet.uid
 
-      const checkedParent = appliedFilterIds.includes(facetUidParent)
-
       const nestedItems = []
+
       const children = selectn('contextParameters.children.entries', facet)
 
       // Render children if exist
@@ -130,6 +159,10 @@ export default class FacetFilterListCategory extends Component {
 
           // Mark as checked if parent checked or if it is checked directly.
           const checkedChild = appliedFilterIds.includes(facetUidChild)
+
+          if (checkedChild) {
+            this.checkedCount += 1
+          }
 
           const leftCheckbox = (
             <Checkbox
@@ -153,6 +186,10 @@ export default class FacetFilterListCategory extends Component {
         })
       }
 
+      const checkedParent = appliedFilterIds.includes(facetUidParent)
+      if (checkedParent) {
+        this.checkedCount += 1
+      }
       const outerLeftCheckbox = (
         <Checkbox
           disabled={this.state.disableAll}
@@ -182,14 +219,4 @@ export default class FacetFilterListCategory extends Component {
   _toggleCheckbox = debounce((checkedFacetUid, childrenIds = [], isChecked, facetUidParent) => {
     this.props.onFacetSelected(this.props.facetField, checkedFacetUid, childrenIds, isChecked, facetUidParent)
   }, 200)
-
-  render() {
-    return (
-      <FiltersWithToggle className="panel-category" label={this.title} mobileOnly style={this.props.styles}>
-        <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
-          <ListUI>{this.listItems}</ListUI>
-        </Paper>
-      </FiltersWithToggle>
-    )
-  }
 }
