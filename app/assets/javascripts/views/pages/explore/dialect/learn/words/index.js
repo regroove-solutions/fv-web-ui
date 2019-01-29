@@ -337,7 +337,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               )}
 
               <div style={{clear: 'both'}}>
-                <h3>{intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}</h3>
+                <h2>{intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}</h2>
                 {browseAlphabetically}
               </div>
             </div>
