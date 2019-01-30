@@ -36,6 +36,7 @@ export default class DictionaryList extends Component {
   }
 
   static defaultProps = {
+    columns: [],
     cols: 3,
     cellHeight: 210,
     wrapperStyle: null,
@@ -46,6 +47,10 @@ export default class DictionaryList extends Component {
 
   constructor(props, context) {
     super(props, context)
+    ;['_getColumnClassNames', '_getColumnHeaders'].forEach((method) => (this[method] = this[method].bind(this)))
+  }
+  componentWillMount() {
+    this._columnClassNames = this._getColumnClassNames()
   }
 
   render() {
@@ -65,16 +70,11 @@ export default class DictionaryList extends Component {
       )
     }
 
+    const columnHeaders = this._getColumnHeaders()
     return (
-      <table className="data-table">
+      <table className="DictionaryList data-table">
         <tbody>
-          <tr>
-            {(columns || []).map((column, i) => (
-              <th key={i} align="left">
-                {selectn('title', column)}
-              </th>
-            ))}
-          </tr>
+          <tr>{columnHeaders}</tr>
 
           {(items || []).map((item, i) => (
             <tr
@@ -89,8 +89,9 @@ export default class DictionaryList extends Component {
                 const cellValue = selectn(column.name, item)
                 const cellRender =
                   typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
+                const className = this._columnClassNames[j] || ''
                 return (
-                  <td key={j} align="left">
+                  <td key={j} className={className} align="left">
                     {cellRender}
                   </td>
                 )
@@ -100,5 +101,46 @@ export default class DictionaryList extends Component {
         </tbody>
       </table>
     )
+  }
+
+  _columnClassNames = []
+
+  _getColumnClassNames() {
+    const { columns } = this.props
+    return columns.map((currentValue) => {
+      const name = selectn('name', currentValue)
+      // title
+      // fv:definitions
+      // related_audio
+      // related_pictures
+      // fv-word:part_of_speech
+      const prefix = 'DictionaryList'
+      let className = ''
+      switch (name) {
+        case 'title':
+          className = `${prefix}Title`
+          break
+        case 'related_audio':
+          className = 'PrintHide'
+          break
+        case 'related_pictures':
+          className = 'PrintHide'
+          break
+        default: // NOTE: do nothing
+      }
+      return className
+    })
+  }
+  _getColumnHeaders() {
+    const { columns } = this.props
+    return columns.map((column, i) => {
+      const text = selectn('title', column)
+      const className = this._columnClassNames[i] || ''
+      return (
+        <th key={i} align="left" className={className}>
+          {text}
+        </th>
+      )
+    })
   }
 }
