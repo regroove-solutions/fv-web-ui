@@ -26,18 +26,21 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         information about property type and what needs to be done to properly produce it during export.
 
         Additional attributes which have to be populated (but are not labeled with column description).
+
         'ufe:" - stands for 'use-for-export' is either true or false and determines if ExportColumnRecord can be used
                  in requested export. If true 'IDENTIFIER from UI' will be returned in FVSupportedExportColumns response
                  and property reader to be used to export property.
+
         'nc:'  - stand for 'number-columns' and defines number of columns to be created for a specific property.
                  Some properties will have multiple columns but only one name 'COLUMN NAME' to define the output.
                  In such a case, when 'nc:' > 1, export will generate additional column headers by appending a number
                  to declared column name.
+
         'c:'   - stands for 'compound' and provides input for compound properties which can generate multiple rows,
                  for each column. Compounds are defined as FV_PropertyValueWithColumnName[]. This class is used
                  universally to bind 2 entities together. Compounds are defined in FVExportProperties and apply to
                  properties describing media type properties with multiple attributes.
-                 Compunds do need to have 'nc:' defined as they are deduced from other factors.
+                 Compounds do need to have 'nc:' defined as they are deduced from other factors.
                  NOTE: there are records below which are labeled as 'AUDIO COMPOUND', 'IMAGE COMPOUND', 'VIDEO COMPOUND'
                  which should always have 'ufe:' set to false as they cannot read properties without being a part of compound.
                  Label 'not done' designed property readers which are not completed yet.
@@ -84,7 +87,7 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( AUDIO_FILENAME,                new ExportColumnRecord( AUDIO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 1,                FV_PropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( AUDIO_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,    FV_BooleanPropertyReader.class, null) );
-        columnRecordHashMap.put( AUDIO_SOURCE,                  new ExportColumnRecord( AUDIO_SOURCE,                    FVExportProperties.MEDIA_SOURCE, false, 2,         FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( AUDIO_SOURCE,                  new ExportColumnRecord( AUDIO_SOURCE,                    FVExportProperties.MEDIA_ORIGIN, false, 2,         FV_SimpleListPropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_CHILD_FOCUSED,           new ExportColumnRecord( AUDIO_CHILD_FOCUSED,             FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,  FV_BooleanPropertyReader.class, null) );
         columnRecordHashMap.put( AUDIO_RECORDER,                new ExportColumnRecord( AUDIO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
 
@@ -93,7 +96,7 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( IMG_FILENAME,                new ExportColumnRecord( IMG_FILENAME,                     FVExportProperties.MEDIA_FILENAME, false, 1,        FV_PropertyReader.class, null) );
         columnRecordHashMap.put( IMG_DESCRIPTION,             new ExportColumnRecord( IMG_DESCRIPTION,                  FVExportProperties.DESCR, false, 1,                 FV_PropertyReader.class, null) );
         columnRecordHashMap.put( IMG_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( IMG_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,        FV_BooleanPropertyReader.class, null) );
-        columnRecordHashMap.put( IMG_SOURCE,                  new ExportColumnRecord( IMG_SOURCE,                       FVExportProperties.MEDIA_SOURCE, false, 2,          FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( IMG_SOURCE,                  new ExportColumnRecord( IMG_SOURCE,                       FVExportProperties.MEDIA_ORIGIN, false, 2,          FV_SimpleListPropertyReader.class, null) );
         columnRecordHashMap.put( IMG_CHILD_FOCUSED,           new ExportColumnRecord( IMG_CHILD_FOCUSED,                FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,   FV_BooleanPropertyReader.class, null) );
         columnRecordHashMap.put( IMG_RECORDER,                new ExportColumnRecord( IMG_RECORDER,                     FVExportProperties.MEDIA_RECORDER, false, 2,        FV_SimpleListPropertyReader.class, null) );
 
@@ -102,7 +105,7 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
         columnRecordHashMap.put( VIDEO_FILENAME,                new ExportColumnRecord( VIDEO_FILENAME,                  FVExportProperties.MEDIA_FILENAME, false, 1,       FV_PropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_DESCRIPTION,             new ExportColumnRecord( AUDIO_DESCRIPTION,               FVExportProperties.DESCR, false, 0,                FV_PropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_SHARED_WITH_OTHER_DIALECTS,  new ExportColumnRecord( VIDEO_SHARED_WITH_OTHER_DIALECTS, FVExportProperties.MEDIA_SHARED, false, 1,    FV_BooleanPropertyReader.class, null) );
-        columnRecordHashMap.put( VIDEO_SOURCE,                  new ExportColumnRecord( VIDEO_SOURCE,                    FVExportProperties.MEDIA_SOURCE, false, 2,         FV_SimpleListPropertyReader.class, null) );
+        columnRecordHashMap.put( VIDEO_SOURCE,                  new ExportColumnRecord( VIDEO_SOURCE,                    FVExportProperties.MEDIA_ORIGIN, false, 2,         FV_SimpleListPropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_CHILD_FOCUSED,           new ExportColumnRecord( VIDEO_CHILD_FOCUSED,             FVExportProperties.MEDIA_CHILD_FOCUSED, false, 1,  FV_BooleanPropertyReader.class, null) );
         columnRecordHashMap.put( VIDEO_RECORDER,                new ExportColumnRecord( VIDEO_RECORDER,                  FVExportProperties.MEDIA_RECORDER, false, 2,       FV_SimpleListPropertyReader.class, null) );
 

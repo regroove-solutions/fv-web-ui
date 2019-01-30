@@ -80,6 +80,7 @@ public final class FVExportConstants
         public static final String CODE                             = "CODE";
         public static final String USERNAME                         = "USERNAME";
         public static final String DESCRIPTION                      = "DESCRIPTION";
+
         public static final String AUDIO                            = "AUDIO";                      // compound descriptor
         public static final String AUDIO_TITLE                      = "AUDIO_TITLE";
         public static final String AUDIO_FILENAME                   = "AUDIO_FILENAME";
@@ -88,6 +89,7 @@ public final class FVExportConstants
         public static final String AUDIO_SOURCE                     = "AUDIO_SOURCE";
         public static final String AUDIO_RECORDER                   = "AUDIO_RECORDER";
         public static final String AUDIO_CHILD_FOCUSED              = "AUDIO_CHILD_FOCUSED";
+
         public static final String IMAGE                            = "IMAGE";                      // compound descriptor
         public static final String IMG_TITLE                        = "IMG_TITLE";
         public static final String IMG_FILENAME                     = "IMG_FILENAME";
@@ -96,6 +98,14 @@ public final class FVExportConstants
         public static final String IMG_SOURCE                       = "IMG_SOURCE";
         public static final String IMG_RECORDER                     = "IMG_RECORDER";
         public static final String IMG_CHILD_FOCUSED                = "IMG_CHILD_FOCUSED";
+        public static final String IMG_HEADLINE                     = "IMG_HEADLINE";
+        public static final String IMG_PICTURE_SOURCE               = "PICTURE_SOURCE";
+        public static final String IMG_PICTURE_ORIGIN               = "PICTURE_ORIGIN";
+        public static final String IMG_PICTURE_CAPTION              = "PICTURE_CAPTION";
+        public static final String IMG_PICTURE_CREDIT               = "PICTURE_CREDIT";
+        public static final String IMG_PICTURE_HEADLINE             = "PICTURE_HEADLINE";
+
+
         public static final String VIDEO                            = "VIDEO";                       // compound descriptor
         public static final String VIDEO_TITLE                      = "VIDEO_TITLE";
         public static final String VIDEO_FILENAME                   = "VIDEO_FILENAME";

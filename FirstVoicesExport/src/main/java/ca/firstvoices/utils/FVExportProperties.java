@@ -69,7 +69,6 @@ public class FVExportProperties
     // FVM:
     public static final String MEDIA_SHARED =           "fvm:shared";           // Boolean
     public static final String MEDIA_RECORDER =         "fvm:recorder";         // String[]
-    public static final String MEDIA_SOURCE =           "fvm:source";           // String[]
     public static final String MEDIA_CHILD_FOCUSED =    "fvm:child_focused";    // Boolean
     public static final String MEDIA_ORIGIN =           "fvm:origin";           // String
     public static final String MEDIA_FILENAME =         "file:filename";        // String
@@ -79,6 +78,16 @@ public class FVExportProperties
     public static final String AUDIO_COMPUND =          "fv:related_audio";
     public static final String VIDEO_COMPUND =          "fv:related_videos";
 
+    // picture:
+    public static final String PICTURE_SOURCE =           "picture:source";      // String
+    public static final String PICTURE_ORIGIN =           "picture:origin";      // String
+    public static final String PICTURE_CAPTION =          "picture:caption";     // String
+    public static final String PICTURE_CREDIT =           "picture:credit";      // String
+    public static final String PICTURE_HEADLINE =         "picture:headline";    // String
+
+    // audio:
+
+    // video:
 
 //    public static final Map<String, String> imgCompoundMap = Stream.of(
 //            new AbstractMap.SimpleEntry<>( FVExportConstants.ExportCSVLabels.IMG_TITLE, TITLE ),
@@ -95,7 +104,7 @@ public class FVExportProperties
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_FILENAME,                         MEDIA_FILENAME ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_DESCRIPTION,                      DESCR ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS,       MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_SOURCE,                           MEDIA_SOURCE ),
+            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_SOURCE,                           MEDIA_ORIGIN ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_RECORDER,                         MEDIA_RECORDER ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_CHILD_FOCUSED,                    MEDIA_CHILD_FOCUSED )
     };
@@ -115,7 +124,7 @@ public class FVExportProperties
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_FILENAME,                       MEDIA_FILENAME ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_DESCRIPTION,                    DESCR ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_SOURCE,                         MEDIA_SOURCE ),
+            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_SOURCE,                         MEDIA_ORIGIN ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_RECORDER,                       MEDIA_RECORDER ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
     };
@@ -137,7 +146,7 @@ public class FVExportProperties
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_FILENAME,                       MEDIA_FILENAME ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_DESCRIPTION,                    DESCR ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_SOURCE,                         MEDIA_SOURCE ),
+            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_SOURCE,                         MEDIA_ORIGIN ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_RECORDER,                       MEDIA_RECORDER ),
             new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
     };
