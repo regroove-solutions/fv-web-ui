@@ -905,13 +905,17 @@ audio::-webkit-media-controls-enclosure {
   }
 }
 
-@import "kids";
+@import "AlphabetGridTile";
+@import "Button";
+@import "CardView";
 @import "Dialect";
 @import "Introduction";
-@import "CardView";
-@import "Button";
-@import "AlphabetGridTile";
+@import "kids";
 @import "SearchDialect";
+
+@media print {
+  @import "Print";
+}
 
 .panel-category {
   .panel-body {
