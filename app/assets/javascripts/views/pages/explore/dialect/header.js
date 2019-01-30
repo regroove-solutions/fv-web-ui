@@ -85,7 +85,7 @@ export default class Header extends Component {
     const isSection = routeParams.area === 'sections'
 
     return (
-      <div className="row" style={portalBackgroundStyles}>
+      <div className="Header row" style={portalBackgroundStyles}>
         <div style={{ position: 'absolute', bottom: '80px', right: 0, width: '442px' }}>
           <div className={classNames('dialect-info-banner')}>
             <div className={classNames('dib-header', 'visible-xs')}>
