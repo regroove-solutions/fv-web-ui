@@ -36,7 +36,7 @@ import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 
-// import ExportDialect from 'views/components/ExportDialect'
+import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
 
@@ -262,16 +262,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       }
     )
 
-    // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
-    // <ExportDialect
-    //   displayDebug
-    //   fileName="File name.csv"
-    //   fileUrl="//google.ca"
-    //   isErrored={false}
-    //   isReady={false}
-    //   isProcessing={false}
-    //   dialectId={fvaDialectId}
-    // />
+    const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
+
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -301,7 +293,15 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <h2>Words</h2>
-
+              <ExportDialect
+                displayDebug
+                // fileName="File name.csv"
+                // fileUrl="//google.ca"
+                // isErrored={false}
+                // isReady={false}
+                // isProcessing={false}
+                dialectId={fvaDialectId}
+              />
               {this.state.clickedFilterByCategory === false && (
                 <RaisedButton
                   style={{ margin: '0 0 10px 0' }}
