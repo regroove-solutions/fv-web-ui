@@ -35,7 +35,7 @@ import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
 
 import { SearchDialect } from 'views/components/SearchDialect'
-import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
+import { SEARCH_DEFAULT } from 'views/components/SearchDialect/constants'
 
 const intl = IntlService.instance
 
@@ -200,7 +200,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         </PromiseWrapper>
       )
     }
-    const dialectClassName = getDialectClassname(computeDocument);
+    const dialectClassName = getDialectClassname(computeDocument)
     const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
     const pageTitle = intl.trans('views.pages.explore.dialect.phrases.x_phrases', `${dialect} Phrases`, null, [dialect])
 
@@ -230,7 +230,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
           </div>
         </div>
         <div className="row">
-          <div className={classNames('col-xs-12', 'col-md-3', computePhraseBooksSize === 0 ? 'hidden' : null)}>
+          <div className={classNames('col-xs-12', 'col-md-3', computePhraseBooksSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <FacetFilterList
               title={intl.trans('phrase_books', 'Phrase Books', 'words')}
               appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
