@@ -19,8 +19,10 @@ import java.util.Map;
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.*;
 
-@Operation(id=FVFormattedDocumentGetter.ID, category= Constants.CAT_DOCUMENT, label="Get formatted document", description="Retrieve formatted (CSV or PDF) document from principals home directory.")
-
+/**
+ * This end-point will return all the documents export by a specific principal
+ */
+@Operation(id=FVFormattedDocumentGetter.ID, category= Constants.CAT_DOCUMENT, label="Get exported documents", description="Retrieve formatted (CSV or PDF) documents from principals home directory.")
 public class FVFormattedDocumentGetter
 {
     public static final String ID = "Document.GetFormattedDocument";
@@ -37,6 +39,11 @@ public class FVFormattedDocumentGetter
     protected OperationContext ctx;
 
 
+    /**
+     * @param input - dialect to check for export documents
+     * @return - list of ALL export documents associated with requesting user
+     *
+     */
     // input should be DocumentModel for a dialect where we will check for existence of exported files
     @OperationMethod
     public DocumentModelList run( DocumentModel input)

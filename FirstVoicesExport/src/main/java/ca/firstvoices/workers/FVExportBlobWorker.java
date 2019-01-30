@@ -13,6 +13,9 @@ import java.io.*;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
 
+/**
+ * FVExportBlobWorker relocates temporary file and connects to a wrapper document created at the start of the export
+ */
 public class FVExportBlobWorker extends FVAbstractExportWork
 {
     private static final Log log = LogFactory.getLog(FVExportBlobWorker.class);

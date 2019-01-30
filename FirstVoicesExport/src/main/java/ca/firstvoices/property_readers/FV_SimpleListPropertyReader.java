@@ -8,6 +8,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * FV_SimpleListPropertyReader reads an array of strings which will be placed in multiple columns
+ * The number of columns is specified in FV_AbstractProducer.FV_CSVExportColumns spec.
+ * FV_AbstractProducer will generate additional columns for the property.
+ * If there are more values than there are columns, additional values will not be displayed
+ * If there are less values than there are columns, empty columns will be displayed
+ *
+ */
 public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
 {
 

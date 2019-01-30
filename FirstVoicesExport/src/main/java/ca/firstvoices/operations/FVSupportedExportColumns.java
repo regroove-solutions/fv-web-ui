@@ -27,8 +27,11 @@ public class FVSupportedExportColumns
     protected String exportElement = FVPHRASE;
 
 
+    /**
+     * @return - list of strings with names of columns which can be used to specify columns for export
+     */
     @OperationMethod
-    public StringList run(DocumentModel input)
+    public StringList run()
     {
         if( format.equals("PDF")) return null;
 

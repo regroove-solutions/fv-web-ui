@@ -17,6 +17,8 @@ import static ca.firstvoices.utils.FVExportConstants.ON_DEMAND_WORKER_CATEGORY;
 
 /*
         Worker description is in FVAbstractExportWorker file.
+
+        FVExportWorker starts export for words and phrases
 */
 
 public class FVExportWorker extends FVAbstractExportWork
@@ -106,7 +108,7 @@ public class FVExportWorker extends FVAbstractExportWork
                 }
 
 
-                fileOutputProducer.close( session, session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
+                fileOutputProducer.close( session.getDocument( new IdRef( getDialectGUID())), getWorkInfo() );
                 lctx.logout();
                 session.close();
             }

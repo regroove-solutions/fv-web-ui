@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringJoiner;
 
+
+/**
+    Helper class to write CSV data to a file
+ */
+
 public class FV_SimpleCSVWriter
 {
     protected FileWriter fileHandle;

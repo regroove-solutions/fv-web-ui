@@ -18,7 +18,7 @@ import static ca.firstvoices.utils.FVExportConstants.CSV_FORMAT;
 public class FV_PhraseCSVProducer extends FV_AbstractProducer
 {
 
-    protected FV_SimpleCSVWriter csvWriter;
+    private FV_SimpleCSVWriter csvWriter;
 
     public FV_PhraseCSVProducer(CoreSession session, String fileName, StringList columns )
     {
@@ -26,11 +26,11 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
         try
         {
-            addReaders( spec, columns );
+            addReaders( columns );
 
             if( createTemporaryOutputFile( fileName, CSV_FORMAT ) )
             {
-                csvWriter = new FV_SimpleCSVWriter(new FileWriter(outputFile));
+                csvWriter = new FV_SimpleCSVWriter( new FileWriter(outputFile) );
             }
             else
             {
@@ -72,13 +72,14 @@ public class FV_PhraseCSVProducer extends FV_AbstractProducer
 
     protected void createDefaultPropertyReaders()
     {
+        //                                                                           Binding spec for this producer                      Key to a reader binding                       binding spec owner
         propertyReaders.add( new FV_PropertyReader(             session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.PHRASE ),                         this ) );
         propertyReaders.add( new FV_PropertyReader(             session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DESCR ),                          this) );
         propertyReaders.add( new FV_WordTranslationReader(      session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.DOMINANT_LANGUAGE_DEFINITION ),   this ) );
         propertyReaders.add( new FV_SimpleListPropertyReader(   session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.CULTURAL_NOTE ),                  this ) );
         propertyReaders.add( new FV_PropertyReader(             session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.REFERENCE ),                      this ) );
 
-        hasCompoundReaders = true;
+        hasCompoundReaders = true;  // have to set this flag manually as property readers are created manually
         propertyReaders.add( new FV_CompoundPropertyReader(     session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.IMAGE ),                          this ) );
         propertyReaders.add( new FV_CompoundPropertyReader(     session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.AUDIO ),                          this ) );
         propertyReaders.add( new FV_CompoundPropertyReader(     session,    spec.getColumnExportRecord( FVExportConstants.ExportCSVLabels.VIDEO ),                          this ) );

@@ -20,6 +20,9 @@ import java.util.*;
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
 
+/**
+ *
+ */
 public class FVExportListener implements EventListener
 {
     private static final Log log = LogFactory.getLog(FVExportListener.class);
@@ -33,7 +36,7 @@ public class FVExportListener implements EventListener
 
         switch( event.getName() )
         {
-            case PRODUCE_FORMATTED_DOCUMENT:
+            case PRODUCE_FORMATTED_DOCUMENT: // starting point for an export operations
                 FVExportWorkInfo info = (FVExportWorkInfo) ctx.getProperty( EXPORT_WORK_INFO );
 
                 String id = makeExportWorkerID( info );
@@ -44,11 +47,11 @@ public class FVExportListener implements EventListener
                 }
                 break;
 
-            case FINISH_EXPORT_BY_WRAPPING_BLOB:
+            case FINISH_EXPORT_BY_WRAPPING_BLOB: // conclusion of the export - send document to be included in a wrapper
                 workManager.schedule( produceBlobWorker( ctx ), true);
                 break;
 
-            case AUTO_PRODUCE_FORMATTED_DOCUMENT:
+            case AUTO_PRODUCE_FORMATTED_DOCUMENT: // placeholder for cyclic export
                 if( checkForRunningWorkerBeforeProceeding( CYCLIC_WORKER_ID ) )
                 {
                     workManager.schedule( produceWorker(ctx, new FVCyclicExportWorker() ), true);

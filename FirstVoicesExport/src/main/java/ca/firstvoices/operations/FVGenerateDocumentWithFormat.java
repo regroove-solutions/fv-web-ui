@@ -29,6 +29,15 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportProperties.*;
 import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
 
+/**
+ * FVGenerateDocumentWithFormat endpoint starts the export of words or phrases base on provided parameters
+ * for specified dialect and ties it to the requesting user.
+ * Initial setup includes collection of the document IDS to be processed and filling in the work information
+ * which will be passed between different stages of the export process.
+ *
+ * Document representing the wrapper which will hold the generated export document is returned back to the
+ * requesting user.
+ */
 
 @Operation(id=FVGenerateDocumentWithFormat.ID, category= Constants.CAT_DOCUMENT, label="Export Document with format", description="Export word or phrase documents with format (CSV or PDF). ")
 public class FVGenerateDocumentWithFormat
@@ -63,8 +72,13 @@ public class FVGenerateDocumentWithFormat
     protected OperationContext ctx;
 
 
+    /**
+     * @param input - dialect for which the export is to be generated
+     * @return - wrapper document which will hold the exported document once finished
+     *
+     */
     @OperationMethod
-    public DocumentModel run(DocumentModel input)
+    public DocumentModel run( DocumentModel input )
     {
         Map<String, Object> parameters = new HashMap<String, Object>();
         DocumentModel wrapper = null;
@@ -82,7 +96,7 @@ public class FVGenerateDocumentWithFormat
             workInfo.initiatorName = session.getPrincipal().getName();
             workInfo.exportElement = exportElement;
 
-            GeneratedQueryArguments workParams = getDocumentIDs( "*", input );
+            GeneratedQueryArguments workParams = getDocumentIDs( query, input );
 
             if( workParams != null )
             {
@@ -152,6 +166,12 @@ public class FVGenerateDocumentWithFormat
     }
 
 
+    /**
+     * @param query - as supplied by requesting user
+     * @param dialect - dialect associated with a user requesting export
+     *
+     * @return - string of the query which was executed
+     */
     private GeneratedQueryArguments getDocumentIDs( String query, DocumentModel dialect )
     {
         DocumentModelList docs;
@@ -187,6 +207,13 @@ public class FVGenerateDocumentWithFormat
         return returnArgs;
     }
 
+
+    /**
+     * @param session - session associated with the the endpoint
+     * @param workInfo - work information
+     *
+     * @return - existing wrapper or null if document does not exist
+     */
     private DocumentModel findWrapper( CoreSession session, FVExportWorkInfo workInfo )
     {
         DocumentModel wrapper = null;
