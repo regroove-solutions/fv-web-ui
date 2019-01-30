@@ -99,7 +99,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
             </div>
           </div>
 
-          <div className="row" style={{ marginTop: '15px' }}>
+          <div className="row PrintHide" style={{ marginTop: '15px' }}>
             <div className={classNames('col-md-7', 'col-xs-12')} style={{ paddingBottom: '15px' }}>
               <Pagination
                 forcePage={this.props.fetcherParams.currentPageIndex - 1}
