@@ -1,8 +1,11 @@
 package ca.firstvoices.utils;
 
+import ca.firstvoices.format_producers.FV_AbstractProducer;
+import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.ecm.core.api.*;
 
+import java.lang.reflect.Constructor;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +135,16 @@ public class FVExportUtils
     {
         String md5Hex = DigestUtils.md5Hex(hashCandidate).toUpperCase();
         return  md5Hex;
+    }
+
+    public static FV_AbstractPropertyReader makePropertyReader(CoreSession session, ExportColumnRecord colR, FV_AbstractProducer producer) throws Exception
+    {
+        Class<?> clazz = colR.requiredPropertyReader;
+        Constructor<?> constructor = clazz.getConstructor( CoreSession.class, ExportColumnRecord.class , FV_AbstractProducer.class );
+        FV_AbstractPropertyReader instance = (FV_AbstractPropertyReader) constructor.newInstance( session, colR, producer );
+        instance.session = session;
+
+        return instance;
     }
 }
 
