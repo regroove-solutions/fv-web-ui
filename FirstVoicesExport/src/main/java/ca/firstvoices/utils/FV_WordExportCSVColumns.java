@@ -37,7 +37,7 @@ public final class FV_WordExportCSVColumns extends FV_CSVExportColumns
                  to declared column name.
 
         'c:'   - stands for 'compound' and provides input for compound properties which can generate multiple rows,
-                 for each column. Compounds are defined as FV_PropertyValueWithColumnName[]. This class is used
+                 for each column. Compounds are defined as FV_DataBinding[]. This class is used
                  universally to bind 2 entities together. Compounds are defined in FVExportProperties and apply to
                  properties describing media type properties with multiple attributes.
                  Compounds do need to have 'nc:' defined as they are deduced from other factors.

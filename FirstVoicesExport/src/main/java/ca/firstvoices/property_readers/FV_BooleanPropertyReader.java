@@ -20,10 +20,10 @@ public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
         return ReaderType.BOOLEAN;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
         Boolean prop = (Boolean)word.getPropertyValue(propertyToRead);
 
         if( prop == null )
@@ -33,7 +33,7 @@ public class FV_BooleanPropertyReader extends FV_AbstractPropertyReader
 
         String propertyValue = prop ? "true" : "false";
 
-        readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, propertyValue));
+        readValues.add(new FV_DataBinding( columnNameForOutput, propertyValue));
 
         return readValues;
     }

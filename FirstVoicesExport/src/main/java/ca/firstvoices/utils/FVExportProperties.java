@@ -1,13 +1,6 @@
 package ca.firstvoices.utils;
 
-import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
-
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import ca.firstvoices.property_readers.FV_DataBinding;
 
 public class FVExportProperties
 {
@@ -99,14 +92,14 @@ public class FVExportProperties
 //            new AbstractMap.SimpleEntry<>( FVExportConstants.ExportCSVLabels.IMG_CHILD_FOCUSED, MEDIA_CHILD_FOCUSED )
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
-    public static final FV_PropertyValueWithColumnName imgCompoundA[] = {
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_TITLE,                            TITLE ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_FILENAME,                         MEDIA_FILENAME ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_DESCRIPTION,                      DESCR ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS,       MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_SOURCE,                           MEDIA_ORIGIN ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_RECORDER,                         MEDIA_RECORDER ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.IMG_CHILD_FOCUSED,                    MEDIA_CHILD_FOCUSED )
+    public static final FV_DataBinding imgCompoundA[] = {
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_TITLE,                            TITLE ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_FILENAME,                         MEDIA_FILENAME ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_DESCRIPTION,                      DESCR ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_SHARED_WITH_OTHER_DIALECTS,       MEDIA_SHARED ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_SOURCE,                           MEDIA_ORIGIN ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_RECORDER,                         MEDIA_RECORDER ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_CHILD_FOCUSED,                    MEDIA_CHILD_FOCUSED )
     };
 
 //    public static final Map<String, String> audioCompoundMap = Stream.of(
@@ -119,14 +112,14 @@ public class FVExportProperties
 //            new AbstractMap.SimpleEntry<>( FVExportConstants.ExportCSVLabels.AUDIO_CHILD_FOCUSED,                       MEDIA_CHILD_FOCUSED )
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
-    public static final FV_PropertyValueWithColumnName audioCompoundA[] = {
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_TITLE,                          TITLE ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_FILENAME,                       MEDIA_FILENAME ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_DESCRIPTION,                    DESCR ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_SOURCE,                         MEDIA_ORIGIN ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_RECORDER,                       MEDIA_RECORDER ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.AUDIO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
+    public static final FV_DataBinding audioCompoundA[] = {
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_TITLE,                          TITLE ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_FILENAME,                       MEDIA_FILENAME ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_DESCRIPTION,                    DESCR ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_SOURCE,                         MEDIA_ORIGIN ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_RECORDER,                       MEDIA_RECORDER ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
     };
 
 
@@ -141,14 +134,14 @@ public class FVExportProperties
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
 
-    public static final FV_PropertyValueWithColumnName videoCompoundA[] = {
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_TITLE,                          TITLE ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_FILENAME,                       MEDIA_FILENAME ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_DESCRIPTION,                    DESCR ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_SOURCE,                         MEDIA_ORIGIN ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_RECORDER,                       MEDIA_RECORDER ),
-            new FV_PropertyValueWithColumnName( FVExportConstants.ExportCSVLabels.VIDEO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
+    public static final FV_DataBinding videoCompoundA[] = {
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_TITLE,                          TITLE ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_FILENAME,                       MEDIA_FILENAME ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_DESCRIPTION,                    DESCR ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_SHARED_WITH_OTHER_DIALECTS,     MEDIA_SHARED ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_SOURCE,                         MEDIA_ORIGIN ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_RECORDER,                       MEDIA_RECORDER ),
+            new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_CHILD_FOCUSED,                  MEDIA_CHILD_FOCUSED )
     };
 
     //--

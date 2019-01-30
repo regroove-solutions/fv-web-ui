@@ -12,7 +12,7 @@ import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
 
 public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 {
-    private FV_PropertyValueWithColumnName[]    compound;
+    private FV_DataBinding[]    compound;
     private List<FV_AbstractPropertyReader>     compoundReaders;
 
     public ReaderType readerType()
@@ -31,11 +31,11 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
         makeReaders();
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel doc = (DocumentModel) o;
 
-        List<FV_PropertyValueWithColumnName> compoundOutput = new ArrayList<>();
+        List<FV_DataBinding> compoundOutput = new ArrayList<>();
 
         try
         {
@@ -51,13 +51,13 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
                     {
                         DocumentModel refDoc = session.getDocument( new IdRef(guid) );
 
-                        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+                        List<FV_DataBinding> output = new ArrayList<>();
 
                         if (refDoc == null) throw new Exception("FV_CompoundPropertyReader: Invalid document");
 
                         for (FV_AbstractPropertyReader prop : compoundReaders)
                         {
-                            List<FV_PropertyValueWithColumnName> listToAdd;
+                            List<FV_DataBinding> listToAdd;
 
                             try
                             {
@@ -90,9 +90,9 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
     }
 
 
-//    public List<FV_PropertyValueWithColumnName> readPropertyFromObject_old(Object o) {
+//    public List<FV_DataBinding> readPropertyFromObject_old(Object o) {
 //        DocumentModel doc = (DocumentModel) o;
-//        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+//        List<FV_DataBinding> output = new ArrayList<>();
 //
 //        try
 //        {
@@ -108,38 +108,38 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 //
 //                    if (refDoc == null) throw new Exception("FV_CompoundPropertyReader: Invalid document");
 //
-//                    for (FV_PropertyValueWithColumnName prop : compound)
+//                    for (FV_DataBinding prop : compound)
 //                    {
 //                        Object val = refDoc.getPropertyValue((String)prop.readPropertyValue);
 //
 //                        if( val == null )
 //                        {
-//                            output.add(new FV_PropertyValueWithColumnName(prop.outputColumnName, "") );
+//                            output.add(new FV_DataBinding(prop.outputColumnName, "") );
 //                        }
 //                        else if( val instanceof String )
 //                        {
-//                            output.add(new FV_PropertyValueWithColumnName( prop.outputColumnName, (String)val));
+//                            output.add(new FV_DataBinding( prop.outputColumnName, (String)val));
 //                        }
 //                        else if( val instanceof Boolean )
 //                        {
 //                            Boolean b = (Boolean)val;
-//                            output.add(new FV_PropertyValueWithColumnName( prop.outputColumnName,  (b ? "true" : "false") ));
+//                            output.add(new FV_DataBinding( prop.outputColumnName,  (b ? "true" : "false") ));
 //                        }
 //                        else if( val instanceof String[] )
 //                        {
 //                            String[] sa = (String[])val;
 //                            if( sa.length > 0 )
 //                            {
-//                                output.add(new FV_PropertyValueWithColumnName(prop.outputColumnName, sa[0]));
+//                                output.add(new FV_DataBinding(prop.outputColumnName, sa[0]));
 //                            }
 //                            else
 //                            {
-//                                output.add(new FV_PropertyValueWithColumnName(prop.outputColumnName, ""));
+//                                output.add(new FV_DataBinding(prop.outputColumnName, ""));
 //                            }
 //                        }
 //                        else
 //                        {
-//                            output.add(new FV_PropertyValueWithColumnName(prop.outputColumnName, "FV_CompoundPropertyReader: unhandled property" ) );
+//                            output.add(new FV_DataBinding(prop.outputColumnName, "FV_CompoundPropertyReader: unhandled property" ) );
 //                        }
 //                    }
 //                }
@@ -165,7 +165,7 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 
         columns = new StringList();
 
-        for( FV_PropertyValueWithColumnName p : compound )
+        for( FV_DataBinding p : compound )
         {
             columns.add( p.outputColumnName );
         }
@@ -177,7 +177,7 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
     {
         if( compoundReaders.size() > 0 ) return;
 
-        for ( FV_PropertyValueWithColumnName pvc : compound )
+        for ( FV_DataBinding pvc : compound )
         {
             try
             {
@@ -192,15 +192,15 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
         }
     }
 
-    private FV_PropertyValueWithColumnName createCompoundProperty( String colName, List<FV_PropertyValueWithColumnName> list )
+    private FV_DataBinding createCompoundProperty(String colName, List<FV_DataBinding> list )
     {
-        return new FV_PropertyValueWithColumnName( colName,list);
+        return new FV_DataBinding( colName,list);
     }
 
-    private List<FV_PropertyValueWithColumnName> createCompoundListOutput( String colName, List<FV_PropertyValueWithColumnName> list )
+    private List<FV_DataBinding> createCompoundListOutput(String colName, List<FV_DataBinding> list )
     {
-        List<FV_PropertyValueWithColumnName> compoundReturnOutput = new ArrayList<>();
-        compoundReturnOutput.add( new FV_PropertyValueWithColumnName( colName,list) );
+        List<FV_DataBinding> compoundReturnOutput = new ArrayList<>();
+        compoundReturnOutput.add( new FV_DataBinding( colName,list) );
         return compoundReturnOutput;
     }
 

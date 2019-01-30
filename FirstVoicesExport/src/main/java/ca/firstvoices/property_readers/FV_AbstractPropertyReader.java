@@ -31,7 +31,7 @@ public abstract class FV_AbstractPropertyReader
     public CoreSession session;
 
     public abstract ReaderType readerType();
-    public abstract List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o);
+    public abstract List<FV_DataBinding> readPropertyFromObject(Object o);
 
     public FV_AbstractPropertyReader( CoreSession session, ExportColumnRecord spec, FV_AbstractProducer specOwner )
     {
@@ -70,23 +70,23 @@ public abstract class FV_AbstractPropertyReader
         return output;
     }
 
-    public List<FV_PropertyValueWithColumnName> writeEmptyRow()
+    public List<FV_DataBinding> writeEmptyRow()
     {
-        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+        List<FV_DataBinding> output = new ArrayList<>();
 
         for (String col : columns)
         {
-            output.add(new FV_PropertyValueWithColumnName( col, ""));
+            output.add(new FV_DataBinding( col, ""));
         }
 
         return output;
     }
 
-    public List<FV_PropertyValueWithColumnName> propertyDoesNotExist( String columnName )
+    public List<FV_DataBinding> propertyDoesNotExist(String columnName )
     {
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
 
-        readValues.add( new FV_PropertyValueWithColumnName( columnName, "Property is not entered") );
+        readValues.add( new FV_DataBinding( columnName, "Property is not entered") );
 
         return readValues;
     }

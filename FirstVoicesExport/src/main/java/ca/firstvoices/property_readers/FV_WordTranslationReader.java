@@ -19,10 +19,10 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
         return ReaderType.WORD_TRANSLATION;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
 
         Object prop = word.getPropertyValue(propertyToRead);
         Object[] colA = columns.toArray();
@@ -46,11 +46,11 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
                         output = output + " (" + iter.next() + ")";
                     }
 
-                    readValues.add( new FV_PropertyValueWithColumnName( (String)colA[i], output));
+                    readValues.add( new FV_DataBinding( (String)colA[i], output));
                 }
                 else
                 {
-                    readValues.add( new FV_PropertyValueWithColumnName( (String)colA[i]," "));
+                    readValues.add( new FV_DataBinding( (String)colA[i]," "));
                 }
 
                 counter++;

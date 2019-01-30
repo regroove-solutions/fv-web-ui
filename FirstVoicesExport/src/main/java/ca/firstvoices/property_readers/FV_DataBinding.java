@@ -5,13 +5,20 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import java.lang.reflect.Array;
 import java.util.List;
 
-public class FV_PropertyValueWithColumnName
-{
-    protected Object readPropertyValue;
-    protected String outputColumnName;
-    protected Object[] properties;
+/*
+    FV_DataBinding is a utility class which binds different properties/values together.
+    It is used to bind property and column name in some cases and
+    different data types to column name in other ones.
 
-    public FV_PropertyValueWithColumnName(String ocn, Object rp )
+*/
+public class FV_DataBinding
+{
+    protected Object    readPropertyValue;
+    protected String    outputColumnName;
+    protected Object[]  properties;          // can be created as a duplicate of readPropertyValue to allow
+                                             // indexed access
+
+    public FV_DataBinding(String ocn, Object rp )
     {
         readPropertyValue = rp;
         outputColumnName = ocn;
@@ -21,11 +28,12 @@ public class FV_PropertyValueWithColumnName
     public String getOutputColumnName() { return outputColumnName; }
     public String getKey() {  return outputColumnName; }
 
+    // used when payload is output from compound
     public int getNumberOfCompoundColumn()
     {
         if( isMultiLine() )
         {
-                return ((List)readPropertyValue).size();
+            return ((List) readPropertyValue).size();
         }
 
         return 1;

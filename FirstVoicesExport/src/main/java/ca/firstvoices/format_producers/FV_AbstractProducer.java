@@ -1,7 +1,7 @@
 package ca.firstvoices.format_producers;
 
 import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
-import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
+import ca.firstvoices.property_readers.FV_DataBinding;
 import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.utils.FV_CSVExportColumns;
@@ -56,15 +56,15 @@ abstract public class FV_AbstractProducer
         writeLine( outputLine );
     }
 
-    public void writeRowData( List<FV_PropertyValueWithColumnName> rowData  )
+    public void writeRowData( List<FV_DataBinding> rowData  )
     {
         List<String> outputLine;
 
         if( hasCompoundReaders )
         {
-            List< List<FV_PropertyValueWithColumnName> > multiLines = createOutputFromCompound( rowData );
+            List< List<FV_DataBinding> > multiLines = createOutputFromCompound( rowData );
 
-            for( List<FV_PropertyValueWithColumnName> line : multiLines )
+            for( List<FV_DataBinding> line : multiLines )
             {
                 outputLine = createLineFromData( line );
                 writeLine(outputLine);
@@ -147,13 +147,13 @@ abstract public class FV_AbstractProducer
         return false;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertiesWithReadersFrom( Object o )
+    public List<FV_DataBinding> readPropertiesWithReadersFrom(Object o )
     {
-        List<FV_PropertyValueWithColumnName> listToReturn = new ArrayList<>();
+        List<FV_DataBinding> listToReturn = new ArrayList<>();
 
         for( FV_AbstractPropertyReader pr : propertyReaders )
         {
-            List<FV_PropertyValueWithColumnName> listToAdd = pr.readPropertyFromObject( o );
+            List<FV_DataBinding> listToAdd = pr.readPropertyFromObject( o );
 
             listToReturn.addAll( listToAdd );
         }
@@ -161,11 +161,11 @@ abstract public class FV_AbstractProducer
         return listToReturn;
     }
 
-    public List<String> createLineFromData( List<FV_PropertyValueWithColumnName> data )
+    public List<String> createLineFromData( List<FV_DataBinding> data )
     {
         List<String> output = new ArrayList<>();
 
-        for( FV_PropertyValueWithColumnName column : data )
+        for( FV_DataBinding column : data )
         {
             output.add( (String)column.getReadProperty() );
         }
@@ -187,18 +187,18 @@ abstract public class FV_AbstractProducer
         return  output;
     }
 
-    private List<List<FV_PropertyValueWithColumnName>> createOutputFromCompound( List<FV_PropertyValueWithColumnName> rowData )
+    private List<List<FV_DataBinding>> createOutputFromCompound(List<FV_DataBinding> rowData )
     {
-        List< List<FV_PropertyValueWithColumnName> > listToReturn = new ArrayList<>();
+        List< List<FV_DataBinding> > listToReturn = new ArrayList<>();
         int numOutputLines = 1;
         int scan = 1;
 
         // calculate how many compounds and the max number of lines needed
         do
         {
-            List<FV_PropertyValueWithColumnName> singleLine = new ArrayList<>();
+            List<FV_DataBinding> singleLine = new ArrayList<>();
 
-            for (FV_PropertyValueWithColumnName o : rowData)
+            for (FV_DataBinding o : rowData)
             {
                 int ol = o.outputLinesInProperty();
                 if( ol >= scan )
@@ -206,10 +206,10 @@ abstract public class FV_AbstractProducer
                     if( ol > numOutputLines ) numOutputLines = ol;
                     if( o.isMultiLine() )
                     {
-                        FV_PropertyValueWithColumnName lineObject = (FV_PropertyValueWithColumnName)o.getColumnObject(scan-1);
-                        List<FV_PropertyValueWithColumnName> compoundColumnObjects = (List<FV_PropertyValueWithColumnName>)lineObject.getListOfColumnObjects();
+                        FV_DataBinding lineObject = (FV_DataBinding)o.getColumnObject(scan-1);
+                        List<FV_DataBinding> compoundColumnObjects = (List<FV_DataBinding>)lineObject.getListOfColumnObjects();
 
-                        for( FV_PropertyValueWithColumnName colObj : compoundColumnObjects )
+                        for( FV_DataBinding colObj : compoundColumnObjects )
                         {
                             singleLine.add( colObj );
                         }
@@ -227,7 +227,7 @@ abstract public class FV_AbstractProducer
                     }
                     else
                     {
-                        singleLine.add( new FV_PropertyValueWithColumnName( o.getOutputColumnName(), "") );
+                        singleLine.add( new FV_DataBinding( o.getOutputColumnName(), "") );
                     }
                 }
             }
@@ -243,25 +243,25 @@ abstract public class FV_AbstractProducer
 
 
     // used for testing of compoundReader - creates empty output row
-    public List<FV_PropertyValueWithColumnName> writeDummyRow( StringList columns )
+    public List<FV_DataBinding> writeDummyRow(StringList columns )
     {
-        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+        List<FV_DataBinding> output = new ArrayList<>();
 
         for (String col : columns)
         {
-            output.add(new FV_PropertyValueWithColumnName( col, ""));
+            output.add(new FV_DataBinding( col, ""));
         }
 
         return output;
     }
 
-    private List<FV_PropertyValueWithColumnName> writeBlanks( int columns )
+    private List<FV_DataBinding> writeBlanks(int columns )
     {
-        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+        List<FV_DataBinding> output = new ArrayList<>();
 
         for (int i = 0; i < columns; i++ )
         {
-            output.add(new FV_PropertyValueWithColumnName( "", "") );
+            output.add(new FV_DataBinding( "", "") );
         }
 
         return output;

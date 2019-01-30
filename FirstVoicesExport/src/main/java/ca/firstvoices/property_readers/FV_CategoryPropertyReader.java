@@ -19,10 +19,10 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
         return ReaderType.CATEGORY;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
         Object[] categoryIds = (Object[])word.getPropertyValue(propertyToRead);
         Object[] colA = columns.toArray();
         //StringList categories = new StringList();
@@ -34,7 +34,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
             if (categoryId == null)
             {
                 log.warn("Null Category in FV_CategoryPropertyReader");
-                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], "") );
+                readValues.add(new FV_DataBinding( (String)colA[colCounter], "") );
                 colCounter++;
                 continue;
             }
@@ -45,13 +45,13 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 
                 DocumentModel categoryDoc = session.getDocument(new IdRef((String)categoryId));
 
-                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], categoryDoc.getTitle() ) );
+                readValues.add(new FV_DataBinding( (String)colA[colCounter], categoryDoc.getTitle() ) );
                 colCounter++;
             }
             catch( Exception e )
             {
                 log.warn("Null category document in FV_CategoryPropertyReader.");
-                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], "Null category document") );
+                readValues.add(new FV_DataBinding( (String)colA[colCounter], "Null category document") );
                 colCounter++;
                 e.printStackTrace();
             }
@@ -59,7 +59,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 
         for( ; colCounter < maxColumns; colCounter++ )
         {
-            readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], ""));
+            readValues.add(new FV_DataBinding( (String)colA[colCounter], ""));
         }
 
         return readValues;

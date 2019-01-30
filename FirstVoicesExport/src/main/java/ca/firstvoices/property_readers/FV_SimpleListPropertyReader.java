@@ -21,10 +21,10 @@ public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
         return ReaderType.SIMPLE_LIST;
     }
 
-    public List<FV_PropertyValueWithColumnName>readPropertyFromObject(Object o)
+    public List<FV_DataBinding>readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
 
         Object prop = word.getPropertyValue(propertyToRead);
         Object[] colA = columns.toArray();
@@ -41,11 +41,11 @@ public class FV_SimpleListPropertyReader extends FV_AbstractPropertyReader
                     if (c < stl.length)
                     {
                         stlCounter++;
-                        readValues.add(new FV_PropertyValueWithColumnName( (String)colA[c], stl[stlCounter] ));
+                        readValues.add(new FV_DataBinding( (String)colA[c], stl[stlCounter] ));
                     }
                     else
                     {
-                        readValues.add(new FV_PropertyValueWithColumnName( (String)colA[c], " "));
+                        readValues.add(new FV_DataBinding( (String)colA[c], " "));
                     }
                 }
             }

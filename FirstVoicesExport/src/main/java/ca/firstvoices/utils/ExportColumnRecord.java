@@ -1,9 +1,6 @@
 package ca.firstvoices.utils;
 
-import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
-import org.nuxeo.ecm.automation.core.util.StringList;
-
-import java.util.Map;
+import ca.firstvoices.property_readers.FV_DataBinding;
 
 public class ExportColumnRecord
 {
@@ -12,9 +9,9 @@ public class ExportColumnRecord
     public Boolean                          useForExport;   // set to true if it is ready to be used for export
     public Integer                          numCols;        // max number of columns we want to allow in csv
     public Class                            requiredPropertyReader;
-    public FV_PropertyValueWithColumnName   compound[];
+    public FV_DataBinding compound[];
 
-    ExportColumnRecord( String cID, String prop, Boolean ufe, Integer nc, Class rpr, FV_PropertyValueWithColumnName[] c )
+    ExportColumnRecord( String cID, String prop, Boolean ufe, Integer nc, Class rpr, FV_DataBinding[] c )
     {
         colID = cID;
         property = prop;

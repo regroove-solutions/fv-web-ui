@@ -21,10 +21,10 @@ public class FV_IDPropertyReader extends FV_AbstractPropertyReader
         return ReaderType.ID_PROP;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
         Object prop = word.getPropertyValue(propertyToRead);
 
         if( prop != null )
@@ -34,16 +34,16 @@ public class FV_IDPropertyReader extends FV_AbstractPropertyReader
 
             if( refDoc != null )
             {
-                readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, (String)refDoc.getPropertyValue( "dc:title")));
+                readValues.add(new FV_DataBinding( columnNameForOutput, (String)refDoc.getPropertyValue( "dc:title")));
             }
             else
             {
-                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, "Invalid UUID: "+propertyValue ));
+                readValues.add(new FV_DataBinding(columnNameForOutput, "Invalid UUID: "+propertyValue ));
             }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput," ") );
+            readValues.add(new FV_DataBinding( columnNameForOutput," ") );
         }
 
         return readValues;

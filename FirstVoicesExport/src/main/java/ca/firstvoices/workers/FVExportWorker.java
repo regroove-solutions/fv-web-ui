@@ -2,7 +2,7 @@ package ca.firstvoices.workers;
 
 import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.format_producers.FV_PhraseCSVProducer;
-import ca.firstvoices.property_readers.FV_PropertyValueWithColumnName;
+import ca.firstvoices.property_readers.FV_DataBinding;
 import ca.firstvoices.format_producers.FV_WordCSVProducer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -88,7 +88,7 @@ public class FVExportWorker extends FVAbstractExportWork
 
                         if (doc != null)
                         {
-                            List<FV_PropertyValueWithColumnName> output = fileOutputProducer.readPropertiesWithReadersFrom(doc);
+                            List<FV_DataBinding> output = fileOutputProducer.readPropertiesWithReadersFrom(doc);
 
                             assert (output != null) : "Null output from producer";
 

@@ -21,21 +21,21 @@ public class FV_PropertyReader extends FV_AbstractPropertyReader
         return ReaderType.PROPERTY;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
         Object prop = word.getPropertyValue(propertyToRead);
 
         if( prop != null )
         {
             String propertyValue = (String) prop;
 
-            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, propertyValue ));
+            readValues.add(new FV_DataBinding( columnNameForOutput, propertyValue ));
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput," ") );
+            readValues.add(new FV_DataBinding( columnNameForOutput," ") );
         }
 
         return readValues;

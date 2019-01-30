@@ -21,25 +21,25 @@ public class FV_PartOfSpeechPropertyReader extends FV_AbstractPropertyReader
         return ReaderType.SPEECH_PART;
     }
 
-    public List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o)
+    public List<FV_DataBinding> readPropertyFromObject(Object o)
     {
         DocumentModel word = (DocumentModel)o;
-        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+        List<FV_DataBinding> readValues = new ArrayList<>();
         Object prop = word.getPropertyValue(propertyToRead);
 
         if( prop != null )
         {
             if (prop instanceof String)
             {
-                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, (String) prop));
+                readValues.add(new FV_DataBinding(columnNameForOutput, (String) prop));
             } else
             {
-                readValues.add(new FV_PropertyValueWithColumnName(columnNameForOutput, "unknown instance" ));
+                readValues.add(new FV_DataBinding(columnNameForOutput, "unknown instance" ));
             }
         }
         else
         {
-            readValues.add(new FV_PropertyValueWithColumnName( columnNameForOutput, "" ) );
+            readValues.add(new FV_DataBinding( columnNameForOutput, "" ) );
         }
 
         return readValues;
