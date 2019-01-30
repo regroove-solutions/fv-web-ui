@@ -17,22 +17,24 @@ import org.nuxeo.runtime.api.Framework;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
+import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
 
 abstract public class FV_AbstractProducer
 {
     protected static final Log log = LogFactory.getLog(FV_AbstractProducer.class);
-    protected List<FV_AbstractPropertyReader> propertyReaders;
-    protected File outputFile;
-    protected String originalFileName;
-    protected FV_CSVExportColumns spec;
+    protected List<FV_AbstractPropertyReader>   propertyReaders;
+    protected File                              outputFile;
+    protected String                            originalFileName;
+    protected FV_CSVExportColumns               spec;
+    protected CoreSession                       session;
 
-    protected CoreSession session;
+    protected Boolean hasCompoundReaders = false;
+
 
     FV_AbstractProducer( CoreSession session, FV_CSVExportColumns spec )
     {
@@ -45,6 +47,8 @@ abstract public class FV_AbstractProducer
     abstract void createDefaultPropertyReaders();
     abstract void endProduction();
 
+    public FV_CSVExportColumns getSpec() { return spec; }
+
     public void writeColumnNames()
     {
         List<String> outputLine = getColumnNames();
@@ -54,9 +58,23 @@ abstract public class FV_AbstractProducer
 
     public void writeRowData( List<FV_PropertyValueWithColumnName> rowData  )
     {
-        List<String> outputLine = createLineFromData( rowData );
+        List<String> outputLine;
 
-        writeLine( outputLine );
+        if( hasCompoundReaders )
+        {
+            List< List<FV_PropertyValueWithColumnName> > multiLines = createOutputFromCompound( rowData );
+
+            for( List<FV_PropertyValueWithColumnName> line : multiLines )
+            {
+                outputLine = createLineFromData( line );
+                writeLine(outputLine);
+            }
+        }
+        else
+        {
+            outputLine = createLineFromData( rowData );
+            writeLine(outputLine);
+        }
     }
 
     // this close has to be called after subclass completes its own close
@@ -91,13 +109,10 @@ abstract public class FV_AbstractProducer
 
                 if (colR != null && colR.useForExport)
                 {
-
                     try
                     {
-                        Class<?> clazz = colR.requiredPropertyReader;
-                        Constructor<?> constructor = clazz.getConstructor( ExportColumnRecord.class );
-                        FV_AbstractPropertyReader instance = (FV_AbstractPropertyReader) constructor.newInstance( colR );
-                        instance.session = session;
+                        FV_AbstractPropertyReader instance = makePropertyReader( session, colR, this );
+                        if( instance.readerType() == FV_AbstractPropertyReader.ReaderType.COMPOUND ) hasCompoundReaders = true;
                         propertyReaders.add(instance);
                     }
                     catch (Exception e)
@@ -152,7 +167,7 @@ abstract public class FV_AbstractProducer
 
         for( FV_PropertyValueWithColumnName column : data )
         {
-            output.add( column.getReadProperty() );
+            output.add( (String)column.getReadProperty() );
         }
 
         return output;
@@ -171,4 +186,86 @@ abstract public class FV_AbstractProducer
 
         return  output;
     }
+
+    private List<List<FV_PropertyValueWithColumnName>> createOutputFromCompound( List<FV_PropertyValueWithColumnName> rowData )
+    {
+        List< List<FV_PropertyValueWithColumnName> > listToReturn = new ArrayList<>();
+        int numOutputLines = 1;
+        int scan = 1;
+
+        // calculate how many compounds and the max number of lines needed
+        do
+        {
+            List<FV_PropertyValueWithColumnName> singleLine = new ArrayList<>();
+
+            for (FV_PropertyValueWithColumnName o : rowData)
+            {
+                int ol = o.outputLinesInProperty();
+                if( ol >= scan )
+                {
+                    if( ol > numOutputLines ) numOutputLines = ol;
+                    if( o.isMultiLine() )
+                    {
+                        FV_PropertyValueWithColumnName lineObject = (FV_PropertyValueWithColumnName)o.getColumnObject(scan-1);
+                        List<FV_PropertyValueWithColumnName> compoundColumnObjects = (List<FV_PropertyValueWithColumnName>)lineObject.getListOfColumnObjects();
+
+                        for( FV_PropertyValueWithColumnName colObj : compoundColumnObjects )
+                        {
+                            singleLine.add( colObj );
+                        }
+                    }
+                    else
+                    {
+                        singleLine.add( o );
+                    }
+                }
+                else
+                {
+                    if( o.isMultiLine() )
+                    {
+                        singleLine.addAll( writeBlanks( o.getNumberOfCompoundColumn()) );
+                    }
+                    else
+                    {
+                        singleLine.add( new FV_PropertyValueWithColumnName( o.getOutputColumnName(), "") );
+                    }
+                }
+            }
+
+            scan++;
+            listToReturn.add(singleLine);
+
+
+        } while ( scan  <= numOutputLines );
+
+        return listToReturn;
+    }
+
+
+    // used for testing of compoundReader - creates empty output row
+    public List<FV_PropertyValueWithColumnName> writeDummyRow( StringList columns )
+    {
+        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+
+        for (String col : columns)
+        {
+            output.add(new FV_PropertyValueWithColumnName( col, ""));
+        }
+
+        return output;
+    }
+
+    private List<FV_PropertyValueWithColumnName> writeBlanks( int columns )
+    {
+        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+
+        for (int i = 0; i < columns; i++ )
+        {
+            output.add(new FV_PropertyValueWithColumnName( "", "") );
+        }
+
+        return output;
+
+    }
+
 }
