@@ -1,5 +1,6 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.utils.ExportColumnRecord;
 import ca.firstvoices.workers.FVExportWorker;
 import org.apache.commons.logging.Log;
@@ -7,12 +8,13 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class FV_AbstractPropertyReader
 {
     protected static final Log log = LogFactory.getLog(FVExportWorker.class);
-    protected Object[] columns;
+    protected StringList columns;
 
     public enum ReaderType
     {
@@ -21,19 +23,24 @@ public abstract class FV_AbstractPropertyReader
 
     protected ExportColumnRecord spec;
 
-    protected String    propertyToRead;
-    protected String    columnNameForOutput;
-    protected Integer   maxColumns;
+    protected String                propertyToRead;
+    protected String                columnNameForOutput;
+    protected Integer               maxColumns;
+    protected FV_AbstractProducer   specOwner;
 
     public CoreSession session;
 
-    public FV_AbstractPropertyReader( CoreSession session, ExportColumnRecord spec )
+    public abstract ReaderType readerType();
+    public abstract List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o);
+
+    public FV_AbstractPropertyReader( CoreSession session, ExportColumnRecord spec, FV_AbstractProducer specOwner )
     {
         propertyToRead = spec.property;
         columnNameForOutput = spec.colID;
         maxColumns = spec.numCols;
         this.spec = spec;
         this.session = session;
+        this.specOwner = specOwner;
     }
 
     public Integer expectedColumnCount()
@@ -41,11 +48,12 @@ public abstract class FV_AbstractPropertyReader
         return maxColumns;
     }
 
-    public abstract ReaderType readerType();
     public String getPropertyToRead() { return propertyToRead; }
 
     public StringList getColumnNameForOutput()
     {
+        if( columns != null ) return columns;
+
         StringList output = new StringList();
 
         String modColumnName = columnNameForOutput;
@@ -58,9 +66,28 @@ public abstract class FV_AbstractPropertyReader
             counter++;
         }
 
-        columns = output.toArray();
+        columns = output;
         return output;
     }
 
-    public abstract List<FV_PropertyValueWithColumnName> readPropertyFromObject(Object o);
+    public List<FV_PropertyValueWithColumnName> writeEmptyRow()
+    {
+        List<FV_PropertyValueWithColumnName> output = new ArrayList<>();
+
+        for (String col : columns)
+        {
+            output.add(new FV_PropertyValueWithColumnName( col, ""));
+        }
+
+        return output;
+    }
+
+    public List<FV_PropertyValueWithColumnName> propertyDoesNotExist( String columnName )
+    {
+        List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
+
+        readValues.add( new FV_PropertyValueWithColumnName( columnName, "Property is not entered") );
+
+        return readValues;
+    }
 }

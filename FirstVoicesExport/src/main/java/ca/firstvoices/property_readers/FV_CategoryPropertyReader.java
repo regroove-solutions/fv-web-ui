@@ -1,7 +1,7 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.utils.ExportColumnRecord;
-import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.*;
 
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.List;
 
 public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 {
-    public FV_CategoryPropertyReader(CoreSession session, ExportColumnRecord spec )
+    public FV_CategoryPropertyReader( CoreSession session, ExportColumnRecord spec, FV_AbstractProducer specOwner )
     {
-        super( session, spec );
+        super( session, spec, specOwner );
     }
 
     public ReaderType readerType()
@@ -24,8 +24,9 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
         DocumentModel word = (DocumentModel)o;
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
         Object[] categoryIds = (Object[])word.getPropertyValue(propertyToRead);
+        Object[] colA = columns.toArray();
+        //StringList categories = new StringList();
 
-        StringList categories = new StringList();
         int colCounter = 0;
 
         for (Object categoryId : categoryIds)
@@ -33,7 +34,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
             if (categoryId == null)
             {
                 log.warn("Null Category in FV_CategoryPropertyReader");
-                readValues.add(new FV_PropertyValueWithColumnName( (String)columns[colCounter], "") );
+                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], "") );
                 colCounter++;
                 continue;
             }
@@ -44,13 +45,13 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 
                 DocumentModel categoryDoc = session.getDocument(new IdRef((String)categoryId));
 
-                readValues.add(new FV_PropertyValueWithColumnName( (String)columns[colCounter], categoryDoc.getTitle() ) );
+                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], categoryDoc.getTitle() ) );
                 colCounter++;
             }
             catch( Exception e )
             {
                 log.warn("Null category document in FV_CategoryPropertyReader.");
-                readValues.add(new FV_PropertyValueWithColumnName( (String)columns[colCounter], "Null category document") );
+                readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], "Null category document") );
                 colCounter++;
                 e.printStackTrace();
             }
@@ -58,7 +59,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader
 
         for( ; colCounter < maxColumns; colCounter++ )
         {
-            readValues.add(new FV_PropertyValueWithColumnName( (String)columns[colCounter], ""));
+            readValues.add(new FV_PropertyValueWithColumnName( (String)colA[colCounter], ""));
         }
 
         return readValues;

@@ -1,5 +1,6 @@
 package ca.firstvoices.property_readers;
 
+import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.utils.ExportColumnRecord;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -8,9 +9,9 @@ import java.util.*;
 
 public class FV_WordTranslationReader extends FV_AbstractPropertyReader
 {
-    public FV_WordTranslationReader(CoreSession session, ExportColumnRecord spec )
+    public FV_WordTranslationReader( CoreSession session, ExportColumnRecord spec, FV_AbstractProducer specOwner )
     {
-        super( session, spec );
+        super( session, spec, specOwner );
     }
 
     public ReaderType readerType()
@@ -24,12 +25,12 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
         List<FV_PropertyValueWithColumnName> readValues = new ArrayList<>();
 
         Object prop = word.getPropertyValue(propertyToRead);
+        Object[] colA = columns.toArray();
 
         if (prop!= null && prop instanceof List)
         {
             ArrayList<HashMap<String, String>> property = (ArrayList<HashMap<String, String>>) prop;
             Integer counter = 0;
-            String columnLabel = columnNameForOutput;
 
             for( Integer i = 0; i < maxColumns; i++ )
             {
@@ -45,36 +46,20 @@ public class FV_WordTranslationReader extends FV_AbstractPropertyReader
                         output = output + " (" + iter.next() + ")";
                     }
 
-                    readValues.add( new FV_PropertyValueWithColumnName( columnLabel, output));
+                    readValues.add( new FV_PropertyValueWithColumnName( (String)colA[i], output));
                 }
                 else
                 {
-                    readValues.add( new FV_PropertyValueWithColumnName( columnLabel," "));
+                    readValues.add( new FV_PropertyValueWithColumnName( (String)colA[i]," "));
                 }
 
-                columnLabel = columnNameForOutput + "_" + counter.toString();
                 counter++;
             }
         }
         else
         {
-
-            readValues = writeColumnDataWhenReceivingWrongType( readValues );
-        }
-
-        return readValues;
-    }
-
-    private  List<FV_PropertyValueWithColumnName> writeColumnDataWhenReceivingWrongType( List<FV_PropertyValueWithColumnName> readValues)
-    {
-        Integer counter = 1;
-        String columnLabel = columnNameForOutput;
-
-        for( Integer i = 0; i < maxColumns; i++ )
-        {
-            readValues.add(new FV_PropertyValueWithColumnName( columnLabel, "UNKNOWN TYPE"));
-            columnLabel = columnNameForOutput + "_" + counter.toString();
-            counter++;
+            if( prop!= null && !(prop instanceof List) ) log.warn("FV_WordTranslationReader: incorrect type");
+            readValues = writeEmptyRow();
         }
 
         return readValues;
