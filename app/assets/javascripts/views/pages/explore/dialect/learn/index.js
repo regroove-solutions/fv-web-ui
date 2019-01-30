@@ -18,31 +18,32 @@ import Immutable from 'immutable'
 
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.json'
+// import ConfGlobal from 'conf/local.json'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import Header from 'views/pages/explore/dialect/header'
-import PageHeader from 'views/pages/explore/dialect/page-header'
+// import PageHeader from 'views/pages/explore/dialect/page-header'
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import SearchBar from 'views/pages/explore/dialect/search-bar'
+// import SearchBar from 'views/pages/explore/dialect/search-bar'
 
-import RaisedButton from 'material-ui/lib/raised-button'
-import FlatButton from 'material-ui/lib/flat-button'
+// import RaisedButton from 'material-ui/lib/raised-button'
+// import FlatButton from 'material-ui/lib/flat-button'
 
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import IconButton from 'material-ui/lib/icon-button'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
+// import IconMenu from 'material-ui/lib/menus/icon-menu'
+// import IconButton from 'material-ui/lib/icon-button'
+// import MenuItem from 'material-ui/lib/menus/menu-item'
+// import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
+// import Tabs from 'material-ui/lib/tabs/tabs'
+// import Tab from 'material-ui/lib/tabs/tab'
 
-import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent'
+// import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent'
+import {EditableComponentHelper} from 'views/components/Editor/EditableComponent'
 
 import RecentActivityList from 'views/components/Dashboard/RecentActivityList'
-import Link from 'views/components/Document/Link'
+// import Link from 'views/components/Document/Link'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
@@ -182,7 +183,7 @@ export default class DialectLearn extends Component {
             this.props.queryModifiedWords(dialectPath)
             this.props.queryCreatedWords(dialectPath)
 
-            if (userName && userName != 'Guest') {
+            if (userName && userName !== 'Guest') {
               this.props.queryUserCreatedWords(dialectPath, userName)
               this.props.queryUserModifiedWords(dialectPath, userName)
             }
@@ -192,7 +193,7 @@ export default class DialectLearn extends Component {
             this.props.queryModifiedPhrases(dialectPath)
             this.props.queryCreatedPhrases(dialectPath)
 
-            if (userName && userName != 'Guest') {
+            if (userName && userName !== 'Guest') {
               this.props.queryUserCreatedPhrases(dialectPath, userName)
               this.props.queryUserModifiedPhrases(dialectPath, userName)
             }
@@ -202,7 +203,7 @@ export default class DialectLearn extends Component {
             this.props.queryModifiedStories(dialectPath)
             this.props.queryCreatedStories(dialectPath)
 
-            if (userName && userName != 'Guest') {
+            if (userName && userName !== 'Guest') {
               this.props.queryUserCreatedStories(dialectPath, userName)
               this.props.queryUserModifiedStories(dialectPath, userName)
             }
@@ -212,7 +213,7 @@ export default class DialectLearn extends Component {
             this.props.queryModifiedSongs(dialectPath)
             this.props.queryCreatedSongs(dialectPath)
 
-            if (userName && userName != 'Guest') {
+            if (userName && userName !== 'Guest') {
               this.props.queryUserCreatedSongs(dialectPath, userName)
               this.props.queryUserModifiedSongs(dialectPath, userName)
             }
@@ -277,7 +278,7 @@ export default class DialectLearn extends Component {
         <PromiseWrapper computeEntities={computeEntities}>
 
           {(() => {
-            if (this.props.routeParams.area == 'Workspaces') {
+            if (this.props.routeParams.area === 'Workspaces') {
               if (selectn('response', computeDialect2))
                 return <PageToolbar
                   label={intl.trans('views.pages.explore.dialect.learn.language_portal', 'Language Portal', 'words')}
@@ -303,18 +304,18 @@ export default class DialectLearn extends Component {
 
             <div className={classNames('col-xs-12', 'col-md-7')}>
               <div className={dialectClassName}>
-              <TextHeader
-                title={intl.trans('views.pages.explore.dialect.learn.about_our_language', 'About Our Language', 'upper')}
-                tag="h2" properties={this.props.properties}/>
-              <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}}
-                renderPartial>
-                <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2}
-                  updateEntity={updateDialect2} property="dc:description"
-                  entity={selectn('response', computeDialect2)}/>
-              </AuthorizationFilter>
+                <TextHeader
+                  title={intl.trans('views.pages.explore.dialect.learn.about_our_language', 'About Our Language', 'upper')}
+                  tag="h2" properties={this.props.properties}/>
+                <AuthorizationFilter filter={{permission: 'Write', entity: selectn('response', computeDialect2)}}
+                  renderPartial>
+                  <EditableComponentHelper isSection={isSection} computeEntity={computeDialect2}
+                    updateEntity={updateDialect2} property="dc:description"
+                    entity={selectn('response', computeDialect2)}/>
+                </AuthorizationFilter>
               </div>
 
-              <div className="row" style={{marginTop: '15px'}}>
+              <div className="row PrintHide" style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-12')}>
                   <TextHeader
@@ -370,7 +371,11 @@ export default class DialectLearn extends Component {
                 </div>
 
                 <div className={classNames('col-xs-12', 'col-md-6')}>
-                  <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'phrases')}>>
+                  <Card
+                    initiallyExpanded={false}
+                    style={{marginBottom: '15px'}}
+                    onExpandChange={this._loadRecentActivity.bind(this, 'phrases')}
+                  >
                     <CardHeader
                       className="card-header-custom"
                       title={intl.trans('phrases', 'PHRASES', 'upper')}
@@ -414,7 +419,11 @@ export default class DialectLearn extends Component {
                 </div>
 
                 <div className={classNames('col-xs-12', 'col-md-6')}>
-                  <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'songs')}>>
+                  <Card
+                    initiallyExpanded={false}
+                    style={{marginBottom: '15px'}}
+                    onExpandChange={this._loadRecentActivity.bind(this, 'songs')}
+                  >
                     <CardHeader
                       className="card-header-custom"
                       title={intl.trans('songs', 'SONGS', 'upper')}
@@ -458,7 +467,11 @@ export default class DialectLearn extends Component {
                 </div>
 
                 <div className={classNames('col-xs-12', 'col-md-6')}>
-                  <Card initiallyExpanded={false} style={{marginBottom: '15px'}} onExpandChange={this._loadRecentActivity.bind(this, 'stories')}>>
+                  <Card
+                    initiallyExpanded={false}
+                    style={{marginBottom: '15px'}}
+                    onExpandChange={this._loadRecentActivity.bind(this, 'stories')}
+                  >
                     <CardHeader
                       className="card-header-custom"
                       title={intl.trans('stories', 'STORIES', 'upper')}
