@@ -192,7 +192,6 @@ a:visited {
 
 form.editableComponentForm {
   fieldset {
-    width: 72%;
     margin-right: 5px;
     display: inline;
 
@@ -704,13 +703,24 @@ video {
   margin: 0;
   background-color: transparent;
   padding-left: 20px;
+  text-transform: capitalize;
 
   a {
     color: #353b40;
+    text-decoration: none;
+  }
+  a:hover,
+  a:focus {
+    text-decoration: underline;
   }
 
   > li.active {
     color: #000;
+  }
+  > li + li:before {
+    content: "/\00a0";
+    padding: 0 0 0 5px;
+    color: #ccc;
   }
 }
 
