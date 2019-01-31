@@ -3,11 +3,10 @@
 {% block content %}
 <div id="app-wrapper" class="app-wrapper">
   <div id="app-loader" class="app-loader">
-    <div class="app-loader-intro">
-      <p><strong>FirstVoices</strong></p>
+    <div class="app-loader-content">
+      <h1><img src="/assets/images/logo.png" alt="FirstVoices" /></h1>
       <p>FirstVoices is a suite of web-based tools and services designed to support Indigenous people engaged in language archiving, language teaching and culture revitalization.</p>
-    </div>
-    <p>Loading / Chargement / Cargando...</p>
+      <p>Loading / Chargement / Cargando...</p>
   </div>
 </div>
 {% endblock %}
@@ -31,10 +30,8 @@
     align-items: center;
     font-size: 20px;
   }
-  .app-loader-intro {
+  .app-loader-content {
     max-width: 50%;
-    border: 1px #ccc solid;
-    padding: 15px;
   }
 </style>
 {% endblock %}
