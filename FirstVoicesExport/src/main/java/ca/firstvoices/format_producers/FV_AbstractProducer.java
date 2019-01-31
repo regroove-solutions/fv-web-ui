@@ -34,7 +34,7 @@ import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
  * to feed it to a subclass.
  * FV_AbstractProducer is also able to collect all the column names for all properties to be included in the export file.
  *
- * It is responsibility of the subclass to create a physical file, select the file writer and manage the process of physical writing.
+ * It is responsibility of the subclass to create a file writer and perform writes.
  *
  */
 abstract public class FV_AbstractProducer
