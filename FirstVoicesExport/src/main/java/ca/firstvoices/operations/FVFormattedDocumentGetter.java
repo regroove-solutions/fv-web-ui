@@ -19,7 +19,7 @@ import java.util.Map;
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.*;
 
-/**
+/*
  * This end-point will return all the documents export by a specific principal
  */
 @Operation(id=FVFormattedDocumentGetter.ID, category= Constants.CAT_DOCUMENT, label="Get exported documents", description="Retrieve formatted (CSV or PDF) documents from principals home directory.")

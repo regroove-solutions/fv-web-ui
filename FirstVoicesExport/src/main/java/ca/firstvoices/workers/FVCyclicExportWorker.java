@@ -2,7 +2,6 @@ package ca.firstvoices.workers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.core.work.AbstractWork;
 
 import static ca.firstvoices.utils.FVExportConstants.CYCLIC_EXPORT_WORKER_CATEGORY;
 import static ca.firstvoices.utils.FVExportConstants.CYCLIC_WORKER_ID;

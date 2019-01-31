@@ -20,7 +20,7 @@ import java.util.*;
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
 
-/**
+/*
  *
  */
 public class FVExportListener implements EventListener

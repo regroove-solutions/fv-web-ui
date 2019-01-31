@@ -5,7 +5,7 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 import java.lang.reflect.Array;
 import java.util.List;
 
-/**
+/*
     FV_DataBinding is a utility class which binds different properties/values together.
     It is used to bind property and column name in some cases and
     different data types to column name in other ones.

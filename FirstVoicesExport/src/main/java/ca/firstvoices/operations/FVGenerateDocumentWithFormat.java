@@ -29,7 +29,7 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportProperties.*;
 import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
 
-/**
+/*
  * FVGenerateDocumentWithFormat endpoint starts the export of words or phrases base on provided parameters
  * for specified dialect and ties it to the requesting user.
  * Initial setup includes collection of the document IDS to be processed and filling in the work information

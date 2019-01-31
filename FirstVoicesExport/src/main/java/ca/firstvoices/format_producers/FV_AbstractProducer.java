@@ -24,7 +24,7 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
 import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
 
-/**
+/*
  * FV_AbstractProducer is a driver of any export process related to producing a list of words and their
  * associated properties. FV_AbstractProducer does not know or care about the format of the export.
  * It knows how to assemble a list of readers, create a temporary file for output.

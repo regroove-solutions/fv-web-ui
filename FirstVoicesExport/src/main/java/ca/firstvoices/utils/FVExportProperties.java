@@ -92,7 +92,7 @@ public class FVExportProperties
 //            new AbstractMap.SimpleEntry<>( FVExportConstants.ExportCSVLabels.IMG_CHILD_FOCUSED, MEDIA_CHILD_FOCUSED )
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
-    public static final FV_DataBinding imgCompoundA[] = {
+    public static final FV_DataBinding[] imgCompoundA = {
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_TITLE,                            TITLE ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_FILENAME,                         MEDIA_FILENAME ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.IMG_DESCRIPTION,                      DESCR ),
@@ -112,7 +112,7 @@ public class FVExportProperties
 //            new AbstractMap.SimpleEntry<>( FVExportConstants.ExportCSVLabels.AUDIO_CHILD_FOCUSED,                       MEDIA_CHILD_FOCUSED )
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
-    public static final FV_DataBinding audioCompoundA[] = {
+    public static final FV_DataBinding[] audioCompoundA = {
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_TITLE,                          TITLE ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_FILENAME,                       MEDIA_FILENAME ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.AUDIO_DESCRIPTION,                    DESCR ),
@@ -134,7 +134,7 @@ public class FVExportProperties
 //    ).collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue));
 
 
-    public static final FV_DataBinding videoCompoundA[] = {
+    public static final FV_DataBinding[] videoCompoundA = {
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_TITLE,                          TITLE ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_FILENAME,                       MEDIA_FILENAME ),
             new FV_DataBinding( FVExportConstants.ExportCSVLabels.VIDEO_DESCRIPTION,                    DESCR ),

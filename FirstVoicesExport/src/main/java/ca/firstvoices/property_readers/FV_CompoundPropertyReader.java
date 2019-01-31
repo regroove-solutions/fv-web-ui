@@ -10,7 +10,7 @@ import java.util.List;
 
 import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
 
-/**
+/*
  * FV_CompoundPropertyReader reads properties which are String[] and have to be de-referenced
  * to read their values. For now FV_CompoundPropertyReader handles Media type properties (Image, Audio, Video).
  */
@@ -36,7 +36,7 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
         makeReaders();
     }
 
-    /**
+    /*
      * Format of the returned compound value from FV_CompoundPropertyReader
      * List of
      * FV_DataBinding

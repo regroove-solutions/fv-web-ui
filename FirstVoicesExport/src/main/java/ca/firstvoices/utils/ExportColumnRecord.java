@@ -2,7 +2,7 @@ package ca.firstvoices.utils;
 
 import ca.firstvoices.property_readers.FV_DataBinding;
 
-/**
+/*
  * ExportColumnRecord class binds list of values together to provide a concise record to describe
  * output and provide a reader to generate it
  *

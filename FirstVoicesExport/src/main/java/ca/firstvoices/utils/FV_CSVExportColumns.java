@@ -2,7 +2,7 @@ package ca.firstvoices.utils;
 
 import java.util.HashMap;
 
-/**
+/*
  * Binding class for connecting instructions from UI, to column names in export output to readers to be applied
  * during export
  */
