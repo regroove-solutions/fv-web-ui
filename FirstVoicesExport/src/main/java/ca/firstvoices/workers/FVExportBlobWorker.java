@@ -6,6 +6,11 @@ import org.apache.commons.logging.LogFactory;
 
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventContext;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.event.impl.EventContextImpl;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
@@ -46,7 +51,7 @@ public class FVExportBlobWorker extends FVAbstractExportWork
 
 
             File file = new File(workInfo.filePath);
-            FileBlob fileBlob = new FileBlob(file, "text/csv", "UTF-8" );
+            FileBlob fileBlob = new FileBlob( file, workInfo.mimeType, workInfo.encoding );
 
             DocumentModel wrapper =  workInfo.wrapper;
 
@@ -59,9 +64,20 @@ public class FVExportBlobWorker extends FVAbstractExportWork
             session.saveDocument( wrapper ); // ?
             session.save();
 
+            if( workInfo.continueAutoEvent != null )
+            {
+                EventProducer eventProducer = Framework.getService( EventProducer.class );
+                EventContextImpl ctx = new EventContextImpl( session, session.getPrincipal() );
+
+                ctx.setProperty( EXPORT_WORK_INFO, workInfo );
+
+                Event event = ctx.newEvent( workInfo.continueAutoEvent ); // move to next set of exports if invoked by cyclic worker
+                eventProducer.fireEvent( event );
+            }
+
             lctx.logout();
             session.close();
-        }
+         }
         catch ( Exception e)
         {
             e.printStackTrace();

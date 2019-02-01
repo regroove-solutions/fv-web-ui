@@ -29,6 +29,14 @@ public class FVCyclicExportWorker extends FVAbstractExportWork
     @Override
     public void work()
     {
+
+        // make a list of all known exports in FV
+        // start new update cycle
+        // things to consider
+        // - using temp file for storing outstanding work?
+        // - how to drive updates
+        // - how to check if export needs to be updated
+        // - how to trigger autoamtic re-run of the worker, outside of cron, to process all exports
         try
         {
             log.warn("FVCyclicExportWorker is not implemented yet.");
