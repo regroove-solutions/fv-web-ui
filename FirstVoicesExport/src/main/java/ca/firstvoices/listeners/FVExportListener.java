@@ -1,5 +1,6 @@
 package ca.firstvoices.listeners;
 
+import ca.firstvoices.utils.FVExportUtils;
 import ca.firstvoices.utils.FVExportWorkInfo;
 import ca.firstvoices.workers.FVAbstractExportWork;
 import ca.firstvoices.workers.FVCyclicExportWorker;
@@ -43,7 +44,7 @@ public class FVExportListener implements EventListener
 
                 if( checkForRunningWorkerBeforeProceeding( id ) )
                 {
-                    workManager.schedule(produceWorker(ctx, new FVExportWorker( id )), true);
+                    workManager.schedule(produceWorker(ctx, new FVExportWorker(id)), true);
                 }
                 break;
 
@@ -57,14 +58,17 @@ public class FVExportListener implements EventListener
                     workManager.schedule( produceWorker(ctx, new FVCyclicExportWorker() ), true);
                 }
                 break;
+
+            case AUTO_NEXT_EXPORT_WORKER: // cyclic: move to work on next export document
+                break;
         }
     }
 
     private boolean checkForRunningWorkerBeforeProceeding( String workId )
     {
+        if( !FVExportUtils.checkForRunningWorkerBeforeProceeding( workId, workManager ) ) return true; // worker is not running
 
-        if( workManager.find( workId, null ) != null ) return false; // worker is running
-        return true; // worker is not running
+        return false; // worker is running
     }
 
     private FVAbstractExportWork produceBlobWorker( EventContext ctx )
@@ -88,11 +92,23 @@ public class FVExportListener implements EventListener
         }
         else
         {
+            FVExportWorkInfo workInfo = new FVExportWorkInfo();
+
+            workInfo.workDuration       = System.currentTimeMillis();;
+            workInfo.dialectGUID        = INHERITED_FROM_OTHER;
+            workInfo.dialectName        = INHERITED_FROM_OTHER;
+            workInfo.exportFormat       = INHERITED_FROM_OTHER;
+            workInfo.initiatorName      = INHERITED_FROM_OTHER;
+            workInfo.exportElement      = INHERITED_FROM_OTHER;
+            workInfo.continueAutoEvent  = AUTO_NEXT_EXPORT_WORKER; // continue to next export document set
+
             work.setExportQuery( INHERITED_FROM_OTHER );
             work.setInitiatorName( "System" );
             work.setDialectName( INHERITED_FROM_OTHER );
             work.setDialectGUID( INHERITED_FROM_OTHER );
             work.setExportFormat( INHERITED_FROM_OTHER );
+
+            work.setWorkInfo( workInfo );
         }
 
         return work;
