@@ -5,6 +5,7 @@
         <operation class="ca.firstvoices.operations.FVGenerateDocumentWithFormat"/>
         <operation class="ca.firstvoices.operations.FVFormattedDocumentGetter"/>
         <operation class="ca.firstvoices.operations.FVSupportedExportColumns"/>
+        <operation class="ca.firstvoices.operations.FVExportProgressGetter"/>
     </extension>
 
 </component>
