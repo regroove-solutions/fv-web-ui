@@ -136,7 +136,7 @@ abstract public class FV_AbstractProducer
         // and attach it to a wrapper which will represent it to users
         blob_worker_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
 
-        Event event = blob_worker_ctx.newEvent( FINISH_EXPORT_BY_WRAPPING_BLOB );
+        Event event = blob_worker_ctx.newEvent( FINISH_EXPORT_BY_WRAPPING_BLOB ); // notify about export completion
         eventProducer.fireEvent(event);
     }
 
