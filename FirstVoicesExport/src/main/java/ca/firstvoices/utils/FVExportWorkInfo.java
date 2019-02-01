@@ -27,6 +27,9 @@ public class FVExportWorkInfo implements Serializable
     public String exportDigest;         // identifies export based on query, request type, columns and principal info ( MD5 hash )
     public StringList columns;          // columns as requested by user
     public DocumentModel wrapper;       // document which wraps/contains export file aka. a link to export file
+    public String continueAutoEvent;    // event to send back to Listener when export is ready for wrapping
+    public String mimeType;
+    public String encoding;
 
     public String getFullFileName()
     {

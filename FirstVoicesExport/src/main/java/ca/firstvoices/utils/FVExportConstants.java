@@ -12,6 +12,7 @@ public final class FVExportConstants
     public static final String PRODUCE_FORMATTED_DOCUMENT           = "produceFormattedDocument";       // start of worker by user action
     public static final String FINISH_EXPORT_BY_WRAPPING_BLOB       = "produceWrappedBlob";             // trigger event for starting of export worker
     public static final String AUTO_PRODUCE_FORMATTED_DOCUMENT      = "autoProduceFormattedDocument";   // cron event to trigger cyclic worker
+    public static final String AUTO_NEXT_EXPORT_WORKER              = "autoWorkOnNextDialect";          // continue cyclic work
 
     public static final String FVEXPORT                         = "FVExport";                           // export document type
     public static final String DIALECT_RESOURCES_TYPE           = "FVResources";                        // Resource folder type

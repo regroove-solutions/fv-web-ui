@@ -4,6 +4,7 @@ import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 
 import java.lang.reflect.Constructor;
 import java.security.Principal;
@@ -146,5 +147,13 @@ public class FVExportUtils
 
         return instance;
     }
+
+    public static boolean checkForRunningWorkerBeforeProceeding( String workId, WorkManager workManager )
+    {
+        if( workManager == null ) return false; // worker is running
+        if( workManager.find( workId, null ) != null ) return true; // worker is running
+        return false; // worker is not running
+    }
+
 }
 
