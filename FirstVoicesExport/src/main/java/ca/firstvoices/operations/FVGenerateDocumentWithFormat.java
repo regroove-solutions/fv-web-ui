@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import java.util.Map;
 import static ca.firstvoices.utils.FVExportConstants.*;
 import static ca.firstvoices.utils.FVExportProperties.*;
 import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
+import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
+import static ca.firstvoices.utils.FVExportUtils.checkForRunningWorkerBeforeProceeding;
 
 /*
  * FVGenerateDocumentWithFormat endpoint starts the export of words or phrases base on provided parameters
@@ -64,6 +67,7 @@ public class FVGenerateDocumentWithFormat
 
 
     protected AutomationService automation = Framework.getService(AutomationService.class);
+    protected WorkManager workManager = Framework.getService(WorkManager.class);
 
     @Context
     protected CoreSession session;
@@ -95,6 +99,13 @@ public class FVGenerateDocumentWithFormat
             workInfo.exportFormat = format;
             workInfo.initiatorName = session.getPrincipal().getName();
             workInfo.exportElement = exportElement;
+            workInfo.continueAutoEvent = null;
+
+            if( format.equals( CSV_FORMAT ) )
+            {
+                workInfo.mimeType = "text/csv";
+                workInfo.encoding = "UTF-8";
+            }
 
             GeneratedQueryArguments workParams = getDocumentIDs( query, input );
 
@@ -116,8 +127,15 @@ public class FVGenerateDocumentWithFormat
                 // check if wrapper already exists
                 wrapper = findWrapper( session, workInfo );
 
+
                 if( wrapper != null )
                 {
+                    if( checkForRunningWorkerBeforeProceeding( makeExportWorkerID( workInfo ), workManager ) )
+                    {
+                        return wrapper; // return a valid wrapper if export is already running
+                    }
+
+                    // cannot delete wrapper if worker is running to create export file
                     session.removeDocument( wrapper.getRef() );
                 }
 
@@ -140,10 +158,7 @@ public class FVGenerateDocumentWithFormat
                 export_ctx.setProperty( EXPORT_WORK_INFO, workInfo );
                 export_ctx.setProperty( DOCS_TO_EXPORT, workParams.docsToProcess );
                 Event event;
-
                 event = export_ctx.newEvent(PRODUCE_FORMATTED_DOCUMENT);
-
-
                 eventProducer.fireEvent(event);
 
                 parameters.put( "message", "Request to export documents in " + format + " was submitted" );

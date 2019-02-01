@@ -81,7 +81,7 @@ public class FVFormattedDocumentGetter
     {
         DocumentModelList wrappers = null;
 
-        String wrapperQ = "SELECT * FROM FVExport WHERE ecm:ancestorId = '" + resourcesFolderGUID + "' AND fvexport:workdigest = '" + workDigest + "'";
+        String wrapperQ = "SELECT * FROM FVExport WHERE ecm:ancestorId = '" + resourcesFolderGUID + "' AND fvexport:workdigest = '" + workDigest + "' ORDER BY dc:created DESC";
         DocumentModelList docs = session.query( wrapperQ );
 
         if( docs != null && docs.size() > 0)
