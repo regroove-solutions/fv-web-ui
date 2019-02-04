@@ -12,6 +12,7 @@ export default class ExportDialect extends Component {
     ExportDialectReducer: any.isRequired,
     ExportDialectRequest: func.isRequired,
     ExportDialectProgress: func.isRequired,
+    ExportDialectDownload: func.isRequired,
     displayDebug: bool,
     dialectId: string,
     fileName: string,
@@ -29,6 +30,9 @@ export default class ExportDialect extends Component {
     isProcessing: false,
     isErrored: false,
   }
+
+  polling = false
+
   constructor(props) {
     super(props)
     this.state = {
@@ -47,63 +51,55 @@ export default class ExportDialect extends Component {
       '_stateIsSuccess',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
+  componentWillUnmount() {
+    this.polling = false
+  }
   render() {
     const { CONSTANTS } = this.props.ExportDialectReducer
-    const { IN_PROGRESS, SUCCESS, ERROR } = CONSTANTS
-    const { dialectIdDocumentUuid, dialectIdLifecycle, dialectIdData } = this._getData()
+    const { IN_PROGRESS, IN_PROGRESS_SUCCESS, SUCCESS, ERROR } = CONSTANTS
+    const { dialectIdLifecycle } = this._getData()
     let componentState = null
     switch (dialectIdLifecycle) {
       case IN_PROGRESS:
-        componentState = this._stateIsInProgress(dialectIdData)
-        this._pollServer(this._checkProgress, 3000, 1000)
-          .then((response) => {
-            // Polling done, now do something else!
-            console.log('render > this._pollServer > success', response)
-          })
-          .catch((error) => {
-            // Polling timed out, handle the error!
-            console.log('render > this._pollServer > timeout', error)
-            // debugger
-          })
-
+        componentState = this._stateIsInProgress()
+        break
+      case IN_PROGRESS_SUCCESS:
+        componentState = this._stateIsSuccess()
         break
       case SUCCESS:
-        componentState = this._stateIsSuccess(dialectIdData)
+        componentState = this._stateIsSuccess()
         break
       case ERROR:
-        componentState = this._stateIsError(dialectIdData)
+        componentState = this._stateIsError()
         break
       default:
         componentState = this._stateIsNotStarted()
     }
 
-    const debug = this._getDebug()
+    // const debug = this._getDebug()
     return (
       <div>
         <h2>Export</h2>
-        {debug}
+        {/* {debug} */}
         {componentState}
       </div>
     )
   }
 
+  async _exportDialectDownload() {
+    const { dialectId } = this.props
+    const documentUuid = this.props.ExportDialectReducer.dialectIdDocumentUuid[dialectId]
+    await this.props.ExportDialectDownload(dialectId, documentUuid)
+  }
   async _exportDialectProgress() {
     const { dialectId } = this.props
-    const _dialectId = this.state.dialectId || dialectId
-    if (_dialectId === undefined) {
-      return
-    }
-    const documentUuid = this.props.ExportDialectReducer.dialectIdDocumentUuid[_dialectId]
-    await this.props.ExportDialectProgress(_dialectId, documentUuid, this.state._EXPORT_DIALECT_SCHEME_HOST_URL)
+    const documentUuid = this.props.ExportDialectReducer.dialectIdDocumentUuid[dialectId]
+    await this.props.ExportDialectProgress(dialectId, documentUuid)
   }
 
   async _exportDialectRequest() {
     const { dialectId } = this.props
-    const _dialectId = this.state.dialectId || dialectId
-    if (_dialectId === undefined) {
-      return
-    }
-    await this.props.ExportDialectRequest(_dialectId, this.state._EXPORT_DIALECT_SCHEME_HOST_URL)
+    await this.props.ExportDialectRequest(dialectId)
   }
 
   _getData() {
@@ -149,6 +145,8 @@ export default class ExportDialect extends Component {
             onClick={() => {
               this.setState({
                 dialectId,
+                _dialectId: undefined,
+                _EXPORT_DIALECT_SCHEME_HOST_URL: undefined,
                 EXPORT_DIALECT_SCHEME_HOST_URL,
               })
             }}
@@ -221,25 +219,33 @@ export default class ExportDialect extends Component {
   }
 
   async _checkProgress() {
+    // Make request
     await this._exportDialectProgress()
+    // Pull data from store
     const { CONSTANTS } = this.props.ExportDialectReducer
-    const { SUCCESS, ERROR } = CONSTANTS
+    const { IN_PROGRESS_SUCCESS, SUCCESS, ERROR } = CONSTANTS
     const { dialectIdLifecycle } = this._getData()
-    if (dialectIdLifecycle === SUCCESS) {
+
+    // Responses
+    // if (dialectIdLifecycle === SUCCESS) {
+    if (dialectIdLifecycle === IN_PROGRESS_SUCCESS) {
+      // true: Stop polling
       return true
     }
 
     if (dialectIdLifecycle === ERROR) {
+      // false: Stop polling
       return false
     }
+
+    // null: Continue polling
     return null
   }
 
   // Thanks: https://davidwalsh.name/javascript-polling
-  _pollServer(fn, timeout = 2000, interval = 100) {
+  _pollServer(fn, timeout = 20000, interval = 5000) {
     // The polling function
     const endTime = Number(new Date()) + timeout
-
     // eslint-disable-next-line func-names
     const checkCondition = async function(resolve, reject) {
       // If the condition is met, we're done!
@@ -248,36 +254,34 @@ export default class ExportDialect extends Component {
         resolve(result)
       }
       if (result === false) {
-        reject(new Error('checkCondition rejected'))
+        reject(new Error('Network request error'))
       }
-      if (Number(new Date()) < endTime) {
+      if (Number(new Date()) < endTime && result === null) {
         // If the condition isn't met but the timeout hasn't elapsed, go again
-        if (result === null) {
-          setTimeout(checkCondition, interval, resolve, reject)
-        }
+        // this.pollServerTimeoutId = setTimeout(checkCondition, interval, resolve, reject)
+        setTimeout(checkCondition, interval, resolve, reject)
       } else {
         // Didn't match and too much time, reject!
-        reject(new Error('timed out for ' + fn + ': ' + arguments))
+        reject(new Error('Timed out'))
       }
     }
 
     return new Promise(checkCondition)
   }
 
-  _stateIsError(dialectIdData) {
+  _stateIsError() {
+    const { dialectIdLifecycle, dialectIdData } = this._getData()
+    const { message, percentage } = dialectIdData
     return (
       <div>
         <p>There was a problem creating the export file.</p>
         <p>We have been notified of the matter and will look into it shortly.</p>
-        <p>{`${dialectIdData.message} ${dialectIdData.percentage}`}</p>
+        <p>{`${dialectIdLifecycle}: ${message || ''} ${percentage || ''}`}</p>
       </div>
     )
   }
 
   _stateIsNotStarted() {
-    const { dialectId } = this.props
-    const id = this.state.dialectId || dialectId
-
     return (
       <div>
         <p>You can create a file of this dialect for printing or other uses:</p>
@@ -288,69 +292,51 @@ export default class ExportDialect extends Component {
     )
   }
 
-  _stateIsInProgress(dialectIdData = { message: '', percentage: 0 }) {
+  _stateIsInProgress() {
+    const { dialectIdLifecycle, dialectIdData } = this._getData()
+    const { message, percentage } = dialectIdData
+
+    if (this.polling === false) {
+      this.polling = true
+      this._pollServer(this._checkProgress, 2000000, 1000)
+        .then((response) => {
+          // Polling done, now do something else!
+          this.polling = false
+          console.log('render > this._pollServer > success', response)
+          this._exportDialectDownload()
+        })
+        .catch((error) => {
+          // Polling timed out, handle the error!
+          this.polling = false
+          debugger
+          console.log('render > this._pollServer > timeout', error)
+        })
+    }
     return (
       <div>
         <p>The export file is being created.</p>
-        <p>{`${dialectIdData.message} ${dialectIdData.percentage}`}</p>
+        <p>{`${dialectIdLifecycle}: ${message || ''} ${percentage || ''}`}</p>
       </div>
     )
   }
 
   _stateIsSuccess() {
-    const { fileName, fileUrl } = this.props
+    const { dialectIdLifecycle, dialectIdData } = this._getData()
+    const { entityType, entries } = dialectIdData
+    console.log('_stateIsSuccess', entityType, entries)
 
-    const content =
-      fileUrl === '' ? (
-        <div>
-          <p>The file has finished processing but is temporarily unavailable for download.</p>
-          <p>Sorry for the delay, it should be fixed shortly.</p>
-        </div>
-      ) : (
-        <div>
-          <p>You can download a file of this dialect for printing or other uses:</p>
-          <a href={fileUrl}>
-            Download <strong>{fileName}</strong>
-          </a>
-        </div>
-      )
-    return content
-  }
+    // await this._exportDialectDownload()
+    // const { dialectIdData } = this._getData()
+    // const { ExportDialectFileUrl, ExportDialectFileName } = dialectIdData
+    // const ExportDialectFileUrl = ''
+    // const ExportDialectFileName = ''
 
-  _requestCsvDownload() {
-    /*
-    const { dialectId, EXPORT_DIALECT_SCHEME_HOST_URL } = this.props
-    const { _EXPORT_DIALECT_SCHEME_HOST_URL } = this.state
-    const id = this.state.dialectId || dialectId
-    if (id === undefined) {
-      return
-    }
-    const reqBody = {
-      input: id,
-      params: {
-        format: 'CSV',
-      },
-    }
-    Request(
-      {
-        url: `${_EXPORT_DIALECT_SCHEME_HOST_URL || EXPORT_DIALECT_SCHEME_HOST_URL}${CSV_URL_DOWNLOAD}`,
-        method: 'POST',
-        body: reqBody,
-        json: true,
-      },
-      (error, response, body) => {
-        // console.log('!', error)
-        // console.log('!!', response)
-        // console.log('!!!', body)
-        if (response && response.statusCode === 200) {
-          if (body && body.value) {
-            const respData = body.value.split(',')
-            const id = respData[1].split(':')
-            console.log('!!!', id[1])
-          }
-        }
-      }
+    const content = (
+      <div>
+        <p>You can download a file of this dialect for printing or other uses:</p>
+        <button>TBD</button>
+      </div>
     )
-    */
+    return content
   }
 }
