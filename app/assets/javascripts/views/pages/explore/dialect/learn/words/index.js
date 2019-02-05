@@ -293,15 +293,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <h2>Words</h2>
-              <ExportDialect
-                displayDebug
-                // fileName="File name.csv"
-                // fileUrl="//google.ca"
-                // isErrored={false}
-                // isReady={false}
-                // isProcessing={false}
-                dialectId={fvaDialectId}
-              />
+              <ExportDialect dialectId={fvaDialectId} />
               {this.state.clickedFilterByCategory === false && (
                 <RaisedButton
                   style={{ margin: '0 0 10px 0' }}
