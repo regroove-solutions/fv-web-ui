@@ -11,10 +11,8 @@ import java.security.InvalidParameterException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -30,13 +28,31 @@ import javax.inject.Inject;
  * @author loopingz
  */
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, PlatformFeature.class})
-@Deploy({"studio.extensions.First-Voices", "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml"})
-@LocalDeploy({"FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
-    "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml"})
+@Features({RuntimeFeature.class, CoreFeature.class, PlatformFeature.class})
+@Deploy( {"studio.extensions.First-Voices",
+        "org.nuxeo.ecm.platform",
+        "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.automation.core",
+        "org.nuxeo.ecm.platform.publisher.core",
+        "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.rendition.core",
+        "org.nuxeo.ecm.platform.video.core",
+        "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.ecm.automation.scripting",
+        "org.nuxeo.ecm.platform.web.common"})
+@LocalDeploy({
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml",
+        "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml",
+        "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml",
+        "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"
+})
 public class FirstVoicesPublisherTest {
     @Inject
     protected CoreSession session;
@@ -270,7 +286,13 @@ public class FirstVoicesPublisherTest {
     }
 
     private DocumentModel getProxy(DocumentModel model) {
-        return session.getProxies(model.getRef(), null).get(0);
+        DocumentModelList proxies = session.getProxies(model.getRef(), null);
+
+        if (proxies.size() > 0 ) {
+            return proxies.get(0);
+        }
+
+        return null;
     }
 
     @Test
