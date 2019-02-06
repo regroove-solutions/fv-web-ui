@@ -12,7 +12,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 @Path("/fv/users")
 @Produces("text/html;charset=UTF-8")
-@WebObject(type = "FVUserRegistrationTemplates", superType = "userRegistration")
+@WebObject(type = "FVUserRegistration", superType = "userRegistration")
 public class FVUserInvitationObject extends UserInvitationObject {
 //    protected String requestedSpace;
 //    protected String ageGroup;

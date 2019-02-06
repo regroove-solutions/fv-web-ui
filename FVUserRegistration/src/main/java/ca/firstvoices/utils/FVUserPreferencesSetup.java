@@ -47,7 +47,7 @@ public class FVUserPreferencesSetup {
 
     public String createDefaultUserPreferencesWithRegistration( DocumentModel registration ) throws Exception
     {
-        String dialectID = (String) registration.getPropertyValue("docinfo:documentId");
+        String dialectID = (String) registration.getPropertyValue("fvuserinfo:requestedSpace");
 
         return createDefaultUserPreferencesWithDialectID( dialectID );
     }

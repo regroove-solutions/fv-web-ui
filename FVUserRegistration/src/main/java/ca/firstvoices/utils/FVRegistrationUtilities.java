@@ -18,20 +18,23 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
-
 
 public class FVRegistrationUtilities
 {
@@ -135,6 +138,9 @@ public class FVRegistrationUtilities
             throw new UserRegistrationException("Cannot request to join a disabled dialect.");
         }
 
+        // Set Workspace document as requested space
+        registrationRequest.setPropertyValue("fvuserinfo:requestedSpace", dialect.getId());
+
         userInfo = new FVUserRegistrationInfo();
 
         String ageGroup =  (String) registrationRequest.getPropertyValue("fvuserinfo:ageGroup");
@@ -169,6 +175,7 @@ public class FVRegistrationUtilities
         userInfo.setEmail((String) registrationRequest.getPropertyValue("userinfo:email"));
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
+        userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
         userInfo.setLogin( userInfo.getEmail() );
 
         try
@@ -228,6 +235,8 @@ public class FVRegistrationUtilities
         options.put("fName", (String) ureg.getPropertyValue("userinfo:firstName"));
         options.put("lName", (String) ureg.getPropertyValue("userinfo:lastName"));
         options.put("email", (String) ureg.getPropertyValue("userinfo:email"));
+        options.put("comment", (String) ureg.getPropertyValue("fvuserinfo:comment"));
+        options.put("dialectId", dialect.getId() );
         options.put("dialect", dialect.getTitle() );
 
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
@@ -315,27 +324,23 @@ public class FVRegistrationUtilities
             switch ( validationStatus )
             {
                 case EMAIL_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login the same as submitted email is present.", 400);
-
                 case LOGIN_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Login name already present.", 400);
-
                 case LOGIN_AND_EMAIL_EXIST_ERROR:
-                    throw new RestOperationException("Exception validation: Login name and email already present.", 400);
+                    throw new RestOperationException("This email address is already in use.", 400);
 
                 case REGISTRATION_EXISTS_ERROR:
-                    throw new RestOperationException("Exception validation: Pending registration with the same credentials is present.", 400);
+                    throw new RestOperationException("A pending registration with the same credentials is present. Please check your email (including SPAM folder) for a message with instructions or contact us for help.", 400);
 
             }
         }
 
         // Additional information from registration
-        info.put("registration:comment", comment);
         info.put("dc:title", userInfo.getFirstName() + " " + userInfo.getLastName() + " Wants to Join " + dialectTitle);
         info.put("fvuserinfo:role", userInfo.getRole() );
         info.put("fvuserinfo:ageGroup", userInfo.getAgeGroup() );
         info.put("fvuserinfo:preferences", userInfo.getPreferences() );
         info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
+        info.put("fvuserinfo:comment", userInfo.getComment());
 
         // Set permissions on registration document
         String registrationId = null;
@@ -450,11 +455,37 @@ public class FVRegistrationUtilities
         public void run() {
             DocumentModel registrationDoc = session.getDocument(new IdRef(registrationDocId));
 
-            ACE registrationACE = new ACE(language_admin_group, "Everything");
+            ACE registrationACE = new ACE(language_admin_group, SecurityConstants.EVERYTHING);
+            ACE registrationContainerACE = new ACE(language_admin_group, SecurityConstants.REMOVE_CHILDREN);
 
             ACP registrationDocACP = registrationDoc.getACP();
             registrationDocACP.addACE("local", registrationACE);
             registrationDoc.setACP(registrationDocACP, false);
+
+            // Apply REMOVE CHILD permission to parent so that registration requests can be removed.
+            DocumentModel registrationContainer = session.getDocument(registrationDoc.getParentRef());
+            ACP registrationContainerDocACP = registrationContainer.getACP();
+            registrationContainerDocACP.addACE("local", registrationContainerACE);
+
+            registrationContainer.setACP(registrationContainerDocACP, false);
+        }
+    }
+
+    /**
+     * Removes registration request for users
+     * @param users list of users to remove registration requests for
+     */
+    public static void removeRegistrationsForUsers(CoreSession session, StringList users) {
+        String query = String.format(
+                "SELECT * FROM FVUserRegistration " +
+                "WHERE userinfo:email IN ('%s') " +
+                "ORDER BY dc:created DESC",
+                String.join("','", users));
+
+        DocumentModelList docs = session.query(query);
+
+        for (DocumentModel doc : docs) {
+            session.removeDocument(doc.getRef());
         }
     }
 
@@ -476,7 +507,6 @@ public class FVRegistrationUtilities
 
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
 
-            FVUserPreferencesSetup up = new FVUserPreferencesSetup();
             String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
 
@@ -501,9 +531,11 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            notificationEmailsAndReminderTasks( dialect, ureg );
+            // Only email language admins if requested role is involved in language revitalization
+            if (userDoc.getPropertyValue("user:role").equals("languagerevitalizer")) {
+                notificationEmailsAndReminderTasks( dialect, ureg );
+            }
 
-            // TODO decide if we need to remove the registration document for created document at this point
             lctx.logout();
         }
         catch( Exception e )

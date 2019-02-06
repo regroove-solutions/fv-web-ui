@@ -59,9 +59,9 @@
 					return false;
 				}
 				else {
-					var passMatch = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$");
+					var passMatch = new RegExp("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$");
 					if (!passMatch.test(passwordFieldInput.value)) {
-						errorMessageBox.innerHTML = "Select a strong password at least 8 characters long, with a capital and lowercase letter, number and special character (e.g. $, %, #, etc.)"
+						errorMessageBox.innerHTML = "Select a strong password at least 8 characters long, with at least 1 capital letter, lowercase letter, and number."
 						return false;
 					}
 				}
@@ -116,7 +116,7 @@
 
 			<div style="text-align: left;padding-left: 25px;">
 				Pick a password that is at least 8 characters long<br/>
-				Include a capital letter, lowercase letter, number and special character (e.g. $, %, #, etc.)
+				Include at least 1 capital letter, lowercase letter, and number
 			</div>
 		</div>
 

@@ -1,6 +1,7 @@
 package ca.firstvoices.operations;
 
 import ca.firstvoices.services.FVMoveUserToDialectServiceImpl;
+import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
@@ -11,6 +12,8 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+
+import javax.ws.rs.core.Response;
 
 @Operation(id = FVChangeUserGroupToDialectGroup.ID, category = Constants.CAT_USERS_GROUPS, label = "FVChangeUserGroupToDialectGroup",
         description = "Language administrator operation to include user(s) in one of the dialect groups (members, recorders, recorders+)")
@@ -31,7 +34,7 @@ public class FVChangeUserGroupToDialectGroup
     protected String groupName;
 
     @OperationMethod
-    public String run( DocumentModel dialect )
+    public Object run( DocumentModel dialect )
     {
         FVMoveUserToDialectServiceImpl util = new FVMoveUserToDialectServiceImpl();
 
@@ -42,6 +45,10 @@ public class FVChangeUserGroupToDialectGroup
                 util.placeNewUserInGroup(dialect, groupName, uName);
                 log.info("Moved user " + uName +" to group " + groupName );
             }
+
+            // Remove registration request as it has been dealt with
+            // Future user modifications should be done via other look-ups
+            FVRegistrationUtilities.removeRegistrationsForUsers(session, userNames);
         }
         catch( Exception e)
         {
@@ -49,6 +56,6 @@ public class FVChangeUserGroupToDialectGroup
             return e.getMessage();
         }
 
-        return "Updated.";
+        return Response.status(200).entity("User(s) updated successfully.").build();
     }
 }

@@ -84,14 +84,15 @@ public class NonRecorders extends AbstractSecurityPolicy {
                 WhereClause where = query.where;
                 Predicate predicate;
 
-                // Do not limit published assets in the Site and SharedData directories. These generally do not follow fv-lifecycle
-                if (where.toString().indexOf("ecm:path STARTSWITH '/FV/sections/Site/Resources/'") != -1 || where.toString().indexOf("ecm:path STARTSWITH '/FV/sections/SharedData/'") != -1) {
-                    return query;
-                }
-
                 if (where == null || where.predicate == null) {
                 	predicate = new Predicate(NOT_DISABLED, Operator.AND, NOT_NEW);
                 } else {
+
+                    // Do not limit published assets in the Site and SharedData directories. These generally do not follow fv-lifecycle
+                    if (where.toString().contains("ecm:path STARTSWITH '/FV/sections/Site/Resources/'") || where.toString().contains("ecm:path STARTSWITH '/FV/sections/SharedData/'")) {
+                        return query;
+                    }
+
                 	Predicate notDisabledAndNotNew = new Predicate(NOT_DISABLED, Operator.AND, NOT_NEW);
                 	predicate = new Predicate(notDisabledAndNotNew, Operator.AND, where.predicate);
                 }

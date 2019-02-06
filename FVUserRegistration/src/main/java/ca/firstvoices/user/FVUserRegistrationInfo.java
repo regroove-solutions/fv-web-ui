@@ -4,10 +4,11 @@ import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
 public class FVUserRegistrationInfo extends UserRegistrationInfo{
 
-    private  String requestedSpace;
-    private String preferences;
-    private String ageGroup;
-    private String role;
+    protected String requestedSpace;
+    protected String preferences;
+    protected String ageGroup;
+    protected String role;
+    protected String comment;
 
     public FVUserRegistrationInfo() {}
 
@@ -40,6 +41,14 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
 }

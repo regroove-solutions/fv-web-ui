@@ -56,9 +56,6 @@ public class FVQuickUserRegistration {
     @Param(name = "info", required = false)
     protected Map<String, Serializable> info = new HashMap<>();
 
-    @Param(name = "comment", required = false)
-    protected String comment;
-
     protected String bRange;
 
     @OperationMethod
@@ -111,7 +108,7 @@ public class FVQuickUserRegistration {
             String registrationId = utilCommon.postCondition(registrationService,
                     registrationRequest,
                     info,
-                    comment,
+                    null,
                     validationMethod,
                     true); // we always autoAccept quick registration
         } catch (RestOperationException e) {

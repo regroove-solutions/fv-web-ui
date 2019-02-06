@@ -7,9 +7,11 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.features.PrincipalHelper;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.RenderingHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.mail.Message;
@@ -23,6 +25,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -109,16 +112,10 @@ public class FVRegistrationMailUtilities {
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(dialect, "Everything", false);
 
-        // TODO: Change for production run ... this is done for testing ONLY
-        // TODO: we want to send email only to administrator ... not to languageAdministrator
-        NuxeoPrincipal admin = umgr.getPrincipal("Administrator");
-        String adminEmail = admin.getEmail();
-        // TODO: remove to this place from the first TODO
-
         session.close();
         lctx.logout();
 
-        return adminEmail; //  composeEmailString( result ); // TODO: remove adminEmail and restore composeEmailString
+        return composeEmailString( result );
     }
 
     private interface EmailContentAssembler
@@ -136,13 +133,13 @@ public class FVRegistrationMailUtilities {
             switch( variant)
             {
                 case MID_REGISTRATION_PERIOD_ACT:
-                    title = "NOTIFICATION User registration will expire soon.";
+                    title = "FirstVoices: User registration will expire soon.";
                     break;
                 case REGISTRATION_EXPIRATION_ACT:
-                    title = "NOTIFICATION User registration was not completed and will be deleted.";
+                    title = "FirstVoices: User registration was not completed and will be deleted.";
                     break;
                 case NEW_USER_SELF_REGISTRATION_ACT:
-                    title = "NOTIFICATION New user registration";
+                    title = "FirstVoices: New User Registration (action may be required)";
                     break;
             }
 
@@ -151,29 +148,30 @@ public class FVRegistrationMailUtilities {
 
         public String getEmailBody( int variant, Map<String, String> options )
         {
-            String body = null;
-
-            String s1 = "<br> Login name: " + options.get("email");
-            String s2 = "<br><br> User registered and created password to participate in " + options.get("dialect");
-            String ex7 = "<br> Please make the user a member of your dialect.";
-            String ex24 =   "<br><br> Registration request will be deleted in 24 hrs. <br>";
-            String endStr =  "<br><br> To complete registration "+options.get("fName")+ " has to setup account password.";
-            String thankYou = " <br><br> Regards,<br> The FirstVoices team";
+            String bodyTemplate = null;
 
             switch( variant) {
                 case MID_REGISTRATION_PERIOD_ACT:
-                    body = "Registration for " + options.get("fName") + " " + options.get("lName") + " will expire in 3 days." + s1 +s2 + endStr + thankYou;
+                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationAboutToExpire.ftl";
                      break;
                 case REGISTRATION_EXPIRATION_ACT:
-                    body = "Registration period for " + options.get("fName") + " " + options.get("lName") + " EXPIRED."+ s1 + s2 + ex24 + endStr + thankYou;
+                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationExpired.ftl";
                     break;
-
                 case NEW_USER_SELF_REGISTRATION_ACT:
-                    body = "New self registration by " + options.get("fName") + " " + options.get("lName") + s1 + s2 + ex7 + thankYou;
+                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-NewUserRegistered.ftl";
                     break;
             }
 
-            return body;
+            StringWriter writer = new StringWriter();
+            RenderingHelper rh = new RenderingHelper();
+
+            try {
+                rh.getRenderingEngine().render(bodyTemplate, options, writer);
+            } catch (RenderingException e) {
+                throw new NuxeoException("Error during rendering email", e);
+            }
+
+            return writer.getBuffer().toString();
         }
     }
 
@@ -292,13 +290,14 @@ public class FVRegistrationMailUtilities {
         options.put("fName", (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         options.put("lName", (String) registrationRequest.getPropertyValue("userinfo:lastName"));
         options.put("email", (String) registrationRequest.getPropertyValue("userinfo:email"));
+        options.put("comment", (String) registrationRequest.getPropertyValue("userinfo:comment"));
         options.put("dialect", dialectTitle);
 
-        // temporary until
         String toStr =  getLanguageAdministratorEmail( dialect );
 
         registrationMailSender( variant, new UserReminderMailContent(), options , "" );
 
-        registrationMailSender( variant, new AdminMailContent(), options , toStr );
+        // TODO Decide if we need to send reminders to admins
+        //registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }
