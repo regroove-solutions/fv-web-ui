@@ -67,6 +67,7 @@ class SearchDialect extends Component {
       '_updateSearchTerm',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
+
   partsOfSpeech = []
 
   componentDidMount() {
@@ -114,8 +115,8 @@ class SearchDialect extends Component {
       searchByTitleText = 'Words'
       searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
     }
-    const disableButtons = searchTerm === '' || searchTerm === null
-
+    const disableButtonSearch = searchTerm === '' || searchTerm === null
+    const disableButtonReset = this.state.userInteractedWithSearchDialectAdvanced === false || (searchType === SEARCH_DEFAULT && disableButtonSearch)
     let partsOfSpeechOptions = null
     if (isSearchingPhrases === false) {
       partsOfSpeechOptions = this.partsOfSpeech.map((part, index) => {
@@ -145,7 +146,7 @@ class SearchDialect extends Component {
 
             <RaisedButton
               className="SearchDialectMainBtn"
-              disabled={disableButtons}
+              disabled={disableButtonSearch}
               label={searchButtonText}
               onTouchTap={this._handleSearch}
               primary
@@ -153,7 +154,7 @@ class SearchDialect extends Component {
 
             <RaisedButton
               className="SearchDialectMainBtn SearchDialectMainBtnReset"
-              disabled={disableButtons}
+              disabled={disableButtonReset}
               label={resetButtonText}
               onTouchTap={this._resetSearch}
               primary={false}
@@ -267,6 +268,7 @@ class SearchDialect extends Component {
                   value={searchPartOfSpeech}
                 >
                   <option value={SEARCH_SORT_DEFAULT}>Any</option>
+                  <option disabled>─────────────</option>
                   {partsOfSpeechOptions}
                 </select>
               </span>
