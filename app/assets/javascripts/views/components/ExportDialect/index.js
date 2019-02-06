@@ -248,8 +248,8 @@ export default class ExportDialect extends Component {
     const content = (
       <div>
         <p>
-          The file is ready to download:
-          <a href={ExportDialectFileUrl}>{ExportDialectFileName}</a>
+          The file is available for download:
+          <a href={ExportDialectFileUrl} style={{display: 'block', wordBreak: 'break-word'}}>{ExportDialectFileName}</a>
         </p>
       </div>
     )
