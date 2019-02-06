@@ -36,18 +36,17 @@
     </dependency>
     <dependency>
       <groupId>ca.firstvoices</groupId>
-      <artifactId>FVUserRegistration</artifactId>
+      <artifactId>FirstVoicesEnrichers</artifactId>
     </dependency>
     <dependency>
       <groupId>ca.firstvoices</groupId>
-      <artifactId>FirstVoicesEnrichers</artifactId>
+      <artifactId>FVUserRegistration</artifactId>
     </dependency>
     <dependency>
       <groupId>ca.firstvoices</groupId>
       <artifactId>FirstVoicesExport</artifactId>
     </dependency>
   </dependencies>
-
   <build>
     <plugins>
       <plugin>
