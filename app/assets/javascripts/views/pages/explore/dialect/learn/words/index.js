@@ -261,17 +261,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridListTile: AlphabetGridTile,
       }
     )
-
+    // For <ExportDialect>
     // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
-    // <ExportDialect
-    //   displayDebug
-    //   fileName="File name.csv"
-    //   fileUrl="//google.ca"
-    //   isErrored={false}
-    //   isReady={false}
-    //   isProcessing={false}
-    //   dialectId={fvaDialectId}
-    // />
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -301,7 +292,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <h2>Words</h2>
-
+              {/* <ExportDialect dialectId={fvaDialectId} /> */}
               {this.state.clickedFilterByCategory === false && (
                 <RaisedButton
                   style={{ margin: '0 0 10px 0' }}

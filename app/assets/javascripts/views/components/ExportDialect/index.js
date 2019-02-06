@@ -1,12 +1,15 @@
 import React, { Component, PropTypes } from 'react'
-const { bool, string } = PropTypes
+const { any, bool, func, string } = PropTypes
 // import classNames from 'classnames'
-import Request from 'request'
-
-import { CSV_URL, CSV_URL_INITIATE, CSV_URL_DOWNLOAD } from './constants'
-
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+@provide
 export default class ExportDialect extends Component {
   static propTypes = {
+    ExportDialectReducer: any.isRequired,
+    ExportDialectCheckPrevious: func.isRequired,
+    ExportDialectRequest: func.isRequired,
+    ExportDialectProgress: func.isRequired,
     displayDebug: bool,
     dialectId: string,
     fileName: string,
@@ -24,209 +27,232 @@ export default class ExportDialect extends Component {
     isProcessing: false,
     isErrored: false,
   }
+
+  polling = false
+  pollingInterval = 1000
+  pollingLimit = 2000000
+
   constructor(props) {
     super(props)
     this.state = {
-      initiateCsvRequestSent: false,
-      initiateCsvRequestErrored: false,
-      CSV_URL: null,
-      dialectId: null,
+      _EXPORT_DIALECT_SCHEME_HOST_URL: null,
+      _dialectId: null,
     }
 
     // Bind methods to 'this'
-    ;['_initiateCsvRequest', '_requestCsvDownload'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;[
+      '_checkProgress',
+      '_exportDialectCheckPrevious',
+      '_exportDialectRequest',
+      '_exportDialectProgress',
+      '_getProgress',
+      '_pollServer',
+      '_stateIsNotStarted',
+      '_stateIsSuccess',
+    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
-
+  componentDidMount() {
+    this._exportDialectCheckPrevious()
+  }
+  componentDidUpdate(prevProps) {
+    if (this.props.dialectId && prevProps.dialectId === undefined) {
+      this._exportDialectCheckPrevious()
+    }
+  }
+  componentWillUnmount() {
+    this.polling = false
+  }
   render() {
-    const { displayDebug, dialectId, isProcessing, isReady, isErrored } = this.props
-    const { initiateCsvRequestSent, initiateCsvRequestErrored } = this.state
-    let content = this._stateIsDefault()
-    if (isProcessing || initiateCsvRequestSent) {
-      content = this._stateIsProcessing()
+    if (this.props.dialectId === undefined) {
+      return null
     }
-    if (isErrored || initiateCsvRequestErrored) {
-      content = this._stateIsErrored()
+    const { CONSTANTS } = this.props.ExportDialectReducer
+    const { IN_PROGRESS, SUCCESS, ERROR } = CONSTANTS
+    const { dialectIdLifecycle } = this._getData()
+
+    let componentState = null
+    // check current state
+    switch (dialectIdLifecycle) {
+      case IN_PROGRESS:
+        componentState = this._stateIsInProgress()
+        break
+      case SUCCESS:
+        componentState = this._stateIsSuccess()
+        break
+      case ERROR:
+        componentState = this._stateIsError()
+        break
+      default:
+        componentState = this._stateIsNotStarted()
     }
-    if (isReady) {
-      content = this._stateIsReady()
-    }
-    const debug =  (displayDebug) ? (
-      <div style={{border: '1px dotted red', margin: '5px 0', padding: '5px', fontSize: '11px'}}>
-        <h3 style={{fontSize: '12px', margin: '0'}}>TEMP FOR DEV</h3>
-
-        {(this.state.CSV_URL || this.state.dialectId) && (
-          <button type="button"  style={{fontSize: '11px', display: 'block', margin: '2px'}} onClick={()=>{
-            this.setState({
-              dialectId: this.props.dialectId,
-              CSV_URL,
-            })
-          }}>Reset vaules</button>
-        )}
-
-          URL:
-        <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
-          this.setState({CSV_URL: evt.target.value})
-        }} value={this.state.CSV_URL || CSV_URL} />
-
-          Document ID:
-        <input style={{fontSize: '11px', margin: '0', width: '100%'}} onChange={(evt)=>{
-          this.setState({dialectId: evt.target.value})
-        }} value={this.state.dialectId || dialectId} />
-
-        <hr />
-
-        <button type="button" style={{
-          fontSize: '11px',
-          display: 'block',
-          width: '100%',
-          margin: '2px',
-          lineHeight: '1.3',
-          wordBreak: 'break-word',
-          textAlign: 'left',
-        }} onClick={this._initiateCsvRequest}>
-          {`${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`}
-        </button>
-
-        <button type="button" style={{
-          fontSize: '11px',
-          display: 'block',
-          width: '100%',
-          margin: '2px',
-          lineHeight: '1.3',
-          wordBreak: 'break-word',
-          textAlign: 'left',
-        }} onClick={this._requestCsvDownload}>
-          {`${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`}
-        </button>
-      </div>
-    ) : null
 
     return (
       <div>
         <h2>Export</h2>
-        {debug}
-        {content}
+        {componentState}
       </div>
     )
   }
-  _stateIsDefault() {
-    const { dialectId } = this.props
-    const id = this.state.dialectId || dialectId
-    if (id === undefined) {
-      return null
+  async _checkProgress() {
+    // Make request
+    await this._exportDialectProgress()
+    // Pull data from store
+    const { CONSTANTS } = this.props.ExportDialectReducer
+    const { SUCCESS, ERROR } = CONSTANTS
+    const { dialectIdLifecycle } = this._getData()
+
+    // Responses
+    if (dialectIdLifecycle === SUCCESS) {
+      // true: Stop polling
+      return true
     }
-    return (
-      <div>
-        <p>You can create a file of this dialect for printing or other uses:</p>
-        <button type="button" onClick={this._initiateCsvRequest}>
-          Create export file
-        </button>
-      </div>
-    )
+
+    if (dialectIdLifecycle === ERROR) {
+      // false: Stop polling
+      return false
+    }
+
+    // null: Continue polling
+    return null
   }
-  _stateIsProcessing() {
-    return (
-      <div>
-        <p>The export file is being created.</p>
-      </div>
-    )
+
+  async _exportDialectCheckPrevious() {
+    const { dialectId } = this.props
+    if (dialectId) {
+      await this.props.ExportDialectCheckPrevious(dialectId)
+    }
   }
-  _stateIsErrored() {
+  async _exportDialectProgress() {
+    const { dialectId } = this.props
+    let _documentUuid = this.props.ExportDialectReducer.dialectIdDocumentUuid[dialectId]
+    if (!_documentUuid) {
+      const { dialectExportedDocumentUuid } = this._getData()
+      _documentUuid = dialectExportedDocumentUuid
+    }
+    await this.props.ExportDialectProgress(dialectId, _documentUuid)
+  }
+
+  async _exportDialectRequest() {
+    const { dialectId } = this.props
+    await this.props.ExportDialectRequest(dialectId)
+  }
+
+  _getData() {
+    const { dialectId } = this.props
+
+    if (!dialectId) {
+      return {
+        dialectIdDocumentUuid,
+        dialectIdLifecycle,
+        dialectIdData,
+      }
+    }
+    const {
+      dialectsExported,
+      dialectIdDocumentUuid,
+      dialectIdLifecycle,
+      dialectIdData,
+    } = this.props.ExportDialectReducer
+
+    const _dialectExported = (dialectsExported || []).filter((existingExport) => {
+      const exportedDialectId = selectn('properties.fvexport:dialect', existingExport)
+      return exportedDialectId === dialectId
+    })
+    const _dialectIdDocumentUuid = dialectIdDocumentUuid[dialectId]
+    const _dialectIdLifecycle = dialectIdLifecycle[dialectId]
+    const _dialectIdData = dialectIdData[dialectId]
+
+    return {
+      dialectExportedDocumentUuid: _dialectExported.length > 0 ? _dialectExported[0].uid : undefined,
+      dialectIdDocumentUuid: _dialectIdDocumentUuid,
+      dialectIdLifecycle: _dialectIdLifecycle,
+      dialectIdData: _dialectIdData,
+    }
+  }
+  _getProgress() {
+    if (this.polling === false) {
+      this.polling = true
+      this._pollServer(this._checkProgress).finally(() => {
+        this.polling = false
+      })
+    }
+  }
+  // Thanks: https://davidwalsh.name/javascript-polling
+  _pollServer(fn) {
+    // The polling function
+    const timeout = this.pollingLimit
+    const interval = this.pollingInterval
+    const endTime = Number(new Date()) + timeout
+    // eslint-disable-next-line func-names
+    const checkCondition = async function(resolve, reject) {
+      // If the condition is met, we're done!
+      const result = await fn()
+      if (result === true) {
+        resolve(result)
+      }
+      if (result === false) {
+        reject(new Error('Network request error'))
+      }
+      if (Number(new Date()) < endTime && result === null) {
+        // If the condition isn't met but the timeout hasn't elapsed, go again
+        setTimeout(checkCondition, interval, resolve, reject)
+      } else {
+        // Didn't match and too much time, reject!
+        reject(new Error('Timed out'))
+      }
+    }
+
+    return new Promise(checkCondition)
+  }
+
+  _stateIsError() {
+    // const { dialectIdData } = this._getData()
+    // const { message, percentage } = dialectIdData
     return (
       <div>
         <p>There was a problem creating the export file.</p>
         <p>We have been notified of the matter and will look into it shortly.</p>
+        {/* <p>{`${message || ''} ${percentage || ''}`}</p> */}
       </div>
     )
   }
-  _stateIsReady() {
-    const { fileName, fileUrl } = this.props
 
-    const content =
-      fileUrl === '' ? (
-        <div>
-          <p>The file has finished processing but is temporarily unavailable for download.</p>
-          <p>Sorry for the delay, it should be fixed shortly.</p>
-        </div>
-      ) : (
-        <div>
-          <p>You can download a file of this dialect for printing or other uses:</p>
-          <a href={fileUrl}>
-            Download <strong>{fileName}</strong>
-          </a>
-        </div>
-      )
+  _stateIsInProgress() {
+    const { dialectIdData } = this._getData()
+    const { percentage } = dialectIdData
+
+    this._getProgress()
+
+    return (
+      <div>
+        <div style={{ backgroundColor: 'green', width: `${percentage}%`, height: '2px' }} />
+        <p>The file is being created.</p>
+      </div>
+    )
+  }
+
+  _stateIsNotStarted() {
+    return (
+      <div>
+        <p>Generate a file of this dialect for printing or use offline.</p>
+        <button type="button" onClick={this._exportDialectRequest}>
+          Generate export file
+        </button>
+      </div>
+    )
+  }
+
+  _stateIsSuccess() {
+    const { dialectIdData } = this._getData()
+    const { ExportDialectFileUrl, ExportDialectFileName } = dialectIdData
+    const content = (
+      <div>
+        <p>
+          The file is ready to download:
+          <a href={ExportDialectFileUrl}>{ExportDialectFileName}</a>
+        </p>
+      </div>
+    )
     return content
-  }
-  _initiateCsvRequest() {
-    const { dialectId } = this.props
-    const id = this.state.dialectId || dialectId
-    if (id === undefined ) {
-      return
-    }
-    const reqBody = {
-      input: id,
-      params: {
-        columns: '*',
-        format: 'CSV',
-        query: '*',
-      },
-    }
-    Request(
-      {
-        url: `${this.state.CSV_URL || CSV_URL }${CSV_URL_INITIATE}`,
-        method: 'POST',
-        body: reqBody,
-        json: true,
-      },
-      (error, response, body) => {
-        // console.log('!', error)
-        // console.log('!!', response)
-        // console.log('!!!', body)
-
-        if (response && response.statusCode === 204) {
-          this.setState({
-            initiateCsvRequestSent: true,
-          })
-        } else {
-          this.setState({
-            initiateCsvRequestErrored: true,
-          })
-        }
-      }
-    )
-  }
-  _requestCsvDownload() {
-    const { dialectId } = this.props
-    const id = this.state.dialectId || dialectId
-    if (id === undefined) {
-      return
-    }
-    const reqBody = {
-      input: id,
-      params: {
-        format: 'CSV',
-      },
-    }
-    Request(
-      {
-        url: `${this.state.CSV_URL || CSV_URL}${CSV_URL_DOWNLOAD}`,
-        method: 'POST',
-        body: reqBody,
-        json: true,
-      },
-      (error, response, body) => {
-        // console.log('!', error)
-        // console.log('!!', response)
-        // console.log('!!!', body)
-        if (response && response.statusCode === 200) {
-          if (body && body.value) {
-            const respData = body.value.split(',')
-            const id = respData[1].split(':')
-            console.log('!!!', id[1])
-          }
-        }
-      }
-    )
   }
 }
