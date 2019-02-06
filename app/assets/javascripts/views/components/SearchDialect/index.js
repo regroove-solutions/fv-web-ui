@@ -4,32 +4,34 @@ import { PropTypes } from 'react'
 import { SEARCH_ADVANCED, SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from './constants'
 import provide from 'react-redux-provide'
 import StringHelpers from 'common/StringHelpers'
-
+import selectn from 'selectn'
 import classNames from 'classnames'
 import RaisedButton from 'material-ui/lib/raised-button'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-const { any, func, string, bool } = PropTypes
+const { any, func, string, bool, object } = PropTypes
 
 @provide
 class SearchDialect extends Component {
   static propTypes = {
-    isSearchingPhrases: bool,
-    searchButtonText: string,
-    resetButtonText: string,
+    computeDirectory: object.isRequired,
+    fetchDirectory: func.isRequired,
     filterInfo: any, // TODO: set appropriate propType
-    updateAncestorState: func,
     handleSearch: func,
+    isSearchingPhrases: bool,
+    resetButtonText: string,
     resetSearch: func,
+    searchButtonText: string,
     searchByAlphabet: bool,
+    searchByDefinitions: bool,
+    searchByTitle: bool,
+    searchByTranslations: bool,
     searchByCulturalNotes: bool,
+    searchPartOfSpeech: string,
     searchTerm: string,
     searchType: string,
-    searchByTitle: bool,
-    searchByDefinitions: bool,
-    searchByTranslations: bool,
-    searchPartOfSpeech: string,
+    updateAncestorState: func,
   }
   static defaultProps = {
     isSearchingPhrases: false,
@@ -66,10 +68,27 @@ class SearchDialect extends Component {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  componentDidUpdate() {
+  partsOfSpeech = []
+
+  componentDidMount() {
+    this.props.fetchDirectory('parts_of_speech')
+  }
+
+  componentDidUpdate(prevProps) {
     const searchNxqlQuery = this._generateNxql()
     const searchNxqlSort = this._getNxqlSearchSort()
     this.props.updateAncestorState({ searchNxqlQuery, searchNxqlSort })
+    const prevComputeSuccess = selectn('computeDirectory.success', prevProps)
+    const currentComputeSuccess = selectn('computeDirectory.success', this.props)
+    if (prevComputeSuccess !== currentComputeSuccess && currentComputeSuccess === true) {
+      const _partsOfSpeech = selectn('computeDirectory.directories.parts_of_speech', this.props)
+      const _partsOfSpeechSort = _partsOfSpeech.sort((a, b) => {
+        if (a.text < b.text) return -1
+        if (a.text > b.text) return 1
+        return 0
+      })
+      this.partsOfSpeech = _partsOfSpeechSort
+    }
   }
 
   render() {
@@ -96,7 +115,19 @@ class SearchDialect extends Component {
       searchByTitleText = 'Words'
       searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
     }
-    const disableButtons = searchTerm === '' || searchTerm === null
+    const disableButtonSearch = searchTerm === '' || searchTerm === null
+    const disableButtonReset = this.state.userInteractedWithSearchDialectAdvanced === false || (searchType === SEARCH_DEFAULT && disableButtonSearch)
+    let partsOfSpeechOptions = null
+    if (isSearchingPhrases === false) {
+      partsOfSpeechOptions = this.partsOfSpeech.map((part, index) => {
+        return (
+          <option key={index} value={part.value}>
+            {part.text}
+          </option>
+        )
+      })
+    }
+
     return (
       <div className="SearchDialect">
         <div
@@ -115,7 +146,7 @@ class SearchDialect extends Component {
 
             <RaisedButton
               className="SearchDialectMainBtn"
-              disabled={disableButtons}
+              disabled={disableButtonSearch}
               label={searchButtonText}
               onTouchTap={this._handleSearch}
               primary
@@ -123,7 +154,7 @@ class SearchDialect extends Component {
 
             <RaisedButton
               className="SearchDialectMainBtn SearchDialectMainBtnReset"
-              disabled={disableButtons}
+              disabled={disableButtonReset}
               label={resetButtonText}
               onTouchTap={this._resetSearch}
               primary={false}
@@ -237,8 +268,8 @@ class SearchDialect extends Component {
                   value={searchPartOfSpeech}
                 >
                   <option value={SEARCH_SORT_DEFAULT}>Any</option>
-                  <option value="noun">Noun</option>
-                  <option value="verb">Verb</option>
+                  <option disabled>─────────────</option>
+                  {partsOfSpeechOptions}
                 </select>
               </span>
             )}
@@ -448,7 +479,7 @@ class SearchDialect extends Component {
   }
 
   _handleSearch() {
-    const updateState = {searchByAlphabet: false}
+    const updateState = { searchByAlphabet: false }
     this.props.updateAncestorState(updateState)
     this.props.handleSearch()
   }
