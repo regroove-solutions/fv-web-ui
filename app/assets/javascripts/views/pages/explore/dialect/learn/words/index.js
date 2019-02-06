@@ -36,7 +36,7 @@ import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 
-import ExportDialect from 'views/components/ExportDialect'
+// import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
 
@@ -261,9 +261,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridListTile: AlphabetGridTile,
       }
     )
-
-    const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
-
+    // For <ExportDialect>
+    // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -293,7 +292,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           <div className={classNames('col-xs-12', 'col-md-3', computeCategoriesSize === 0 ? 'hidden' : null, 'PrintHide')}>
             <div>
               <h2>Words</h2>
-              <ExportDialect dialectId={fvaDialectId} />
+              {/* <ExportDialect dialectId={fvaDialectId} /> */}
               {this.state.clickedFilterByCategory === false && (
                 <RaisedButton
                   style={{ margin: '0 0 10px 0' }}
