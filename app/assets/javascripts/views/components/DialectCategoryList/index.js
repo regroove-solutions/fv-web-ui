@@ -17,7 +17,7 @@ import StringHelpers from 'common/StringHelpers'
 // const FiltersWithToggle = withToggle()
 
 @provide
-export default class CategoryList extends Component {
+export default class DialectCategoryList extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     facets: PropTypes.array.isRequired,

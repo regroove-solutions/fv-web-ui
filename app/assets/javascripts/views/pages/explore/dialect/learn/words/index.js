@@ -29,7 +29,7 @@ import { SearchDialect } from 'views/components/SearchDialect'
 import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-import CategoryList from 'views/components/CategoryList'
+import DialectCategoryList from 'views/components/DialectCategoryList'
 import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
@@ -293,8 +293,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             <div>
               <h2>Words</h2>
               {/* <ExportDialect dialectId={fvaDialectId} /> */}
-
-              <CategoryList
+              <DialectCategoryList
                 // title={intl.trans('categories', 'Categories', 'first')}
                 title={intl.trans(
                   'views.pages.explore.dialect.learn.words.find_by_category',
