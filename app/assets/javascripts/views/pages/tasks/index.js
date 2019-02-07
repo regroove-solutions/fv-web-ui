@@ -120,7 +120,7 @@ export default class Tasks extends React.Component {
 
     fetchData(newProps) {
         newProps.fetchUserTasks(selectn('response.id', newProps.computeLogin));
-        newProps.fetchUserRegistrationTasks(this.state.userRegistrationTasksPath);
+        //newProps.fetchUserRegistrationTasks(this.state.userRegistrationTasksPath);
     }
 
     componentWillReceiveProps(newProps) {

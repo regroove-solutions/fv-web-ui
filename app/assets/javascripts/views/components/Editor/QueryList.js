@@ -99,7 +99,8 @@ export default class DirectoryList extends Component {
 
                         :
 
-                        <select value={this.props.value} onChange={this._handleStandardSelectChange}>
+                        <select className="form-control" value={this.props.value} onChange={this._handleStandardSelectChange}>
+                            <option value>Please select:</option>
                             {entries.map((entry) =>
                                 <option key={selectn('ecm:uuid', entry)}
                                         value={selectn('ecm:uuid', entry)}>{selectn('dc:title', entry)}</option>

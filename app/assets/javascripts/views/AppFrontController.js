@@ -66,6 +66,7 @@ import {
     PagePlay,
     PageSearch,
     PageTasks,
+    PageUserTasks,
     PageUsersProfile,
     PageUsersRegister,
     PageUserLogin,
@@ -332,6 +333,12 @@ export default class AppFrontController extends Component {
                 path: ['tasks'],
                 title: intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
                 page: <PageTasks/>
+            },
+            {
+                path: ['tasks', 'users', new paramMatch('dialect', ANYTHING_BUT_SLASH)],
+                title: intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
+                page: <PageUserTasks type="users" />,
+                breadcrumbs: false
             },
             {
                 path: ['register'],
