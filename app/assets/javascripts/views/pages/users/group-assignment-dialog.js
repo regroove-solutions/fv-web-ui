@@ -120,12 +120,7 @@ export default class GroupAssignmentDialog extends Component {
 
     // Passed validation
     if (formValue) {
-      this.props.userUpgrade(selectn("response.uid", this.props.dialect), {
-        userNames: selectn("properties.userinfo:login", this.props.selectedItem),
-        groupName: formValue.group,
-      })
-
-      //this.props.saveMethod(properties, this.props.selectedItem);
+      this.props.saveMethod(properties, this.props.selectedItem)
       this.props.closeMethod()
     }
   }

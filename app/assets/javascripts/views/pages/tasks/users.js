@@ -74,13 +74,13 @@ export default class UserTasks extends React.Component {
       selectedTask: null,
       selectedPreapprovalTask: null,
       lastActionedTaskId: null,
+      savedItems: new List(),
       userRegistrationTasksPath: "/management/registrationRequests/",
     }
 
     // Bind methods to 'this'
     ;[
       "_handleTaskActions",
-      "_handleRegistrationActions",
       "_handleOpen",
       "_handlePreApprovalOpen",
       "_handleClose",
@@ -109,34 +109,6 @@ export default class UserTasks extends React.Component {
           {
             comment: "",
             status: "reject",
-          },
-          null,
-          intl.trans("views.pages.tasks.request_rejected", "Request Rejected Successfully", "words")
-        )
-        break
-    }
-
-    this.setState({ lastActionedTaskId: id })
-  }
-
-  _handleRegistrationActions(id, action) {
-    switch (action) {
-      case "approve":
-        this.props.approveRegistration(
-          id,
-          {
-            value: "approve",
-          },
-          null,
-          intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
-        )
-        break
-
-      case "reject":
-        this.props.rejectRegistration(
-          id,
-          {
-            value: "reject",
           },
           null,
           intl.trans("views.pages.tasks.request_rejected", "Request Rejected Successfully", "words")
@@ -178,21 +150,16 @@ export default class UserTasks extends React.Component {
     this.fetchData(this.props)
   }
 
-  _saveMethod(properties) {
-    this.props.approveRegistration(
-      properties.id,
-      {
-        comment: properties.comment,
-        group: properties.group,
-        appurl: ConfGlobal.baseWebUIURL,
-      },
-      null,
-      intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
-    )
+  _saveMethod(properties, selectedItem) {
+    this.props.userUpgrade(selectn("properties.fvuserinfo:requestedSpace", selectedItem), {
+      userNames: selectn("properties.userinfo:login", selectedItem),
+      groupName: properties.group,
+    })
 
     this.setState({
       selectedPreapprovalTask: null,
       open: false,
+      savedItems: this.state.savedItems.push(selectn("uid", selectedItem)),
     })
   }
 
@@ -209,6 +176,8 @@ export default class UserTasks extends React.Component {
   }
 
   render() {
+    let serverErrorMessage = ""
+
     const userID = selectn("response.id", this.props.computeLogin)
 
     const computeEntities = Immutable.fromJS([
@@ -230,14 +199,38 @@ export default class UserTasks extends React.Component {
       this.props.computeDialect2,
       selectn("routeParams.dialect", this.props)
     )
+    const computeUserUpgrade = ProviderHelpers.getEntry(
+      this.props.computeUserUpgrade,
+      selectn("routeParams.dialect", this.props)
+    )
 
     let userTasks = []
     let userRegistrationTasks = []
+
+    if (selectn("success", computeUserUpgrade)) {
+      switch (selectn("response.value.status", computeUserUpgrade)) {
+        case 403:
+          serverErrorMessage = (
+            <div className={classNames("alert", "alert-danger")} role="alert">
+              {selectn("response.value.entity", computeUserUpgrade)}
+            </div>
+          )
+          break
+        case 200:
+          serverErrorMessage = ""
+          break
+      }
+    }
 
     // Compute User Registration Tasks
     ;(selectn("response.entries", computeUserRegistrationTasks) || []).map(
       function(task, i) {
         let uid = selectn("uid", task)
+
+        if (this.state.savedItems.includes(uid)) {
+          return
+        }
+
         let title = selectn("properties.dc:title", task)
         let firstName = selectn("properties.userinfo:firstName", task)
         let lastName = selectn("properties.userinfo:lastName", task)
@@ -277,6 +270,8 @@ export default class UserTasks extends React.Component {
             <br />
             You can promote them to direct members of your community portal by clicking the ADD TO GROUP button.
           </p>
+
+          {serverErrorMessage}
 
           <AuthorizationFilter
             showAuthError={true}
