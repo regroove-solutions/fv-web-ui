@@ -29,7 +29,7 @@ import { SearchDialect } from 'views/components/SearchDialect'
 import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-import FacetFilterListCategory from 'views/components/Browsing/facet-filter-list-category'
+import CategoryList from 'views/components/CategoryList'
 import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
@@ -293,39 +293,24 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             <div>
               <h2>Words</h2>
               {/* <ExportDialect dialectId={fvaDialectId} /> */}
-              {this.state.clickedFilterByCategory === false && (
-                <RaisedButton
-                  style={{ margin: '0 0 10px 0' }}
-                  label={intl.trans(
-                    'views.pages.explore.dialect.learn.words.find_by_category',
-                    'Filter by Category',
-                    'words'
-                  )}
-                  onTouchTap={() => {
-                    this.setState({clickedFilterByCategory: true})
-                    this._handleFilterChange('find_by_category') // NOTE: Comes from PageDialectLearnBase
-                  }}
-                />
-              )}
 
-              {this.state.clickedFilterByCategory && (
-                <FacetFilterListCategory
-                  // title={intl.trans('categories', 'Categories', 'first')}
-                  title={intl.trans(
-                    'views.pages.explore.dialect.learn.words.find_by_category',
-                    'Filter by Category',
-                    'words'
-                  )}
-                  appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
-                  facetField={ProviderHelpers.switchWorkspaceSectionKeys(
-                    'fv-word:categories',
-                    this.props.routeParams.area
-                  )}
-                  onFacetSelected={this._handleFacetSelected} // NOTE: Comes from PageDialectLearnBase
-                  facets={selectn('response.entries', computeCategories) || []}
-                  clearCategoryFilter={this.clearCategoryFilter}
-                />
-              )}
+              <CategoryList
+                // title={intl.trans('categories', 'Categories', 'first')}
+                title={intl.trans(
+                  'views.pages.explore.dialect.learn.words.find_by_category',
+                  'Filter by Category',
+                  'words'
+                )}
+                appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
+                facetField={ProviderHelpers.switchWorkspaceSectionKeys(
+                  'fv-word:categories',
+                  this.props.routeParams.area
+                )}
+                onFacetSelected={this._handleFacetSelected} // NOTE: Comes from PageDialectLearnBase
+                facets={selectn('response.entries', computeCategories) || []}
+                clearCategoryFilter={this.clearCategoryFilter}
+              />
+
 
               <div style={{clear: 'both'}}>
                 <h2>{intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}</h2>

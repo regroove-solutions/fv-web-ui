@@ -2,18 +2,21 @@ import React, { Component, PropTypes } from 'react'
 import Immutable, { Set } from 'immutable'
 
 import RaisedButton from 'material-ui/lib/raised-button'
-import memoize from 'memoize-one'
+// import memoize from 'memoize-one'
+// import { debounce } from 'debounce'
 import selectn from 'selectn'
+import provide from 'react-redux-provide'
+// import Paper from 'material-ui/lib/paper'
+// import ListUI from 'material-ui/lib/lists/list'
+// import ListItem from 'material-ui/lib/lists/list-item'
+// import Checkbox from 'material-ui/lib/checkbox'
+// import withToggle from 'views/hoc/view/with-toggle'
+// import IntlService from 'views/services/intl'
+import NavigationHelpers from 'common/NavigationHelpers'
+import StringHelpers from 'common/StringHelpers'
+// const FiltersWithToggle = withToggle()
 
-import { debounce } from 'debounce'
-import Paper from 'material-ui/lib/paper'
-import ListUI from 'material-ui/lib/lists/list'
-import ListItem from 'material-ui/lib/lists/list-item'
-import Checkbox from 'material-ui/lib/checkbox'
-import withToggle from 'views/hoc/view/with-toggle'
-import IntlService from 'views/services/intl'
-const FiltersWithToggle = withToggle()
-
+@provide
 export default class CategoryList extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
@@ -22,6 +25,8 @@ export default class CategoryList extends Component {
     facetField: PropTypes.string.isRequired,
     appliedFilterIds: PropTypes.instanceOf(Set),
     styles: PropTypes.object,
+    pushWindowPath: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.any, // TODO: set appropriate propType
   }
 
   static defaultProps = {
@@ -61,6 +66,8 @@ export default class CategoryList extends Component {
     alignItems: 'center',
   }
 
+  uidUrl = {}
+
   constructor(props, context) {
     super(props, context)
 
@@ -68,25 +75,33 @@ export default class CategoryList extends Component {
       disableAll: false,
     }
 
-    // console.time('_sortCategories')
-    this.categoriesSorted = this._sortCategories(props.facets)
-    // console.timeEnd('_sortCategories')
-    // console.time('_categoryTitlesIntl')
-    // const intlCategories = this._categoryTitlesIntl(this.categoriesSorted)
-    // console.timeEnd('_categoryTitlesIntl')
-    // console.time('_generateListItems')
-    this.listItems = this._generateListItems(this.categoriesSorted)
-    // console.timeEnd('_generateListItems')
+    if (props.facets.length > 0) {
+      this.categoriesSorted = this._sortCategories(props.facets)
+      this.listItems = this._generateListItems(this.categoriesSorted)
+    }
 
     this.title = props.title
-    ;['_sortCategories', '_sortByTitle', '_clearCategoryFilter', '_toggleCheckbox'].forEach(
+    ;['_generateUidUrlPaths', '_sortCategories', '_setUidUrlPath', '_sortByTitle'].forEach(
       (method) => (this[method] = this[method].bind(this))
     )
+  }
+
+  componentDidMount() {
+    if (this.props.facets.length > 0) {
+      this.categoriesSorted = this._sortCategories(this.props.facets)
+      this.listItems = this._generateListItems(this.categoriesSorted)
+    }
   }
 
   componentDidUpdate(prevProps) {
     const prevAppliedFilterIds = prevProps.appliedFilterIds
     const currentAppliedFilterIds = this.props.appliedFilterIds
+
+    if (prevProps.facets.length !== this.props.facets.length) {
+      this.categoriesSorted = this._sortCategories(this.props.facets)
+      this.listItems = this._generateListItems(this.categoriesSorted)
+      this.setState({update: Math.random() + Math.random()}) // TODO: TEMP HACK
+    }
 
     if (prevAppliedFilterIds.equals(currentAppliedFilterIds) === false) {
       // console.time('componentDidUpdate _generateListItems')
@@ -102,96 +117,93 @@ export default class CategoryList extends Component {
     const appliedFilterIdCount = this.props.appliedFilterIds.count()
     return (
       <div>
-        <RaisedButton
-          disabled={appliedFilterIdCount === 0}
-          style={{ margin: '0 0 10px 0' }}
-          label={appliedFilterIdCount > 1 ? 'Clear Category Filters' : 'Clear Category Filter'}
-          onTouchTap={this._clearCategoryFilter}
-        />
-        <FiltersWithToggle className="panel-category" label={this.title} mobileOnly style={this.props.styles}>
-          <Paper style={{ maxHeight: '70vh', overflow: 'auto' }}>
-            <ListUI>{this.listItems}</ListUI>
-          </Paper>
-        </FiltersWithToggle>
+        <h2>Categories</h2>
+        <ul>{this.listItems}</ul>
       </div>
     )
   }
 
-  // _categoryTitlesIntl(categories) {
-  //   const _categories = [...categories]
-  //   _categories.forEach((category) => {
-  //     // Note: Original fn() didn't searchAndReplace root titles
-  //     // category.title = this.intl.searchAndReplace(category.title)
-  //     const children = selectn('contextParameters.children.entries', category)
-  //     if (children.length > 0) {
-  //       children.forEach((categoryChild) => {
-  //         // Note: This is slow!
-  //         categoryChild.title = this.intl.searchAndReplace(categoryChild.title)
-  //       })
-  //     }
-  //   })
-  //   return _categories
-  // }
+  _generateUidUrlPaths(categories) {
+    const _splitWindowPath = [...this.props.splitWindowPath]
+    const lastPath = _splitWindowPath.pop()
+
+    if (lastPath === 'words' || lastPath === 'phrases') {
+      _splitWindowPath.push(lastPath)
+      _splitWindowPath.push('categories')
+    }
+    const path = _splitWindowPath.join('/')
+
+    categories.forEach((category) => {
+      this._setUidUrlPath(category, path)
+      const children = selectn('contextParameters.children.entries', category)
+      if (children.length > 0) {
+        children.forEach((categoryChild) => {
+          this._setUidUrlPath(categoryChild, path)
+        })
+      }
+    })
+    return this.uidUrl
+  }
+  _setUidUrlPath(category, path) {
+    // TODO: map encodeUri title to uid for friendly urls
+    // this.uidUrl[category.uid] = encodeURI(category.title)
+
+    // TODO: temp using uid in url
+    this.uidUrl[category.uid] = `${path}/${encodeURI(category.uid)}`
+  }
 
   _generateListItems = (categories) => {
+    this._generateUidUrlPaths(categories)
+
     const { appliedFilterIds } = this.props
     const _categories = categories.map((category) => {
-      const uidParent = category.uid
       const childrenItems = []
-      const childrenUids = []
+      // const childrenUids = []
       const children = selectn('contextParameters.children.entries', category)
       if (children.length > 0) {
         children.forEach((categoryChild) => {
           const uidChild = categoryChild.uid
-          childrenUids.push(uidChild)
-          const checkedChild = appliedFilterIds.includes(uidChild)
-          const childLeftCheckbox = (
-            <Checkbox
-              disabled={this.disableAll}
-              checked={checkedChild}
-              onCheck={() => {
-                this._toggleCheckbox(uidChild, null, !checkedChild, uidParent)
-              }}
-              style={this.styleListItemCheckbox}
-            />
-          )
+          // childrenUids.push(uidChild)
+          const childActiveClass = appliedFilterIds.includes(uidChild) ? `${this._css}ItemActive` : ''
+          const childHref = `/${this.uidUrl[uidChild]}`
           const childListItem = (
-            <ListItem
-              disabled={this.disableAll}
-              key={uidChild}
-              leftCheckbox={childLeftCheckbox}
-              primaryText={categoryChild.title}
-              style={this.styleListItemChild}
-            />
+            <li key={uidChild} className={`${this._css}Item`}>
+              <a
+                className={`${this._css}Link ${childActiveClass}`}
+                href={childHref}
+                onClick={(e) => {
+                  // e.preventDefault()
+                  // NavigationHelpers.navigate(childHref, this.props.pushWindowPath, false)
+                }}
+                title={categoryChild.title}
+              >
+                {categoryChild.title}
+              </a>
+            </li>
           )
           childrenItems.push(childListItem)
         })
       }
 
-      const checkedParent = appliedFilterIds.includes(uidParent)
-      const parentLeftCheckbox = (
-        <Checkbox
-          disabled={this.disableAll}
-          checked={checkedParent}
-          onCheck={() => {
-            this._toggleCheckbox(uidParent, childrenUids, !checkedParent)
-          }}
-          style={this.styleListItemCheckbox}
-        />
-      )
-
+      const uidParent = category.uid
+      const parentActiveClass = appliedFilterIds.includes(uidParent) ? `${this._css}ItemActive` : ''
+      const parentHref = `/${this.uidUrl[uidParent]}`
       const parentListItem = (
-        <ListItem
-          disabled={this.disableAll}
-          key={uidParent}
-          autoGenerateNestedIndicator={false}
-          initiallyOpen
-          leftCheckbox={parentLeftCheckbox}
-          nestedItems={childrenItems}
-          open={checkedParent}
-          primaryText={category.title}
-          style={this.styleListItemParent}
-        />
+        <li className={`${this._css}Item ${parentActiveClass}`}>
+          <a
+            key={uidParent}
+            className={`${this._css}Link`}
+            href={parentHref}
+            onClick={(e) => {
+              // e.preventDefault()
+              // NavigationHelpers.navigate(parentHref, this.props.pushWindowPath, false)
+            }}
+            title={category.title}
+          >
+            {category.title}
+          </a>
+          {childrenItems.length > 0 ? <ul>{childrenItems}</ul> : null}
+        </li>
       )
 
       return parentListItem
@@ -199,7 +211,6 @@ export default class CategoryList extends Component {
 
     return _categories
   }
-
   _sortByTitle(a, b) {
     if (a.title < b.title) return -1
     if (a.title > b.title) return 1
@@ -220,22 +231,4 @@ export default class CategoryList extends Component {
     })
     return _categoriesSorted
   }
-
-  _clearCategoryFilter() {
-    this.props.clearCategoryFilter()
-  }
-
-  _toggleCheckbox = debounce(async(checkedFacetUid, childrenIds = [], isChecked, facetUidParent) => {
-    this.setState(
-      {
-        disableAll: true,
-      },
-      async() => {
-        await this.props.onFacetSelected(this.props.facetField, checkedFacetUid, childrenIds, isChecked, facetUidParent)
-        this.setState({
-          disableAll: false,
-        })
-      }
-    )
-  }, 200)
 }
