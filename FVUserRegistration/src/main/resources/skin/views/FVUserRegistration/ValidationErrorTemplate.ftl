@@ -1,5 +1,4 @@
-<!--#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")-->
-<#assign siteURL = "https://www.firstvoices.com/">
+<#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")?replace("8080", "3001")>
 <!DOCTYPE html>
 <!--[if lte IE 8]>
 <html class="lt-ie9  no-js" lang="en">
