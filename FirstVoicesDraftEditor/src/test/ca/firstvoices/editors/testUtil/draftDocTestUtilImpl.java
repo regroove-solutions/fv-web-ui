@@ -134,6 +134,32 @@ public class draftDocTestUtilImpl implements draftDocTestUtil {
         }
     }
 
+    private void commonOperationRunner(AutomationService automationService, DraftEditorService draftEditorServiceInstance, DocumentModel[] docArray, String operationSignature, String uuidKey )
+    {
+        for( DocumentModel aWord : docArray )
+        {
+            String uuid = draftEditorServiceInstance.getUUID( aWord, uuidKey );
+
+            if( uuid != null )
+            {
+                Object returnObj;
+                OperationContext ctx = new OperationContext(aWord.getCoreSession());
+                ctx.setInput(aWord);
+
+                Map<String, Object> params = new HashMap<String, Object>();
+
+                try
+                {
+                    returnObj = automationService.run(ctx, operationSignature, params);
+                }
+                catch (OperationException e)
+                {
+
+                }
+            }
+        }
+    }
+
     public ArrayList<Map<String, String>> createListMapTestData(String[] keys, String[] values )
     {
         assertTrue("Data for setting List<Map<String,String>> is not correct", keys.length == values.length);
@@ -207,31 +233,6 @@ public class draftDocTestUtilImpl implements draftDocTestUtil {
 
     }
 
-    private void commonOperationRunner(AutomationService automationService, DraftEditorService draftEditorServiceInstance, DocumentModel[] docArray, String operationSignature, String uuidKey )
-    {
-        for( DocumentModel aWord : docArray )
-        {
-            String uuid = draftEditorServiceInstance.getUUID( aWord, uuidKey );
-
-            if( uuid != null )
-            {
-                Object returnObj;
-                OperationContext ctx = new OperationContext(aWord.getCoreSession());
-                ctx.setInput(aWord);
-
-                Map<String, Object> params = new HashMap<String, Object>();
-
-                try
-                {
-                    returnObj = automationService.run(ctx, operationSignature, params);
-                }
-                catch (OperationException e)
-                {
-
-                }
-            }
-        }
-    }
 
     public void startEditViaAutomation( AutomationService automationService, DocumentModel[] docArray )
     {
