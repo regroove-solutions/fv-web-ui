@@ -1,7 +1,9 @@
 package ca.firstvoices.utils;
 
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 
@@ -57,12 +59,10 @@ public class FVOperationCredentialsVerification
                 // language admin can make changes to a user in their dialect
                 if (credentialsType == LANGUAGE_ADMINISTRATOR)
                 {
-                    DocumentModel userToChange = userManager.getUserModel(username);
+                    DocumentModelList registrations = FVRegistrationUtilities.getRegistrations(session, username, dialectGUID);
 
-                    String userPreferences = (String) userToChange.getPropertyValue("user:preferences");
-
-                    //user preferred dialect has to be included in user preferences
-                    if (userPreferences.contains(dialectGUID)) return false; // valid credentials
+                    // If registrations for this dialect found, allow moving user
+                    if (registrations.size() > 0) return false;
                 }
 
                 return true; // invalid credentials

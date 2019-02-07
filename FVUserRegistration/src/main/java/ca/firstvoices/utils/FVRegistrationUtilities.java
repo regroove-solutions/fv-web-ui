@@ -476,17 +476,45 @@ public class FVRegistrationUtilities
      * @param users list of users to remove registration requests for
      */
     public static void removeRegistrationsForUsers(CoreSession session, StringList users) {
-        String query = String.format(
-                "SELECT * FROM FVUserRegistration " +
-                "WHERE userinfo:email IN ('%s') " +
-                "ORDER BY dc:created DESC",
-                String.join("','", users));
-
-        DocumentModelList docs = session.query(query);
+        DocumentModelList docs = getRegistrations(session, users);
 
         for (DocumentModel doc : docs) {
             session.removeDocument(doc.getRef());
         }
+    }
+
+    /**
+     * Get registration for a list of users
+     * @param users list of users to lookup registration for
+     */
+    public static DocumentModelList getRegistrations(CoreSession session, StringList users) {
+        String query = String.format(
+                "SELECT * FROM FVUserRegistration " +
+                        "WHERE userinfo:email IN ('%s') " +
+                        "ORDER BY dc:created DESC",
+                String.join("','", users));
+
+        DocumentModelList docs = session.query(query);
+
+        return docs;
+    }
+
+    /**
+     * Get registration for single user, for a dialect
+     * @param user user to lookup registration for
+     * @param dialect dialect user requested to join
+     */
+    public static DocumentModelList getRegistrations(CoreSession session, String user, String dialect) {
+        String query = String.format(
+                "SELECT * FROM FVUserRegistration " +
+                        "WHERE userinfo:email LIKE '%s' " +
+                        "AND fvuserinfo:requestedSpace = '%s' " +
+                        "ORDER BY dc:created DESC",
+                user, dialect);
+
+        DocumentModelList docs = session.query(query);
+
+        return docs;
     }
 
     /**
