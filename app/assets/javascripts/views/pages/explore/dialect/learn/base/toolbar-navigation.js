@@ -57,25 +57,25 @@ export default class ToolbarNavigation extends Component {
 
     componentDidMount() {
         // Get count for language assets
-        this.props.fetchResultSet('count_stories', {
-            'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="story" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
-            'language': 'nxql',
-            'sortOrder': 'ASC'
-        });
+        // this.props.fetchResultSet('count_stories', {
+        //     'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="story" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
+        //     'language': 'nxql',
+        //     'sortOrder': 'ASC'
+        // });
 
-        this.props.fetchResultSet('count_songs', {
-            'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
-            'language': 'nxql',
-            'sortOrder': 'ASC'
-        });
+        // this.props.fetchResultSet('count_songs', {
+        //     'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
+        //     'language': 'nxql',
+        //     'sortOrder': 'ASC'
+        // });
 
-        this.props.fetchResultSet('count_words', {
-            'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"',
-            'language': 'nxql',
-            'sortOrder': 'ASC'
-        });
+        // this.props.fetchResultSet('count_words', {
+        //     'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"',
+        //     'language': 'nxql',
+        //     'sortOrder': 'ASC'
+        // });
 
-        this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
+        // this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
     }
 
     _onNavigateRequest(pathArray) {
@@ -108,13 +108,13 @@ export default class ToolbarNavigation extends Component {
 
             <ToolbarGroup firstChild={true} float="left">
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'words')}
-                            label={intl.trans('words', 'Words', 'first') + " (" + wordCount + ")"}/>
+                            label={intl.trans('words', 'Words', 'first') + ""}/>
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'phrases')}
-                            label={intl.trans('phrases', 'Phrases', 'first') + " (" + phraseCount + ")"}/>
+                            label={intl.trans('phrases', 'Phrases', 'first') + ""}/>
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'songs')}
-                            label={intl.trans('songs', 'Songs', 'first') + " (" + songCount + ")"}/>
+                            label={intl.trans('songs', 'Songs', 'first') + ""}/>
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'stories')}
-                            label={intl.trans('stories', 'Stories', 'first') + " (" + storyCount + ")"}/>
+                            label={intl.trans('stories', 'Stories', 'first') + ""}/>
                 <FlatButton onTouchTap={this._onNavigateRequest.bind(this, 'alphabet')}
                             label={intl.trans('alphabet', 'Alphabet', 'first')}/>
             </ToolbarGroup>

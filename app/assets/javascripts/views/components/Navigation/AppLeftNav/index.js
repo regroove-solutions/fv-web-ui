@@ -13,25 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { Map } from 'immutable';
+import React, { Component, PropTypes } from "react"
+import Immutable, { Map } from "immutable"
 
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import provide from "react-redux-provide"
+import selectn from "selectn"
 
-import {Divider, List, ListItem, LeftNav, AppBar} from 'material-ui/lib';
+import { Divider, List, ListItem, LeftNav, AppBar } from "material-ui/lib"
 
-import IconButton from 'material-ui/lib/icon-button';
-import NavigationClose from 'material-ui/lib/svg-icons/navigation/close';
+import IconButton from "material-ui/lib/icon-button"
+import NavigationClose from "material-ui/lib/svg-icons/navigation/close"
 
-import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance';
-import IntlService from 'views/services/intl';
+import { SelectableContainerEnhance } from "material-ui/lib/hoc/selectable-enhance"
+import IntlService from "views/services/intl"
 
-let SelectableList = SelectableContainerEnhance(List);
+const SelectableList = SelectableContainerEnhance(List)
 
 @provide
 export default class AppLeftNav extends Component {
-
   static propTypes = {
     toggleMenuAction: PropTypes.func.isRequired,
     computeToggleMenuAction: PropTypes.object.isRequired,
@@ -39,206 +38,231 @@ export default class AppLeftNav extends Component {
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
-    computeLoadNavigation: PropTypes.object.isRequired
-  };
+    computeLoadNavigation: PropTypes.object.isRequired,
+  }
 
-  intl = IntlService.instance;
+  intl = IntlService.instance
 
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
 
-    this.state = this._getInitialState();
+    this.state = this._getInitialState()
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', '_onRequestChange'].forEach( (method => this[method] = this[method].bind(this)) );
+    ;["_onNavigateRequest", "_onRequestChange"].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   /**
-  * Initial state
-  */
+   * Initial state
+   */
   _getInitialState() {
-
     const routes = Immutable.fromJS([
       {
-          id: 'home',
-          label: this.intl.translate({key: 'home', default: 'Home', case: 'first'}),
-          path: "/"
+        id: "home",
+        label: this.intl.translate({ key: "home", default: "Home", case: "first" }),
+        path: "/",
       },
       {
-          id: 'get-started',
-          label: this.intl.translate({key: 'get_started', default: 'Get Started', case: 'first'}),
-          path: "/content/get-started/"
+        id: "get-started",
+        label: this.intl.translate({ key: "get_started", default: "Get Started", case: "first" }),
+        path: "/content/get-started/",
       },
       {
-          id: 'explore',
-          label: this.intl.translate({key: 'general.explore', default: 'Explore Languages', case: 'first'}),
-          path: '/explore/FV/sections/Data/',
+        id: "explore",
+        label: this.intl.translate({ key: "general.explore", default: "Explore Languages", case: "first" }),
+        path: "/explore/FV/sections/Data/",
       },
       {
-          id: 'kids',
-          label: this.intl.translate({key: 'kids', default: 'Kids', case: 'first'}),
-          path: '/kids',
+        id: "kids",
+        label: this.intl.translate({ key: "kids", default: "Kids", case: "first" }),
+        path: "/kids",
       },
       {
-          id: 'contribute',
-          label: this.intl.translate({key: 'contribute', default: 'Contribute', case: 'first'}),
-          path: "/content/contribute/"
-      }
-    ]);
+        id: "contribute",
+        label: this.intl.translate({ key: "contribute", default: "Contribute", case: "first" }),
+        path: "/content/contribute/",
+      },
+    ])
 
     return {
-      routes: routes
-    };
+      routes: routes,
+    }
   }
 
-  componentWillReceiveProps(newProps) {
+  componentWillReceiveProps() {
     /**
-    * If the user is connected, display modified routes (splitting Explore path)
-    */
+     * If the user is connected, display modified routes (splitting Explore path)
+     */
     if (selectn("isConnected", this.props.computeLogin)) {
+      const nestedItems = [
+        <ListItem
+          key="Workspaces"
+          value="/explore/FV/Workspaces/Data/"
+          secondaryText={
+            <p>
+              {this.intl.translate({
+                key: "views.components.navigation.view_work_in_progress",
+                default: "View work in progress or unpublished content",
+              })}
+              .
+            </p>
+          }
+          secondaryTextLines={2}
+          primaryText={this.intl.translate({
+            key: "views.components.navigation.workspace_dialects",
+            default: "Workspace Dialects",
+          })}
+        />,
 
-      let nestedItems = [
-        <ListItem key="Workspaces" value="/explore/FV/Workspaces/Data/"
-        secondaryText={<p>{this.intl.translate({
-            key: 'views.components.navigation.view_work_in_progress',
-            default: 'View work in progress or unpublished content'
-        })}.</p>} secondaryTextLines={2}
-        primaryText={this.intl.translate({
-            key: 'views.components.navigation.workspace_dialects',
-            default: 'Workspace Dialects'
-        })}/>,
+        <ListItem
+          key="sections"
+          value="/explore/FV/sections/Data/"
+          secondaryText={
+            <p>
+              {this.intl.translate({
+                key: "views.components.navigation.view_dialects_as_end_user",
+                default: "View dialects as an end user would view them",
+              })}
+              .
+            </p>
+          }
+          secondaryTextLines={2}
+          primaryText={this.intl.translate({
+            key: "views.components.navigation.published_dialects",
+            default: "Published Dialects",
+          })}
+        />,
+      ]
 
-        <ListItem key="sections" value="/explore/FV/sections/Data/"
-        secondaryText={<p>{this.intl.translate({
-            key: 'views.components.navigation.view_dialects_as_end_user',
-            default: 'View dialects as an end user would view them'
-        })}.</p>} secondaryTextLines={2}
-        primaryText={this.intl.translate({
-            key: 'views.components.navigation.published_dialects',
-            default: 'Published Dialects'
-        })}/>
-      ];
+      const exploreEntry = this.state.routes.findEntry((value) => value.get("id") === "explore")
 
-      let exploreEntry = this.state.routes.findEntry(function(value, key) {
-        return value.get('id') === 'explore';
-      });
+      const newExploreEntry = exploreEntry[1].set("path", null).set("nestedItems", nestedItems)
 
-      let newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems);
-
-      let newState = this.state.routes.set(exploreEntry[0], newExploreEntry);
+      let newState = this.state.routes.set(exploreEntry[0], newExploreEntry)
 
       // Insert Tasks after explore
-      let currentTasksEntry = newState.findEntry(function(value, key) {
-        return value.get('id') === 'tasks';
-      });
+      const currentTasksEntry = newState.findEntry((value) => value.get("id") === "tasks")
 
-      if (currentTasksEntry == null) {
-        newState = newState.insert(exploreEntry[0], new Map({
-          id: 'tasks',
-          label: this.intl.translate({key: 'tasks', default: 'Tasks', case: 'first'}),
-          path: "/tasks/"
-        }));
+      if (currentTasksEntry === null) {
+        newState = newState.insert(
+          exploreEntry[0],
+          new Map({
+            id: "tasks",
+            label: this.intl.translate({ key: "tasks", default: "Tasks", case: "first" }),
+            path: "/tasks/",
+          })
+        )
       }
-      this.setState({routes: newState});
-
+      this.setState({ routes: newState })
     } else {
       // If user logged out, revert to initial state
-      this.setState(this._getInitialState());
+      this.setState(this._getInitialState())
     }
   }
 
   _onNavigateRequest(event, path) {
-
-    if (path == '/logout/') {
-      this.props.logout();
-      this.props.pushWindowPath( '/' );
+    if (path === "/logout/") {
+      this.props.logout()
+      this.props.pushWindowPath("/")
     } else {
       // Request to navigate to
-      this.props.pushWindowPath(path);
+      this.props.pushWindowPath(path)
     }
 
     // Close side-menu
-    this.props.toggleMenuAction();
+    this.props.toggleMenuAction()
   }
 
   _onRequestChange() {
     // Close side-menu
-    this.props.toggleMenuAction();
+    this.props.toggleMenuAction()
   }
 
   render() {
+    const entries = selectn("response.entries", this.props.computeLoadNavigation)
+    this.additionalEntries = entries
+      ? entries.map((d) => (
+          <ListItem
+            className="2"
+            key={selectn("uid", d)}
+            value={"/content/" + selectn("properties.fvpage:url", d) + "/"}
+            primaryText={selectn("properties.dc:title", d)}
+          />
+        ))
+      : null
 
     return (
-      <LeftNav 
-        docked={true}
-        style={{height: 'auto'}}
+      <LeftNav
+        docked
+        style={{ height: "auto" }}
         open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
+      >
+        <AppBar
+          iconElementLeft={
+            <IconButton onTouchTap={this._onRequestChange}>
+              <NavigationClose />
+            </IconButton>
+          }
+          title={
+            <img src="/assets/images/logo.png" style={{ padding: "0 0 5px 0" }} alt={this.props.properties.title} />
+          }
+        />
+
+        <SelectableList
+          valueLink={{
+            value: location.pathname,
+            requestChange: this._onNavigateRequest,
+          }}
         >
-          <AppBar
-            iconElementLeft={<IconButton onTouchTap={this._onRequestChange}><NavigationClose /></IconButton>}
-            title={<img src="/assets/images/logo.png" style={{padding: '0 0 5px 0'}} alt={this.props.properties.title} />} />
+          {this.state.routes.map((d) => (
+            <ListItem
+              className="1"
+              key={d.get("id")}
+              value={d.get("path")}
+              nestedItems={d.get("nestedItems")}
+              primaryText={d.get("label")}
+            />
+          ))}
 
-          <SelectableList
-            valueLink={{
-              value: location.pathname,
-              requestChange: this._onNavigateRequest
-          }}>
+          {this.additionalEntries}
+        </SelectableList>
 
-            {this.state.routes.map((d, i) => 
-                <ListItem
-                  key={d.get('id')}
-                  value={d.get('path')}
-                  nestedItems={d.get('nestedItems')}
-                  primaryText={d.get('label')} />
-            )}
+        <Divider />
 
-            {(selectn('response.entries', this.props.computeLoadNavigation) || []).map((d, i) => 
-                <ListItem
-                  key={selectn('uid', d)}
-                  value={'/content/' + selectn('properties.fvpage:url', d) + '/'}
-                  primaryText={selectn('properties.dc:title', d)} />
-            )}
-
-          </SelectableList>
-
-          <Divider />
-
-          {(() => {
-
-            if (selectn("isConnected", this.props.computeLogin)) {
-              
-              return <SelectableList
+        {(() => {
+          if (selectn("isConnected", this.props.computeLogin)) {
+            return (
+              <SelectableList
                 valueLink={{
                   value: location.pathname,
-                  requestChange: this._onNavigateRequest
-              }}>
-
-              {/* <ListItem
+                  requestChange: this._onNavigateRequest,
+                }}
+              >
+                <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
-                      key: 'views.pages.users.profile.my_profile',
-                      default: 'My Profile',
-                      case: 'words'
-                  })}/> */}
+                    key: "views.pages.users.profile.my_profile",
+                    default: "My Profile",
+                    case: "words",
+                  })}
+                />
 
-              <ListItem
+                <ListItem
                   key="sign-out"
                   value="/logout/"
                   primaryText={this.intl.translate({
-                      key: 'sign_out',
-                      default: 'Sign Out',
-                      case: 'words'
-                  })}/>
-
-              </SelectableList>;
-
-            }
-
-          })()}
-
+                    key: "sign_out",
+                    default: "Sign Out",
+                    case: "words",
+                  })}
+                />
+              </SelectableList>
+            )
+          }
+        })()}
       </LeftNav>
-    );
+    )
   }
 }

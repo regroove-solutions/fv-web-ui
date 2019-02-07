@@ -13,94 +13,70 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, { Component, PropTypes } from 'react'
 
-import classNames from 'classnames';
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import provide from 'react-redux-provide'
+import ReportsJson from './reports.json'
+import GeneralList from 'views/components/Browsing/general-list'
+import { CardView } from './list-view'
 
-import ConfGlobal from 'conf/local.json';
-import ReportsJson from './reports.json';
-
-import ProviderHelpers from 'common/ProviderHelpers';
-import StringHelpers from 'common/StringHelpers';
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
-import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base';
-
-import RaisedButton from 'material-ui/lib/raised-button';
-
-import DropDownMenu from 'material-ui/lib/DropDownMenu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-
-import GeneralList from 'views/components/Browsing/general-list';
-import {CardView} from './list-view';
-
-import withFilter from 'views/hoc/grid-list/with-filter';
-import IntlService from 'views/services/intl';
-
-const intl = IntlService.instance;
-const DEFAULT_LANGUAGE = 'english';
-
-const FilteredCardList = withFilter(GeneralList);
+import withFilter from 'views/hoc/grid-list/with-filter'
+const FilteredCardList = withFilter(GeneralList)
 
 /**
-* Learn songs
-*/
+ * Learn songs
+ */
 @provide
 export default class ReportBrowser extends Component {
-
   static propTypes = {
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired, 
+    computeLogin: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
     style: PropTypes.object,
-    fullWidth: PropTypes.bool
-  };
+    fullWidth: PropTypes.bool,
+  }
 
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
 
     this.state = {
-      filteredList: null
-    };
+      filteredList: null,
+    }
 
     // Bind methods to 'this'
-    ['_onNavigateRequest', 'fixedListFetcher'].forEach( (method => this[method] = this[method].bind(this)) );
+    ;['_onNavigateRequest', 'fixedListFetcher'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   fixedListFetcher(list) {
     this.setState({
-      filteredList: list
-    });
+      filteredList: list,
+    })
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(path);
+    this.props.pushWindowPath(path)
   }
 
   render() {
-
-    let listProps = {
-      filterOptionsKey: "Reports",
+    const listProps = {
+      filterOptionsKey: 'Reports',
       fixedList: true,
       fixedListFetcher: this.fixedListFetcher,
       filteredItems: this.state.filteredList,
       fullWidth: this.props.fullWidth,
-      style: {fontSize: '1.2em', padding: '8px 0 0 30px'},
+      style: { fontSize: '1.2em', padding: '8px 0 0 30px' },
       wrapperStyle: this.props.style,
       card: <CardView fullWidth={this.props.fullWidth} dialectPath={this.props.routeParams.dialect_path} />,
       area: this.props.routeParams.area,
       items: ReportsJson,
-      action: this._onNavigateRequest
-    };
+      action: this._onNavigateRequest,
+    }
 
-    let listView = <FilteredCardList {...listProps} />;
-    
-    return listView;
+    const listView = <FilteredCardList {...listProps} />
+
+    return listView
   }
 }

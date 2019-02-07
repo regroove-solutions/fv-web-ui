@@ -109,7 +109,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
     _onNavigateRequest(path) {
         this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path);
     }
-
+    // NOTE: PageDialectLearnBase calls `fetchData`
     fetchData(newProps) {
         newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
         newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary');

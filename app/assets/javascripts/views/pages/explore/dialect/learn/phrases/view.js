@@ -30,7 +30,7 @@ import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel';
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar';
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation';
-
+import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
 import TextHeader from 'views/components/Document/Typography/text-header';
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
@@ -266,6 +266,8 @@ export default class View extends Component {
         }
         ;
 
+        const dialectClassName = getDialectClassname(computePhrase)
+
         /**
          * Generate definitions body
          */
@@ -290,10 +292,10 @@ export default class View extends Component {
             <div className="row" style={{marginTop: '15px'}}>
                 <div className={classNames('col-xs-12', 'col-md-7')}>
                     <div>
-
+                        <div className={dialectClassName}>
                         <TextHeader title={selectn('response.title', computePhrase)} tag="h1"
                                     properties={this.props.properties}/>
-
+                        </div>
                         <hr/>
 
                         {(() => {

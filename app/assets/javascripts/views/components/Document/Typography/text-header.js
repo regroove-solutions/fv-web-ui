@@ -10,28 +10,29 @@ export default class TextHeader extends Component {
     render() {
 
         const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties);
-        const sectionHrStyle = {backgroundColor: primary1Color, width: '94px', height: '4px', margin: '0'};
+        const sectionHrStyle = {backgroundColor: primary1Color, width: '100%', height: '2px', margin: '0 0 10px 0'};
 
         return (
             <div>
-                <hr style={sectionHrStyle}/>
                 {(() => {
 
                     switch (this.props.tag) {
                         case 'h2':
                             return <h2
-                                style={{margin: '15px 0 15px 0'}}>{this.props.title} {this.props.appendToTitle}</h2>;
+                                style={{margin: '15px 0 10px 0'}}>{this.props.title} {this.props.appendToTitle}</h2>;
                             break;
 
                         default:
                             return <h1 style={{
                                 fontWeight: 500,
-                                margin: '15px 0 15px 0'
+                                margin: '15px 0 10px 0'
                             }}>{this.props.title} {this.props.appendToTitle}</h1>;
                             break;
                     }
 
                 })()}
+
+                <hr style={sectionHrStyle}/>
 
             </div>
         );
