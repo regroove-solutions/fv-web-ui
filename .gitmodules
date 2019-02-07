@@ -1,0 +1,3 @@
+[submodule "frontend/app/assets/games"]
+	path = frontend/app/assets/games
+	url = https://git@github.com/First-Peoples-Cultural-Council/fv-games.git
