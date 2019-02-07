@@ -13,11 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import ColouringBookGame from 'games/colouring-book'
 import IntlService from 'views/services/intl';
-
+import PromiseHelpers from 'common/PromiseHelpers';
 const intl = IntlService.instance;
 /**
  * Play games
@@ -30,6 +29,16 @@ export default class ColouringBook extends Component {
     constructor(props, context) {
         super(props, context);
         this.gameContainer = null;
+    }
+
+    loadGameScript() {
+        return PromiseHelpers.makeCancelablePromise((() => {
+            return new Promise((resolve, reject) => {
+                import(/* webpackChunkName: "coloringbook" */ 'games/colouring-book').then(({ default: coloringbook }) => {
+                    resolve(coloringbook);
+                }).catch(reject);
+            })
+        })());
     }
 
     /**
@@ -76,20 +85,29 @@ export default class ColouringBook extends Component {
 
         };
 
+        this.loadGameScriptTask = this.loadGameScript();
+        this.loadGameScriptTask.promise.then((coloringBook) => {
+            this.coloringBook = coloringBook;
 
-        /**
-         * Create the game, with container and game config
-         */
-        const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-        ColouringBookGame.init(gameContainerNode, gameConfig);
+            /**
+             * Create the game, with container and game config
+             */
+            const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+            coloringBook.init(gameContainerNode, gameConfig);
+        });
     }
 
     /**
      * Component Will Unmount
-     * Cleanup the game / assets for memory management
+     * Cleanup the game / assets for coloringbook management
      */
     componentWillUnmount() {
-        ColouringBookGame.destroy();
+        if (this.coloringBook) {
+            this.coloringBook.destroy();
+        }
+        else if (this.loadGameScriptTask) {
+            this.loadGameScriptTask.cancel();
+        }
     }
 
 

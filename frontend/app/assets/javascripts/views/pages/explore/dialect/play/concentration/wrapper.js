@@ -13,12 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import Memory from 'games/memory'
-import IntlService from 'views/services/intl';
+import PromiseHelpers from 'common/PromiseHelpers';
 
-const intl = IntlService.instance;
 /**
  * Test game wrapper
  */
@@ -36,6 +34,16 @@ export default class Game extends Component {
         this.gameContainer = null;
     }
 
+    loadGameScript() {
+        return PromiseHelpers.makeCancelablePromise((() => {
+            return new Promise((resolve, reject) => {
+                import(/* webpackChunkName: "memory" */ 'games/memory').then(({ default: memory }) => {
+                    resolve(memory);
+                }).catch(reject);
+            })
+        })());
+    }
+
     /**
      * componentDidMount
      */
@@ -43,7 +51,6 @@ export default class Game extends Component {
 
         //Setup default asset paths
         const defaultAssetsPath = '/assets/games/memory/assets';
-        const defaultLibsPath = `${defaultAssetsPath}/libs`;
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config
@@ -72,8 +79,12 @@ export default class Game extends Component {
         /**
          * Create the game, with container and game config
          */
-        const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-        Memory.init(gameContainerNode, gameConfig);
+        this.loadGameScriptTask = this.loadGameScript();
+        this.loadGameScriptTask.promise.then((memory) => {
+            this.memory = memory;
+            const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
+            memory.init(gameContainerNode, gameConfig);
+        });
     }
 
     /**
@@ -81,7 +92,12 @@ export default class Game extends Component {
      * Cleanup the game / assets for memory management
      */
     componentWillUnmount() {
-        Memory.destroy();
+        if (this.memory) {
+            this.memory.destroy();
+        }
+        else if (this.loadGameScriptTask) {
+            this.loadGameScriptTask.cancel();
+        }
     }
 
     /**
