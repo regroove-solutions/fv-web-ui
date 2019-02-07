@@ -53,7 +53,7 @@ public class FVChangeUserGroupToDialectGroup
         catch( Exception e)
         {
             log.error( e );
-            return e.getMessage();
+            return Response.status(Response.Status.FORBIDDEN).entity(e.getMessage()).build();
         }
 
         return Response.status(200).entity("User(s) updated successfully.").build();

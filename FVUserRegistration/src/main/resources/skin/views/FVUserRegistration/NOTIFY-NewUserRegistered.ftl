@@ -11,7 +11,7 @@ In their registration they mentioned being involved in language revitalization.<
 
 <p>
     If you are expecting this registration, you may want to promote them to an active role in your community portal by going here:<br/>
-    <a href="https://www.firstvoices.com/tasks/users/${dialectId}">https://www.firstvoices.com/tasks/users/${dialectId}</a> (Note: you must be logged in to perform that action)
+    <a href="${siteURL}/tasks/users/${dialectId}">${siteURL}/tasks/users/${dialectId}</a> (Note: you must be logged in to perform that action)
 </p>
 
 <p>You can also connect with them directly here ${email} or choose to ignore this email.</p>

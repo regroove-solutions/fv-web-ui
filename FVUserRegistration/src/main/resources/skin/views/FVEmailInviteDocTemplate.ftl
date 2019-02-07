@@ -3,7 +3,7 @@
 Hello ${userinfo.firstName} ${userinfo.lastName}, <br />
 
 <#if documentTitle != "">
-    <p>You have been added as a user on FirstVoices.com<br/>
+    <p>You have been added as a user on FirstVoices.<br/>
         Your default community portal has been set to <strong>${documentTitle}</strong>.</p>
 </#if>
 

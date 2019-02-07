@@ -6,6 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.automation.features.PrincipalHelper;
 import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.core.api.*;
@@ -165,6 +166,13 @@ public class FVRegistrationMailUtilities {
             StringWriter writer = new StringWriter();
             RenderingHelper rh = new RenderingHelper();
 
+            // Add site url to options
+            String siteURL = Framework.getProperty("nuxeo.url")
+                                .replace("/nuxeo", "")
+                                .replace("8080", "3001");
+
+            options.put("siteURL", siteURL);
+
             try {
                 rh.getRenderingEngine().render(bodyTemplate, options, writer);
             } catch (RenderingException e) {
@@ -200,9 +208,9 @@ public class FVRegistrationMailUtilities {
         {
             String body = null;
             String g =  "Dear "+ options.get("fName") +",";
-            String e3 = "<br> Your registration to FirstVoices.com will expire in 3 days.";
-            String e24 = "<br> Your registration to FirstVoices.com expired and will be deleted in 24 hrs.";
-            String del = "<br> Your registration to FirstVoices.com was deleted.";
+            String e3 = "<br> Your registration to FirstVoices will expire in 3 days.";
+            String e24 = "<br> Your registration to FirstVoices expired and will be deleted in 24 hrs.";
+            String del = "<br> Your registration to FirstVoices was deleted.";
             String ln =  "<br><br> Your login name is: " + options.get("email");
             String dp =  "<br><br> You registered to participate in " + options.get("dialect") +". <br>";
             String endStr =  "<br> Please setup account password to complete registration.";

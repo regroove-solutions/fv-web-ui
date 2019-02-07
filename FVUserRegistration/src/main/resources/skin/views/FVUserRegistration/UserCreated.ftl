@@ -1,5 +1,4 @@
-<!--#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")-->
-<#assign siteURL = "https://www.firstvoices.com/">
+<#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")?replace("8080", "3001")>
 <!DOCTYPE html>
 <!--[if lte IE 8]>
 <html class="lt-ie9  no-js" lang="en">
@@ -55,7 +54,7 @@
 		<div class="container-box">
 
 			<div data-component-id="AppBar" style="background-color:#b40000;transition:all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;box-sizing:border-box;font-family:Arial, sans-serif;-webkit-tap-highlight-color:rgba(0,0,0,0);box-shadow:0 1px 6px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.12);border-radius:0px;position:relative;z-index:1100;width:100%;display:flex;min-height:64px;padding-left:24px;padding-right:24px;" data-reactid=".0.0.1.0.0">
-				<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;padding-top:15px;letter-spacing:0;font-size:24px;font-weight:400;color:#ffffff;line-height:64px;box-flex:1;flex:1;" data-reactid=".0.0.1.0.0.1"><span class="hidden-xs" data-reactid=".0.0.1.0.0.1.0"><img src="https://www.firstvoices.com/assets/images/logo.png" style="padding:0 0 5px 0;" alt="FirstVoices" data-reactid=".0.0.1.0.0.1.0.0"></span></div>
+				<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;padding-top:15px;letter-spacing:0;font-size:24px;font-weight:400;color:#ffffff;line-height:64px;box-flex:1;flex:1;" data-reactid=".0.0.1.0.0.1"><span class="hidden-xs" data-reactid=".0.0.1.0.0.1.0"><img src="${siteURL}/assets/images/logo.png" style="padding:0 0 5px 0;" alt="FirstVoices" data-reactid=".0.0.1.0.0.1.0.0"></span></div>
 			</div>
 
 			<div id="pageContainer">
@@ -66,7 +65,7 @@
 					<div>
 
 						<div class="info">
-							You are being redirected to FirstVoices.com or can <a href="${siteURL}">click here to access FirstVoices.com</a> now.
+							You are being redirected to ${siteURL} or can <a href="${siteURL}">click here to access ${siteURL}</a> now.
 						</div>
 
 					</div>

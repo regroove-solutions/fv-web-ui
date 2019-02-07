@@ -8,10 +8,14 @@ import static org.junit.Assert.*;
 
 import java.security.InvalidParameterException;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentNotFoundException;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
@@ -60,6 +64,8 @@ public class FirstVoicesPublisherTest {
     @Inject
     protected PublisherService publisherService;
 
+    private DocumentModel domain;
+
     private DocumentModel sectionRoot;
 
     private DocumentModel languageDoc;
@@ -101,7 +107,11 @@ public class FirstVoicesPublisherTest {
 
     @Before
     public void setUp() throws Exception {
-        DocumentModel domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
+
+        session.removeChildren(session.getRootDocument().getRef());
+        session.save();
+
+        domain = session.createDocument(session.createDocumentModel("/", "FV", "Domain"));
         sectionRoot = publisherService.getRootSectionFinder(session).getDefaultSectionRoots(true, true).get(0);
         createDialectTree();
     }
@@ -286,13 +296,7 @@ public class FirstVoicesPublisherTest {
     }
 
     private DocumentModel getProxy(DocumentModel model) {
-        DocumentModelList proxies = session.getProxies(model.getRef(), null);
-
-        if (proxies.size() > 0 ) {
-            return proxies.get(0);
-        }
-
-        return null;
+        return session.getProxies(model.getRef(), null).get(0);
     }
 
     @Test
