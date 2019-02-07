@@ -1,4 +1,4 @@
-package firstvoices.testUtil;
+package ca.firstvoices.testUtils;
 
 import static org.junit.Assert.*;
 
@@ -132,29 +132,29 @@ public class ExportTestUtil
         }
     }
 
-    private void commonOperationRunner(AutomationService automationService, DraftEditorService draftEditorServiceInstance, DocumentModel[] docArray, String operationSignature, String uuidKey )
-    {
-        for( DocumentModel aWord : docArray )
-        {
-            String uuid = draftEditorServiceInstance.getUUID( aWord, uuidKey );
-
-            if( uuid != null )
-            {
-                Object returnObj;
-                OperationContext ctx = new OperationContext(aWord.getCoreSession());
-                ctx.setInput(aWord);
-
-                Map<String, Object> params = new HashMap<String, Object>();
-
-                try
-                {
-                    returnObj = automationService.run(ctx, operationSignature, params);
-                }
-                catch (OperationException e)
-                {
-
-                }
-            }
-        }
-    }
+//    private void commonOperationRunner(AutomationService automationService, DraftEditorService draftEditorServiceInstance, DocumentModel[] docArray, String operationSignature, String uuidKey )
+//    {
+//        for( DocumentModel aWord : docArray )
+//        {
+//            String uuid = draftEditorServiceInstance.getUUID( aWord, uuidKey );
+//
+//            if( uuid != null )
+//            {
+//                Object returnObj;
+//                OperationContext ctx = new OperationContext(aWord.getCoreSession());
+//                ctx.setInput(aWord);
+//
+//                Map<String, Object> params = new HashMap<String, Object>();
+//
+//                try
+//                {
+//                    returnObj = automationService.run(ctx, operationSignature, params);
+//                }
+//                catch (OperationException e)
+//                {
+//
+//                }
+//            }
+//        }
+//    }
 }
