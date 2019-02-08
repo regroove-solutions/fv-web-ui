@@ -49,6 +49,9 @@
         <div class="container-fluid" id="page-wrapper">
             {% block content %}{% endblock %}
         </div>
+        <div class="container-fluid" id="page-absolute-footer" style="background-color: #0d6c80;color: #fff;">
+            Version: {{uiVersion}}
+        </div>
         <!-- /#page-wrapper -->
 
         <!--<div style="position: fixed;
