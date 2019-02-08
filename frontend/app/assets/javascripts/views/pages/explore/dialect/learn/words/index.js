@@ -26,7 +26,7 @@ import RaisedButton from 'material-ui/lib/raised-button'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import { SearchDialect } from 'views/components/SearchDialect'
-import { SEARCH_DEFAULT, SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
+import { SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DialectCategoryList from 'views/components/DialectCategoryList'
@@ -138,10 +138,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.state = {
       filterInfo,
       searchTerm: '',
-      searchType: SEARCH_DEFAULT,
       searchByAlphabet: false,
-      searchByDefinitions: false,
-      searchByTitle: false,
+      searchByDefinitions: true,
+      searchByTitle: true,
       searchByTranslations: false,
       searchNxqlQuery: '',
       searchNxqlSort: {},
@@ -182,7 +181,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchByTranslations,
       searchTerm,
       searchPartOfSpeech,
-      searchType,
     } = this.state
     const { routeParams } = this.props
     const computeDocument = ProviderHelpers.getEntry(
@@ -352,7 +350,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               searchByTranslations={searchByTranslations}
               searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
-              searchType={searchType}
               updateAncestorState={this.updateState}
             />
 
@@ -436,7 +433,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _changeFilter() {
     const { searchByAlphabet, searchTerm, searchNxqlQuery } = this.state
-    const searchType = searchByAlphabet ? 'startsWith' : 'contains'
+    const _searchType = searchByAlphabet ? 'startsWith' : 'contains'
 
     let newFilter = this.state.filterInfo
 
@@ -454,13 +451,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
 
     // Add new search
-    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => ` AND ${searchNxqlQuery}`)
+    newFilter = newFilter.updateIn(['currentAppliedFilter', _searchType], () => ` AND ${searchNxqlQuery}`)
 
     // Add new description
-    newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', searchType], () => {
+    newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', _searchType], () => {
       let filterDesc
 
-      switch (searchType) {
+      switch (_searchType) {
         case 'contains':
           filterDesc = 'contain the search term'
           break
@@ -470,6 +467,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
           break
 
         case 'categories':
+          // NOTE: DON'T THINK WE EVER GET HERE!
+          debugger
           filterDesc = 'have the categories'
           break
 
@@ -500,9 +499,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       {
         // filterInfo: newFilter,
         searchTerm: letter,
-        searchType: SEARCH_DEFAULT,
         searchByAlphabet: true,
-        searchByTitle: false,
+        searchByTitle: true,
         searchByDefinitions: false,
         searchByTranslations: false,
         searchPartOfSpeech: SEARCH_SORT_DEFAULT,

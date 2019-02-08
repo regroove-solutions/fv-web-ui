@@ -90,10 +90,9 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     this.state = {
       filterInfo,
       searchTerm: '',
-      searchType: SEARCH_DEFAULT,
       searchByCulturalNotes: false,
       searchByDefinitions: false,
-      searchByTitle: false,
+      searchByTitle: true,
       searchNxqlQuery: '',
       searchNxqlSort: {},
     }
@@ -120,7 +119,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       searchByTitle,
       searchByDefinitions,
       searchTerm,
-      searchType,
     } = this.state
 
     const computeEntities = Immutable.fromJS([
@@ -254,7 +252,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
               searchByTitle={searchByTitle}
               searchByDefinitions={searchByDefinitions}
               searchTerm={searchTerm}
-              searchType={searchType}
               updateAncestorState={this.updateState}
             />
 
@@ -324,6 +321,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
           break
 
         case 'categories':
+          // NOTE: DON'T THINK WE EVER GET HERE!
+          debugger
           filterDesc = 'have the categories'
           break
 
