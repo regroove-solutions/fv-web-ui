@@ -289,7 +289,7 @@ class SearchDialect extends Component {
       cols.push('Definitions')
     }
     if (searchByCulturalNotes) {
-      cols.push('Cultural Notes')
+      cols.push('Cultural notes')
     }
     if (searchByTranslations) {
       cols.push('Literal translations')
@@ -300,7 +300,9 @@ class SearchDialect extends Component {
     const messagePartsOfSpeech =
       searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ''
     const messages = {
-      all: (
+      all: isSearchingPhrases ? (
+        <span>{`Showing all ${wordsOrPhrases} listed alphabetically${messagePartsOfSpeech}`}</span>
+      ) : (
         <span>{`Showing all ${wordsOrPhrases} in the dictionary listed alphabetically${messagePartsOfSpeech}`}</span>
       ),
       startWith: (
@@ -319,6 +321,11 @@ class SearchDialect extends Component {
           cols[1]
         }' columns${messagePartsOfSpeech}`}</span>
       ),
+      containColsThree: (
+        <span>{`Showing ${wordsOrPhrases} that contain the search term '`}{_searchTerm}{`' in the '${cols[0]}', '${cols[1]}', and '${
+          cols[2]
+        }' columns${messagePartsOfSpeech}`}</span>
+      ),
     }
 
     let msg = ''
@@ -333,8 +340,12 @@ class SearchDialect extends Component {
         msg = messages.containColOne
       }
 
-      if (cols.length >= 2) {
+      if (cols.length === 2) {
         msg = messages.containColsTwo
+      }
+
+      if (cols.length >= 3) {
+        msg = messages.containColsThree
       }
     }
     return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{msg}</div>

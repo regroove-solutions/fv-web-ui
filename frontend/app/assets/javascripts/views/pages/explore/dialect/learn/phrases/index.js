@@ -91,7 +91,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       filterInfo,
       searchTerm: '',
       searchByCulturalNotes: false,
-      searchByDefinitions: false,
+      searchByDefinitions: true,
       searchByTitle: true,
       searchNxqlQuery: '',
       searchNxqlSort: {},
