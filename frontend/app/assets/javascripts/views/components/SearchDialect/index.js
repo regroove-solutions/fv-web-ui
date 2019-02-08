@@ -250,7 +250,6 @@ class SearchDialect extends Component {
   }
 
   _getSearchInfo() {
-    // TODO: IMPROVE SEARCH MESSAGES
     const {
       isSearchingPhrases,
       searchByAlphabet,
@@ -281,120 +280,64 @@ class SearchDialect extends Component {
     // Showing words that contain the search term 'd' in the 'Word' and 'Definitions' columns, filtered by the selected 'Parts of speech'
     // Showing words that contain the search term 'd' in the 'Word' and 'Literal translations' columns, filtered by the selected 'Parts of speech'
     // Showing words that contain the search term 'd' in the 'Definitions' and 'Literal translations' columns, filtered by the selected 'Parts of speech'
+
+    const cols = []
+    if (searchByTitle) {
+      cols.push(isSearchingPhrases ? 'Phrase' : 'Word')
+    }
+    if (searchByDefinitions) {
+      cols.push('Definitions')
+    }
+    if (searchByCulturalNotes) {
+      cols.push('Cultural Notes')
+    }
+    if (searchByTranslations) {
+      cols.push('Literal translations')
+    }
+
     const wordsOrPhrases = isSearchingPhrases ? 'phrases' : 'words'
+    const _searchTerm = <strong>{searchTerm}</strong>
+    const messagePartsOfSpeech =
+      searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ''
+    const messages = {
+      all: (
+        <span>{`Showing all ${wordsOrPhrases} in the dictionary listed alphabetically${messagePartsOfSpeech}`}</span>
+      ),
+      startWith: (
+        <span>{`Showing ${wordsOrPhrases} that start with the letter '`}{_searchTerm}{`'${messagePartsOfSpeech}`}</span>
+      ),
+      contain: (
+        <span>{`Showing ${wordsOrPhrases} that contain the search term '`}{_searchTerm}{`'${messagePartsOfSpeech}`}</span>
+      ),
+      containColOne: (
+        <span>{`Showing ${wordsOrPhrases} that contain the search term '`}{_searchTerm}{`' in the '${
+          cols[0]
+        }' column${messagePartsOfSpeech}`}</span>
+      ),
+      containColsTwo: (
+        <span>{`Showing ${wordsOrPhrases} that contain the search term '`}{_searchTerm}{`' in the '${cols[0]}' and '${
+          cols[1]
+        }' columns${messagePartsOfSpeech}`}</span>
+      ),
+    }
 
     let msg = ''
-    if (searchByAlphabet) {
-      msg = (
-        <span>
-          Showing all {wordsOrPhrases} that start with the letter <strong>{searchTerm}</strong>
-        </span>
-      )
+    if (searchTerm === '' || searchTerm === null) {
+      msg = messages.all
+    } else if (searchByAlphabet) {
+      msg = messages.startWith
     } else {
-      let searchingCol = ''
-      const colCount = searchByCulturalNotes + searchByDefinitions + searchByTitle + searchByTranslations
-      if (colCount === 1) {
-        let colSearched = ''
-        if (searchByTitle) {
-          colSearched = isSearchingPhrases ? 'Phrase' : 'Word'
-        }
-        if (searchByDefinitions) {
-          colSearched = 'Definitions'
-        }
-        if (searchByCulturalNotes) {
-          colSearched = 'Cultural Notes'
-        }
-        if (searchByTranslations) {
-          colSearched = 'Literal translations'
-        }
-        searchingCol = ` in the '${colSearched}' column`
-      }
-      if (colCount >= 2) {
-        const _colsSearched = []
-        if (searchByTitle) {
-          _colsSearched.push(isSearchingPhrases ? "'Phrase'" : "'Word'")
-        }
-        if (searchByDefinitions) {
-          _colsSearched.push("'Definitions'")
-        }
+      msg = messages.contain
 
-        if (searchByCulturalNotes) {
-          _colsSearched.push("'Cultural Notes'")
-        }
-        if (searchByTranslations) {
-          _colsSearched.push("'Literal translations'")
-        }
-        const lastCol = _colsSearched.pop()
-        searchingCol = ` in the ${_colsSearched.join(', ')} and ${lastCol} columns`
+      if (cols.length === 1) {
+        msg = messages.containColOne
       }
 
-      const searchingPartsOfSpeech =
-        searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ''
-      let msgPrefix = null
-      if (searchTerm === '' || searchTerm === null) {
-        msgPrefix = <span>{`Showing all ${wordsOrPhrases} found`}</span>
-      } else {
-        msgPrefix = (
-          <span>
-            {`Showing ${wordsOrPhrases} that contain the search term '`}
-            <strong>{searchTerm}</strong>
-            {"' found"}
-          </span>
-        )
+      if (cols.length >= 2) {
+        msg = messages.containColsTwo
       }
-      msg = (
-        <span>
-          {msgPrefix}
-          {searchingCol}
-          {searchingPartsOfSpeech}
-        </span>
-      )
     }
     return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{msg}</div>
-    /*
-    const { filterInfo, isSearchingPhrases } = this.props
-
-    let searchInfo = isSearchingPhrases ? (
-      <span key="SearchInfoPhrasesDefault">
-        Showing <strong>all phrases</strong> in the phrase books <strong>listed alphabetically</strong>.
-      </span>
-    ) : (
-      <span key="SearchInfoWordsDefault">
-        Showing <strong>all words</strong> in the dictionary <strong>listed alphabetically</strong>.
-      </span>
-    )
-
-    if (filterInfo.get('currentAppliedFiltersDesc') && !filterInfo.get('currentAppliedFiltersDesc').isEmpty()) {
-      const appliedFilters = []
-      appliedFilters.push(
-        isSearchingPhrases ? (
-          <span key="SearchInfoAppliedFiltersPhrases">Showing phrases that </span>
-        ) : (
-          <span key="SearchInfoAppliedFiltersWords">Showing words that </span>
-        )
-      )
-
-      let i = 0
-
-      filterInfo.get('currentAppliedFiltersDesc').forEach((currentValue, index, arr) => {
-        //
-        appliedFilters.push(<span key={`SearchInfoAppliedFiltersDesc${index}`}>{currentValue}</span>)
-
-        if (arr.size > 1 && arr.size - 1 !== i) {
-          appliedFilters.push(
-            <span key={`SearchInfoAppliedFiltersDescDivider${index}`}>
-              {' '}
-              <span style={{ textDecoration: 'underline' }}>AND</span>{' '}
-            </span>
-          )
-        }
-        ++i
-      })
-      searchInfo = appliedFilters
-    }
-
-    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{searchInfo}</div>
-    */
   }
 
   _getNxqlSearchSort() {
