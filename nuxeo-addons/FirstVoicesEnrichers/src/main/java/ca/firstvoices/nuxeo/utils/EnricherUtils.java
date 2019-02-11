@@ -7,9 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ArrayNode;
-import org.codehaus.jackson.node.ObjectNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -23,6 +22,8 @@ import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class EnricherUtils {
 
@@ -216,7 +217,7 @@ public class EnricherUtils {
         }
 
         // Test explicitly for members
-        NuxeoPrincipal principal = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal principal = session.getPrincipal();
 
         for (ACE ace : doc.getACP().getACL("local").getACEs()) {
             if (SecurityConstants.READ.equals(ace.getPermission())) {

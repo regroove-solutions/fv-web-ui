@@ -8,7 +8,7 @@ import ca.firstvoices.models.CustomPreferencesObject;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 import javax.ws.rs.HEAD;
