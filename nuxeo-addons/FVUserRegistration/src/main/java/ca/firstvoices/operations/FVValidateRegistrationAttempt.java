@@ -25,24 +25,20 @@ import static ca.firstvoices.utils.FVRegistrationConstants.*;
     public static final int REGISTRATION_EXISTS_ERROR      = 4;
 
 */
-@Operation(id = FVValidateRegistrationAttempt.ID, category = Constants.CAT_USERS_GROUPS, label = "FVValidateRegistrationAttempt",
-        description = "Validate new user registration attempt. Input: Login and Email of the new user. Return error code (email exists, login exist, registration can be accepted)")
-public class FVValidateRegistrationAttempt
-{
+@Operation(id = FVValidateRegistrationAttempt.ID, category = Constants.CAT_USERS_GROUPS, label = "FVValidateRegistrationAttempt", description = "Validate new user registration attempt. Input: Login and Email of the new user. Return error code (email exists, login exist, registration can be accepted)")
+public class FVValidateRegistrationAttempt {
     public static final String ID = "FVValidateRegistrationAttempt";
-    private static final Log log = LogFactory.getLog(FVValidateRegistrationAttempt.class);
 
+    private static final Log log = LogFactory.getLog(FVValidateRegistrationAttempt.class);
 
     @Param(name = "Login:")
     protected String login;
 
-    @Param(name = "email:", required = false )
+    @Param(name = "email:", required = false)
     protected String email = null;
 
-
     @OperationMethod
-    public int run()
-    {
+    public int run() {
         LoginContext lctx = null;
         CoreSession session = null;
 
@@ -51,60 +47,49 @@ public class FVValidateRegistrationAttempt
         DocumentModel user = null;
         int verificationState = REGISTRATION_CAN_PROCEED;
 
-        try
-        {
+        try {
             lctx = Framework.login();
             session = CoreInstance.openCoreSession("default");
-            UserManager userManager = Framework.getService( UserManager.class );
+            UserManager userManager = Framework.getService(UserManager.class);
 
             user = userManager.getUserModel(login);
 
-            if( user != null )
-            {
+            if (user != null) {
                 verificationState = LOGIN_EXISTS_ERROR;
-            }
-            else
-            {
+            } else {
                 String querryStr = null;
 
-                if (email != null)
-                {
+                if (email != null) {
                     userE = userManager.getUserModel(email);
 
-                    if( userE != null )
-                    {
+                    if (userE != null) {
                         verificationState = LOGIN_AND_EMAIL_EXIST_ERROR;
+                    } else {
+                        querryStr = String.format(
+                                "Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND ( %s = '%s' OR %s = '%s')",
+                                "userinfo:login", login, "userinfo:email", email);
                     }
-                    else
-                    {
-                        querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND ( %s = '%s' OR %s = '%s')", "userinfo:login", login, "userinfo:email", email);
-                    }
-                }
-                else
-                {
-                    querryStr = String.format("Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND  %s = '%s' ", "userinfo:login", login);
+                } else {
+                    querryStr = String.format(
+                            "Select * from Document where ecm:mixinType = 'UserRegistration' AND ecm:currentLifeCycleState = 'approved' AND  %s = '%s' ",
+                            "userinfo:login", login);
                 }
 
-                if( userE == null && querryStr != null )
-                {
-                    registrations = session.query(querryStr );
+                if (userE == null && querryStr != null) {
+                    registrations = session.query(querryStr);
 
-                    if( registrations != null && !registrations.isEmpty() )
-                    {
+                    if (registrations != null && !registrations.isEmpty()) {
                         verificationState = REGISTRATION_EXISTS_ERROR;
                     }
                 }
             }
 
             lctx.logout();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             log.warn(e);
-        }
-        finally
-        {
-            if( session != null) session.close();
+        } finally {
+            if (session != null)
+                session.close();
         }
 
         return verificationState;

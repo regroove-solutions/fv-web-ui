@@ -22,50 +22,52 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RestrictFVDialectPublishing implements EventListener {
 
-	protected static PublisherService publisherService = Framework.getService(PublisherService.class);
+    protected static PublisherService publisherService = Framework.getService(PublisherService.class);
 
-	/**
-	 * Reject document. Borrowed mostly from PublishActionsBean.
-	 * @param publishingComment
-	 * @param docToReject
-	 * @param session
-	 */
-	protected void rejectDocument(String publishingComment, DocumentModel docToReject, CoreSession session) {
+    /**
+     * Reject document. Borrowed mostly from PublishActionsBean.
+     * 
+     * @param publishingComment
+     * @param docToReject
+     * @param session
+     */
+    protected void rejectDocument(String publishingComment, DocumentModel docToReject, CoreSession session) {
 
         PublicationTree tree = publisherService.getPublicationTreeFor(docToReject, session);
         PublishedDocument publishedDocument = tree.wrapToPublishedDocument(docToReject);
         tree.validatorRejectPublication(publishedDocument, publishingComment);
 
         Events.instance().raiseEvent(EventNames.DOCUMENT_PUBLICATION_REJECTED);
-	}
+    }
 
-	@Override
-	public void handleEvent(Event event) throws NuxeoException {
-	       EventContext ctx = event.getContext();
-	       CoreSession session = ctx.getCoreSession();
-	       NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
+    @Override
+    public void handleEvent(Event event) throws NuxeoException {
+        EventContext ctx = event.getContext();
+        CoreSession session = ctx.getCoreSession();
+        NuxeoPrincipal principal = (NuxeoPrincipal) ctx.getPrincipal();
 
-	       // Skip non-document events and administrator
-	       if (!(ctx instanceof DocumentEventContext) || principal.isAdministrator()) {
-	           return;
-	       }
+        // Skip non-document events and administrator
+        if (!(ctx instanceof DocumentEventContext) || principal.isAdministrator()) {
+            return;
+        }
 
-	       for (Object doc : ctx.getArguments()) {
-	    	   // A Language Administrator trying TO PUBLISH someone else's Dialect
-	    	   if (doc instanceof DocumentModel && ((DocumentModel) doc).getType().equals("FVDialect")) {
-	    		   DocumentModel currentDoc = (DocumentModel) doc;
+        for (Object doc : ctx.getArguments()) {
+            // A Language Administrator trying TO PUBLISH someone else's Dialect
+            if (doc instanceof DocumentModel && ((DocumentModel) doc).getType().equals("FVDialect")) {
+                DocumentModel currentDoc = (DocumentModel) doc;
 
-	    		   // Check if principal has EVERYTHING permission on the source dialect, approve publishing immediately
-	    		   if (session.hasPermission(principal, new IdRef(currentDoc.getSourceId()), SecurityConstants.EVERYTHING)) {
-	    			   // By default, Language Administrators do not seem to need approval for this level.
-	    			   return;
-	    		   }
-	    		   // They don't have EVERYTHING on the source dialect, reject publishing immediately
-	    		   else {
-	    			   rejectDocument("Can't publish someone else's Dialect.", currentDoc, session);
-	    		   }
-	    	   }
-	       }
+                // Check if principal has EVERYTHING permission on the source dialect, approve publishing immediately
+                if (session.hasPermission(principal, new IdRef(currentDoc.getSourceId()),
+                        SecurityConstants.EVERYTHING)) {
+                    // By default, Language Administrators do not seem to need approval for this level.
+                    return;
+                }
+                // They don't have EVERYTHING on the source dialect, reject publishing immediately
+                else {
+                    rejectDocument("Can't publish someone else's Dialect.", currentDoc, session);
+                }
+            }
+        }
 
-	}
+    }
 }

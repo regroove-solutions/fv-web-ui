@@ -21,8 +21,7 @@ import static ca.firstvoices.utils.FVExportConstants.*;
 /*
  * FVExportBlobWorker relocates temporary file and connects to a wrapper document created at the start of the export
  */
-public class FVExportBlobWorker extends FVAbstractExportWork
-{
+public class FVExportBlobWorker extends FVAbstractExportWork {
     private static final Log log = LogFactory.getLog(FVExportBlobWorker.class);
 
     @Override
@@ -35,51 +34,46 @@ public class FVExportBlobWorker extends FVAbstractExportWork
         return "Move an export file to blob and create a wrapper.";
     }
 
-    public FVExportBlobWorker(String id, FVExportWorkInfo info )
-    {
-        super( id );
-        super.setWorkInfo( info );
+    public FVExportBlobWorker(String id, FVExportWorkInfo info) {
+        super(id);
+        super.setWorkInfo(info);
     }
 
     @Override
-    public void work()
-    {
-        try
-        {
+    public void work() {
+        try {
             LoginContext lctx = Framework.login();
             CoreSession session = CoreInstance.openCoreSession("default");
 
-
             File file = new File(workInfo.filePath);
-            FileBlob fileBlob = new FileBlob( file, workInfo.mimeType, workInfo.encoding );
+            FileBlob fileBlob = new FileBlob(file, workInfo.mimeType, workInfo.encoding);
 
-            DocumentModel wrapper =  workInfo.wrapper;
+            DocumentModel wrapper = workInfo.wrapper;
 
-            wrapper.setPropertyValue( "file:content", fileBlob );
+            wrapper.setPropertyValue("file:content", fileBlob);
 
             workInfo.workDuration = (System.currentTimeMillis() - workInfo.workDuration) / MILLISECONDS;
-            workInfo.setExportProgress( "EXPORT: Total work time : " + workInfo.workDuration + "seconds while processing " + workInfo.originalWorkloadSize + " documents." );
-            workInfo.setExportProgressValue( 100.0 );
+            workInfo.setExportProgress("EXPORT: Total work time : " + workInfo.workDuration
+                    + "seconds while processing " + workInfo.originalWorkloadSize + " documents.");
+            workInfo.setExportProgressValue(100.0);
 
-            session.saveDocument( wrapper ); // ?
+            session.saveDocument(wrapper); // ?
             session.save();
 
-            if( workInfo.continueAutoEvent != null )
-            {
-                EventProducer eventProducer = Framework.getService( EventProducer.class );
-                EventContextImpl ctx = new EventContextImpl( session, session.getPrincipal() );
+            if (workInfo.continueAutoEvent != null) {
+                EventProducer eventProducer = Framework.getService(EventProducer.class);
+                EventContextImpl ctx = new EventContextImpl(session, session.getPrincipal());
 
-                ctx.setProperty( EXPORT_WORK_INFO, workInfo );
+                ctx.setProperty(EXPORT_WORK_INFO, workInfo);
 
-                Event event = ctx.newEvent( workInfo.continueAutoEvent ); // move to next set of exports if invoked by cyclic worker
-                eventProducer.fireEvent( event );
+                Event event = ctx.newEvent(workInfo.continueAutoEvent); // move to next set of exports if invoked by
+                                                                        // cyclic worker
+                eventProducer.fireEvent(event);
             }
 
             lctx.logout();
             session.close();
-         }
-        catch ( Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

@@ -16,6 +16,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Listener assigning origin document (Word/Phrase) to a media item (Photos, Videos, Audio) created within that word.
+ * 
  * @author dyona
  */
 public class AssignOriginListener implements EventListener {

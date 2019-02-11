@@ -41,7 +41,6 @@ import static org.junit.Assert.assertTrue;
         "FirstVoicesExport:OSGI-INF/extensions/ca.firstvoices.workers.xml",
         "FirstVoicesExport:schemas/fvexport.xsd"})
 @LocalDeploy( {
-        "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",

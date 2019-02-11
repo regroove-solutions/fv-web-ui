@@ -14,18 +14,18 @@ import java.util.Map;
 /**
  *
  */
-public class FVRegistrationCompletionListener implements EventListener  {
+public class FVRegistrationCompletionListener implements EventListener {
 
-   private static final Log log = LogFactory.getLog(ca.firstvoices.listeners.FVRegistrationCompletionListener.class);
+    private static final Log log = LogFactory.getLog(ca.firstvoices.listeners.FVRegistrationCompletionListener.class);
 
     // accepts documentRemoved && registrationValidated
 
     @Override
-    public void handleEvent(Event event)
-    {
+    public void handleEvent(Event event) {
         EventContext ctx;
         ctx = event.getContext();
-        if (!(ctx instanceof DocumentEventContext)) return;
+        if (!(ctx instanceof DocumentEventContext))
+            return;
 
         DocumentEventContext docCtx = (DocumentEventContext) ctx;
 
@@ -35,46 +35,43 @@ public class FVRegistrationCompletionListener implements EventListener  {
         DocumentModel dialect;
 
         switch (event.getName()) {
-            case "newUserApprovedByLanguageAdministrator": //       <event>newUserApprovedByLanguageAdministrator</event>
-                dialect = docCtx.getSourceDocument();
-                args = docCtx.getArguments();
-                for( Object o : args )
-                {
-                    if (o == null) break;
+        case "newUserApprovedByLanguageAdministrator": // <event>newUserApprovedByLanguageAdministrator</event>
+            dialect = docCtx.getSourceDocument();
+            args = docCtx.getArguments();
+            for (Object o : args) {
+                if (o == null)
+                    break;
 
-                    Map<String, String> cArg = (Map<String, String>)o;
+                Map<String, String> cArg = (Map<String, String>) o;
 
-                    try
-                    {
-                        util.placeNewUserInGroup(dialect, cArg.get("groupName"), cArg.get("userName"));
-                    }
-                    catch(Exception e)
-                    {
-                        log.error( e );
-                    }
+                try {
+                    util.placeNewUserInGroup(dialect, cArg.get("groupName"), cArg.get("userName"));
+                } catch (Exception e) {
+                    log.error(e);
                 }
+            }
 
-                break;
+            break;
 
-            case "documentRemoved":
-                // TODO: use it to make sure user name is not left in the system when registration is deleted on time out
-                break;
+        case "documentRemoved":
+            // TODO: use it to make sure user name is not left in the system when registration is deleted on time out
+            break;
 
-            case "invitationValidated":
-                args = docCtx.getArguments();
+        case "invitationValidated":
+            args = docCtx.getArguments();
 
-                for (Object o : args)
-                {
-                    if (o == null) break;
+            for (Object o : args) {
+                if (o == null)
+                    break;
 
-                    DocumentModel ureg = (DocumentModel) o;
-                    String cArg = ureg.getType();
+                DocumentModel ureg = (DocumentModel) o;
+                String cArg = ureg.getType();
 
-                    if (cArg.equals("FVUserRegistration")) {
-                        regUtil.registrationValidationHandler( ureg );
-                    }
+                if (cArg.equals("FVUserRegistration")) {
+                    regUtil.registrationValidationHandler(ureg);
                 }
-                break;
+            }
+            break;
         }
     }
 }

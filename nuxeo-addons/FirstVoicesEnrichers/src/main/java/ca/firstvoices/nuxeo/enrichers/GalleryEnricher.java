@@ -19,48 +19,49 @@ import ca.firstvoices.nuxeo.utils.EnricherUtils;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class GalleryEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-	public static final String NAME = "gallery";
+    public static final String NAME = "gallery";
 
-	public GalleryEnricher() {
-		super(NAME);
-	}
+    public GalleryEnricher() {
+        super(NAME);
+    }
 
-	// Method that will be called when the enricher is asked for
-	@Override
-	public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
-		// We use the Jackson library to generate Json
-		ObjectNode galleryJsonObject = constructGalleryJSON(doc);
-		jg.writeFieldName(NAME);
-		jg.writeObject(galleryJsonObject);
-	}
+    // Method that will be called when the enricher is asked for
+    @Override
+    public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
+        // We use the Jackson library to generate Json
+        ObjectNode galleryJsonObject = constructGalleryJSON(doc);
+        jg.writeFieldName(NAME);
+        jg.writeObject(galleryJsonObject);
+    }
 
-	private ObjectNode constructGalleryJSON(DocumentModel doc) {
-		ObjectMapper mapper = new ObjectMapper();
+    private ObjectNode constructGalleryJSON(DocumentModel doc) {
+        ObjectMapper mapper = new ObjectMapper();
 
-		// JSON object to be returned
-		ObjectNode jsonObj = mapper.createObjectNode();
+        // JSON object to be returned
+        ObjectNode jsonObj = mapper.createObjectNode();
 
-		// First create the parent document's Json object content
-		CoreSession session = doc.getCoreSession();
+        // First create the parent document's Json object content
+        CoreSession session = doc.getCoreSession();
 
-		String documentType = doc.getType();
+        String documentType = doc.getType();
 
-		if (documentType.equalsIgnoreCase("FVGallery")) {
+        if (documentType.equalsIgnoreCase("FVGallery")) {
 
-			// Process "fv:related_pictures" values
-			String[] pictureIds = (!doc.isProxy()) ? (String []) doc.getProperty("fvcore", "related_pictures") : (String []) doc.getProperty("fvproxy", "proxied_pictures");
-			if (pictureIds != null) {
-				ArrayNode pictureJsonArray = mapper.createArrayNode();
-				for (String pictureId : pictureIds) {
-					ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(pictureId, session);
-					if(binaryJsonObj != null) {
-						pictureJsonArray.add(binaryJsonObj);
-					}
-				}
-				jsonObj.put("related_pictures", pictureJsonArray);
-			}
-		}
+            // Process "fv:related_pictures" values
+            String[] pictureIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvcore", "related_pictures")
+                    : (String[]) doc.getProperty("fvproxy", "proxied_pictures");
+            if (pictureIds != null) {
+                ArrayNode pictureJsonArray = mapper.createArrayNode();
+                for (String pictureId : pictureIds) {
+                    ObjectNode binaryJsonObj = EnricherUtils.getBinaryPropertiesJsonObject(pictureId, session);
+                    if (binaryJsonObj != null) {
+                        pictureJsonArray.add(binaryJsonObj);
+                    }
+                }
+                jsonObj.put("related_pictures", pictureJsonArray);
+            }
+        }
 
-		return jsonObj;
-	}
+        return jsonObj;
+    }
 }

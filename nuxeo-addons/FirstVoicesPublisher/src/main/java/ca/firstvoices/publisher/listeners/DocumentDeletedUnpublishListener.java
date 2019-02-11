@@ -19,8 +19,8 @@ import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
 /**
  * Listener to unpublish documents that have been deleted.
+ * 
  * @author dyona
- *
  */
 public class DocumentDeletedUnpublishListener implements EventListener {
 
@@ -29,7 +29,7 @@ public class DocumentDeletedUnpublishListener implements EventListener {
     protected FirstVoicesPublisherService service = Framework.getService(FirstVoicesPublisherService.class);
 
     @Override
-	public void handleEvent(Event event) {
+    public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
             return;

@@ -9,28 +9,22 @@ import org.nuxeo.ecm.automation.core.util.StringList;
 
 import java.util.List;
 
-public class FV_PDF_Producer extends FV_AbstractProducer
-{
+public class FV_PDF_Producer extends FV_AbstractProducer {
 
-    FV_PDF_Producer(String fileName, StringList columns  )
-    {
-        super( null, null );
+    FV_PDF_Producer(String fileName, StringList columns) {
+        super(null, null);
     }
 
     @Override
-    public void writeRowData( List<FV_DataBinding> rowData  )
-    {
+    public void writeRowData(List<FV_DataBinding> rowData) {
     }
 
-    public void writeLine( List<String> outputLine )
-    {
+    public void writeLine(List<String> outputLine) {
     }
 
-    protected void endProduction()
-    {
+    protected void endProduction() {
     }
 
-    protected void createDefaultPropertyReaders()
-    {
+    protected void createDefaultPropertyReaders() {
     }
 }

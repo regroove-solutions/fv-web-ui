@@ -49,10 +49,7 @@ public class FVRegistrationMailUtilities {
      * @param content
      * @throws Exception
      */
-    private void generateMail( String destination,
-                               String copy,
-                               String title,
-                               String content) throws Exception {
+    private void generateMail(String destination, String copy, String title, String content) throws Exception {
 
         InitialContext ic = new InitialContext();
         Session session = (Session) ic.lookup(getJavaMailJndiName());
@@ -62,7 +59,7 @@ public class FVRegistrationMailUtilities {
         msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse((String) destination, false));
 
         if (!StringUtils.isBlank(copy)) {
-            msg.addRecipient(Message.RecipientType.CC, new InternetAddress( copy, false));
+            msg.addRecipient(Message.RecipientType.CC, new InternetAddress(copy, false));
         }
 
         msg.setSubject(title, "UTF-8");
@@ -83,16 +80,18 @@ public class FVRegistrationMailUtilities {
         return result;
     }
 
-    private String composeEmailString( Set<String> emailSet )
-    {
+    private String composeEmailString(Set<String> emailSet) {
         String toStr = new String();
 
-        for( String em : emailSet )
-        {
-            if( !isValidEmailAddress(em) ) continue;
+        for (String em : emailSet) {
+            if (!isValidEmailAddress(em))
+                continue;
 
-            if( toStr.isEmpty() ) { toStr = em; }
-            else { toStr = toStr + ", " + em; }
+            if (toStr.isEmpty()) {
+                toStr = em;
+            } else {
+                toStr = toStr + ", " + em;
+            }
         }
 
         return toStr;
@@ -102,13 +101,12 @@ public class FVRegistrationMailUtilities {
      * @param dialect
      * @return
      */
-    public String getLanguageAdministratorEmail( DocumentModel dialect ) throws LoginException
-    {
-        LoginContext lctx =  Framework.login();
+    public String getLanguageAdministratorEmail(DocumentModel dialect) throws LoginException {
+        LoginContext lctx = Framework.login();
 
         CoreSession session = CoreInstance.openCoreSession("default");
-        UserManager umgr = Framework.getService( UserManager.class );
-        PermissionProvider permissionProvider = Framework.getService( PermissionProvider.class );
+        UserManager umgr = Framework.getService(UserManager.class);
+        PermissionProvider permissionProvider = Framework.getService(PermissionProvider.class);
 
         PrincipalHelper ph = new PrincipalHelper(umgr, permissionProvider);
         Set<String> result = ph.getEmailsForPermission(dialect, "Everything", false);
@@ -116,60 +114,54 @@ public class FVRegistrationMailUtilities {
         session.close();
         lctx.logout();
 
-        return composeEmailString( result );
+        return composeEmailString(result);
     }
 
-    private interface EmailContentAssembler
-    {
-        String getEmailTitle( int variant, Map<String, String> options );
-        String getEmailBody( int variant, Map<String, String> options );
+    private interface EmailContentAssembler {
+        String getEmailTitle(int variant, Map<String, String> options);
+
+        String getEmailBody(int variant, Map<String, String> options);
     }
 
-    private class AdminMailContent implements EmailContentAssembler
-    {
-        public String getEmailTitle( int variant, Map<String, String> options )
-        {
+    private class AdminMailContent implements EmailContentAssembler {
+        public String getEmailTitle(int variant, Map<String, String> options) {
             String title = null;
 
-            switch( variant)
-            {
-                case MID_REGISTRATION_PERIOD_ACT:
-                    title = "FirstVoices: User registration will expire soon.";
-                    break;
-                case REGISTRATION_EXPIRATION_ACT:
-                    title = "FirstVoices: User registration was not completed and will be deleted.";
-                    break;
-                case NEW_USER_SELF_REGISTRATION_ACT:
-                    title = "FirstVoices: New User Registration (action may be required)";
-                    break;
+            switch (variant) {
+            case MID_REGISTRATION_PERIOD_ACT:
+                title = "FirstVoices: User registration will expire soon.";
+                break;
+            case REGISTRATION_EXPIRATION_ACT:
+                title = "FirstVoices: User registration was not completed and will be deleted.";
+                break;
+            case NEW_USER_SELF_REGISTRATION_ACT:
+                title = "FirstVoices: New User Registration (action may be required)";
+                break;
             }
 
             return title;
         }
 
-        public String getEmailBody( int variant, Map<String, String> options )
-        {
+        public String getEmailBody(int variant, Map<String, String> options) {
             String bodyTemplate = null;
 
-            switch( variant) {
-                case MID_REGISTRATION_PERIOD_ACT:
-                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationAboutToExpire.ftl";
-                     break;
-                case REGISTRATION_EXPIRATION_ACT:
-                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationExpired.ftl";
-                    break;
-                case NEW_USER_SELF_REGISTRATION_ACT:
-                    bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-NewUserRegistered.ftl";
-                    break;
+            switch (variant) {
+            case MID_REGISTRATION_PERIOD_ACT:
+                bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationAboutToExpire.ftl";
+                break;
+            case REGISTRATION_EXPIRATION_ACT:
+                bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-RegisterationExpired.ftl";
+                break;
+            case NEW_USER_SELF_REGISTRATION_ACT:
+                bodyTemplate = "skin/views/FVUserRegistration/NOTIFY-NewUserRegistered.ftl";
+                break;
             }
 
             StringWriter writer = new StringWriter();
             RenderingHelper rh = new RenderingHelper();
 
             // Add site url to options
-            String siteURL = Framework.getProperty("nuxeo.url")
-                                .replace("/nuxeo", "")
-                                .replace("8080", "3001");
+            String siteURL = Framework.getProperty("nuxeo.url").replace("/nuxeo", "").replace("8080", "3001");
 
             options.put("siteURL", siteURL);
 
@@ -183,52 +175,49 @@ public class FVRegistrationMailUtilities {
         }
     }
 
-    private class UserReminderMailContent implements EmailContentAssembler
-    {
-        public String getEmailTitle( int variant, Map<String, String> options )
-        {
+    private class UserReminderMailContent implements EmailContentAssembler {
+        public String getEmailTitle(int variant, Map<String, String> options) {
             String title = null;
 
-            switch( variant ) {
-                case MID_REGISTRATION_PERIOD_ACT:
-                    title = "NOTIFICATION Your registration will expire soon.";
-                    break;
-                case REGISTRATION_EXPIRATION_ACT:
-                    title = "NOTIFICATION Your registration was not completed and will be deleted.";
-                    break;
-                case REGISTRATION_DELETION_ACT:
-                    title = "Your registration to FirstVoices was deleted.";
-                    break;
-                default:
+            switch (variant) {
+            case MID_REGISTRATION_PERIOD_ACT:
+                title = "NOTIFICATION Your registration will expire soon.";
+                break;
+            case REGISTRATION_EXPIRATION_ACT:
+                title = "NOTIFICATION Your registration was not completed and will be deleted.";
+                break;
+            case REGISTRATION_DELETION_ACT:
+                title = "Your registration to FirstVoices was deleted.";
+                break;
+            default:
             }
             return title;
         }
 
-        public String getEmailBody( int variant, Map<String, String> options )
-        {
+        public String getEmailBody(int variant, Map<String, String> options) {
             String body = null;
-            String g =  "Dear "+ options.get("fName") +",";
+            String g = "Dear " + options.get("fName") + ",";
             String e3 = "<br> Your registration to FirstVoices will expire in 3 days.";
             String e24 = "<br> Your registration to FirstVoices expired and will be deleted in 24 hrs.";
             String del = "<br> Your registration to FirstVoices was deleted.";
-            String ln =  "<br><br> Your login name is: " + options.get("email");
-            String dp =  "<br><br> You registered to participate in " + options.get("dialect") +". <br>";
-            String endStr =  "<br> Please setup account password to complete registration.";
+            String ln = "<br><br> Your login name is: " + options.get("email");
+            String dp = "<br><br> You registered to participate in " + options.get("dialect") + ". <br>";
+            String endStr = "<br> Please setup account password to complete registration.";
             String re = "<br> In order to participate in FirstVoices you will need to register again.";
-            String endStr_D =  "<br><br> If you do so please complete registration by setting up your account password.";
+            String endStr_D = "<br><br> If you do so please complete registration by setting up your account password.";
             String thankYou = " <br><br> Regards,<br> The FirstVoices team";
 
-            switch( variant ) {
-                case MID_REGISTRATION_PERIOD_ACT:
-                    body =  g + e3 + ln + dp + endStr + thankYou;
-                    break;
-                case REGISTRATION_EXPIRATION_ACT:
-                    body =  g + e24 + ln + dp + endStr + thankYou;
-                    break;
-                case REGISTRATION_DELETION_ACT:
-                    body =  g + del + re + endStr_D + thankYou;
-                    break;
-                default:
+            switch (variant) {
+            case MID_REGISTRATION_PERIOD_ACT:
+                body = g + e3 + ln + dp + endStr + thankYou;
+                break;
+            case REGISTRATION_EXPIRATION_ACT:
+                body = g + e24 + ln + dp + endStr + thankYou;
+                break;
+            case REGISTRATION_DELETION_ACT:
+                body = g + del + re + endStr_D + thankYou;
+                break;
+            default:
             }
 
             return body;
@@ -242,24 +231,20 @@ public class FVRegistrationMailUtilities {
      * @param toStr
      * @throws Exception
      */
-    private void registrationMailSender(int variant, EmailContentAssembler prep, Map<String, String> options, String toStr ) throws Exception
-    {
-        String title = prep.getEmailTitle( variant, options );
-        String body = prep.getEmailBody( variant, options );
+    private void registrationMailSender(int variant, EmailContentAssembler prep, Map<String, String> options,
+            String toStr) throws Exception {
+        String title = prep.getEmailTitle(variant, options);
+        String body = prep.getEmailBody(variant, options);
 
-        try
-        {
-            if( title != null && body != null )
-            {
+        try {
+            if (title != null && body != null) {
                 if (!toStr.isEmpty()) {
                     generateMail(toStr, "", title, body);
                 } else {
                     generateMail(options.get("email"), "", title, body);
                 }
             }
-        }
-        catch (NamingException | MessagingException e)
-        {
+        } catch (NamingException | MessagingException e) {
             log.warn(e);
             throw new NuxeoException("Error while sending mail", e);
         }
@@ -271,9 +256,8 @@ public class FVRegistrationMailUtilities {
      * @param toStr
      * @throws Exception
      */
-    public void registrationAdminMailSender(int variant, Map<String, String> options, String toStr ) throws Exception
-    {
-        registrationMailSender( variant, new AdminMailContent(), options, toStr );
+    public void registrationAdminMailSender(int variant, Map<String, String> options, String toStr) throws Exception {
+        registrationMailSender(variant, new AdminMailContent(), options, toStr);
     }
 
     /**
@@ -282,12 +266,12 @@ public class FVRegistrationMailUtilities {
      * @param session
      * @throws Exception
      */
-    public void emailReminder( int variant, DocumentModel registrationRequest, CoreSession session ) throws Exception
-    {
+    public void emailReminder(int variant, DocumentModel registrationRequest, CoreSession session) throws Exception {
         String requestedSpaceId = (String) registrationRequest.getPropertyValue("docinfo:documentId");
 
         // Source lookup (unrestricted)
-        FVRegistrationUtilities.UnrestrictedSourceDocumentResolver usdr = new FVRegistrationUtilities.UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
+        FVRegistrationUtilities.UnrestrictedSourceDocumentResolver usdr = new FVRegistrationUtilities.UnrestrictedSourceDocumentResolver(
+                session, requestedSpaceId);
         usdr.runUnrestricted();
 
         // Source document
@@ -301,11 +285,11 @@ public class FVRegistrationMailUtilities {
         options.put("comment", (String) registrationRequest.getPropertyValue("userinfo:comment"));
         options.put("dialect", dialectTitle);
 
-        String toStr =  getLanguageAdministratorEmail( dialect );
+        String toStr = getLanguageAdministratorEmail(dialect);
 
-        registrationMailSender( variant, new UserReminderMailContent(), options , "" );
+        registrationMailSender(variant, new UserReminderMailContent(), options, "");
 
         // TODO Decide if we need to send reminders to admins
-        //registrationMailSender( variant, new AdminMailContent(), options , toStr );
+        // registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }

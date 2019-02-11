@@ -18,66 +18,69 @@ import ca.firstvoices.nuxeo.utils.EnricherUtils;
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class DialectEnricher extends AbstractJsonEnricher<DocumentModel> {
 
-	public static final String NAME = "dialect";
+    public static final String NAME = "dialect";
 
-	public DialectEnricher() {
-		super(NAME);
-	}
+    public DialectEnricher() {
+        super(NAME);
+    }
 
-	// Method that will be called when the enricher is asked for
-	@Override
-	public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
-		// We use the Jackson library to generate Json
-		ObjectNode dialectJsonObject = constructDialectJSON(doc);
-		jg.writeFieldName(NAME);
-		jg.writeObject(dialectJsonObject);
-	}
+    // Method that will be called when the enricher is asked for
+    @Override
+    public void write(JsonGenerator jg, DocumentModel doc) throws IOException {
+        // We use the Jackson library to generate Json
+        ObjectNode dialectJsonObject = constructDialectJSON(doc);
+        jg.writeFieldName(NAME);
+        jg.writeObject(dialectJsonObject);
+    }
 
-	private ObjectNode constructDialectJSON(DocumentModel doc) {
-		ObjectMapper mapper = new ObjectMapper();
+    private ObjectNode constructDialectJSON(DocumentModel doc) {
+        ObjectMapper mapper = new ObjectMapper();
 
-		// JSON object to be returned
-		ObjectNode jsonObj = mapper.createObjectNode();
+        // JSON object to be returned
+        ObjectNode jsonObj = mapper.createObjectNode();
 
-		// First create the parent document's Json object content
-		CoreSession session = doc.getCoreSession();
+        // First create the parent document's Json object content
+        CoreSession session = doc.getCoreSession();
 
-		String documentType = doc.getType();
+        String documentType = doc.getType();
 
-		/*
-		 * Properties for FVDialect
-		 */
-		if (documentType.equalsIgnoreCase("FVDialect")) {
+        /*
+         * Properties for FVDialect
+         */
+        if (documentType.equalsIgnoreCase("FVDialect")) {
 
-			// Process "fvdialect:keyboards" values
-			String[] keyboardLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvdialect", "keyboards") : (String[]) doc.getProperty("fvproxy", "proxied_keyboards");
-			if (keyboardLinkIds != null) {
-				ArrayNode keyboardJsonArray = mapper.createArrayNode();
-				for (String keyboardId : keyboardLinkIds) {
-					ObjectNode keyboardJsonObj = EnricherUtils.getLinkJsonObject(keyboardId, session);
-					if(keyboardJsonObj != null) {
-						keyboardJsonArray.add(keyboardJsonObj);
-					}
-				}
-				jsonObj.put("keyboards", keyboardJsonArray);
-			}
+            // Process "fvdialect:keyboards" values
+            String[] keyboardLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvdialect", "keyboards")
+                    : (String[]) doc.getProperty("fvproxy", "proxied_keyboards");
+            if (keyboardLinkIds != null) {
+                ArrayNode keyboardJsonArray = mapper.createArrayNode();
+                for (String keyboardId : keyboardLinkIds) {
+                    ObjectNode keyboardJsonObj = EnricherUtils.getLinkJsonObject(keyboardId, session);
+                    if (keyboardJsonObj != null) {
+                        keyboardJsonArray.add(keyboardJsonObj);
+                    }
+                }
+                jsonObj.put("keyboards", keyboardJsonArray);
+            }
 
             // Process "fvdialect:language_resources" values
-            String[] languageResourcesLinkIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fvdialect", "language_resources") : (String[]) doc.getProperty("fvproxy", "proxied_language_resources");
+            String[] languageResourcesLinkIds = (!doc.isProxy())
+                    ? (String[]) doc.getProperty("fvdialect", "language_resources")
+                    : (String[]) doc.getProperty("fvproxy", "proxied_language_resources");
             if (languageResourcesLinkIds != null) {
                 ArrayNode languageResourcesJsonArray = mapper.createArrayNode();
                 for (String languageResourceId : languageResourcesLinkIds) {
                     ObjectNode languageResourceJsonObj = EnricherUtils.getLinkJsonObject(languageResourceId, session);
-                    if(languageResourceJsonObj != null) {
+                    if (languageResourceJsonObj != null) {
                         languageResourcesJsonArray.add(languageResourceJsonObj);
                     }
                 }
                 jsonObj.put("language_resources", languageResourcesJsonArray);
             }
 
-			jsonObj.put("roles", EnricherUtils.getRolesAssociatedWithDialect(doc, session));
-		}
+            jsonObj.put("roles", EnricherUtils.getRolesAssociatedWithDialect(doc, session));
+        }
 
-		return jsonObj;
-	}
+        return jsonObj;
+    }
 }

@@ -4,7 +4,16 @@
 
 package ca.firstvoices.listeners;
 
-import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.security.InvalidParameterException;
+
+import javax.inject.Inject;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -17,42 +26,34 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
-import org.nuxeo.runtime.test.runner.*;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
-import javax.inject.Inject;
-import java.security.InvalidParameterException;
-
-import static org.junit.Assert.*;
+import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
 /**
  * @author loopingz
  */
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, CoreFeature.class, PlatformFeature.class})
-@Deploy( {"studio.extensions.First-Voices",
-        "org.nuxeo.ecm.platform",
-        "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.automation.core",
-        "org.nuxeo.ecm.platform.publisher.core",
-        "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.platform.video.core",
-        "org.nuxeo.ecm.platform.audio.core",
-        "org.nuxeo.ecm.automation.scripting",
-        "org.nuxeo.ecm.platform.web.common"})
-@LocalDeploy({
-        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
+@Features({ RuntimeFeature.class, CoreFeature.class, PlatformFeature.class })
+@Deploy({ "studio.extensions.First-Voices", "org.nuxeo.ecm.platform", "org.nuxeo.ecm.platform.commandline.executor",
+        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.picture.core",
+        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.video.core",
+        "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.ecm.automation.scripting",
+        "org.nuxeo.ecm.platform.web.common" })
+@LocalDeploy({ "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml",
         "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml",
-        "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"
-})
+        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
 public class FirstVoicesPublisherTest {
     @Inject
     protected CoreSession session;
@@ -266,33 +267,41 @@ public class FirstVoicesPublisherTest {
 
     @Test(expected = InvalidParameterException.class)
     public void testDialectPublishingWrongPlace() throws Exception {
-        dialectPublisherService.publishDialect(session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
+        dialectPublisherService.publishDialect(
+                session.createDocument(session.createDocumentModel("/", "Dialect", "FVDialect")));
     }
 
     private void createWord() {
-        category = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories", "Category", "FVCategory"));
-        subcategory = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories/Category", "SubCategory", "FVCategory"));
-        contributor = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
-        contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor2", "FVContributor"));
-        picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
-        audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio", "FVAudio"));
-        video = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
+        category = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Categories", "Category", "FVCategory"));
+        subcategory = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Categories/Category",
+                "SubCategory", "FVCategory"));
+        contributor = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Contributors", "myContributor", "FVContributor"));
+        contributor2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Contributors",
+                "myContributor2", "FVContributor"));
+        picture = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture", "FVPicture"));
+        audio = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio", "FVAudio"));
+        video = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Resources", "myVideo", "FVVideo"));
         word = session.createDocumentModel("/Family/Language/Dialect/Dictionary", "myWord1", "FVWord");
         String[] values = new String[1];
-        values[0]=audio.getId();
+        values[0] = audio.getId();
         word.setPropertyValue("fvcore:related_audio", values);
         values = new String[1];
-        values[0]=picture.getId();
+        values[0] = picture.getId();
         word.setPropertyValue("fvcore:related_pictures", values);
         values = new String[1];
-        values[0]=video.getId();
+        values[0] = video.getId();
         word.setPropertyValue("fvcore:related_videos", values);
         values = new String[1];
-        values[0]=subcategory.getId();
+        values[0] = subcategory.getId();
         word.setPropertyValue("fv-word:categories", values);
         values = new String[2];
-        values[0]=contributor.getId();
-        values[1]=contributor2.getId();
+        values[0] = contributor.getId();
+        values[1] = contributor2.getId();
         word.setPropertyValue("fvcore:source", values);
         word = session.createDocument(word);
     }
@@ -303,12 +312,12 @@ public class FirstVoicesPublisherTest {
 
     @Test
     public void testDocumentPublishing() throws Exception {
-       // Create a word
-       createWord();
-       session.followTransition(dialectDoc, "Publish");
-       session.followTransition(word, "Publish");
-       // Not nice to have all parameters
-       verifyProxy(getProxy(word));
+        // Create a word
+        createWord();
+        session.followTransition(dialectDoc, "Publish");
+        session.followTransition(word, "Publish");
+        // Not nice to have all parameters
+        verifyProxy(getProxy(word));
     }
 
     @Ignore
@@ -324,18 +333,21 @@ public class FirstVoicesPublisherTest {
         verifyProxy(getProxy(word));
     }
 
-
     @Test
     public void testPortalPublishing() throws Exception {
 
-    	DocumentModel dialect = dialectDoc;
-    	DocumentModel portal = session.getChild(dialect.getRef(), "Portal");
+        DocumentModel dialect = dialectDoc;
+        DocumentModel portal = session.getChild(dialect.getRef(), "Portal");
 
-        link = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Links", "myLink", "FVLink"));
-        link2 = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Links", "myLink2", "FVLink"));
+        link = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Links", "myLink", "FVLink"));
+        link2 = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Links", "myLink2", "FVLink"));
 
-        DocumentModel picture = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture1", "FVPicture"));
-        DocumentModel audio = session.createDocument(session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio1", "FVAudio"));
+        DocumentModel picture = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Resources", "myPicture1", "FVPicture"));
+        DocumentModel audio = session.createDocument(
+                session.createDocumentModel("/Family/Language/Dialect/Resources", "myAudio1", "FVAudio"));
 
         String[] values = new String[1];
 
@@ -343,17 +355,17 @@ public class FirstVoicesPublisherTest {
         portal.setPropertyValue("fv-portal:featured_audio", audio.getRef().toString());
         portal.setPropertyValue("fv-portal:logo", picture.getRef().toString());
         values = new String[2];
-        values[0]=link.getId();
-        values[1]=link2.getId();
+        values[0] = link.getId();
+        values[1] = link2.getId();
         portal.setPropertyValue("fv-portal:related_links", values);
 
-    	portal = session.createDocument(portal);
+        portal = session.createDocument(portal);
 
-    	portal.getCurrentLifeCycleState();
+        portal.getCurrentLifeCycleState();
 
-    	if (!"Published".equals(dialectDoc.getCurrentLifeCycleState())) {
-			session.followTransition(dialectDoc, "Publish");
-		}
+        if (!"Published".equals(dialectDoc.getCurrentLifeCycleState())) {
+            session.followTransition(dialectDoc, "Publish");
+        }
 
         session.followTransition(portal, "Publish");
 
@@ -400,7 +412,7 @@ public class FirstVoicesPublisherTest {
     }
 
     private void verifyProxy(DocumentModel proxy) {
-     // Check the schema is added
+        // Check the schema is added
         DocumentModel doc;
         assertTrue(proxy.hasSchema("fvproxy"));
         assertFalse(word.hasSchema("fvproxy"));
@@ -427,24 +439,28 @@ public class FirstVoicesPublisherTest {
         assertEquals(1, property.length);
         assertNotEquals(subcategory.getRef(), new IdRef(property[0]));
         doc = session.getDocument(new IdRef(property[0]));
-        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Categories/Category/SubCategory"));
+        assertTrue(doc.getPathAsString()
+                      .matches("/FV.*/sections/Family/Language/Dialect/Categories/Category/SubCategory"));
         doc = session.getSourceDocument(new IdRef(property[0]));
         assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Categories/Category/SubCategory"));
     }
+
     private void verifyProxiedResource(String[] property, DocumentModel original) {
         assertEquals(1, property.length);
         IdRef ref = new IdRef(property[0]);
         assertNotEquals(original.getRef(), ref);
         DocumentModel doc = session.getDocument(ref);
-        assertTrue(doc.getPathAsString().matches("/FV.*/sections/Family/Language/Dialect/Resources/" + original.getName()));
+        assertTrue(doc.getPathAsString()
+                      .matches("/FV.*/sections/Family/Language/Dialect/Resources/" + original.getName()));
         doc = session.getSourceDocument(ref);
         assertTrue(doc.getPathAsString().matches("/Family/Language/Dialect/Resources/" + original.getName()));
         assertEquals(original.getRef().toString(), doc.getSourceId());
     }
-    private String[] getPropertyValueAsArray(DocumentModel proxy, String propertyName) {
-    	String[] property = new String[1];
-    	property[0] = (String) proxy.getPropertyValue(propertyName);
 
-    	return property;
+    private String[] getPropertyValueAsArray(DocumentModel proxy, String propertyName) {
+        String[] property = new String[1];
+        property[0] = (String) proxy.getPropertyValue(propertyName);
+
+        return property;
     }
 }

@@ -42,7 +42,7 @@ import ca.firstvoices.utils.CustomSecurityConstants;
 /**
  *
  */
-@Operation(id=FVDialectPublishedDocumentPermissions.ID, category=Constants.CAT_USERS_GROUPS, label="FVDialectPublishedDocumentPermissions", description="")
+@Operation(id = FVDialectPublishedDocumentPermissions.ID, category = Constants.CAT_USERS_GROUPS, label = "FVDialectPublishedDocumentPermissions", description = "")
 public class FVDialectPublishedDocumentPermissions extends AbstractFVDialectOperation {
 
     @Context
@@ -52,55 +52,53 @@ public class FVDialectPublishedDocumentPermissions extends AbstractFVDialectOper
 
     private static final Log log = LogFactory.getLog(FVDialectPublishedDocumentPermissions.class);
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
-    	// If not published document return
-    	if (!input.isProxy()) {
-    		return input;
-    	}
+        // If not published document return
+        if (!input.isProxy()) {
+            return input;
+        }
 
-    	HashMap<String, String> groupsToCreate = new HashMap<String, String>();
+        HashMap<String, String> groupsToCreate = new HashMap<String, String>();
 
-    	try {
-           	groupsToCreate.put(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP, SecurityConstants.EVERYTHING);
-        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_GROUP, CustomSecurityConstants.CAN_ASK_FOR_PUBLISH);
-        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.APPROVE);
+        try {
+            groupsToCreate.put(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP, SecurityConstants.EVERYTHING);
+            groupsToCreate.put(CustomSecurityConstants.RECORDERS_GROUP, CustomSecurityConstants.CAN_ASK_FOR_PUBLISH);
+            groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.APPROVE);
 
-        	for (Map.Entry<String, String> group : groupsToCreate.entrySet()) {
+            for (Map.Entry<String, String> group : groupsToCreate.entrySet()) {
 
-        		processGroup(input, group);
+                processGroup(input, group);
 
-        		// If published document, give Language Administrators access to parent to ask for permission to publish
-        		if (CustomSecurityConstants.LANGUAGE_ADMINS_GROUP.equals(group.getKey())) {
-        			DocumentModel parentDoc = session.getParentDocument(input.getRef());
+                // If published document, give Language Administrators access to parent to ask for permission to publish
+                if (CustomSecurityConstants.LANGUAGE_ADMINS_GROUP.equals(group.getKey())) {
+                    DocumentModel parentDoc = session.getParentDocument(input.getRef());
 
-        			if (parentDoc != null && "FVLanguage".equals(parentDoc.getType()))
-        			{
-        				String groupName = generateGroupNameFromDialect(input.getName(), group.getKey());
-        				ACE parentRecordACE = new ACE(groupName, CustomSecurityConstants.CAN_ASK_FOR_PUBLISH, true);
-    		        	ACP parentDocACP = parentDoc.getACP();
-    		        	parentDocACP.addACE(ACL.LOCAL_ACL, parentRecordACE);
-    		        	parentDoc.setACP(parentDocACP, true);
+                    if (parentDoc != null && "FVLanguage".equals(parentDoc.getType())) {
+                        String groupName = generateGroupNameFromDialect(input.getName(), group.getKey());
+                        ACE parentRecordACE = new ACE(groupName, CustomSecurityConstants.CAN_ASK_FOR_PUBLISH, true);
+                        ACP parentDocACP = parentDoc.getACP();
+                        parentDocACP.addACE(ACL.LOCAL_ACL, parentRecordACE);
+                        parentDoc.setACP(parentDocACP, true);
 
-    		        	DocumentHelper.saveDocument(parentDoc.getCoreSession(), parentDoc);
-        	    	}
-        		}
-        	}
+                        DocumentHelper.saveDocument(parentDoc.getCoreSession(), parentDoc);
+                    }
+                }
+            }
 
-    	}
-    	catch (DocumentNotFoundException e){
-    		log.warn("Could not find document.", e);
-    	}
-    	catch (Exception e){
-    		log.warn("Could not create groups automatically.", e);
-    	}
+        } catch (DocumentNotFoundException e) {
+            log.warn("Could not find document.", e);
+        } catch (Exception e) {
+            log.warn("Could not create groups automatically.", e);
+        }
 
-    	return input;
+        return input;
     }
 
-	@Override
-	protected ArrayList<String> addParentsToGroup(ArrayList<String> currentParents, DocumentModel groupDocModel, Map.Entry<String, String> currentGroup, DocumentModel input) {
-		return currentParents;
-	}
+    @Override
+    protected ArrayList<String> addParentsToGroup(ArrayList<String> currentParents, DocumentModel groupDocModel,
+            Map.Entry<String, String> currentGroup, DocumentModel input) {
+        return currentParents;
+    }
 }

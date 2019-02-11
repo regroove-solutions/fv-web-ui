@@ -84,7 +84,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         // Need to republish all assets that were published
         // Note: Can we avoid what could be a very long operation?
-        for (DocumentModel child : session.query("SELECT * FROM Document WHERE ecm:ancestorId = '" + dialect.getId() + "' AND ecm:currentLifeCycleState='Published'")) {
+        for (DocumentModel child : session.query("SELECT * FROM Document WHERE ecm:ancestorId = '" + dialect.getId()
+                + "' AND ecm:currentLifeCycleState='Published'")) {
             publishAsset(child);
         }
         return section;
@@ -176,7 +177,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             return input;
         }
 
-		input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
+        input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
@@ -226,7 +227,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
                         PublisherService publisherService = Framework.getLocalService(PublisherService.class);
-                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
+                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel,
+                                publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
                         publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
@@ -242,7 +244,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
                 // Handle as array
                 else {
-                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray((String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
+                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray(
+                            (String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
                     input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
                 }
             }
@@ -266,7 +269,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         DocumentModel input = getPublication(session, asset.getRef());
 
         // Always publish changes
-    	input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
+        input = publishDocument(session, asset, getPublication(session, asset.getParentRef()));
 
         Map<String, String> dependencies = new HashMap<String, String>();
 
@@ -325,7 +328,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                     DocumentModel parentDependencySection;
                     if ("FVCategory".equals(dependencyDocModel.getType())) {
                         PublisherService publisherService = Framework.getLocalService(PublisherService.class);
-                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel, publisherService);
+                        publishedDep = PublisherUtils.publishAncestors(session, "FVCategory", dependencyDocModel,
+                                publisherService);
                     } else {
                         parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
                         publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
@@ -338,7 +342,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
                 // Handle as array
                 else {
-                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray((String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
+                    String[] updatedProperty = PublisherUtils.constructDependencyPropertyValueAsArray(
+                            (String[]) input.getPropertyValue(dependencyEntry.getValue()), publishedDep);
                     input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
                 }
             }
@@ -380,7 +385,9 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
     }
 
     private boolean isAssetType(String type) {
-        return "FVBookEntry".equals(type) || "FVBook".equals(type) || "FVPhrase".equals(type) || "FVWord".equals(type) || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type) || "FVCharacter".equals(type) || "FVGallery".equals(type) || "FVLink".equals(type);
+        return "FVBookEntry".equals(type) || "FVBook".equals(type) || "FVPhrase".equals(type) || "FVWord".equals(type)
+                || "FVPicture".equals(type) || "FVVideo".equals(type) || "FVAudio".equals(type)
+                || "FVCharacter".equals(type) || "FVGallery".equals(type) || "FVLink".equals(type);
     }
 
     @Override
@@ -390,11 +397,9 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         }
         if ("FVDialect".equals(doc.getType())) {
             return publishDialect(doc);
-        }
-        else if ("FVPortal".equals(doc.getType())) {
-        	return publishPortalAssets(doc);
-        }
-        else if (isAssetType(doc.getType())) {
+        } else if ("FVPortal".equals(doc.getType())) {
+            return publishPortalAssets(doc);
+        } else if (isAssetType(doc.getType())) {
             return publishAsset(doc);
         }
         return null;
@@ -409,7 +414,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
         if (isAssetType(doc.getType())) {
             return republishAsset(doc);
         } else if ("FVPortal".equals(doc.getType())) {
-        	return publishPortalAssets(doc);
+            return publishPortalAssets(doc);
         }
 
         return null;
@@ -417,6 +422,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
     /**
      * Sets relevant related proxies on published dialect proxy
+     * 
      * @param dialectProxy
      * @return
      */
@@ -424,77 +430,82 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
     public DocumentModel setDialectProxies(DocumentModel dialectProxy) {
         CoreSession session = dialectProxy.getCoreSession();
 
-            Map<String, String> dependencies = new HashMap<String, String>();
+        Map<String, String> dependencies = new HashMap<String, String>();
 
-            dependencies.put("fvdialect:keyboards", "fvproxy:proxied_keyboards");
-            dependencies.put("fvdialect:language_resources", "fvproxy:proxied_language_resources");
+        dependencies.put("fvdialect:keyboards", "fvproxy:proxied_keyboards");
+        dependencies.put("fvdialect:language_resources", "fvproxy:proxied_language_resources");
 
-            for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
+        for (Entry<String, String> dependencyEntry : dependencies.entrySet()) {
 
-                String dependency = dependencyEntry.getKey();
-                String[] dependencyPropertyValue;
-                ArrayList<String> dependencyPublishedPropertyValues = new ArrayList<String>();
+            String dependency = dependencyEntry.getKey();
+            String[] dependencyPropertyValue;
+            ArrayList<String> dependencyPublishedPropertyValues = new ArrayList<String>();
 
-                // Handle values as arrays
-                if (dependencyEntry.getKey() == "fvdialect:keyboards" || dependencyEntry.getKey() == "fvdialect:language_resources") {
-                    dependencyPropertyValue = (String[]) dialectProxy.getPropertyValue(dependency);
-                }
-                // Handle as string
-                else {
-                    dependencyPropertyValue = PublisherUtils.extractDependencyPropertyValueAsString(dialectProxy, dependency);
-                }
-
-                if (PublisherUtils.dependencyIsEmpty(dependencyPropertyValue)) {
-                    dialectProxy.setPropertyValue(dependencyEntry.getValue(), null);
-                    continue;
-                }
-
-                // input is the document in the section
-                for (String relatedDocUUID : dependencyPropertyValue) {
-                    IdRef dependencyRef = new IdRef(relatedDocUUID);
-                    DocumentModel publishedDep = getPublication(session, dependencyRef);
-
-                    try {
-                        session.getDocument(publishedDep.getRef());
-                    } catch (NullPointerException | DocumentNotFoundException e) {
-                        publishedDep = null;
-                    }
-
-                    // If dependency isn't published, needs publishing
-                    if (publishedDep == null) {
-                        DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
-                        DocumentModel parentDependencySection;
-
-                        parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
-
-                        // Publish parent if not yet published
-                        if (parentDependencySection == null) {
-                            DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
-                            parentDependencySection = publishDocument(session, parent, getPublication(session, parent.getParentRef()));
-                        }
-
-                        publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
-                    }
-
-                    dependencyPublishedPropertyValues.add(publishedDep.getRef().toString());
-                }
-
-                // Handle property values as arrays
-                if (dependencyEntry.getKey() == "fvdialect:keyboards" || dependencyEntry.getKey() == "fvdialect:language_resources") {
-                    dialectProxy.setPropertyValue(dependencyEntry.getValue(), dependencyPublishedPropertyValues.toArray(new String[dependencyPublishedPropertyValues.size()]));
-                }
-                // Handle as string
-                else {
-                    dialectProxy.setPropertyValue(dependencyEntry.getValue(), dependencyPublishedPropertyValues.get(0));
-                }
+            // Handle values as arrays
+            if (dependencyEntry.getKey() == "fvdialect:keyboards"
+                    || dependencyEntry.getKey() == "fvdialect:language_resources") {
+                dependencyPropertyValue = (String[]) dialectProxy.getPropertyValue(dependency);
+            }
+            // Handle as string
+            else {
+                dependencyPropertyValue = PublisherUtils.extractDependencyPropertyValueAsString(dialectProxy,
+                        dependency);
             }
 
-            // Save changes to property values
+            if (PublisherUtils.dependencyIsEmpty(dependencyPropertyValue)) {
+                dialectProxy.setPropertyValue(dependencyEntry.getValue(), null);
+                continue;
+            }
+
+            // input is the document in the section
+            for (String relatedDocUUID : dependencyPropertyValue) {
+                IdRef dependencyRef = new IdRef(relatedDocUUID);
+                DocumentModel publishedDep = getPublication(session, dependencyRef);
+
+                try {
+                    session.getDocument(publishedDep.getRef());
+                } catch (NullPointerException | DocumentNotFoundException e) {
+                    publishedDep = null;
+                }
+
+                // If dependency isn't published, needs publishing
+                if (publishedDep == null) {
+                    DocumentModel dependencyDocModel = session.getDocument(dependencyRef);
+                    DocumentModel parentDependencySection;
+
+                    parentDependencySection = getPublication(session, dependencyDocModel.getParentRef());
+
+                    // Publish parent if not yet published
+                    if (parentDependencySection == null) {
+                        DocumentModel parent = session.getDocument(dependencyDocModel.getParentRef());
+                        parentDependencySection = publishDocument(session, parent,
+                                getPublication(session, parent.getParentRef()));
+                    }
+
+                    publishedDep = publishDocument(session, dependencyDocModel, parentDependencySection);
+                }
+
+                dependencyPublishedPropertyValues.add(publishedDep.getRef().toString());
+            }
+
+            // Handle property values as arrays
+            if (dependencyEntry.getKey() == "fvdialect:keyboards"
+                    || dependencyEntry.getKey() == "fvdialect:language_resources") {
+                dialectProxy.setPropertyValue(dependencyEntry.getValue(), dependencyPublishedPropertyValues.toArray(
+                        new String[dependencyPublishedPropertyValues.size()]));
+            }
+            // Handle as string
+            else {
+                dialectProxy.setPropertyValue(dependencyEntry.getValue(), dependencyPublishedPropertyValues.get(0));
+            }
+        }
+
+        // Save changes to property values
         return session.saveDocument(dialectProxy);
     }
 
     @Override
-	public DocumentModel publishPortalAssets(DocumentModel portal) {
+    public DocumentModel publishPortalAssets(DocumentModel portal) {
         CoreSession session = portal.getCoreSession();
 
         DocumentModel dialect = getDialect(portal);
@@ -506,13 +517,13 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             throw new InvalidParameterException("Dialect should be published");
         }
         DocumentModel dialectSection = proxies.get(0);
-        //DocumentModel input = getPublication(session, portal.getRef());
+        // DocumentModel input = getPublication(session, portal.getRef());
 
         // Portal should always be published at this point, skip if not
-        //if (input == null) {
-            // Already published
-        //    return input;
-        //}
+        // if (input == null) {
+        // Already published
+        // return input;
+        // }
 
         // Publish changes
         DocumentModel input = session.publishDocument(portal, dialectSection, true);
@@ -537,7 +548,8 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
             String[] dependencyPropertyValue;
 
             // Handle expection property values as arrays
-            if (dependencyEntry.getKey() == "fv-portal:featured_words" || dependencyEntry.getKey() == "fv-portal:related_links") {
+            if (dependencyEntry.getKey() == "fv-portal:featured_words"
+                    || dependencyEntry.getKey() == "fv-portal:related_links") {
                 dependencyPropertyValue = (String[]) input.getPropertyValue(dependency);
             }
             // Handle as string
@@ -556,10 +568,11 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 DocumentModel publishedDep = getPublication(session, dependencyRef);
 
                 try {
-                	// TODO: Bug? getProxies seems to return documents that don't exist anymore. Force check to see if doc exists.
-                	session.getDocument(publishedDep.getRef());
+                    // TODO: Bug? getProxies seems to return documents that don't exist anymore. Force check to see if
+                    // doc exists.
+                    session.getDocument(publishedDep.getRef());
                 } catch (NullPointerException | DocumentNotFoundException e) {
-                	publishedDep = null;
+                    publishedDep = null;
                 }
 
                 // If dependency isn't published, needs publishing
@@ -572,10 +585,11 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
 
                 // Handle exception property values as arrays
-                if (dependencyEntry.getKey() == "fv-portal:featured_words" || dependencyEntry.getKey() == "fv-portal:related_links") {
+                if (dependencyEntry.getKey() == "fv-portal:featured_words"
+                        || dependencyEntry.getKey() == "fv-portal:related_links") {
                     String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
 
-                    if ( !Arrays.asList(property).contains(publishedDep.getRef().toString()) ) {
+                    if (!Arrays.asList(property).contains(publishedDep.getRef().toString())) {
                         String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
                         updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
                         input.setPropertyValue(dependencyEntry.getValue(), updatedProperty);
@@ -583,11 +597,11 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                 }
                 // Handle as string
                 else {
-                	input.setPropertyValue(dependencyEntry.getValue(), publishedDep.getRef().toString());
+                    input.setPropertyValue(dependencyEntry.getValue(), publishedDep.getRef().toString());
                 }
             }
         }
         session.saveDocument(input);
         return input;
-	}
+    }
 }

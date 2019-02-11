@@ -2,15 +2,20 @@ package ca.firstvoices.user;
 
 import org.nuxeo.ecm.user.invite.UserRegistrationInfo;
 
-public class FVUserRegistrationInfo extends UserRegistrationInfo{
+public class FVUserRegistrationInfo extends UserRegistrationInfo {
 
     protected String requestedSpace;
+
     protected String preferences;
+
     protected String ageGroup;
+
     protected String role;
+
     protected String comment;
 
-    public FVUserRegistrationInfo() {}
+    public FVUserRegistrationInfo() {
+    }
 
     public String getPreferences() {
         return preferences;
@@ -25,7 +30,9 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
         this.requestedSpace = requestedSpace;
     }
 
-    public String getRequestedSpace() { return requestedSpace; }
+    public String getRequestedSpace() {
+        return requestedSpace;
+    }
 
     public String getAgeGroup() {
         return ageGroup;

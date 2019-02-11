@@ -14,76 +14,82 @@ import org.nuxeo.runtime.api.Framework;
 
 public abstract class AbstractFVDialectOperation {
 
-	private static Log log;
-	protected UserManager userManager = Framework.getService(UserManager.class);
+    private static Log log;
 
-	protected String generateGroupNameFromDialect(String dialectName, String groupName) {
-		return dialectName.replace(" ", "_").toLowerCase() + "_" + groupName;
-	}
+    protected UserManager userManager = Framework.getService(UserManager.class);
 
-	protected String generateGroupLabelFromDialect(String dialectName, String groupName) {
-		return dialectName + " " + WordUtils.capitalize(groupName.replace("_", " "));
+    protected String generateGroupNameFromDialect(String dialectName, String groupName) {
+        return dialectName.replace(" ", "_").toLowerCase() + "_" + groupName;
+    }
 
-	}
+    protected String generateGroupLabelFromDialect(String dialectName, String groupName) {
+        return dialectName + " " + WordUtils.capitalize(groupName.replace("_", " "));
 
-	abstract protected ArrayList<String> addParentsToGroup(ArrayList<String> currentParents, DocumentModel groupDocModel, Map.Entry<String, String> currentGroup, DocumentModel input);
+    }
 
-	/**
-	 * This method will create the relevant groups in the system when a new dialect is created.
-	 * It assigns the correct hierarchy to that group.
-	 * @param input FVDialect being processed
-	 * @param group Map of groups and relevant permission for that group
-	 */
-	protected void processGroup(DocumentModel input, Map.Entry<String, String> group) {
+    abstract protected ArrayList<String> addParentsToGroup(ArrayList<String> currentParents,
+            DocumentModel groupDocModel, Map.Entry<String, String> currentGroup, DocumentModel input);
 
-    	String dialectName = input.getName();
-    	ACP docACP = input.getACP();
+    /**
+     * This method will create the relevant groups in the system when a new dialect is created. It assigns the correct
+     * hierarchy to that group.
+     * 
+     * @param input FVDialect being processed
+     * @param group Map of groups and relevant permission for that group
+     */
+    protected void processGroup(DocumentModel input, Map.Entry<String, String> group) {
 
-    	String groupName = generateGroupNameFromDialect(dialectName, group.getKey());
-    	String groupLabel = generateGroupLabelFromDialect(dialectName, group.getKey());
+        String dialectName = input.getName();
+        ACP docACP = input.getACP();
 
-    	if (userManager.getGroup(groupName) == null) {
+        String groupName = generateGroupNameFromDialect(dialectName, group.getKey());
+        String groupLabel = generateGroupLabelFromDialect(dialectName, group.getKey());
 
-    		DocumentModel groupDocModel = userManager.getBareGroupModel();
-    		ArrayList<String> parentGroups = new ArrayList<String>();
+        if (userManager.getGroup(groupName) == null) {
 
-    		parentGroups.add(group.getKey());
+            DocumentModel groupDocModel = userManager.getBareGroupModel();
+            ArrayList<String> parentGroups = new ArrayList<String>();
 
-    		// Create parent group if it does not exist
-    		if (userManager.getGroup(group.getKey()) == null){
-    			DocumentModel parentGroupDocModel = userManager.getBareGroupModel();
-    			ArrayList<String> parentParentGroups = new ArrayList<String>();
-    			parentParentGroups.add(userManager.getGroupMembersField());
+            parentGroups.add(group.getKey());
 
-    			parentGroupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupIdField(), group.getKey());
-    			parentGroupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField(), WordUtils.capitalize(group.getKey().replace("_", " ")));
-    			parentGroupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupParentGroupsField(), parentParentGroups);
+            // Create parent group if it does not exist
+            if (userManager.getGroup(group.getKey()) == null) {
+                DocumentModel parentGroupDocModel = userManager.getBareGroupModel();
+                ArrayList<String> parentParentGroups = new ArrayList<String>();
+                parentParentGroups.add(userManager.getGroupMembersField());
 
-	    		// Create parent group
-	        	userManager.createGroup(parentGroupDocModel);
-    		}
+                parentGroupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupIdField(),
+                        group.getKey());
+                parentGroupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField(),
+                        WordUtils.capitalize(group.getKey().replace("_", " ")));
+                parentGroupDocModel.setProperty(userManager.getGroupSchemaName(),
+                        userManager.getGroupParentGroupsField(), parentParentGroups);
 
-    		try {
-    			// Add additional parent Groups
-    			parentGroups = addParentsToGroup(parentGroups, groupDocModel, group, input);
+                // Create parent group
+                userManager.createGroup(parentGroupDocModel);
+            }
 
-	        	groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupIdField(), groupName);
-	        	groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField(), groupLabel);
-	        	groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupParentGroupsField(), parentGroups);
+            try {
+                // Add additional parent Groups
+                parentGroups = addParentsToGroup(parentGroups, groupDocModel, group, input);
 
+                groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupIdField(), groupName);
+                groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupLabelField(),
+                        groupLabel);
+                groupDocModel.setProperty(userManager.getGroupSchemaName(), userManager.getGroupParentGroupsField(),
+                        parentGroups);
 
+                // Create group
+                userManager.createGroup(groupDocModel);
+            } catch (Exception e) {
+                log.warn("Could not create group automatically.", e);
+            }
+        }
 
-	    		// Create group
-	        	userManager.createGroup(groupDocModel);
-    		} catch (Exception e) {
-    			log.warn("Could not create group automatically.", e);
-    		}
-    	}
-
-    	// Add permission to document
-    	ACE recordACE = new ACE(groupName, group.getValue(), true);
-    	docACP.addACE(ACL.LOCAL_ACL, recordACE);
-    	input.setACP(docACP, true);
-	}
+        // Add permission to document
+        ACE recordACE = new ACE(groupName, group.getValue(), true);
+        docACP.addACE(ACL.LOCAL_ACL, recordACE);
+        input.setACP(docACP, true);
+    }
 
 }

@@ -12,19 +12,6 @@
   <name>First voices package</name>
 
   <dependencies>
-    <!-- Base distribution(s) for the MP -->
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
-      <type>zip</type>
-      <scope>provided</scope>
-    </dependency>
-
     <!-- Additional bundles to be deployed by the MP -->
     <dependency>
       <groupId>ca.firstvoices</groupId>

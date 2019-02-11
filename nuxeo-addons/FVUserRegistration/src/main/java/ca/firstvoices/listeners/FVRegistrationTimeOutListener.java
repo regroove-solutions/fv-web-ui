@@ -11,8 +11,7 @@ import org.nuxeo.runtime.api.Framework;
 /**
  *
  */
-public class FVRegistrationTimeOutListener  implements EventListener
-{
+public class FVRegistrationTimeOutListener implements EventListener {
     private static final Log log = LogFactory.getLog(FVRegistrationTimeOutListener.class);
 
     public static final String CHECK_REGISTRETION_TIMEOUT_EVENT_NAME = "checkRegistrationTimeout";
@@ -20,10 +19,8 @@ public class FVRegistrationTimeOutListener  implements EventListener
     protected WorkManager workManager = Framework.getService(WorkManager.class);
 
     @Override
-    public void handleEvent(Event event)
-    {
-        if (CHECK_REGISTRETION_TIMEOUT_EVENT_NAME.equals(event.getName()))
-        {
+    public void handleEvent(Event event) {
+        if (CHECK_REGISTRETION_TIMEOUT_EVENT_NAME.equals(event.getName())) {
             FVRegistrationTimeOutWorker doCheckRegTimeOut = new FVRegistrationTimeOutWorker();
             workManager.schedule(doCheckRegTimeOut, true);
         }

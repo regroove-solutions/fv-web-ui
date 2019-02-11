@@ -15,17 +15,14 @@ import javax.ws.rs.HEAD;
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class FVUserPreferencesSetup {
 
-
-    private String createDefaultUserPreferencesWithDialectID( String dialectID ) throws Exception
-    {
+    private String createDefaultUserPreferencesWithDialectID(String dialectID) throws Exception {
         CustomPreferencesObject userPreferencesObj = new CustomPreferencesObject();
 
         // Create general preferences
         Map<String, Object> generalPreferences = new HashMap<>();
-        generalPreferences.put("primary_dialect", dialectID );
+        generalPreferences.put("primary_dialect", dialectID);
 
         // Create navigation preferences
         Map<String, Object> navigationPreferences = new HashMap<>();
@@ -42,14 +39,13 @@ public class FVUserPreferencesSetup {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        return mapper.writeValueAsString( userPreferencesObj );
+        return mapper.writeValueAsString(userPreferencesObj);
     }
 
-    public String createDefaultUserPreferencesWithRegistration( DocumentModel registration ) throws Exception
-    {
+    public String createDefaultUserPreferencesWithRegistration(DocumentModel registration) throws Exception {
         String dialectID = (String) registration.getPropertyValue("fvuserinfo:requestedSpace");
 
-        return createDefaultUserPreferencesWithDialectID( dialectID );
+        return createDefaultUserPreferencesWithDialectID(dialectID);
     }
 
     /**
@@ -57,12 +53,11 @@ public class FVUserPreferencesSetup {
      * @param registration
      * @throws Exception
      */
-    public DocumentModel updateUserPreferencesWithRegistration(DocumentModel existingUserObject, DocumentModel registration ) throws Exception
-    {
-        String modifiedPreferencesString = createDefaultUserPreferencesWithRegistration( registration );
+    public DocumentModel updateUserPreferencesWithRegistration(DocumentModel existingUserObject,
+            DocumentModel registration) throws Exception {
+        String modifiedPreferencesString = createDefaultUserPreferencesWithRegistration(registration);
         existingUserObject.setPropertyValue("user:preferences", modifiedPreferencesString);
 
         return existingUserObject;
     }
 }
-

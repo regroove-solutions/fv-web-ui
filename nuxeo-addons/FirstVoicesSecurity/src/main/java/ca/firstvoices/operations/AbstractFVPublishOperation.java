@@ -21,39 +21,40 @@ public abstract class AbstractFVPublishOperation {
 
     protected AutomationService service = Framework.getService(AutomationService.class);
 
-	/**
-	 * @param doc document to check published versions for.
-	 * @return {@code true} if document has ANY published version; {@code false} otherwise
-	 */
-	protected Boolean hasPublication(DocumentModel doc) {
+    /**
+     * @param doc document to check published versions for.
+     * @return {@code true} if document has ANY published version; {@code false} otherwise
+     */
+    protected Boolean hasPublication(DocumentModel doc) {
 
-		List<PublishedDocument> publishedDocuments = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc));
+        List<PublishedDocument> publishedDocuments = tree.getExistingPublishedDocument(new DocumentLocationImpl(doc));
 
-		if (!publishedDocuments.isEmpty()) {
-			return true;
-		}
+        if (!publishedDocuments.isEmpty()) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Method finds a section to publish to based on the document
-	 * TODO: Ensure this is a little more intelligent than selecting the first section found.
-	 * @param doc
-	 * @return section to publish to or {@code null}
-	 */
+    /**
+     * Method finds a section to publish to based on the document TODO: Ensure this is a little more intelligent than
+     * selecting the first section found.
+     * 
+     * @param doc
+     * @return section to publish to or {@code null}
+     */
     protected DocumentModel getSectionToPublishTo(DocumentModel doc) {
 
-		DocumentModelList sections = session.getProxies(doc.getRef(), null);
+        DocumentModelList sections = session.getProxies(doc.getRef(), null);
 
-		for (DocumentModel section : sections) {
-			// Ensure section is within the publication target
-			if (section.getPath().toString().indexOf(tree.getPath()) == 0) {
-				return section;
-			}
-		}
+        for (DocumentModel section : sections) {
+            // Ensure section is within the publication target
+            if (section.getPath().toString().indexOf(tree.getPath()) == 0) {
+                return section;
+            }
+        }
 
-    	return null;
+        return null;
     }
 
 }

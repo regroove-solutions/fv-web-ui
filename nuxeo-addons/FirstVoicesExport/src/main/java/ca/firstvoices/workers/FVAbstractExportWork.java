@@ -1,6 +1,5 @@
 package ca.firstvoices.workers;
 
-
 import ca.firstvoices.utils.FVExportWorkInfo;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.work.AbstractWork;
@@ -40,39 +39,71 @@ FVCyclicExportWorker - is a more complex version of an exporter. It is not meant
 
 */
 
-abstract public class FVAbstractExportWork extends AbstractWork
-{
+abstract public class FVAbstractExportWork extends AbstractWork {
     protected FVExportWorkInfo workInfo;
 
-    public FVAbstractExportWork( String id )
-    {
-        super( id );
+    public FVAbstractExportWork(String id) {
+        super(id);
         workInfo = new FVExportWorkInfo();
     }
 
-    public FVExportWorkInfo getWorkInfo() { return workInfo; }
-    public void setWorkInfo( FVExportWorkInfo workInfo ) { this.workInfo = workInfo; }
+    public FVExportWorkInfo getWorkInfo() {
+        return workInfo;
+    }
 
-    public String getInitiatorName() {  return workInfo.initiatorName; }
-    public void setInitiatorName( String name ) { workInfo.initiatorName = name; }
+    public void setWorkInfo(FVExportWorkInfo workInfo) {
+        this.workInfo = workInfo;
+    }
 
-    public String getDialectName() {  return workInfo.dialectName; }
-    public void setDialectName( String dname ) { workInfo.dialectName = dname; }
+    public String getInitiatorName() {
+        return workInfo.initiatorName;
+    }
 
-    public String getDialectGUID() {  return workInfo.dialectGUID; }
-    public void setDialectGUID( String dguid ) { workInfo.dialectGUID = dguid; }
+    public void setInitiatorName(String name) {
+        workInfo.initiatorName = name;
+    }
 
-    public String getExportFormat() {  return workInfo.exportFormat; }
-    public void setExportFormat( String eFormat ) { workInfo.exportFormat = eFormat; }
+    public String getDialectName() {
+        return workInfo.dialectName;
+    }
 
-    public String getExportQuery() {  return workInfo.exportQuery; }
-    public void setExportQuery( String eQuery ) { workInfo.exportQuery = eQuery; }
+    public void setDialectName(String dname) {
+        workInfo.dialectName = dname;
+    }
 
-    public StringList getExportColumns() {  return workInfo.columns; }
-    public void setExportColumns( StringList clist ) { workInfo.columns = clist; }
+    public String getDialectGUID() {
+        return workInfo.dialectGUID;
+    }
 
-    protected static double round (double value, int precision)
-    {
+    public void setDialectGUID(String dguid) {
+        workInfo.dialectGUID = dguid;
+    }
+
+    public String getExportFormat() {
+        return workInfo.exportFormat;
+    }
+
+    public void setExportFormat(String eFormat) {
+        workInfo.exportFormat = eFormat;
+    }
+
+    public String getExportQuery() {
+        return workInfo.exportQuery;
+    }
+
+    public void setExportQuery(String eQuery) {
+        workInfo.exportQuery = eQuery;
+    }
+
+    public StringList getExportColumns() {
+        return workInfo.columns;
+    }
+
+    public void setExportColumns(StringList clist) {
+        workInfo.columns = clist;
+    }
+
+    protected static double round(double value, int precision) {
         int scale = (int) Math.pow(10, precision);
         return (double) Math.round(value * scale) / scale;
     }

@@ -44,11 +44,11 @@ import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 /**
  * Operation to invite a User.
  */
-@Operation(id = UserInvite.ID, category = Constants.CAT_USERS_GROUPS, label = "Invite a user",
-        description = "Stores a registration request and returns its ID.")
+@Operation(id = UserInvite.ID, category = Constants.CAT_USERS_GROUPS, label = "Invite a user", description = "Stores a registration request and returns its ID.")
 public class UserInvite {
 
     public static final String ID = "User.Invite";
+
     private static final Log log = LogFactory.getLog(UserInvite.class);
 
     @Context
@@ -66,7 +66,7 @@ public class UserInvite {
     @Context
     protected OperationContext ctx;
 
-    @Param(name ="docInfo", required = false)
+    @Param(name = "docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;
 
     @Param(name = "validationMethod", required = false)
@@ -81,33 +81,22 @@ public class UserInvite {
     @Param(name = "comment", required = false)
     protected String comment;
 
-
     @OperationMethod
-    public String run(DocumentModel registrationRequest) throws Exception
-    {
+    public String run(DocumentModel registrationRequest) throws Exception {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
         /*
-            This operation has for most part similar code to sister operation FVQuickUserRegistration.
-            The main difference is in conditions we apply for both.
-            Common code is split into 2 parts
-            - preCondition
-            - postCondition
-            Each of the operations executes it own, context specific conditions and any other operations
-            following if appropriate.
+         * This operation has for most part similar code to sister operation FVQuickUserRegistration. The main
+         * difference is in conditions we apply for both. Common code is split into 2 parts - preCondition -
+         * postCondition Each of the operations executes it own, context specific conditions and any other operations
+         * following if appropriate. In this case email to the user is sent by Nuxeo and since administrator initiated
+         * invitation we do not send an email.
+         */
+        utilCommon.preCondition(registrationRequest, session, userManager);
 
-            In this case email to the user is sent by Nuxeo and since administrator initiated invitation
-            we do not send an email.
-        */
-        utilCommon.preCondition(registrationRequest, session, userManager );
+        autoAccept = utilCommon.UserInviteCondition(registrationRequest, session, autoAccept);
 
-        autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );
-
-        String registrationId = utilCommon.postCondition(registrationService,
-                registrationRequest,
-                info,
-                comment,
-                validationMethod,
-                autoAccept);
+        String registrationId = utilCommon.postCondition(registrationService, registrationRequest, info, comment,
+                validationMethod, autoAccept);
 
         return registrationId;
     }

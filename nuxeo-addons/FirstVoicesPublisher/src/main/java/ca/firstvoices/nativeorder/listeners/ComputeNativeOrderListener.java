@@ -29,6 +29,7 @@ public class ComputeNativeOrderListener implements EventListener {
 
     /**
      * Checks if title was modified, but not custom order
+     * 
      * @return
      */
     private Boolean titleModifiedButNotCustomOrder(DocumentModel doc) {
@@ -66,7 +67,7 @@ public class ComputeNativeOrderListener implements EventListener {
         return (titleModified && !customOrderModified);
     }
 
-	@Override
+    @Override
     public void handleEvent(Event event) {
         EventContext ctx = event.getContext();
         if (!(ctx instanceof DocumentEventContext)) {
@@ -75,7 +76,7 @@ public class ComputeNativeOrderListener implements EventListener {
 
         DocumentModel doc = ((DocumentEventContext) ctx).getSourceDocument();
 
-        if (doc == null ) {
+        if (doc == null) {
             return;
         }
 
@@ -87,18 +88,18 @@ public class ComputeNativeOrderListener implements EventListener {
         // Handle language assets (Words and Phrases)
         if ((doc.getType().equals("FVWord") || doc.getType().equals("FVPhrase"))) {
 
-            switch (event.getName()){
+            switch (event.getName()) {
 
-                // Creation
-                case DocumentEventTypes.DOCUMENT_CREATED:
-                    service.computeAssetNativeOrderTranslation(doc);
+            // Creation
+            case DocumentEventTypes.DOCUMENT_CREATED:
+                service.computeAssetNativeOrderTranslation(doc);
                 break;
 
-                // Modification
-                case DocumentEventTypes.BEFORE_DOC_UPDATE:
-                    if (titleModifiedButNotCustomOrder(doc)) {
-                        service.computeAssetNativeOrderTranslation(doc);
-                    }
+            // Modification
+            case DocumentEventTypes.BEFORE_DOC_UPDATE:
+                if (titleModifiedButNotCustomOrder(doc)) {
+                    service.computeAssetNativeOrderTranslation(doc);
+                }
                 break;
             }
         }

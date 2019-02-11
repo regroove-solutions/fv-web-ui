@@ -28,11 +28,11 @@ public class ComputeNativeOrderAlphabetListener implements EventListener {
 
     protected NativeOrderComputeService service = Framework.getService(NativeOrderComputeService.class);
 
-	@Override
+    @Override
     public void handleEvent(Event event) {
 
-        if (!(event.getName().equals(DocumentEventTypes.DOCUMENT_CREATED)) &&
-                !(event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE))) {
+        if (!(event.getName().equals(DocumentEventTypes.DOCUMENT_CREATED))
+                && !(event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE))) {
             return;
         }
 

@@ -35,59 +35,60 @@ import ca.firstvoices.utils.CustomSecurityConstants;
 /**
  * This method will assign the correct permissions when a new dialect is created.
  */
-@Operation(id=FVDialectRegularDocumentPermissions.ID, category=Constants.CAT_USERS_GROUPS, label="FVDialectRegularDocumentPermissions", description="")
+@Operation(id = FVDialectRegularDocumentPermissions.ID, category = Constants.CAT_USERS_GROUPS, label = "FVDialectRegularDocumentPermissions", description = "")
 public class FVDialectRegularDocumentPermissions extends AbstractFVDialectOperation {
 
     public static final String ID = "FVDialectRegularDocumentPermissions";
 
     private static final Log log = LogFactory.getLog(FVDialectRegularDocumentPermissions.class);
 
-    @OperationMethod(collector=DocumentModelCollector.class)
+    @OperationMethod(collector = DocumentModelCollector.class)
     public DocumentModel run(DocumentModel input) {
 
-    	// Don't process published document
-    	if (input.isProxy()) {
-    		return input;
-    	}
+        // Don't process published document
+        if (input.isProxy()) {
+            return input;
+        }
 
-    	HashMap<String, String> groupsToCreate = new HashMap<String, String>();
+        HashMap<String, String> groupsToCreate = new HashMap<String, String>();
 
-    	try {
-           	groupsToCreate.put(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP, SecurityConstants.EVERYTHING);
-        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_GROUP, CustomSecurityConstants.RECORD);
-        	groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.APPROVE);
-        	groupsToCreate.put(userManager.getGroupMembersField(), SecurityConstants.READ);
+        try {
+            groupsToCreate.put(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP, SecurityConstants.EVERYTHING);
+            groupsToCreate.put(CustomSecurityConstants.RECORDERS_GROUP, CustomSecurityConstants.RECORD);
+            groupsToCreate.put(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP, CustomSecurityConstants.APPROVE);
+            groupsToCreate.put(userManager.getGroupMembersField(), SecurityConstants.READ);
 
-	    	for (Map.Entry<String, String> group : groupsToCreate.entrySet()) {
-	    		processGroup(input, group);
-	    	}
-    	}
-    	catch (DocumentNotFoundException e){
-    		log.warn("Could not find document.", e);
-    	}
-    	catch (Exception e){
-    		log.warn("Could not create groups automatically.", e);
-    	}
+            for (Map.Entry<String, String> group : groupsToCreate.entrySet()) {
+                processGroup(input, group);
+            }
+        } catch (DocumentNotFoundException e) {
+            log.warn("Could not find document.", e);
+        } catch (Exception e) {
+            log.warn("Could not create groups automatically.", e);
+        }
 
-    	return input;
+        return input;
     }
 
-	@Override
-	protected ArrayList<String> addParentsToGroup(ArrayList<String> currentGroups, DocumentModel groupDocModel, Map.Entry<String, String> currentGroup, DocumentModel input) {
+    @Override
+    protected ArrayList<String> addParentsToGroup(ArrayList<String> currentGroups, DocumentModel groupDocModel,
+            Map.Entry<String, String> currentGroup, DocumentModel input) {
 
-    	// All groups have their 'members' group as parent (except for members)
-    	if (!userManager.getGroupMembersField().equals(currentGroup.getKey())) {
-    		String dialectMembersGroupName = generateGroupNameFromDialect(input.getName(), userManager.getGroupMembersField());
-    		currentGroups.add(dialectMembersGroupName);
-    	}
+        // All groups have their 'members' group as parent (except for members)
+        if (!userManager.getGroupMembersField().equals(currentGroup.getKey())) {
+            String dialectMembersGroupName = generateGroupNameFromDialect(input.getName(),
+                    userManager.getGroupMembersField());
+            currentGroups.add(dialectMembersGroupName);
+        }
 
-    	// Recorders with Approval should have the Recorders group as a parent
-    	if (CustomSecurityConstants.RECORDERS_APPROVERS_GROUP.equals(currentGroup.getKey())) {
-    		String dialectRecordersGroupName = generateGroupNameFromDialect(input.getName(), CustomSecurityConstants.RECORDERS_GROUP);
-    		currentGroups.add(dialectRecordersGroupName);
-    	}
+        // Recorders with Approval should have the Recorders group as a parent
+        if (CustomSecurityConstants.RECORDERS_APPROVERS_GROUP.equals(currentGroup.getKey())) {
+            String dialectRecordersGroupName = generateGroupNameFromDialect(input.getName(),
+                    CustomSecurityConstants.RECORDERS_GROUP);
+            currentGroups.add(dialectRecordersGroupName);
+        }
 
-    	return currentGroups;
-	}
+        return currentGroups;
+    }
 
 }
