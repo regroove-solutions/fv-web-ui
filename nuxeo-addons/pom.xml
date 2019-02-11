@@ -4,16 +4,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <nuxeo.distribution.version.base>7.10</nuxeo.distribution.version.base>
-    <nuxeo.distribution.version>7.10-HF46</nuxeo.distribution.version>
-    <fv.studio.version>0.0.81</fv.studio.version>
+    <nuxeo.distribution.version.base>10.10</nuxeo.distribution.version.base>
+    <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
+    <fv.studio.version>migration-10-10-SNAPSHOT</fv.studio.version>
     <fv.plugin.version>1.0.23-SNAPSHOT</fv.plugin.version>
   </properties>
 
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>7.10-HF46</version>
+    <version>10.10</version>
   </parent>
 
   <groupId>ca.firstvoices</groupId>
