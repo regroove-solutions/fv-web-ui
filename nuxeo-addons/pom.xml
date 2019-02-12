@@ -4,7 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
-    <nuxeo.distribution.version.base>10.10</nuxeo.distribution.version.base>
     <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
     <fv.studio.version>migration-10-10-SNAPSHOT</fv.studio.version>
     <fv.plugin.version>1.0.23-SNAPSHOT</fv.plugin.version>
