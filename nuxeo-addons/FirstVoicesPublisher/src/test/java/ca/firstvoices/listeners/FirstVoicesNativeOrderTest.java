@@ -20,7 +20,6 @@ import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ca.firstvoices.nativeorder.services.NativeOrderComputeService;
@@ -32,12 +31,9 @@ import ca.firstvoices.nativeorder.services.NativeOrderComputeService;
 @Features({ RuntimeFeature.class, CoreFeature.class, AutomationFeature.class })
 @Deploy({ "studio.extensions.First-Voices", "org.nuxeo.ecm.platform", "org.nuxeo.ecm.platform.commandline.executor",
         "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.rendition.core",
-        "org.nuxeo.ecm.platform.video.core", "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.ecm.automation.scripting",
-        "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",
-        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
+        "org.nuxeo.ecm.platform.video.core", "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.ecm.automation.scripting", })
+@Deploy({ "FirstVoicesNuxeoPublisher.tests:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
         "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml" })

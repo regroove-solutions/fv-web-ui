@@ -23,14 +23,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.nuxeo.runtime.test.runner.RuntimeFeature;
 
 import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
@@ -38,22 +35,18 @@ import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
  * @author loopingz
  */
 @RunWith(FeaturesRunner.class)
-@Features({ RuntimeFeature.class, CoreFeature.class, PlatformFeature.class })
-@Deploy({ "studio.extensions.First-Voices", "org.nuxeo.ecm.platform", "org.nuxeo.ecm.platform.commandline.executor",
-        "org.nuxeo.ecm.automation.core", "org.nuxeo.ecm.platform.publisher.core", "org.nuxeo.ecm.platform.picture.core",
-        "org.nuxeo.ecm.platform.rendition.core", "org.nuxeo.ecm.platform.video.core",
-        "org.nuxeo.ecm.platform.audio.core", "org.nuxeo.ecm.automation.scripting",
-        "org.nuxeo.ecm.platform.web.common" })
-@LocalDeploy({ "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
+@Features({ PlatformFeature.class })
+@Deploy({ "org.nuxeo.ecm.platform.types.core", "org.nuxeo.ecm.platform.publisher.core",
+        "org.nuxeo.ecm.platform.picture.core", "org.nuxeo.ecm.platform.video.core", "org.nuxeo.ecm.platform.audio.core",
+        "org.nuxeo.ecm.automation.scripting" })
+@Deploy({ "studio.extensions.First-Voices",
+        "FirstVoicesNuxeoPublisher.tests:OSGI-INF/extensions/ca.firstvoices.fakestudio.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.templates.factories.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.schemas.ProxySchema.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.services.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml",
         "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
-        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml",
-        "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
-        "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml" })
+        "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml" })
 public class FirstVoicesPublisherTest {
     @Inject
     protected CoreSession session;
@@ -115,8 +108,8 @@ public class FirstVoicesPublisherTest {
 
     @After
     public void cleanup() {
-        session.removeChildren(session.getRootDocument().getRef());
-        session.save();
+        // session.removeChildren(session.getRootDocument().getRef());
+        // session.save();
     }
 
     @Test
@@ -129,9 +122,6 @@ public class FirstVoicesPublisherTest {
         child = session.getChild(dialect.getRef(), "Dictionary");
         assertNotNull(child);
         assertEquals("FVDictionary", child.getDocumentType().getName());
-        child = session.getChild(dialect.getRef(), "Forum");
-        assertNotNull(child);
-        assertEquals("Forum", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Portal");
         assertNotNull(child);
         assertEquals("FVPortal", child.getDocumentType().getName());
