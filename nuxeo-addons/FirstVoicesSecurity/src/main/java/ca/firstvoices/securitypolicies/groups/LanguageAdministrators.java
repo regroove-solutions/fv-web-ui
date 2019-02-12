@@ -1,9 +1,9 @@
 package ca.firstvoices.securitypolicies.groups;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
@@ -19,7 +19,7 @@ import ca.firstvoices.utils.CustomSecurityConstants;
 public class LanguageAdministrators extends AbstractSecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) throws SecurityException {
 
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);

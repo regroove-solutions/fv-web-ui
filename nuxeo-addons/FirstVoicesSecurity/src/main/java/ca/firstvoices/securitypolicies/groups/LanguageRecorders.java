@@ -1,10 +1,10 @@
 package ca.firstvoices.securitypolicies.groups;
 
-import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -26,7 +26,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
 
     /**
      * Check if user has permission on current document, to avoid using groups for filtering.
-     * 
+     *
      * @param mergedAcp
      * @param additionalPrincipalsList
      * @param permission
@@ -61,7 +61,7 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
     }
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) throws SecurityException {
 
         List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);

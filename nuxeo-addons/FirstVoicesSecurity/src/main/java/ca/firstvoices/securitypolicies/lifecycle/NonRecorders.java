@@ -1,6 +1,5 @@
 package ca.firstvoices.securitypolicies.lifecycle;
 
-import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 public class NonRecorders extends AbstractSecurityPolicy {
 
     @Override
-    public Access checkPermission(Document doc, ACP mergedAcp, Principal principal, String permission,
+    public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
 
         // Skip administrators
@@ -74,9 +73,7 @@ public class NonRecorders extends AbstractSecurityPolicy {
                 new StringLiteral("New"));
 
         @Override
-        public SQLQuery transform(Principal principal, SQLQuery query) {
-
-            NuxeoPrincipal nxPrincipal = (NuxeoPrincipal) principal;
+        public SQLQuery transform(NuxeoPrincipal nxPrincipal, SQLQuery query) {
 
             // Skip Admins
             if (nxPrincipal.isAdministrator()) {
