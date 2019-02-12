@@ -26,7 +26,12 @@ import RaisedButton from 'material-ui/lib/raised-button'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import { SearchDialect } from 'views/components/SearchDialect'
-import { SEARCH_SORT_DEFAULT } from 'views/components/SearchDialect/constants'
+import {
+  SEARCH_SORT_DEFAULT,
+  SEARCH_BY_DEFAULT,
+  SEARCH_BY_ALPHABET,
+  SEARCH_BY_CATEGORY,
+} from 'views/components/SearchDialect/constants'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DialectCategoryList from 'views/components/DialectCategoryList'
@@ -35,7 +40,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
-
+import NavigationHelpers from 'common/NavigationHelpers'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
@@ -138,8 +143,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.state = {
       filterInfo,
       searchTerm: '',
-      searchByAlphabet: false,
-      searchByCategory: false,
+      searchByMode: SEARCH_BY_DEFAULT,
+      searchingCategory: undefined,
       searchByDefinitions: true,
       searchByTitle: true,
       searchByTranslations: false,
@@ -157,9 +162,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       'handleSearch',
       'resetSearch',
       'updateState',
-      '_changeFilter',
+      'changeFilter',
       '_getPageKey',
-      '_handleAlphabetClick',
+      'handleAlphabetClick',
+      'handleCategoryClick',
       '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
       'handleDialectCategoryList', // NOTE: Comes from PageDialectLearnBase
       '_initialFilterInfo',
@@ -177,8 +183,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       filterInfo,
       isKidsTheme,
       searchNxqlSort,
-      searchByAlphabet,
-      searchByCategory,
+      searchByMode,
+      searchingCategory,
       searchByDefinitions,
       searchByTitle,
       searchByTranslations,
@@ -256,7 +262,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridViewProps: {
           cols: 10,
           cellHeight: 25,
-          action: this._handleAlphabetClick,
+          action: this.handleAlphabetClick,
           style: { overflowY: 'hidden', padding: '10px' },
         },
         gridListTile: AlphabetGridTile,
@@ -297,7 +303,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               {/* <ExportDialect dialectId={fvaDialectId} /> */}
 
               <div>
-                <h2>{intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}</h2>
+                <h2>
+                  {intl.trans(
+                    'views.pages.explore.dialect.learn.words.find_by_alphabet',
+                    'Browse Alphabetically',
+                    'words'
+                  )}
+                </h2>
                 {browseAlphabetically}
               </div>
 
@@ -313,10 +325,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                   'fv-word:categories',
                   this.props.routeParams.area
                 )}
-                onFacetSelected={this.handleDialectCategoryList} // NOTE: Comes from PageDialectLearnBase
+                handleCategoryClick={this.handleCategoryClick}
+                handleDialectCategoryList={this.handleDialectCategoryList} // NOTE: Comes from PageDialectLearnBase
                 facets={selectn('response.entries', computeCategories) || []}
                 clearCategoryFilter={this.clearCategoryFilter}
-
               />
             </div>
             {/*
@@ -349,8 +361,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               filterInfo={filterInfo}
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
-              searchByCategory={searchByCategory}
-              searchByAlphabet={searchByAlphabet}
+              searchByMode={searchByMode}
+              searchingCategory={searchingCategory}
               searchByTitle={searchByTitle}
               searchByDefinitions={searchByDefinitions}
               searchByTranslations={searchByTranslations}
@@ -391,7 +403,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   handleSearch() {
-    this._changeFilter()
+    this.changeFilter()
   }
 
   resetSearch() {
@@ -444,100 +456,95 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     newProps.fetchCategories('/api/v1/path/FV/' + newProps.routeParams.area + '/SharedData/Shared Categories/@children')
   }
 
-  _changeFilter() {
-    const { searchByAlphabet, searchTerm, searchNxqlQuery } = this.state
-    const _searchType = searchByAlphabet ? 'startsWith' : 'contains'
-
+  changeFilter(href) {
+    const { searchByMode, searchNxqlQuery } = this.state
+    let searchType
     let newFilter = this.state.filterInfo
 
-    // Prune old settings
-    if (searchByAlphabet) {
-      newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'], null)
-      // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
+    switch (searchByMode) {
+      case SEARCH_BY_ALPHABET: {
+        searchType = 'startsWith'
 
-      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null)
-      // newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'], null)
-    } else {
-      newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
+        // Remove other settings
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'], null)
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
+        newFilter = newFilter.set('currentCategoryFilterIds', new Set())
+        break
+      }
+      case SEARCH_BY_CATEGORY: {
+        searchType = 'categories'
 
-      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'startsWith'], null)
+        // Remove other settings
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'], null)
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
+        break
+      }
+      default: {
+        searchType = 'contains'
+
+        // Remove other settings
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'], null)
+        newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
+        newFilter = newFilter.set('currentCategoryFilterIds', new Set())
+      }
     }
 
-    // Add new search
-    newFilter = newFilter.updateIn(['currentAppliedFilter', _searchType], () => ` AND ${searchNxqlQuery}`)
-
-    // Add new description
-    newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', _searchType], () => {
-      let filterDesc
-
-      switch (_searchType) {
-        case 'contains':
-          filterDesc = 'contain the search term'
-          break
-
-        case 'startsWith':
-          filterDesc = 'start with the letter '
-          break
-
-        case 'categories':
-          // NOTE: DON'T THINK WE EVER GET HERE!
-          debugger
-          filterDesc = 'have the categories'
-          break
-
-        default:
-          filterDesc = null
-      }
-
-      return (
-        <span>
-          {filterDesc} <strong>{searchTerm}</strong>
-        </span>
-      )
-    })
+    // Add new search query
+    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => ` AND ${searchNxqlQuery}`)
 
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
     this._resetURLPagination()
     this.setState({ filterInfo: newFilter, force: Math.random() })
+
+    // See about updating url
+    if (href) {
+      NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+    }
   }
 
-  _handleAlphabetClick(letter) {
-    // let newFilter = this.state.filterInfo
-
-    // newFilter = newFilter.set('currentCategoryFilterIds', new Set())
-    // newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'], null)
-
+  handleAlphabetClick(letter) {
     this.setState(
       {
-        // filterInfo: newFilter,
         searchTerm: letter,
-        searchByAlphabet: true,
-        searchByCategory: false,
+        searchByMode: SEARCH_BY_ALPHABET,
         searchByTitle: true,
         searchByDefinitions: false,
         searchByTranslations: false,
         searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       },
       () => {
-        this.handleSearch()
+        let href = undefined
+        const _splitWindowPath = [...this.props.splitWindowPath]
+        const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
+          return element === 'words' || element === 'phrases'
+        })
+        if (wordOrPhraseIndex !== -1) {
+          _splitWindowPath.splice(wordOrPhraseIndex + 1)
+          href = `/${_splitWindowPath.join('/')}`
+        }
+        this.changeFilter(href)
       }
     )
   }
 
-  _handleCategoryClick() {
+  handleCategoryClick(obj) {
+    const { facetField, selected, unselected, href } = obj
+
     this.setState(
       {
         searchTerm: '',
-        searchByAlphabet: false,
-        searchByCategory: true,
+        searchByMode: SEARCH_BY_CATEGORY,
+        searchingCategory: selected.checkedFacetUid,
         searchByTitle: true,
         searchByDefinitions: false,
         searchByTranslations: false,
         searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       },
       () => {
-        this.handleSearch()
+        this.changeFilter(href)
+
+        this.handleDialectCategoryList(facetField, selected, unselected)
       }
     )
   }

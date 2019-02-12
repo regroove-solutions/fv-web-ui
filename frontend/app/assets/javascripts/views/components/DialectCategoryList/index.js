@@ -11,7 +11,8 @@ export default class DialectCategoryList extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     facets: PropTypes.array.isRequired,
-    onFacetSelected: PropTypes.func.isRequired,
+    handleCategoryClick: PropTypes.func,
+    handleDialectCategoryList: PropTypes.func.isRequired,
     facetField: PropTypes.string.isRequired,
     appliedFilterIds: PropTypes.instanceOf(Set),
     styles: PropTypes.object,
@@ -21,6 +22,7 @@ export default class DialectCategoryList extends Component {
 
   static defaultProps = {
     facets: [],
+    handleCategoryClick: () => {},
   }
 
   categoriesSorted = []
@@ -103,7 +105,7 @@ export default class DialectCategoryList extends Component {
         childrenIds: lastCheckedChildrenUids,
         parentFacetUid: lastCheckedParentFacetUid,
       }
-      this.props.onFacetSelected(this.props.facetField, undefined, unselected)
+      this.props.handleDialectCategoryList(this.props.facetField, undefined, unselected)
     }
   }
 
@@ -285,9 +287,12 @@ export default class DialectCategoryList extends Component {
           checkedFacetUid,
           childrenIds,
         }
-        this.props.onFacetSelected(this.props.facetField, selected, unselected)
-        // update url
-        NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+        this.props.handleCategoryClick({
+          facetField: this.props.facetField,
+          selected,
+          unselected,
+          href,
+        })
       }
     )
   }
