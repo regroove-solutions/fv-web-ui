@@ -158,18 +158,19 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     // Bind methods to 'this'
     ;[
-      'clearCategoryFilter',
-      'handleSearch',
-      'resetSearch',
-      'updateState',
       'changeFilter',
-      '_getPageKey',
+      'clearCategoryFilter',
       'handleAlphabetClick',
       'handleCategoryClick',
-      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
-      'handleDialectCategoryList', // NOTE: Comes from PageDialectLearnBase
+      'handleSearch',
+      'resetSearch',
+      'searchController',
+      'updateState',
+      '_getPageKey',
       '_initialFilterInfo',
+      'handleDialectCategoryList', // NOTE: Comes from PageDialectLearnBase
       '_getURLPageProps', // NOTE: Comes from PageDialectLearnBase
+      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
       '_handleFilterChange', // NOTE: Comes from PageDialectLearnBase
       '_handlePagePropertiesChange', // NOTE: Comes from PageDialectLearnBase
       '_onNavigateRequest', // NOTE: Comes from PageDialectLearnBase
@@ -268,7 +269,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         gridListTile: AlphabetGridTile,
       }
     )
-    // For <ExportDialect>
+    // Note: Following for <ExportDialect>
     // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -331,22 +332,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 clearCategoryFilter={this.clearCategoryFilter}
               />
             </div>
-            {/*
-            <hr />
-            <div>
-            <h3>More in {selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal)}</h3>
-
-            <ul>
-            <li>Browse Words</li>
-            <li>Browse Phrases</li>
-            <li>Browse Songs</li>
-            <li>Browse Stories</li>
-            <li>View Alphabet</li>
-            <li>View Portal Page</li>
-            <li>View Language Page</li>
-            </ul>
-            </div>
-            */}
           </div>
           <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1>
@@ -551,5 +536,28 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _getPageKey() {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
+  }
+
+  // TODO
+  searchController(obj, cb) {
+    const {
+      searchByMode,
+      searchByTitle,
+      searchByDefinitions,
+      searchByTranslations,
+      searchPartOfSpeech,
+      searchTerm,
+    } = obj
+
+    this.setState({
+      searchByMode,
+      searchByTitle,
+      searchByDefinitions,
+      searchByTranslations,
+      searchPartOfSpeech,
+      searchTerm,
+    }, ()=>{
+      if (cb) { cb() }
+    })
   }
 }
