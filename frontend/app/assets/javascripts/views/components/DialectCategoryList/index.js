@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react'
 import Immutable, { Set } from 'immutable'
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
-import NavigationHelpers from 'common/NavigationHelpers'
 // import StringHelpers from 'common/StringHelpers'
 // const FiltersWithToggle = withToggle()
 
@@ -17,7 +16,7 @@ export default class DialectCategoryList extends Component {
     appliedFilterIds: PropTypes.instanceOf(Set),
     styles: PropTypes.object,
     pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.any, // TODO: set appropriate propType
+    splitWindowPath: PropTypes.array,
   }
 
   static defaultProps = {
