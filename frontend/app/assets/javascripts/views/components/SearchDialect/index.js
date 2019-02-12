@@ -53,7 +53,6 @@ class SearchDialect extends Component {
 
     this.state = {
       partsOfSpeechOptions: null,
-      searchInfoOutput: this._getSearchInfo(),
     }
     ;[
       '_getSearchInfo',
@@ -109,25 +108,6 @@ class SearchDialect extends Component {
       // eslint-disable-next-line
       this.setState({ partsOfSpeechOptions })
     }
-
-    if (this.props.searchByMode === SEARCH_BY_ALPHABET && prevProps.searchTerm !== this.props.searchTerm) {
-      // Note: aware that we are triggering a new render
-      // eslint-disable-next-line
-      this.setState({
-        searchInfoOutput: this._getSearchInfo(),
-      })
-    }
-
-    if (
-      this.props.searchByMode === SEARCH_BY_CATEGORY &&
-      prevProps.searchingCategory !== this.props.searchingCategory
-    ) {
-      // Note: aware that we are triggering a new render
-      // eslint-disable-next-line
-      this.setState({
-        searchInfoOutput: this._getSearchInfo(),
-      })
-    }
   }
 
   render() {
@@ -154,7 +134,7 @@ class SearchDialect extends Component {
     const _css = 'SearchDialect'
     return (
       <div className={`${_css}`}>
-        {this.state.searchInfoOutput}
+        {this._getSearchInfo()}
         <div className={`${_css}Form`}>
           <div className={`${_css}FormPrimary`}>
             <input
@@ -359,19 +339,11 @@ class SearchDialect extends Component {
     }
 
     let msg = ''
-    if (searchTerm === '' || searchTerm === null) {
-      switch (searchByMode) {
-        case SEARCH_BY_ALPHABET: {
-          msg = messages.startWith
-          break
-        }
-        case SEARCH_BY_CATEGORY: {
-          msg = messages.byCategory
-          break
-        }
-        default:
-          msg = messages.all
-      }
+
+    if (searchByMode === SEARCH_BY_ALPHABET) {
+      msg = messages.startWith
+    } else if (searchByMode === SEARCH_BY_CATEGORY) {
+      msg = messages.byCategory
     } else {
       msg = messages.contain
 
@@ -452,7 +424,7 @@ class SearchDialect extends Component {
       // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
       searchByTitle: `dc:title ILIKE '%${search}%'`,
       searchByAlphabet: `dc:title ILIKE '${search}%'`,
-      searchByCategory: `dc:title ILIKE '${search}%'`,
+      searchByCategory: `dc:title ILIKE '%${search}%'`,
       searchByCulturalNotes: `fv:cultural_note ILIKE '%${search}%'`,
       searchByDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
       searchByTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
@@ -542,9 +514,6 @@ class SearchDialect extends Component {
   }
 
   _handleSearch() {
-    this.setState({
-      searchInfoOutput: this._getSearchInfo(),
-    })
     const updateState = { searchByMode: SEARCH_BY_DEFAULT }
     this.props.updateAncestorState(updateState)
     this.props.handleSearch()
@@ -561,9 +530,6 @@ class SearchDialect extends Component {
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
     }
     await this.props.updateAncestorState(updateState)
-    this.setState({
-      searchInfoOutput: this._getSearchInfo(),
-    })
     this.props.resetSearch()
   }
 
