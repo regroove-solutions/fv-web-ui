@@ -252,6 +252,7 @@ class SearchDialect extends Component {
   _getSearchInfo() {
     const {
       isSearchingPhrases,
+      searchByCategory,
       searchByAlphabet,
       searchByCulturalNotes,
       searchByDefinitions,
@@ -261,7 +262,9 @@ class SearchDialect extends Component {
       searchPartOfSpeech,
     } = this.props
 
-    // Showing all words in the dictionary listed alphabetically.
+    // Showing all words in the dictionary listed alphabetically
+
+    // Showing all words in the 'Fish' category
 
     // Showing words that start with the letter d
 
@@ -305,6 +308,9 @@ class SearchDialect extends Component {
       ) : (
         <span>{`Showing all ${wordsOrPhrases} in the dictionary listed alphabetically${messagePartsOfSpeech}`}</span>
       ),
+      byCategory: (
+        <span>{`Showing all ${wordsOrPhrases} in the selected category${messagePartsOfSpeech}`}</span>
+      ),
       startWith: (
         <span>{`Showing ${wordsOrPhrases} that start with the letter '`}{_searchTerm}{`'${messagePartsOfSpeech}`}</span>
       ),
@@ -330,7 +336,8 @@ class SearchDialect extends Component {
 
     let msg = ''
     if (searchTerm === '' || searchTerm === null) {
-      msg = messages.all
+      msg = searchByCategory ? messages.byCategory : messages.all
+      // msg = messages.all
     } else if (searchByAlphabet) {
       msg = messages.startWith
     } else {

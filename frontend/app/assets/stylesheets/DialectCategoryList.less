@@ -1,0 +1,53 @@
+// BLOCK
+.DialectCategoryList {
+  font-size: 16px;
+  line-height: 1.2;
+}
+// ELEMENT
+.DialectCategoryListItemGroup {
+  display: flex;
+  width: 100%;
+}
+.DialectCategoryListLinkParent {
+  font-weight: 900;
+}
+.DialectCategoryListItemParent + .DialectCategoryListItemParent {
+  margin-top: 14px;
+}
+.DialectCategoryListList {
+  list-style-type: none;
+  padding: 0;
+}
+.DialectCategoryListLink {
+  display: block;
+  text-decoration: none;
+  padding: 10px;
+  flex-grow: 1;
+}
+.DialectCategoryListLink:hover,
+.DialectCategoryListLink:focus {
+  background-color: #fbe8e8;
+  color: #820000;
+  text-decoration: none;
+}
+.DialectCategoryListLink:focus {
+  text-decoration: underline;
+}
+// MODIFIERS
+.DialectCategoryListLink--child {
+  padding-left: 20px;
+}
+a.DialectCategoryListLink--active,
+a.DialectCategoryListLink--active:hover {
+  color: #820000;
+  background-color: #f1cac9;
+}
+a.DialectCategoryListLink--activeParent {
+  background-color: #fbe8e8;
+}
+a.DialectCategoryListLink--activeParent:hover {
+  background-color: #f1cac9;
+}
+.DialectCategoryListItemParent--active{
+  border-left: 3px solid #820000;
+}
