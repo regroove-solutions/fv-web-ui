@@ -131,14 +131,13 @@ class SearchDialect extends Component {
       searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
     }
 
-    const _css = 'SearchDialect'
     return (
-      <div className={`${_css}`}>
+      <div className="SearchDialect">
         {this._getSearchInfo()}
-        <div className={`${_css}Form`}>
-          <div className={`${_css}FormPrimary`}>
+        <div className="SearchDialectForm">
+          <div className="SearchDialectFormPrimary">
             <input
-              className={`${_css}FormPrimaryInput`}
+              className="SearchDialectFormPrimaryInput"
               type="text"
               onChange={this._updateSearchTerm}
               onKeyPress={this._handleEnterSearch}
@@ -155,74 +154,74 @@ class SearchDialect extends Component {
             />
           </div>
 
-          <div className={`${_css}FormSecondary`}>
-            <span className={`${_css}FormSecondaryGroup`}>
+          <div className="SearchDialectFormSecondary">
+            <span className="SearchDialectFormSecondaryGroup">
               <input
                 checked={searchByTitle}
-                className={`${_css}Option`}
+                className="SearchDialectOption"
                 id="searchByTitle"
                 name="searchByTitle"
                 onChange={this._handleCustomSearch}
                 type="checkbox"
               />
-              <label className={`${_css}Label`} htmlFor="searchByTitle">
+              <label className="SearchDialectLabel" htmlFor="searchByTitle">
                 {searchByTitleText}
               </label>
             </span>
 
-            <span className={`${_css}FormSecondaryGroup`}>
+            <span className="SearchDialectFormSecondaryGroup">
               <input
                 checked={searchByDefinitions}
-                className={`${_css}Option`}
+                className="SearchDialectOption"
                 id="searchByDefinitions"
                 name="searchByDefinitions"
                 onChange={this._handleCustomSearch}
                 type="checkbox"
               />
-              <label className={`${_css}Label`} htmlFor="searchByDefinitions">
+              <label className="SearchDialectLabel" htmlFor="searchByDefinitions">
                 Definitions
               </label>
             </span>
 
             {isSearchingPhrases && (
-              <span className={`${_css}FormSecondaryGroup`}>
+              <span className="SearchDialectFormSecondaryGroup">
                 <input
                   checked={searchByCulturalNotes}
-                  className={`${_css}Option`}
+                  className="SearchDialectOption"
                   id="searchByCulturalNotes"
                   name="searchByCulturalNotes"
                   onChange={this._handleCustomSearch}
                   type="checkbox"
                 />
-                <label className={`${_css}Label`} htmlFor="searchByCulturalNotes">
+                <label className="SearchDialectLabel" htmlFor="searchByCulturalNotes">
                   Cultural notes
                 </label>
               </span>
             )}
 
             {isSearchingPhrases !== true && (
-              <span className={`${_css}FormSecondaryGroup`}>
+              <span className="SearchDialectFormSecondaryGroup">
                 <input
                   checked={searchByTranslations}
-                  className={`${_css}Option`}
+                  className="SearchDialectOption"
                   id="searchByTranslations"
                   name="searchByTranslations"
                   onChange={this._handleCustomSearch}
                   type="checkbox"
                 />
-                <label className={`${_css}Label`} htmlFor="searchByTranslations">
+                <label className="SearchDialectLabel" htmlFor="searchByTranslations">
                   Literal translations
                 </label>
               </span>
             )}
 
             {isSearchingPhrases !== true && (
-              <span className={`${_css}FormSecondaryGroup`}>
-                <label className={`${_css}Label`} htmlFor="searchPartOfSpeech">
+              <span className="SearchDialectFormSecondaryGroup">
+                <label className="SearchDialectLabel" htmlFor="searchPartOfSpeech">
                   Parts of speech:
                 </label>
                 <select
-                  className={`${_css}Option ${_css}PartsOfSpeech`}
+                  className="SearchDialectOption SearchDialectPartsOfSpeech"
                   id="searchPartOfSpeech"
                   name="searchPartOfSpeech"
                   onChange={this._handleCustomSearch}
