@@ -425,18 +425,22 @@ class SearchDialect extends Component {
         break
       }
       case SEARCH_BY_CUSTOM: {
-        msg = messages.contain
+        if (searchTerm === '') {
+          msg = messages.all
+        } else {
+          msg = messages.contain
 
-        if (cols.length === 1) {
-          msg = messages.containColOne
-        }
+          if (cols.length === 1) {
+            msg = messages.containColOne
+          }
 
-        if (cols.length === 2) {
-          msg = messages.containColsTwo
-        }
+          if (cols.length === 2) {
+            msg = messages.containColsTwo
+          }
 
-        if (cols.length >= 3) {
-          msg = messages.containColsThree
+          if (cols.length >= 3) {
+            msg = messages.containColsThree
+          }
         }
         break
       }
