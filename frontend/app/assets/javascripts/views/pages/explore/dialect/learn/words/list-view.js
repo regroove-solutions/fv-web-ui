@@ -45,7 +45,8 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
     DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'fv:custom_order',
+    // DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
     ENABLED_COLS: [
       'title',
@@ -254,10 +255,12 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `fetchData`
   fetchData(newProps) {
+    // console.log('!!! fetchData 1')
     if (newProps.dialect === null && !this.getDialect(newProps)) {
+      // console.log('!!! fetchData 2')
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
-
+    // console.log('!!! fetchData 3')
     this._fetchListViewData(
       newProps,
       newProps.DEFAULT_PAGE,
@@ -281,13 +284,16 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `_fetchListViewData`
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    // console.log('!!! _fetchListViewData 1')
     let currentAppliedFilter = ''
 
     if (props.filter.has('currentAppliedFilter')) {
+      // console.log('!!! _fetchListViewData 2')
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
     const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex -
       1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+    // console.log('!!! _fetchListViewData 3')
     props.fetchWords(this._getPathOrParentID(props), nql)
   }
 

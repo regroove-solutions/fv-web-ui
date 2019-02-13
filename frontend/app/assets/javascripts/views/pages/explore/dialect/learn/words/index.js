@@ -143,6 +143,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.state = {
       filterInfo,
       searchTerm: '',
+      searchByAlphabet: '',
       searchByMode: SEARCH_BY_DEFAULT,
       searchingCategory: undefined,
       searchByDefinitions: true,
@@ -164,7 +165,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       'handleCategoryClick',
       'handleSearch',
       'resetSearch',
-      'searchController',
       'updateState',
       '_getPageKey',
       '_initialFilterInfo',
@@ -185,6 +185,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       isKidsTheme,
       searchNxqlSort,
       searchByMode,
+      searchByAlphabet,
       searchingCategory,
       searchByDefinitions,
       searchByTitle,
@@ -347,6 +348,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
               searchByMode={searchByMode}
+              searchByAlphabet={searchByAlphabet}
               searchingCategory={searchingCategory}
               searchByTitle={searchByTitle}
               searchByDefinitions={searchByDefinitions}
@@ -407,7 +409,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this._resetURLPagination()
     this.setState({
       filterInfo: newFilter,
-      searchNxqlSort: 'fv:custom_order',
+      // searchNxqlSort: 'fv:custom_order',
+      searchNxqlSort: 'dc:title',
     })
   }
 
@@ -476,11 +479,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     // Add new search query
     newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => ` AND ${searchNxqlQuery}`)
+    // NOTE: data-list-view triggers call to fetch new data but only if currentAppliedFilter is different
+    // than the last version, hence the following hack...
+    // newFilter = newFilter.updateIn(['currentAppliedFilter', `force${Math.random()}`], () => '')
 
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
     this._resetURLPagination()
-    this.setState({ filterInfo: newFilter, force: Math.random() })
+    this.setState({ filterInfo: newFilter })
 
     // See about updating url
     if (href) {
@@ -491,7 +497,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   handleAlphabetClick(letter) {
     this.setState(
       {
-        searchTerm: letter,
+        searchTerm: '',
+        searchByAlphabet: letter,
         searchByMode: SEARCH_BY_ALPHABET,
         searchByTitle: true,
         searchByDefinitions: false,
@@ -519,6 +526,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     this.setState(
       {
         searchTerm: '',
+        searchByAlphabet: '',
         searchByMode: SEARCH_BY_CATEGORY,
         searchingCategory: selected.checkedFacetUid,
         searchByTitle: true,
@@ -536,28 +544,5 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
   _getPageKey() {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
-  }
-
-  // TODO
-  searchController(obj, cb) {
-    const {
-      searchByMode,
-      searchByTitle,
-      searchByDefinitions,
-      searchByTranslations,
-      searchPartOfSpeech,
-      searchTerm,
-    } = obj
-
-    this.setState({
-      searchByMode,
-      searchByTitle,
-      searchByDefinitions,
-      searchByTranslations,
-      searchPartOfSpeech,
-      searchTerm,
-    }, ()=>{
-      if (cb) { cb() }
-    })
   }
 }

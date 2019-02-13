@@ -111,7 +111,7 @@ export default class DialectCategoryList extends Component {
   render() {
     return (
       <div className="DialectCategoryList">
-        <h2>Categories</h2>
+        <h2>Browse by Category</h2>
         <ul className="DialectCategoryListList">{this.state.listItems}</ul>
       </div>
     )
