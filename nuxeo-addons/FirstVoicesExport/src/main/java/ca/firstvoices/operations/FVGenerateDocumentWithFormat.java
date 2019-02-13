@@ -1,8 +1,31 @@
 package ca.firstvoices.operations;
 
-import ca.firstvoices.utils.FVExportConstants;
-import ca.firstvoices.utils.FVExportUtils;
-import ca.firstvoices.utils.FVExportWorkInfo;
+import static ca.firstvoices.utils.FVExportConstants.CSV_FORMAT;
+import static ca.firstvoices.utils.FVExportConstants.DIALECT_DICTIONARY_TYPE;
+import static ca.firstvoices.utils.FVExportConstants.DIALECT_RESOURCES_TYPE;
+import static ca.firstvoices.utils.FVExportConstants.DOCS_TO_EXPORT;
+import static ca.firstvoices.utils.FVExportConstants.EXPORT_WORK_INFO;
+import static ca.firstvoices.utils.FVExportConstants.FVEXPORT;
+import static ca.firstvoices.utils.FVExportConstants.FVPHRASE;
+import static ca.firstvoices.utils.FVExportConstants.FVWORD;
+import static ca.firstvoices.utils.FVExportConstants.PDF_FORMAT;
+import static ca.firstvoices.utils.FVExportConstants.PRODUCE_FORMATTED_DOCUMENT;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_COLUMNS;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_DIALECT;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_DIGEST;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_FORMAT;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_PROGRESS_STRING;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_PROGRESS_VALUE;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_QUERY;
+import static ca.firstvoices.utils.FVExportProperties.FVEXPORT_WORK_DIGEST;
+import static ca.firstvoices.utils.FVExportUtils.checkForRunningWorkerBeforeProceeding;
+import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
+import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -22,15 +45,8 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.api.WorkManager;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import static ca.firstvoices.utils.FVExportConstants.*;
-import static ca.firstvoices.utils.FVExportProperties.*;
-import static ca.firstvoices.utils.FVExportUtils.getPathToChildInDialect;
-import static ca.firstvoices.utils.FVExportUtils.makeExportWorkerID;
-import static ca.firstvoices.utils.FVExportUtils.checkForRunningWorkerBeforeProceeding;
+import ca.firstvoices.utils.FVExportUtils;
+import ca.firstvoices.utils.FVExportWorkInfo;
 
 /*
  * FVGenerateDocumentWithFormat endpoint starts the export of words or phrases base on provided parameters
@@ -181,7 +197,7 @@ public class FVGenerateDocumentWithFormat {
         String generatedQuery;
 
         generatedQuery = "SELECT * FROM " + exportElement + " WHERE ecm:ancestorId = '" + dictionary.getId()
-                + "' AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
+                + "' AND ecm:isTrashed = 0 AND ecm:isProxy = 0 AND ecm:isVersion = 0 ORDER BY ecm:name";
 
         if (query.equals("*")) {
             docs = session.query(generatedQuery); // TODO: be weary of limits of how many records will be returned

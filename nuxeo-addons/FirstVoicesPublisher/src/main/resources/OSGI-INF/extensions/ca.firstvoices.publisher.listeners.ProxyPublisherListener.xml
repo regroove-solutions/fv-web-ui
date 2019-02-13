@@ -11,7 +11,7 @@
     
     <listener name="DocumentDeletedUnpublishListener" async="false" postCommit="false"
       class="ca.firstvoices.publisher.listeners.DocumentDeletedUnpublishListener" priority="150">
-      <event>aboutToRemove</event>
+      <event>documentTrashed</event>
     </listener>
     
     <listener name="AssignOriginListener" class="ca.firstvoices.publisher.listeners.AssignOriginListener" priority="250">

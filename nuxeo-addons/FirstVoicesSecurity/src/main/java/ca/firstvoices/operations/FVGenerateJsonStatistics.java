@@ -52,7 +52,7 @@ public class FVGenerateJsonStatistics {
 
     protected ObjectMapper mapper = new ObjectMapper();
 
-    protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:path STARTSWITH '%s' AND ecm:currentLifeCycleState <> 'deleted'";
+    protected final String BASE_DOCS_QUERY = "SELECT * FROM %s WHERE ecm:path STARTSWITH '%s' AND ecm:isTrashed = 0 ";
 
     private final List<String> allowedDocTypes = Arrays.asList("words", "phrases", "characters", "songs", "stories");
 

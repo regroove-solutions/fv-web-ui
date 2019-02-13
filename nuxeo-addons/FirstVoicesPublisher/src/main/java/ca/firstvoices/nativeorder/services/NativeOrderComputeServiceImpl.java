@@ -16,7 +16,7 @@ public class NativeOrderComputeServiceImpl extends AbstractService implements Na
 
     private DocumentModel[] loadAlphabet(CoreSession session, DocumentModel dialect) {
         DocumentModelList chars = session.query("SELECT * FROM FVCharacter WHERE ecm:ancestorId='" + dialect.getId()
-                + "' AND ecm:currentLifeCycleState <> 'deleted' ORDER BY fvcharacter:alphabet_order");
+                + "' AND ecm:isTrashed = 0  ORDER BY fvcharacter:alphabet_order");
         DocumentModel[] models = new DocumentModel[chars.size()];
 
         models = chars.toArray(models);
