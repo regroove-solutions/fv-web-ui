@@ -91,14 +91,18 @@ class AlphabetListView extends Component {
         </div>
       )
     })
-    return (
-      <div>
-        <h2>
-          {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
-        </h2>
-        <div className="AlphabetListViewTiles">{_entries}</div>
-      </div>
-    )
+    let content = null
+    if (_entries.length > 0) {
+      content = (
+        <div>
+          <h2>
+            {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
+          </h2>
+          <div className="AlphabetListViewTiles">{_entries}</div>
+        </div>
+      )
+    }
+    return content
   }
 }
 
