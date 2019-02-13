@@ -108,8 +108,8 @@ public class FirstVoicesPublisherTest {
 
     @After
     public void cleanup() {
-        // session.removeChildren(session.getRootDocument().getRef());
-        // session.save();
+        session.removeChildren(session.getRootDocument().getRef());
+        session.save();
     }
 
     @Test
