@@ -20,8 +20,8 @@ import org.nuxeo.ecm.core.schema.FacetNames;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.runtime.api.Framework;
 
-import ca.firstvoices.services.AbstractService;
 import ca.firstvoices.publisher.utils.PublisherUtils;
+import ca.firstvoices.services.AbstractService;
 
 /**
  * @author loopingz
@@ -422,7 +422,7 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
 
     /**
      * Sets relevant related proxies on published dialect proxy
-     * 
+     *
      * @param dialectProxy
      * @return
      */
@@ -589,6 +589,9 @@ public class FirstVoicesPublisherServiceImpl extends AbstractService implements 
                         || dependencyEntry.getKey() == "fv-portal:related_links") {
                     String[] property = (String[]) input.getPropertyValue(dependencyEntry.getValue());
 
+                    if (property == null) {
+                        property = new String[0];
+                    }
                     if (!Arrays.asList(property).contains(publishedDep.getRef().toString())) {
                         String[] updatedProperty = Arrays.copyOf(property, property.length + 1);
                         updatedProperty[updatedProperty.length - 1] = publishedDep.getRef().toString();
