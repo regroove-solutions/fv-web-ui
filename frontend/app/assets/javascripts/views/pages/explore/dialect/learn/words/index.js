@@ -32,7 +32,8 @@ import {
   SEARCH_BY_ALPHABET,
   SEARCH_BY_CATEGORY,
 } from 'views/components/SearchDialect/constants'
-import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
+// import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
+// import AlphabetListView from 'views/components/AlphabetListView'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import DialectCategoryList from 'views/components/DialectCategoryList'
 import IntlService from 'views/services/intl'
@@ -41,6 +42,7 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import NavigationHelpers from 'common/NavigationHelpers'
+import { AlphabetListView } from '../../../../../components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
@@ -48,48 +50,48 @@ const intl = IntlService.instance
 /**
  * Learn words
  */
-class AlphabetGridTile extends Component {
-  static defaultProps = {
-    action: () => {},
-  }
-  static propTypes = {
-    action: PropTypes.func,
-    tile: PropTypes.any, // TODO: set appropriate propType
-  }
-  constructor(props) {
-    super(props)
-    const { tile } = this.props
-    this.state = {
-      char: selectn('properties.dc:title', tile),
-      uid: selectn('uid', tile),
-    }
-    ;['_handleClick'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-  render() {
-    const { char, uid } = this.state
-    return (
-      <GridTile
-        key={uid}
-        className="AlphabetGridTile"
-        style={{
-          height: 'initial',
-        }}
-      >
-        <a onClick={this._handleClick} className="AlphabetGridTileLink">
-          {char}
-        </a>
-      </GridTile>
-    )
-  }
-  _handleClick() {
-    const { char } = this.state
+// class AlphabetGridTile extends Component {
+//   static defaultProps = {
+//     action: () => {},
+//   }
+//   static propTypes = {
+//     action: PropTypes.func,
+//     tile: PropTypes.any, // TODO: set appropriate propType
+//   }
+//   constructor(props) {
+//     super(props)
+//     const { tile } = this.props
+//     this.state = {
+//       char: selectn('properties.dc:title', tile),
+//       uid: selectn('uid', tile),
+//     }
+//     ;['_handleClick'].forEach((method) => (this[method] = this[method].bind(this)))
+//   }
+//   render() {
+//     const { char, uid } = this.state
+//     return (
+//       <GridTile
+//         key={uid}
+//         className="AlphabetGridTile"
+//         style={{
+//           height: 'initial',
+//         }}
+//       >
+//         <a onClick={this._handleClick} className="AlphabetGridTileLink">
+//           {char}
+//         </a>
+//       </GridTile>
+//     )
+//   }
+//   _handleClick() {
+//     const { char } = this.state
 
-    this.props.action(char, 'startsWith', (letter) => {
-      const query = ` AND dc:title LIKE '${letter}%'`
-      return query
-    })
-  }
-}
+//     this.props.action(char, 'startsWith', (letter) => {
+//       const query = ` AND dc:title LIKE '${letter}%'`
+//       return query
+//     })
+//   }
+// }
 
 @provide
 export default class PageDialectLearnWords extends PageDialectLearnBase {
@@ -252,24 +254,24 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
 
     const dialectClassName = getDialectClassname(computeDocument)
-    const browseAlphabetically = React.cloneElement(
-      <AlphabetListView
-        pagination={false}
-        routeParams={this.props.routeParams}
-        dialect={selectn('response', computePortal)}
-      />,
-      {
-        className: dialectClassName,
-        gridListView: true,
-        gridViewProps: {
-          cols: 10,
-          cellHeight: 25,
-          action: this.handleAlphabetClick,
-          style: { overflowY: 'hidden', padding: '10px' },
-        },
-        gridListTile: AlphabetGridTile,
-      }
-    )
+    // const browseAlphabetically = React.cloneElement(
+    //   <AlphabetListView
+    //     pagination={false}
+    //     routeParams={this.props.routeParams}
+    //     dialect={selectn('response', computePortal)}
+    //   />,
+    //   {
+    //     className: dialectClassName,
+    //     gridListView: true,
+    //     gridViewProps: {
+    //       cols: 10,
+    //       cellHeight: 25,
+    //       action: this.handleAlphabetClick,
+    //       style: { overflowY: 'hidden', padding: '10px' },
+    //     },
+    //     gridListTile: AlphabetGridTile,
+    //   }
+    // )
     // Note: Following for <ExportDialect>
     // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
     return (
@@ -304,16 +306,14 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             <div>
               {/* <ExportDialect dialectId={fvaDialectId} /> */}
 
-              <div>
-                <h2>
-                  {intl.trans(
-                    'views.pages.explore.dialect.learn.words.find_by_alphabet',
-                    'Browse Alphabetically',
-                    'words'
-                  )}
-                </h2>
-                {browseAlphabetically}
-              </div>
+
+              <AlphabetListView
+                dialect={selectn('response', computePortal)}
+                handleClick={this.handleAlphabetClick}
+                routeParams={this.props.routeParams}
+                letter={this.state.searchByAlphabet}
+              />
+
 
               <DialectCategoryList
                 // title={intl.trans('categories', 'Categories', 'first')}
@@ -365,7 +365,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
   }
   // END render
-
   clearCategoryFilter() {
     this.setState({ filterInfo: this._initialFilterInfo() })
   }
