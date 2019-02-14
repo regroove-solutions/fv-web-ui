@@ -14,6 +14,7 @@ import selectn from 'selectn'
 import classNames from 'classnames'
 import RaisedButton from 'material-ui/lib/raised-button'
 import IntlService from 'views/services/intl'
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 const intl = IntlService.instance
 const { any, func, string, bool, object, number } = PropTypes
@@ -448,7 +449,7 @@ class SearchDialect extends Component {
         msg = messages.all
     }
 
-    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{msg}</div>
+    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info', getDialectClassname())}>{msg}</div>
   }
 
   _getNxqlSearchSort() {
