@@ -79,6 +79,7 @@ export default class DictionaryList extends Component {
           {(items || []).map((item, i) => (
             <tr
               key={i}
+              className="DictionaryListRow"
               style={{
                 borderBottom: '1px dotted #a8a8a8',
                 margin: '10px',
@@ -118,15 +119,22 @@ export default class DictionaryList extends Component {
       let className = ''
       switch (name) {
         case 'title':
-          className = `${prefix}Title`
+          className = `${prefix}Title ${prefix}Data`
+          break
+        case 'fv:definitions':
+          className = `${prefix}Definitions ${prefix}Data`
           break
         case 'related_audio':
-          className = 'PrintHide'
+          className = `${prefix}Audio ${prefix}Data PrintHide`
           break
         case 'related_pictures':
-          className = 'PrintHide'
+          className = `${prefix}Pictures ${prefix}Data PrintHide`
           break
-        default: // NOTE: do nothing
+        case 'fv-word:part_of_speech':
+          className = `${prefix}Speech ${prefix}Data`
+          break
+        default:
+          className = `${prefix}Data`
       }
       return className
     })
