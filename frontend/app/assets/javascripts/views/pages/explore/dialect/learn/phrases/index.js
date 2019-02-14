@@ -190,7 +190,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         </PromiseWrapper>
       )
     }
-    const dialectClassName = getDialectClassname(computeDocument)
+    const dialectClassName = getDialectClassname(computePortal)
     const dialect = selectn("response.contextParameters.ancestry.dialect.dc:title", computePortal) || ""
     const pageTitle = intl.trans("views.pages.explore.dialect.phrases.x_phrases", `${dialect} Phrases`, null, [dialect])
 
