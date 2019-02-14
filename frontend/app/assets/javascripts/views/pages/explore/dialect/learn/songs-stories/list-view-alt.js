@@ -169,9 +169,16 @@ export default class ListViewAlt extends DataListView {
     }
 
     props.fetchBooks(
-      props.routeParams.dialect_path + "/Stories & Songs",
-      `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+      props.routeParams.dialect_path,
+      currentAppliedFilter +
+        "&currentPageIndex=" +
+        (pageIndex - 1) +
+        "&pageSize=" +
+        pageSize +
+        "&sortOrder=" +
+        sortOrder +
+        "&sortBy=" +
+        sortBy
     )
   }
 
@@ -182,7 +189,7 @@ export default class ListViewAlt extends DataListView {
   render() {
     const computeEntities = Immutable.fromJS([
       {
-        id: `${this.props.routeParams.dialect_path}/Stories & Songs`,
+        id: this.props.routeParams.dialect_path,
         entity: this.props.computeBooks,
       },
     ])
@@ -197,10 +204,7 @@ export default class ListViewAlt extends DataListView {
       )
     }
 
-    const computeBooks = ProviderHelpers.getEntry(
-      this.props.computeBooks,
-      `${this.props.routeParams.dialect_path}/Stories & Songs`
-    )
+    const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path)
     const computeDialect2 = this.props.dialect || this.getDialect()
 
     return (

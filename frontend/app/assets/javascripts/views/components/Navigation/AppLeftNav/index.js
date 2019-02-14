@@ -239,7 +239,7 @@ export default class AppLeftNav extends Component {
                   requestChange: this._onNavigateRequest,
                 }}
               >
-                <ListItem
+                {/* <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
@@ -247,7 +247,7 @@ export default class AppLeftNav extends Component {
                     default: "My Profile",
                     case: "words",
                   })}
-                />
+                /> */}
 
                 <ListItem
                   key="sign-out"
