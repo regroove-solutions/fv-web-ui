@@ -38,7 +38,7 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "wordsearch" */ 'games/wordsearch').then(({ default: wordsearch }) => {
+                System.import(/* webpackChunkName: "wordsearch" */ 'games/wordsearch').then(({ default: wordsearch }) => {
                     resolve(wordsearch);
                 }).catch(reject);
             })

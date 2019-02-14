@@ -37,7 +37,7 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "memory" */ 'games/memory').then(({ default: memory }) => {
+                System.import(/* webpackChunkName: "memory" */ 'games/memory').then(({ default: memory }) => {
                     resolve(memory);
                 }).catch(reject);
             })

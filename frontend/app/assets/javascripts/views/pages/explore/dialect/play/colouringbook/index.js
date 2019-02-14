@@ -34,7 +34,7 @@ export default class ColouringBook extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "coloringbook" */ 'games/colouring-book').then(({ default: coloringbook }) => {
+                System.import(/* webpackChunkName: "coloringbook" */ 'games/colouring-book').then(({ default: coloringbook }) => {
                     resolve(coloringbook);
                 }).catch(reject);
             })

@@ -37,7 +37,7 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "jigsaw" */ 'games/jigsaw').then(({ default: jigsaw }) => {
+                System.import(/* webpackChunkName: "jigsaw" */ 'games/jigsaw').then(({ default: jigsaw }) => {
                     resolve(jigsaw);
                 }).catch(reject);
             })
