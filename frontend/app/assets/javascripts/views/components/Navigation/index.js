@@ -306,14 +306,14 @@ export default class Navigation extends Component {
     const isDialect = this.props.routeParams.hasOwnProperty("dialect_path")
     // const isFrontPage = this.props.frontpage
 
-    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
+    // const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + "/Portal"
     )
     const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
+    // const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
 
     //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
@@ -352,8 +352,8 @@ export default class Navigation extends Component {
             />
 
             <ToolbarSeparator
-              className={classNames({ "hidden-xs": this.props.computeLogin.isConnected })}
-              style={{ float: "none", marginLeft: 0, marginRight: 0 }}
+              className={classNames({ hidden: !this.props.computeLogin.isConnected })}
+              style={{ float: "none", marginLeft: 0, marginRight: 10 }}
             />
 
             <AuthenticationFilter
@@ -363,7 +363,7 @@ export default class Navigation extends Component {
               containerStyle={{ display: "inline" }}
             >
               <span>
-                <Badge
+                {/* <Badge
                   badgeContent={userTaskCount}
                   style={{ top: "8px", left: "-15px", padding: "0 0 12px 12px" }}
                   badgeStyle={{
@@ -383,7 +383,11 @@ export default class Navigation extends Component {
                   >
                     <NotificationsIcon />
                   </IconButton>
-                </Badge>
+                </Badge> */}
+
+                <a href="/tasks/" className="nav_link">
+                  View My Tasks
+                </a>
 
                 {/*<Badge
                   badgeContent={guideCount}
@@ -444,7 +448,7 @@ export default class Navigation extends Component {
 
             <ToolbarSeparator
               className="search-bar-seperator"
-              style={{ float: "none", marginRight: 0, marginLeft: 0 }}
+              style={{ float: "none", marginRight: 0, marginLeft: 10 }}
             />
 
             <div

@@ -21,7 +21,7 @@
 @primary-header-color: #666666;
 @mobile-xs-width: 480px;
 @font-family: Arial, sans-serif;
-@font-family-aboriginal-sans: "Aboriginal Sans", @font-family;
+@font-family-aboriginal-sans: "Lucida Grande", "Lucida Sans Unicode", Gentium, Code2001, "Aboriginal Sans", "Aboriginal Serif";
 
 body {
   font-family: @font-family;
@@ -31,9 +31,29 @@ body {
 }
 
 // FONTS
-.fontOskiDakelh {
+
+// OskiDakelh
+
+@font-face {
+  font-family: 'OskiDakelhWeb';
+  src: url('/assets/fonts/oskidakelh/oskidakelh1.ttf');
+}
+
+@font-face {
+  font-family: 'OskiDakelhWeb';
+  src: url('/assets/fonts/oskidakelh/oskidakelhbold1.ttf');
+  font-weight: bold;
+}
+
+.OskiDakelh {
   font-family: "OskiDakelh", @font-family-aboriginal-sans;
 }
+.OskiDakelhWeb {
+  font-family: "OskiDakelh", "OskiDakelhWeb", @font-family-aboriginal-sans;
+}
+
+// FONTS
+
 .fontAboriginalSans {
   font-family: @font-family-aboriginal-sans;
 }
@@ -267,8 +287,8 @@ form.editableComponentForm {
   }
 }
 
-.search-results,
-.document-list-view {
+// Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter
+.search-results{
   a {
     text-decoration: none;
     border-bottom: 1px solid;
@@ -928,6 +948,7 @@ audio::-webkit-media-controls-enclosure {
 @import "Button";
 @import "CardView";
 @import "Dialect";
+@import "DictionaryList";
 @import "Introduction";
 @import "kids";
 @import "Navigation";

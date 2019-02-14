@@ -2330,7 +2330,7 @@ export default class AppFrontController extends Component {
               }
             })()}
 
-            <ol className={classNames('breadcrumb', 'pull-left')}>
+            <ol className={classNames('breadcrumb', 'pull-left', 'fontAboriginalSans')}>
               <li>
                 <Link href="/">
                   {intl.translate({
