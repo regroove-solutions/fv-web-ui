@@ -7,7 +7,7 @@ import selectn from 'selectn'
 // import classNames from 'classnames'
 import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
-
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 const { any, func, string, bool, object, number } = PropTypes
 const intl = IntlService.instance
 
@@ -20,6 +20,7 @@ class AlphabetListView extends Component {
     routeParams: object.isRequired,
     dialect: any.isRequired,
     computeCharacters: PropTypes.object.isRequired, // via provide
+    computePortal: PropTypes.object.isRequired, // via provide
     fetchDialect2: PropTypes.func.isRequired,
     fetchCharacters: PropTypes.func.isRequired,
     letter: PropTypes.string,
@@ -55,11 +56,17 @@ class AlphabetListView extends Component {
         this.props.computeCharacters,
         `${routeParams.dialect_path}/Alphabet`
       )
+      const computePortal = await ProviderHelpers.getEntry(
+        this.props.computePortal,
+        `${routeParams.dialect_path}/Portal`
+      )
 
       const entries = selectn('response.entries', computedCharacters)
+
       this.setState({
         renderCycle: this.state.renderCycle + 1,
         entries,
+        dialectClassName: getDialectClassname(computePortal),
       })
     }
     if (prevProps.letter === undefined && this.props.letter) {
@@ -98,7 +105,7 @@ class AlphabetListView extends Component {
           <h2>
             {intl.trans('views.pages.explore.dialect.learn.words.find_by_alphabet', 'Browse Alphabetically', 'words')}
           </h2>
-          <div className="AlphabetListViewTiles">{_entries}</div>
+          <div className={`AlphabetListViewTiles ${this.state.dialectClassName}`}>{_entries}</div>
         </div>
       )
     }
