@@ -123,8 +123,8 @@ export default class ListView extends DataListView {
             const clickHandler = props.disableWordClick
               ? NavigationHelpers.disable
               : (e) => {
-                e.preventDefault()
-                NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+                // e.preventDefault()
+                // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
               }
             return (
               <a onClick={clickHandler} href={href}>
