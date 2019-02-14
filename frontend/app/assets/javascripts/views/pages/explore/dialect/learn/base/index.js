@@ -13,11 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { Set } from "immutable"
-import selectn from "selectn"
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { Set } from 'immutable'
+import selectn from 'selectn'
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
 /**
  * Learn Base Page
@@ -39,7 +39,7 @@ export default class PageDialectLearnBase extends Component {
   constructor(props, context) {
     super(props, context)
 
-    if (typeof this.fetchData === "undefined") {
+    if (typeof this.fetchData === 'undefined') {
       // eslint-disable-next-line
       console.warn("The class that extends 'PageDialectLearnBase' must define a 'fetchData' function")
     }
@@ -64,8 +64,8 @@ export default class PageDialectLearnBase extends Component {
 
   _getURLPageProps() {
     const pageProps = {}
-    const page = selectn("page", this.props.routeParams)
-    const pageSize = selectn("pageSize", this.props.routeParams)
+    const page = selectn('page', this.props.routeParams)
+    const pageSize = selectn('pageSize', this.props.routeParams)
 
     if (page) {
       pageProps.DEFAULT_PAGE = parseInt(page, 10)
@@ -84,6 +84,11 @@ export default class PageDialectLearnBase extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this.fetchData(this.props)
+
+    // TODO: get rid of this extending setup
+    if (this.componentDidMountViaPageDialectLearnBase) {
+      this.componentDidMountViaPageDialectLearnBase()
+    }
   }
 
   // Refetch data on URL change
@@ -94,8 +99,8 @@ export default class PageDialectLearnBase extends Component {
   }
 
   _handleFacetSelected(facetField, checkedFacetUid, childrenIds, checked, parentFacetUid) {
-    const currentCategoryFilterIds = this.state.filterInfo.get("currentCategoryFilterIds")
-    let categoryFilter = ""
+    const currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
+    let categoryFilter = ''
     let newList
     const childrenIdsList = new Set(childrenIds)
 
@@ -135,20 +140,20 @@ export default class PageDialectLearnBase extends Component {
       */
     }
 
-    let newFilter = this.state.filterInfo.updateIn(["currentCategoryFilterIds"], () => {
+    let newFilter = this.state.filterInfo.updateIn(['currentCategoryFilterIds'], () => {
       return newList
     })
-    newFilter = newFilter.updateIn(["currentAppliedFilter", "categories"], () => {
+    newFilter = newFilter.updateIn(['currentAppliedFilter', 'categories'], () => {
       return categoryFilter
     })
 
     // Update filter description based on if categories exist or don't exist
     if (newList.size > 0) {
-      newFilter = newFilter.updateIn(["currentAppliedFiltersDesc", "categories"], () => {
+      newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', 'categories'], () => {
         return " match the categories you've selected "
       })
     } else {
-      newFilter = newFilter.deleteIn(["currentAppliedFiltersDesc", "categories"])
+      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'])
     }
 
     // Update page properties to use when navigating away
@@ -162,8 +167,8 @@ export default class PageDialectLearnBase extends Component {
   }
 
   handleDialectCategoryList(facetField, selected, unselected) {
-    const currentCategoryFilterIds = this.state.filterInfo.get("currentCategoryFilterIds")
-    let categoryFilter = ""
+    const currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
+    let categoryFilter = ''
     let newList = new Set()
 
     if (unselected) {
@@ -204,20 +209,20 @@ export default class PageDialectLearnBase extends Component {
       )}/* IN ("${newList.join('","')}")`
     }
 
-    let newFilter = this.state.filterInfo.updateIn(["currentCategoryFilterIds"], () => {
+    let newFilter = this.state.filterInfo.updateIn(['currentCategoryFilterIds'], () => {
       return newList
     })
-    newFilter = newFilter.updateIn(["currentAppliedFilter", "categories"], () => {
+    newFilter = newFilter.updateIn(['currentAppliedFilter', 'categories'], () => {
       return categoryFilter
     })
 
     // Update filter description based on if categories exist or don't exist
     if (newList.size > 0) {
-      newFilter = newFilter.updateIn(["currentAppliedFiltersDesc", "categories"], () => {
+      newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', 'categories'], () => {
         return " match the categories you've selected "
       })
     } else {
-      newFilter = newFilter.deleteIn(["currentAppliedFiltersDesc", "categories"])
+      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'])
     }
 
     // Update page properties to use when navigating away
@@ -237,7 +242,7 @@ export default class PageDialectLearnBase extends Component {
   }
 
   _resetURLPagination(pageSize = null) {
-    const newPageSize = pageSize || selectn("pageSize", this.props.routeParams)
+    const newPageSize = pageSize || selectn('pageSize', this.props.routeParams)
 
     // If URL pagination exists, reset
     if (newPageSize) {
