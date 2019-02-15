@@ -21,7 +21,8 @@
 @primary-header-color: #666666;
 @mobile-xs-width: 480px;
 @font-family: Arial, sans-serif;
-@font-family-aboriginal-sans: "Lucida Grande", "Lucida Sans Unicode", Gentium, Code2001, "Aboriginal Sans", "Aboriginal Serif";
+@font-family-aboriginal-sans: "Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium,
+  Code2001;
 
 body {
   font-family: @font-family;
@@ -35,13 +36,13 @@ body {
 // OskiDakelh
 
 @font-face {
-  font-family: 'OskiDakelhWeb';
-  src: url('/assets/fonts/oskidakelh/oskidakelh1.ttf');
+  font-family: "OskiDakelhWeb";
+  src: url("/assets/fonts/oskidakelh/oskidakelh1.ttf");
 }
 
 @font-face {
-  font-family: 'OskiDakelhWeb';
-  src: url('/assets/fonts/oskidakelh/oskidakelhbold1.ttf');
+  font-family: "OskiDakelhWeb";
+  src: url("/assets/fonts/oskidakelh/oskidakelhbold1.ttf");
   font-weight: bold;
 }
 
@@ -288,7 +289,7 @@ form.editableComponentForm {
 }
 
 // Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter
-.search-results{
+.search-results {
   a {
     text-decoration: none;
     border-bottom: 1px solid;
