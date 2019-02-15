@@ -1027,6 +1027,7 @@
     "upper_case": "Upper Case",
     "value_in_field_x_cannot_be_empty": "Value in field %s cannot be empty",
     "width_greater_than": "Width Greater Than",
+    "file_size_greater_than": "File Size Greater Than",
     "your_a_member_of_more_than_one_dialect": "You're a member of more than one dialect"
   },
   "operations": {

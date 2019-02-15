@@ -83,7 +83,7 @@ const ResourcesFields = {
     },
     'common:size': {
       label: intl.translate({
-        key: 'models.width_greater_than',
+        key: 'models.file_size_greater_than',
         default: 'Greater than (MB)',
         case: 'words',
         append: ' (MB)',
