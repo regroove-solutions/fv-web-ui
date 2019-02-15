@@ -20,17 +20,11 @@ limitations under the License.
   <condition property="cmd.npm" value="npm.cmd" else="npm">
     <os family="windows"/>
   </condition>
-  <condition property="cmd.bower" value="bower.cmd" else="bower">
-    <os family="windows"/>
-  </condition>
+
   <condition property="cmd.gulp" value="gulp.cmd" else="gulp">
     <os family="windows"/>
   </condition>
   <condition property="cmd.mvn" value="mvn.cmd" else="mvn">
-    <os family="windows"/>
-  </condition>
-  <!-- set npm script names based on OS family -->
-  <condition property="lint.script" value="win-lint" else="lint">
     <os family="windows"/>
   </condition>
 
@@ -47,22 +41,9 @@ limitations under the License.
     </exec>
   </target>
 
-  <target name="bowerInstall" description="Install npm depedencies" unless="skipInstall">
-    <exec executable="${cmd.bower}" failonerror="true">
-      <arg value="install" />
-    </exec>
-  </target>
-
-  <target name="init" description="Download all node and web dependencies" depends="npmInstall,bowerInstall">
-    <exec executable="${cmd.npm}" failonerror="true">
-      <arg value="run" />
-      <arg value="${lint.script}" />
-    </exec>
-  </target>
-
-  <target name="build" depends="init">
+  <target name="build" depends="npmInstall">
     <exec executable="${cmd.gulp}" failonerror="true">
-      <arg value="build" />
+      <arg value="copy:nuxeo" />
     </exec>
   </target>
 
