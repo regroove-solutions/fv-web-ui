@@ -1,28 +1,25 @@
 package ca.firstvoices.nuxeo.utils;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentNotFoundException;
-import org.nuxeo.ecm.core.api.DocumentSecurityException;
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.blob.binary.BinaryBlob;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class EnricherUtils {
@@ -229,4 +226,38 @@ public class EnricherUtils {
 
         return roles;
 	}
+
+
+	public static String expandCategoriesToChildren(CoreSession session, String query) {
+		if (query != null && !query.isEmpty()) {
+			// Expand value of fv-word:categories so that it includes children
+			String REGEX = "(fv-word:categories|fvproxy:proxied_categories)\\/\\* IN \\(\"([a-zA-Z0-9\\-]*)\"\\)";
+
+			Pattern pattern = Pattern.compile(REGEX);
+			Matcher m = pattern.matcher(query);
+
+			if (m.find() && !m.group(2).isEmpty())
+			{
+				String categoryProperty = m.group(1);
+				String categoryID = m.group(2);
+
+				DocumentModelList childCategories = session.getChildren(new IdRef(categoryID));
+				Iterator it = session.getChildren(new IdRef(categoryID)).iterator();
+
+				String inClause = "(\""+ categoryID + "\"";
+
+				while (it.hasNext()) {
+					DocumentModel doc = (DocumentModel) it.next();
+					inClause += ",\"" + doc.getId() + "\"";
+				}
+
+				inClause += ")";
+
+				query = query.replaceFirst(REGEX , categoryProperty + "/* IN " + inClause);
+			}
+		}
+
+		return query;
+	}
+
 }

@@ -48,7 +48,6 @@ import static org.junit.Assert.*;
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.publisher.listeners.ProxyPublisherListener.xml",
         "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
         "FirstVoicesNuxeoPublisher:OSGI-INF/extensions/ca.firstvoices.nativeorder.services.xml",
-        "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml",
         "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml"
@@ -128,9 +127,9 @@ public class FirstVoicesPublisherTest {
         child = session.getChild(dialect.getRef(), "Dictionary");
         assertNotNull(child);
         assertEquals("FVDictionary", child.getDocumentType().getName());
-        child = session.getChild(dialect.getRef(), "Forum");
-        assertNotNull(child);
-        assertEquals("Forum", child.getDocumentType().getName());
+//        child = session.getChild(dialect.getRef(), "Forum");
+//        assertNotNull(child);
+//        assertEquals("Forum", child.getDocumentType().getName());
         child = session.getChild(dialect.getRef(), "Portal");
         assertNotNull(child);
         assertEquals("FVPortal", child.getDocumentType().getName());
