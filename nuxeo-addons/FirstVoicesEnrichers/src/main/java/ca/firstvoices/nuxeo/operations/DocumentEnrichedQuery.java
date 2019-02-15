@@ -24,8 +24,8 @@ import org.nuxeo.ecm.platform.query.api.PageProviderService;
 import java.util.HashMap;
 import java.util.Map;
 
-@Operation(id = DocumentEnrichedQuery.ID, category = Constants.CAT_FETCH, label = "Get Words For Category",
-        description = "Returns a query includes a lookup for sub-categories in addition to parent category")
+@Operation(id = DocumentEnrichedQuery.ID, category = Constants.CAT_FETCH, label = "Enriched Query",
+        description = "Returns a query that is transformed, for example - includes a lookup for sub-categories in addition to parent category")
 public class DocumentEnrichedQuery {
 
     public static final String ID = "Document.EnrichedQuery";
