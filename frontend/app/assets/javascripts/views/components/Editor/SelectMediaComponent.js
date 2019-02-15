@@ -45,11 +45,6 @@ const DefaultFetcherParams = {
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
 
-const FilteredPaginatedMediaList = withFilter(
-  withPagination(MediaList, DefaultFetcherParams.pageSize),
-  DefaultFetcherParams
-)
-
 const intl = IntlService.instance
 
 class SharedResourceGridTile extends Component {
@@ -239,11 +234,16 @@ export default class SelectMediaComponent extends React.Component {
     const dialect = this.props.dialect
 
     const SharedResourceGridTileWithDialect = React.createClass({
-      render: function() {
+      render: function SharedResourceGridTileWithDialectRender() {
         return React.createElement(SharedResourceGridTile, { ...this.props, dialect: dialect })
       },
     })
-
+    const items =
+      selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []
+    const FilteredPaginatedMediaList = withFilter(
+      withPagination(MediaList, DefaultFetcherParams.pageSize),
+      DefaultFetcherParams
+    )
     return (
       <div style={{ display: 'inline' }}>
         <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
@@ -280,9 +280,7 @@ export default class SelectMediaComponent extends React.Component {
             fetcherParams={this.state.fetcherParams}
             initialValues={{ 'dc:contributors': selectn('response.properties.username', this.props.computeLogin) }}
             metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
-            items={
-              selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []
-            }
+            items={items}
           />
         </Dialog>
       </div>
