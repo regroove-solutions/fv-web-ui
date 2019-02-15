@@ -9,6 +9,7 @@
     <version>1.0.23-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
+  <groupId>migration.ca.firstvoices</groupId>
   <artifactId>migration-contributions</artifactId>
   <name>Migration contributions</name>
   <description>Migration Bundle</description>
