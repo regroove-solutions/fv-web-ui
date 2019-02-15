@@ -47,52 +47,6 @@ import { AlphabetListView } from '../../../../../components/AlphabetListView'
 
 const intl = IntlService.instance
 
-/**
- * Learn words
- */
-// class AlphabetGridTile extends Component {
-//   static defaultProps = {
-//     action: () => {},
-//   }
-//   static propTypes = {
-//     action: PropTypes.func,
-//     tile: PropTypes.any, // TODO: set appropriate propType
-//   }
-//   constructor(props) {
-//     super(props)
-//     const { tile } = this.props
-//     this.state = {
-//       char: selectn('properties.dc:title', tile),
-//       uid: selectn('uid', tile),
-//     }
-//     ;['_handleClick'].forEach((method) => (this[method] = this[method].bind(this)))
-//   }
-//   render() {
-//     const { char, uid } = this.state
-//     return (
-//       <GridTile
-//         key={uid}
-//         className="AlphabetGridTile"
-//         style={{
-//           height: 'initial',
-//         }}
-//       >
-//         <a onClick={this._handleClick} className="AlphabetGridTileLink">
-//           {char}
-//         </a>
-//       </GridTile>
-//     )
-//   }
-//   _handleClick() {
-//     const { char } = this.state
-
-//     this.props.action(char, 'startsWith', (letter) => {
-//       const query = ` AND dc:title LIKE '${letter}%'`
-//       return query
-//     })
-//   }
-// }
-
 @provide
 export default class PageDialectLearnWords extends PageDialectLearnBase {
   static propTypes = {
@@ -115,10 +69,15 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
 
   componentDidMountViaPageDialectLearnBase() {
-    if (selectn('routeParams.category', this.props)) {
-      this.setState({
-        searchByMode: SEARCH_BY_CATEGORY,
-      })
+    // const category = selectn('routeParams.category', this.props)
+    // if (category) {
+    //   this.setState({
+    //     selectedCategory: category,
+    //   })
+    // }
+    const letter = selectn('routeParams.letter', this.props)
+    if (letter) {
+      this.handleAlphabetClick(letter)
     }
   }
   constructor(props, context) {
@@ -261,26 +220,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     }
 
     const dialectClassName = getDialectClassname(computePortal)
-    // const browseAlphabetically = React.cloneElement(
-    //   <AlphabetListView
-    //     pagination={false}
-    //     routeParams={this.props.routeParams}
-    //     dialect={selectn('response', computePortal)}
-    //   />,
-    //   {
-    //     className: dialectClassName,
-    //     gridListView: true,
-    //     gridViewProps: {
-    //       cols: 10,
-    //       cellHeight: 25,
-    //       action: this.handleAlphabetClick,
-    //       style: { overflowY: 'hidden', padding: '10px' },
-    //     },
-    //     gridListTile: AlphabetGridTile,
-    //   }
-    // )
-    // Note: Following for <ExportDialect>
-    // const fvaDialectId = selectn('response.properties.fva:dialect', computeDocument)
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -336,6 +275,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 handleDialectCategoryList={this.handleDialectCategoryList} // NOTE: Comes from PageDialectLearnBase
                 facets={selectn('response.entries', computeCategories) || []}
                 clearCategoryFilter={this.clearCategoryFilter}
+                routeParams={this.props.routeParams}
               />
             </div>
           </div>
@@ -417,8 +357,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchNxqlSort: 'dc:title',
     })
 
-    // url
-    if (selectn('routeParams.category', this.props)) {
+    // Remove alphabet/category filter urls
+    if (selectn('routeParams.category', this.props) || selectn('routeParams.letter', this.props)) {
       let resetUrl = `/${this.props.splitWindowPath.join('/')}`
       const _splitWindowPath = [...this.props.splitWindowPath]
       const learnIndex = _splitWindowPath.indexOf('learn')
@@ -530,7 +470,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         })
         if (wordOrPhraseIndex !== -1) {
           _splitWindowPath.splice(wordOrPhraseIndex + 1)
-          href = `/${_splitWindowPath.join('/')}`
+          href = `/${_splitWindowPath.join('/')}/browse/alphabet/${letter}`
         }
         this.changeFilter(href)
       }

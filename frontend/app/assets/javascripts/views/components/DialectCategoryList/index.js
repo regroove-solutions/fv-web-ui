@@ -17,6 +17,7 @@ export default class DialectCategoryList extends Component {
     styles: PropTypes.object,
     pushWindowPath: PropTypes.func.isRequired,
     splitWindowPath: PropTypes.array,
+    routeParams: PropTypes.any,
   }
 
   static defaultProps = {
@@ -57,6 +58,8 @@ export default class DialectCategoryList extends Component {
   }
 
   uidUrl = {}
+  clickParams = {}
+  selectedCategory = undefined
 
   constructor(props, context) {
     super(props, context)
@@ -70,11 +73,22 @@ export default class DialectCategoryList extends Component {
     }
 
     this.title = props.title
-    ;['_generateUidUrlPaths', '_handleClick', '_sortCategories', '_setUidUrlPath', '_sortByTitle'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
+    ;[
+      '_generateUidUrlPaths',
+      '_generateCategoryUrl',
+      '_handleClick',
+      '_sortCategories',
+      '_setUidUrlPath',
+      '_sortByTitle',
+    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
+  componentDidMount() {
+    const selectedCategory = selectn('routeParams.category', this.props)
+    if (selectedCategory) {
+      this.selectedCategory = selectedCategory
+    }
+  }
   componentDidUpdate(prevProps) {
     const prevAppliedFilterIds = prevProps.appliedFilterIds
     const currentAppliedFilterIds = this.props.appliedFilterIds
@@ -147,6 +161,19 @@ export default class DialectCategoryList extends Component {
     this.uidUrl[category.uid] = `${path}/${encodeURI(category.uid)}`
   }
 
+  _generateCategoryUrl(catId) {
+    let href = `/${this.props.splitWindowPath.join('/')}`
+    const _splitWindowPath = [...this.props.splitWindowPath]
+    const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
+      return element === 'words' || element === 'phrases'
+    })
+    if (wordOrPhraseIndex !== -1) {
+      _splitWindowPath.splice(wordOrPhraseIndex + 1)
+      href = `/${_splitWindowPath.join('/')}/categories/${catId}`
+    }
+    return href
+  }
+
   _generateListItems = (categories) => {
     this._generateUidUrlPaths(categories)
     const { appliedFilterIds } = this.props
@@ -186,7 +213,16 @@ export default class DialectCategoryList extends Component {
             lastCheckedParentFacetUid = uidParent
           }
 
-          const childHref = `/${this.uidUrl[uidChild]}`
+          // const childHref = `/${this.uidUrl[uidChild]}`
+          const childHref = this._generateCategoryUrl(uidChild)
+          const childClickParams = {
+            href: childHref,
+            checkedFacetUid: uidChild,
+            childrenIds: null,
+            parentFacetUid: uidParent,
+          }
+          // Saving for direct page load events
+          this.clickParams[uidChild] = childClickParams
           const childListItem = (
             <li key={uidChild}>
               <a
@@ -194,12 +230,7 @@ export default class DialectCategoryList extends Component {
                 href={childHref}
                 onClick={(e) => {
                   e.preventDefault()
-                  this._handleClick({
-                    href: childHref,
-                    checkedFacetUid: uidChild,
-                    childrenIds: null,
-                    parentFacetUid: uidParent,
-                  })
+                  this._handleClick(childClickParams)
                 }}
                 title={categoryChild.title}
               >
@@ -211,7 +242,8 @@ export default class DialectCategoryList extends Component {
         })
       }
 
-      const parentHref = `/${this.uidUrl[uidParent]}`
+      // const parentHref = `/${this.uidUrl[uidParent]}`
+      const parentHref = this._generateCategoryUrl(uidParent)
 
       if (parentIsActive) {
         lastCheckedUid = uidParent
@@ -219,6 +251,14 @@ export default class DialectCategoryList extends Component {
         lastCheckedParentFacetUid = undefined
       }
       const listItemActiveClass = parentIsActive || hasActiveChild ? 'DialectCategoryListItemParent--active' : ''
+      const parentClickParams = {
+        href: parentHref,
+        checkedFacetUid: uidParent,
+        childrenIds: childrenUids,
+        parentFacetUid: undefined,
+      }
+      // Saving for direct page load events
+      this.clickParams[uidParent] = parentClickParams
       const parentListItem = (
         <li key={uidParent} className={`DialectCategoryListItemParent ${listItemActiveClass}`}>
           <div className="DialectCategoryListItemGroup">
@@ -227,12 +267,7 @@ export default class DialectCategoryList extends Component {
               href={parentHref}
               onClick={(e) => {
                 e.preventDefault()
-                this._handleClick({
-                  href: parentHref,
-                  checkedFacetUid: uidParent,
-                  childrenIds: childrenUids,
-                  parentFacetUid: undefined,
-                })
+                this._handleClick(parentClickParams)
               }}
               title={category.title}
             >
@@ -250,12 +285,23 @@ export default class DialectCategoryList extends Component {
     // return _categories
 
     // Save active item/data
-    this.setState({
-      listItems: _categories,
-      lastCheckedUid,
-      lastCheckedChildrenUids,
-      lastCheckedParentFacetUid,
-    })
+    this.setState(
+      {
+        listItems: _categories,
+        lastCheckedUid,
+        lastCheckedChildrenUids,
+        lastCheckedParentFacetUid,
+      },
+      () => {
+        if (this.selectedCategory) {
+          const selectedParams = this.clickParams[this.selectedCategory]
+          if (selectedParams) {
+            this._handleClick(selectedParams)
+            this.selectedCategory = undefined
+          }
+        }
+      }
+    )
   }
 
   _handleClick(obj) {

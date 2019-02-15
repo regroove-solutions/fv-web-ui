@@ -274,6 +274,20 @@ const addCategory = (route) => {
   })
 }
 
+const addBrowseAlphabet = (route) => {
+  return Object.assign({}, route, {
+    path: route.path.concat(['browse', 'alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
+    title:
+      intl.translate({
+        key: 'category_view',
+        default: 'Alphabet View',
+        case: 'words',
+      }) +
+      ' | ' +
+      selectn('title', route),
+  })
+}
+
 class Redirecter extends Component {
   constructor(props, context) {
     super(props, context)
@@ -1240,6 +1254,8 @@ export default class AppFrontController extends Component {
         extractPaths: true,
         redirects: [WORKSPACE_TO_SECTION_REDIRECT],
       },
+      addBrowseAlphabet(DIALECT_LEARN_WORDS),
+      addPagination(addBrowseAlphabet(DIALECT_LEARN_WORDS)),
       addCategory(DIALECT_LEARN_WORDS),
       addPagination(addCategory(DIALECT_LEARN_WORDS)),
       {
