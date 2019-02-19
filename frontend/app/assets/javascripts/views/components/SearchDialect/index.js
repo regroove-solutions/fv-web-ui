@@ -329,7 +329,6 @@ class SearchDialect extends Component {
       searchByTranslations,
       searchPartOfSpeech,
     } = this.props
-
     // Showing all words in the dictionary listed alphabetically
 
     // Showing all words in the 'Fish' category
@@ -426,7 +425,7 @@ class SearchDialect extends Component {
         break
       }
       case SEARCH_BY_CUSTOM: {
-        if (searchTerm === '') {
+        if (!searchTerm || searchTerm === '') {
           msg = messages.all
         } else {
           msg = messages.contain
