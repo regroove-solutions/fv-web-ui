@@ -381,7 +381,7 @@ class SearchDialect extends Component {
       startWith: (
         <span>
           {`Showing ${wordsOrPhrases} that start with the letter '`}
-          {searchByAlphabet}
+          <strong className={getDialectClassname()}>{searchByAlphabet}</strong>
           {`'${messagePartsOfSpeech}`}
         </span>
       ),
