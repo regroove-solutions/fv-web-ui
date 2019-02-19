@@ -215,7 +215,7 @@ class SearchDialect extends Component {
       <div className="SearchDialectForm">
         <div className="SearchDialectFormPrimary">
           <input
-            className="SearchDialectFormPrimaryInput"
+            className={`SearchDialectFormPrimaryInput ${getDialectClassname()}`}
             type="text"
             onChange={this._updateSearchTerm}
             onKeyPress={this._handleEnterSearch}
@@ -367,7 +367,7 @@ class SearchDialect extends Component {
     }
 
     const wordsOrPhrases = isSearchingPhrases ? 'phrases' : 'words'
-    const _searchTerm = <strong>{searchTerm}</strong>
+    const _searchTerm = <strong className={getDialectClassname()}>{searchTerm}</strong>
     const messagePartsOfSpeech =
       searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ''
 
@@ -449,7 +449,7 @@ class SearchDialect extends Component {
         msg = messages.all
     }
 
-    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info', getDialectClassname())}>{msg}</div>
+    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{msg}</div>
   }
 
   _getNxqlSearchSort() {
