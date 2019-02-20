@@ -61,6 +61,8 @@ export default class DialectCategoryList extends Component {
   clickParams = {}
   selectedCategory = undefined
 
+  _isMounted = false
+
   constructor(props, context) {
     super(props, context)
 
@@ -77,6 +79,7 @@ export default class DialectCategoryList extends Component {
       '_generateUidUrlPaths',
       '_generateCategoryUrl',
       '_handleClick',
+      '_handleHistoryEvent',
       '_sortCategories',
       '_setUidUrlPath',
       '_sortByTitle',
@@ -84,11 +87,66 @@ export default class DialectCategoryList extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true
+    window.addEventListener('popstate', this._handleHistoryEvent)
+
     const selectedCategory = selectn('routeParams.category', this.props)
     if (selectedCategory) {
       this.selectedCategory = selectedCategory
     }
   }
+
+  componentWillUnmount() {
+    this._isMounted = false
+    window.removeEventListener('popstate', this._handleHistoryEvent)
+
+    const { lastCheckedUid, lastCheckedChildrenUids, lastCheckedParentFacetUid } = this.state
+    // 'uncheck' previous
+    if (lastCheckedUid) {
+      const unselected = {
+        checkedFacetUid: lastCheckedUid,
+        childrenIds: lastCheckedChildrenUids,
+        parentFacetUid: lastCheckedParentFacetUid,
+      }
+      this.props.handleDialectCategoryList(this.props.facetField, undefined, unselected)
+    }
+  }
+
+  _handleHistoryEvent() {
+    if (this._isMounted) {
+      const _catId = selectn('category', this.props.routeParams)
+      if (_catId) {
+        const selectedParams = this.clickParams[_catId]
+        if (selectedParams) {
+          const { href, checkedFacetUid, childrenIds, parentFacetUid } = selectedParams
+          // this._handleClick(selectedParams)
+          this.setState(
+            {
+              lastCheckedUid: checkedFacetUid,
+              lastCheckedChildrenUids: childrenIds,
+              lastCheckedParentFacetUid: parentFacetUid,
+            },
+            () => {
+              const selected = {
+                checkedFacetUid,
+                childrenIds,
+              }
+              this.props.handleCategoryClick(
+                {
+                  facetField: this.props.facetField,
+                  selected,
+                  undefined,
+                  href,
+                },
+                false
+              )
+            }
+          )
+        }
+      }
+    }
+  }
+
   componentDidUpdate(prevProps) {
     const prevAppliedFilterIds = prevProps.appliedFilterIds
     const currentAppliedFilterIds = this.props.appliedFilterIds
@@ -106,19 +164,6 @@ export default class DialectCategoryList extends Component {
 
     if (prevProps.title !== this.props.title) {
       this.title = this.props.title
-    }
-  }
-
-  componentWillUnmount() {
-    const { lastCheckedUid, lastCheckedChildrenUids, lastCheckedParentFacetUid } = this.state
-    // 'uncheck' previous
-    if (lastCheckedUid) {
-      const unselected = {
-        checkedFacetUid: lastCheckedUid,
-        childrenIds: lastCheckedChildrenUids,
-        parentFacetUid: lastCheckedParentFacetUid,
-      }
-      this.props.handleDialectCategoryList(this.props.facetField, undefined, unselected)
     }
   }
 
