@@ -14,8 +14,6 @@ const intl = IntlService.instance
 @provide
 class AlphabetListView extends Component {
   static propTypes = {
-    // computeDirectory: object.isRequired,
-    // fetchDirectory: func.isRequired,
     handleClick: func,
     routeParams: object.isRequired,
     dialect: any.isRequired,
@@ -29,17 +27,33 @@ class AlphabetListView extends Component {
     handleClick: () => {},
   }
 
+  _isMounted = false
+
   constructor(props) {
     super(props)
 
     this.state = {
       renderCycle: 0,
     }
-    ;['_generateTiles'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_generateTiles', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  // componentDidMount() {
-  // }
+  componentDidMount() {
+    this._isMounted = true
+    window.addEventListener('popstate', this._handleHistoryEvent)
+  }
+  componentWillUnmount() {
+    this._isMounted = false
+    window.removeEventListener('popstate', this._handleHistoryEvent)
+  }
+  _handleHistoryEvent() {
+    if (this._isMounted) {
+      const _letter = selectn('letter', this.props.routeParams)
+      if (_letter) {
+        this.props.handleClick(_letter, false)
+      }
+    }
+  }
 
   async componentDidUpdate(prevProps) {
     if (prevProps.dialect === undefined && this.props.dialect) {
