@@ -225,8 +225,10 @@ export default class PageDialectLearnBase extends Component {
       newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'])
     }
 
-    // Note: this strips out the sort by alphabet filter. Don't know where it's coming from but this stops it in it's tracks.
+    // Note: This strips out the sort by alphabet filter. I can't figure out where it's coming from but this stops it in it's tracks.
     newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'])
+    // Note: also remove the SearchDialect settings...
+    newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'])
 
     // Update page properties to use when navigating away
     this._handlePagePropertiesChange({ filterInfo: newFilter })
