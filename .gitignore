@@ -9,3 +9,6 @@ app/assets/stylesheets/generated
 .happypack
 .vscode
 .idea
+target
+target/
+/target
