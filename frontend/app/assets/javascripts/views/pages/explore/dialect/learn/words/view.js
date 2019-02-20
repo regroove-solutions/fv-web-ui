@@ -273,7 +273,7 @@ export default class DialectViewWord extends Component {
         <h3 className="DialectViewWordContentItemTitle">
           {intl.trans('views.pages.explore.dialect.learn.words.cultural_notes', 'Cultural Notes', 'first')}
         </h3>
-        {culturalNotes}
+        <div className="DialectViewWordContentItemGroup">{culturalNotes}</div>
       </div>
     ) : null
   }
@@ -302,7 +302,7 @@ export default class DialectViewWord extends Component {
     return _definitions.length > 0 ? (
       <div className="DialectViewWordContentItem DialectViewWordDefinition">
         <h3 className="DialectViewWordContentItemTitle">Definition</h3>
-        {_definitions}
+        <div className="DialectViewWordContentItemGroup">{_definitions}</div>
       </div>
     ) : null
   }
@@ -332,7 +332,7 @@ export default class DialectViewWord extends Component {
         <h3 className="DialectViewWordContentItemTitle">
           {intl.trans('views.pages.explore.dialect.learn.words.literal_translations', 'Literal Translations', 'first')}
         </h3>
-        {_literalTranslations}
+        <div className="DialectViewWordContentItemGroup">{_literalTranslations}</div>
       </div>
     ) : null
   }
@@ -403,7 +403,7 @@ export default class DialectViewWord extends Component {
     return phrases.length > 0 ? (
       <div className="DialectViewWordContentItem DialectViewWordPhrase">
         <h3 className="DialectViewWordContentItemTitle">{intl.trans('related_phrases', 'Related Phrases', 'first')}</h3>
-        {phrases}
+        <div className="DialectViewWordContentItemGroup">{phrases}</div>
       </div>
     ) : null
   }
@@ -415,7 +415,7 @@ export default class DialectViewWord extends Component {
       return (
         <div className="DialectViewWordContentItem DialectViewWordPronounciation">
           <h3 className="DialectViewWordContentItemTitle">{intl.trans('pronunciation', 'Pronunciation', 'first')}</h3>
-          <div className={dialectClassName}>{pronunciation}</div>
+          <div className="DialectViewWordContentItemGroup"><div className={dialectClassName}>{pronunciation}</div></div>
         </div>
       )
     }
