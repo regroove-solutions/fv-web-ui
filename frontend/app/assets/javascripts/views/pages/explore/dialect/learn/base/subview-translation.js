@@ -13,20 +13,24 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import classNames from 'classnames';
-import _ from 'underscore';
+import React, { Component, PropTypes } from 'react'
+import classNames from 'classnames'
+import _ from 'underscore'
 
-import Tabs from 'material-ui/lib/tabs/tabs';
-import Tab from 'material-ui/lib/tabs/tab';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import IntlService from 'views/services/intl';
+import Tabs from 'material-ui/lib/tabs/tabs'
+import Tab from 'material-ui/lib/tabs/tab'
+import List from 'material-ui/lib/lists/list'
+import ListItem from 'material-ui/lib/lists/list-item'
+import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance;
+const intl = IntlService.instance
 export default class SubViewTranslation extends Component {
-
-    /*static containerStyles = {
+  static defaultProps = {}
+  static propTypes = {
+    group: PropTypes.any, // TODO: set appropriate propType
+    children: PropTypes.any, // TODO: set appropriate propType
+  }
+  /*static containerStyles = {
       borderWidth: '1px',
       borderStyle: 'dashed',
       borderColor: '#efefef',
@@ -34,66 +38,60 @@ export default class SubViewTranslation extends Component {
       padding: '10px'
     };*/
 
-    static tabsStyles = {
-        tabItemContainerStyle: {
-            backgroundColor: 'transparent'
-        }
-    };
+  static tabsStyles = {
+    tabItemContainerStyle: {
+      backgroundColor: 'transparent',
+    },
+  }
 
-    static tabStyles = {
-        headline: {
-            fontSize: 15,
-            color: '#666666',
-            paddingTop: 1,
-            paddingBottom: 0,
-            marginBottom: 0,
-            textAlign: 'left'
-        }
-    };
+  static tabStyles = {
+    headline: {
+      fontSize: 15,
+      color: '#666666',
+      paddingTop: 1,
+      paddingBottom: 0,
+      marginBottom: 0,
+      textAlign: 'left',
+    },
+  }
 
-    constructor(props, context) {
-        super(props, context);
-    }
+  constructor(props, context) {
+    super(props, context)
+  }
 
-    render() {
+  render() {
+    const _this = this
 
-        const _this = this;
+    if (!this.props.group) return <div />
 
-        if (!this.props.group)
-            return <div></div>;
+    const grouped = _.groupBy(this.props.group, (obj) => {
+      return obj[_this.props.groupByElement]
+    })
 
-        const grouped = _.groupBy(this.props.group, function (obj) {
-            return obj[_this.props.groupByElement];
-        });
+    if (!grouped || _.isEmpty(grouped)) return <div />
 
-        if (!grouped || _.isEmpty(grouped))
-            return <div></div>;
+    return (
+      <div className="row">
+        <div className={classNames('col-xs-12', 'col-md-2')} style={{ marginTop: '10px' }}>
+          {this.props.children}
+        </div>
 
-        return <div className="row">
-            <div className={classNames('col-xs-12', 'col-md-2')} style={{marginTop: '10px'}}>
-                {this.props.children}
-            </div>
-
-            <div className={classNames('col-xs-12', 'col-md-10')}>
-                <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
-                    {_.map(grouped, function (group, key) {
-
-                        return <Tab style={SubViewTranslation.tabStyles.headline}
-                                    label={intl.searchAndReplace(key) + ':'} key={key}>
-
-                            <List>
-
-                                {group.map(function (groupValue, key) {
-                                    return (<ListItem key={key} primaryText={groupValue[_this.props.groupValue]}/>);
-                                })}
-
-                            </List>
-
-                        </Tab>;
-
+        <div className={classNames('col-xs-12', 'col-md-10')}>
+          <Tabs tabItemContainerStyle={SubViewTranslation.tabsStyles.tabItemContainerStyle}>
+            {_.map(grouped, (group, key) => {
+              return (
+                <Tab style={SubViewTranslation.tabStyles.headline} label={intl.searchAndReplace(key) + ':'} key={key}>
+                  <List>
+                    {group.map((groupValue, key) => {
+                      return <ListItem key={key} primaryText={groupValue[_this.props.groupValue]} />
                     })}
-                </Tabs>
-            </div>
-        </div>;
-    }
+                  </List>
+                </Tab>
+              )
+            })}
+          </Tabs>
+        </div>
+      </div>
+    )
+  }
 }
