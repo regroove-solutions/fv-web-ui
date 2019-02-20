@@ -215,7 +215,7 @@ export default class DialectViewWord extends Component {
               {this._getLiteralTranslations(computeWord)}
             </div>
 
-            <aside className="DialectViewWordSecondary">
+            <aside className="DialectViewWordContentSecondary">
               {this._getPhotos(computeWord)}
               {this._getVideos(computeWord)}
               {this._getCategories(computeWord)}
