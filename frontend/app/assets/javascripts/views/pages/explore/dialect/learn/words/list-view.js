@@ -231,7 +231,7 @@ export default class ListView extends DataListView {
 
     // Only show enabled cols if specified
     if (this.props.ENABLED_COLS.length > 0) {
-      this.state.columns = this.state.columns.filter((v, k) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
+      this.state.columns = this.state.columns.filter((v) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
     }
 
     // Bind methods to 'this'
