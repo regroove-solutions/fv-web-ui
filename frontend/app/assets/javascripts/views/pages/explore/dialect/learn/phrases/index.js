@@ -30,12 +30,13 @@ import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import RaisedButton from 'material-ui/lib/raised-button'
 
 import FacetFilterList from 'views/components/Browsing/facet-filter-list'
+import DialectFilterList from 'views/components/DialectFilterList'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
-
+import NavigationHelpers from 'common/NavigationHelpers'
 import { SearchDialect } from 'views/components/SearchDialect'
-import { SEARCH_DEFAULT } from 'views/components/SearchDialect/constants'
+import { SEARCH_SORT_DEFAULT, SEARCH_BY_ALPHABET, SEARCH_BY_DEFAULT, SEARCH_BY_PHRASE_BOOK } from 'views/components/SearchDialect/constants'
 
 const intl = IntlService.instance
 
@@ -62,58 +63,20 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     hasPagination: PropTypes.bool,
   }
 
+  DIALECT_FILTER_TYPE = 'phrases'
+
   constructor(props, context) {
     super(props, context)
 
-    const initialCategories = props.routeParams.category ? new Set([props.routeParams.category]) : new Set()
-
-    let filterInfo = new Map({
-      currentCategoryFilterIds: initialCategories,
-      currentAppliedFilter: new Map({
-        categories: props.routeParams.category
-          ? ' AND ' +
-            ProviderHelpers.switchWorkspaceSectionKeys('fv-phrase:phrase_books', props.routeParams.area) +
-            '/* IN ("' +
-            props.routeParams.category +
-            '")'
-          : '',
-      }),
-    })
+    let filterInfo = this._initialFilterInfo()
 
     // If no filters are applied via URL, use props
-    const pagePropertiesFilterInfo = selectn([[this._getPageKey()], 'filterInfo'], props.properties.pageProperties)
-
-    if (filterInfo.get('currentCategoryFilterIds').isEmpty() && pagePropertiesFilterInfo) {
-      filterInfo = pagePropertiesFilterInfo
+    if (filterInfo.get('currentCategoryFilterIds').isEmpty()) {
+      const pagePropertiesFilterInfo = selectn([[this._getPageKey()], 'filterInfo'], props.properties.pageProperties)
+      if (pagePropertiesFilterInfo) {
+        filterInfo = pagePropertiesFilterInfo
+      }
     }
-
-    this.state = {
-      filterInfo,
-      searchTerm: '',
-      searchByCulturalNotes: false,
-      searchByDefinitions: true,
-      searchByTitle: true,
-      searchNxqlQuery: '',
-      searchNxqlSort: {},
-    }
-
-    // Bind methods to 'this'
-    ;[
-      'handleSearch',
-      'resetSearch',
-      'updateState',
-      '_changeFilter',
-      '_onNavigateRequest',
-      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
-      '_handlePagePropertiesChange',
-      '_resetURLPagination',
-      '_getPageKey',
-      '_getURLPageProps',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
-  render() {
-    const { filterInfo, searchByCulturalNotes, searchByTitle, searchByDefinitions, searchTerm } = this.state
 
     const computeEntities = Immutable.fromJS([
       {
@@ -130,6 +93,59 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       },
     ])
 
+    this.state = {
+      filterInfo,
+      searchTerm: '',
+      searchByAlphabet: '',
+      searchByMode: SEARCH_BY_DEFAULT,
+      searchingDialectFilter: undefined,
+      searchByDefinitions: true,
+      searchByTitle: true,
+      searchByTranslations: false,
+      searchNxqlQuery: '',
+      searchNxqlSort: {},
+      searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+      computeEntities,
+      isKidsTheme: props.routeParams.theme === 'kids',
+    }
+
+    // Bind methods to 'this'
+    ;[
+      'handleSearch',
+      'handlePhraseBookClick',
+      'resetSearch',
+      'updateState',
+      'changeFilter',
+      'clearDialectFilter',
+      '_initialFilterInfo',
+      '_onNavigateRequest',
+      '_getPageKey',
+      'handleDialectFilterList', // NOTE: Comes from PageDialectLearnBase
+      '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
+      '_handlePagePropertiesChange', // NOTE: Comes from PageDialectLearnBase
+      '_resetURLPagination', // NOTE: Comes from PageDialectLearnBase
+      '_getURLPageProps', // NOTE: Comes from PageDialectLearnBase
+    ].forEach((method) => (this[method] = this[method].bind(this)))
+  }
+
+  render() {
+    const {
+      computeEntities,
+      filterInfo,
+      isKidsTheme,
+      // searchNxqlSort, // for browse by alphabet
+      searchByMode,
+      searchByAlphabet,
+      searchingDialectFilter,
+      searchByDefinitions,
+      searchByTitle,
+      searchByTranslations,
+      searchTerm,
+      searchPartOfSpeech,
+
+      searchByCulturalNotes,
+    } = this.state
+
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
       this.props.routeParams.dialect_path + '/Dictionary'
@@ -144,8 +160,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     )
 
     const computePhraseBooksSize = selectn('response.entries.length', computePhraseBooks) || 0
-
-    const isKidsTheme = this.props.routeParams.theme === 'kids'
 
     const phraseListView = selectn('response.uid', computeDocument) ? (
       <PhraseListView
@@ -224,28 +238,44 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
           <div
             className={classNames('col-xs-12', 'col-md-3', computePhraseBooksSize === 0 ? 'hidden' : null, 'PrintHide')}
           >
-            <FacetFilterList
-              title={intl.trans('phrase_books', 'Phrase Books', 'words')}
+
+            <DialectFilterList
+              type={this.DIALECT_FILTER_TYPE}
+              title={intl.trans(
+                'views.pages.explore.dialect.learn.phrases.filter_by_phrase_books',
+                'Filter by Phrase Books',
+                'words'
+              )}
               appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
               facetField={ProviderHelpers.switchWorkspaceSectionKeys(
                 'fv-phrase:phrase_books',
                 this.props.routeParams.area
               )}
-              onFacetSelected={this._handleFacetSelected} // NOTE: Comes from PageDialectLearnBase
               facets={selectn('response.entries', computePhraseBooks) || []}
+              routeParams={this.props.routeParams}
+              handleDialectFilterClick={this.handlePhraseBookClick}
+              handleDialectFilterList={this.handleDialectFilterList} // NOTE: Comes from PageDialectLearnBase
+              clearDialectFilter={this.clearDialectFilter}
             />
           </div>
           <div className={classNames('col-xs-12', computePhraseBooksSize === 0 ? 'col-md-12' : 'col-md-9')}>
             <h1>{pageTitle}</h1>
 
             <SearchDialect
-              isSearchingPhrases
               filterInfo={filterInfo}
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
+              // Phrase specific
+              isSearchingPhrases
               searchByCulturalNotes={searchByCulturalNotes}
-              searchByTitle={searchByTitle}
+              // Phrase & Word
+              searchByAlphabet={searchByAlphabet}
               searchByDefinitions={searchByDefinitions}
+              searchByMode={searchByMode}
+              searchByTitle={searchByTitle}
+              searchByTranslations={searchByTranslations}
+              searchingDialectFilter={searchingDialectFilter}
+              searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               updateAncestorState={this.updateState}
             />
@@ -258,21 +288,88 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
   // END render
 
+  clearDialectFilter() {
+    this.setState({ filterInfo: this._initialFilterInfo() })
+  }
+
+  _initialFilterInfo = () => {
+    const routeParamsCategory = this.props.routeParams.phraseBook
+    const initialCategories = routeParamsCategory ? new Set([routeParamsCategory]) : new Set()
+    const currentAppliedFilterCategoriesParam1 = ProviderHelpers.switchWorkspaceSectionKeys(
+      'fv-phrase:phrase_books',
+      this.props.routeParams.area
+    )
+    const currentAppliedFilterCategories = routeParamsCategory
+      ? ` AND ${currentAppliedFilterCategoriesParam1}/* IN ("${routeParamsCategory}")`
+      : ''
+
+    return new Map({
+      currentCategoryFilterIds: initialCategories,
+      currentAppliedFilter: new Map({
+        phraseBook: currentAppliedFilterCategories,
+      }),
+    })
+  }
+
   handleSearch() {
-    const { searchTerm, searchNxqlQuery } = this.state
-    this._changeFilter(searchTerm, 'contains', () => ` AND ${searchNxqlQuery}`)
+    this.changeFilter()
+  }
+
+  handlePhraseBookClick(obj, updateHistory = true) {
+    const { facetField, selected, unselected, href } = obj
+    this.setState(
+      {
+        searchTerm: '',
+        searchByAlphabet: '',
+        searchByMode: SEARCH_BY_PHRASE_BOOK,
+        searchingDialectFilter: selected.checkedFacetUid,
+        searchByTitle: true,
+        searchByDefinitions: false,
+        searchByTranslations: false,
+        searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+      },
+      () => {
+        this.changeFilter(href, updateHistory)
+
+        this.handleDialectFilterList(facetField, selected, unselected, this.DIALECT_FILTER_TYPE)
+      }
+    )
   }
 
   resetSearch() {
-    // TODO: Should `let newFilter = this.state.filterInfo.deleteIn(..`
-    // TODO: just be `this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)`?
-    let newFilter = this.state.filterInfo.deleteIn(['currentAppliedFilter', 'contains'], null)
-    newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'contains'], null)
+    let newFilter = this.state.filterInfo
 
-    // When facets change, pagination should be reset.
-    // In these pages (words/phrase), list views are controlled via URL
-    this._resetURLPagination()
-    this.setState({ filterInfo: newFilter })
+    newFilter = newFilter.set('currentAppliedFilter', new Map())
+    newFilter = newFilter.set('currentAppliedFiltersDesc', new Map())
+    newFilter = newFilter.set('currentCategoryFilterIds', new Set())
+
+    this.setState(
+      {
+        filterInfo: newFilter,
+        // searchNxqlSort: 'fv:custom_order',
+        searchNxqlSort: 'dc:title',
+      },
+      () => {
+        // When facets change, pagination should be reset.
+        // In these pages (words/phrase), list views are controlled via URL
+        this._resetURLPagination()
+
+        // TODO: REMOVE CATEGORY?
+
+        // Remove alphabet/category filter urls
+        if (selectn('routeParams.phraseBook', this.props) || selectn('routeParams.letter', this.props)) {
+          let resetUrl = `/${this.props.splitWindowPath.join('/')}`
+          const _splitWindowPath = [...this.props.splitWindowPath]
+          const learnIndex = _splitWindowPath.indexOf('learn')
+          if (learnIndex !== -1) {
+            _splitWindowPath.splice(learnIndex + 2)
+            resetUrl = `/${_splitWindowPath.join('/')}`
+          }
+
+          NavigationHelpers.navigate(resetUrl, this.props.pushWindowPath, false)
+        }
+      }
+    )
   }
 
   updateState(stateObj) {
@@ -298,43 +395,41 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     )
   }
 
-  _changeFilter(value, type, nxql) {
-    let newFilter = this.state.filterInfo.updateIn(['currentAppliedFilter', type], () => {
-      return nxql(value)
-    })
+  changeFilter(href, updateUrl = true) {
+    const { searchByMode, searchNxqlQuery } = this.state
+    let searchType
+    let newFilter = this.state.filterInfo
 
-    newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', type], () => {
-      let filterDesc
-
-      switch (type) {
-        case 'contains':
-          filterDesc = 'contain the search term'
-          break
-
-        case 'startsWith':
-          filterDesc = 'start with the letter '
-          break
-
-        case 'categories':
-          // NOTE: DON'T THINK WE EVER GET HERE!
-          filterDesc = 'have the categories'
-          break
-
-        default:
-          filterDesc = null
+    switch (searchByMode) {
+      case SEARCH_BY_ALPHABET: {
+        searchType = 'startsWith'
+        break
       }
+      case SEARCH_BY_PHRASE_BOOK: {
+        searchType = 'phraseBook'
+        break
+      }
+      default: {
+        searchType = 'contains'
+      }
+    }
 
-      return (
-        <span>
-          {filterDesc} <strong>{value}</strong>
-        </span>
-      )
-    })
+    // Remove all old settings...
+    newFilter = newFilter.set('currentAppliedFilter', new Map())
+    newFilter = newFilter.set('currentCategoryFilterIds', new Set())
+
+    // Add new search query
+    newFilter = newFilter.updateIn(['currentAppliedFilter', searchType], () => ` AND ${searchNxqlQuery}`)
 
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
-    this._resetURLPagination()
-    this.setState({ filterInfo: newFilter })
+    this.setState({ filterInfo: newFilter }, () => {
+      this._resetURLPagination()
+      // See about updating url
+      if (href && updateUrl) {
+        NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+      }
+    })
   }
   _getPageKey() {
     return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_phrases'

@@ -7,6 +7,7 @@ import {
   SEARCH_BY_ALPHABET,
   SEARCH_BY_CATEGORY,
   SEARCH_BY_CUSTOM,
+  SEARCH_BY_PHRASE_BOOK,
 } from './constants'
 import provide from 'react-redux-provide'
 import StringHelpers from 'common/StringHelpers'
@@ -32,7 +33,7 @@ class SearchDialect extends Component {
     searchButtonText: string,
     searchByMode: number,
     searchByAlphabet: string,
-    searchingCategory: string,
+    searchingDialectFilter: string,
     searchByDefinitions: bool,
     searchByTitle: bool,
     searchByTranslations: bool,
@@ -132,7 +133,7 @@ class SearchDialect extends Component {
 
     // if (
     //   this.props.searchByMode === SEARCH_BY_CATEGORY &&
-    //   prevProps.searchingCategory !== this.props.searchingCategory
+    //   prevProps.searchingDialectFilter !== this.props.searchingDialectFilter
     // ) {
     //   console.log('!!!! componentDidUpdate SEARCH_BY_CATEGORY')
     //   // Note: aware that we are triggering a new render
@@ -143,10 +144,11 @@ class SearchDialect extends Component {
     // }
     const updatedAlphabet =
       this.props.searchByMode === SEARCH_BY_ALPHABET && prevProps.searchByAlphabet !== this.props.searchByAlphabet
-    const updatedCategory =
-      this.props.searchByMode === SEARCH_BY_CATEGORY && prevProps.searchingCategory !== this.props.searchingCategory
+    const updatedDialectFilter =
+      (this.props.searchByMode === SEARCH_BY_CATEGORY || this.props.searchByMode === SEARCH_BY_PHRASE_BOOK) &&
+      prevProps.searchingDialectFilter !== this.props.searchingDialectFilter
     const updatedMode = prevProps.searchByMode !== this.props.searchByMode
-    if (updatedAlphabet || updatedCategory || updatedMode) {
+    if (updatedAlphabet || updatedDialectFilter || updatedMode) {
       // Note: aware that we are triggering a new render
       // eslint-disable-next-line
       this.setState({
@@ -159,7 +161,11 @@ class SearchDialect extends Component {
     const { searchByMode } = this.props
 
     let searchBody = null
-    if (searchByMode === SEARCH_BY_ALPHABET || searchByMode === SEARCH_BY_CATEGORY) {
+    if (
+      searchByMode === SEARCH_BY_ALPHABET ||
+      searchByMode === SEARCH_BY_CATEGORY ||
+      searchByMode === SEARCH_BY_PHRASE_BOOK
+    ) {
       searchBody = this._getBrowse()
     } else {
       searchBody = this._getSearchForm()
@@ -174,19 +180,22 @@ class SearchDialect extends Component {
   _getBrowse() {
     const { searchByMode } = this.props
     let resetButtonText = ''
-    if (searchByMode === SEARCH_BY_ALPHABET) {
-      resetButtonText = 'Stop browsing Alphabetically'
-    } else {
-      resetButtonText = 'Stop browsing by Category'
+    switch (searchByMode) {
+      case SEARCH_BY_ALPHABET:
+        resetButtonText = 'Stop browsing Alphabetically'
+        break
+      case SEARCH_BY_CATEGORY:
+        resetButtonText = 'Stop browsing by Category'
+        break
+      case SEARCH_BY_PHRASE_BOOK:
+        resetButtonText = 'Stop browsing by Phrase Book'
+        break
+      default:
+        resetButtonText = 'Stop browsing and clear filter'
     }
     return (
       <div className="SearchDialectForm">
-        <RaisedButton
-          label={resetButtonText}
-          onTouchTap={this._resetSearch}
-          primary
-          // style={{ marginLeft: '20px' }}
-        />
+        <RaisedButton label={resetButtonText} onTouchTap={this._resetSearch} primary />
       </div>
     )
   }
@@ -377,6 +386,7 @@ class SearchDialect extends Component {
         <span>{`Showing all ${wordsOrPhrases} in the dictionary listed alphabetically${messagePartsOfSpeech}`}</span>
       ),
       byCategory: <span>{`Showing all ${wordsOrPhrases} in the selected category${messagePartsOfSpeech}`}</span>,
+      byPhraseBook: <span>{`Showing all ${wordsOrPhrases} from the selected Phrase Book${messagePartsOfSpeech}`}</span>,
       startWith: (
         <span>
           {`Showing ${wordsOrPhrases} that start with the letter '`}
@@ -422,6 +432,10 @@ class SearchDialect extends Component {
       }
       case SEARCH_BY_CATEGORY: {
         msg = messages.byCategory
+        break
+      }
+      case SEARCH_BY_PHRASE_BOOK: {
+        msg = messages.byPhraseBook
         break
       }
       case SEARCH_BY_CUSTOM: {
@@ -516,6 +530,7 @@ class SearchDialect extends Component {
       searchByTitle: `dc:title ILIKE '%${search}%'`,
       searchByAlphabet: `dc:title ILIKE          '${searchByAlphabet}%'`,
       searchByCategory: `dc:title ILIKE '%${search}%'`,
+      searchByPhraseBook: `dc:title ILIKE '%${search}%'`,
       searchByCulturalNotes: `fv:cultural_note ILIKE '%${search}%'`,
       searchByDefinitions: `fv:definitions/*/translation ILIKE '%${search}%'`,
       searchByTranslations: `fv:literal_translation/*/translation ILIKE '%${search}%'`,
@@ -537,6 +552,10 @@ class SearchDialect extends Component {
       }
       case SEARCH_BY_CATEGORY: {
         nxqlQueries.push(`${nxqlTmpl.searchByCategory}`)
+        break
+      }
+      case SEARCH_BY_PHRASE_BOOK: {
+        nxqlQueries.push(`${nxqlTmpl.searchByPhraseBook}`)
         break
       }
       default: {
@@ -610,7 +629,7 @@ class SearchDialect extends Component {
       searchByMode: SEARCH_BY_CUSTOM,
       searchTerm: this.props.searchTerm,
       searchByAlphabet: '',
-      searchingCategory: '',
+      searchingDialectFilter: '',
       // searchNxqlQuery: this._generateNxql(),
       // searchNxqlSort: this._getNxqlSearchSort(),
       // force: Math.random(),

@@ -57,6 +57,7 @@
     "all_dialects": "All Dialects",
     "alphabet": "alphabet",
     "alphabet_de": "Alphabet",
+    "alphabet_view": "Alphabet View",
     "already_member": "Already a Member?",
     "ancestor": "ancestor",
     "ancestry": "ancestry",
@@ -1204,11 +1205,18 @@
               "x_book": "%s book",
               "warning": "<strong>Note:<\/strong> This new sort order will be saved once the book is saved in the 'Book' tab"
             },
+            "phrases": {
+              "browse_by_phrase_books": "Browse by Phrase Books",
+              "page_title": "Phrases",
+              "page_title_phrase_book": "Browsing by Phrase Book"
+            },
             "words": {
               "add_new_word_to_x": "Add New Word to %s",
               "create_new_word": "Create New Word",
               "cultural_note": "Cultural Note",
               "cultural_notes": "Cultural Notes",
+              "browse_by_category": "Browse by category",
+              "page_title_category": "Browsing by Category",
               "literal_translation": "Literal Translation",
               "literal_translations": "Literal Translations",
               "no_audio_yet": "No audio is available yet",

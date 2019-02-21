@@ -166,9 +166,10 @@ export default class PageDialectLearnBase extends Component {
     this.setState({ filterInfo: newFilter })
   }
 
-  handleDialectCategoryList(facetField, selected, unselected) {
-    const currentCategoryFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
-    let categoryFilter = ''
+  handleDialectFilterList(facetField, selected, unselected, type='words') {
+    const categoriesOrPhraseBook = type === 'words' ? 'categories' : 'phraseBook'
+    const currentDialectFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
+    let dialectFilter = ''
     let newList = new Set()
 
     if (unselected) {
@@ -178,10 +179,10 @@ export default class PageDialectLearnBase extends Component {
         parentFacetUid: unselectedParentFacetUid,
       } = unselected
       // Removing filter
-      newList = currentCategoryFilterIds.delete(currentCategoryFilterIds.keyOf(unselectedCheckedFacetUid))
+      newList = currentDialectFilterIds.delete(currentDialectFilterIds.keyOf(unselectedCheckedFacetUid))
 
       if (unselectedParentFacetUid) {
-        newList = newList.delete(currentCategoryFilterIds.keyOf(unselectedParentFacetUid))
+        newList = newList.delete(currentDialectFilterIds.keyOf(unselectedParentFacetUid))
       }
       const unselectedChildrenIdsList = new Set(unselectedChildrenIds)
       if (unselectedChildrenIdsList.size > 0) {
@@ -203,7 +204,7 @@ export default class PageDialectLearnBase extends Component {
 
     // Category filter
     if (newList.size > 0) {
-      categoryFilter = ` AND ${ProviderHelpers.switchWorkspaceSectionKeys(
+      dialectFilter = ` AND ${ProviderHelpers.switchWorkspaceSectionKeys(
         facetField,
         this.props.routeParams.area
       )}/* IN ("${newList.join('","')}")`
@@ -212,23 +213,30 @@ export default class PageDialectLearnBase extends Component {
     let newFilter = this.state.filterInfo.updateIn(['currentCategoryFilterIds'], () => {
       return newList
     })
-    newFilter = newFilter.updateIn(['currentAppliedFilter', 'categories'], () => {
-      return categoryFilter
+    newFilter = newFilter.updateIn(['currentAppliedFilter', categoriesOrPhraseBook], () => {
+      return dialectFilter
     })
 
     // Update filter description based on if categories exist or don't exist
     if (newList.size > 0) {
-      newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', 'categories'], () => {
-        return " match the categories you've selected "
+      newFilter = newFilter.updateIn(['currentAppliedFiltersDesc', categoriesOrPhraseBook], () => {
+        return type === 'words' ? " match the categories you've selected " : " match the phrase books you've selected"
       })
     } else {
-      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', 'categories'])
+      newFilter = newFilter.deleteIn(['currentAppliedFiltersDesc', categoriesOrPhraseBook])
     }
 
     // Note: This strips out the sort by alphabet filter. I can't figure out where it's coming from but this stops it in it's tracks.
     newFilter = newFilter.deleteIn(['currentAppliedFilter', 'startsWith'])
     // Note: also remove the SearchDialect settings...
     newFilter = newFilter.deleteIn(['currentAppliedFilter', 'contains'])
+
+    if (type === 'words') {
+      newFilter = newFilter.deleteIn(['currentAppliedFilter', 'phraseBook'])
+    }
+    if (type === 'phrases') {
+      newFilter = newFilter.deleteIn(['currentAppliedFilter', 'categories'])
+    }
 
     // Update page properties to use when navigating away
     this._handlePagePropertiesChange({ filterInfo: newFilter })

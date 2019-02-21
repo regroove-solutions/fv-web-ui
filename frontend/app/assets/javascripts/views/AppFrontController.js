@@ -225,7 +225,7 @@ const DIALECT_LEARN_PHRASES = {
   path: PHRASES_PATH,
   title:
     intl.translate({
-      key: 'phrases',
+      key: 'views.pages.explore.dialect.learn.phrases.page_title',
       default: 'Phrases',
       case: 'words',
     }) + ' | {$dialect_name}',
@@ -265,7 +265,7 @@ const addCategory = (route) => {
     path: route.path.concat(['categories', new paramMatch('category', ANYTHING_BUT_SLASH)]),
     title:
       intl.translate({
-        key: 'category_view',
+        key: 'views.pages.explore.dialect.learn.words.page_title_category',
         default: 'Category View',
         case: 'words',
       }) +
@@ -277,14 +277,19 @@ const addCategory = (route) => {
 const addBrowseAlphabet = (route) => {
   return Object.assign({}, route, {
     path: route.path.concat(['browse', 'alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
-    title:
-      intl.translate({
-        key: 'category_view',
-        default: 'Alphabet View',
-        case: 'words',
-      }) +
-      ' | ' +
-      selectn('title', route),
+    title: '{$letter}' + ` | ${selectn('title', route)}`,
+  })
+}
+const addBrowsePhraseBook = (route) => {
+  return Object.assign({}, route, {
+    path: route.path.concat(['book', new paramMatch('phraseBook', ANYTHING_BUT_SLASH)]),
+    title: intl.translate({
+      key: 'views.pages.explore.dialect.learn.phrases.page_title_phrase_book',
+      default: 'Browsing by Phrase Book',
+      case: 'words',
+    }) +
+    ' | ' +
+    selectn('title', route),
   })
 }
 
@@ -1344,6 +1349,8 @@ export default class AppFrontController extends Component {
       },
       DIALECT_LEARN_PHRASES,
       addPagination(DIALECT_LEARN_PHRASES),
+      addBrowsePhraseBook(DIALECT_LEARN_PHRASES),
+      addPagination(addBrowsePhraseBook(DIALECT_LEARN_PHRASES)),
       {
         path: [
           KIDS_OR_DEFAULT,

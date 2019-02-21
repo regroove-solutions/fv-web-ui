@@ -33,7 +33,7 @@ import {
   SEARCH_BY_CATEGORY,
 } from 'views/components/SearchDialect/constants'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-import DialectCategoryList from 'views/components/DialectCategoryList'
+import DialectFilterList from 'views/components/DialectFilterList'
 import IntlService from 'views/services/intl'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
@@ -78,6 +78,9 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       this.handleAlphabetClick(letter)
     }
   }
+
+  DIALECT_FILTER_TYPE = 'words'
+
   constructor(props, context) {
     super(props, context)
 
@@ -111,7 +114,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchTerm: '',
       searchByAlphabet: '',
       searchByMode: SEARCH_BY_DEFAULT,
-      searchingCategory: undefined,
+      searchingDialectFilter: undefined,
       searchByDefinitions: true,
       searchByTitle: true,
       searchByTranslations: false,
@@ -120,13 +123,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
-      clickedFilterByCategory: false,
     }
 
     // Bind methods to 'this'
     ;[
       'changeFilter',
-      'clearCategoryFilter',
+      'clearDialectFilter',
       'handleAlphabetClick',
       'handleCategoryClick',
       'handleSearch',
@@ -134,7 +136,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       'updateState',
       '_getPageKey',
       '_initialFilterInfo',
-      'handleDialectCategoryList', // NOTE: Comes from PageDialectLearnBase
+      'handleDialectFilterList', // NOTE: Comes from PageDialectLearnBase
       '_getURLPageProps', // NOTE: Comes from PageDialectLearnBase
       '_handleFacetSelected', // NOTE: Comes from PageDialectLearnBase
       '_handleFilterChange', // NOTE: Comes from PageDialectLearnBase
@@ -152,7 +154,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchNxqlSort,
       searchByMode,
       searchByAlphabet,
-      searchingCategory,
+      searchingDialectFilter,
       searchByDefinitions,
       searchByTitle,
       searchByTranslations,
@@ -255,11 +257,11 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 letter={this.state.searchByAlphabet}
               />
 
-              <DialectCategoryList
-                // title={intl.trans('categories', 'Categories', 'first')}
+              <DialectFilterList
+                type={this.DIALECT_FILTER_TYPE}
                 title={intl.trans(
-                  'views.pages.explore.dialect.learn.words.find_by_category',
-                  'Filter by Category',
+                  'views.pages.explore.dialect.learn.words.browse_by_category',
+                  'Browse by category',
                   'words'
                 )}
                 appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
@@ -267,10 +269,10 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                   'fv-word:categories',
                   this.props.routeParams.area
                 )}
-                handleCategoryClick={this.handleCategoryClick}
-                handleDialectCategoryList={this.handleDialectCategoryList} // NOTE: Comes from PageDialectLearnBase
+                handleDialectFilterClick={this.handleCategoryClick}
+                handleDialectFilterList={this.handleDialectFilterList} // NOTE: Comes from PageDialectLearnBase
                 facets={selectn('response.entries', computeCategories) || []}
-                clearCategoryFilter={this.clearCategoryFilter}
+                clearDialectFilter={this.clearDialectFilter}
                 routeParams={this.props.routeParams}
               />
             </div>
@@ -288,12 +290,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               filterInfo={filterInfo}
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
-              searchByMode={searchByMode}
+
               searchByAlphabet={searchByAlphabet}
-              searchingCategory={searchingCategory}
-              searchByTitle={searchByTitle}
               searchByDefinitions={searchByDefinitions}
+              searchByMode={searchByMode}
+              searchByTitle={searchByTitle}
               searchByTranslations={searchByTranslations}
+              searchingDialectFilter={searchingDialectFilter}
               searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               updateAncestorState={this.updateState}
@@ -307,7 +310,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
   }
   // END render
 
-  clearCategoryFilter() {
+  clearDialectFilter() {
     this.setState({ filterInfo: this._initialFilterInfo() })
   }
 
@@ -487,7 +490,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         searchTerm: '',
         searchByAlphabet: '',
         searchByMode: SEARCH_BY_CATEGORY,
-        searchingCategory: selected.checkedFacetUid,
+        searchingDialectFilter: selected.checkedFacetUid,
         searchByTitle: true,
         searchByDefinitions: false,
         searchByTranslations: false,
@@ -496,7 +499,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       () => {
         this.changeFilter(href, updateHistory)
 
-        this.handleDialectCategoryList(facetField, selected, unselected)
+        this.handleDialectFilterList(facetField, selected, unselected, this.DIALECT_FILTER_TYPE)
       }
     )
   }
