@@ -116,4 +116,4 @@ AnswerMQ.childContextTypes = {
   muiTheme: React.PropTypes.object
 };
 
-module.exports = AnswerMQ;
+export default AnswerMQ;

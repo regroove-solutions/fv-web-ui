@@ -163,4 +163,4 @@ WordEditView.contextTypes = {
   router: React.PropTypes.func
 };
 
-module.exports = WordEditView;
+export default WordEditView;

@@ -273,7 +273,7 @@ export default class HangmanGame extends Component {
 
             <div>{intl.trans('views.pages.explore.dialect.play.hangman.guess_puzzle_to_make_it_to_the_beach', 'Guess the puzzle to make it to the beach', 'first')}</div>
 
-            <img src={`/assets/games/hangman/assets/${this.state.guessesLeft}.png`}
+            <img src={`/assets/games/fv-games-hangman/images/${this.state.guessesLeft}.png`}
                  style={{width: '100%', maxWidth: '750px'}}/>
 
             <div>

@@ -26,14 +26,14 @@ import PageDialectBookEdit from './explore/dialect/learn/songs-stories/edit'
 import PageDialectBookEntryEdit from './explore/dialect/learn/songs-stories/entry/edit'
 import PageDialectAlphabetCharacterEdit from './explore/dialect/learn/alphabet/edit'
 
-module.exports = {
-  PageExploreDialectEdit,
-  PageDialectWordEdit,
-  PageDialectEditMedia,
-  PageDialectPhraseEdit,
-  PageDialectBookEdit,
-  PageDialectBookEntryEdit,
-  PageDialectAlphabetCharacterEdit,
-  PageDialectGalleryEdit
+export {
+    PageExploreDialectEdit,
+    PageDialectWordEdit,
+    PageDialectEditMedia,
+    PageDialectPhraseEdit,
+    PageDialectBookEdit,
+    PageDialectBookEntryEdit,
+    PageDialectAlphabetCharacterEdit,
+    PageDialectGalleryEdit
 }
 

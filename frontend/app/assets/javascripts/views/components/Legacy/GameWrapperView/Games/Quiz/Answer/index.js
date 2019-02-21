@@ -62,4 +62,4 @@ Answer.childContextTypes = {
   muiTheme: React.PropTypes.object
 };
 
-module.exports = Answer;
+export default Answer;
