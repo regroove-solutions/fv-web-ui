@@ -14,34 +14,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { Component, PropTypes } from "react"
-import Immutable, { Map } from "immutable"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
 
-import classNames from "classnames"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import t from "tcomb-form"
+import t from 'tcomb-form'
 
-import fields from "models/schemas/filter-fields"
-import options from "models/schemas/filter-options"
+import fields from 'models/schemas/filter-fields'
+import options from 'models/schemas/filter-options'
 
-import RaisedButton from "material-ui/lib/raised-button"
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import RaisedButton from 'material-ui/lib/raised-button'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import ProviderHelpers from "common/ProviderHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
 
-import StringHelpers from "common/StringHelpers"
-import FormHelpers from "common/FormHelpers"
-import AnalyticsHelpers from "common/AnalyticsHelpers"
+import StringHelpers from 'common/StringHelpers'
+import FormHelpers from 'common/FormHelpers'
+import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
-import SearchResultTile from "./tile"
+import SearchResultTile from './tile'
 
-import DataListView from "views/pages/explore/dialect/learn/base/data-list-view"
-import DocumentListView from "views/components/Document/DocumentListView"
+import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
+import DocumentListView from 'views/components/Document/DocumentListView'
 
-import withToggle from "views/hoc/view/with-toggle"
-import IntlService from "views/services/intl"
+import withToggle from 'views/hoc/view/with-toggle'
+import IntlService from 'views/services/intl'
 
 const FiltersWithToggle = withToggle()
 const intl = IntlService.instance
@@ -49,12 +49,12 @@ const intl = IntlService.instance
 @provide
 export default class Search extends DataListView {
   static defaultProps = {
-    DISABLED_SORT_COLS: ["state", "fv-word:categories", "related_audio", "related_pictures"],
+    DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
-    DEFAULT_LANGUAGE: "english",
-    DEFAULT_SORT_COL: "fv:custom_order",
-    DEFAULT_SORT_TYPE: "asc",
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
     gridListView: false,
@@ -95,9 +95,9 @@ export default class Search extends DataListView {
       },
       formValue: {
         searchTerm: props.routeParams.searchTerm,
-        documentTypes: ["FVWord", "FVPhrase", "FVBook", "FVPortal"],
+        documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'],
       },
-      defaultFormValue: { searchTerm: "", documentTypes: ["FVWord", "FVPhrase", "FVBook", "FVPortal"] },
+      defaultFormValue: { searchTerm: '', documentTypes: ['FVWord', 'FVPhrase', 'FVBook', 'FVPortal'] },
       preparedFilters: null,
     }
 
@@ -106,12 +106,12 @@ export default class Search extends DataListView {
 
     // Bind methods to 'this'
     ;[
-      "_handleRefetch",
-      "_onSearchSaveForm",
-      "_computeQueryParam",
-      "_getQueryPath",
-      "_onEntryNavigateRequest",
-      "_onReset",
+      '_handleRefetch',
+      '_onSearchSaveForm',
+      '_computeQueryParam',
+      '_getQueryPath',
+      '_onEntryNavigateRequest',
+      '_onReset',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
@@ -127,28 +127,28 @@ export default class Search extends DataListView {
   }
 
   _fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
-    if (props.routeParams.searchTerm && props.routeParams.searchTerm !== "") {
+    if (props.routeParams.searchTerm && props.routeParams.searchTerm !== '') {
       const documentTypeFilter = "'" + formValue.documentTypes.join("','") + "'"
       // const documentTypeFilter = `'${formValue.documentTypes.join("','")}'`
       props.searchDocuments(
         this._getQueryPath(props),
-        (props.routeParams.area === "sections" ? " AND ecm:isLatestVersion = 1" : " ") +
+        (props.routeParams.area === 'sections' ? ' AND ecm:isLatestVersion = 1' : ' ') +
           // Exclude Demo from search
           (!props.routeParams.dialect_path
             ? " AND ecm:ancestorId <> 'b482d9df-e71b-40b5-9632-79b1fc2782d7' AND ecm:ancestorId <> '732c2ef6-19d3-45a8-97e7-b6cff7d84909' "
-            : " ") +
-          " AND ecm:primaryType IN (" +
+            : ' ') +
+          ' AND ecm:primaryType IN (' +
           documentTypeFilter +
-          ")" +
+          ')' +
           " AND ecm:fulltext = '*" +
-          StringHelpers.clean(props.routeParams.searchTerm, "fulltext") +
+          StringHelpers.clean(props.routeParams.searchTerm, 'fulltext') +
           "*'" +
           // More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +
-          "&currentPageIndex=" +
+          '&currentPageIndex=' +
           (pageIndex - 1) +
-          "&pageSize=" +
+          '&pageSize=' +
           pageSize +
-          "&sortBy=ecm:fulltextScore"
+          '&sortBy=ecm:fulltextScore'
       )
 
       // TODO: Update with path after filter.
@@ -196,15 +196,15 @@ export default class Search extends DataListView {
       props.routeParams.dialect_path ||
       props.routeParams.language_path ||
       props.routeParams.language_family_path ||
-      `/${props.properties.domain}/${props.routeParams.area || "sections"}/Data`
+      `/${props.properties.domain}/${props.routeParams.area || 'sections'}/Data`
     )
   }
 
   _computeQueryParam() {
     const lastPathSegment = this.props.splitWindowPath[this.props.splitWindowPath.length - 1]
 
-    let queryParam = ""
-    if (lastPathSegment !== "search") {
+    let queryParam = ''
+    if (lastPathSegment !== 'search') {
       queryParam = lastPathSegment
     }
 
@@ -213,10 +213,10 @@ export default class Search extends DataListView {
 
   _onReset(event, props = this.props) {
     // Reset all controlled inputs
-    const inputs = selectn("refs.input.refs", this.refs.search_form)
+    const inputs = selectn('refs.input.refs', this.refs.search_form)
 
     for (const inputKey in inputs) {
-      if (typeof inputs[inputKey].reset === "function") {
+      if (typeof inputs[inputKey].reset === 'function') {
         inputs[inputKey].reset()
       }
     }
@@ -229,12 +229,12 @@ export default class Search extends DataListView {
   componentDidUpdate(prevProps, prevState) {
     const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath())
 
-    if (selectn("response.totalSize", computeSearchDocuments) !== undefined) {
+    if (selectn('response.totalSize', computeSearchDocuments) !== undefined) {
       // Track search event
       AnalyticsHelpers.trackSiteSearch({
         keyword: this.props.routeParams.searchTerm,
         category: false,
-        results: selectn("response.totalSize", computeSearchDocuments),
+        results: selectn('response.totalSize', computeSearchDocuments),
       })
     }
   }
@@ -249,11 +249,11 @@ export default class Search extends DataListView {
 
     const computeSearchDocuments = ProviderHelpers.getEntry(this.props.computeSearchDocuments, this._getQueryPath())
 
-    let _onEntryNavigateRequest = this._onEntryNavigateRequest
-    let searchTerm = this.props.routeParams.searchTerm
+    const _onEntryNavigateRequest = this._onEntryNavigateRequest
+    const searchTerm = this.props.routeParams.searchTerm
 
-    let SearchResultTileWithProps = React.createClass({
-      render: function() {
+    const SearchResultTileWithProps = React.createClass({
+      render: () => {
         return React.createElement(SearchResultTile, {
           searchTerm: searchTerm,
           action: _onEntryNavigateRequest,
@@ -265,66 +265,64 @@ export default class Search extends DataListView {
     return (
       <div>
         <div className="row">
-          <div className={classNames("col-xs-12", "col-md-3")}>
+          <div className={classNames('col-xs-12', 'col-md-3')}>
             <div className="col-xs-12">
               <form onSubmit={this._onSearchSaveForm}>
                 <FiltersWithToggle
-                  label={intl.trans("views.pages.search.filter_items", "Filter items", "first")}
-                  mobileOnly={true}
+                  label={intl.trans('views.pages.search.filter_items', 'Filter items', 'first')}
+                  mobileOnly
                 >
-                  <t.form.Form
-                    ref="search_form"
-                    value={Object.assign({}, this.state.formValue, { searchTerm: this.props.routeParams.searchTerm })}
-                    type={t.struct(selectn("Search", fields))}
-                    options={selectn("Search", options)}
-                  />
-                  <RaisedButton
-                    onTouchTap={this._onReset}
-                    label={intl.trans("reset", "Reset", "first")}
-                    primary={true}
-                  />{" "}
+                  <div className="fontAboriginalSans">
+                    <t.form.Form
+                      ref="search_form"
+                      value={Object.assign({}, this.state.formValue, { searchTerm: this.props.routeParams.searchTerm })}
+                      type={t.struct(selectn('Search', fields))}
+                      options={selectn('Search', options)}
+                    />
+                  </div>
+                  <RaisedButton onTouchTap={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
                   &nbsp;
-                  <RaisedButton type="submit" label={intl.trans("search", "Search", "first")} primary={true} />
+                  <RaisedButton type="submit" label={intl.trans('search', 'Search', 'first')} primary />
                 </FiltersWithToggle>
               </form>
             </div>
           </div>
           <div
-            className={classNames("search-results", "col-xs-12", "col-md-6")}
-            style={{ borderLeft: "5px solid #f7f7f7" }}
+            className={classNames('search-results', 'col-xs-12', 'col-md-6')}
+            style={{ borderLeft: '5px solid #f7f7f7' }}
           >
             <h1>
-              {intl.trans("search_results", "Search results", "first")} - {this.props.routeParams.searchTerm}
+              {intl.trans('search_results', 'Search results', 'first')} -{' '}
+              <span className="fontAboriginalSans">{this.props.routeParams.searchTerm}</span>
             </h1>
 
-            <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+            <PromiseWrapper renderOnError computeEntities={computeEntities}>
               {(() => {
-                let entries = selectn("response.entries", computeSearchDocuments)
+                const entries = selectn('response.entries', computeSearchDocuments)
 
                 if (entries) {
                   if (entries.length == 0) {
                     return <div>Sorry, no results were found for this search.</div>
-                  } else {
-                    return (
-                      <DocumentListView
-                        objectDescriptions="results"
-                        type="Document"
-                        data={computeSearchDocuments}
-                        gridCols={1}
-                        gridListView={true}
-                        gridListTile={SearchResultTileWithProps}
-                        gridViewProps={{ cellHeight: 170, style: { overflowY: "hidden", margin: "0 0 30px 0" } }}
-                        refetcher={this._handleRefetch}
-                        onSortChange={this._handleSortChange}
-                        onSelectionChange={this._onEntryNavigateRequest}
-                        page={this.state.pageInfo.page}
-                        pageSize={this.state.pageInfo.pageSize}
-                        onColumnOrderChange={this._handleColumnOrderChange}
-                        usePrevResponse={true}
-                        className="browseDataGrid"
-                      />
-                    )
                   }
+                  return (
+                    <DocumentListView
+                      objectDescriptions="results"
+                      type="Document"
+                      data={computeSearchDocuments}
+                      gridCols={1}
+                      gridListView
+                      gridListTile={SearchResultTileWithProps}
+                      gridViewProps={{ cellHeight: 170, style: { overflowY: 'hidden', margin: '0 0 30px 0' } }}
+                      refetcher={this._handleRefetch}
+                      onSortChange={this._handleSortChange}
+                      onSelectionChange={this._onEntryNavigateRequest}
+                      page={this.state.pageInfo.page}
+                      pageSize={this.state.pageInfo.pageSize}
+                      onColumnOrderChange={this._handleColumnOrderChange}
+                      usePrevResponse
+                      className="browseDataGrid fontAboriginalSans"
+                    />
+                  )
                 }
               })()}
             </PromiseWrapper>
