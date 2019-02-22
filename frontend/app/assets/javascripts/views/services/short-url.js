@@ -13,19 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from "react"
 
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import provide from "react-redux-provide"
+import selectn from "selectn"
 
-import ProviderHelpers from 'common/ProviderHelpers';
+import ProviderHelpers from "common/ProviderHelpers"
 
 /**
-* Dialect portal page showing all the various components of this dialect.
-*/
+ * Dialect portal page showing all the various components of this dialect.
+ */
 @provide
 export default class ServiceShortURL extends Component {
-
   static propTypes = {
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
@@ -34,44 +33,55 @@ export default class ServiceShortURL extends Component {
     replaceWindowPath: PropTypes.func.isRequired,
     queryDialect2ByShortURL: PropTypes.func.isRequired,
     computeDialect2ByShortURL: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired
-  };
+    routeParams: PropTypes.object.isRequired,
+  }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired
-  };
+    muiTheme: PropTypes.object.isRequired,
+  }
 
-  constructor(props, context){
-    super(props, context);
+  constructor(props, context) {
+    super(props, context)
 
-    this.fetchData(this.props);
+    this.fetchData(this.props)
   }
 
   fetchData(newProps) {
-    newProps.queryDialect2ByShortURL('/FV/' + newProps.routeParams.area, ' AND (fvdialect:short_url = \'' + newProps.routeParams.dialectFriendlyName + '\' OR ecm:name = \'' + newProps.routeParams.dialectFriendlyName + '\') AND ecm:currentLifeCycleState <> \'deleted\' AND ecm:isCheckedInVersion = 0');
+    newProps.queryDialect2ByShortURL(
+      "/FV/" + newProps.routeParams.area,
+      " AND (fvdialect:short_url = '" +
+        newProps.routeParams.dialectFriendlyName +
+        "' OR ecm:name = '" +
+        newProps.routeParams.dialectFriendlyName +
+        "') AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+    )
   }
 
   componentWillReceiveProps(nextProps) {
-    const dialectQuery = ProviderHelpers.getEntry(nextProps.computeDialect2ByShortURL, '/FV/' + nextProps.routeParams.area);
-    const isSection = nextProps.routeParams.area === 'sections';
+    const dialectQuery = ProviderHelpers.getEntry(
+      nextProps.computeDialect2ByShortURL,
+      "/FV/" + nextProps.routeParams.area
+    )
+    const isSection = nextProps.routeParams.area === "sections"
 
-    let appendPath = '';
+    let appendPath = ""
 
     if (nextProps.routeParams.appendPath) {
-      appendPath = '/' + nextProps.routeParams.appendPath.replace(/_/g, "/");
+      appendPath = "/" + nextProps.routeParams.appendPath.replace(/_/g, "/")
     }
 
-    let dialectFullPath = selectn('response.entries[0].path', dialectQuery);
+    let dialectFullPath = selectn("response.entries[0].path", dialectQuery)
 
     if (dialectQuery.success) {
       if (dialectFullPath) {
-        nextProps.replaceWindowPath('/explore' + dialectFullPath + appendPath);
+        nextProps.replaceWindowPath("/explore" + dialectFullPath + appendPath)
       } else {
-        nextProps.replaceWindowPath('/404-page-not-found');
+        nextProps.replaceWindowPath("/404-page-not-found")
       }
     }
-
   }
 
-  render() { return null; }
-};
+  render() {
+    return null
+  }
+}
