@@ -475,7 +475,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         })
         if (wordOrPhraseIndex !== -1) {
           _splitWindowPath.splice(wordOrPhraseIndex + 1)
-          href = `/${_splitWindowPath.join('/')}/browse/alphabet/${letter}`
+          href = `/${_splitWindowPath.join('/')}/alphabet/${letter}`
         }
         this.changeFilter(href, updateHistory)
       }

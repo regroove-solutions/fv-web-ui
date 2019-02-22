@@ -276,7 +276,7 @@ const addCategory = (route) => {
 
 const addBrowseAlphabet = (route) => {
   return Object.assign({}, route, {
-    path: route.path.concat(['browse', 'alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
+    path: route.path.concat(['alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
     title: '{$letter}' + ` | ${selectn('title', route)}`,
   })
 }
@@ -292,10 +292,10 @@ const addBrowsePhraseBook = (route) => {
     selectn('title', route),
   })
 }
-// learn/phrases/browse/alphabet/b
+// eg: learn/phrases/alphabet/b
 const addBrowsePhraseBookByAlphabet = (route) => {
   return Object.assign({}, route, {
-    path: route.path.concat(['browse', 'alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
+    path: route.path.concat(['alphabet', new paramMatch('letter', ANYTHING_BUT_SLASH)]),
     title: intl.translate({
       key: 'views.pages.explore.dialect.learn.phrases.page_title_phrase_book',
       default: 'Browsing Phrase Book alphabetically',
