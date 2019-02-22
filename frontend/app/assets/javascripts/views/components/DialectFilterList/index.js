@@ -99,6 +99,12 @@ export default class DialectFilterList extends Component {
     if (selectedDialectFilter) {
       this.selectedDialectFilter = selectedDialectFilter
     }
+
+    if (this.props.facets && this.props.facets.length > 0) {
+      this.filtersSorted = this._sortDialectFilters(this.props.facets)
+      this._generateUidUrlPaths(this.filtersSorted)
+      this._generateListItems(this.filtersSorted, true)
+    }
   }
 
   componentWillUnmount() {
@@ -115,6 +121,59 @@ export default class DialectFilterList extends Component {
       }
       this.props.handleDialectFilterList(this.props.facetField, undefined, unselected, this.props.type)
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    const prevAppliedFilterIds = prevProps.appliedFilterIds
+    const currentAppliedFilterIds = this.props.appliedFilterIds
+
+    if (prevProps.facets.length !== this.props.facets.length) {
+      this.filtersSorted = this._sortDialectFilters(this.props.facets)
+      this._generateUidUrlPaths(this.filtersSorted)
+    }
+
+    if (
+      prevProps.facets.length !== this.props.facets.length ||
+      prevAppliedFilterIds.equals(currentAppliedFilterIds) === false
+    ) {
+      this._generateListItems(this.filtersSorted, true)
+    }
+
+    if (prevProps.title !== this.props.title) {
+      this.title = this.props.title
+    }
+  }
+
+  render() {
+    return (
+      <div className="DialectFilterList">
+        <h2>{this.title}</h2>
+        <ul className="DialectFilterListList">{this.state.listItems}</ul>
+      </div>
+    )
+  }
+
+  _generateUidUrlPaths(filters) {
+    const _splitWindowPath = [...this.props.splitWindowPath]
+    const lastPath = _splitWindowPath.pop()
+
+    if (lastPath === 'words' || lastPath === 'phrases') {
+      _splitWindowPath.push(lastPath)
+      const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
+      _splitWindowPath.push(urlFragment)
+    }
+    const path = _splitWindowPath.join('/')
+
+    filters.forEach((filter) => {
+      this._setUidUrlPath(filter, path)
+      const children = selectn('contextParameters.children.entries', filter)
+      if (children.length > 0) {
+        children.forEach((filterChild) => {
+          this._setUidUrlPath(filterChild, path)
+        })
+      }
+    })
+    return this.uidUrl
   }
 
   _handleHistoryEvent() {
@@ -156,58 +215,6 @@ export default class DialectFilterList extends Component {
     }
   }
 
-  componentDidUpdate(prevProps) {
-    const prevAppliedFilterIds = prevProps.appliedFilterIds
-    const currentAppliedFilterIds = this.props.appliedFilterIds
-
-    if (prevProps.facets.length !== this.props.facets.length) {
-      this.filtersSorted = this._sortDialectFilters(this.props.facets)
-    }
-
-    if (
-      prevProps.facets.length !== this.props.facets.length ||
-      prevAppliedFilterIds.equals(currentAppliedFilterIds) === false
-    ) {
-      this._generateListItems(this.filtersSorted)
-    }
-
-    if (prevProps.title !== this.props.title) {
-      this.title = this.props.title
-    }
-  }
-
-  render() {
-    return (
-      <div className="DialectFilterList">
-        <h2>{this.title}</h2>
-        <ul className="DialectFilterListList">{this.state.listItems}</ul>
-      </div>
-    )
-  }
-
-  _generateUidUrlPaths(filters) {
-    const _splitWindowPath = [...this.props.splitWindowPath]
-    const lastPath = _splitWindowPath.pop()
-
-    if (lastPath === 'words' || lastPath === 'phrases') {
-      _splitWindowPath.push(lastPath)
-      const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
-      _splitWindowPath.push(urlFragment)
-    }
-    const path = _splitWindowPath.join('/')
-
-    filters.forEach((filter) => {
-      this._setUidUrlPath(filter, path)
-      const children = selectn('contextParameters.children.entries', filter)
-      if (children.length > 0) {
-        children.forEach((filterChild) => {
-          this._setUidUrlPath(filterChild, path)
-        })
-      }
-    })
-    return this.uidUrl
-  }
-
   _setUidUrlPath(filter, path) {
     // TODO: map encodeUri title to uid for friendly urls
     // this.uidUrl[category.uid] = encodeURI(category.title)
@@ -230,8 +237,7 @@ export default class DialectFilterList extends Component {
     return href
   }
 
-  _generateListItems = (filters) => {
-    this._generateUidUrlPaths(filters)
+  _generateListItems = (filters, updateState = false) => {
     const { appliedFilterIds } = this.props
 
     let lastCheckedUid = undefined
@@ -338,26 +344,26 @@ export default class DialectFilterList extends Component {
       return parentListItem
     })
 
-    // return _filters
-
-    // Save active item/data
-    this.setState(
-      {
-        listItems: _filters,
-        lastCheckedUid,
-        lastCheckedChildrenUids,
-        lastCheckedParentFacetUid,
-      },
-      () => {
-        if (this.selectedDialectFilter) {
-          const selectedParams = this.clickParams[this.selectedDialectFilter]
-          if (selectedParams) {
-            this._handleClick(selectedParams)
-            this.selectedDialectFilter = undefined
+    if (updateState) {
+      // Save active item/data
+      this.setState(
+        {
+          listItems: _filters,
+          lastCheckedUid,
+          lastCheckedChildrenUids,
+          lastCheckedParentFacetUid,
+        },
+        () => {
+          if (this.selectedDialectFilter) {
+            const selectedParams = this.clickParams[this.selectedDialectFilter]
+            if (selectedParams) {
+              this._handleClick(selectedParams)
+              this.selectedDialectFilter = undefined
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
 
   _handleClick(obj) {
