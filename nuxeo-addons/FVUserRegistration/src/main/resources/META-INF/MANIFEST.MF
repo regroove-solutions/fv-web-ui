@@ -13,5 +13,6 @@ Nuxeo-Component: OSGI-INF/extensions/ca.firstvoices.operations.xml,OSGI-INF/exte
  .xml,OSGI-INF/extensions/ca.firstvoices.codecs.xml,OSGI-INF/extension
  s/ca.firstvoices.user.xml,OSGI-INF/extensions/ca.firstvoices.usermapp
  ing.xml,OSGI-INF/extensions/ca.firstvoices.workers.regtimeout.xml,OSG
- I-INF/extensions/ca.firstvoices.schedulers.xml
+ I-INF/extensions/ca.firstvoices.schedulers.xml, OSGI-INF/extensions/c
+ a.firstvoices.marshallers.xml
 
