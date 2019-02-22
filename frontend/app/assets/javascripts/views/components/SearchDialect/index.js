@@ -524,7 +524,7 @@ class SearchDialect extends Component {
       searchPartOfSpeech,
     } = this.props
 
-    const search = searchTerm || ''
+    const search = StringHelpers.clean(searchTerm, 'nxql') || ''
     const nxqlTmpl = {
       // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
       searchByTitle: `dc:title ILIKE '%${search}%'`,
