@@ -133,7 +133,11 @@ $ gulp karma
 ## Switching Targets for test purposes ##
 Note: local.json is where you change the target you run against.
 Location: <your-front-end-work-directory>/app/assets/javascript/configuration/local.json
-For running aginst local server configure to http://localhost:3001/nuxeo
+
+For running aginst local server configure to
+"baseWebUIURL":"http://localhost:3001/"
+"baseURL":"http://localhost:8080/nuxeo/"
+
 
 ## Licensing ##
 
