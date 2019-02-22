@@ -351,6 +351,7 @@ export default class ListView extends DataListView {
       renderSimpleTable: this.props.renderSimpleTable,
       sortInfo: this.state.sortInfo.uiSortOrder,
       type: 'FVWord',
+      flashcard: false,
     }
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
