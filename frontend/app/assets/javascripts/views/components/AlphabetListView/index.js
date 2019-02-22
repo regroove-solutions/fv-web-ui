@@ -38,9 +38,35 @@ class AlphabetListView extends Component {
     ;['_generateTiles', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this._isMounted = true
     window.addEventListener('popstate', this._handleHistoryEvent)
+
+    const { routeParams } = this.props
+    await ProviderHelpers.fetchIfMissing(routeParams.dialect_path, this.props.fetchDialect2)
+    const _pageIndex = 0
+    const _pageSize = 100
+    await this.props.fetchCharacters(
+      `${routeParams.dialect_path}/Alphabet`,
+      `&currentPageIndex=${_pageIndex}&pageSize=${_pageSize}&sortOrder=asc&sortBy=fvcharacter:alphabet_order`
+    )
+
+    const computedCharacters = await ProviderHelpers.getEntry(
+      this.props.computeCharacters,
+      `${routeParams.dialect_path}/Alphabet`
+    )
+    const computePortal = await ProviderHelpers.getEntry(
+      this.props.computePortal,
+      `${routeParams.dialect_path}/Portal`
+    )
+
+    const entries = selectn('response.entries', computedCharacters)
+
+    this.setState({
+      renderCycle: this.state.renderCycle + 1,
+      entries,
+      dialectClassName: getDialectClassname(computePortal),
+    })
   }
   componentWillUnmount() {
     this._isMounted = false

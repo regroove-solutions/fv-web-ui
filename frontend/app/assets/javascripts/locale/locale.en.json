@@ -1206,7 +1206,7 @@
               "warning": "<strong>Note:<\/strong> This new sort order will be saved once the book is saved in the 'Book' tab"
             },
             "phrases": {
-              "browse_by_phrase_books": "Browse by Phrase Books",
+              "browse_by_phrase_books": "Browse Phrase Books",
               "page_title": "Phrases",
               "page_title_phrase_book": "Browsing by Phrase Book"
             },
@@ -1215,7 +1215,7 @@
               "create_new_word": "Create New Word",
               "cultural_note": "Cultural Note",
               "cultural_notes": "Cultural Notes",
-              "browse_by_category": "Browse by category",
+              "browse_by_category": "Browse Categroies",
               "page_title_category": "Browsing by Category",
               "literal_translation": "Literal Translation",
               "literal_translations": "Literal Translations",

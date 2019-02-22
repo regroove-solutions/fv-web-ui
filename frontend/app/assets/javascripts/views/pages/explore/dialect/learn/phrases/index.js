@@ -29,8 +29,9 @@ import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 
 import RaisedButton from 'material-ui/lib/raised-button'
 
-import FacetFilterList from 'views/components/Browsing/facet-filter-list'
 import DialectFilterList from 'views/components/DialectFilterList'
+import { AlphabetListView } from '../../../../../components/AlphabetListView'
+
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
@@ -64,6 +65,13 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
   }
 
   DIALECT_FILTER_TYPE = 'phrases'
+
+  componentDidMountViaPageDialectLearnBase() {
+    const letter = selectn('routeParams.letter', this.props)
+    if (letter) {
+      this.handleAlphabetClick(letter)
+    }
+  }
 
   constructor(props, context) {
     super(props, context)
@@ -111,6 +119,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
     // Bind methods to 'this'
     ;[
+      'handleAlphabetClick',
       'handleSearch',
       'handlePhraseBookClick',
       'resetSearch',
@@ -133,7 +142,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       computeEntities,
       filterInfo,
       isKidsTheme,
-      // searchNxqlSort, // for browse by alphabet
       searchByMode,
       searchByAlphabet,
       searchingDialectFilter,
@@ -145,7 +153,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
       searchByCulturalNotes,
     } = this.state
-
     const computeDocument = ProviderHelpers.getEntry(
       this.props.computeDocument,
       this.props.routeParams.dialect_path + '/Dictionary'
@@ -209,6 +216,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
     const pageTitle = intl.trans('views.pages.explore.dialect.phrases.x_phrases', `${dialect} Phrases`, null, [dialect])
 
+    console.log('!', selectn('response', computePortal))
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
@@ -239,11 +247,18 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
             className={classNames('col-xs-12', 'col-md-3', computePhraseBooksSize === 0 ? 'hidden' : null, 'PrintHide')}
           >
 
+            <AlphabetListView
+              dialect={selectn('response', computePortal)}
+              handleClick={this.handleAlphabetClick}
+              routeParams={this.props.routeParams}
+              letter={this.state.searchByAlphabet}
+            />
+
             <DialectFilterList
               type={this.DIALECT_FILTER_TYPE}
               title={intl.trans(
-                'views.pages.explore.dialect.learn.phrases.filter_by_phrase_books',
-                'Filter by Phrase Books',
+                'views.pages.explore.dialect.learn.phrases.browse_by_phrase_books',
+                'Browse Phrase Books',
                 'words'
               )}
               appliedFilterIds={this.state.filterInfo.get('currentCategoryFilterIds')}
@@ -313,6 +328,32 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
 
   handleSearch() {
     this.changeFilter()
+  }
+
+  handleAlphabetClick(letter, updateHistory = true) {
+    this.setState(
+      {
+        searchTerm: '',
+        searchByAlphabet: letter,
+        searchByMode: SEARCH_BY_ALPHABET,
+        searchByTitle: true,
+        searchByDefinitions: false,
+        searchByTranslations: false,
+        searchPartOfSpeech: SEARCH_SORT_DEFAULT,
+      },
+      () => {
+        let href = undefined
+        const _splitWindowPath = [...this.props.splitWindowPath]
+        const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
+          return element === 'words' || element === 'phrases'
+        })
+        if (wordOrPhraseIndex !== -1) {
+          _splitWindowPath.splice(wordOrPhraseIndex + 1)
+          href = `/${_splitWindowPath.join('/')}/browse/alphabet/${letter}`
+        }
+        this.changeFilter(href, updateHistory)
+      }
+    )
   }
 
   handlePhraseBookClick(obj, updateHistory = true) {

@@ -261,7 +261,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
                 type={this.DIALECT_FILTER_TYPE}
                 title={intl.trans(
                   'views.pages.explore.dialect.learn.words.browse_by_category',
-                  'Browse by category',
+                  'Browse Categories',
                   'words'
                 )}
                 appliedFilterIds={filterInfo.get('currentCategoryFilterIds')}
