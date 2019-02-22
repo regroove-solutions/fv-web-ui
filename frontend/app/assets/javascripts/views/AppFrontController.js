@@ -169,11 +169,16 @@ const REMOVE_FROM_BREADCRUMBS = ["FV", "sections", "Data", "Workspaces", "search
 
 const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
   // Don't perform any redirect if these aren't available.
-  if (!selectn("success", computeLogin) || !computeDialect2 || !computeDialect2.get(0).get("response")) {
+  if (
+    !selectn("success", computeLogin) ||
+    !computeDialect2 ||
+    !computeDialect2.get(0) ||
+    !computeDialect2.get(0).get("response")
+  ) {
     return false
   }
 
-  return ProviderHelpers.isDialectPath(windowPath) && !ProviderHelpers.isDialectMember(computeLogin, computeDialect2)
+  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2)
 }
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
@@ -234,7 +239,7 @@ const DIALECT_LEARN_PHRASES = {
   path: PHRASES_PATH,
   title:
     intl.translate({
-      key: "phrases",
+      key: "views.pages.explore.dialect.learn.phrases.page_title",
       default: "Phrases",
       case: "words",
     }) + " | {$dialect_name}",
@@ -274,7 +279,7 @@ const addCategory = (route) => {
     path: route.path.concat(["categories", new paramMatch("category", ANYTHING_BUT_SLASH)]),
     title:
       intl.translate({
-        key: "category_view",
+        key: "views.pages.explore.dialect.learn.words.page_title_category",
         default: "Category View",
         case: "words",
       }) +
@@ -285,11 +290,31 @@ const addCategory = (route) => {
 
 const addBrowseAlphabet = (route) => {
   return Object.assign({}, route, {
-    path: route.path.concat(["browse", "alphabet", new paramMatch("letter", ANYTHING_BUT_SLASH)]),
+    path: route.path.concat(["alphabet", new paramMatch("letter", ANYTHING_BUT_SLASH)]),
+    title: "{$letter}" + ` | ${selectn("title", route)}`,
+  })
+}
+const addBrowsePhraseBook = (route) => {
+  return Object.assign({}, route, {
+    path: route.path.concat(["book", new paramMatch("phraseBook", ANYTHING_BUT_SLASH)]),
     title:
       intl.translate({
-        key: "category_view",
-        default: "Alphabet View",
+        key: "views.pages.explore.dialect.learn.phrases.page_title_phrase_book",
+        default: "Browsing by Phrase Book",
+        case: "words",
+      }) +
+      " | " +
+      selectn("title", route),
+  })
+}
+// eg: learn/phrases/alphabet/b
+const addBrowsePhraseBookByAlphabet = (route) => {
+  return Object.assign({}, route, {
+    path: route.path.concat(["alphabet", new paramMatch("letter", ANYTHING_BUT_SLASH)]),
+    title:
+      intl.translate({
+        key: "views.pages.explore.dialect.learn.phrases.page_title_phrase_book",
+        default: "Browsing Phrase Book alphabetically",
         case: "words",
       }) +
       " | " +
@@ -1354,6 +1379,10 @@ export default class AppFrontController extends Component {
       },
       DIALECT_LEARN_PHRASES,
       addPagination(DIALECT_LEARN_PHRASES),
+      addBrowsePhraseBook(DIALECT_LEARN_PHRASES),
+      addPagination(addBrowsePhraseBook(DIALECT_LEARN_PHRASES)),
+      addBrowsePhraseBookByAlphabet(DIALECT_LEARN_PHRASES),
+      addPagination(addBrowsePhraseBookByAlphabet(DIALECT_LEARN_PHRASES)),
       {
         path: [
           KIDS_OR_DEFAULT,
@@ -2198,7 +2227,7 @@ export default class AppFrontController extends Component {
       // No match found (i.e. 404)
       const notFoundPage = Immutable.fromJS({
         title: PAGE_NOT_FOUND_TITLE,
-        page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
+        page: <PageError title={PAGE_NOT_FOUND_TITLE} body="HELLOW WOLRD" />,
       })
 
       const matchReturn = {
@@ -2254,7 +2283,10 @@ export default class AppFrontController extends Component {
     }
     // Re-route if trying to view Workspaces from different group
     // TODO: Handle on back-end; hide all areas where you can access workspaces
-    else if (allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)) {
+    else if (
+      ProviderHelpers.isDialectPath(nextProps.windowPath) &&
+      allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)
+    ) {
       window.location.href = nextProps.windowPath.replace("Workspaces", "sections")
     }
   }

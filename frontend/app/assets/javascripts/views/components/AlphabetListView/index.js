@@ -14,11 +14,10 @@ const intl = IntlService.instance
 @provide
 class AlphabetListView extends Component {
   static propTypes = {
-    // computeDirectory: object.isRequired,
-    // fetchDirectory: func.isRequired,
     handleClick: func,
     routeParams: object.isRequired,
     dialect: any.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
     computeCharacters: PropTypes.object.isRequired, // via provide
     computePortal: PropTypes.object.isRequired, // via provide
     fetchDialect2: PropTypes.func.isRequired,
@@ -29,17 +28,59 @@ class AlphabetListView extends Component {
     handleClick: () => {},
   }
 
+  _isMounted = false
+
   constructor(props) {
     super(props)
 
     this.state = {
       renderCycle: 0,
     }
-    ;['_generateTiles'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_generateTiles', '_generateDialectFilterUrl', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  // componentDidMount() {
-  // }
+  async componentDidMount() {
+    this._isMounted = true
+    window.addEventListener('popstate', this._handleHistoryEvent)
+
+    const { routeParams } = this.props
+    await ProviderHelpers.fetchIfMissing(routeParams.dialect_path, this.props.fetchDialect2)
+    const _pageIndex = 0
+    const _pageSize = 100
+    await this.props.fetchCharacters(
+      `${routeParams.dialect_path}/Alphabet`,
+      `&currentPageIndex=${_pageIndex}&pageSize=${_pageSize}&sortOrder=asc&sortBy=fvcharacter:alphabet_order`
+    )
+
+    const computedCharacters = await ProviderHelpers.getEntry(
+      this.props.computeCharacters,
+      `${routeParams.dialect_path}/Alphabet`
+    )
+    const computePortal = await ProviderHelpers.getEntry(
+      this.props.computePortal,
+      `${routeParams.dialect_path}/Portal`
+    )
+
+    const entries = selectn('response.entries', computedCharacters)
+
+    this.setState({
+      renderCycle: this.state.renderCycle + 1,
+      entries,
+      dialectClassName: getDialectClassname(computePortal),
+    })
+  }
+  componentWillUnmount() {
+    this._isMounted = false
+    window.removeEventListener('popstate', this._handleHistoryEvent)
+  }
+  _handleHistoryEvent() {
+    if (this._isMounted) {
+      const _letter = selectn('letter', this.props.routeParams)
+      if (_letter) {
+        this.props.handleClick(_letter, false)
+      }
+    }
+  }
 
   async componentDidUpdate(prevProps) {
     if (prevProps.dialect === undefined && this.props.dialect) {
@@ -81,21 +122,38 @@ class AlphabetListView extends Component {
     const content = renderCycle !== 0 ? this._generateTiles() : null
     return <div className="AlphabetListView">{content}</div>
   }
+
+  _generateDialectFilterUrl(letter) {
+    let href = undefined
+    const _splitWindowPath = [...this.props.splitWindowPath]
+    const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
+      return element === 'words' || element === 'phrases'
+    })
+    if (wordOrPhraseIndex !== -1) {
+      _splitWindowPath.splice(wordOrPhraseIndex + 1)
+      href = `/${_splitWindowPath.join('/')}/alphabet/${letter}`
+    }
+    return href
+  }
+
   _generateTiles() {
     const { entries } = this.state
     const { letter } = this.props
     const _entries = entries.map((value, index) => {
       const _letter = value.title
+      const href = this._generateDialectFilterUrl(_letter)
       return (
-        <div
+        <a
+          href={href}
           className={`AlphabetListViewTile ${letter === _letter ? 'AlphabetListViewTile--active' : ''}`}
-          onClick={() => {
-            this.props.handleClick(_letter)
+          onClick={(e) => {
+            e.preventDefault()
+            this.props.handleClick(_letter, href)
           }}
           key={index}
         >
           {_letter}
-        </div>
+        </a>
       )
     })
     let content = null

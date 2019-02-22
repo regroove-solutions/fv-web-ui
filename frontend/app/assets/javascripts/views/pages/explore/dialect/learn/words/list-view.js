@@ -85,8 +85,6 @@ export default class ListView extends DataListView {
     fetchDialect2: PropTypes.func.isRequired,
     filter: PropTypes.object,
     gridListView: PropTypes.bool,
-    onPaginationReset: PropTypes.func,
-    onPagePropertiesChange: PropTypes.func,
     pageProperties: PropTypes.object,
     parentID: PropTypes.string,
     properties: PropTypes.object.isRequired,
@@ -193,7 +191,7 @@ export default class ListView extends DataListView {
           name: 'dc:modified',
           width: 210,
           title: intl.trans('date_modified', 'Date Modified'),
-          render: function(v, data, cellProps) {
+          render: (v, data) => {
             return StringHelpers.formatUTCDateString(selectn('lastModified', data))
           },
         },
@@ -201,7 +199,7 @@ export default class ListView extends DataListView {
           name: 'dc:created',
           width: 210,
           title: intl.trans('date_created', 'Date Created'),
-          render: function(v, data, cellProps) {
+          render: (v, data) => {
             return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data))
           },
         },
@@ -233,7 +231,7 @@ export default class ListView extends DataListView {
 
     // Only show enabled cols if specified
     if (this.props.ENABLED_COLS.length > 0) {
-      this.state.columns = this.state.columns.filter((v, k) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
+      this.state.columns = this.state.columns.filter((v) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
     }
 
     // Bind methods to 'this'
@@ -255,12 +253,9 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `fetchData`
   fetchData(newProps) {
-    // console.log('!!! fetchData 1')
     if (newProps.dialect === null && !this.getDialect(newProps)) {
-      // console.log('!!! fetchData 2')
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
-    // console.log('!!! fetchData 3')
     this._fetchListViewData(
       newProps,
       newProps.DEFAULT_PAGE,
@@ -284,16 +279,14 @@ export default class ListView extends DataListView {
 
   // NOTE: DataListView calls `_fetchListViewData`
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    // console.log('!!! _fetchListViewData 1')
     let currentAppliedFilter = ''
 
     if (props.filter.has('currentAppliedFilter')) {
-      // console.log('!!! _fetchListViewData 2')
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
     const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex -
       1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
-    // console.log('!!! _fetchListViewData 3')
+
     props.fetchWords(this._getPathOrParentID(props), nql)
   }
 

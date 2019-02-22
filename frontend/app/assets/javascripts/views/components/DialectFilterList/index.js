@@ -6,12 +6,13 @@ import provide from 'react-redux-provide'
 // const FiltersWithToggle = withToggle()
 
 @provide
-export default class DialectCategoryList extends Component {
+export default class DialectFilterList extends Component {
   static propTypes = {
+    type: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     facets: PropTypes.array.isRequired,
-    handleCategoryClick: PropTypes.func,
-    handleDialectCategoryList: PropTypes.func.isRequired,
+    handleDialectFilterClick: PropTypes.func,
+    handleDialectFilterList: PropTypes.func.isRequired,
     facetField: PropTypes.string.isRequired,
     appliedFilterIds: PropTypes.instanceOf(Set),
     styles: PropTypes.object,
@@ -21,11 +22,12 @@ export default class DialectCategoryList extends Component {
   }
 
   static defaultProps = {
+    type: 'words',
     facets: [],
-    handleCategoryClick: () => {},
+    handleDialectFilterClick: () => {},
   }
 
-  categoriesSorted = []
+  filtersSorted = []
   // intl = IntlService.instance
   title = ''
 
@@ -59,7 +61,9 @@ export default class DialectCategoryList extends Component {
 
   uidUrl = {}
   clickParams = {}
-  selectedCategory = undefined
+  selectedDialectFilter = undefined
+
+  _isMounted = false
 
   constructor(props, context) {
     super(props, context)
@@ -75,41 +79,38 @@ export default class DialectCategoryList extends Component {
     this.title = props.title
     ;[
       '_generateUidUrlPaths',
-      '_generateCategoryUrl',
+      '_generateDialectFilterUrl',
       '_handleClick',
-      '_sortCategories',
+      '_handleHistoryEvent',
+      '_sortDialectFilters',
       '_setUidUrlPath',
       '_sortByTitle',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentDidMount() {
-    const selectedCategory = selectn('routeParams.category', this.props)
-    if (selectedCategory) {
-      this.selectedCategory = selectedCategory
-    }
-  }
-  componentDidUpdate(prevProps) {
-    const prevAppliedFilterIds = prevProps.appliedFilterIds
-    const currentAppliedFilterIds = this.props.appliedFilterIds
+    this._isMounted = true
+    window.addEventListener('popstate', this._handleHistoryEvent)
 
-    if (prevProps.facets.length !== this.props.facets.length) {
-      this.categoriesSorted = this._sortCategories(this.props.facets)
+    const selectedDialectFilter =
+      this.props.type === 'words'
+        ? selectn('routeParams.category', this.props)
+        : selectn('routeParams.phraseBook', this.props)
+    if (selectedDialectFilter) {
+      this.selectedDialectFilter = selectedDialectFilter
     }
 
-    if (
-      prevProps.facets.length !== this.props.facets.length ||
-      prevAppliedFilterIds.equals(currentAppliedFilterIds) === false
-    ) {
-      this._generateListItems(this.categoriesSorted)
-    }
-
-    if (prevProps.title !== this.props.title) {
-      this.title = this.props.title
+    if (this.props.facets && this.props.facets.length > 0) {
+      this.filtersSorted = this._sortDialectFilters(this.props.facets)
+      this._generateUidUrlPaths(this.filtersSorted)
+      this._generateListItems(this.filtersSorted, true)
     }
   }
 
   componentWillUnmount() {
+    this._isMounted = false
+    window.removeEventListener('popstate', this._handleHistoryEvent)
+
     const { lastCheckedUid, lastCheckedChildrenUids, lastCheckedParentFacetUid } = this.state
     // 'uncheck' previous
     if (lastCheckedUid) {
@@ -118,50 +119,111 @@ export default class DialectCategoryList extends Component {
         childrenIds: lastCheckedChildrenUids,
         parentFacetUid: lastCheckedParentFacetUid,
       }
-      this.props.handleDialectCategoryList(this.props.facetField, undefined, unselected)
+      this.props.handleDialectFilterList(this.props.facetField, undefined, unselected, this.props.type)
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    const prevAppliedFilterIds = prevProps.appliedFilterIds
+    const currentAppliedFilterIds = this.props.appliedFilterIds
+
+    if (prevProps.facets.length !== this.props.facets.length) {
+      this.filtersSorted = this._sortDialectFilters(this.props.facets)
+      this._generateUidUrlPaths(this.filtersSorted)
+    }
+
+    if (
+      prevProps.facets.length !== this.props.facets.length ||
+      prevAppliedFilterIds.equals(currentAppliedFilterIds) === false
+    ) {
+      this._generateListItems(this.filtersSorted, true)
+    }
+
+    if (prevProps.title !== this.props.title) {
+      this.title = this.props.title
     }
   }
 
   render() {
     return (
-      <div className="DialectCategoryList">
-        <h2>Browse by Category</h2>
-        <ul className="DialectCategoryListList">{this.state.listItems}</ul>
+      <div className="DialectFilterList">
+        <h2>{this.title}</h2>
+        <ul className="DialectFilterListList">{this.state.listItems}</ul>
       </div>
     )
   }
 
-  _generateUidUrlPaths(categories) {
+  _generateUidUrlPaths(filters) {
     const _splitWindowPath = [...this.props.splitWindowPath]
     const lastPath = _splitWindowPath.pop()
 
     if (lastPath === 'words' || lastPath === 'phrases') {
       _splitWindowPath.push(lastPath)
-      _splitWindowPath.push('categories')
+      const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
+      _splitWindowPath.push(urlFragment)
     }
     const path = _splitWindowPath.join('/')
 
-    categories.forEach((category) => {
-      this._setUidUrlPath(category, path)
-      const children = selectn('contextParameters.children.entries', category)
+    filters.forEach((filter) => {
+      this._setUidUrlPath(filter, path)
+      const children = selectn('contextParameters.children.entries', filter)
       if (children.length > 0) {
-        children.forEach((categoryChild) => {
-          this._setUidUrlPath(categoryChild, path)
+        children.forEach((filterChild) => {
+          this._setUidUrlPath(filterChild, path)
         })
       }
     })
     return this.uidUrl
   }
 
-  _setUidUrlPath(category, path) {
+  _handleHistoryEvent() {
+    if (this._isMounted) {
+      const _filterId =
+        this.props.type === 'words'
+          ? selectn('routeParams.category', this.props)
+          : selectn('routeParams.phraseBook', this.props)
+      // const _catId = selectn('category', this.props.routeParams)
+      if (_filterId) {
+        const selectedParams = this.clickParams[_filterId]
+        if (selectedParams) {
+          const { href, checkedFacetUid, childrenIds, parentFacetUid } = selectedParams
+          // this._handleClick(selectedParams)
+          this.setState(
+            {
+              lastCheckedUid: checkedFacetUid,
+              lastCheckedChildrenUids: childrenIds,
+              lastCheckedParentFacetUid: parentFacetUid,
+            },
+            () => {
+              const selected = {
+                checkedFacetUid,
+                childrenIds,
+              }
+              this.props.handleDialectFilterClick(
+                {
+                  facetField: this.props.facetField,
+                  selected,
+                  undefined,
+                  href,
+                },
+                false
+              )
+            }
+          )
+        }
+      }
+    }
+  }
+
+  _setUidUrlPath(filter, path) {
     // TODO: map encodeUri title to uid for friendly urls
     // this.uidUrl[category.uid] = encodeURI(category.title)
 
     // TODO: temp using uid in url
-    this.uidUrl[category.uid] = `${path}/${encodeURI(category.uid)}`
+    this.uidUrl[filter.uid] = `${path}/${encodeURI(filter.uid)}`
   }
 
-  _generateCategoryUrl(catId) {
+  _generateDialectFilterUrl(filterId) {
     let href = `/${this.props.splitWindowPath.join('/')}`
     const _splitWindowPath = [...this.props.splitWindowPath]
     const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
@@ -169,41 +231,41 @@ export default class DialectCategoryList extends Component {
     })
     if (wordOrPhraseIndex !== -1) {
       _splitWindowPath.splice(wordOrPhraseIndex + 1)
-      href = `/${_splitWindowPath.join('/')}/categories/${catId}`
+      const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
+      href = `/${_splitWindowPath.join('/')}/${urlFragment}/${filterId}`
     }
     return href
   }
 
-  _generateListItems = (categories) => {
-    this._generateUidUrlPaths(categories)
+  _generateListItems = (filters, updateState = false) => {
     const { appliedFilterIds } = this.props
 
     let lastCheckedUid = undefined
     let lastCheckedChildrenUids = undefined
     let lastCheckedParentFacetUid = undefined
 
-    const _categories = categories.map((category) => {
+    const _filters = filters.map((filter) => {
       const childrenItems = []
       const childrenUids = []
-      const uidParent = category.uid
+      const uidParent = filter.uid
 
       const parentIsActive = appliedFilterIds.includes(uidParent)
-      const parentActiveClass = parentIsActive ? 'DialectCategoryListLink--active' : ''
+      const parentActiveClass = parentIsActive ? 'DialectFilterListLink--active' : ''
 
-      const children = selectn('contextParameters.children.entries', category)
+      const children = selectn('contextParameters.children.entries', filter)
       let hasActiveChild = false
       if (children.length > 0) {
-        children.forEach((categoryChild) => {
-          const uidChild = categoryChild.uid
+        children.forEach((filterChild) => {
+          const uidChild = filterChild.uid
 
           childrenUids.push(uidChild)
           const childIsActive = appliedFilterIds.includes(uidChild)
 
           let childActiveClass = ''
           if (parentActiveClass) {
-            childActiveClass = 'DialectCategoryListLink--activeParent'
+            childActiveClass = 'DialectFilterListLink--activeParent'
           } else if (childIsActive) {
-            childActiveClass = 'DialectCategoryListLink--active'
+            childActiveClass = 'DialectFilterListLink--active'
           }
 
           if (childIsActive) {
@@ -214,7 +276,7 @@ export default class DialectCategoryList extends Component {
           }
 
           // const childHref = `/${this.uidUrl[uidChild]}`
-          const childHref = this._generateCategoryUrl(uidChild)
+          const childHref = this._generateDialectFilterUrl(uidChild)
           const childClickParams = {
             href: childHref,
             checkedFacetUid: uidChild,
@@ -226,15 +288,15 @@ export default class DialectCategoryList extends Component {
           const childListItem = (
             <li key={uidChild}>
               <a
-                className={`DialectCategoryListLink DialectCategoryListLink--child ${childActiveClass}`}
+                className={`DialectFilterListLink DialectFilterListLink--child ${childActiveClass}`}
                 href={childHref}
                 onClick={(e) => {
                   e.preventDefault()
                   this._handleClick(childClickParams)
                 }}
-                title={categoryChild.title}
+                title={filterChild.title}
               >
-                {categoryChild.title}
+                {filterChild.title}
               </a>
             </li>
           )
@@ -243,14 +305,14 @@ export default class DialectCategoryList extends Component {
       }
 
       // const parentHref = `/${this.uidUrl[uidParent]}`
-      const parentHref = this._generateCategoryUrl(uidParent)
+      const parentHref = this._generateDialectFilterUrl(uidParent)
 
       if (parentIsActive) {
         lastCheckedUid = uidParent
         lastCheckedChildrenUids = childrenUids
         lastCheckedParentFacetUid = undefined
       }
-      const listItemActiveClass = parentIsActive || hasActiveChild ? 'DialectCategoryListItemParent--active' : ''
+      const listItemActiveClass = parentIsActive || hasActiveChild ? 'DialectFilterListItemParent--active' : ''
       const parentClickParams = {
         href: parentHref,
         checkedFacetUid: uidParent,
@@ -260,48 +322,48 @@ export default class DialectCategoryList extends Component {
       // Saving for direct page load events
       this.clickParams[uidParent] = parentClickParams
       const parentListItem = (
-        <li key={uidParent} className={`DialectCategoryListItemParent ${listItemActiveClass}`}>
-          <div className="DialectCategoryListItemGroup">
+        <li key={uidParent} className={`DialectFilterListItemParent ${listItemActiveClass}`}>
+          <div className="DialectFilterListItemGroup">
             <a
-              className={`DialectCategoryListLink DialectCategoryListLink--parent ${parentActiveClass}`}
+              className={`DialectFilterListLink DialectFilterListLink--parent ${parentActiveClass}`}
               href={parentHref}
               onClick={(e) => {
                 e.preventDefault()
                 this._handleClick(parentClickParams)
               }}
-              title={category.title}
+              title={filter.title}
             >
-              {category.title}
+              {filter.title}
             </a>
-            {/* {childrenItems.length > 0 && <button className="DialectCategoryListItemToggle">Show subcategories</button>} */}
+            {/* {childrenItems.length > 0 && <button className="DialectFilterListItemToggle">Show subcategories</button>} */}
           </div>
-          {childrenItems.length > 0 ? <ul className="DialectCategoryListList">{childrenItems}</ul> : null}
+          {childrenItems.length > 0 ? <ul className="DialectFilterListList">{childrenItems}</ul> : null}
         </li>
       )
 
       return parentListItem
     })
 
-    // return _categories
-
-    // Save active item/data
-    this.setState(
-      {
-        listItems: _categories,
-        lastCheckedUid,
-        lastCheckedChildrenUids,
-        lastCheckedParentFacetUid,
-      },
-      () => {
-        if (this.selectedCategory) {
-          const selectedParams = this.clickParams[this.selectedCategory]
-          if (selectedParams) {
-            this._handleClick(selectedParams)
-            this.selectedCategory = undefined
+    if (updateState) {
+      // Save active item/data
+      this.setState(
+        {
+          listItems: _filters,
+          lastCheckedUid,
+          lastCheckedChildrenUids,
+          lastCheckedParentFacetUid,
+        },
+        () => {
+          if (this.selectedDialectFilter) {
+            const selectedParams = this.clickParams[this.selectedDialectFilter]
+            if (selectedParams) {
+              this._handleClick(selectedParams)
+              this.selectedDialectFilter = undefined
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
 
   _handleClick(obj) {
@@ -332,7 +394,7 @@ export default class DialectCategoryList extends Component {
           checkedFacetUid,
           childrenIds,
         }
-        this.props.handleCategoryClick({
+        this.props.handleDialectFilterClick({
           facetField: this.props.facetField,
           selected,
           unselected,
@@ -348,18 +410,18 @@ export default class DialectCategoryList extends Component {
     return 0
   }
 
-  _sortCategories(categories) {
-    const _categories = [...categories]
+  _sortDialectFilters(filters) {
+    const _filters = [...filters]
     // Sort root level
-    _categories.sort(this._sortByTitle)
-    const _categoriesSorted = _categories.map((category) => {
+    _filters.sort(this._sortByTitle)
+    const _filtersSorted = _filters.map((filter) => {
       // Sort children
-      const children = selectn('contextParameters.children.entries', category)
+      const children = selectn('contextParameters.children.entries', filter)
       if (children.length > 0) {
         children.sort(this._sortByTitle)
       }
-      return category
+      return filter
     })
-    return _categoriesSorted
+    return _filtersSorted
   }
 }
