@@ -62,11 +62,11 @@ export default class Play extends Component {
                                     <img src="/assets/games/fv-games-jigsaw/images/preview.png"
                                         className="responsive-image" /></a>
                             </div>
-                            <div className="cell" style={cellStyle}>
+                            {/* <div className="cell" style={cellStyle}>
                                 <a href="colouringbook" onClick={this.navigate}><img
                                     src="/assets/games/fv-games-colouring-book/images/preview.png"
                                     className="responsive-image" /></a>
-                            </div>
+                            </div> */}
                             <div className="cell" style={cellStyle}>
                                 <a href="wordsearch" onClick={this.navigate}><img
                                     src="/assets/games/fv-games-wordsearch/images/preview.png"
@@ -76,11 +76,11 @@ export default class Play extends Component {
                                 <a href="wordscramble" onClick={this.navigate}><img src="/assets/games/fv-games-wordscramble/images/preview.png"
                                     className="responsive-image" /></a>
                             </div>
-                            <div className="cell" style={cellStyle}>
+                            {/* <div className="cell" style={cellStyle}>
                                 <a href="picturethis" onClick={this.navigate}><img
                                     src="/assets/games/fv-games-picture-this/images/preview.png"
                                     className="responsive-image"/></a>
-                            </div>
+                            </div> */}
                             <div className="cell" style={cellStyle}>
                                 <a href="hangman" onClick={this.navigate} ><img src="/assets/games/fv-games-hangman/images/preview.png"
                                     className="responsive-image" /></a>

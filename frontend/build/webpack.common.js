@@ -151,9 +151,19 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: "babel-loader",
+                exclude:/node_modules\/(?!@fpcc)/,
                 options: {
-                    babelrc: true,
-                    cacheDirectory: true,
+                    cacheDirectory:true,
+                    presets: [
+                        "@babel/preset-env",
+                        "@babel/preset-react"
+                    ],
+                    plugins: [
+                        ["transform-react-jsx-component-data-ids"],
+                        ["@babel/plugin-syntax-dynamic-import"],
+                        ["@babel/plugin-proposal-decorators", { "legacy": true }],
+                        ["@babel/plugin-proposal-class-properties", { "loose": true }]
+                    ]
                 },
             },
             {
