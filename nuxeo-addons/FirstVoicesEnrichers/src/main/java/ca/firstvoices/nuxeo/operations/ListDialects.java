@@ -35,7 +35,7 @@ public class ListDialects
         DocumentModelList dList = null;
 
 
-        return null;
+        return dList;
     }
 }
 
