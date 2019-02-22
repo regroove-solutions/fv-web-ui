@@ -130,6 +130,11 @@ $ gulp karma
 
 <a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
+## Switching Targets for test purposes ##
+Note: local.json is where you change the target you run against.
+Location: <your-front-end-work-directory>/app/assets/javascript/configuration/local.json
+For running aginst local server configure to http://localhost:3001/nuxeo
+
 ## Licensing ##
 
 The data and code in this repository is licensed under multiple licenses.
