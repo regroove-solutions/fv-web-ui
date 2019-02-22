@@ -17,6 +17,7 @@ class AlphabetListView extends Component {
     handleClick: func,
     routeParams: object.isRequired,
     dialect: any.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
     computeCharacters: PropTypes.object.isRequired, // via provide
     computePortal: PropTypes.object.isRequired, // via provide
     fetchDialect2: PropTypes.func.isRequired,
@@ -35,7 +36,7 @@ class AlphabetListView extends Component {
     this.state = {
       renderCycle: 0,
     }
-    ;['_generateTiles', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_generateTiles', '_generateDialectFilterUrl', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   async componentDidMount() {
@@ -121,21 +122,38 @@ class AlphabetListView extends Component {
     const content = renderCycle !== 0 ? this._generateTiles() : null
     return <div className="AlphabetListView">{content}</div>
   }
+
+  _generateDialectFilterUrl(letter) {
+    let href = undefined
+    const _splitWindowPath = [...this.props.splitWindowPath]
+    const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
+      return element === 'words' || element === 'phrases'
+    })
+    if (wordOrPhraseIndex !== -1) {
+      _splitWindowPath.splice(wordOrPhraseIndex + 1)
+      href = `/${_splitWindowPath.join('/')}/alphabet/${letter}`
+    }
+    return href
+  }
+
   _generateTiles() {
     const { entries } = this.state
     const { letter } = this.props
     const _entries = entries.map((value, index) => {
       const _letter = value.title
+      const href = this._generateDialectFilterUrl(_letter)
       return (
-        <div
+        <a
+          href={href}
           className={`AlphabetListViewTile ${letter === _letter ? 'AlphabetListViewTile--active' : ''}`}
-          onClick={() => {
-            this.props.handleClick(_letter)
+          onClick={(e) => {
+            e.preventDefault()
+            this.props.handleClick(_letter, href)
           }}
           key={index}
         >
           {_letter}
-        </div>
+        </a>
       )
     })
     let content = null

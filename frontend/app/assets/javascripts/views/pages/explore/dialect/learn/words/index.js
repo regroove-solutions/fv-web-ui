@@ -456,7 +456,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     })
   }
 
-  handleAlphabetClick(letter, updateHistory = true) {
+  handleAlphabetClick(letter, href, updateHistory = true) {
     this.setState(
       {
         searchTerm: '',
@@ -468,15 +468,6 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       },
       () => {
-        let href = undefined
-        const _splitWindowPath = [...this.props.splitWindowPath]
-        const wordOrPhraseIndex = _splitWindowPath.findIndex((element) => {
-          return element === 'words' || element === 'phrases'
-        })
-        if (wordOrPhraseIndex !== -1) {
-          _splitWindowPath.splice(wordOrPhraseIndex + 1)
-          href = `/${_splitWindowPath.join('/')}/alphabet/${letter}`
-        }
         this.changeFilter(href, updateHistory)
       }
     )
