@@ -15,7 +15,7 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
 // This example is from https://doc.nuxeo.com/display/NXDOC/Content+Enricher
 
-// The class will be instanciated as a singleton
+// The class will be instantiated as a singleton
 // Priority defines which marshaller will be used in case of conflict. Priority is an integer.
 // The higher the number, the more priority you get: 10 > 1 for instance.
 @Setup(mode = SINGLETON, priority = REFERENCE)
