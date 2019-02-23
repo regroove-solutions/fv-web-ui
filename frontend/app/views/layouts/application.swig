@@ -9,6 +9,7 @@
     <meta name="author" content="FPCC"/>
     <meta name="google-site-verification" content="EDJl0zb8mhsF1z_YbnEcdOwKF72uLcZw_3FGbSMVGSM" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
 
     <style>
       .material-icons {
