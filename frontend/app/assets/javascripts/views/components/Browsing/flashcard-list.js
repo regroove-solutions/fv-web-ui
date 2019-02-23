@@ -15,9 +15,7 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import { List, Map } from 'immutable'
-// import classNames from 'classnames'
 import selectn from 'selectn'
-
 import IntlService from 'views/services/intl'
 
 export default class FlashcardList extends Component {
@@ -33,6 +31,7 @@ export default class FlashcardList extends Component {
     cellHeight: PropTypes.number,
     wrapperStyle: PropTypes.object,
     style: PropTypes.object,
+    flashcardTitle: PropTypes.string,
   }
 
   static defaultProps = {
@@ -41,21 +40,25 @@ export default class FlashcardList extends Component {
     cellHeight: 210,
     wrapperStyle: null,
     style: null,
+    flashcardTitle: '',
   }
 
   intl = IntlService.instance
 
   constructor(props, context) {
     super(props, context)
-    ;['_getColumnClassNames', '_getColumnHeaders'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_generateFlashcards'].forEach((method) => (this[method] = this[method].bind(this)))
   }
-  componentWillMount() {
-    this._columnClassNames = this._getColumnClassNames()
+  componentDidMount() {
+    document.body.classList.add('PrintFlashcards')
+  }
+  componentWillUnmount() {
+    document.body.classList.remove('PrintFlashcards')
   }
 
   render() {
+    const { columns } = this.props
     const items = this.props.filteredItems || this.props.items
-    const columns = this.props.columns
 
     if (selectn('length', items) === 0) {
       return (
@@ -70,85 +73,41 @@ export default class FlashcardList extends Component {
       )
     }
 
-    const columnHeaders = this._getColumnHeaders()
-    return (
-      <table className="DictionaryList data-table">
-        <tbody>
-          <tr>{columnHeaders}</tr>
-
-          {(items || []).map((item, i) => (
-            <tr
-              key={i}
-              className="DictionaryListRow"
-              style={{
-                borderBottom: '1px dotted #a8a8a8',
-                margin: '10px',
-                background: i % 2 ? '#f2f7ff' : '#ffffff',
-              }}
-            >
-              {(columns || []).map((column, j) => {
-                const cellValue = selectn(column.name, item)
-                const cellRender =
-                  typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
-                const className = this._columnClassNames[j] || ''
-                return (
-                  <td key={j} className={className} align="left">
-                    {cellRender}
-                  </td>
-                )
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    )
+    const content = this._generateFlashcards({ items, columns })
+    return <div className="FlashcardList PrintPageBreak">{content}</div>
   }
 
-  _columnClassNames = []
+  _generateFlashcards(obj) {
+    const { items, columns } = obj
+    return (items || []).map((item, i) => (
+      <div className={`Flashcard ${i % 3 === 0 ? 'PrintPageBreak' : ''}`} key={i}>
+        {(columns || []).map((column, j) => {
+          const cellValue = selectn(column.name, item)
+          const cellRender = typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
 
-  _getColumnClassNames() {
-    const { columns } = this.props
-    return columns.map((currentValue) => {
-      const name = selectn('name', currentValue)
-      // title
-      // fv:definitions
-      // related_audio
-      // related_pictures
-      // fv-word:part_of_speech
-      const prefix = 'DictionaryList'
-      let className = ''
-      switch (name) {
-        case 'title':
-          className = `${prefix}Title ${prefix}Data`
-          break
-        case 'fv:definitions':
-          className = `${prefix}Definitions ${prefix}Data`
-          break
-        case 'related_audio':
-          className = `${prefix}Audio ${prefix}Data PrintHide`
-          break
-        case 'related_pictures':
-          className = `${prefix}Pictures ${prefix}Data PrintHide`
-          break
-        case 'fv-word:part_of_speech':
-          className = `${prefix}Speech ${prefix}Data`
-          break
-        default:
-          className = `${prefix}Data`
-      }
-      return className
-    })
-  }
-  _getColumnHeaders() {
-    const { columns } = this.props
-    return columns.map((column, i) => {
-      const text = selectn('title', column)
-      const className = this._columnClassNames[i] || ''
-      return (
-        <th key={i} align="left" className={className}>
-          {text}
-        </th>
-      )
-    })
+          if (column.name === 'title') {
+            return (
+              <div key={j} className="FlashcardTitle FlashcardData fontAboriginalSans">
+                {cellRender}
+              </div>
+            )
+          }
+          if (column.name === 'fv:definitions') {
+            return (
+              <div key={j} className="FlashcardDefinitions FlashcardData">
+                <div className="FlashcardDefinitionsMeta">
+                  <div className="FlashcardDefinitionsDialect fontAboriginalSans">{this.props.flashcardTitle}</div>
+                </div>
+                <div className="FlashcardDefinition fontAboriginalSans">{cellRender}</div>
+                <div className="FlashcardDefinitionsMeta">
+                  <div className="FlashcardDefinitionsUrl">www.firstvoices.com</div>
+                </div>
+              </div>
+            )
+          }
+          return null
+        })}
+      </div>
+    ))
   }
 }

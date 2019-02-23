@@ -115,6 +115,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
+      flashcardMode: false,
     }
 
     // Bind methods to 'this'
@@ -167,7 +168,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     )
 
     const computePhraseBooksSize = selectn('response.entries.length', computePhraseBooks) || 0
-
+    const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
+    const pageTitle = intl.trans('views.pages.explore.dialect.phrases.x_phrases', `${dialect} Phrases`, null, [dialect])
     const phraseListView = selectn('response.uid', computeDocument) ? (
       <PhraseListView
         controlViaURL
@@ -178,6 +180,8 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         {...this._getURLPageProps()}
         routeParams={this.props.routeParams}
         disablePhraseClick={false}
+        flashcard={this.state.flashcardMode}
+        flashcardTitle={pageTitle}
       />
     ) : (
       <div />
@@ -213,8 +217,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
       )
     }
     const dialectClassName = getDialectClassname(computePortal)
-    const dialect = selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''
-    const pageTitle = intl.trans('views.pages.explore.dialect.phrases.x_phrases', `${dialect} Phrases`, null, [dialect])
 
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -273,7 +275,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
             />
           </div>
           <div className={classNames('col-xs-12', computePhraseBooksSize === 0 ? 'col-md-12' : 'col-md-9')}>
-            <h1>{pageTitle}</h1>
+            <h1 className="DialectPageTitle">{pageTitle}</h1>
 
             <SearchDialect
               filterInfo={filterInfo}
@@ -292,6 +294,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
               searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               updateAncestorState={this.updateState}
+              flashcardMode={this.state.flashcardMode}
             />
 
             <div className={dialectClassName}>{phraseListView}</div>

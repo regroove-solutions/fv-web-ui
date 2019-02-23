@@ -50,6 +50,7 @@ export default class DocumentListView extends Component {
     sortInfo: PropTypes.any, // TODO: set appropriate propType
     type: PropTypes.any, // TODO: set appropriate propType
     flashcard: PropTypes.bool,
+    flashcardTitle: PropTypes.string,
     usePrevResponse: PropTypes.bool,
   }
 
@@ -59,6 +60,7 @@ export default class DocumentListView extends Component {
     usePrevResponse: false,
     onSelectionChange: () => {},
     flashcard: false,
+    flashcardTitle: '',
   }
 
   constructor(props, context) {
@@ -111,6 +113,7 @@ export default class DocumentListView extends Component {
       disablePageSize: disablePageSize,
       dialect: dialect,
       items: selectn('response.entries', data),
+      flashcardTitle: this.props.flashcardTitle,
     }
 
     if (gridListView) {

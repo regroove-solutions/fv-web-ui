@@ -41,6 +41,7 @@ class SearchDialect extends Component {
     searchPartOfSpeech: string,
     searchTerm: string,
     updateAncestorState: func,
+    flashcardMode: bool,
   }
   static defaultProps = {
     isSearchingPhrases: false,
@@ -194,10 +195,36 @@ class SearchDialect extends Component {
         resetButtonText = 'Stop browsing and clear filter'
     }
     return (
-      <div className="SearchDialectForm">
+      <div className="SearchDialectForm SearchDialectForm--filtering">
         <RaisedButton label={resetButtonText} onTouchTap={this._resetSearch} primary />
+        {this._getFlashcardMode()}
       </div>
     )
+  }
+  _getFlashcardMode() {
+    const { flashcardMode } = this.props
+
+    if (flashcardMode !== undefined) {
+      return flashcardMode ? (
+        <RaisedButton
+          style={{ marginLeft: 'auto' }}
+          label="Stop viewing Flashcards"
+          primary
+          onTouchTap={() => {
+            this.props.updateAncestorState({ flashcardMode: false })
+          }}
+        />
+      ) : (
+        <RaisedButton
+          style={{ marginLeft: 'auto' }}
+          label="Flashcards"
+          onTouchTap={() => {
+            this.props.updateAncestorState({ flashcardMode: true })
+          }}
+        />
+      )
+    }
+    return null
   }
   _getSearchForm() {
     const {
@@ -239,6 +266,8 @@ class SearchDialect extends Component {
             primary={false}
             style={{ marginLeft: '20px' }}
           />
+
+          {this._getFlashcardMode()}
         </div>
 
         <div className="SearchDialectFormSecondary">
