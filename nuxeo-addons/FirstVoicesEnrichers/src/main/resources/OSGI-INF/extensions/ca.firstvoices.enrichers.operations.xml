@@ -5,6 +5,6 @@
 	</extension>
 
 	<extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations" >
-		<operation class="ca.firstvoices.nuxeo.operations.ListDialects" />
+		<operation class="ca.firstvoices.nuxeo.operations.ListDialects" replace="true"/>
 	</extension>
 </component>

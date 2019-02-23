@@ -93,6 +93,8 @@ public class DocumentEnrichedQuery {
         params.put("sortOrder", sortOrder);
         params.put("namedParameters", namedParameters);
 
-        return (DocumentModelList) automationService.run(ctx, "Repository.Query", params);
+        DocumentModelList dml = (DocumentModelList) automationService.run(ctx, "Repository.Query", params);
+
+        return dml;
     }
 }

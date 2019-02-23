@@ -28,7 +28,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(FeaturesRunner.class)
-@Features({RuntimeFeature.class, CoreFeature.class, PlatformFeature.class, AutomationFeature.class} )
+@Features({RuntimeFeature.class, CoreFeature.class, AutomationFeature.class} )
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 @Deploy( {"studio.extensions.First-Voices",
         "org.nuxeo.ecm.platform",

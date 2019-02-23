@@ -14,60 +14,65 @@ import org.nuxeo.runtime.api.Framework;
 
 import javax.security.auth.login.LoginContext;
 
-@Operation(id = ListDialects.ID, category = Constants.CAT_DOCUMENT, label = "List dialects in FV tree.",
-        description = "Returns a list of dialects which can be joined by new users")
+@Operation(id = ListDialects.ID, category = Constants.CAT_DOCUMENT, label = "List dialects in FV tree",
+        description = "Returns a list of dialects based on selection criteria")
 public class ListDialects
 {
     public static final String ID = "Document.ListDialects";
 
     public static final String ALL_DIALECTS          = "*";
     public static final String DIALECTS_TO_JOIN      = "to-join";
+    public static final String NEW_DIALECTS          = "new";
     public static final String ENABLED_DIALECTS      = "enabled";
     public static final String DISABLED_DIALECTS     = "disabled";
     public static final String PUBLISHED_DIALECTS    = "published";
-    public static final String DELETED_DIALECTS      = "deleted";
 
     @Context
     protected AutomationService automationService;
 
-    @Param(name = "dialectState", required = true, values = { DIALECTS_TO_JOIN, ALL_DIALECTS, ENABLED_DIALECTS, DISABLED_DIALECTS, PUBLISHED_DIALECTS, DELETED_DIALECTS } )
+    @Context
+    protected CoreSession session;
+
+    @Param(name = "dialectState", required = false, values = { DIALECTS_TO_JOIN, ALL_DIALECTS, NEW_DIALECTS, ENABLED_DIALECTS, DISABLED_DIALECTS, PUBLISHED_DIALECTS } )
     protected String dialectState = DIALECTS_TO_JOIN;
 
     @OperationMethod
     public DocumentModelList run() throws Exception
     {
         LoginContext lctx = null;
-        CoreSession session = null;
+        //CoreSession session = null;
 
         DocumentModelList dList = null;
         lctx = Framework.login();
-        session = CoreInstance.openCoreSession("default");
+        //session = CoreInstance.openCoreSession(null);
 
-        String queryFront = "SELECT ecm:uuid, dc:title FROM FVDialect WHERE ";
-        String queryEnd = "ecm:isLatestVersion = 1 ORDER BY dc:title ASC";
-        String query = queryFront + queryEnd;
+        String queryFront   = "SELECT ecm:uuid, dc:title FROM FVDialect WHERE ";
+        String queryVersion = "ecm:isVersion=0 ";
+        String queryProxy   = "ecm:isProxy=0 AND ";
+        String querySort    = "ORDER BY dc:title ASC";
+        String query = queryFront + queryVersion + querySort;
 
-        switch( dialectState )
+        switch( dialectState.toLowerCase() )
         {
             case ALL_DIALECTS:
-                query = queryFront + queryEnd;
+                query = "SELECT ecm:uuid, dc:title FROM FVDialect " + querySort;
+                break;
+            case NEW_DIALECTS:
+                query = queryFront + "ecm:currentLifeCycleState = 'New' " + querySort;
                 break;
             case DIALECTS_TO_JOIN:
-                query = queryFront + "(ecm:currentLifeCycleState = 'Enabled' OR  ecm:currentLifeCycleState = 'Published') AND " + queryEnd;
+                query = queryFront + "(ecm:currentLifeCycleState = 'Enabled' OR  (ecm:currentLifeCycleState = 'Published' AND ecm:isProxy=0)) AND " + queryVersion + querySort;
                 break;
             case ENABLED_DIALECTS:
-                query = queryFront + "ecm:currentLifeCycleState = 'Enabled' AND " + queryEnd;
+                query = queryFront + "ecm:currentLifeCycleState = 'Enabled' AND " + queryVersion + querySort;
                 break;
             case DISABLED_DIALECTS:
-                query = queryFront + "ecm:currentLifeCycleState = 'Disabled' AND " + queryEnd;
+                query = queryFront + "ecm:currentLifeCycleState = 'Disabled' AND " + queryVersion + querySort;
                 break;
             case PUBLISHED_DIALECTS:
-                query = queryFront + "ecm:currentLifeCycleState = 'Published' AND " + queryEnd;
+                query = queryFront + "ecm:currentLifeCycleState = 'Published' AND " + queryProxy + queryVersion + querySort;
                 break;
-            case DELETED_DIALECTS:
-                query = queryFront + "ecm:currentLifeCycleState = 'Deleted' AND " + queryEnd;
-                break;
-        }
+         }
 
         dList = session.query( query );
 
