@@ -123,6 +123,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
       searchPartOfSpeech: SEARCH_SORT_DEFAULT,
       computeEntities,
       isKidsTheme: props.routeParams.theme === 'kids',
+      flashcardMode: false,
     }
 
     // Bind methods to 'this'
@@ -175,6 +176,13 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     )
     const computeCategoriesSize = selectn('response.entries.length', computeCategories) || 0
 
+    const pageTitle = `${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''} ${intl.trans(
+      'words',
+      'Words',
+      'first'
+    )}`
+
+
     const wordListView = selectn('response.uid', computeDocument) ? (
       <WordListView
         disableWordClick={false}
@@ -187,10 +195,8 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
         // NOTE: PageDialectLearnBase provides `_getURLPageProps`
         {...this._getURLPageProps()}
         {...searchNxqlSort}
-        // DEFAULT_PAGE
-        // DEFAULT_PAGE_SIZE
-        // DEFAULT_SORT_TYPE
-        // DEFAULT_SORT_COL
+        flashcard={this.state.flashcardMode}
+        flashcardTitle={pageTitle}
       />
     ) : (
       <div />
@@ -278,19 +284,12 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
             </div>
           </div>
           <div className={classNames('col-xs-12', computeCategoriesSize === 0 ? 'col-md-12' : 'col-md-9')}>
-            <h1>
-              {`${selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) || ''} ${intl.trans(
-                'words',
-                'Words',
-                'first'
-              )}`}
-            </h1>
+            <h1 className="DialectPageTitle">{pageTitle}</h1>
 
             <SearchDialect
               filterInfo={filterInfo}
               handleSearch={this.handleSearch}
               resetSearch={this.resetSearch}
-
               searchByAlphabet={searchByAlphabet}
               searchByDefinitions={searchByDefinitions}
               searchByMode={searchByMode}
@@ -300,6 +299,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
               searchPartOfSpeech={searchPartOfSpeech}
               searchTerm={searchTerm}
               updateAncestorState={this.updateState}
+              flashcardMode={this.state.flashcardMode}
             />
 
             <div className={dialectClassName}>{wordListView}</div>

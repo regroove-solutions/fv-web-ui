@@ -2364,7 +2364,7 @@ export default class AppFrontController extends Component {
 
     return (
       <div>
-        <div className="row">
+        <div className="breadcrumbContainer row">
           <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
             {(() => {
               const area = selectn("routeParams.area", reactElement.props)
@@ -2511,9 +2511,9 @@ export default class AppFrontController extends Component {
           }
         })}
 
-        <div className="row">{navigation}</div>
+        <div id="pageNavigation" className="row">{navigation}</div>
         <div id="pageContainer">{page}</div>
-        <div className="row">{footer}</div>
+        <div id="pageFooter" className="row">{footer}</div>
       </div>
     )
   }

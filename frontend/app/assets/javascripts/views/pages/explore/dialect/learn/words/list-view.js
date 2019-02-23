@@ -63,6 +63,8 @@ export default class ListView extends DataListView {
     controlViaURL: false,
     renderSimpleTable: false,
     disablePageSize: false,
+    flashcard: false,
+    flashcardTitle: '',
   }
 
   static propTypes = {
@@ -93,6 +95,8 @@ export default class ListView extends DataListView {
     renderSimpleTable: PropTypes.bool,
     splitWindowPath: PropTypes.array.isRequired,
     windowPath: PropTypes.string.isRequired,
+    flashcard: PropTypes.bool,
+    flashcardTitle: PropTypes.string,
   }
 
   constructor(props, context) {
@@ -351,6 +355,8 @@ export default class ListView extends DataListView {
       renderSimpleTable: this.props.renderSimpleTable,
       sortInfo: this.state.sortInfo.uiSortOrder,
       type: 'FVWord',
+      flashcard: this.props.flashcard,
+      flashcardTitle: this.props.flashcardTitle,
     }
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
