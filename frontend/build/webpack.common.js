@@ -65,7 +65,8 @@ module.exports = {
      **/
     devServer: {
         host: "0.0.0.0",
-        port: 3001
+        port: 3001,
+        historyApiFallback:true
     },
 
     /**
@@ -151,9 +152,9 @@ module.exports = {
             {
                 test: /\.js$/,
                 loader: "babel-loader",
-                exclude:/node_modules\/(?!@fpcc)/,
+                exclude: /node_modules\/(?!@fpcc)/,
                 options: {
-                    cacheDirectory:true,
+                    cacheDirectory: true,
                     presets: [
                         "@babel/preset-env",
                         "@babel/preset-react"
