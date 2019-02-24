@@ -123,6 +123,13 @@ export default {
     return groups && groups.length === 1 && groups[0] === "members"
   },
   /**
+   * A site admin
+   */
+  isAdmin: function(computeLogin) {
+    let userGroups = selectn("response.properties.groups", computeLogin)
+    return userGroups && userGroups.indexOf("administrators") != -1
+  },
+  /**
    * Checks if a current user is parts of list of groups
    */
   isDialectMember: function(computeLogin, computeDialect) {

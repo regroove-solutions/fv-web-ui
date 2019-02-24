@@ -623,14 +623,22 @@ video {
 .dialect-navigation {
   position: absolute;
   bottom: 0;
-  background-color: #3a6880 !important;
+  width: 100%;
+  padding: 15px 35px;
 
-  button {
-    text-shadow: 0 0 2px rgba(0, 0, 0, 1);
-    color: #fff !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
-    margin-right: 0 !important;
+  a {
+    color: #f7f7f7;
+    font-size: 1.85rem;
+    text-decoration: none;
+    background-color:#292929;
+    padding: 5px 30px 5px 35px;
+    border: 1px solid #909090;
+    border-radius: 5px;
+    margin: 10px 15px 0 0;
+
+    &:hover{
+      background-color: rgba(0,0,0,0.8);
+    }
   }
 }
 
@@ -909,8 +917,12 @@ audio::-webkit-media-controls-enclosure {
   }
 
   .dialect-navigation {
-    position: relative;
+    // position: relative;
     height: inherit !important;
+
+    a {
+      display: block;
+    }
 
     > div {
       float: none !important;

@@ -416,7 +416,7 @@
     "last_updated": "last updated",
     "learn": "learn",
     "learn_about_framework_of_lang": "Learn about the framework of our language",
-    "learn_our_lang": "Learn Our Language",
+    "learn_our_lang": "Learn our Language",
     "lesson": "Lesson",
     "lessons": "Lessons",
     "link": "link",
@@ -1224,7 +1224,7 @@
               "related_phrases": "Related Phrases"
             }
           },
-          "learn_our_language": "Learn Our Language",
+          "learn_our_language": "Learn our Language",
           "links": {
             "add_new_link_to_x": "Add New Link to %s",
             "edit_x_link": "Edit %s Link"
