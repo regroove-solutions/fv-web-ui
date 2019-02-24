@@ -9,18 +9,15 @@ import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.automation.test.AutomationFeature;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.runtime.test.runner.*;
 
 import javax.inject.Inject;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -135,76 +132,103 @@ public class ListDialectsTest
     }
 
     @Test
-    public void listAllDialects() throws OperationException
+    public void listAllDialects() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", ALL_DIALECTS );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertEquals(4, docs.size());
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have 4 dialects", countDocsInBlob( docs.getString(), "ecm:uuid" ) == 4);
+
+        assertTrue("Should have 1 New dialect", countDocsInBlob( docs.getString(), "New" ) == 1);
+
+        assertTrue("Should have 1 Enabled dialect", countDocsInBlob( docs.getString(), "Enabled" ) == 1);
+
+        assertTrue("Should have 1 Disabled dialect", countDocsInBlob( docs.getString(), "Disabled" ) == 1);
+
+        assertTrue("Should have 1 Published dialect", countDocsInBlob( docs.getString(), "Published" ) == 1);
+
     }
 
     @Test
-    public void listNewDialects() throws OperationException
+    public void listNewDialects() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", NEW_DIALECTS );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertEquals(1, docs.size());
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have only 1 New dialect", countDocsInBlob( docs.getString(), "ecm:uuid" ) == 1);
     }
 
     @Test
-    public void listDialectsToJoin() throws OperationException
+    public void listDialectsToJoin() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", DIALECTS_TO_JOIN );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertTrue("Should have only 2 dialects as candidates to join", docs.size() == 2);
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have only 2 dialects as candidates to join", countDocsInBlob( docs.getString(), "ecm:uuid" ) == 2);
     }
 
     @Test
-    public void listPublishedDialects() throws OperationException
+    public void listPublishedDialects() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", PUBLISHED_DIALECTS );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertTrue("Should have only 1 published dialect", docs.size() == 1);
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have only 1 published dialect", countDocsInBlob( docs.getString(), "ecm:uuid"  ) == 1);
     }
 
     @Test
-    public void listEnabledDialects() throws OperationException
+    public void listEnabledDialects() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", ENABLED_DIALECTS );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertTrue("Should have only 1 enabled dialect", docs.size() == 1);
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have only 1 Enabled dialect", countDocsInBlob( docs.getString(), "ecm:uuid"  ) == 1);
     }
 
 
     @Test
-    public void listDisabledDialects() throws OperationException
+    public void listDisabledDialects() throws OperationException, IOException
     {
         OperationContext ctx = new OperationContext(session);
         Map<String, Object> params = new HashMap<>();
 
         params.put("dialectState", DISABLED_DIALECTS );
 
-        DocumentModelList docs = (DocumentModelList) automationService.run(ctx, ListDialects.ID, params);
-        assertTrue("Should have only 1 disabled dialect", docs.size() == 1);
+        Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
+        assertTrue("Should have only 1 disabled dialect", countDocsInBlob( docs.getString(), "ecm:uuid"  ) == 1);
     }
 
+    private int countDocsInBlob( String blobStr, String findStr )
+    {
+        int lastIndex = 0;
+        int count = 0;
+
+        while(lastIndex != -1){
+
+            lastIndex = blobStr.indexOf(findStr,lastIndex);
+
+            if(lastIndex != -1)
+            {
+                count ++;
+                lastIndex += findStr.length();
+            }
+        }
+
+        return count;
+    }
 }
