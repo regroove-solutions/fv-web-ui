@@ -535,6 +535,64 @@ export default class ExploreDialect extends Component {
               )}
             </div>
           </div>
+
+          <div className={classNames("col-xs-12", "col-md-4", "col-md-offset-1")}>
+            <TextHeader
+              tag="h2"
+              title={intl.trans("views.pages.explore.dialect.about", "REGION DATA", "upper")}
+              properties={this.props.properties}
+            />
+
+            <div className={classNames("dialect-info-banner")}>
+              <div>
+                {/* <div className="dib-body-row">
+                  <strong>{intl.trans("name_of_archive", "Name of Archive")}: </strong>
+                  <AuthorizationFilter
+                    filter={{ permission: "Write", entity: selectn("response", computeDialect2) }}
+                    renderPartial
+                  >
+                    <EditableComponentHelper
+                      isSection={isSection}
+                      computeEntity={computeDialect2}
+                      updateEntity={updateDialect2}
+                      property="dc:title"
+                      entity={selectn("response", computeDialect2)}
+                    />
+                  </AuthorizationFilter>
+                </div> */}
+                <div className="dib-body-row">
+                  <strong>{intl.trans("country", "Country")}: </strong>
+                  <AuthorizationFilter
+                    filter={{ permission: "Write", entity: selectn("response", computeDialect2) }}
+                    renderPartial
+                  >
+                    <EditableComponentHelper
+                      isSection={isSection}
+                      computeEntity={computeDialect2}
+                      updateEntity={updateDialect2}
+                      property="fvdialect:country"
+                      entity={selectn("response", computeDialect2)}
+                    />
+                  </AuthorizationFilter>
+                </div>
+                <div className="dib-body-row">
+                  <strong>{intl.trans("region", "Region", "first")}: </strong>
+                  <AuthorizationFilter
+                    filter={{ permission: "Write", entity: selectn("response", computeDialect2) }}
+                    renderPartial
+                  >
+                    <EditableComponentHelper
+                      isSection={isSection}
+                      computeEntity={computeDialect2}
+                      updateEntity={updateDialect2}
+                      property="fvdialect:region"
+                      entity={selectn("response", computeDialect2)}
+                    />
+                  </AuthorizationFilter>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </PromiseWrapper>
     )
