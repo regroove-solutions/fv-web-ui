@@ -7,12 +7,21 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.runtime.api.Framework;
 
+import org.nuxeo.ecm.core.api.Blob;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import javax.security.auth.login.LoginContext;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
 
 @Operation(id = ListDialects.ID, category = Constants.CAT_DOCUMENT, label = "List dialects in FV tree",
         description = "Returns a list of dialects based on selection criteria")
@@ -37,12 +46,14 @@ public class ListDialects
     protected String dialectState = DIALECTS_TO_JOIN;
 
     @OperationMethod
-    public DocumentModelList run() throws Exception
+    public Blob run() throws Exception
     {
         LoginContext lctx = null;
         //CoreSession session = null;
 
         DocumentModelList dList = null;
+
+        // Run query as system
         lctx = Framework.login();
         //session = CoreInstance.openCoreSession(null);
 
@@ -55,7 +66,7 @@ public class ListDialects
         switch( dialectState.toLowerCase() )
         {
             case ALL_DIALECTS:
-                query = "SELECT ecm:uuid, dc:title FROM FVDialect " + querySort;
+                query = "SELECT ecm:uuid, dc:title, ecm:currentLifeCycleState FROM FVDialect " + querySort;
                 break;
             case NEW_DIALECTS:
                 query = queryFront + "ecm:currentLifeCycleState = 'New' " + querySort;
@@ -74,11 +85,21 @@ public class ListDialects
                 break;
          }
 
-        dList = session.query( query );
+        IterableQueryResult result = session.queryAndFetch(query, "NXQL");
+        Iterator<Map<String, Serializable>> it = result.iterator();
+
+        JSONArray array = new JSONArray();
+        while (it.hasNext()) {
+            Map<String, Serializable> item = it.next();
+            JSONObject object = new JSONObject();
+            object.accumulateAll(item);
+            array.add(object);
+        }
 
         lctx.logout();
-        //session.close();
 
-        return dList;
+        return new StringBlob(array.toString(), "application/json");
+
+        //session.close();
     }
 }

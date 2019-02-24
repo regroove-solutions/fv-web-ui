@@ -338,7 +338,7 @@ export default class Navigation extends Component {
             <div
               style={{ display: "inline-block", paddingRight: "10px", paddingTop: "15px", textTransform: "uppercase" }}
             >
-              <Link className="nav_link" href={"/explore" + this.state.pathOrId + "/Data"}>
+              <Link className="nav_link hidden-xs" href={"/explore" + this.state.pathOrId + "/Data"}>
                 {this.intl.trans("choose_lang", "Choose a Language", "first")}
               </Link>
             </div>

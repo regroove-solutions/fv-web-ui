@@ -38,7 +38,7 @@ var UserPreferences = t.maybe(
 )
 
 const AgeRanges = t.enums.of(
-  "0-5 6-10 11-15 16-20 21-25 26-30 31-35 36-40 41-45 46-50 51-55 56-60 61-65 66-70 71-75 76-80 81-85 86-90 91-95 96-100 100+"
+  "6-10 11-15 16-20 21-25 26-30 31-35 36-40 41-45 46-50 51-55 56-60 61-65 66-70 71-75 76-80 81-85 86-90 91-95 96-100 100+"
 )
 
 const fields = {
@@ -143,6 +143,7 @@ const fields = {
     "fvuserinfo:ageGroup": t.maybe(AgeRanges),
     "fvuserinfo:phone": t.maybe(t.String),
     "fvuserinfo:comment": t.maybe(t.String),
+    "fvuserinfo:language_team_member": t.maybe(t.Boolean),
   },
   FVUserProfile: {
     firstName: t.String,

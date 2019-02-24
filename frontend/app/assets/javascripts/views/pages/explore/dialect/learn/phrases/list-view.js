@@ -51,6 +51,8 @@ export default class ListView extends DataListView {
     gridListView: false,
     gridCols: 4,
     controlViaURL: false,
+    flashcard: false,
+    flashcardTitle: '',
   }
 
   static propTypes = {
@@ -83,6 +85,8 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE_SIZE: PropTypes.number,
     DEFAULT_SORT_COL: PropTypes.string,
     DEFAULT_SORT_TYPE: PropTypes.string,
+    flashcard: PropTypes.bool,
+    flashcardTitle: PropTypes.string,
   }
 
   constructor(props, context) {
@@ -300,6 +304,8 @@ export default class ListView extends DataListView {
             sortInfo={this.state.sortInfo.uiSortOrder}
             className="browseDataGrid"
             dialect={selectn('response', computeDialect2)}
+            flashcard={this.props.flashcard}
+            flashcardTitle={this.props.flashcardTitle}
           />
         )}
       </PromiseWrapper>

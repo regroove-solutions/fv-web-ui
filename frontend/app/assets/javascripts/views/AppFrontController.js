@@ -178,7 +178,7 @@ const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDial
     return false
   }
 
-  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2)
+  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
 }
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
@@ -2227,7 +2227,7 @@ export default class AppFrontController extends Component {
       // No match found (i.e. 404)
       const notFoundPage = Immutable.fromJS({
         title: PAGE_NOT_FOUND_TITLE,
-        page: <PageError title={PAGE_NOT_FOUND_TITLE} body="HELLOW WOLRD" />,
+        page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
       })
 
       const matchReturn = {
@@ -2364,7 +2364,7 @@ export default class AppFrontController extends Component {
 
     return (
       <div>
-        <div className="row">
+        <div className="breadcrumbContainer row">
           <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
             {(() => {
               const area = selectn("routeParams.area", reactElement.props)
@@ -2511,9 +2511,13 @@ export default class AppFrontController extends Component {
           }
         })}
 
-        <div className="row">{navigation}</div>
+        <div id="pageNavigation" className="row">
+          {navigation}
+        </div>
         <div id="pageContainer">{page}</div>
-        <div className="row">{footer}</div>
+        <div id="pageFooter" className="row">
+          {footer}
+        </div>
       </div>
     )
   }
