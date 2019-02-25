@@ -8,6 +8,7 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
     protected String preferences;
     protected String ageGroup;
     protected String role;
+    protected String language_team_member;
     protected String comment;
 
     public FVUserRegistrationInfo() {}
@@ -51,4 +52,11 @@ public class FVUserRegistrationInfo extends UserRegistrationInfo{
         this.comment = comment;
     }
 
+    public String getLanguageTeamMember() {
+        return language_team_member;
+    }
+
+    public void setLanguageTeamMember(String language_team_member) {
+        this.language_team_member = language_team_member;
+    }
 }

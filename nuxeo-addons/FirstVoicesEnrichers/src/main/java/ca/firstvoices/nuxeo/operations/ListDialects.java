@@ -1,24 +1,17 @@
 package ca.firstvoices.nuxeo.operations;
 
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IterableQueryResult;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.runtime.api.Framework;
 
-import org.nuxeo.ecm.core.api.Blob;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
-
-import javax.security.auth.login.LoginContext;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
@@ -48,14 +41,7 @@ public class ListDialects
     @OperationMethod
     public Blob run() throws Exception
     {
-        LoginContext lctx = null;
-        //CoreSession session = null;
-
         DocumentModelList dList = null;
-
-        // Run query as system
-        lctx = Framework.login();
-        //session = CoreInstance.openCoreSession(null);
 
         String queryFront   = "SELECT ecm:uuid, dc:title FROM FVDialect WHERE ";
         String queryVersion = "ecm:isVersion=0 ";
@@ -85,21 +71,37 @@ public class ListDialects
                 break;
          }
 
-        IterableQueryResult result = session.queryAndFetch(query, "NXQL");
-        Iterator<Map<String, Serializable>> it = result.iterator();
 
-        JSONArray array = new JSONArray();
-        while (it.hasNext()) {
-            Map<String, Serializable> item = it.next();
-            JSONObject object = new JSONObject();
-            object.accumulateAll(item);
-            array.add(object);
+        UnrestrictedDialectQuery dialectListQueryRunner = new UnrestrictedDialectQuery(session, query);
+        dialectListQueryRunner.runUnrestricted();
+
+
+        return new StringBlob(dialectListQueryRunner.resultSetArray.toString(), "application/json");
+    }
+
+    protected static class UnrestrictedDialectQuery extends UnrestrictedSessionRunner {
+
+        private String query;
+        private JSONArray resultSetArray;
+        private IterableQueryResult result;
+
+        protected UnrestrictedDialectQuery(CoreSession session, String query) {
+            super(session);
+            this.query = query;
         }
 
-        lctx.logout();
+        @Override
+        public void run() {
+            result = session.queryAndFetch(query, "NXQL");
+            Iterator<Map<String, Serializable>> it = result.iterator();
 
-        return new StringBlob(array.toString(), "application/json");
-
-        //session.close();
+            resultSetArray = new JSONArray();
+            while (it.hasNext()) {
+                Map<String, Serializable> item = it.next();
+                JSONObject object = new JSONObject();
+                object.accumulateAll(item);
+                resultSetArray.add(object);
+            }
+        }
     }
 }

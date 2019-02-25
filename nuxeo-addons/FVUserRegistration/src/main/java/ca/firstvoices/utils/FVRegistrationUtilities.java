@@ -5,7 +5,6 @@
 package ca.firstvoices.utils;
 
 import ca.firstvoices.user.FVUserRegistrationInfo;
-import ca.firstvoices.webengine.FVUserInvitationObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -18,20 +17,15 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.*;
-import org.apache.commons.lang3.StringUtils;
-
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -176,6 +170,8 @@ public class FVRegistrationUtilities
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
         userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
+        userInfo.setLanguageTeamMember( (String) registrationRequest.getPropertyValue("fvuserinfo:language_team_member") );
+
         userInfo.setLogin( userInfo.getEmail() );
 
         try
@@ -559,8 +555,9 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            // Only email language admins if requested role is involved in language revitalization
-            if (userDoc.getPropertyValue("user:role").equals("languagerevitalizer")) {
+            // Only email language admins if user stated they are part of an FV language team
+            if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
+                //finishTestingAndimplementing();
                 notificationEmailsAndReminderTasks( dialect, ureg );
             }
 
