@@ -3,15 +3,17 @@
   height: 25vh;
   border-left: 1px solid #e8e8e8;
   border-right: 1px solid #e8e8e8;
-  border-top: none;
+  border-bottom: 1px solid #e8e8e8;
   color: #000;
+}
+.FlashcardListIntroduction {
+  margin: 0 0 20px 0;
 }
 .Flashcard.PrintPageBreak {
   border-top: 1px solid #e8e8e8;
-  border-bottom: 1px solid #e8e8e8;
 }
-.Flashcard + .Flashcard {
-  border-bottom: 1px solid #e8e8e8;
+.Flashcard0 {
+  border-top: 1px solid #e8e8e8;
 }
 .FlashcardData {
   width: 50%;
@@ -29,6 +31,9 @@
   text-decoration: none;
   color: #000;
   padding: 0 0.1in;
+}
+.FlashcardList .Flashcard:first-of-type {
+  border: 1px solid red !important;
 }
 .FlashcardList a[href]:after {
   content: none !important;
@@ -71,6 +76,14 @@
   // float: right;
 }
 @media print {
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .FlashcardList {
+    width: 7.5in;
+  }
   body.PrintFlashcards {
     @page {
       margin: 0.5in;
@@ -84,5 +97,6 @@
   }
   .Flashcard {
     height: 2.5in;
+    min-width: 50%;
   }
 }

@@ -36,7 +36,9 @@ class AlphabetListView extends Component {
     this.state = {
       renderCycle: 0,
     }
-    ;['_generateTiles', '_generateDialectFilterUrl', '_handleHistoryEvent'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_generateTiles', '_generateDialectFilterUrl', '_handleHistoryEvent'].forEach(
+      (method) => (this[method] = this[method].bind(this))
+    )
   }
 
   async componentDidMount() {
@@ -56,10 +58,7 @@ class AlphabetListView extends Component {
       this.props.computeCharacters,
       `${routeParams.dialect_path}/Alphabet`
     )
-    const computePortal = await ProviderHelpers.getEntry(
-      this.props.computePortal,
-      `${routeParams.dialect_path}/Portal`
-    )
+    const computePortal = await ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
 
     const entries = selectn('response.entries', computedCharacters)
 
@@ -139,7 +138,7 @@ class AlphabetListView extends Component {
   _generateTiles() {
     const { entries } = this.state
     const { letter } = this.props
-    const _entries = entries.map((value, index) => {
+    const _entries = (entries || []).map((value, index) => {
       const _letter = value.title
       const href = this._generateDialectFilterUrl(_letter)
       return (
