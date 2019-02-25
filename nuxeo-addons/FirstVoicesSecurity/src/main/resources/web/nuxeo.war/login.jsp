@@ -12,6 +12,7 @@
 <%@ page import="org.nuxeo.common.Environment"%>
 <%@ page import="org.nuxeo.runtime.api.Framework"%>
 <%@ page import="org.nuxeo.ecm.platform.ui.web.auth.service.LoginVideo" %>
+<%@ page import="org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -23,7 +24,8 @@ String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 boolean isTesting = "Nuxeo-Selenium-Tester".equals(testerName);
 String context = request.getContextPath();
 
-String WEB_UI_URL = (request.getScheme() + "://" + request.getServerName() + request.getServerPort()).replace("8080", ":3001");
+String NUXEO_URL = VirtualHostHelper.getBaseURL(request);
+String WEB_UI_URL = NUXEO_URL.replace("/nuxeo", "").replace("8080", "3001");
 
 HttpSession httpSession = request.getSession(false);
 if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)!=null) {
@@ -121,7 +123,7 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
       }
 
 		</style>
-    <link rel="shortcut icon" href="<%=WEB_UI_URL%>/assets/images/favicon.ico" />
+    <link rel="shortcut icon" href="<%=WEB_UI_URL%>assets/images/favicon.ico" />
 
 
 		<script type="text/javascript">
@@ -148,7 +150,7 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 	<div class="container-box">
 
 		<div data-component-id="AppBar" style="background-color:#b40000;transition:all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;box-sizing:border-box;font-family:Arial, sans-serif;-webkit-tap-highlight-color:rgba(0,0,0,0);box-shadow:0 1px 6px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.12);border-radius:0px;position:relative;z-index:1100;width:100%;display:flex;min-height:64px;padding-left:24px;padding-right:24px;" data-reactid=".0.0.1.0.0">
-			<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;padding-top:15px;letter-spacing:0;font-size:24px;font-weight:400;color:#ffffff;line-height:64px;box-flex:1;flex:1;" data-reactid=".0.0.1.0.0.1"><span class="hidden-xs" data-reactid=".0.0.1.0.0.1.0"><img src="<%=WEB_UI_URL%>/assets/images/logo.png" style="padding:0 0 5px 0;" alt="FirstVoices" data-reactid=".0.0.1.0.0.1.0.0"></span></div>
+			<div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0;padding-top:15px;letter-spacing:0;font-size:24px;font-weight:400;color:#ffffff;line-height:64px;box-flex:1;flex:1;" data-reactid=".0.0.1.0.0.1"><span class="hidden-xs" data-reactid=".0.0.1.0.0.1.0"><img src="<%=WEB_UI_URL%>assets/images/logo.png" style="padding:0 0 5px 0;" alt="FirstVoices" data-reactid=".0.0.1.0.0.1.0.0"></span></div>
 		</div>
 			<div style="margin-bottom:15px;text-align:center;">
 				<h1 style="font-weight:500;">Already a member? Log into FirstVoices</h1>
@@ -234,14 +236,14 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 			</form>
 
 			<div style="text-align: left;padding: 10px 0 0 25px;margin-top: 10px;border-top:1px solid gray;">
-				<a href="<%=WEB_UI_URL%>/forgotpassword/">Forgot your password? Click here to reset it</a>.<br/>
-				<strong><a href="<%=WEB_UI_URL%>/register/">New to FirstVoices? Click here to register</a>.</strong>
+				<a href="<%=WEB_UI_URL%>forgotpassword/">Forgot your password? Click here to reset it</a>.<br/>
+				<strong><a href="<%=WEB_UI_URL%>register/">New to FirstVoices? Click here to register</a>.</strong>
 			</div>
 		</div>
 
 	</div>
 
-	<div style="color:#fff;font-weight:bold;background: 0 95% url(<%=WEB_UI_URL%>/assets/images/footer-background.png) no-repeat;height:45px;padding-top: 15px;">
+	<div style="color:#fff;font-weight:bold;background: 0 95% url(<%=WEB_UI_URL%>assets/images/footer-background.png) no-repeat;height:45px;padding-top: 15px;">
 		Need help? Feel free to contact us at support@fpcc.ca
 	</div>
 
