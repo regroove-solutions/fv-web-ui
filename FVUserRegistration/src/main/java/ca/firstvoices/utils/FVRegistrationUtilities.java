@@ -243,7 +243,7 @@ public class FVRegistrationUtilities {
      * @return
      */
     public boolean UserInviteCondition(DocumentModel registrationRequest, CoreSession session, boolean autoAccept) {
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal currentUser = session.getPrincipal();
 
         ugdr = new UnrestrictedGroupResolver(session, dialect);
         ugdr.runUnrestricted();
@@ -338,27 +338,13 @@ public class FVRegistrationUtilities {
         // Set permissions on registration document
         String registrationId = null;
 
-        try {
-            registrationId = registrationService.submitRegistrationRequest(
-                    registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(),
-                    userInfo, docInfo, info, validationMethod, autoAccept, userInfo.getEmail());
+        registrationId = registrationService.submitRegistrationRequest(
+                registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(), userInfo,
+                docInfo, info, validationMethod, autoAccept, userInfo.getEmail());
 
-            lctx = Framework.login();
-            s = CoreInstance.openCoreSession("default");
-
-            UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId,
-                    ugdr.language_admin_group);
-            urpr.runUnrestricted();
-
-            lctx.logout();
-        } catch (Exception e) {
-            log.warn(e);
-            throw e;
-        } finally {
-            if (s != null)
-                s.close();
-
-        }
+        UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId,
+                ugdr.language_admin_group);
+        urpr.runUnrestricted();
 
         return registrationId;
     }
@@ -463,7 +449,7 @@ public class FVRegistrationUtilities {
 
     /**
      * Removes registration request for users
-     * 
+     *
      * @param users list of users to remove registration requests for
      */
     public static void removeRegistrationsForUsers(CoreSession session, StringList users) {
@@ -476,7 +462,7 @@ public class FVRegistrationUtilities {
 
     /**
      * Get registration for a list of users
-     * 
+     *
      * @param users list of users to lookup registration for
      */
     public static DocumentModelList getRegistrations(CoreSession session, StringList users) {
@@ -491,7 +477,7 @@ public class FVRegistrationUtilities {
 
     /**
      * Get registration for single user, for a dialect
-     * 
+     *
      * @param user user to lookup registration for
      * @param dialect dialect user requested to join
      */
