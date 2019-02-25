@@ -1024,9 +1024,10 @@ const options = {
           }) + " *",
         factory: SelectFactory,
         attrs: {
-          query:
-            "SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:isLatestVersion = 1 ORDER BY dc:title ASC",
+          // query:
+          //   "SELECT ecm:uuid, dc:title FROM FVDialect WHERE ecm:currentLifeCycleState <> 'deleted' AND ecm:isLatestVersion = 1 ORDER BY dc:title ASC",
           queryId: "dialect_titles_uids",
+          query: "dialect_list",
           label: "Your FirstVoices community/language",
           fancy: false,
         },

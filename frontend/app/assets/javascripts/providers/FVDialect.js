@@ -89,6 +89,7 @@ const fetchDialectStats = RESTActions.execute("FV_DIALECT_STATS", "FVGenerateJso
 const fetchDialects = RESTActions.query("FV_DIALECTS", "FVDialect", {
   headers: { "X-NXenrichers.document": "ancestry,dialect" },
 })
+const fetchDialectList = RESTActions.execute("FV_DIALECT_LIST", "Document.ListDialects", {})
 const publishDialect = RESTActions.execute("FV_DIALECT2_PUBLISH", "FVPublish", {
   headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
 })
@@ -114,6 +115,7 @@ const actions = {
   publishDialect,
   publishDialectOnly,
   unpublishDialect,
+  fetchDialectList,
   fetchDialects,
   fetchDialectStats,
   enableDialect,
@@ -125,6 +127,7 @@ const computeDialectQuery = RESTReducers.computeQuery("dialect2_query")
 const computeDialectByShortURL = RESTReducers.computeQuery("dialect2_shorturl")
 const computeDialectFetch = RESTReducers.computeFetch("dialect2")
 const computeDialectStatsOperation = RESTReducers.computeOperation("dialect_stats")
+const computeDialectListOperation = RESTReducers.computeOperation("dialect_list")
 
 const reducers = {
   computeDialect(
@@ -172,6 +175,7 @@ const reducers = {
   computeDialects: computeDialectsQuery.computeDialects,
   computeDialect2: computeDialectFetch.computeDialect2,
   computeDialectStats: computeDialectStatsOperation.computeDialectStats,
+  computeDialectList: computeDialectListOperation.computeDialectList,
   computeDialectUnpublish(
     state = {
       isFetching: false,
