@@ -16,6 +16,9 @@ import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
@@ -524,8 +527,6 @@ public class FVRegistrationUtilities
 
         try
         {
-            //String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
-
             lctx = Framework.login();
             session = CoreInstance.openCoreSession(null);
 
@@ -540,10 +541,6 @@ public class FVRegistrationUtilities
                 // Set creation time
                 Calendar cEventDate = Calendar.getInstance();
                 cEventDate.setTime(new Date(System.currentTimeMillis()));
-
-                // TODO: clarify with DY what we are blocking if the dialect state is Enabled
-                // TODO: we will send an email if the user is member of FV language team ...
-                // TODO: but what if somebody else tries to register for enabled dialect and is not a member of the language team?
 
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
@@ -560,17 +557,26 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-// TODO:            finishTestingAndimplementing();
 
             // check if dialect is private ie. Enabled
+            // In this case we always notify Language Administrator regardless of the user's role
             if( dialectLifeCycleState.equals("Enabled") )
             {
-                // Only email language admins if requested role is involved in language revitalization
-                // NOTE: This is executed after user set the password not in the first stage of registration
-                if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true) )
-                {
-                    notificationEmailsAndReminderTasks( dialect, ureg );
-                }
+                // user membership does not change until action of the language admin
+                // until than user belongs only to global 'members' group
+                notificationEmailsAndReminderTasks( dialect, ureg );
+            }
+            else if( dialectLifeCycleState.equals("Published") )
+            {
+                // send system authorized group change event
+                String newUserGroup = ureg.getPropertyValue("docinfo:documentTitle") + "_members";
+                EventProducer eventProducer = Framework.getService( EventProducer.class );
+                DocumentEventContext group_ctx =  new DocumentEventContext( session, session.getPrincipal(), dialect );
+                group_ctx.setProperty(USER_NAME_ARG, username );
+                group_ctx.setProperty(GROUP_NAME_ARG, newUserGroup);
+                Event event;
+                event = group_ctx.newEvent(SYSTEM_APPROVED_GROUP_CHANGE);
+                eventProducer.fireEvent(event);
             }
 
             lctx.logout();
