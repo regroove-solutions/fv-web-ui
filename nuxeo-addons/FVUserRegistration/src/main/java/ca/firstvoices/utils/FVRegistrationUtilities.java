@@ -5,7 +5,6 @@
 package ca.firstvoices.utils;
 
 import ca.firstvoices.user.FVUserRegistrationInfo;
-import ca.firstvoices.webengine.FVUserInvitationObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -18,20 +17,15 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.services.config.ConfigurationService;
 
 import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.*;
-import org.apache.commons.lang3.StringUtils;
-
 
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
@@ -176,6 +170,8 @@ public class FVRegistrationUtilities
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
         userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
+        userInfo.setLanguageTeamMember( (String) registrationRequest.getPropertyValue("fvuserinfo:language_team_member") );
+
         userInfo.setLogin( userInfo.getEmail() );
 
         try
@@ -531,9 +527,10 @@ public class FVRegistrationUtilities
             //String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
 
             lctx = Framework.login();
-            session = CoreInstance.openCoreSession("default");
+            session = CoreInstance.openCoreSession(null);
 
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
+            String dialectLifeCycleState = dialect.getCurrentLifeCycleState();
 
             String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
@@ -543,6 +540,10 @@ public class FVRegistrationUtilities
                 // Set creation time
                 Calendar cEventDate = Calendar.getInstance();
                 cEventDate.setTime(new Date(System.currentTimeMillis()));
+
+                // TODO: clarify with DY what we are blocking if the dialect state is Enabled
+                // TODO: we will send an email if the user is member of FV language team ...
+                // TODO: but what if somebody else tries to register for enabled dialect and is not a member of the language team?
 
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
@@ -559,9 +560,17 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            // Only email language admins if requested role is involved in language revitalization
-            if (userDoc.getPropertyValue("user:role").equals("languagerevitalizer")) {
-                notificationEmailsAndReminderTasks( dialect, ureg );
+// TODO:            finishTestingAndimplementing();
+
+            // check if dialect is private ie. Enabled
+            if( dialectLifeCycleState.equals("Enabled") )
+            {
+                // Only email language admins if requested role is involved in language revitalization
+                // NOTE: This is executed after user set the password not in the first stage of registration
+                if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true) )
+                {
+                    notificationEmailsAndReminderTasks( dialect, ureg );
+                }
             }
 
             lctx.logout();

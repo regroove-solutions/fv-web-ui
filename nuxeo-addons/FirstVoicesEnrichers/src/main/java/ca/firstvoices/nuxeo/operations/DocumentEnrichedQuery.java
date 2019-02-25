@@ -49,7 +49,7 @@ public class DocumentEnrichedQuery {
     protected String query;
 
     @Param(name = "language", required = false, description = "The query " + "language.", widget = Constants.W_OPTION, values = { NXQL.NXQL })
-    protected String lang = NXQL.NXQL;
+    protected String language = NXQL.NXQL;
 
     @Param(name = "currentPageIndex", required = false, description = "Target listing page.")
     protected Integer currentPageIndex;
@@ -58,7 +58,7 @@ public class DocumentEnrichedQuery {
     protected Integer pageSize;
 
     @Param(name = "queryParams", required = false, description = "Ordered " + "query parameters.")
-    protected StringList strParameters;
+    protected StringList queryParams;
 
     @Param(name = "sortBy", required = false, description = "Sort by " + "properties (separated by comma)")
     protected String sortBy;
@@ -85,14 +85,16 @@ public class DocumentEnrichedQuery {
         Map<String, Object> params = new HashMap<>();
 
         params.put("query", query);
-        params.put("language", lang);
+        params.put("language", language);
         params.put("currentPageIndex", currentPageIndex);
         params.put("pageSize", pageSize);
-        params.put("strParameters", strParameters);
+        params.put("strParameters", queryParams);
         params.put("sortBy", sortBy);
         params.put("sortOrder", sortOrder);
         params.put("namedParameters", namedParameters);
 
-        return (DocumentModelList) automationService.run(ctx, "Repository.Query", params);
+        DocumentModelList dml = (DocumentModelList) automationService.run(ctx, "Repository.Query", params);
+
+        return dml;
     }
 }

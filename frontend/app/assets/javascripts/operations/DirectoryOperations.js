@@ -142,7 +142,7 @@ export default class DirectoryOperations extends BaseOperations {
     )
     return new Promise((resolve, reject) => {
       properties.client
-        .operation("Document.Query")
+        .operation("Document.EnrichedQuery")
         .params(nxqlQueryParams)
         .execute(_headers)
         .then((docs) => {

@@ -123,6 +123,13 @@ export default {
     return groups && groups.length === 1 && groups[0] === "members"
   },
   /**
+   * A site admin
+   */
+  isAdmin: function(computeLogin) {
+    let userGroups = selectn("response.properties.groups", computeLogin)
+    return userGroups && userGroups.indexOf("administrators") != -1
+  },
+  /**
    * Checks if a current user is parts of list of groups
    */
   isDialectMember: function(computeLogin, computeDialect) {
@@ -257,9 +264,7 @@ export default {
     KIDS_OR_DEFAULT: "(kids|explore)",
   },
   userRegistrationRoles: [
-    { value: "languagerevitalizer", text: "I am involved in language revitalization" },
-    { value: "teacher", text: "I am a teacher" },
-    { value: "educator", text: "I am an educator" },
+    { value: "teacher", text: "I am a teacher/educator" },
     { value: "student", text: "I am a learner/student" },
     { value: "learner-1", text: "I am interested in learning MY language" },
     { value: "learner-2", text: "I am interested in learning A language" },

@@ -416,7 +416,7 @@
     "last_updated": "last updated",
     "learn": "learn",
     "learn_about_framework_of_lang": "Learn about the framework of our language",
-    "learn_our_lang": "Learn Our Language",
+    "learn_our_lang": "Learn our Language",
     "lesson": "Lesson",
     "lessons": "Lessons",
     "link": "link",
@@ -1165,6 +1165,7 @@
           "dialect_unpublished_successfully": "Dialect UnPublished Successfully!",
           "edit_x_community_portal": "Edit %s Community Portal",
           "first_words": "FIRST WORDS",
+          "information": "INFORMATION",
           "fetching_community_portal": "Fetching community portal",
           "gallery": {
             "add_new_gallery_to_x": "Add New Gallery to %s",
@@ -1224,7 +1225,7 @@
               "related_phrases": "Related Phrases"
             }
           },
-          "learn_our_language": "Learn Our Language",
+          "learn_our_language": "Learn our Language",
           "links": {
             "add_new_link_to_x": "Add New Link to %s",
             "edit_x_link": "Edit %s Link"
