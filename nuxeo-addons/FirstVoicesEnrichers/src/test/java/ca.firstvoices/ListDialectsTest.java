@@ -211,6 +211,7 @@ public class ListDialectsTest
 
         Blob docs = (Blob) automationService.run(ctx, ListDialects.ID, params);
         assertTrue("Should have only 1 disabled dialect", countDocsInBlob( docs.getString(), "ecm:uuid"  ) == 1);
+
     }
 
     private int countDocsInBlob( String blobStr, String findStr )

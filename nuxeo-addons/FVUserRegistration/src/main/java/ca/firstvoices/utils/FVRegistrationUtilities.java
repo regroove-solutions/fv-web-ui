@@ -527,9 +527,10 @@ public class FVRegistrationUtilities
             //String newUserGroup = (String) ureg.getPropertyValue("docinfo:documentTitle") + "_members";
 
             lctx = Framework.login();
-            session = CoreInstance.openCoreSession("default");
+            session = CoreInstance.openCoreSession(null);
 
             dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
+            String dialectLifeCycleState = dialect.getCurrentLifeCycleState();
 
             String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
@@ -539,6 +540,10 @@ public class FVRegistrationUtilities
                 // Set creation time
                 Calendar cEventDate = Calendar.getInstance();
                 cEventDate.setTime(new Date(System.currentTimeMillis()));
+
+                // TODO: clarify with DY what we are blocking if the dialect state is Enabled
+                // TODO: we will send an email if the user is member of FV language team ...
+                // TODO: but what if somebody else tries to register for enabled dialect and is not a member of the language team?
 
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
                 userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
@@ -555,10 +560,17 @@ public class FVRegistrationUtilities
                 log.warn("Exception while updating user preferences "+e );
             }
 
-            // Only email language admins if user stated they are part of an FV language team
-            if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
-                //finishTestingAndimplementing();
-                notificationEmailsAndReminderTasks( dialect, ureg );
+// TODO:            finishTestingAndimplementing();
+
+            // check if dialect is private ie. Enabled
+            if( dialectLifeCycleState.equals("Enabled") )
+            {
+                // Only email language admins if requested role is involved in language revitalization
+                // NOTE: This is executed after user set the password not in the first stage of registration
+                if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true) )
+                {
+                    notificationEmailsAndReminderTasks( dialect, ureg );
+                }
             }
 
             lctx.logout();
