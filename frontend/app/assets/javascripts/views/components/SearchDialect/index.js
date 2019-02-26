@@ -553,7 +553,7 @@ class SearchDialect extends Component {
       searchPartOfSpeech,
     } = this.props
 
-    const search = StringHelpers.clean(searchTerm, "nxql") || ""
+    const search = StringHelpers.clean(searchTerm, "NXQL") || ""
     const searchByAlphabetClean = StringHelpers.clean(searchByAlphabet, "NXQL") || ""
 
     const nxqlTmpl = {
