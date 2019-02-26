@@ -1,4 +1,5 @@
 <#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")?replace("8080", "3001")>
+<#assign loginURL = "/nuxeo/login-init.jsp">
 <!DOCTYPE html>
 <!--[if lte IE 8]>
 <html class="lt-ie9  no-js" lang="en">
@@ -45,7 +46,7 @@
 		</style>
 
 		<script>
-			setTimeout(function(){window.location.replace("${siteURL}")}, 2000);
+			setTimeout(function(){window.location.replace("${loginURL}")}, 2000);
 		</script>
 
 	</head>
@@ -65,7 +66,7 @@
 					<div>
 
 						<div class="info">
-							You are being redirected to ${siteURL} or can <a href="${siteURL}">click here to access ${siteURL}</a> now.
+							In a few seconds you will be redirected to our login page or can <a href="${loginURL}">click here to access it directly</a>.
 						</div>
 
 					</div>

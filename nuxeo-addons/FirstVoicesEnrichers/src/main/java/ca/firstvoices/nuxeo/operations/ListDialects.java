@@ -92,16 +92,21 @@ public class ListDialects
 
         @Override
         public void run() {
-            result = session.queryAndFetch(query, "NXQL");
-            Iterator<Map<String, Serializable>> it = result.iterator();
+            try {
+                result = session.queryAndFetch(query, "NXQL");
+                Iterator<Map<String, Serializable>> it = result.iterator();
 
-            resultSetArray = new JSONArray();
-            while (it.hasNext()) {
-                Map<String, Serializable> item = it.next();
-                JSONObject object = new JSONObject();
-                object.accumulateAll(item);
-                resultSetArray.add(object);
+                resultSetArray = new JSONArray();
+                while (it.hasNext()) {
+                    Map<String, Serializable> item = it.next();
+                    JSONObject object = new JSONObject();
+                    object.accumulateAll(item);
+                    resultSetArray.add(object);
+                }
+            } finally {
+                result.close();
             }
+
         }
     }
 }

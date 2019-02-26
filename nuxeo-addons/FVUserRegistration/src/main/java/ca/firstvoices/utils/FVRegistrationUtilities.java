@@ -173,7 +173,7 @@ public class FVRegistrationUtilities
         userInfo.setFirstName( (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
         userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
-        userInfo.setLanguageTeamMember( (String) registrationRequest.getPropertyValue("fvuserinfo:language_team_member") );
+        userInfo.setLanguageTeamMember( (Boolean) registrationRequest.getPropertyValue("fvuserinfo:language_team_member") );
 
         userInfo.setLogin( userInfo.getEmail() );
 
@@ -237,6 +237,7 @@ public class FVRegistrationUtilities
         options.put("comment", (String) ureg.getPropertyValue("fvuserinfo:comment"));
         options.put("dialectId", dialect.getId() );
         options.put("dialect", dialect.getTitle() );
+        options.put("dialectState", dialect.getCurrentLifeCycleState() );
 
         String adminTO = mailUtil.getLanguageAdministratorEmail( dialect );
         mailUtil.registrationAdminMailSender(NEW_USER_SELF_REGISTRATION_ACT, options, adminTO );
@@ -340,6 +341,10 @@ public class FVRegistrationUtilities
         info.put("fvuserinfo:preferences", userInfo.getPreferences() );
         info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
         info.put("fvuserinfo:comment", userInfo.getComment());
+        info.put("fvuserinfo:language_team_member", userInfo.getLanguageTeamMember() );
+
+        // Add status of dialect for email
+        info.put("dialect_current_status", dialect.getCurrentLifeCycleState() );
 
         // Set permissions on registration document
         String registrationId = null;
@@ -536,14 +541,20 @@ public class FVRegistrationUtilities
             String username = (String) ureg.getPropertyValue("userinfo:login");
             DocumentModel userDoc = userManager.getUserModel( username );
 
-            try
-            {
+            try {
                 // Set creation time
                 Calendar cEventDate = Calendar.getInstance();
                 cEventDate.setTime(new Date(System.currentTimeMillis()));
 
                 //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
-                userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
+
+                // If user requested access to a private (i.e. Enabled) dialect; do not set user preferences
+                // so that the user is not redirected to the private dialect and gets a 404.
+                // Next step would be for Language Administrator to add them to a group directly.
+                if (!dialectLifeCycleState.equals("Enabled")) {
+                    userDoc.setPropertyValue("user:preferences", ureg.getPropertyValue("fvuserinfo:preferences"));
+                }
+
                 userDoc.setPropertyValue("user:yearBornRange", ureg.getPropertyValue("fvuserinfo:ageGroup"));
                 userDoc.setPropertyValue("user:role", ureg.getPropertyValue("fvuserinfo:role"));
                 userDoc.setPropertyValue("user:ua", ureg.getPropertyValue("fvuserinfo:ua"));
@@ -569,7 +580,7 @@ public class FVRegistrationUtilities
             else if( dialectLifeCycleState.equals("Published") )
             {
                 // send system authorized group change event
-                String newUserGroup = ureg.getPropertyValue("docinfo:documentTitle") + "_members";
+                String newUserGroup = "members";
                 EventProducer eventProducer = Framework.getService( EventProducer.class );
                 DocumentEventContext group_ctx =  new DocumentEventContext( session, session.getPrincipal(), dialect );
                 group_ctx.setProperty(USER_NAME_ARG, username );
@@ -577,6 +588,11 @@ public class FVRegistrationUtilities
                 Event event;
                 event = group_ctx.newEvent(SYSTEM_APPROVED_GROUP_CHANGE);
                 eventProducer.fireEvent(event);
+
+                // Only email language admins if user stated they are part of an FV language team
+                if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
+                    notificationEmailsAndReminderTasks( dialect, ureg );
+                }
             }
 
             lctx.logout();

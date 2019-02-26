@@ -3,14 +3,13 @@ package ca.firstvoices.utils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.ecm.automation.AutomationService;
-import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.core.util.StringList;
-import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.automation.features.PrincipalHelper;
-import org.nuxeo.ecm.platform.rendering.api.RenderingException;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.security.PermissionProvider;
+import org.nuxeo.ecm.platform.rendering.api.RenderingException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.invite.RenderingHelper;
 import org.nuxeo.runtime.api.Framework;
@@ -298,7 +297,7 @@ public class FVRegistrationMailUtilities {
         options.put("fName", (String) registrationRequest.getPropertyValue("userinfo:firstName"));
         options.put("lName", (String) registrationRequest.getPropertyValue("userinfo:lastName"));
         options.put("email", (String) registrationRequest.getPropertyValue("userinfo:email"));
-        options.put("comment", (String) registrationRequest.getPropertyValue("userinfo:comment"));
+        options.put("comment", (String) registrationRequest.getPropertyValue("fvuserinfo:comment"));
         options.put("dialect", dialectTitle);
 
         String toStr =  getLanguageAdministratorEmail( dialect );

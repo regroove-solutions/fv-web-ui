@@ -160,7 +160,14 @@ public class FVLogin extends StartupHelper {
         String finalPath = "";
 
         if (primary_dialect_short_url != null && !primary_dialect_short_url.isEmpty()) {
-            finalPath = "Workspaces/" + primary_dialect_short_url;
+            // Users who are global 'members' should just go to the Sections URL
+            if (currentUser.getGroups().contains("members")) {
+                finalPath = "sections/" + primary_dialect_short_url;
+            }
+            // Other users can go to Workspaces
+            else {
+                finalPath = "Workspaces/" + primary_dialect_short_url;
+            }
         }
         else if (primary_dialect_path != null) {
             try {
