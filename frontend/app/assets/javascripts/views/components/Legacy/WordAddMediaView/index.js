@@ -206,4 +206,4 @@ WordAddMediaView.contextTypes = {
   router: React.PropTypes.func
 };
 
-module.exports = WordAddMediaView;
+export default WordAddMediaView;

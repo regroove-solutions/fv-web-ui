@@ -81,7 +81,6 @@ import {
   PageUserTasks,
   PageUsersProfile,
   PageUsersRegister,
-  PageUserLogin,
   PageUsersForgotPassword,
   PageDialectLearnWordsCategories,
   PageDialectLearnPhrasesCategories,
@@ -453,11 +452,6 @@ export default class AppFrontController extends Component {
         path: ["register"],
         title: intl.translate({ key: "register", default: "Register", case: "first" }),
         page: <PageUsersRegister />,
-      },
-      {
-        path: ["login"],
-        title: intl.translate({ key: "user_login", default: "User Login", case: "words" }),
-        page: <PageUserLogin />,
       },
       {
         path: ["profile"],

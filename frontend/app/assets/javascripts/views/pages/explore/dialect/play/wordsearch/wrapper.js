@@ -38,8 +38,8 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "wordsearch" */ 'games/wordsearch').then(({ default: wordsearch }) => {
-                    resolve(wordsearch);
+                import(/* webpackChunkName: "wordsearch" */ '@fpcc/fv-game-wordsearch').then(({ default: wordsearch }) => {
+                resolve(wordsearch);
                 }).catch(reject);
             })
         })());
@@ -51,8 +51,7 @@ export default class Game extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/wordsearch/assets';
-        const defaultLibsPath = `${defaultAssetsPath}/libs`;
+        const defaultAssetsPath = '/assets/games/fv-games-wordsearch';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config
@@ -61,10 +60,6 @@ export default class Game extends Component {
          */
 
         let gameConfig = {
-
-            libs: {
-                wordFindScript: `${defaultLibsPath}/wordfind.js`
-            },
 
             images: {
                 preloaderLoading: `${defaultImagesPath}/loading.png`,
