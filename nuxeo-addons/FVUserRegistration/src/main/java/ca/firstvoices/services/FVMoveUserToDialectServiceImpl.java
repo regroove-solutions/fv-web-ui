@@ -24,13 +24,22 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
         CoreSession session = dialect.getCoreSession();
         userManager = Framework.getService( UserManager.class );
 
-        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName.toLowerCase() ) ) throw new Exception("No sufficient privileges to modify group: " + groupName);
-        if( terminateOnInvalidCredentials_NewUserHomeChange( session, userManager, newUsername, dialect.getId() ) ) throw new Exception("No sufficient privileges to modify user: " + newUsername);
+        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName.toLowerCase() ) ) throw new Exception("placeNewUserInGroup: No sufficient privileges to modify group: " + groupName);
+        if( terminateOnInvalidCredentials_NewUserHomeChange( session, userManager, newUsername, dialect.getId() ) ) throw new Exception("placeNewUserInGroup: No sufficient privileges to modify user: " + newUsername);
 
         userManager = null;
+
+        // allow system to move user between groups
+        systemPlaceNewUserInGroup( dialect, groupName, newUsername );
+    }
+
+    public void systemPlaceNewUserInGroup( DocumentModel dialect, String groupName, String newUsername ) throws Exception
+    {
         LoginContext lctx = Framework.login();
-        session = CoreInstance.openCoreSession("default");
+        CoreSession session = CoreInstance.openCoreSession("default");
+
         moveUserBetweenGroups( dialect, newUsername, "members", groupName.toLowerCase() );
+
         lctx.logout();
         session.close();
     }
@@ -48,7 +57,7 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
 
         if (toGroup == null)
         {
-            throw new Exception("Cannot update non-existent group: " + toGroupName);
+            throw new Exception("moveUserBetweenGroups: Cannot update non-existent group: " + toGroupName);
         }
 
         DocumentModel membersGroup = userManager.getGroupModel(fromGroupName);

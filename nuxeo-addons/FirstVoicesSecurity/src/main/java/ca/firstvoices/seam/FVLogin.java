@@ -16,6 +16,8 @@ import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.webapp.helpers.StartupHelper;
 
 import javax.faces.context.FacesContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -51,13 +53,13 @@ public class FVLogin extends StartupHelper {
         try {
 
             if (currentUser.isAnonymous()) {
-//
-//                // Reset JSESSIONID Cookie
-//                HttpServletResponse httpResponse = RestHelper.getHttpServletResponse();
-//                Cookie cookie = new Cookie("JSESSIONID", null);
-//                cookie.setMaxAge(0);
-//                cookie.setPath("/");
-//                httpResponse.addCookie(cookie);
+
+                // Reset JSESSIONID Cookie
+                HttpServletResponse httpResponse = RestHelper.getHttpServletResponse();
+                Cookie cookie = new Cookie("JSESSIONID", null);
+                cookie.setMaxAge(0);
+                cookie.setPath("/");
+                httpResponse.addCookie(cookie);
 
                 redirectTo = NUXEO_URL + "login.jsp?nxtimeout=true&forceAnonymousLogin=true";
             }

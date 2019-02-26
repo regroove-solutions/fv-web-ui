@@ -1,11 +1,16 @@
 <%@ page contentType="text/html; charset=UTF-8"%>
 <%@ page language="java"%>
 
+<%@ page import="org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%
-String WEB_UI_URL = (request.getScheme() + "://" + request.getServerName() + request.getServerPort()).replace("8080", ":3001");
+
+String NUXEO_URL = VirtualHostHelper.getBaseURL(request);
+String WEB_UI_URL = NUXEO_URL.replace("/nuxeo", "").replace("8080", "3001");
+
 response.sendRedirect(WEB_UI_URL);
 %>
 
