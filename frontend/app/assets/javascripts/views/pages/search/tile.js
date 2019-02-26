@@ -15,7 +15,7 @@ const intl = IntlService.instance
 export default class SearchResultTile extends Component {
   static defaultProps = {}
   static propTypes = {
-    tile: PropTypes.any, // TODO: set appropriate propType
+    tile: PropTypes.any.isRequired, // TODO: set appropriate propType
     searchTerm: PropTypes.any, // TODO: set appropriate propType
   }
   constructor(props, context) {
@@ -33,7 +33,7 @@ export default class SearchResultTile extends Component {
   render() {
     const tile = this.props.tile
 
-    let type = selectn('type', tile)
+    let type = selectn('type', tile) || ''
     let desc = intl.searchAndReplace(selectn('properties.dc:description', tile))
     let title = intl.searchAndReplace(selectn('properties.dc:title', tile))
     let subtitle = ''
@@ -180,7 +180,7 @@ export default class SearchResultTile extends Component {
     }
 
     title = DOMPurify.sanitize(title)
-
+    const SearchResultTileTitleType = type.replace('FV', '')
     return (
       <GridTile
         className="SearchResultTile"
@@ -193,7 +193,7 @@ export default class SearchResultTile extends Component {
             //onTouchTap={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null}
           >
             {title}
-            <small className="SearchResultTileTitleType">[{type.replace('FV', '')}]</small>
+            <small className="SearchResultTileTitleType">[{SearchResultTileTitleType}]</small>
           </a>
         }
         actionPosition="right"
