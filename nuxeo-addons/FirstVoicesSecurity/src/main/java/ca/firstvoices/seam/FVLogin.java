@@ -16,8 +16,6 @@ import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.webapp.helpers.StartupHelper;
 
 import javax.faces.context.FacesContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -37,11 +35,16 @@ public class FVLogin extends StartupHelper {
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public String initDomainAndFindStartupPage(String domainTitle, String viewId) {
 
+
+
         String NUXEO_URL = restHelper.getBaseURL();
 
         String WEB_UI_URL = NUXEO_URL
                 .replace("/nuxeo", "")
                 .replace("8080", "3001");
+
+        //String SERVLET_PATH = RestHelper.getHttpServletRequest().getServletPath();
+        // SERVLET_PATH.equals("/nxstartup.faces")
 
         String backToPath = RestHelper.getHttpServletRequest().getParameter("backTo");
         String result = initServerAndFindStartupPage();
@@ -51,19 +54,9 @@ public class FVLogin extends StartupHelper {
         String redirectTo = null;
 
         try {
-
             if (currentUser.isAnonymous()) {
-
-                // Reset JSESSIONID Cookie
-                HttpServletResponse httpResponse = RestHelper.getHttpServletResponse();
-                Cookie cookie = new Cookie("JSESSIONID", null);
-                cookie.setMaxAge(0);
-                cookie.setPath("/");
-                httpResponse.addCookie(cookie);
-
-                redirectTo = NUXEO_URL + "login.jsp?nxtimeout=true&forceAnonymousLogin=true";
+                redirectTo = NUXEO_URL + "login.jsp";
             }
-
             else if (!currentUser.isAdministrator()) {
                 // A valid "back to" path has been specified
                 if (validatePath(backToPath)) {

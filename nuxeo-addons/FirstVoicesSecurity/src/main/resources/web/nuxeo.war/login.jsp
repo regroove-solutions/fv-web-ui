@@ -27,9 +27,39 @@ String context = request.getContextPath();
 String NUXEO_URL = VirtualHostHelper.getBaseURL(request);
 String WEB_UI_URL = NUXEO_URL.replace("/nuxeo", "").replace("8080", "3001");
 
+/*
+
+DY - Do not redirect on this page
 HttpSession httpSession = request.getSession(false);
 if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)!=null) {
   response.sendRedirect(context + "/" + NuxeoAuthenticationFilter.DEFAULT_START_PAGE);
+}
+*/
+
+/* DY - Reset user JSESSIONID on this page so that login can start from scratch */
+
+Cookie cookie = null;
+Cookie[] cookies = null;
+
+// Get an array of Cookies associated with the this domain
+cookies = request.getCookies();
+
+boolean JSESSIONIDExists = false;
+
+if( cookies != null ) {
+   for (int i = 0; i < cookies.length; i++) {
+      cookie = cookies[i];
+      if (cookie.getName( ).equals("JSESSIONID")) {
+        JSESSIONIDExists = true;
+      }
+   }
+
+   if (JSESSIONIDExists) {
+    Cookie resetJSESSIONID = new Cookie("JSESSIONID", null);
+    resetJSESSIONID.setMaxAge(0);
+    resetJSESSIONID.setPath("/nuxeo/");
+    response.addCookie(resetJSESSIONID);
+   }
 }
 
 Locale locale = request.getLocale();
@@ -121,7 +151,18 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
         border-radius: 5px;
         padding: 5px;
       }
+    .buttonLink{
+        background-color: #4e4e4e;
+        color: #fff;
+        padding: 8px 15px;
+        border-radius: 10px;
+        margin-right: 15px;
+        text-decoration: none;
+    }
 
+    .buttonLink:hover{
+        background-color: #4c7784;
+    }
 		</style>
     <link rel="shortcut icon" href="<%=WEB_UI_URL%>assets/images/favicon.ico" />
 
@@ -235,9 +276,9 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 				</div>
 			</form>
 
-			<div style="text-align: left;padding: 10px 0 0 25px;margin-top: 10px;border-top:1px solid gray;">
-				<a href="<%=WEB_UI_URL%>forgotpassword/">Forgot your password? Click here to reset it</a>.<br/>
-				<strong><a href="<%=WEB_UI_URL%>register/">New to FirstVoices? Click here to register</a>.</strong>
+			<div style="text-align: center;padding: 20px 0 0 25px;margin-top: 20px;border-top:1px solid gray;">
+                <a href="<%=WEB_UI_URL%>register/" class="buttonLink">New to FirstVoices? Register here!</a>
+                <a href="<%=WEB_UI_URL%>forgotpassword/" class="buttonLink">Forgot your password?</a>
 			</div>
 		</div>
 

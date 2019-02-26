@@ -5,6 +5,8 @@
   <require>org.nuxeo.ecm.automation.server</require>
   <require>org.nuxeo.ecm.platform.web.common</require>
   <require>org.nuxeo.ecm.platform.lang</require>
+  <require>org.nuxeo.ecm.webapp.ui</require>
+
 
   <install>
 
