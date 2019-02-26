@@ -162,6 +162,9 @@ export default class AppLeftNav extends Component {
   }
 
   _onNavigateRequest(event, path) {
+    if (path === null) {
+      return
+    }
     if (path === ConfGlobal.baseURL + 'logout') {
       window.location.href = ConfGlobal.baseURL + 'logout?requestedUrl=logout-success.jsp'
     } else {
