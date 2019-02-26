@@ -144,4 +144,4 @@ WordCreateView.contextTypes = {
   router: React.PropTypes.func
 };
 
-module.exports = WordCreateView;
+export default WordCreateView;

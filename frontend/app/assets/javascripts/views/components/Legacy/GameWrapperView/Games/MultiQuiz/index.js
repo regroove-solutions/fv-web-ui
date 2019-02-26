@@ -241,4 +241,4 @@ MultiQuiz.childContextTypes = {
 };
 
 
-module.exports = MultiQuiz;
+export default MultiQuiz;

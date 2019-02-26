@@ -61,7 +61,7 @@ export default class Picturethis extends Component {
         this.config = {
             themes: [
                 {
-                    image: '/assets/games/picturethis/assets/01animals.png',
+                    image: '/assets/games/fv-games-picture-this/images/01animals.png',
                     name: 'Animals',
                     words: Map(
                         {
@@ -85,7 +85,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/02backyard.png',
+                    image: '/assets/games/fv-games-picture-this/images/02backyard.png',
                     name: 'Backyard',
                     words: Map(
                         {
@@ -105,7 +105,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/03bedroom.png',
+                    image: '/assets/games/fv-games-picture-this/images/03bedroom.png',
                     name: 'Bedroom',
                     words: Map(
                         {
@@ -125,7 +125,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/04camping.png',
+                    image: '/assets/games/fv-games-picture-this/images/04camping.png',
                     name: 'Camping',
                     words: Map(
                         {
@@ -145,7 +145,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/05classroom.png',
+                    image: '/assets/games/fv-games-picture-this/images/05classroom.png',
                     name: 'Classroom',
                     words: Map(
                         {
@@ -165,7 +165,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/06feast.png',
+                    image: '/assets/games/fv-games-picture-this/images/06feast.png',
                     name: 'Feast',
                     words: Map(
                         {
@@ -185,7 +185,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/07garage_sale.png',
+                    image: '/assets/games/fv-games-picture-this/images/07garage_sale.png',
                     name: 'Garage Sale',
                     words: Map(
                         {
@@ -205,7 +205,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/08kitchen.png',
+                    image: '/assets/games/fv-games-picture-this/images/08kitchen.png',
                     name: 'Kitchen',
                     words: Map(
                         {
@@ -225,7 +225,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/09medical_center.png',
+                    image: '/assets/games/fv-games-picture-this/images/09medical_center.png',
                     name: 'Medical Center',
                     words: Map(
                         {
@@ -245,7 +245,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/10pow_wow.png',
+                    image: '/assets/games/fv-games-picture-this/images/10pow_wow.png',
                     name: 'Pow Wow',
                     words: Map(
                         {
@@ -265,7 +265,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/11travel.png',
+                    image: '/assets/games/fv-games-picture-this/images/11travel.png',
                     name: 'Travel',
                     words: Map(
                         {
@@ -285,7 +285,7 @@ export default class Picturethis extends Component {
                     )
                 },
                 {
-                    image: '/assets/games/picturethis/assets/12village.png',
+                    image: '/assets/games/fv-games-picture-this/images/12village.png',
                     name: 'Village',
                     words: Map(
                         {

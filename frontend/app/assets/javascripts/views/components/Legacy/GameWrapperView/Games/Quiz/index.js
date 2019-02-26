@@ -251,4 +251,4 @@ Quiz.childContextTypes = {
 };
 
 
-module.exports = Quiz;
+export default Quiz;

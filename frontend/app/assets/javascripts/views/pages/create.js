@@ -27,7 +27,7 @@ import {default as PageDialectPhraseBooksCreate} from './explore/dialect/phraseb
 import {default as PageDialectContributorsCreate} from './explore/dialect/contributors/create'
 
 
-module.exports = {
+export {
   PageDialectWordsCreate,
   PageDialectPhrasesCreate,
   PageDialectStoriesAndSongsCreate,

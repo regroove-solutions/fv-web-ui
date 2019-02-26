@@ -68,7 +68,8 @@ import PageUsersProfile from "./users/profile"
 // KIDS
 import PageKidsHome from "./kids/home"
 
-module.exports = {
+
+export {
   PageTest,
   PageError,
   PageIntro,

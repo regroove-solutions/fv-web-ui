@@ -29,7 +29,7 @@ export default class AuthenticationFilter extends Component {
             hideFromSections,
             routeParams,
             containerStyle,
-            ...other,
+            ...other
         } = this.props;
 
         let isSection = (selectn('area', routeParams) == 'sections');
