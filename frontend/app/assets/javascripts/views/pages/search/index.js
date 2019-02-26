@@ -31,7 +31,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
-import StringHelpers from 'common/StringHelpers'
+import StringHelpers, { CLEAN_FULLTEXT } from 'common/StringHelpers'
 import FormHelpers from 'common/FormHelpers'
 import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
@@ -141,7 +141,7 @@ export default class Search extends DataListView {
           documentTypeFilter +
           ')' +
           " AND ecm:fulltext = '*" +
-          StringHelpers.clean(props.routeParams.searchTerm, 'fulltext') +
+          StringHelpers.clean(props.routeParams.searchTerm, CLEAN_FULLTEXT) +
           "*'" +
           // More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +
           '&currentPageIndex=' +

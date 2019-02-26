@@ -10,7 +10,7 @@ import {
   SEARCH_BY_PHRASE_BOOK,
 } from './constants'
 import provide from 'react-redux-provide'
-import StringHelpers from 'common/StringHelpers'
+import StringHelpers, { CLEAN_NXQL } from 'common/StringHelpers'
 import selectn from 'selectn'
 import classNames from 'classnames'
 import RaisedButton from 'material-ui/lib/raised-button'
@@ -553,11 +553,12 @@ class SearchDialect extends Component {
       searchPartOfSpeech,
     } = this.props
 
-    const search = StringHelpers.clean(searchTerm, 'nxql') || ''
+    const search = StringHelpers.clean(searchTerm, CLEAN_NXQL) || ''
+    const _searchByAlphabet = StringHelpers.clean(searchByAlphabet, CLEAN_NXQL) || ''
     const nxqlTmpl = {
-      // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
+      // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, CLEAN_FULLTEXT)}*'`,
       searchByTitle: `dc:title ILIKE '%${search}%'`,
-      searchByAlphabet: `dc:title ILIKE          '${searchByAlphabet}%'`,
+      searchByAlphabet: `dc:title ILIKE '${_searchByAlphabet}%'`,
       searchByCategory: `dc:title ILIKE '%${search}%'`,
       searchByPhraseBook: `dc:title ILIKE '%${search}%'`,
       searchByCulturalNotes: `fv:cultural_note ILIKE '%${search}%'`,
