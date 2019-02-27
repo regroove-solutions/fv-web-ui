@@ -92,8 +92,8 @@ public class FVQuickUserRegistration {
             This operation has for most part similar code to sister operation UserInvite.
             The main difference is in conditions we apply for both.
             Common code is split into 2 parts
-            - preCondition
-            - postCondition
+            - registrationCommonSetup
+            - registrationCommonFinish
             Each of the operations executes it own, context specific conditions and any other operations
             following if appropriate.
             In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
@@ -101,11 +101,11 @@ public class FVQuickUserRegistration {
          */
 
         try {
-            utilCommon.preCondition(registrationRequest, session, userManager);
+            utilCommon.registrationCommonSetup(registrationRequest, session, userManager);
 
             utilCommon.QuickUserRegistrationCondition(registrationRequest, session);
 
-            String registrationId = utilCommon.postCondition(registrationService,
+            String registrationId = utilCommon.registrationCommonFinish(registrationService,
                     registrationRequest,
                     info,
                     null,

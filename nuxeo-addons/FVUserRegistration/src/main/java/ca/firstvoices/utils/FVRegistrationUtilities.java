@@ -113,7 +113,7 @@ public class FVRegistrationUtilities
      * @param s
      * @param uM
      */
-    public void preCondition(DocumentModel registrationRequest, CoreSession s, UserManager uM )
+    public void registrationCommonSetup(DocumentModel registrationRequest, CoreSession s, UserManager uM )
     {
         session = s;
         userManager = uM;
@@ -291,12 +291,12 @@ public class FVRegistrationUtilities
      * @param autoAccept
      * @return
      */
-    public String postCondition( UserRegistrationService  registrationService,
-                                 DocumentModel            registrationRequest,
-                                 Map<String, Serializable> info,
-                                 String                   comment,
-                                 ValidationMethod         validationMethod,
-                                 boolean                  autoAccept ) throws RestOperationException, Exception
+    public String registrationCommonFinish(UserRegistrationService  registrationService,
+                                           DocumentModel            registrationRequest,
+                                           Map<String, Serializable> info,
+                                           String                   comment,
+                                           ValidationMethod         validationMethod,
+                                           boolean                  autoAccept ) throws RestOperationException, Exception
     {
         LoginContext lctx;
         CoreSession s = null;
