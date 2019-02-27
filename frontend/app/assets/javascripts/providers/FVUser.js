@@ -94,14 +94,26 @@ const userSuggestion = RESTActions.execute("FV_USER_SUGGESTION", "UserGroup.Sugg
 const userUpdate = RESTActions.execute("FV_USER_UPDATE", "FVUpdateUser")
 const userUpgrade = RESTActions.execute("FV_USER_UPGRADE", "FVChangeUserGroupToDialectGroup", {})
 
+const fetchUserDialects = RESTActions.execute("FV_USER_DIALECTS", "FVGetDialectsForUser")
+
 const computeUserFetchFactory = RESTReducers.computeFetch("user")
 const computeUserSuggestion = RESTReducers.computeOperation("user_suggestion")
 
 const computeUserSelfregisterOperation = RESTReducers.computeOperation("user_selfregister")
 const computeUserUpdate = RESTReducers.computeOperation("user_update")
 const computeUserUpgrade = RESTReducers.computeOperation("user_upgrade")
+const computeUserDialectsOperation = RESTReducers.computeOperation("user_dialects")
 
-const actions = { fetchUser, userSuggestion, createUser, selfregisterUser, updateUser, userUpdate, userUpgrade }
+const actions = {
+  fetchUser,
+  userSuggestion,
+  fetchUserDialects,
+  createUser,
+  selfregisterUser,
+  updateUser,
+  userUpdate,
+  userUpgrade,
+}
 
 const reducers = {
   computeUser: computeUserFetchFactory.computeUser,
@@ -109,6 +121,7 @@ const reducers = {
   computeUserUpgrade: computeUserUpgrade.computeUserUpgrade,
   computeUserSuggestion: computeUserSuggestion.computeUserSuggestion,
   computeUserSelfregister: computeUserSelfregisterOperation.computeUserSelfregister,
+  computeUserDialects: computeUserDialectsOperation.computeUserDialects,
 }
 
 const middleware = [thunk]

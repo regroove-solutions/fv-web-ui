@@ -2,6 +2,7 @@ package ca.firstvoices.seam;
 
 import ca.firstvoices.marshallers.CustomPreferencesJSONReader;
 import ca.firstvoices.models.CustomPreferencesObject;
+import ca.firstvoices.utils.FVLoginUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.seam.ScopeType;
@@ -9,9 +10,10 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
-import org.nuxeo.ecm.core.api.*;
-import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.FacetNames;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.webapp.helpers.StartupHelper;
 
@@ -20,8 +22,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -124,29 +124,11 @@ public class FVLogin extends StartupHelper {
 
         // Find first dialect user is member of...
         else {
-            List<String> groups = currentUser.getGroups();
+            DocumentModelList dialects = FVLoginUtils.getDialectsForUser(currentUser, documentManager);
 
-            if (groups != null) {
-                Iterator it = groups.iterator();
-                String inClause = "(\""+ groups.get(0) + "\"";
-                it.next();
-                while (it.hasNext()) {
-                    inClause += ",\"" + it.next() + "\"";
-                }
-                inClause += ")";
-
-                String query = "SELECT * FROM FVDialect WHERE " + NXQL.ECM_MIXINTYPE + " <> '"
-                        + FacetNames.HIDDEN_IN_NAVIGATION + "' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                        + LifeCycleConstants.DELETED_STATE + "'" + " AND ecm:isCheckedInVersion = 0 "
-                        + " AND ecm:acl/*/principal IN " + inClause + " "
-                        + " AND ecm:isProxy = 0 ";
-
-                DocumentModelList dialects = documentManager.query(query);
-
-                if (dialects.size() > 0) {
-                    primary_dialect_short_url = dialects.get(0).getPropertyValue("fvdialect:short_url").toString();
-                    primary_dialect_path = dialects.get(0).getPathAsString();
-                }
+            if (dialects.size() > 0) {
+                primary_dialect_short_url = dialects.get(0).getPropertyValue("fvdialect:short_url").toString();
+                primary_dialect_path = dialects.get(0).getPathAsString();
             }
         }
 
