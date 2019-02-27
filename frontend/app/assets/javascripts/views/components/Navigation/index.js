@@ -22,6 +22,7 @@ import selectn from "selectn"
 import provide from "react-redux-provide"
 
 import ProviderHelpers from "common/ProviderHelpers"
+import NavigationHelpers from "common/NavigationHelpers"
 import UIHelpers from "common/UIHelpers"
 
 import Shepherd from "tether-shepherd"
@@ -338,7 +339,10 @@ export default class Navigation extends Component {
             <div
               style={{ display: "inline-block", paddingRight: "10px", paddingTop: "15px", textTransform: "uppercase" }}
             >
-              <Link className="nav_link hidden-xs" href={"/explore" + this.state.pathOrId + "/Data"}>
+              <Link
+                className="nav_link hidden-xs"
+                href={NavigationHelpers.generateURL("page_explore_dialects", this.props.routeParams)}
+              >
                 {this.intl.trans("choose_lang", "Choose a Language", "first")}
               </Link>
             </div>

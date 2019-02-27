@@ -68,6 +68,25 @@ import PageUsersProfile from "./users/profile"
 // KIDS
 import PageKidsHome from "./kids/home"
 
+// EDIT
+import PageExploreDialectEdit from "./explore/dialect/edit"
+import PageDialectGalleryEdit from "./explore/dialect/gallery/edit"
+import PageDialectEditMedia from "./explore/dialect/media/edit"
+import PageDialectWordEdit from "./explore/dialect/learn/words/edit"
+import PageDialectPhraseEdit from "./explore/dialect/learn/phrases/edit"
+import PageDialectBookEdit from "./explore/dialect/learn/songs-stories/edit"
+import PageDialectBookEntryEdit from "./explore/dialect/learn/songs-stories/entry/edit"
+import PageDialectAlphabetCharacterEdit from "./explore/dialect/learn/alphabet/edit"
+
+// CREATE
+import { default as PageDialectWordsCreate } from "./explore/dialect/learn/words/create"
+import { default as PageDialectPhrasesCreate } from "./explore/dialect/learn/phrases/create"
+import { default as PageDialectStoriesAndSongsCreate } from "./explore/dialect/learn/songs-stories/create"
+import { default as PageDialectStoriesAndSongsBookEntryCreate } from "./explore/dialect/learn/songs-stories/entry/create"
+import { default as PageDialectGalleryCreate } from "./explore/dialect/gallery/create"
+import { default as PageDialectCategoryCreate } from "./explore/dialect/category/create"
+import { default as PageDialectPhraseBooksCreate } from "./explore/dialect/phrasebooks/create"
+import { default as PageDialectContributorsCreate } from "./explore/dialect/contributors/create"
 
 export {
   PageTest,
@@ -106,7 +125,6 @@ export {
   PageUsersRegister,
   PageUsersForgotPassword,
   PageUsersProfile,
-
   //GAMES
   PageJigsawGame,
   PageColouringBook,
@@ -116,7 +134,24 @@ export {
   PageHangman,
   PageWordscramble,
   PageQuiz,
-
   // KIDS
   PageKidsHome,
+  // EDITS
+  PageExploreDialectEdit,
+  PageDialectWordEdit,
+  PageDialectEditMedia,
+  PageDialectPhraseEdit,
+  PageDialectBookEdit,
+  PageDialectBookEntryEdit,
+  PageDialectAlphabetCharacterEdit,
+  PageDialectGalleryEdit,
+  //CREATE
+  PageDialectWordsCreate,
+  PageDialectPhrasesCreate,
+  PageDialectStoriesAndSongsCreate,
+  PageDialectStoriesAndSongsBookEntryCreate,
+  PageDialectGalleryCreate,
+  PageDialectCategoryCreate,
+  PageDialectPhraseBooksCreate,
+  PageDialectContributorsCreate,
 }
