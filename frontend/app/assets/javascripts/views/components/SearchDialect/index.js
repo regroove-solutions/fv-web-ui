@@ -1,6 +1,6 @@
-import React, { Component } from "react"
-import Immutable, { Set, Map } from "immutable"
-import { PropTypes } from "react"
+import React, { Component } from 'react'
+import Immutable, { Set, Map } from 'immutable'
+import { PropTypes } from 'react'
 import {
   SEARCH_SORT_DEFAULT,
   SEARCH_BY_DEFAULT,
@@ -8,14 +8,14 @@ import {
   SEARCH_BY_CATEGORY,
   SEARCH_BY_CUSTOM,
   SEARCH_BY_PHRASE_BOOK,
-} from "./constants"
-import provide from "react-redux-provide"
-import StringHelpers from "common/StringHelpers"
-import selectn from "selectn"
-import classNames from "classnames"
-import RaisedButton from "material-ui/lib/raised-button"
-import IntlService from "views/services/intl"
-import { getDialectClassname } from "views/pages/explore/dialect/helpers"
+} from './constants'
+import provide from 'react-redux-provide'
+import StringHelpers, { CLEAN_NXQL } from 'common/StringHelpers'
+import selectn from 'selectn'
+import classNames from 'classnames'
+import RaisedButton from 'material-ui/lib/raised-button'
+import IntlService from 'views/services/intl'
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 const intl = IntlService.instance
 const { any, func, string, bool, object, number } = PropTypes
@@ -50,12 +50,12 @@ class SearchDialect extends Component {
     handleSearch: () => {},
     resetSearch: () => {},
     searchByMode: SEARCH_BY_DEFAULT,
-    searchByAlphabet: "",
+    searchByAlphabet: '',
     searchByCulturalNotes: false,
     searchByTitle: true,
     searchByDefinitions: true,
     searchByTranslations: false,
-    searchTerm: "",
+    searchTerm: '',
     searchPartOfSpeech: SEARCH_SORT_DEFAULT,
   }
 
@@ -66,22 +66,22 @@ class SearchDialect extends Component {
       partsOfSpeechOptions: null,
     }
     ;[
-      "_getBrowse",
-      "_getSearchForm",
-      "_getSearchInfo",
-      "_getNxqlSearchSort",
-      "_getNxqlBoolCount",
-      "_generateNxql",
-      "_handleCustomSearch",
-      "_handleEnterSearch",
-      "_handleSearch",
-      "_resetSearch",
-      "_updateSearchTerm",
+      '_getBrowse',
+      '_getSearchForm',
+      '_getSearchInfo',
+      '_getNxqlSearchSort',
+      '_getNxqlBoolCount',
+      '_generateNxql',
+      '_handleCustomSearch',
+      '_handleEnterSearch',
+      '_handleSearch',
+      '_resetSearch',
+      '_updateSearchTerm',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentDidMount() {
-    this.props.fetchDirectory("parts_of_speech")
+    this.props.fetchDirectory('parts_of_speech')
   }
 
   componentDidUpdate(prevProps) {
@@ -89,10 +89,10 @@ class SearchDialect extends Component {
     const searchNxqlSort = this._getNxqlSearchSort()
     this.props.updateAncestorState({ searchNxqlQuery, searchNxqlSort })
 
-    const prevComputeSuccess = selectn("computeDirectory.success", prevProps)
-    const currentComputeSuccess = selectn("computeDirectory.success", this.props)
+    const prevComputeSuccess = selectn('computeDirectory.success', prevProps)
+    const currentComputeSuccess = selectn('computeDirectory.success', this.props)
     if (prevComputeSuccess !== currentComputeSuccess && currentComputeSuccess === true) {
-      const _partsOfSpeech = selectn("computeDirectory.directories.parts_of_speech", this.props)
+      const _partsOfSpeech = selectn('computeDirectory.directories.parts_of_speech', this.props)
       const _partsOfSpeechSort = _partsOfSpeech.sort((a, b) => {
         if (a.text < b.text) return -1
         if (a.text > b.text) return 1
@@ -180,19 +180,19 @@ class SearchDialect extends Component {
   }
   _getBrowse() {
     const { searchByMode } = this.props
-    let resetButtonText = ""
+    let resetButtonText = ''
     switch (searchByMode) {
       case SEARCH_BY_ALPHABET:
-        resetButtonText = "Stop browsing Alphabetically"
+        resetButtonText = 'Stop browsing Alphabetically'
         break
       case SEARCH_BY_CATEGORY:
-        resetButtonText = "Stop browsing by Category"
+        resetButtonText = 'Stop browsing by Category'
         break
       case SEARCH_BY_PHRASE_BOOK:
-        resetButtonText = "Stop browsing by Phrase Book"
+        resetButtonText = 'Stop browsing by Phrase Book'
         break
       default:
-        resetButtonText = "Stop browsing and clear filter"
+        resetButtonText = 'Stop browsing and clear filter'
     }
     return (
       <div className="SearchDialectForm SearchDialectForm--filtering">
@@ -207,7 +207,7 @@ class SearchDialect extends Component {
     if (flashcardMode !== undefined) {
       return flashcardMode ? (
         <RaisedButton
-          style={{ marginLeft: "auto" }}
+          style={{ marginLeft: 'auto' }}
           label="Stop viewing Flashcards"
           primary
           onTouchTap={() => {
@@ -216,7 +216,7 @@ class SearchDialect extends Component {
         />
       ) : (
         <RaisedButton
-          style={{ marginLeft: "auto" }}
+          style={{ marginLeft: 'auto' }}
           label="Flashcards"
           onTouchTap={() => {
             this.props.updateAncestorState({ flashcardMode: true })
@@ -236,15 +236,15 @@ class SearchDialect extends Component {
       searchByTranslations,
       searchPartOfSpeech,
     } = this.props
-    let searchButtonText = ""
-    const resetButtonText = "Reset search"
-    let searchByTitleText = ""
+    let searchButtonText = ''
+    const resetButtonText = 'Reset search'
+    let searchByTitleText = ''
     if (isSearchingPhrases) {
-      searchByTitleText = "Phrase"
-      searchButtonText = "Search"
+      searchByTitleText = 'Phrase'
+      searchButtonText = 'Search'
     } else {
-      searchByTitleText = "Word"
-      searchButtonText = intl.trans("views.pages.explore.dialect.learn.words.search_words", "Search Words", "words")
+      searchByTitleText = 'Word'
+      searchButtonText = intl.trans('views.pages.explore.dialect.learn.words.search_words', 'Search Words', 'words')
     }
 
     return (
@@ -264,7 +264,7 @@ class SearchDialect extends Component {
             label={resetButtonText}
             onTouchTap={this._resetSearch}
             primary={false}
-            style={{ marginLeft: "20px" }}
+            style={{ marginLeft: '20px' }}
           />
 
           {this._getFlashcardMode()}
@@ -391,22 +391,22 @@ class SearchDialect extends Component {
 
     const cols = []
     if (searchByTitle) {
-      cols.push(isSearchingPhrases ? "Phrase" : "Word")
+      cols.push(isSearchingPhrases ? 'Phrase' : 'Word')
     }
     if (searchByDefinitions) {
-      cols.push("Definitions")
+      cols.push('Definitions')
     }
     if (searchByCulturalNotes) {
-      cols.push("Cultural notes")
+      cols.push('Cultural notes')
     }
     if (searchByTranslations) {
-      cols.push("Literal translations")
+      cols.push('Literal translations')
     }
 
-    const wordsOrPhrases = isSearchingPhrases ? "phrases" : "words"
+    const wordsOrPhrases = isSearchingPhrases ? 'phrases' : 'words'
     const _searchTerm = <strong className={getDialectClassname()}>{searchTerm}</strong>
     const messagePartsOfSpeech =
-      searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ""
+      searchPartOfSpeech !== SEARCH_SORT_DEFAULT ? ", filtered by the selected 'Parts of speech'" : ''
 
     const messages = {
       all: isSearchingPhrases ? (
@@ -453,7 +453,7 @@ class SearchDialect extends Component {
       ),
     }
 
-    let msg = ""
+    let msg = ''
     switch (searchByMode) {
       case SEARCH_BY_ALPHABET: {
         msg = messages.startWith
@@ -468,7 +468,7 @@ class SearchDialect extends Component {
         break
       }
       case SEARCH_BY_CUSTOM: {
-        if (!searchTerm || searchTerm === "") {
+        if (!searchTerm || searchTerm === '') {
           msg = messages.all
         } else {
           msg = messages.contain
@@ -491,13 +491,13 @@ class SearchDialect extends Component {
         msg = messages.all
     }
 
-    return <div className={classNames("SearchDialectSearchFeedback", "alert", "alert-info")}>{msg}</div>
+    return <div className={classNames('SearchDialectSearchFeedback', 'alert', 'alert-info')}>{msg}</div>
   }
 
   _getNxqlSearchSort() {
     const { searchPartOfSpeech, searchTerm } = this.props
     // Default sort
-    let searchSortBy = "dc:title"
+    let searchSortBy = 'dc:title'
 
     const boolCount = this._getNxqlBoolCount()
     // if (boolCount > 0) {
@@ -505,14 +505,14 @@ class SearchDialect extends Component {
     // }
 
     if (boolCount === 1 && searchPartOfSpeech !== SEARCH_SORT_DEFAULT) {
-      searchSortBy = "fv-word:part_of_speech"
+      searchSortBy = 'fv-word:part_of_speech'
     }
 
     return searchTerm
       ? {
-          DEFAULT_SORT_COL: searchSortBy,
-          DEFAULT_SORT_TYPE: "asc",
-        }
+        DEFAULT_SORT_COL: searchSortBy,
+        DEFAULT_SORT_TYPE: 'asc',
+      }
       : {}
   }
 
@@ -553,13 +553,12 @@ class SearchDialect extends Component {
       searchPartOfSpeech,
     } = this.props
 
-    const search = StringHelpers.clean(searchTerm, "NXQL") || ""
-    const searchByAlphabetClean = StringHelpers.clean(searchByAlphabet, "NXQL") || ""
-
+    const search = StringHelpers.clean(searchTerm, CLEAN_NXQL) || ''
+    const _searchByAlphabet = StringHelpers.clean(searchByAlphabet, CLEAN_NXQL) || ''
     const nxqlTmpl = {
-      // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, 'fulltext')}*'`,
+      // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, CLEAN_FULLTEXT)}*'`,
       searchByTitle: `dc:title ILIKE '%${search}%'`,
-      searchByAlphabet: `dc:title ILIKE          '${searchByAlphabetClean}%'`,
+      searchByAlphabet: `dc:title ILIKE '${_searchByAlphabet}%'`,
       searchByCategory: `dc:title ILIKE '%${search}%'`,
       searchByPhraseBook: `dc:title ILIKE '%${search}%'`,
       searchByCulturalNotes: `fv:cultural_note ILIKE '%${search}%'`,
@@ -569,8 +568,8 @@ class SearchDialect extends Component {
     }
 
     const nxqlQueries = []
-    let nxqlQuerySpeech = ""
-    const nxqlQueryJoin = (nxq, join = " OR ") => {
+    let nxqlQuerySpeech = ''
+    const nxqlQueryJoin = (nxq, join = ' OR ') => {
       if (nxq.length >= 1) {
         nxq.push(join)
       }
@@ -622,9 +621,9 @@ class SearchDialect extends Component {
       nxqlQueries.push(nxqlTmpl.searchByTitle)
     }
 
-    let nxqlQueryCollection = ""
+    let nxqlQueryCollection = ''
     if (nxqlQueries.length > 0) {
-      nxqlQueryCollection = `( ${nxqlQueries.join("")} )`
+      nxqlQueryCollection = `( ${nxqlQueries.join('')} )`
     }
     return `${nxqlQueryCollection}${nxqlQuerySpeech}`
   }
@@ -636,7 +635,7 @@ class SearchDialect extends Component {
 
     // Record changes
     switch (type) {
-      case "checkbox":
+      case 'checkbox':
         updateState[id] = checked
         break
       default:
@@ -647,7 +646,7 @@ class SearchDialect extends Component {
   }
 
   _handleEnterSearch(evt) {
-    if (evt.key === "Enter") {
+    if (evt.key === 'Enter') {
       this._handleSearch()
     }
   }
@@ -659,8 +658,8 @@ class SearchDialect extends Component {
     const updateState = {
       searchByMode: SEARCH_BY_CUSTOM,
       searchTerm: this.props.searchTerm,
-      searchByAlphabet: "",
-      searchingDialectFilter: "",
+      searchByAlphabet: '',
+      searchingDialectFilter: '',
       // searchNxqlQuery: this._generateNxql(),
       // searchNxqlSort: this._getNxqlSearchSort(),
       // force: Math.random(),
@@ -673,7 +672,7 @@ class SearchDialect extends Component {
     const updateState = {
       searchTerm: null,
       searchByMode: SEARCH_BY_DEFAULT,
-      searchByAlphabet: "",
+      searchByAlphabet: '',
       searchByCulturalNotes: false,
       searchByTitle: true,
       searchByDefinitions: true,

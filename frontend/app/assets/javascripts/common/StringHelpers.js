@@ -15,15 +15,16 @@ limitations under the License.
 */
 import IntlService from "views/services/intl"
 
+export const CLEAN_NXQL = "NXQL"
+export const CLEAN_FULLTEXT = "fulltext"
+
 export default {
-  clean: (str, mode = "NXQL") => {
+  clean: (str, mode = CLEAN_NXQL) => {
     let _str
 
-    if (!str) {
-      return str
-    }
+    if (!str) return str
 
-    if (mode === "NXQL") {
+    if (mode === CLEAN_NXQL) {
       // Escape single quotes and URL decode
       _str = decodeURIComponent(str.replace(/'/g, "\\'"))
 
@@ -31,7 +32,7 @@ export default {
       _str = _str.replace(/&/g, "%26")
     }
 
-    if (mode === "fulltext") {
+    if (mode === CLEAN_FULLTEXT) {
       // Escape single quotes and URL decode
       _str = str.replace(/'/g, "\\'")
 
