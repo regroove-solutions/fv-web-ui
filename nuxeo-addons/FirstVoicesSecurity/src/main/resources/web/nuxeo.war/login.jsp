@@ -147,9 +147,10 @@ String loop = screenConfig.getVideoLoop() ? "loop " : "";
 
       .login_button{
         text-transform: uppercase;
-        background: #ececec;
+        background: #b6020e;
         border-radius: 5px;
         padding: 5px;
+        color:#fff;
       }
     .buttonLink{
         background-color: #4e4e4e;

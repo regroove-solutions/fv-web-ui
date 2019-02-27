@@ -1,5 +1,5 @@
 <#assign siteURL = Context.getServerURL().toString()?replace("/nuxeo", "")?replace("8080", "3001")>
-<#assign loginURL = "/nuxeo/login-init.jsp">
+<#assign loginURL = "/nuxeo/login.jsp">
 <!DOCTYPE html>
 <!--[if lte IE 8]>
 <html class="lt-ie9  no-js" lang="en">
