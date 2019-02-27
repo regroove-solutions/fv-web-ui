@@ -31,6 +31,9 @@ const HtmlWebpackPlugin = require("html-webpack-plugin")
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const CopyPlugin = require("copy-webpack-plugin")
 const CleanWebpackPlugin = require("clean-webpack-plugin")
+const GitRevisionPlugin = require("git-revision-webpack-plugin")
+
+var gitRevisionPlugin = new GitRevisionPlugin()
 
 // Phaser webpack config , requried by fv-games
 // TODO : Move this as a peer dependency of games and have games to import them
@@ -125,9 +128,11 @@ module.exports = {
    */
   plugins: [
     new CleanWebpackPlugin([outputDirectory], { root: rootDirectory }),
-
     new HtmlWebpackPlugin({
       template: path.resolve(frontEndRootDirectory, "index.html"),
+      templateParameters: {
+        VERSION: gitRevisionPlugin.version(),
+      },
     }),
     new MiniCssExtractPlugin({
       filename: path.join(outputStylesDirectory, "[name].[hash].css"),
