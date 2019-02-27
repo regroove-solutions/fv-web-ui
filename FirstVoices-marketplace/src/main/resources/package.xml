@@ -23,6 +23,7 @@
    <dependencies> 
     <package>nuxeo-jsf-ui</package>
     <package>nuxeo-dam</package>
+    <package>nuxeo-platform-user-registration</package>
     <package>nuxeo-diff</package>
     <package>saml2-authentication</package>
   </dependencies> 
