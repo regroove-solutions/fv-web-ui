@@ -90,19 +90,19 @@ public class UserInvite {
             This operation has for most part similar code to sister operation FVQuickUserRegistration.
             The main difference is in conditions we apply for both.
             Common code is split into 2 parts
-            - preCondition
-            - postCondition
+            - registrationCommonSetup
+            - registrationCommonFinish
             Each of the operations executes it own, context specific conditions and any other operations
             following if appropriate.
 
             In this case email to the user is sent by Nuxeo and since administrator initiated invitation
             we do not send an email.
         */
-        utilCommon.preCondition(registrationRequest, session, userManager );
+        utilCommon.registrationCommonSetup(registrationRequest, session, userManager );
 
         autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );
 
-        String registrationId = utilCommon.postCondition(registrationService,
+        String registrationId = utilCommon.registrationCommonFinish(registrationService,
                 registrationRequest,
                 info,
                 comment,
