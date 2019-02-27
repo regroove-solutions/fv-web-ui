@@ -1,40 +1,44 @@
 package ca.firstvoices.services;
 
-import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GroupUpdate;
-import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_NewUserHomeChange;
-import static ca.firstvoices.utils.FVRegistrationConstants.APPEND;
-import static ca.firstvoices.utils.FVRegistrationConstants.GROUP_SCHEMA;
-import static ca.firstvoices.utils.FVRegistrationConstants.MEMBERS;
-import static ca.firstvoices.utils.FVRegistrationConstants.REMOVE;
-
 import org.nuxeo.ecm.automation.core.util.StringList;
+import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
+import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVProperty;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GroupUpdate;
+import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_NewUserHomeChange;
+import static ca.firstvoices.utils.FVRegistrationConstants.*;
+
 public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectService {
 
     private UserManager userManager = null;
 
-    @Override
     public void placeNewUserInGroup(DocumentModel dialect, String groupName, String newUsername) throws Exception {
         CoreSession session = dialect.getCoreSession();
         userManager = Framework.getService(UserManager.class);
 
-        if (terminateOnInvalidCredentials_GroupUpdate(session, groupName.toLowerCase()))
-            throw new Exception("No sufficient privileges to modify group: " + groupName);
-        if (terminateOnInvalidCredentials_NewUserHomeChange(session, userManager, newUsername, dialect.getId()))
-            throw new Exception("No sufficient privileges to modify user: " + newUsername);
-
+        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName.toLowerCase() ) )
+            throw new Exception("placeNewUserInGroup: No sufficient privileges to modify group: " + groupName);
+        
+        if( terminateOnInvalidCredentials_NewUserHomeChange( session, userManager, newUsername, dialect.getId() ) )
+            throw new Exception("placeNewUserInGroup: No sufficient privileges to modify user: " + newUsername);
+	
         userManager = null;
-        moveUserBetweenGroups(dialect, newUsername, "members", groupName.toLowerCase());
+        // allow system to move user between groups
+        systemPlaceNewUserInGroup( dialect, groupName, newUsername, session );
     }
 
-    @Override
-    public void moveUserBetweenGroups(DocumentModel dialect, String userName, String fromGroupName, String toGroupName)
-            throws Exception {
+    public void systemPlaceNewUserInGroup( DocumentModel dialect, String groupName, String newUsername, CoreSession session ) throws Exception
+    {
+        CoreInstance.doPrivileged(session, s -> {
+                moveUserBetweenGroups(dialect, newUsername, "members", groupName.toLowerCase());
+        });
+    }
+
+    public void moveUserBetweenGroups(DocumentModel dialect, String userName, String fromGroupName, String toGroupName) {
         if (userManager == null)
             userManager = Framework.getService(UserManager.class);
 
@@ -45,19 +49,21 @@ public class FVMoveUserToDialectServiceImpl implements FVMoveUserToDialectServic
 
         DocumentModel toGroup = userManager.getGroupModel(toGroupName);
 
-        if (toGroup == null) {
-            throw new Exception("Cannot update non-existent group: " + toGroupName);
+//        if (toGroup == null) {
+//            throw new Exception("moveUserBetweenGroups: Cannot update non-existent group: " + toGroupName);
+//        }
+
+        if (toGroup != null) {
+            DocumentModel membersGroup = userManager.getGroupModel(fromGroupName);
+
+            StringList uL = new StringList();
+            uL.add(userName);
+            membersGroup = updateFVProperty(REMOVE, membersGroup, uL, GROUP_SCHEMA, MEMBERS);
+            userManager.updateGroup(membersGroup);
+            toGroup = updateFVProperty(APPEND, toGroup, uL, GROUP_SCHEMA, MEMBERS);
+            userManager.updateGroup(toGroup);
+            userManager = null;
         }
-
-        DocumentModel membersGroup = userManager.getGroupModel(fromGroupName);
-
-        StringList uL = new StringList();
-        uL.add(userName);
-        membersGroup = updateFVProperty(REMOVE, membersGroup, uL, GROUP_SCHEMA, MEMBERS);
-        userManager.updateGroup(membersGroup);
-        toGroup = updateFVProperty(APPEND, toGroup, uL, GROUP_SCHEMA, MEMBERS);
-        userManager.updateGroup(toGroup);
-        userManager = null;
     }
 
     @Override

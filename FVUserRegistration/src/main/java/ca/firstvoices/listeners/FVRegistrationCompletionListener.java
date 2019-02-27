@@ -58,7 +58,7 @@ public class FVRegistrationCompletionListener implements EventListener  {
 
                 try
                 {
-                    util.systemPlaceNewUserInGroup(dialect, (String)docCtx.getProperty(GROUP_NAME_ARG), (String)docCtx.getProperty(USER_NAME_ARG));
+                    util.systemPlaceNewUserInGroup(dialect, (String)docCtx.getProperty(GROUP_NAME_ARG), (String)docCtx.getProperty(USER_NAME_ARG), dialect.getCoreSession());
                 }
                 catch(Exception e)
                 {
