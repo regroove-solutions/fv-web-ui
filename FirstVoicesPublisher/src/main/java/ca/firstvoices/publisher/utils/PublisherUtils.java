@@ -14,15 +14,16 @@ import org.nuxeo.runtime.api.Framework;
 
 import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
 
-
 public class PublisherUtils {
 
     private static final Log log = LogFactory.getLog(PublisherUtils.class);
 
-    protected static FirstVoicesPublisherService FVPublisherService = Framework.getService(FirstVoicesPublisherService.class);
+    protected static FirstVoicesPublisherService FVPublisherService = Framework.getService(
+            FirstVoicesPublisherService.class);
 
     /**
      * Adds proxy properties to assets (Media, Words, Phrases)
+     * 
      * @param asset
      * @return
      */
@@ -41,12 +42,12 @@ public class PublisherUtils {
             dependencies.put("fvmedia:origin", "fvproxy:proxied_origin");
         }
 
-        if (asset.hasSchema("fv-word")){
+        if (asset.hasSchema("fv-word")) {
             dependencies.put("fv-word:categories", "fvproxy:proxied_categories");
             dependencies.put("fv-word:related_phrases", "fvproxy:proxied_phrases");
         }
 
-        if (asset.hasSchema("fvbook")){
+        if (asset.hasSchema("fvbook")) {
             dependencies.put("fvbook:author", "fvproxy:proxied_author");
         }
 
@@ -63,15 +64,18 @@ public class PublisherUtils {
 
     /**
      * Checks if a dependency is empty
+     * 
      * @param dependencyPropertyValue
      * @return
      */
     public static boolean dependencyIsEmpty(String[] dependencyPropertyValue) {
-        return dependencyPropertyValue == null || dependencyPropertyValue.length == 0 || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null);
+        return dependencyPropertyValue == null || dependencyPropertyValue.length == 0
+                || (dependencyPropertyValue.length == 1 && dependencyPropertyValue[0] == null);
     }
 
     /**
      * Extracts dependency values from property as a string, always returning an array for simplicity.
+     * 
      * @param input
      * @param dependency
      * @return
@@ -89,11 +93,13 @@ public class PublisherUtils {
 
     /**
      * Constructs the dependency's updated value for insertion, as an array.
+     * 
      * @param input
      * @param dependencyEntry
      * @param publishedDep
      */
-    public static String[] constructDependencyPropertyValueAsArray(String[] currentPropValue, DocumentModel publishedDep) {
+    public static String[] constructDependencyPropertyValueAsArray(String[] currentPropValue,
+            DocumentModel publishedDep) {
         String[] updatedProperty = new String[1];
 
         if (currentPropValue != null) {
@@ -107,6 +113,7 @@ public class PublisherUtils {
 
     /**
      * Publish all ancestors of a document of a specific type
+     * 
      * @param dependencyDocModel
      * @param string
      * @param session
@@ -114,7 +121,8 @@ public class PublisherUtils {
      * @param dependencyDocModel
      * @return
      */
-    public static DocumentModel publishAncestors(CoreSession session, String docType, DocumentModel dependencyDocModel, PublisherService publisherService) {
+    public static DocumentModel publishAncestors(CoreSession session, String docType, DocumentModel dependencyDocModel,
+            PublisherService publisherService) {
         DocumentModel parentDependencySection;
         DocumentModel publishedDep = null;
 
@@ -131,7 +139,8 @@ public class PublisherUtils {
             if (parentDependencySection == null) {
                 parentDependencySection = FVPublisherService.getPublication(session,
                         ((DocumentModel) docs[i]).getParentRef());
-                parentDependencySection = FVPublisherService.publishDocument(session, ((DocumentModel) docs[i]), parentDependencySection);
+                parentDependencySection = FVPublisherService.publishDocument(session, ((DocumentModel) docs[i]),
+                        parentDependencySection);
             }
             if (i == 0) {
                 publishedDep = parentDependencySection;

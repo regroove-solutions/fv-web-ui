@@ -1,4 +1,6 @@
 <component name="ca.firstvoices.uregistration.operations.contrib">
+  
+     <require>org.nuxeo.ecm.core.automation.features.operations</require>
 
 	<extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent" point="operations" >
 		<operation class="ca.firstvoices.operations.UserInvite" replace="true" />

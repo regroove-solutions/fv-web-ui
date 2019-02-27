@@ -4,7 +4,6 @@
  */
 package ca.firstvoices.operations;
 
-
 import ca.firstvoices.utils.FVRegistrationUtilities;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,11 +27,11 @@ import java.util.HashMap;
 import java.util.Map;
 import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 
-@Operation(id = FVQuickUserRegistration.ID, category = Constants.CAT_USERS_GROUPS, label = "Guest self registration",
-        description = "Starts guest registration.")
+@Operation(id = FVQuickUserRegistration.ID, category = Constants.CAT_USERS_GROUPS, label = "Guest self registration", description = "Starts guest registration.")
 public class FVQuickUserRegistration {
 
     public static final String ID = "User.SelfRegistration";
+
     private static final Log log = LogFactory.getLog(FVQuickUserRegistration.class);
 
     @Context
@@ -47,7 +46,7 @@ public class FVQuickUserRegistration {
     @Context
     protected OperationContext operationContext;
 
-    @Param(name ="docInfo", required = false)
+    @Param(name = "docInfo", required = false)
     protected DocumentRegistrationInfo docInfo = null;
 
     @Param(name = "validationMethod", required = false)
@@ -59,8 +58,7 @@ public class FVQuickUserRegistration {
     protected String bRange;
 
     @OperationMethod
-    public Object run( DocumentModel registrationRequest ) throws Exception
-    {
+    public Object run(DocumentModel registrationRequest) throws Exception {
         String ip = null;
 
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
@@ -88,16 +86,10 @@ public class FVQuickUserRegistration {
         info.put("ua", ua);
 
         /*
-
-            This operation has for most part similar code to sister operation UserInvite.
-            The main difference is in conditions we apply for both.
-            Common code is split into 2 parts
-            - registrationCommonSetup
-            - registrationCommonFinish
-            Each of the operations executes it own, context specific conditions and any other operations
-            following if appropriate.
-            In this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
-
+         * This operation has for most part similar code to sister operation UserInvite. The main difference is in
+         * conditions we apply for both. Common code is split into 2 parts - preCondition - postCondition Each of the
+         * operations executes it own, context specific conditions and any other operations following if appropriate. In
+         * this case it is sending of emails to both user and LanguageAdministrator informing them about actions.
          */
 
         try {

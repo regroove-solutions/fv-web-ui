@@ -44,14 +44,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-
 //TODO Do we need it? It is an exact copy of the UserInviteApprove
 //
 /**
  * Operation to accept a user invitation.
  */
-@Operation(id = UserInviteReject.ID, category = Constants.CAT_USERS_GROUPS, label = "Rejects user invite",
-        description = "Rejects a request to join the system.")
+@Operation(id = UserInviteReject.ID, category = Constants.CAT_USERS_GROUPS, label = "Rejects user invite", description = "Rejects a request to join the system.")
 public class UserInviteReject {
 
     public static final String ID = "User.UserInviteReject";
@@ -86,7 +84,7 @@ public class UserInviteReject {
         registrationDoc.setPropertyValue("userinfo:groups", approved_groups);
 
         // Add current user to contributors
-        String[] contributors = (String []) registrationDoc.getProperty("dublincore", "contributors");
+        String[] contributors = (String[]) registrationDoc.getProperty("dublincore", "contributors");
         NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
 
         String[] newContributors = Arrays.copyOf(contributors, contributors.length + 1);
@@ -101,7 +99,9 @@ public class UserInviteReject {
         session.saveDocument(registrationDoc);
 
         // Set additional information for email
-        additionalInfo.put("enterPasswordUrl", appurl + registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getEnterPasswordUrl());
+        additionalInfo.put("enterPasswordUrl",
+                appurl + registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME)
+                                            .getEnterPasswordUrl());
 
         // Determine the document url to add it into the email
         String dialectId = (String) registrationDoc.getPropertyValue("docinfo:documentId");
@@ -145,6 +145,7 @@ public class UserInviteReject {
         private DocumentModel dialect;
 
         public ArrayList<String> member_groups = new ArrayList<String>();
+
         public String language_admin_group;
 
         protected UnrestrictedGroupResolver(CoreSession session, DocumentModel dialect) {
@@ -156,7 +157,7 @@ public class UserInviteReject {
         public void run() {
 
             // Add user to relevant group
-            for (ACE ace : dialect.getACP().getACL(ACL.LOCAL_ACL).getACEs()){
+            for (ACE ace : dialect.getACP().getACL(ACL.LOCAL_ACL).getACEs()) {
 
                 String username = ace.getUsername();
 
@@ -181,9 +182,11 @@ public class UserInviteReject {
     protected static class UnrestrictedRequestPermissionResolver extends UnrestrictedSessionRunner {
 
         private String registrationDocId;
+
         private String language_admin_group;
 
-        protected UnrestrictedRequestPermissionResolver(CoreSession session, String registrationDocId, String language_admin_group) {
+        protected UnrestrictedRequestPermissionResolver(CoreSession session, String registrationDocId,
+                String language_admin_group) {
             super(session);
             this.registrationDocId = registrationDocId;
             this.language_admin_group = language_admin_group;

@@ -19,22 +19,21 @@ public class FVUserGroupUpdateUtilities {
      * @param schemaName
      * @param field
      */
-    public static DocumentModel updateFVProperty(String action, DocumentModel doc, StringList data, String schemaName, String field )
-    {
-        ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList( data );
+    public static DocumentModel updateFVProperty(String action, DocumentModel doc, StringList data, String schemaName,
+            String field) {
+        ArrayList<String> arrayData = FVRegistrationUtilities.makeArrayFromStringList(data);
 
-        if( !action.equals(UPDATE) )
-        {
-            ArrayList<String> pA =  (ArrayList<String>)doc.getProperty(schemaName, field);
+        if (!action.equals(UPDATE)) {
+            ArrayList<String> pA = (ArrayList<String>) doc.getProperty(schemaName, field);
 
             for (String g : arrayData) {
                 switch (action) {
-                    case APPEND:
-                        pA.add(g);
-                        break;
-                    case REMOVE:
-                        pA.remove(g);
-                        break;
+                case APPEND:
+                    pA.add(g);
+                    break;
+                case REMOVE:
+                    pA.remove(g);
+                    break;
                 }
             }
 

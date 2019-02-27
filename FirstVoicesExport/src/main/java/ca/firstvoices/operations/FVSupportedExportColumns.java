@@ -14,64 +14,54 @@ import java.util.HashMap;
 
 import static ca.firstvoices.utils.FVExportConstants.*;
 
-@Operation(id= FVSupportedExportColumns.ID, category= Constants.CAT_DOCUMENT, label="Get list of supported export columns.", description="Returns supported column labels in export to CSV or PDF. ")
-public class FVSupportedExportColumns
-{
+@Operation(id = FVSupportedExportColumns.ID, category = Constants.CAT_DOCUMENT, label = "Get list of supported export columns.", description = "Returns supported column labels in export to CSV or PDF. ")
+public class FVSupportedExportColumns {
 
     public static final String ID = "Document.FVSupportedExportColumns";
 
-    @Param( name = "format", values = {CSV_FORMAT, PDF_FORMAT} )
+    @Param(name = "format", values = { CSV_FORMAT, PDF_FORMAT })
     protected String format = CSV_FORMAT;
 
-    @Param( name = "exportElement", values = { FVWORD, FVPHRASE} )
+    @Param(name = "exportElement", values = { FVWORD, FVPHRASE })
     protected String exportElement = FVPHRASE;
-
 
     /**
      * @return - list of strings with names of columns which can be used to specify columns for export
      */
     @OperationMethod
-    public StringList run()
-    {
-        if( format.equals("PDF")) return null;
+    public StringList run() {
+        if (format.equals("PDF"))
+            return null;
 
         StringList returnList;
 
-        if( exportElement.equals(FVWORD) )
-        {
+        if (exportElement.equals(FVWORD)) {
             returnList = supportedWordQueries_CSV();
-        }
-        else
-        {
+        } else {
             returnList = supprtedPhraseQueries_CSV();
         }
 
         return returnList;
     }
 
-    private StringList supportedWordQueries_CSV()
-    {
+    private StringList supportedWordQueries_CSV() {
         FV_WordExportCSVColumns wc = new FV_WordExportCSVColumns();
 
-        return getValidExportColumns(  wc.getColumnRecordHashMap() );
+        return getValidExportColumns(wc.getColumnRecordHashMap());
     }
 
-    private StringList supprtedPhraseQueries_CSV()
-    {
+    private StringList supprtedPhraseQueries_CSV() {
         FV_PhraseExportCSVColumns pc = new FV_PhraseExportCSVColumns();
 
-        return getValidExportColumns(  pc.getColumnRecordHashMap() );
+        return getValidExportColumns(pc.getColumnRecordHashMap());
     }
 
-    private StringList getValidExportColumns(  HashMap<String, ExportColumnRecord> map )
-    {
+    private StringList getValidExportColumns(HashMap<String, ExportColumnRecord> map) {
         StringList list = new StringList();
 
-        for ( String k : map.keySet() )
-        {
-            if( map.get( k ).useForExport )
-            {
-                list.add( k );
+        for (String k : map.keySet()) {
+            if (map.get(k).useForExport) {
+                list.add(k);
             }
         }
 

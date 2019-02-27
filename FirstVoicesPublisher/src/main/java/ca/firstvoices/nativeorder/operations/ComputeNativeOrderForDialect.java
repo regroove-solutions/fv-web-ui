@@ -20,7 +20,7 @@ import ca.firstvoices.nativeorder.services.NativeOrderComputeService;
 /*
  *
  */
-@Operation(id=ComputeNativeOrderForDialect.ID, category=Constants.CAT_DOCUMENT, label="Compute Native Order for Dialect", description="Computes the native sort order for all words/phrases within a dialect.")
+@Operation(id = ComputeNativeOrderForDialect.ID, category = Constants.CAT_DOCUMENT, label = "Compute Native Order for Dialect", description = "Computes the native sort order for all words/phrases within a dialect.")
 public class ComputeNativeOrderForDialect {
 
     public static final String ID = "Document.ComputeNativeOrderForDialect";

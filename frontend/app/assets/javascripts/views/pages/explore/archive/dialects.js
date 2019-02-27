@@ -98,8 +98,8 @@ export default class ExploreDialects extends Component {
 
     // TODO: determine which of the following can be moved to componentDidMount()
     // TODO: no need to re-declare/fetch data that doesn't change between renders
-    const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getQueryPath())
-    const portalsEntries = selectn("response.entries", computePortals) || []
+    //const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getQueryPath())
+    const portalsEntries = selectn("response.entries", this.props.computePortals) || []
     // Sort based on dialect name (all FVPortals have dc:title 'Portal')
     const sortedPortals = portalsEntries.sort(this._portalEntriesSort)
 
@@ -137,7 +137,7 @@ export default class ExploreDialects extends Component {
     }
 
     return (
-      <PromiseWrapper computeEntities={computeEntities}>
+      <div computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12">
             <div className={classNames({ hidden: this.props.routeParams.theme === "kids" })}>
@@ -148,12 +148,16 @@ export default class ExploreDialects extends Component {
             {introText2}
           </div>
         </div>
-      </PromiseWrapper>
+      </div>
     )
   }
 
   _fetchData(newProps) {
-    newProps.fetchPortals(this._getQueryPath(newProps))
+    newProps.fetchPortals(
+      "get_dialects",
+      { "X-NXenrichers.document": "ancestry,portal", "X-NXproperties": "" },
+      { area: newProps.routeParams.area }
+    )
   }
 
   _getQueryPath(props = this.props) {

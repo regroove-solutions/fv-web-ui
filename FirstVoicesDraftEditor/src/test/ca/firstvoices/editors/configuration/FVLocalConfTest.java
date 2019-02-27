@@ -54,9 +54,7 @@ import firstvoices.editors.testUtil.draftDocTestUtil;
         "FirstVoicesSecurity:OSGI-INF/extensions/ca.firstvoices.operations.xml",
         "FirstVoicesDraftEditor:OSGI-INF/extensions/ca.firstvoices.editors.operations.xml",
         "FirstVoicesDraftEditor:OSGI-INF/extensions/ca.firstvoices.editors.configuration.adapter.xml",
-        "FirstVoicesDraftEditor:schemas/fvconfiguration.xsd"})
-@LocalDeploy( {
-        "org.nuxeo.ecm.platform.forum.core:OSGI-INF/forum-schemas-contrib.xml",
+        "FirstVoicesDraftEditor:schemas/fvconfiguration.xsd",
         "org.nuxeo.elasticsearch.core:pageprovider-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:schemas-test-contrib.xml",
         "org.nuxeo.elasticsearch.core:elasticsearch-test-contrib.xml",

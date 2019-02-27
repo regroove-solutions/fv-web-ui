@@ -10,8 +10,8 @@ import org.nuxeo.ecm.platform.content.template.factories.SimpleTemplateBasedFact
  */
 public class FVDialectFactory extends SimpleTemplateBasedFactory {
 
-	@Override
-	public void createContentStructure(DocumentModel eventDoc) {
+    @Override
+    public void createContentStructure(DocumentModel eventDoc) {
 
         // Only apply to one type
         if ("FVDialect".equals(eventDoc.getType())) {

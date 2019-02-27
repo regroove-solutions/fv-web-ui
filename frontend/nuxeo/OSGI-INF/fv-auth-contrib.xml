@@ -1,0 +1,11 @@
+<component name="ca.firstvoices.nuxeo.authentication.contrib">
+
+  <extension point="startURL" target="org.nuxeo.ecm.platform.ui.web.auth.service.PluggableAuthenticationService">
+    <startURLPattern>
+      <patterns>
+        <pattern>app/</pattern>
+      </patterns>
+    </startURLPattern>
+  </extension>
+
+</component>

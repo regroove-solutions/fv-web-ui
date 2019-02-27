@@ -22,14 +22,11 @@ import static ca.firstvoices.services.FVUserGroupUpdateUtilities.updateFVPropert
 import static ca.firstvoices.utils.FVOperationCredentialsVerification.terminateOnInvalidCredentials_GroupUpdate;
 import static ca.firstvoices.utils.FVRegistrationConstants.*;
 
-
 /**
  *
  */
-@Operation(id = FVUpdateGroup.ID, category = Constants.CAT_USERS_GROUPS, label = "FVUpdateGroup",
-        description = "Updates group information. Possible actions are 'update'(default), 'append' and 'remove' .")
-public class FVUpdateGroup
-{
+@Operation(id = FVUpdateGroup.ID, category = Constants.CAT_USERS_GROUPS, label = "FVUpdateGroup", description = "Updates group information. Possible actions are 'update'(default), 'append' and 'remove' .")
+public class FVUpdateGroup {
     public static final String ID = "FVUpdateGroup";
 
     @Context
@@ -50,76 +47,65 @@ public class FVUpdateGroup
     @Param(name = "members", required = false)
     protected StringList members;
 
-    @Param(name = "membersAction", required = false, values = { UPDATE, APPEND,  REMOVE})
+    @Param(name = "membersAction", required = false, values = { UPDATE, APPEND, REMOVE })
     protected String membersAction = UPDATE;
 
     @Param(name = "subGroups", required = false)
     protected StringList subGroups;
 
-    @Param(name = "subGroupsAction", required = false, values = { UPDATE, APPEND,  REMOVE})
+    @Param(name = "subGroupsAction", required = false, values = { UPDATE, APPEND, REMOVE })
     protected String subGroupsAction = UPDATE;
 
     @Param(name = "parentGroups", required = false)
     protected StringList parentGroups;
 
-    @Param(name = "parentGroupsAction", required = false, values = { UPDATE, APPEND,  REMOVE})
+    @Param(name = "parentGroupsAction", required = false, values = { UPDATE, APPEND, REMOVE })
     protected String parentGroupsAction = UPDATE;
-
 
     @Param(name = "properties", required = false)
     protected Properties properties = new Properties();
 
     @OperationMethod
-    public String run() throws OperationException
-    {
+    public String run() throws OperationException {
         DocumentModel groupDoc = userManager.getGroupModel(groupName.toLowerCase());
 
-        if (groupDoc == null)
-        {
+        if (groupDoc == null) {
             throw new OperationException("Cannot update non-existent group: " + groupName);
         }
 
-        if( terminateOnInvalidCredentials_GroupUpdate( session, groupName ) ) return "You do not have permission to change " + groupDoc.getName(); // invalid credentials
+        if (terminateOnInvalidCredentials_GroupUpdate(session, groupName))
+            return "You do not have permission to change " + groupDoc.getName(); // invalid credentials
 
-        if( members != null )
-        {
-            updateFVProperty( membersAction, groupDoc, members, GROUP_SCHEMA, MEMBERS );
+        if (members != null) {
+            updateFVProperty(membersAction, groupDoc, members, GROUP_SCHEMA, MEMBERS);
         }
 
-        if (subGroups != null)
-        {
+        if (subGroups != null) {
             StringList alwaysLowerCase = new StringList();
-            for(String gn : subGroups )
-            {
-                alwaysLowerCase.add( gn.toLowerCase());
+            for (String gn : subGroups) {
+                alwaysLowerCase.add(gn.toLowerCase());
             }
 
-            updateFVProperty( subGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, SUB_GROUPS );
+            updateFVProperty(subGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, SUB_GROUPS);
         }
 
-        if (parentGroups != null )
-        {
+        if (parentGroups != null) {
             StringList alwaysLowerCase = new StringList();
-            for(String gn : parentGroups )
-            {
-                alwaysLowerCase.add( gn.toLowerCase());
+            for (String gn : parentGroups) {
+                alwaysLowerCase.add(gn.toLowerCase());
             }
-            updateFVProperty( parentGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, PARENT_GROUPS );
+            updateFVProperty(parentGroupsAction, groupDoc, alwaysLowerCase, GROUP_SCHEMA, PARENT_GROUPS);
         }
 
-        for (Entry<String, String> entry : Arrays.asList(
-                new SimpleEntry<>(GROUP_LABEL, groupLabel),
-                new SimpleEntry<>(GROUP_DESCRIPTION, groupDescription)))
-        {
+        for (Entry<String, String> entry : Arrays.asList(new SimpleEntry<>(GROUP_LABEL, groupLabel),
+                new SimpleEntry<>(GROUP_DESCRIPTION, groupDescription))) {
             String key = entry.getKey();
             String value = entry.getValue();
-            if (StringUtils.isNotBlank(value))
-            {
+            if (StringUtils.isNotBlank(value)) {
                 properties.put(key, value);
             }
         }
-        for (Entry<String, String> entry : properties.entrySet())
-        {
+        for (Entry<String, String> entry : properties.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
             if (key.startsWith(GROUP_COLON)) {
@@ -131,6 +117,6 @@ public class FVUpdateGroup
         userManager.updateGroup(groupDoc);
         groupDoc = userManager.getGroupModel(groupName.toLowerCase());
 
-        return "Updated "+ groupDoc.getName();
+        return "Updated " + groupDoc.getName();
     }
-  }
+}

@@ -16,45 +16,49 @@ import java.util.List;
     Note: diagram of compound binding is included in FV_CompoundPropertyReader file
 
 */
-public class FV_DataBinding
-{
-    protected Object    readPropertyValue;
-    protected String    outputColumnName;
-    protected Object[]  properties;          // can be created as a duplicate of readPropertyValue to allow
-                                             // indexed access
+public class FV_DataBinding {
+    protected Object readPropertyValue;
 
-    public FV_DataBinding(String ocn, Object rp )
-    {
+    protected String outputColumnName;
+
+    protected Object[] properties; // can be created as a duplicate of readPropertyValue to allow
+                                   // indexed access
+
+    public FV_DataBinding(String ocn, Object rp) {
         readPropertyValue = rp;
         outputColumnName = ocn;
     }
 
-    public Object getReadProperty() { return readPropertyValue; }
-    public String getOutputColumnName() { return outputColumnName; }
-    public String getKey() {  return outputColumnName; }
+    public Object getReadProperty() {
+        return readPropertyValue;
+    }
+
+    public String getOutputColumnName() {
+        return outputColumnName;
+    }
+
+    public String getKey() {
+        return outputColumnName;
+    }
 
     // used when payload is output from compound
-    public int getNumberOfCompoundColumn()
-    {
-        if( isMultiLine() )
-        {
+    public int getNumberOfCompoundColumn() {
+        if (isMultiLine()) {
             return ((List) readPropertyValue).size();
         }
 
         return 1;
     }
 
-    public Object getColumnObject( int index )
-    {
-        if( !isMultiLine() ) return null;
+    public Object getColumnObject(int index) {
+        if (!isMultiLine())
+            return null;
 
-        if( properties == null )
-        {
-            properties = ((List)readPropertyValue).toArray();
+        if (properties == null) {
+            properties = ((List) readPropertyValue).toArray();
         }
 
-        if( properties.length > index )
-        {
+        if (properties.length > index) {
             return properties[index];
         }
 
@@ -62,25 +66,20 @@ public class FV_DataBinding
     }
 
     // will confirm if dealing with multi-line output from a compound property
-    public Boolean isMultiLine()
-    {
+    public Boolean isMultiLine() {
         return readPropertyValue instanceof List;
     }
 
-    public int outputLinesInProperty()
-    {
-        if( isMultiLine() )
-        {
-            return ((List)readPropertyValue).size();
+    public int outputLinesInProperty() {
+        if (isMultiLine()) {
+            return ((List) readPropertyValue).size();
         }
 
         return 1;
     }
 
-    public Object getListOfColumnObjects()
-    {
-        if( isMultiLine() )
-        {
+    public Object getListOfColumnObjects() {
+        if (isMultiLine()) {
             return readPropertyValue;
         }
 

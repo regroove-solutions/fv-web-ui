@@ -13,17 +13,14 @@ import static ca.firstvoices.utils.FVRegistrationConstants.CHECK_REGISTRATION_TI
 /**
  *
  */
-public class FVRegistrationTimeOutListener  implements EventListener
-{
+public class FVRegistrationTimeOutListener implements EventListener {
     private static final Log log = LogFactory.getLog(FVRegistrationTimeOutListener.class);
 
     protected WorkManager workManager = Framework.getService(WorkManager.class);
 
     @Override
-    public void handleEvent(Event event)
-    {
-        if (CHECK_REGISTRATION_TIMEOUT_EVENT_NAME.equals(event.getName()))
-        {
+    public void handleEvent(Event event) {
+        if (CHECK_REGISTRATION_TIMEOUT_EVENT_NAME.equals(event.getName())) {
             FVRegistrationTimeOutWorker doCheckRegTimeOut = new FVRegistrationTimeOutWorker();
             workManager.schedule(doCheckRegTimeOut, true);
         }

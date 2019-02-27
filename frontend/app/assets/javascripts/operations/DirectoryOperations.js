@@ -188,8 +188,12 @@ export default class DirectoryOperations extends BaseOperations {
 
     return new Promise((resolve, reject) => {
       properties.client
-        .request(`/query/${pageProvider}?${queryAppend}`, _params)
-        .get({ headers: _headers })
+        .headers(_headers)
+        .repository()
+        .query({
+          pageProvider: pageProvider,
+          queryParams: Object.values(_params),
+        })
         .then((docs) => {
           resolve(docs)
         })

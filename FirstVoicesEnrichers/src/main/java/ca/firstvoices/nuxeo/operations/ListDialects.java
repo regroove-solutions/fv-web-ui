@@ -1,8 +1,5 @@
 package ca.firstvoices.nuxeo.operations;
 
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
@@ -15,6 +12,10 @@ import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Operation(id = ListDialects.ID, category = Constants.CAT_DOCUMENT, label = "List dialects in FV tree",
         description = "Returns a list of dialects based on selection criteria")
@@ -82,7 +83,8 @@ public class ListDialects
     protected static class UnrestrictedDialectQuery extends UnrestrictedSessionRunner {
 
         private String query;
-        private JSONArray resultSetArray;
+        private ArrayNode resultSetArray;
+        protected ObjectMapper mapper;
         private IterableQueryResult result;
 
         protected UnrestrictedDialectQuery(CoreSession session, String query) {
@@ -96,14 +98,18 @@ public class ListDialects
                 result = session.queryAndFetch(query, "NXQL");
                 Iterator<Map<String, Serializable>> it = result.iterator();
 
-                resultSetArray = new JSONArray();
+                mapper = new ObjectMapper();
+                resultSetArray = mapper.createArrayNode();
+                
                 while (it.hasNext()) {
                     Map<String, Serializable> item = it.next();
-                    JSONObject object = new JSONObject();
-                    object.accumulateAll(item);
-                    resultSetArray.add(object);
+                    //JSONObject object = new JSONObject();
+                    //object.accumulateAll(item);
+                    resultSetArray.add(mapper.writeValueAsString(item));
                 }
-            } finally {
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+			} finally {
                 result.close();
             }
 

@@ -18,7 +18,7 @@ const sourceGamesDirectory = path.resolve(sourceAssetsDirectory, "games")
 
 // Output Directories
 const outputAssetsDirectory = "assets"
-const outputDirectory = path.resolve(rootDirectory, "public")
+const outputDirectory = path.resolve(frontEndRootDirectory, "public")
 const outputScriptsDirectory = path.join(outputAssetsDirectory, "javascripts")
 const outputFontsDirectory = path.join(outputAssetsDirectory, "fonts")
 const outputImagesDirectory = path.join(outputAssetsDirectory, "images")
