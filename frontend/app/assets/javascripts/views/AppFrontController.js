@@ -19,7 +19,7 @@ import { Link } from "provide-page"
 import FlatButton from "material-ui/lib/flat-button"
 import Navigation from "views/components/Navigation"
 import WorkspaceSwitcher from "views/components/Navigation/workspace-switcher"
-import KidsNavigation from "views/components/Kids/Navigation"
+import KidsNavigation from "views/components/Kids/navigation"
 import Footer from "views/components/Navigation/Footer"
 
 import IntlService from "views/services/intl"
