@@ -82,7 +82,7 @@ Important Note: when running Yarn for the first time you will be silently prompt
 $ yarn run start
 ```
 
-9. **Building development files (used for debugging development build files)**
+9. Building development files (used for debugging development build files)
 ```bash
 $ yarn run development
 ```
