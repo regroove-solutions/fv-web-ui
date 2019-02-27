@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from "react"
-import Immutable from "immutable"
+import Immutable, { List } from "immutable"
 
 import provide from "react-redux-provide"
 import selectn from "selectn"
@@ -2053,14 +2053,19 @@ export default class AppFrontController extends Component {
         page: <PageDialectPhraseBooksCreate />,
       },
       {
-        path: "404-page-not-found",
+        path: ["404-page-not-found"],
         title: PAGE_NOT_FOUND_TITLE,
         page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
       },
     ])
 
     return {
-      routes: routes,
+      routes:
+        ConfGlobal.contextPath && ConfGlobal.contextPath.length > 0
+          ? routes.map((route) =>
+              route ? route.set("path", List(ConfGlobal.contextPath).concat(route.get("path"))) : route
+            )
+          : routes,
       matchedPage: null,
       matchedRouteParams: {},
       warningsDismissed: false,
