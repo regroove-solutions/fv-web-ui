@@ -167,7 +167,7 @@ export default class ExploreDialects extends Component {
     }
 
     // Direct method
-    return "/api/v1/query/get_dialects?queryParams=" + props.routeParams.area
+    return "/FV/" + props.routeParams.area + "/Data"
   }
 
   _portalEntriesSort(a, b) {
