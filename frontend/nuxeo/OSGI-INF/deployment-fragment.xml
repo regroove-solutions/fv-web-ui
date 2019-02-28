@@ -16,4 +16,9 @@
       <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
   </extension>
+  
+  <extension target="rewrite#RULE">
+    RewriteCond %{REQUEST_URI} !.*/assets/(.*)
+    RewriteRule ^/app/(.*) /app/ [L]
+  </extension>
 </fragment>
