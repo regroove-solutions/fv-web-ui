@@ -154,11 +154,7 @@ export default class DataListView extends Component {
           )
         }
       } else {
-        NavigationHelpers.navigateForward(
-          this.props.splitWindowPath,
-          [pageSize, page],
-          this.props.pushWindowPath
-        )
+        NavigationHelpers.navigateForward(this.props.splitWindowPath, [pageSize, page], this.props.pushWindowPath)
       }
 
       // If pageSize has changed, reset page
