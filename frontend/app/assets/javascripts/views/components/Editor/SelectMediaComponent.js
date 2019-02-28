@@ -206,7 +206,7 @@ class SelectMediaComponent extends React.Component {
         <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
         <Dialog
           title={`${intl.searchAndReplace(
-            `Selectexisting ${fileTypeLabel} from ${selectn(
+            `Select existing ${fileTypeLabel} from ${selectn(
               'properties.dc:title',
               dialect
             )} dialect or shared resources`
