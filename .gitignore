@@ -12,3 +12,7 @@ app/assets/stylesheets/generated
 target
 target/
 /target
+.classpath
+.settings
+.factorypath
+nashorn_code_cache
