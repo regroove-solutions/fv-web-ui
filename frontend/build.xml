@@ -49,6 +49,11 @@ limitations under the License.
     <copy todir="target/classes/nuxeo.war/app">
       <fileset dir="public"/>
     </copy>
+     
+  	<!--MC: why is this not done by default?-->
+    <copy todir="target/classes/OSGI-INF">
+      <fileset dir="nuxeo/OSGI-INF"/>
+    </copy>
 
   </target>
 
