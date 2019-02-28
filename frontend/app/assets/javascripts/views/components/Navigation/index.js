@@ -329,7 +329,7 @@ export default class Navigation extends Component {
         <AppBar
           title={
             <span className="hidden-xs">
-              <img src="/assets/images/logo.png" style={{ padding: "0 0 5px 0" }} alt={this.props.properties.title} />
+              <img src="assets/images/logo.png" style={{ padding: "0 0 5px 0" }} alt={this.props.properties.title} />
             </span>
           }
           showMenuIconButton={isDialect ? true : true}
