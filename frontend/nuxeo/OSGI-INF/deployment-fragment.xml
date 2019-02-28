@@ -21,4 +21,8 @@
     RewriteCond %{REQUEST_URI} !.*/assets/(.*)
     RewriteRule ^/app/(.*) /app/ [L]
   </extension>
+  
+   <extension target="rewrite#RULE">
+    RewriteRule .*/assets/(.*) /app/assets/$1 [L]
+  </extension>
 </fragment>
