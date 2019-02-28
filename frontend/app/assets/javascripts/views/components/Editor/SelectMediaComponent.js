@@ -44,6 +44,10 @@ const DefaultFetcherParams = {
   pageSize: 10,
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
+// const FilteredPaginatedMediaList = withFilter(
+//   withPagination(MediaList, DefaultFetcherParams.pageSize),
+//   DefaultFetcherParams
+// )
 
 const intl = IntlService.instance
 
@@ -107,7 +111,7 @@ class SharedResourceGridTile extends Component {
 }
 
 @provide
-export default class SelectMediaComponent extends React.Component {
+class SelectMediaComponent extends React.Component {
   static propTypes = {
     onComplete: PropTypes.func.isRequired,
     fetchSharedPictures: PropTypes.func.isRequired,
@@ -122,22 +126,6 @@ export default class SelectMediaComponent extends React.Component {
     dialect: PropTypes.object.isRequired,
     label: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-  }
-
-  getDefaultValues() {
-    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
-  }
-
-  _handleOpen() {
-    this.setState({ open: true })
-  }
-
-  _handleClose() {
-    this.setState({ open: false })
-  }
-
-  _handleSelectElement(value) {
-    this.props.onComplete(value)
   }
 
   constructor(props) {
@@ -159,38 +147,6 @@ export default class SelectMediaComponent extends React.Component {
     this.state = {
       open: false,
       fetcherParams: appliedParams,
-    }
-  }
-
-  fetchData(fetcherParams) {
-    if (selectn('path', this.props.dialect)) {
-      // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-      const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-      const group2 = new Map(fetcherParams.filters)
-        .filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects')
-        .toJS()
-
-      this.props.fetchResources(
-        '/FV/Workspaces/',
-        " AND ecm:primaryType ILIKE '" +
-          this.props.type +
-          "'" +
-          " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:currentLifeCycleState != 'Disabled'" +
-          " AND (ecm:path STARTSWITH '" +
-          StringHelpers.clean(selectn('path', this.props.dialect)) +
-          "/Resources/'" +
-          ProviderHelpers.filtersToNXQL(group1) +
-          ')' +
-          ProviderHelpers.filtersToNXQL(group2) +
-          '&currentPageIndex=' +
-          (fetcherParams.currentPageIndex - 1) +
-          '&pageSize=' +
-          fetcherParams.pageSize
-      )
-
-      this.setState({
-        fetcherParams: fetcherParams,
-      })
     }
   }
 
@@ -244,19 +200,17 @@ export default class SelectMediaComponent extends React.Component {
       withPagination(MediaList, DefaultFetcherParams.pageSize),
       DefaultFetcherParams
     )
+
     return (
       <div style={{ display: 'inline' }}>
         <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
         <Dialog
-          title={
-            intl.searchAndReplace(
-              'Select existing ' +
-                fileTypeLabel +
-                ' from ' +
-                selectn('properties.dc:title', dialect) +
-                ' dialect or shared resources'
-            ) + ':'
-          }
+          title={`${intl.searchAndReplace(
+            `Selectexisting ${fileTypeLabel} from ${selectn(
+              'properties.dc:title',
+              dialect
+            )} dialect or shared resources`
+          )}:`}
           actions={actions}
           modal
           contentStyle={{ width: '80%', height: '80vh', maxWidth: '100%' }}
@@ -286,4 +240,54 @@ export default class SelectMediaComponent extends React.Component {
       </div>
     )
   }
+
+  getDefaultValues() {
+    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
+  }
+
+  fetchData(fetcherParams) {
+    if (selectn('path', this.props.dialect)) {
+      // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
+      const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
+      const group2 = new Map(fetcherParams.filters)
+        .filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects')
+        .toJS()
+
+      this.props.fetchResources(
+        '/FV/Workspaces/',
+        " AND ecm:primaryType ILIKE '" +
+          this.props.type +
+          "'" +
+          " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:currentLifeCycleState != 'Disabled'" +
+          " AND (ecm:path STARTSWITH '" +
+          StringHelpers.clean(selectn('path', this.props.dialect)) +
+          "/Resources/'" +
+          ProviderHelpers.filtersToNXQL(group1) +
+          ')' +
+          ProviderHelpers.filtersToNXQL(group2) +
+          '&currentPageIndex=' +
+          (fetcherParams.currentPageIndex - 1) +
+          '&pageSize=' +
+          fetcherParams.pageSize
+      )
+
+      this.setState({
+        fetcherParams: fetcherParams,
+      })
+    }
+  }
+
+  _handleClose() {
+    this.setState({ open: false })
+  }
+
+  _handleOpen() {
+    this.setState({ open: true })
+  }
+
+  _handleSelectElement(value) {
+    this.props.onComplete(value)
+  }
 }
+
+export default SelectMediaComponent
