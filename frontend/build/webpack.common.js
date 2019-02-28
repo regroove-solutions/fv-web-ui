@@ -120,7 +120,7 @@ module.exports = {
     filename: path.join(outputScriptsDirectory, "[name].[hash].js"),
     chunkFilename: path.join(outputScriptsDirectory, "[name].[hash].js"),
     path: outputDirectory,
-    publicPath: "/",
+    publicPath: "",
   },
 
   /**
