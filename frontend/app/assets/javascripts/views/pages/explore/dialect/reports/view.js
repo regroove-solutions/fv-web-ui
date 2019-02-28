@@ -81,7 +81,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
                 case "phrases":
                     defaultCols = ["title", "fv:definitions", "related_pictures", "related_audio", "fv-phrase:phrase_books"];
-                break;                
+                break;
             }
 
             report = report.set("cols", defaultCols);
@@ -156,12 +156,13 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
 
             case 'songs':
                 listView =
-                    <SongsStoriesListViewAlt 
+                    <SongsStoriesListViewAlt
                         onPaginationReset={this._resetURLPagination}
                         onPagePropertiesChange={this._handlePagePropertiesChange}
                         {...this._getURLPageProps()}
                         controlViaURL={true}
                         filter={this.state.filterInfo}
+                        disableClickItem={false}
                         routeParams={this.props.routeParams}/>;
                 break;
 
@@ -173,6 +174,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
                         {...this._getURLPageProps()}
                         controlViaURL={true}
                         filter={this.state.filterInfo}
+                        disableClickItem={false}
                         routeParams={this.props.routeParams}/>;
                 break;
         }

@@ -24,6 +24,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import UIHelpers from 'common/UIHelpers'
 
 import DocumentListView from 'views/components/Document/DocumentListView'
+import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import IntlService from 'views/services/intl'
@@ -33,7 +34,7 @@ const intl = IntlService.instance
  * List view for links
  */
 @provide
-export default class ListView extends DataListView {
+class ListView extends DataListView {
   static defaultProps = {
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
@@ -45,6 +46,7 @@ export default class ListView extends DataListView {
     filter: new Map(),
     gridListView: false,
     gridCols: 4,
+    useDatatable: false,
   }
 
   static propTypes = {
@@ -70,6 +72,7 @@ export default class ListView extends DataListView {
     DEFAULT_PAGE_SIZE: PropTypes.number,
     DEFAULT_SORT_COL: PropTypes.string,
     DEFAULT_SORT_TYPE: PropTypes.string,
+    useDatatable: PropTypes.bool,
   }
 
   constructor(props, context) {
@@ -184,33 +187,48 @@ export default class ListView extends DataListView {
 
     const computeLinks = ProviderHelpers.getEntry(this.props.computeLinks, this.state.linksPath)
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
-
+    const DocumentView = this.props.useDatatable ? (
+      <DocumentListViewDatatable
+        objectDescriptions="links"
+        type="FVLink"
+        data={computeLinks}
+        gridCols={this.props.gridCols}
+        gridListView={this.props.gridListView}
+        refetcher={this._handleRefetch}
+        onSortChange={this._handleSortChange}
+        onSelectionChange={this._onEntryNavigateRequest}
+        page={this.state.pageInfo.page}
+        pageSize={this.state.pageInfo.pageSize}
+        onColumnOrderChange={this._handleColumnOrderChange}
+        columns={this.state.columns}
+        sortInfo={this.state.sortInfo.uiSortOrder}
+        className="browseDataGrid"
+        dialect={selectn('response', computeDialect2)}
+      />
+    ) : (
+      <DocumentListView
+        objectDescriptions="links"
+        type="FVLink"
+        data={computeLinks}
+        gridCols={this.props.gridCols}
+        gridListView={this.props.gridListView}
+        refetcher={this._handleRefetch}
+        onSortChange={this._handleSortChange}
+        onSelectionChange={this._onEntryNavigateRequest}
+        page={this.state.pageInfo.page}
+        pageSize={this.state.pageInfo.pageSize}
+        onColumnOrderChange={this._handleColumnOrderChange}
+        columns={this.state.columns}
+        sortInfo={this.state.sortInfo.uiSortOrder}
+        className="browseDataGrid"
+        dialect={selectn('response', computeDialect2)}
+      />
+    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {(() => {
-          if (selectn('response.entries', computeLinks)) {
-            return (
-              <DocumentListView
-                objectDescriptions="links"
-                type="FVLink"
-                data={computeLinks}
-                gridCols={this.props.gridCols}
-                gridListView={this.props.gridListView}
-                refetcher={this._handleRefetch}
-                onSortChange={this._handleSortChange}
-                onSelectionChange={this._onEntryNavigateRequest}
-                page={this.state.pageInfo.page}
-                pageSize={this.state.pageInfo.pageSize}
-                onColumnOrderChange={this._handleColumnOrderChange}
-                columns={this.state.columns}
-                sortInfo={this.state.sortInfo.uiSortOrder}
-                className="browseDataGrid"
-                dialect={selectn('response', computeDialect2)}
-              />
-            )
-          }
-        })()}
+        {selectn('response.entries', computeLinks) && DocumentView}
       </PromiseWrapper>
     )
   }
 }
+export default ListView
