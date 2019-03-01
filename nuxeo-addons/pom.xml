@@ -6,7 +6,7 @@
   <properties>
     <nuxeo.distribution.version.base>7.10</nuxeo.distribution.version.base>
     <nuxeo.distribution.version>7.10-HF46</nuxeo.distribution.version>
-    <fv.studio.version>0.0.81</fv.studio.version>
+    <fv.studio.version>0.0.83</fv.studio.version>
     <fv.plugin.version>1.0.23-SNAPSHOT</fv.plugin.version>
   </properties>
 
