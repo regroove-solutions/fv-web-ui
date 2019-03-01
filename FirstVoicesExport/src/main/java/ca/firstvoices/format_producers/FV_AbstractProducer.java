@@ -1,10 +1,14 @@
 package ca.firstvoices.format_producers;
 
-import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
-import ca.firstvoices.property_readers.FV_DataBinding;
-import ca.firstvoices.utils.ExportColumnRecord;
-import ca.firstvoices.utils.FVExportWorkInfo;
-import ca.firstvoices.utils.FV_CSVExportColumns;
+import static ca.firstvoices.utils.FVExportConstants.EXPORT_WORK_INFO;
+import static ca.firstvoices.utils.FVExportConstants.FINISH_EXPORT_BY_WRAPPING_BLOB;
+import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.StringList;
@@ -15,14 +19,11 @@ import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import static ca.firstvoices.utils.FVExportConstants.*;
-import static ca.firstvoices.utils.FVExportUtils.getTEMPBlobDirectoryPath;
-import static ca.firstvoices.utils.FVExportUtils.makePropertyReader;
+import ca.firstvoices.property_readers.FV_AbstractPropertyReader;
+import ca.firstvoices.property_readers.FV_DataBinding;
+import ca.firstvoices.utils.ExportColumnRecord;
+import ca.firstvoices.utils.FVExportWorkInfo;
+import ca.firstvoices.utils.FV_CSVExportColumns;
 
 /*
  * FV_AbstractProducer is a driver of any export process related to producing a list of words and their
@@ -157,7 +158,7 @@ abstract public class FV_AbstractProducer {
 
                         propertyReaders.add(instance);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error(e);
                     }
                 } else {
                     // log.warn
@@ -174,14 +175,12 @@ abstract public class FV_AbstractProducer {
      */
     public Boolean createTemporaryOutputFile(String fileName, String suffix) {
         try {
-            String nuxeo_temp_path = getTEMPBlobDirectoryPath();
-            File path = new File(nuxeo_temp_path);
             originalFileName = fileName;
-            outputFile = File.createTempFile(fileName, "." + suffix.toLowerCase(), path);
+            outputFile = File.createTempFile(fileName, "." + suffix.toLowerCase());
 
             return true;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         return false;
