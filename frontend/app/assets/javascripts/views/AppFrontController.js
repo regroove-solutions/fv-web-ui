@@ -86,6 +86,20 @@ class Redirecter extends Component {
   }
 }
 
+const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
+  // Don't perform any redirect if these aren't available.
+  if (
+    !selectn("success", computeLogin) ||
+    !computeDialect2 ||
+    !computeDialect2.get(0) ||
+    !computeDialect2.get(0).get("response")
+  ) {
+    return false
+  }
+
+  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
+}
+
 @provide
 export default class AppFrontController extends Component {
   static propTypes = {

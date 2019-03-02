@@ -63,20 +63,6 @@ const KIDS_OR_DEFAULT = new paramMatch("theme", RegExp(ProviderHelpers.regex.KID
 
 const REMOVE_FROM_BREADCRUMBS = ["FV", "sections", "Data", "Workspaces", "search"]
 
-const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
-  // Don't perform any redirect if these aren't available.
-  if (
-    !selectn("success", computeLogin) ||
-    !computeDialect2 ||
-    !computeDialect2.get(0) ||
-    !computeDialect2.get(0).get("response")
-  ) {
-    return false
-  }
-
-  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
-}
-
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
