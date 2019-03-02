@@ -146,7 +146,7 @@ export default class Login extends Component {
 
     return (
       <div style={{ display: "inline-block", padding: "0 0 0 10px" }}>
-        <a className="nav_link" href={ConfGlobal.baseURL + "login.jsp"}>
+        <a className="nav_link" href={ConfGlobal.baseURL + "logout"}>
           SIGN IN
         </a>
       </div>

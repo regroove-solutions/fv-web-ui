@@ -167,8 +167,8 @@ export default class AppLeftNav extends Component {
     if (path === null) {
       return
     }
-    if (path === ConfGlobal.baseURL + "logout") {
-      window.location.href = ConfGlobal.baseURL + "logout?requestedUrl=logout-success.jsp"
+    if (path ===  "logout") {
+      window.location.href = ConfGlobal.baseURL + "logout"
     } else {
       // Request to navigate to
       this.props.pushWindowPath(path)
@@ -256,7 +256,7 @@ export default class AppLeftNav extends Component {
 
                 <ListItem
                   key="sign-out"
-                  value={ConfGlobal.baseURL + "logout"}
+                  value={"logout"}
                   primaryText={this.intl.translate({
                     key: "sign_out",
                     default: "Sign Out",
