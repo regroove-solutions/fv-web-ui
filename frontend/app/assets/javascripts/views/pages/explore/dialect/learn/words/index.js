@@ -46,7 +46,7 @@ import { AlphabetListView } from '../../../../../components/AlphabetListView'
 const intl = IntlService.instance
 
 @provide
-export default class PageDialectLearnWords extends PageDialectLearnBase {
+class PageDialectLearnWords extends PageDialectLearnBase {
   static propTypes = {
     computeCategories: PropTypes.object.isRequired,
     computeDocument: PropTypes.object.isRequired,
@@ -185,7 +185,7 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
 
     const wordListView = selectn('response.uid', computeDocument) ? (
       <WordListView
-        disableWordClick={false}
+        disableClickItem={false}
         controlViaURL
         DEFAULT_PAGE_SIZE={10}
         filter={filterInfo}
@@ -499,3 +499,4 @@ export default class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 }
+export default PageDialectLearnWords

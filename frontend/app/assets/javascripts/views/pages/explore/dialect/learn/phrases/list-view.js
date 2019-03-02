@@ -27,6 +27,7 @@ import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
 
 import DocumentListView from 'views/components/Document/DocumentListView'
+import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
 import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 import Preview from 'views/components/Editor/Preview'
 import IntlService from 'views/services/intl'
@@ -36,9 +37,9 @@ const intl = IntlService.instance
  * List view for phrases
  */
 @provide
-export default class ListView extends DataListView {
+class ListView extends DataListView {
   static defaultProps = {
-    disablePhraseClick: true,
+    disableClickItem: true,
     DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books', 'related_audio', 'related_pictures', 'dc:modified'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
@@ -53,10 +54,11 @@ export default class ListView extends DataListView {
     controlViaURL: false,
     flashcard: false,
     flashcardTitle: '',
+    useDatatable: false,
   }
 
   static propTypes = {
-    disablePhraseClick: PropTypes.bool,
+    disableClickItem: PropTypes.bool,
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -78,6 +80,7 @@ export default class ListView extends DataListView {
     onPaginationReset: PropTypes.func,
     onPagePropertiesChange: PropTypes.func,
     action: PropTypes.func,
+    useDatatable: PropTypes.bool,
 
     ENABLED_COLS: PropTypes.array,
     DISABLED_SORT_COLS: PropTypes.array,
@@ -101,7 +104,7 @@ export default class ListView extends DataListView {
           title: intl.trans('phrase', 'Phrase', 'first'),
           render: (v, data) => {
             const href = NavigationHelpers.generateUIDPath(currentTheme, data, 'phrases')
-            const clickHandler = props.disablePhraseClick ? NavigationHelpers.disable : null
+            const clickHandler = props.disableClickItem ? NavigationHelpers.disable : null
             return (
               <a onClick={clickHandler} href={href}>
                 {v}
@@ -217,53 +220,6 @@ export default class ListView extends DataListView {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  _getPathOrParentID(newProps) {
-    return newProps.parentID ? newProps.parentID : newProps.routeParams.dialect_path + '/Dictionary'
-  }
-
-  // NOTE: DataListView calls `fetchData`
-  fetchData(newProps) {
-    if (newProps.dialect === null && !this.getDialect(newProps)) {
-      newProps.fetchDialect2(newProps.routeParams.dialect_path)
-    }
-    this._fetchListViewData(
-      newProps,
-      newProps.DEFAULT_PAGE,
-      newProps.DEFAULT_PAGE_SIZE,
-      newProps.DEFAULT_SORT_TYPE,
-      newProps.DEFAULT_SORT_COL
-    )
-  }
-
-  _onEntryNavigateRequest(item) {
-    if (this.props.action) {
-      this.props.action(item)
-    } else {
-      NavigationHelpers.navigate(
-        NavigationHelpers.generateUIDPath(this.props.routeParams.theme, item, 'phrases'),
-        this.props.pushWindowPath,
-        true
-      )
-    }
-  }
-
-  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    let currentAppliedFilter = ''
-
-    if (props.filter.has('currentAppliedFilter')) {
-      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
-    }
-    props.fetchPhrases(
-      this._getPathOrParentID(props),
-      `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
-    )
-  }
-
-  getDialect(props = this.props) {
-    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
-  }
-
   render() {
     const computeEntities = Immutable.fromJS([
       {
@@ -285,30 +241,100 @@ export default class ListView extends DataListView {
     const computePhrases = ProviderHelpers.getEntry(this.props.computePhrases, this._getPathOrParentID(this.props))
     const computeDialect2 = this.props.dialect || this.getDialect()
 
+    const DocumentView = this.props.useDatatable ? (
+      <DocumentListViewDatatable
+        objectDescriptions="phrases"
+        type="FVPhrase"
+        data={computePhrases}
+        gridCols={this.props.gridCols}
+        gridListView={this.props.gridListView}
+        refetcher={this._handleRefetch}
+        onSortChange={this._handleSortChange}
+        onSelectionChange={this._onEntryNavigateRequest}
+        page={this.state.pageInfo.page}
+        pageSize={this.state.pageInfo.pageSize}
+        onColumnOrderChange={this._handleColumnOrderChange}
+        columns={this.state.columns}
+        sortInfo={this.state.sortInfo.uiSortOrder}
+        className="browseDataGrid"
+        dialect={selectn('response', computeDialect2)}
+        flashcard={this.props.flashcard}
+        flashcardTitle={this.props.flashcardTitle}
+      />
+    ) : (
+      <DocumentListView
+        objectDescriptions="phrases"
+        type="FVPhrase"
+        data={computePhrases}
+        gridCols={this.props.gridCols}
+        gridListView={this.props.gridListView}
+        refetcher={this._handleRefetch}
+        onSortChange={this._handleSortChange}
+        onSelectionChange={this._onEntryNavigateRequest}
+        page={this.state.pageInfo.page}
+        pageSize={this.state.pageInfo.pageSize}
+        onColumnOrderChange={this._handleColumnOrderChange}
+        columns={this.state.columns}
+        sortInfo={this.state.sortInfo.uiSortOrder}
+        className="browseDataGrid"
+        dialect={selectn('response', computeDialect2)}
+        flashcard={this.props.flashcard}
+        flashcardTitle={this.props.flashcardTitle}
+      />
+    )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn('response.entries', computePhrases) && (
-          <DocumentListView
-            objectDescriptions="phrases"
-            type="FVPhrase"
-            data={computePhrases}
-            gridCols={this.props.gridCols}
-            gridListView={this.props.gridListView}
-            refetcher={this._handleRefetch}
-            onSortChange={this._handleSortChange}
-            onSelectionChange={this._onEntryNavigateRequest}
-            page={this.state.pageInfo.page}
-            pageSize={this.state.pageInfo.pageSize}
-            onColumnOrderChange={this._handleColumnOrderChange}
-            columns={this.state.columns}
-            sortInfo={this.state.sortInfo.uiSortOrder}
-            className="browseDataGrid"
-            dialect={selectn('response', computeDialect2)}
-            flashcard={this.props.flashcard}
-            flashcardTitle={this.props.flashcardTitle}
-          />
-        )}
+        {selectn('response.entries', computePhrases) && DocumentView}
       </PromiseWrapper>
     )
   }
+
+  // NOTE: DataListView calls `fetchData`
+  fetchData(newProps) {
+    if (newProps.dialect === null && !this.getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path)
+    }
+    this._fetchListViewData(
+      newProps,
+      newProps.DEFAULT_PAGE,
+      newProps.DEFAULT_PAGE_SIZE,
+      newProps.DEFAULT_SORT_TYPE,
+      newProps.DEFAULT_SORT_COL
+    )
+  }
+
+  getDialect(props = this.props) {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
+  }
+
+  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+    let currentAppliedFilter = ''
+
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
+    }
+    props.fetchPhrases(
+      this._getPathOrParentID(props),
+      `${currentAppliedFilter}&currentPageIndex=${pageIndex -
+        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+    )
+  }
+
+  _getPathOrParentID(newProps) {
+    return newProps.parentID ? newProps.parentID : newProps.routeParams.dialect_path + '/Dictionary'
+  }
+
+  _onEntryNavigateRequest(item) {
+    if (this.props.action) {
+      this.props.action(item)
+    } else {
+      NavigationHelpers.navigate(
+        NavigationHelpers.generateUIDPath(this.props.routeParams.theme, item, 'phrases'),
+        this.props.pushWindowPath,
+        true
+      )
+    }
+  }
 }
+
+export default ListView

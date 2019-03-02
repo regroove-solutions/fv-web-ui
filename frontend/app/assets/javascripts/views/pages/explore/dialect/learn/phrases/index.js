@@ -179,7 +179,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
         filter={this.state.filterInfo}
         {...this._getURLPageProps()}
         routeParams={this.props.routeParams}
-        disablePhraseClick={false}
+        disableClickItem={false}
         flashcard={this.state.flashcardMode}
         flashcardTitle={pageTitle}
       />

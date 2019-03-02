@@ -149,7 +149,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
       )
     }
 
-    _doFilter(filters, props = this.props) {
+    _doFilter(filters, props = this.props, isReset) {
       // Filter a fixed list (i.e. all items sent to component)
       if (this.props.fixedList) {
         const filteredList = new List(props.items).filter(function filteredListFilterer(item) {
@@ -179,7 +179,8 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
           Object.assign({}, this.props.fetcherParams, {
             currentPageIndex: 1,
             filters: preparedFilters,
-          })
+          }),
+          isReset ? {} : filters
         )
       }
     }
@@ -205,12 +206,12 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
 
       if (props.fixedList) {
         if (this.state.defaultFormValue) {
-          this._doFilter(this.state.defaultFormValue, props)
+          this._doFilter(this.state.defaultFormValue, props, true)
         } else {
           props.fixedListFetcher(props.items)
         }
       } else {
-        this._doFilter(DefaultFetcherParams.filters, props)
+        this._doFilter(DefaultFetcherParams.filters, props, true)
       }
     }
 

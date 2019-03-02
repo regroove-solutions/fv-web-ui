@@ -33,10 +33,8 @@ public class FVRegistrationConstants {
     // TODO - adjust registration constants here
     // TODO - all values in days
     public static final int MID_REGISTRATION_PERIOD_IN_DAYS = 4;
-
-    public static final int REGISTRATION_EXPIRATION_IN_DAYS = 7;
-
-    public static final int REGISTRATION_DELETION_IN_DAYS = 8;
+    public static final int REGISTRATION_EXPIRATION_IN_DAYS     = 30;
+    public static final int REGISTRATION_DELETION_IN_DAYS       = 31;
 
     public static final String GROUP_SCHEMA = "group";
 

@@ -36,6 +36,7 @@ const intl = IntlService.instance
 @provide
 export default class ListViewAlt extends DataListView {
   static defaultProps = {
+    disableClickItem: true,
     DISABLED_SORT_COLS: ["state", "related_audio", "related_pictures"],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
@@ -48,6 +49,7 @@ export default class ListViewAlt extends DataListView {
   }
 
   static propTypes = {
+    disableClickItem: PropTypes.bool,
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -81,18 +83,25 @@ export default class ListViewAlt extends DataListView {
         {
           name: "title",
           title: intl.trans("title", "Title", "first"),
-          render: (v, data, cellProps) => (
-            <a
-              onClick={NavigationHelpers.disable}
-              href={NavigationHelpers.generateUIDPath(
-                currentTheme || "explore",
-                data,
-                selectn("properties.fvbook:type", data) === "story" ? "stories" : "songs"
-              )}
+          render: (v, data, cellProps) => {
+            const href = NavigationHelpers.generateUIDPath(
+              currentTheme || "explore",
+              data,
+              selectn("properties.fvbook:type", data) === "story" ? "stories" : "songs"
+            )
+            const clickHandler = props.disableClickItem
+              ? NavigationHelpers.disable
+              : (e) => {
+                  // e.preventDefault()
+                  // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+                }
+            return (<a
+              onClick={clickHandler}
+              href={href}
             >
               {v}
-            </a>
-          ),
+            </a>)
+          },
         },
         {
           name: "dc:modified",
