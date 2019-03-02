@@ -17,13 +17,14 @@ import React from 'react';
 
 import classNames from 'classnames';
 
+import NavigationHelpers from "common/NavigationHelpers"
+
 import Divider from 'material-ui/lib/divider';
 import List from 'material-ui/lib/lists/list';
 import ListItem from 'material-ui/lib/lists/list-item';
 import LeftNav from 'material-ui/lib/left-nav';
 import AppBar from 'material-ui/lib/app-bar';
 import IntlService from "views/services/intl";
-
 export default class Footer extends React.Component {
     intl = IntlService.instance;
 
@@ -47,12 +48,12 @@ export default class Footer extends React.Component {
 
                             <div className={classNames('col-xs-12', 'col-md-5', 'col-md-offset-1', 'body')}
                                  style={{paddingTop: '20px', fontWeight: 100}}>
-                                <p><a href="/content/disclaimer/">{this.intl.translate({
+                                <p><a href={NavigationHelpers.generateStaticURL("/content/disclaimer/")}>{this.intl.translate({
                                     key: 'general.disclaimer',
                                     default: 'Disclaimer',
                                     case: 'first'
                                 })}</a> | <a
-                                    href="/content/conditions/">{this.intl.translate({
+                                    href={NavigationHelpers.generateStaticURL("/content/conditions/")}>{this.intl.translate({
                                     key: 'views.components.navigation.conditions_of_use',
                                     default: 'Conditions of Use',
                                     case: 'first'

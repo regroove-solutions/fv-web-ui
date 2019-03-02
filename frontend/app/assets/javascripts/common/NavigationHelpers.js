@@ -29,11 +29,9 @@ const ContextPath = function() {
   }
 }
 
-const DefaultRouteParams = function() {
-  return {
+const DefaultRouteParams = {
     theme: "explore",
     area: "sections",
-  }
 }
 
 export default {
@@ -84,7 +82,20 @@ export default {
   navigateBack: function() {
     window.history.back()
   },
-  generateURL: function(routeId, routeParams, moreParams) {
+  // Method will append given path (/path/to/) to context path
+  generateStaticURL: function (path) {
+    let addForwardSlash = "/";
+
+    if (path.indexOf("/") === 0) {
+      addForwardSlash = "";
+    }
+
+    return ( "/" + 
+      ContextPath().join("/") + addForwardSlash + path
+    )
+  },
+  // Method will lookup a path, based on id, in routes, and generate the correct path
+  generateDynamicURL: function(routeId, routeParams, moreParams) {
     let matchedRoute = ConfRoutes.find((route) => route && route.id && route.id == routeId)
 
     let _params = Object.assign({}, DefaultRouteParams, routeParams, moreParams)
@@ -94,10 +105,12 @@ export default {
 
       matchedRoute.path.forEach((value, key) => {
         if (value instanceof paramMatch) {
+          // If dynamic path value exists in parameters - use it
           if (value.id in _params) {
             outputPath[key] = _params[value.id]
           }
         } else if (value instanceof RegExp) {
+          // When is regexp an option?
         }
       })
 
@@ -108,7 +121,7 @@ export default {
           .join("/")
       )
     } else {
-      // How do we fall back gracefully when no path is found?!
+      // TODO: How do we fall back gracefully when no path is found?
     }
   },
   // Generate a UID link from a Nuxeo document path

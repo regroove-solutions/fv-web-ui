@@ -18,6 +18,8 @@ import Immutable, { Map } from "immutable"
 
 import ConfGlobal from "conf/local.json"
 
+import NavigationHelpers from "common/NavigationHelpers"
+
 import provide from "react-redux-provide"
 import selectn from "selectn"
 
@@ -61,27 +63,27 @@ export default class AppLeftNav extends Component {
       {
         id: "home",
         label: this.intl.translate({ key: "home", default: "Home", case: "first" }),
-        path: "/",
+        path: NavigationHelpers.generateStaticURL("/"),
       },
       {
         id: "get-started",
         label: this.intl.translate({ key: "get_started", default: "Get Started", case: "first" }),
-        path: "/content/get-started/",
+        path: NavigationHelpers.generateStaticURL("/content/get-started"),
       },
       {
         id: "explore",
         label: this.intl.translate({ key: "general.explore", default: "Explore Languages", case: "first" }),
-        path: "/explore/FV/sections/Data/",
+        path: NavigationHelpers.generateStaticURL("/explore/FV/sections/Data"),
       },
       {
         id: "kids",
         label: this.intl.translate({ key: "kids", default: "Kids", case: "first" }),
-        path: "/kids",
+        path: NavigationHelpers.generateStaticURL("/kids"),
       },
       {
         id: "contribute",
         label: this.intl.translate({ key: "contribute", default: "Contribute", case: "first" }),
-        path: "/content/contribute/",
+        path: NavigationHelpers.generateStaticURL("/content/contribute"),
       },
     ])
 
@@ -188,7 +190,7 @@ export default class AppLeftNav extends Component {
           <ListItem
             className="2"
             key={selectn("uid", d)}
-            value={"/content/" + selectn("properties.fvpage:url", d) + "/"}
+            value={NavigationHelpers.generateStaticURL("/content/" + selectn("properties.fvpage:url", d))}
             primaryText={selectn("properties.dc:title", d)}
           />
         ))

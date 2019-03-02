@@ -206,6 +206,7 @@ const addBrowsePhraseBookByAlphabet = (route) => {
 
 const routes = [
   {
+    id: "home",
     path: [],
     alias: [ANY_LANGUAGE_CODE, "home"],
     page: <Pages.PageHome />,
@@ -244,6 +245,7 @@ const routes = [
     ],
   },
   {
+    id: "dynamic_content_page",
     path: ["content", new paramMatch("friendly_url", ANYTHING_BUT_SLASH)],
     page: <Pages.PageContent area="sections" />,
     title: "{$pageTitle} | " + intl.translate({ key: "pages", default: "Pages", case: "first" }),
@@ -271,6 +273,7 @@ const routes = [
     page: <Pages.PagePlay />,
   },
   {
+    id: "tasks",
     path: ["tasks"],
     title: intl.translate({ key: "tasks", default: "Tasks", case: "first" }),
     page: <Pages.PageTasks />,

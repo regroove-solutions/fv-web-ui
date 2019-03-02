@@ -45,6 +45,7 @@ import TextHeader from 'views/components/Document/Typography/text-header';
 import {BrowserView, MobileView, isBrowser, isMobile} from 'react-device-detect';
 import IntlService from "views/services/intl";
 import LocaleChecker from "../../../locale/LocaleChecker";
+import NavigationHelpers from '../../../common/NavigationHelpers';
 
 /**
  * Explore Archive page shows all the families in the archive
@@ -170,7 +171,7 @@ export default class PageHome extends Component {
                                     default: 'Get Started!',
                                     case: 'words'
                                 }) + '!'} primary={true}
-                                              onTouchTap={this._onNavigateRequest.bind(this, '/explore/FV/sections/Data/')}
+                                              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/'))}
                                               style={{marginRight: '10px', height: '50px'}}
                                               labelColor={alternateTextColor} labelStyle={{fontSize: '1.34em'}}/>
                                 <div className="hidden" style={{display: 'inline-block'}}><RaisedButton primary={true}

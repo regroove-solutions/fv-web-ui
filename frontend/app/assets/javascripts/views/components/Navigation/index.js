@@ -256,23 +256,24 @@ export default class Navigation extends Component {
 
       // Do a global search in either the workspace or section
       if (path.includes("/explore/FV/Workspaces/Data")) {
-        queryPath = "/explore/FV/Workspaces/Data"
+        queryPath = "explore/FV/Workspaces/Data"
       } else if (path.includes("/explore/FV/sections/Data")) {
-        queryPath = "/explore/FV/sections/Data"
+        queryPath = "explore/FV/sections/Data"
       } else {
-        queryPath = "/explore/FV/sections/Data"
+        queryPath = "explore/FV/sections/Data"
       }
 
       // Do a dialect search
       if (this.props.routeParams.dialect_path && this.state.searchLocal) {
-        queryPath = "/explore" + this.props.routeParams.dialect_path
+        queryPath = "explore" + this.props.routeParams.dialect_path
       }
 
       // Clear out the input field
       this.refs.navigationSearchField.setValue("")
 
       if (searchQueryParam && searchQueryParam != "") {
-        this.props.replaceWindowPath(queryPath + "/search/" + searchQueryParam)
+        let finalPath = NavigationHelpers.generateStaticURL(queryPath + "/search/" + searchQueryParam);
+        this.props.replaceWindowPath(finalPath)
       }
     }
   }
@@ -341,7 +342,7 @@ export default class Navigation extends Component {
             >
               <Link
                 className="nav_link hidden-xs"
-                href={NavigationHelpers.generateURL("page_explore_dialects", this.props.routeParams)}
+                href={NavigationHelpers.generateDynamicURL("page_explore_dialects", this.props.routeParams)}
               >
                 {this.intl.trans("choose_lang", "Choose a Language", "first")}
               </Link>
@@ -390,7 +391,7 @@ export default class Navigation extends Component {
                   </IconButton>
                 </Badge> */}
 
-                <a href="/tasks/" className="nav_link">
+                <a href={NavigationHelpers.generateStaticURL("/tasks")} className="nav_link">
                   View My Tasks
                 </a>
 
