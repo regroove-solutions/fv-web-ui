@@ -42,7 +42,7 @@
     "react": "~0.14.7",
     "react-autosuggest": "~8.0.0",
     "react-chartjs": "~0.7.3",
-    "react-datagrid": "~2.1.1",
+    "react-datagrid": "2.0.1",
     "react-device-detect": "^0.1.0",
     "react-dom": "~0.14.7",
     "react-image-gallery": "~0.6.0",

@@ -66,7 +66,7 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                 lctx = Framework.login(); // system login
                 s = CoreInstance.openCoreSession("default");
 
-                DocumentModelList registrations = s.query(String.format("Select * from Document where ecm:mixinType = 'UserRegistration'"));
+                DocumentModelList registrations = s.query("SELECT * FROM FVUserRegistration WHERE ecm:currentLifeCycleState = '"+ APPROVED +"'");
 
                 for (DocumentModel uReg : registrations)
                 {
@@ -88,17 +88,16 @@ public class FVRegistrationTimeOutWorker extends AbstractWork {
                     // REGISTRATION_DELETION_ACT -   registration should be deleted
                     //
 
-                    // if registration has lifecycle set to accepted user already provided password
-                    // and registration is just a reminder of the registration operation
-                    if( uReg.getCurrentLifeCycleState().equals(APPROVED) )
-                    {
-                        mailUtil.emailReminder(regTOType, uReg, s);
-                    }
+                    switch (regTOType) {
+                        // TODO: Add to Audit log => log.info( "Registration period expired for user" + uReg.getPropertyValue("userinfo:firstName") + " " + uReg.getPropertyValue("userinfo:lastName") + ". Registration was deleted.");
+                        case REGISTRATION_DELETION_ACT:
+                            s.removeDocument( uReg.getRef() );
+                        break;
 
-                    if( regTOType == REGISTRATION_DELETION_ACT )
-                    {
-                        log.info( "Registration period expired for user" + uReg.getPropertyValue("userinfo:firstName") + " " + uReg.getPropertyValue("userinfo:lastName") + ". Registration was deleted");
-                        s.removeDocument( uReg.getRef() );
+                        case MID_REGISTRATION_PERIOD_ACT:
+                        case REGISTRATION_EXPIRATION_ACT:
+                            mailUtil.emailReminder(regTOType, uReg, s);
+                        break;
                     }
                  }
 
