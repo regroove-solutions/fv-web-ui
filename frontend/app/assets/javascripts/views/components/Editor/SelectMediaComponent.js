@@ -44,10 +44,6 @@ const DefaultFetcherParams = {
   pageSize: 10,
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
-// const FilteredPaginatedMediaList = withFilter(
-//   withPagination(MediaList, DefaultFetcherParams.pageSize),
-//   DefaultFetcherParams
-// )
 
 const intl = IntlService.instance
 
@@ -131,11 +127,6 @@ class SelectMediaComponent extends React.Component {
   constructor(props) {
     super(props)
 
-    // Bind methods to 'this'
-    ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
-
     // If initial filter value provided
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
@@ -147,7 +138,13 @@ class SelectMediaComponent extends React.Component {
     this.state = {
       open: false,
       fetcherParams: appliedParams,
+      initialFormValue: {},
     }
+
+    // Bind methods to 'this'
+    ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
+      (method) => (this[method] = this[method].bind(this))
+    )
   }
 
   componentDidMount() {
@@ -196,6 +193,7 @@ class SelectMediaComponent extends React.Component {
     })
     const items =
       selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []
+
     const FilteredPaginatedMediaList = withFilter(
       withPagination(MediaList, DefaultFetcherParams.pageSize),
       DefaultFetcherParams
@@ -224,17 +222,20 @@ class SelectMediaComponent extends React.Component {
           </div>
 
           <FilteredPaginatedMediaList
-            style={{ overflowY: 'auto', maxHeight: '100vh' }}
+            action={this._handleSelectElement}
             cols={5}
             cellHeight={150}
+            fetcherParams={this.state.fetcherParams}
             filterOptionsKey={'ResourcesSelector'}
-            action={this._handleSelectElement}
             fetcher={this.fetchData}
             gridListTile={SharedResourceGridTileWithDialect}
-            fetcherParams={this.state.fetcherParams}
-            initialValues={{ 'dc:contributors': selectn('response.properties.username', this.props.computeLogin) }}
-            metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
+            initialFormValue={this.state.initialFormValue}
+            initialValues={{
+              'dc:contributors': selectn('response.properties.username', this.props.computeLogin),
+            }}
             items={items}
+            metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
+            style={{ overflowY: 'auto', maxHeight: '100vh' }}
           />
         </Dialog>
       </div>
@@ -245,7 +246,7 @@ class SelectMediaComponent extends React.Component {
     intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
   }
 
-  fetchData(fetcherParams) {
+  fetchData(fetcherParams, initialFormValue) {
     if (selectn('path', this.props.dialect)) {
       // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
       const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
@@ -273,6 +274,7 @@ class SelectMediaComponent extends React.Component {
 
       this.setState({
         fetcherParams: fetcherParams,
+        initialFormValue,
       })
     }
   }
