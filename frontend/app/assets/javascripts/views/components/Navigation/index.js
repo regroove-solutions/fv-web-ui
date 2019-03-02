@@ -65,6 +65,7 @@ import IntlService from "views/services/intl"
 // import FontIcon from 'material-ui/lib/font-icon'
 // import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 import ToolbarTitle from "material-ui/lib/toolbar/toolbar-title"
+import { getDialectClassname } from "views/pages/explore/dialect/helpers"
 
 @provide
 export default class Navigation extends Component {
@@ -306,14 +307,14 @@ export default class Navigation extends Component {
     const isDialect = this.props.routeParams.hasOwnProperty("dialect_path")
     // const isFrontPage = this.props.frontpage
 
-    const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
+    // const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + "/Portal"
     )
     const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
+    // const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
 
     //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
@@ -337,7 +338,7 @@ export default class Navigation extends Component {
             <div
               style={{ display: "inline-block", paddingRight: "10px", paddingTop: "15px", textTransform: "uppercase" }}
             >
-              <Link className="nav_link" href={"/explore" + this.state.pathOrId + "/Data"}>
+              <Link className="nav_link hidden-xs" href={"/explore" + this.state.pathOrId + "/Data"}>
                 {this.intl.trans("choose_lang", "Choose a Language", "first")}
               </Link>
             </div>
@@ -352,8 +353,8 @@ export default class Navigation extends Component {
             />
 
             <ToolbarSeparator
-              className={classNames({ "hidden-xs": this.props.computeLogin.isConnected })}
-              style={{ float: "none", marginLeft: 0, marginRight: 0 }}
+              className={classNames({ hidden: !this.props.computeLogin.isConnected })}
+              style={{ float: "none", marginLeft: 0, marginRight: 10 }}
             />
 
             <AuthenticationFilter
@@ -363,7 +364,7 @@ export default class Navigation extends Component {
               containerStyle={{ display: "inline" }}
             >
               <span>
-                <Badge
+                {/* <Badge
                   badgeContent={userTaskCount}
                   style={{ top: "8px", left: "-15px", padding: "0 0 12px 12px" }}
                   badgeStyle={{
@@ -383,7 +384,11 @@ export default class Navigation extends Component {
                   >
                     <NotificationsIcon />
                   </IconButton>
-                </Badge>
+                </Badge> */}
+
+                <a href="/tasks/" className="nav_link">
+                  View My Tasks
+                </a>
 
                 {/*<Badge
                   badgeContent={guideCount}
@@ -444,7 +449,7 @@ export default class Navigation extends Component {
 
             <ToolbarSeparator
               className="search-bar-seperator"
-              style={{ float: "none", marginRight: 0, marginLeft: 0 }}
+              style={{ float: "none", marginRight: 0, marginLeft: 10 }}
             />
 
             <div
@@ -459,12 +464,13 @@ export default class Navigation extends Component {
                 style={{
                   marginLeft: this.state.searchBarVisibleInMobile ? "15px" : "30px",
                   fontSize: "15px",
-                  height: "38px",
                   backgroundColor: "#fff",
                   paddingLeft: "10px",
-                  lineHeight: "1",
+                  lineHeight: "1.5",
                   width: this.state.searchBarVisibleInMobile ? "214px" : "inherit",
                   paddingRight: this.state.searchBarVisibleInMobile ? "0" : "40px",
+                  fontFamily:
+                    '"Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium, Code2001',
                 }}
                 ref="navigationSearchField"
                 hintText={this.intl.translate({ key: "general.search", default: "Search", case: "first", append: ":" })}
@@ -472,6 +478,7 @@ export default class Navigation extends Component {
                 onFocus={(e) =>
                   this.setState({ searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target })
                 }
+                className={getDialectClassname()}
                 onEnterKeyDown={this._handleNavigationSearchSubmit}
                 name="searchbox"
               />

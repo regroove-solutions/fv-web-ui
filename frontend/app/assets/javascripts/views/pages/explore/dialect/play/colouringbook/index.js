@@ -34,7 +34,7 @@ export default class ColouringBook extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "coloringbook" */ 'games/colouring-book').then(({ default: coloringbook }) => {
+                import(/* webpackChunkName: "coloringbook" */ '@fpcc/fv-game-colouring-book').then(({ default: coloringbook }) => {
                     resolve(coloringbook);
                 }).catch(reject);
             })
@@ -47,8 +47,7 @@ export default class ColouringBook extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/colouring-book/assets';
-        const defaultLibsPath = `${defaultAssetsPath}/libs`;
+        const defaultAssetsPath = '/assets/games/fv-games-colouring-book';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config
@@ -57,13 +56,6 @@ export default class ColouringBook extends Component {
          */
 
         let gameConfig = {
-
-            libs: {
-                bitmapDataFloodFill: `${defaultLibsPath}/BitmapDataFloodFill.js`,
-                blob: `${defaultLibsPath}/Blob.js`,
-                canvasToBlob: `${defaultLibsPath}/CanvasToBlob.js`,
-                fileSaver: `${defaultLibsPath}/FileSaver.js`
-            },
 
             images: {
                 preloaderLoading: `${defaultImagesPath}/loading.png`,

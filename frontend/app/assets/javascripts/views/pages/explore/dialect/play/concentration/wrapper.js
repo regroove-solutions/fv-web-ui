@@ -37,7 +37,7 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "memory" */ 'games/memory').then(({ default: memory }) => {
+                import(/* webpackChunkName: "memory" */ '@fpcc/fv-game-memory').then(({ default: memory }) => {
                     resolve(memory);
                 }).catch(reject);
             })
@@ -50,7 +50,7 @@ export default class Game extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/memory/assets';
+        const defaultAssetsPath = '/assets/games/fv-games-memory/';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config

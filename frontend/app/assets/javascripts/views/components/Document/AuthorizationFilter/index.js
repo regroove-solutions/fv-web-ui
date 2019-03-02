@@ -68,7 +68,7 @@ export default class AuthorizationFilter extends Component {
             filter,
             hideFromSections,
             routeParams,
-            ...other,
+            ...other
         } = this.props;
 
         let authErrorObj = <div className={classNames("alert", "alert-warning")} role="alert">You are not authorized to view this content.</div>;

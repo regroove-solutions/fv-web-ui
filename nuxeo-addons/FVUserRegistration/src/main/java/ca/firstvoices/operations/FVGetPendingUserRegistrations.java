@@ -1,16 +1,14 @@
 package ca.firstvoices.operations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 @Operation(id = FVGetPendingUserRegistrations.ID, category = Constants.CAT_USERS_GROUPS, label = "FVGetPendingUserRegistrations",
         description = "Get registrations for specific dialect or when input is ALL (*) for the system. \n prune action can be 'ignore', 'approved' or 'accepted'\n.")

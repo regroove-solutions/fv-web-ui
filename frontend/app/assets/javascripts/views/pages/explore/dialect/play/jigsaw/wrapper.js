@@ -37,7 +37,7 @@ export default class Game extends Component {
     loadGameScript() {
         return PromiseHelpers.makeCancelablePromise((() => {
             return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "jigsaw" */ 'games/jigsaw').then(({ default: jigsaw }) => {
+                import(/* webpackChunkName: "jigsaw" */ '@fpcc/fv-game-jigsaw').then(({ default: jigsaw }) => {
                     resolve(jigsaw);
                 }).catch(reject);
             })
@@ -67,8 +67,7 @@ export default class Game extends Component {
 
     initJigsawGame() {
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/jigsaw/assets';
-        const defaultLibsPath = `${defaultAssetsPath}/libs`;
+        const defaultAssetsPath = '/assets/games/fv-games-jigsaw';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config
@@ -77,9 +76,6 @@ export default class Game extends Component {
          */
         let gameConfig = {
 
-            libs: {
-                bitmapJigsawScript: `${defaultLibsPath}/BitmapDataJigsawCut.js`
-            },
             images: Object.assign({
                 preloaderLoading: `${defaultImagesPath}/loading.png`,
                 preloaderLogo: `${defaultImagesPath}/logo.png`,

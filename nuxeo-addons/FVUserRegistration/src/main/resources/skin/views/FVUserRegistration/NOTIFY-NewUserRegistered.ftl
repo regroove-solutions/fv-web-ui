@@ -2,7 +2,7 @@
 <body>
 Hello!<br /><br />
 ${fName} ${lName} registered for FirstVoices and selected <strong>${dialect}</strong> as their primary community portal.<br />
-In their registration they mentioned being involved in language revitalization.<br/>
+In their registration they specified that they are part of your FirstVoices language team.<br/>
 
 <#if comment != "">
     <p>They included this comment: </p>

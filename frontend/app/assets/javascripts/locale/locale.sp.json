@@ -1029,6 +1029,7 @@
     "upper_case": "May\u00fasculas",
     "value_in_field_x_cannot_be_empty": "El campo %s no puede estar vac\u00edo",
     "width_greater_than": "Ancho mayor que",
+    "file_size_greater_than": "File Size Greater Than",
     "your_a_member_of_more_than_one_dialect": "Eres miembro de m\u00e1s de un dialecto"
   },
   "operations": {

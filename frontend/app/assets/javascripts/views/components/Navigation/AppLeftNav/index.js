@@ -16,6 +16,8 @@ limitations under the License.
 import React, { Component, PropTypes } from "react"
 import Immutable, { Map } from "immutable"
 
+import ConfGlobal from "conf/local.json"
+
 import provide from "react-redux-provide"
 import selectn from "selectn"
 
@@ -34,7 +36,6 @@ export default class AppLeftNav extends Component {
   static propTypes = {
     toggleMenuAction: PropTypes.func.isRequired,
     computeToggleMenuAction: PropTypes.object.isRequired,
-    logout: PropTypes.func.isRequired,
     properties: PropTypes.object.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     computeLogin: PropTypes.object.isRequired,
@@ -161,9 +162,11 @@ export default class AppLeftNav extends Component {
   }
 
   _onNavigateRequest(event, path) {
-    if (path === "/logout/") {
-      this.props.logout()
-      this.props.pushWindowPath("/")
+    if (path === null) {
+      return
+    }
+    if (path === ConfGlobal.baseURL + "logout") {
+      window.location.href = ConfGlobal.baseURL + "logout?requestedUrl=logout-success.jsp"
     } else {
       // Request to navigate to
       this.props.pushWindowPath(path)
@@ -239,7 +242,7 @@ export default class AppLeftNav extends Component {
                   requestChange: this._onNavigateRequest,
                 }}
               >
-                <ListItem
+                {/* <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
@@ -247,11 +250,11 @@ export default class AppLeftNav extends Component {
                     default: "My Profile",
                     case: "words",
                   })}
-                />
+                /> */}
 
                 <ListItem
                   key="sign-out"
-                  value="/logout/"
+                  value={ConfGlobal.baseURL + "logout"}
                   primaryText={this.intl.translate({
                     key: "sign_out",
                     default: "Sign Out",

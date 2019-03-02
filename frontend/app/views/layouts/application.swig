@@ -9,6 +9,7 @@
     <meta name="author" content="FPCC"/>
     <meta name="google-site-verification" content="EDJl0zb8mhsF1z_YbnEcdOwKF72uLcZw_3FGbSMVGSM" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" />
 
     <style>
       .material-icons {
@@ -37,7 +38,7 @@
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
     </script>
 
-    {% if buildENV == "production" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
+    {% if buildENV == "production_DISABLE_FOR_NOW" %}<script src="https://cdn.ravenjs.com/3.25.2/raven.min.js" crossorigin="anonymous"></script>{% endif %}
 
     {% block head %}{% endblock %}
 
@@ -48,6 +49,9 @@
 
         <div class="container-fluid" id="page-wrapper">
             {% block content %}{% endblock %}
+        </div>
+        <div class="container-fluid" id="page-absolute-footer" style="background-color: #0d6c80;color: #fff;text-align:right;">
+            Version: {{uiVersion}}
         </div>
         <!-- /#page-wrapper -->
 

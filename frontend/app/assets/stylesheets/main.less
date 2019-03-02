@@ -20,8 +20,10 @@
 @primary-color: #b40000;
 @primary-header-color: #666666;
 @mobile-xs-width: 480px;
+@small-screen: 650px;
 @font-family: Arial, sans-serif;
-@font-family-aboriginal-sans: "Aboriginal Sans", @font-family;
+@font-family-aboriginal-sans: "Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium,
+  Code2001;
 
 body {
   font-family: @font-family;
@@ -31,9 +33,40 @@ body {
 }
 
 // FONTS
-.fontOskiDakelh {
+
+// OskiDakelh
+
+@font-face {
+  font-family: "OskiDakelhWeb";
+  src: url("/assets/fonts/oskidakelh/oskidakelh1.ttf");
+}
+
+@font-face {
+  font-family: "OskiDakelhWeb";
+  src: url("/assets/fonts/oskidakelh/oskidakelhbold1.ttf");
+  font-weight: bold;
+}
+
+.OskiDakelh {
   font-family: "OskiDakelh", @font-family-aboriginal-sans;
 }
+.OskiDakelhWeb {
+  font-family: "OskiDakelh", "OskiDakelhWeb", @font-family-aboriginal-sans;
+}
+
+// Noto Sans Canadian Aboriginal
+
+@font-face {
+  font-family: "NotoSansCanadianAboriginal";
+  src: url("/assets/fonts/noto/NotoSansCanadianAboriginal-Regular.ttf");
+}
+
+.NotoSansCanadianAboriginal {
+  font-family: "NotoSansCanadianAboriginal";
+}
+
+// FONTS
+
 .fontAboriginalSans {
   font-family: @font-family-aboriginal-sans;
 }
@@ -267,17 +300,17 @@ form.editableComponentForm {
   }
 }
 
-.search-results,
-.document-list-view{
-  a{
+// Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter
+.search-results {
+  a {
     text-decoration: none;
     border-bottom: 1px solid;
     padding-bottom: 1px;
   }
 }
 
-.toolbar{
-  padding:0!important;
+.toolbar {
+  padding: 0 !important;
 }
 
 .footer {
@@ -563,10 +596,8 @@ video {
 */
 .dialect-info-banner {
   width: 100%;
-  color: #ffffff;
-  background: rgba(0, 0, 0, 0.5);
   margin: 10px 0;
-  padding: 10px 20px;
+  padding: 10px 0;
   right: 0;
   font-size: 18px;
 
@@ -590,14 +621,22 @@ video {
 .dialect-navigation {
   position: absolute;
   bottom: 0;
-  background-color: #3a6880 !important;
+  width: 100%;
+  padding: 15px 35px;
 
-  button {
-    text-shadow: 0 0 2px rgba(0, 0, 0, 1);
-    color: #fff !important;
-    font-size: 18px !important;
-    font-weight: bold !important;
-    margin-right: 0 !important;
+  a {
+    color: #f7f7f7;
+    font-size: 1.85rem;
+    text-decoration: none;
+    background-color:#292929;
+    padding: 5px 30px 5px 35px;
+    border: 1px solid #909090;
+    border-radius: 5px;
+    margin: 10px 15px 0 0;
+
+    &:hover{
+      background-color: rgba(0,0,0,0.8);
+    }
   }
 }
 
@@ -733,6 +772,12 @@ video {
   }
 }
 
+@media (max-width: @small-screen) {
+  .breadcrumb{
+    display:none;
+  }
+}
+
 .admin-guide-step {
   width: 300px;
 }
@@ -811,7 +856,7 @@ audio::-webkit-media-controls-enclosure {
 
   .search-bar-seperator,
   .locale-seperator {
-    margin-right: 15px !important;
+    margin-right: 0 !important;
   }
 
   // Kids Theme
@@ -870,8 +915,12 @@ audio::-webkit-media-controls-enclosure {
   }
 
   .dialect-navigation {
-    position: relative;
+    // position: relative;
     height: inherit !important;
+
+    a {
+      display: block;
+    }
 
     > div {
       float: none !important;
@@ -928,12 +977,20 @@ audio::-webkit-media-controls-enclosure {
 @import "Button";
 @import "CardView";
 @import "Dialect";
+@import "DictionaryList";
 @import "Introduction";
 @import "kids";
 @import "Navigation";
 @import "SearchDialect";
+@import "DialectFilterList";
+@import "AlphabetListView";
+@import "DictionaryList";
+@import "DialectViewWord";
+@import "SearchResultTile";
+@import "Flashcard";
 
 @media print {
+  // Note: Flashcard print styles are in Flashcard.less
   @import "Print";
 }
 

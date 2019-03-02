@@ -21,6 +21,7 @@ import selectn from "selectn"
 import PromiseWrapper from "views/components/Document/PromiseWrapper"
 
 import ProviderHelpers from "common/ProviderHelpers"
+import StringHelpers from "common/StringHelpers"
 import NavigationHelpers from "common/NavigationHelpers"
 import DocumentListView from "views/components/Document/DocumentListView"
 
@@ -35,6 +36,7 @@ const intl = IntlService.instance
 @provide
 export default class ListViewAlt extends DataListView {
   static defaultProps = {
+    disableClickItem: true,
     DISABLED_SORT_COLS: ["state", "related_audio", "related_pictures"],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
@@ -47,6 +49,7 @@ export default class ListViewAlt extends DataListView {
   }
 
   static propTypes = {
+    disableClickItem: PropTypes.bool,
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -80,18 +83,25 @@ export default class ListViewAlt extends DataListView {
         {
           name: "title",
           title: intl.trans("title", "Title", "first"),
-          render: (v, data, cellProps) => (
-            <a
-              onClick={NavigationHelpers.disable}
-              href={NavigationHelpers.generateUIDPath(
-                currentTheme || "explore",
-                data,
-                selectn("properties.fvbook:type", data) === "story" ? "stories" : "songs"
-              )}
+          render: (v, data, cellProps) => {
+            const href = NavigationHelpers.generateUIDPath(
+              currentTheme || "explore",
+              data,
+              selectn("properties.fvbook:type", data) === "story" ? "stories" : "songs"
+            )
+            const clickHandler = props.disableClickItem
+              ? NavigationHelpers.disable
+              : (e) => {
+                  // e.preventDefault()
+                  // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+                }
+            return (<a
+              onClick={clickHandler}
+              href={href}
             >
               {v}
-            </a>
-          ),
+            </a>)
+          },
         },
         {
           name: "dc:modified",
@@ -169,9 +179,16 @@ export default class ListViewAlt extends DataListView {
     }
 
     props.fetchBooks(
-      props.routeParams.dialect_path + "/Stories & Songs",
-      `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+      props.routeParams.dialect_path,
+      currentAppliedFilter +
+        "&currentPageIndex=" +
+        (pageIndex - 1) +
+        "&pageSize=" +
+        pageSize +
+        "&sortOrder=" +
+        sortOrder +
+        "&sortBy=" +
+        sortBy
     )
   }
 
@@ -182,7 +199,7 @@ export default class ListViewAlt extends DataListView {
   render() {
     const computeEntities = Immutable.fromJS([
       {
-        id: `${this.props.routeParams.dialect_path}/Stories & Songs`,
+        id: this.props.routeParams.dialect_path,
         entity: this.props.computeBooks,
       },
     ])
@@ -197,10 +214,7 @@ export default class ListViewAlt extends DataListView {
       )
     }
 
-    const computeBooks = ProviderHelpers.getEntry(
-      this.props.computeBooks,
-      `${this.props.routeParams.dialect_path}/Stories & Songs`
-    )
+    const computeBooks = ProviderHelpers.getEntry(this.props.computeBooks, this.props.routeParams.dialect_path)
     const computeDialect2 = this.props.dialect || this.getDialect()
 
     return (

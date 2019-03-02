@@ -1027,6 +1027,7 @@
     "upper_case": "Majuscules",
     "value_in_field_x_cannot_be_empty": "La valeur du champ %s ne peut pas \u00eatre vide.",
     "width_greater_than": "Largeur sup\u00e9rieure \u00e0",
+    "file_size_greater_than": "File Size Greater Than",
     "your_a_member_of_more_than_one_dialect": "vous \u0207tes membre de plus d'un dialecte"
   },
   "operations": {

@@ -25,8 +25,8 @@ public class FVRegistrationConstants {
     // TODO - adjust registration constants here
     // TODO - all values in days
     public static final int MID_REGISTRATION_PERIOD_IN_DAYS     = 4;
-    public static final int REGISTRATION_EXPIRATION_IN_DAYS     = 7;
-    public static final int REGISTRATION_DELETION_IN_DAYS       = 8;
+    public static final int REGISTRATION_EXPIRATION_IN_DAYS     = 30;
+    public static final int REGISTRATION_DELETION_IN_DAYS       = 31;
 
 
     public static final String GROUP_SCHEMA = "group";
@@ -39,4 +39,13 @@ public class FVRegistrationConstants {
     public static final String SUB_GROUPS = "subGroups";
     public static final String PARENT_GROUPS = "parentGroups";
 
+
+    // events
+    public static final String LADMIN_APPROVED_GROUP_CHANGE = "newUserApprovedByLanguageAdministrator";
+    public static final String SYSTEM_APPROVED_GROUP_CHANGE = "newUserApprovedBySystem";
+    public static final String INVITATION_VALIDATED = "invitationValidated";
+    public static final String CHECK_REGISTRATION_TIMEOUT_EVENT_NAME = "checkRegistrationTimeout";
+    public static final String GROUP_NAME_ARG = "groupName";
+    public static final String USER_NAME_ARG = "userName";
+    public static final String GROUP_CHANGE_ARGS = "groupChangeArgs";
 }

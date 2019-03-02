@@ -57,6 +57,7 @@
     "all_dialects": "All Dialects",
     "alphabet": "alphabet",
     "alphabet_de": "Alphabet",
+    "alphabet_view": "Alphabet View",
     "already_member": "Already a Member?",
     "ancestor": "ancestor",
     "ancestry": "ancestry",
@@ -415,7 +416,7 @@
     "last_updated": "last updated",
     "learn": "learn",
     "learn_about_framework_of_lang": "Learn about the framework of our language",
-    "learn_our_lang": "Learn Our Language",
+    "learn_our_lang": "Learn our Language",
     "lesson": "Lesson",
     "lessons": "Lessons",
     "link": "link",
@@ -1027,6 +1028,7 @@
     "upper_case": "Upper Case",
     "value_in_field_x_cannot_be_empty": "Value in field %s cannot be empty",
     "width_greater_than": "Width Greater Than",
+    "file_size_greater_than": "File Size Greater Than",
     "your_a_member_of_more_than_one_dialect": "You're a member of more than one dialect"
   },
   "operations": {
@@ -1163,6 +1165,7 @@
           "dialect_unpublished_successfully": "Dialect UnPublished Successfully!",
           "edit_x_community_portal": "Edit %s Community Portal",
           "first_words": "FIRST WORDS",
+          "information": "INFORMATION",
           "fetching_community_portal": "Fetching community portal",
           "gallery": {
             "add_new_gallery_to_x": "Add New Gallery to %s",
@@ -1203,11 +1206,18 @@
               "x_book": "%s book",
               "warning": "<strong>Note:<\/strong> This new sort order will be saved once the book is saved in the 'Book' tab"
             },
+            "phrases": {
+              "browse_by_phrase_books": "Browse Phrase Books",
+              "page_title": "Phrases",
+              "page_title_phrase_book": "Browsing by Phrase Book"
+            },
             "words": {
               "add_new_word_to_x": "Add New Word to %s",
               "create_new_word": "Create New Word",
               "cultural_note": "Cultural Note",
               "cultural_notes": "Cultural Notes",
+              "browse_by_category": "Browse Categroies",
+              "page_title_category": "Browsing by Category",
               "literal_translation": "Literal Translation",
               "literal_translations": "Literal Translations",
               "no_audio_yet": "No audio is available yet",
@@ -1215,7 +1225,7 @@
               "related_phrases": "Related Phrases"
             }
           },
-          "learn_our_language": "Learn Our Language",
+          "learn_our_language": "Learn our Language",
           "links": {
             "add_new_link_to_x": "Add New Link to %s",
             "edit_x_link": "Edit %s Link"

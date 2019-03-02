@@ -5,7 +5,7 @@
   <parent>
     <groupId>ca.firstvoices</groupId>
     <artifactId>firstvoices-modules-parent</artifactId>
-    <version>1.0.22-SNAPSHOT</version>
+    <version>1.0.24</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>FirstVoicesSecurity</artifactId>
@@ -89,6 +89,10 @@
       <artifactId>nuxeo-platform-webapp-base</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-webapp-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
     </dependency>
@@ -122,6 +126,10 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-usermapper</artifactId>
       <version>7.10-HF13</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.firstvoices</groupId>
+      <artifactId>FVUserRegistration</artifactId>
     </dependency>
   </dependencies>
   <repositories>
