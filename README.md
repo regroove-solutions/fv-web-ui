@@ -26,6 +26,11 @@ nuxeoctl mp-install First-Voices
 ```
 
 ## Build
+
+There are 2 ways to get your local packages on your Nuxeo instance. One is by running mvn clean install, and installing the generated package via command line, the other is by hot-reloading. Use the latter if you intend to develop or modify the packages.
+
+*Method 1*
+
 In order to build the FirstVoices marketplace package run on branch migration-10.10:
 
 ```
@@ -37,6 +42,15 @@ To install the mp on your Nuxeo:
 ```
 nuxeoctl mp-install FirstVoices-marketplace/target/FirstVoices-marketplace-package-1.0.23-SNAPSHOT.zip
 ```
+
+*Method 2*
+
+1. Install nuxeo-cli by following the instructions here: https://doc.nuxeo.com/nxdoc/nuxeo-cli/
+
+2. In the main directory that has your parent pom.xml, run `nuxeo hotreload configure` to setup the local Nuxeo server URL and what pacakges will be hotreloaded.
+
+3. After you make a change in a method, run `mvn clean compile` and then `nuxeo hotreload` to see those changes on the server.
+
 
 ## Apps
 
