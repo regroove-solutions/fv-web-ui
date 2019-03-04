@@ -11,10 +11,6 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -22,6 +18,11 @@ import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.firstvoices.nuxeo.utils.EnricherUtils;
 
@@ -125,7 +126,9 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
                     String[] relatedAudioIds = (!featuredWordDoc.isProxy())
                             ? (String[]) featuredWordDoc.getProperty("fvcore", "related_audio")
                             : (String[]) featuredWordDoc.getProperty("fvproxy", "proxied_audio");
-
+                    if (relatedAudioIds == null) {
+                        relatedAudioIds = new String[0];
+                    }
                     ArrayNode relatedAudioJsonArray = mapper.createArrayNode();
 
                     // Retrieve additional properties from the referenced binaries, and add them to the JSON
@@ -142,6 +145,9 @@ public class PortalEnricher extends AbstractJsonEnricher<DocumentModel> {
                     String[] relatedPicturesIds = (!featuredWordDoc.isProxy())
                             ? (String[]) featuredWordDoc.getProperty("fvcore", "related_pictures")
                             : (String[]) featuredWordDoc.getProperty("fvproxy", "proxied_pictures");
+                    if (relatedPicturesIds == null) {
+                        relatedPicturesIds = new String[0];
+                    }
                     ArrayNode relatedPicturesJsonArray = mapper.createArrayNode();
 
                     // Retrieve additional properties from the referenced binaries, and add them to the JSON
