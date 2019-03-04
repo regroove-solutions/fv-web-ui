@@ -141,7 +141,7 @@ export default class AutoSuggestComponent extends Component {
                     this.props.fetchSharedPhrases('dialect_phrase_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
                     break;
                 case 'FVCategory':
-                    this.props.fetchSharedCategories(this.props.provider.name, 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.path + '/' + this.props.provider.folder, {'X-NXenrichers.document': 'breadcrumb'});
+                    this.props.fetchSharedCategories(this.props.provider.name, 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.path + '/' + this.props.provider.folder, {'enrichers.document': 'breadcrumb'});
                     break;
                 case 'FVContributor':
                     this.props.fetchSharedContributors('contributor_suggestion', 'currentPageIndex=0&pageSize=15&queryParams=' + value + '&queryParams=' + this.props.dialect.uid, {});
