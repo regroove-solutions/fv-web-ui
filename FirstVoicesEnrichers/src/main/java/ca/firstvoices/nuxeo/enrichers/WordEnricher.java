@@ -64,6 +64,9 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
 
             String[] categoryIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fv-word", "categories")
                     : (String[]) doc.getProperty("fvproxy", "proxied_categories");
+            if (categoryIds == null) {
+                categoryIds = new String[0];
+            }
             ArrayNode categoryArray = mapper.createArrayNode();
             for (String categoryId : categoryIds) {
 
