@@ -23,6 +23,7 @@ import selectn from "selectn"
 import classNames from "classnames"
 
 import ProviderHelpers from "common/ProviderHelpers"
+import NavigationHelpers from "common/NavigationHelpers"
 
 import PortalListDialects from "views/components/Browsing/portal-list-dialects"
 import PromiseWrapper from "views/components/Document/PromiseWrapper"
@@ -130,7 +131,7 @@ export default class ExploreDialects extends Component {
 
       introText2 = (
         <p>
-          <a href="/explore/FV/sections/Data">Click here to view all publicly available portals</a> or click on "Public
+          <a href={NavigationHelpers.generateStaticURL("/explore/FV/sections/Data")}>Click here to view all publicly available portals</a> or click on "Public
           View" (top right).
         </p>
       )
@@ -155,7 +156,7 @@ export default class ExploreDialects extends Component {
   _fetchData(newProps) {
     newProps.fetchPortals(
       "get_dialects",
-      { "X-NXenrichers.document": "ancestry,portal", "X-NXproperties": "" },
+      { "enrichers.document": "ancestry,portal", "properties": "" },
       { area: newProps.routeParams.area }
     )
   }

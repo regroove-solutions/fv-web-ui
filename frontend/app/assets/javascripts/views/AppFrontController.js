@@ -209,19 +209,32 @@ export default class AppFrontController extends Component {
 
         // Extract common paths from URL
         if (value.has("extractPaths") && value.get("extractPaths")) {
-          if (pathArray.length >= 7) {
-            routeParams.dialect_name = decodeURI(pathArray.slice(1, 7)[5])
-            routeParams.dialect_path = decodeURI("/" + pathArray.slice(1, 7).join("/"))
-          }
 
-          if (pathArray.length >= 6) {
-            routeParams.language_name = decodeURI(pathArray.slice(1, 6)[4])
-            routeParams.language_path = decodeURI("/" + pathArray.slice(1, 6).join("/"))
-          }
+          let domainPathLocation = pathArray.indexOf(ConfGlobal.domain);
+          let dialectPathLocation = 5;
+          let languagePathLocation = 4;
+          let languageFamilyPathLocation = 3;
 
-          if (pathArray.length >= 5) {
-            routeParams.language_family_name = decodeURI(pathArray.slice(1, 5)[3])
-            routeParams.language_family_path = decodeURI("/" + pathArray.slice(1, 5).join("/"))
+          // If domain is specified in the URL, these are Nuxeo paths that can be extracted
+          if (domainPathLocation != -1) {
+
+            // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
+            let nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
+
+            if (nuxeoPath.length >= dialectPathLocation) {
+              routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
+              routeParams.dialect_path = decodeURI("/" + nuxeoPath.slice(0, dialectPathLocation + 1).join("/"))
+            }
+
+            if (nuxeoPath.length >= languagePathLocation) {
+              routeParams.language_name = decodeURI(nuxeoPath[languagePathLocation])
+              routeParams.language_path = decodeURI("/" + nuxeoPath.slice(0, languagePathLocation + 1).join("/"))
+            }
+
+            if (nuxeoPath.length >= languageFamilyPathLocation) {
+              routeParams.language_family_name = decodeURI(nuxeoPath[languageFamilyPathLocation])
+              routeParams.language_family_path = decodeURI("/" + nuxeoPath.slice(0, languageFamilyPathLocation + 1).join("/"))
+            }      
           }
         }
 

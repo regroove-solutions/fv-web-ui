@@ -21,12 +21,29 @@ const arrayPopImmutable = function(array, sizeToPop = 1) {
   return array.slice(0, array.length - sizeToPop)
 }
 
+/**
+ * Returns the context path (as an array) from local.json, or empty array.
+ */
 const ContextPath = function() {
   if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
     return []
   } else {
     return ConfGlobal.contextPath
   }
+}
+
+/**
+ * Adds a forward slash to path if it is missing to help generate URLs
+ * @param String path 
+ */
+const AddForwardSlash = function(path){
+  let addForwardSlash = "/";
+
+  if (path.indexOf("/") === 0) {
+    addForwardSlash = "";
+  }
+
+  return addForwardSlash + path;
 }
 
 const DefaultRouteParams = {
@@ -37,14 +54,22 @@ const DefaultRouteParams = {
 export default {
   // Navigate to an absolute path, possibly URL encoding the last path part
   // If no NavigationFunc is provided, will return the path
+  // Will add context path unless already provided
   navigate: function(path, navigationFunc, encodeLastPart = false) {
+
+    // If path starts with `/`, remove it to avoid `//` being outputted
+    if(path.charAt(0) === "/")
+    {
+      path = path.substr(1);
+    }
+
     let pathArray = path.split("/")
 
     if (encodeLastPart) {
       pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1])
     }
 
-    let transformedPath = pathArray.join("/")
+    let transformedPath = "/" + ContextPath().concat(pathArray).join("/")
 
     if (!navigationFunc) {
       return transformedPath
@@ -84,14 +109,8 @@ export default {
   },
   // Method will append given path (/path/to/) to context path
   generateStaticURL: function (path) {
-    let addForwardSlash = "/";
-
-    if (path.indexOf("/") === 0) {
-      addForwardSlash = "";
-    }
-
     return ( "/" + 
-      ContextPath().join("/") + addForwardSlash + path
+      ContextPath().join("/") + AddForwardSlash(path)
     )
   },
   // Method will lookup a path, based on id, in routes, and generate the correct path

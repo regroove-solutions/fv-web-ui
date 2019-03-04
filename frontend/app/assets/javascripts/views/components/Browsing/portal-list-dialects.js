@@ -79,7 +79,7 @@ export default class PortalListDialects extends Component {
             <a
               key={tile.uid}
               className="Dialect"
-              href={href}
+              href={NavigationHelpers.generateStaticURL(href)}
               onClick={(e) => {
                 e.preventDefault()
                 NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
