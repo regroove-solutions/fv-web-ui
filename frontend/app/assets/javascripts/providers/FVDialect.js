@@ -66,7 +66,7 @@ const fetchDialect = function fetchDialect(pathOrId) {
     dispatch({ type: FV_DIALECT_FETCH_START })
 
     return DocumentOperations.getDocument(pathOrId, "FVDialect", {
-      headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+      headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
     })
       .then((response) => {
         dispatch({ type: FV_DIALECT_FETCH_SUCCESS, document: response })
@@ -78,32 +78,32 @@ const fetchDialect = function fetchDialect(pathOrId) {
 }
 
 const updateDialect2 = RESTActions.update("FV_DIALECT2", "FVDialect", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const fetchDialect2 = RESTActions.fetch("FV_DIALECT2", "FVDialect", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const queryDialect2 = RESTActions.query("FV_DIALECT2_QUERY", "FVDialect", {})
 const queryDialect2ByShortURL = RESTActions.query("FV_DIALECT2_SHORTURL", "FVDialect", {})
 const fetchDialectStats = RESTActions.execute("FV_DIALECT_STATS", "FVGenerateJsonStatistics", {})
 const fetchDialects = RESTActions.query("FV_DIALECTS", "FVDialect", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect" },
+  headers: { "enrichers.document": "ancestry,dialect" },
 })
 const fetchDialectList = RESTActions.execute("FV_DIALECT_LIST", "Document.ListDialects", {})
 const publishDialect = RESTActions.execute("FV_DIALECT2_PUBLISH", "FVPublish", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const publishDialectOnly = RESTActions.execute("FV_DIALECT2_PUBLISH", "Document.PublishToSection", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const unpublishDialect = RESTActions.execute("FV_DIALECT2_UNPUBLISH", "FVUnpublishDialect", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const enableDialect = RESTActions.execute("FV_DIALECT2_ENABLE", "FVEnableDocument", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 const disableDialect = RESTActions.execute("FV_DIALECT2_DISABLE", "FVDisableDocument", {
-  headers: { "X-NXenrichers.document": "ancestry,dialect,permissions,acls" },
+  headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
 
 const actions = {

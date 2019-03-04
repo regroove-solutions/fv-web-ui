@@ -85,7 +85,7 @@ const enableDocument = function enableDocument(pathOrId) {
 }
 
 const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', {
-  headers: { 'X-NXenrichers.document': 'ancestry,permissions,acls' },
+  headers: { 'enrichers.document': 'ancestry,permissions,acls' },
 })
 const fetchResultSet = RESTActions.execute('FV_RESULT_SET', 'Repository.ResultSetQuery')
 const fetchSourceDocument = RESTActions.execute('FV_SOURCE_DOCUMENT', 'Proxy.GetSourceDocument')

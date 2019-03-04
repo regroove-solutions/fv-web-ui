@@ -18,7 +18,7 @@ const querySearchResults = function querySearchResults(queryParam, queryPath, do
         dispatch({type: QUERY_SEARCH_RESULTS_START});
 
         return DocumentOperations.searchDocuments(queryParam, queryPath, docTypes,
-            {'X-NXproperties': 'fvcore'},
+            {'properties': 'fvcore'},
             {'currentPageIndex': page, 'pageSize': pageSize}
         ).then((response) => {
             dispatch({type: QUERY_SEARCH_RESULTS_SUCCESS, documents: response})
@@ -31,8 +31,8 @@ const querySearchResults = function querySearchResults(queryParam, queryPath, do
 
 const searchDocuments = RESTActions.query('FV_SEARCH_DOCUMENTS', 'Document', {
     headers: {
-        'X-NXenrichers.document': 'ancestry, word, phrase',
-        'X-NXproperties': 'dublincore, fvbook, fv-word, fvcore, fv-phrase, fv-portal'
+        'enrichers.document': 'ancestry, word, phrase',
+        'properties': 'dublincore, fvbook, fv-word, fvcore, fv-phrase, fv-portal'
     }
 });
 

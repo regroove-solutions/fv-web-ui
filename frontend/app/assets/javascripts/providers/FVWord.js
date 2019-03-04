@@ -49,48 +49,48 @@ const FV_WORDS_USER_CREATED_QUERY_SUCCESS = 'FV_WORDS_USER_CREATED_QUERY_SUCCESS
 const FV_WORDS_USER_CREATED_QUERY_ERROR = 'FV_WORDS_USER_CREATED_QUERY_ERROR'
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', {
   headers: {
-    'X-NXenrichers.document': 'word',
-    'X-NXproperties': 'dublincore, fv-word, fvcore, fvproxy',
+    'enrichers.document': 'word',
+    'properties': 'dublincore, fv-word, fvcore, fvproxy',
   },
 })
 const createWord = RESTActions.create('FV_WORD', 'FVWord', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const updateWord = RESTActions.update(
   'FV_WORD',
   'FVWord',
-  { headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' } },
+  { headers: { 'enrichers.document': 'ancestry,word,permissions' } },
   false
 )
 const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {})
 
 const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const askToPublishWord = RESTActions.execute('FV_WORD_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const unpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const askToUnpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const enableWord = RESTActions.execute('FV_WORD_ENABLE', 'FVEnableDocument', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const askToEnableWord = RESTActions.execute('FV_WORD_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const disableWord = RESTActions.execute('FV_WORD_DISABLE', 'FVDisableDocument', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 const askToDisableWord = RESTActions.execute('FV_WORD_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
-  headers: { 'X-NXenrichers.document': 'ancestry,word,permissions' },
+  headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
 const computeWordFetchFactory = RESTReducers.computeFetch('word')
@@ -118,7 +118,7 @@ const fetchWordsAll = (path, type) => {
   return (dispatch) => {
     dispatch({ type: FV_WORD_FETCH_ALL_START })
 
-    return DirectoryOperations.getDocuments(path, 'FVWord', '', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DirectoryOperations.getDocuments(path, 'FVWord', '', { headers: { 'enrichers.document': 'ancestry' } })
       .then((response) => {
         dispatch({ type: FV_WORD_FETCH_ALL_SUCCESS, documents: response })
       })
@@ -130,13 +130,13 @@ const fetchWordsAll = (path, type) => {
 
 const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:modified&sortOrder=DESC&pageSize=4',
-  headers: { 'X-NXProperties': 'dublincore' },
+  headers: { 'properties': 'dublincore' },
 })
 const computeRecentlyModifiedWordsQuery = RESTReducers.computeQuery('modified_words')
 
 const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:created&sortOrder=DESC&pageSize=4',
-  headers: { 'X-NXProperties': 'dublincore' },
+  headers: { 'properties': 'dublincore' },
 })
 const computeRecentlyCreatedWordsQuery = RESTReducers.computeQuery('created_words')
 
@@ -148,7 +148,7 @@ const queryUserModifiedWords = (pathOrId, user) => {
       pathOrId,
       'FVWord',
       " AND dc:lastContributor='" + user + "'&sortBy=dc:modified&sortOrder=DESC&pageSize=4",
-      { 'X-NXProperties': 'dublincore' }
+      { 'properties': 'dublincore' }
     )
       .then((response) => {
         dispatch({ type: FV_WORDS_USER_MODIFIED_QUERY_SUCCESS, document: response })
@@ -167,7 +167,7 @@ const queryUserCreatedWords = (pathOrId, user) => {
       pathOrId,
       'FVWord',
       " AND dc:lastContributor='" + user + "'&sortBy=dc:created&sortOrder=DESC&pageSize=4",
-      { 'X-NXProperties': 'dublincore' }
+      { 'properties': 'dublincore' }
     )
       .then((response) => {
         dispatch({ type: FV_WORDS_USER_CREATED_QUERY_SUCCESS, document: response })

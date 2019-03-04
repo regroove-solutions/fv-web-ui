@@ -53,7 +53,7 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
 
         dispatch({type: FV_PHRASE_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocuments(path, 'FVPhrase', '', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}})
+        return DirectoryOperations.getDocuments(path, 'FVPhrase', '', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}})
             .then((response) => {
                 dispatch({type: FV_PHRASE_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -62,20 +62,20 @@ const fetchPhrasesAll = function fetchPhrasesAll(path, type) {
     }
 };
 
-const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', {headers: {'X-NXenrichers.document': 'phrase'}});
-const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}}, false);
+const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', {headers: {'enrichers.document': 'phrase'}});
+const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const updatePhrase = RESTActions.update('FV_PHRASE', 'FVPhrase', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}}, false);
 const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {});
 
-const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const askToPublishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
-const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const askToUnpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
-const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
-const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', {headers: {'X-NXenrichers.document': 'ancestry,phrase,permissions'}});
-const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {headers: {'X-NXenrichers.document': 'ancestry,word,permissions'}});
+const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const askToPublishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {headers: {'enrichers.document': 'ancestry,word,permissions'}});
+const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const askToUnpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {headers: {'enrichers.document': 'ancestry,word,permissions'}});
+const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {headers: {'enrichers.document': 'ancestry,word,permissions'}});
+const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', {headers: {'enrichers.document': 'ancestry,phrase,permissions'}});
+const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {headers: {'enrichers.document': 'ancestry,word,permissions'}});
 
 const computePhraseFactory = RESTReducers.computeFetch('phrase');
 const computePhraseDeleteFactory = RESTReducers.computeDelete('delete_phrase');
@@ -86,13 +86,13 @@ const computePhrasesQueryFactory = RESTReducers.computeQuery('phrases');
 
 const queryModifiedPhrases = RESTActions.query('FV_MODIFIED_PHRASES', 'FVPhrase', {
     queryAppend: '&sortBy=dc:modified&sortOrder=DESC&pageSize=4',
-    headers: {'X-NXProperties': 'dublincore'}
+    headers: {'properties': 'dublincore'}
 });
 const computeRecentlyModifiedPhrasesQuery = RESTReducers.computeQuery('modified_phrases');
 
 const queryCreatedPhrases = RESTActions.query('FV_CREATED_PHRASES', 'FVPhrase', {
     queryAppend: '&sortBy=dc:created&sortOrder=DESC&pageSize=4',
-    headers: {'X-NXProperties': 'dublincore'}
+    headers: {'properties': 'dublincore'}
 });
 const computeRecentlyCreatedPhrasesQuery = RESTReducers.computeQuery('created_phrases');
 
@@ -101,7 +101,7 @@ const queryUserModifiedPhrases = function queryUserModifiedPhrases(pathOrId, use
 
         dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_START});
 
-        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&pageSize=4', {'X-NXProperties': 'dublincore'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:modified&sortOrder=DESC&pageSize=4', {'properties': 'dublincore'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_MODIFIED_QUERY_SUCCESS, document: response})
             }).catch((error) => {
@@ -115,7 +115,7 @@ const queryUserCreatedPhrases = function queryUserCreatedPhrases(pathOrId, user)
 
         dispatch({type: FV_PHRASES_USER_CREATED_QUERY_START});
 
-        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&pageSize=4', {'X-NXProperties': 'dublincore'})
+        return DirectoryOperations.getDocuments(pathOrId, 'FVPhrase', ' AND dc:lastContributor=\'' + user + '\'&sortBy=dc:created&sortOrder=DESC&pageSize=4', {'properties': 'dublincore'})
             .then((response) => {
                 dispatch({type: FV_PHRASES_USER_CREATED_QUERY_SUCCESS, document: response})
             }).catch((error) => {

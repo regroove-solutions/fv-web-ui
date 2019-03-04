@@ -3,8 +3,8 @@ import RESTReducers from './rest-reducers'
 
 import thunk from 'redux-thunk';
 
-const fetchLanguage = RESTActions.fetch('FV_LANGUAGE', 'FVLanguage', {headers: {'X-NXenrichers.document': 'ancestry'}});
-const fetchLanguages = RESTActions.query('FV_LANGUAGES', 'FVLanguage', {headers: {'X-NXenrichers.document': 'ancestry'}});
+const fetchLanguage = RESTActions.fetch('FV_LANGUAGE', 'FVLanguage', {headers: {'enrichers.document': 'ancestry'}});
+const fetchLanguages = RESTActions.query('FV_LANGUAGES', 'FVLanguage', {headers: {'enrichers.document': 'ancestry'}});
 
 const actions = {fetchLanguages, fetchLanguage};
 

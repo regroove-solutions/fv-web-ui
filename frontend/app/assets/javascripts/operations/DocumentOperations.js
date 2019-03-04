@@ -228,7 +228,7 @@ export default class DocumentOperations extends BaseOperations {
       (resolve, reject) => {
         properties.client
           .repository()
-          .create(parentDocPathOrId, docParams, {headers: {'X-NXenrichers.document': 'breadcrumb'}})
+          .create(parentDocPathOrId, docParams, {headers: {'enrichers.document': 'breadcrumb'}})
           .then((doc) => {
             resolve(doc)
           })
@@ -373,7 +373,7 @@ export default class DocumentOperations extends BaseOperations {
         }
 
         const defaultHeaders = {
-          'X-NXenrichers.document': 'parentDoc',
+          'enrichers.document': 'parentDoc',
         }
 
         params = Object.assign(defaultParams, params)
@@ -508,7 +508,7 @@ export default class DocumentOperations extends BaseOperations {
 
         properties.client.operation('Document.Query')
           .params(params)
-          .execute({headers: {'X-NXenrichers.document': 'ancestry'}})
+          .execute({headers: {'enrichers.document': 'ancestry'}})
           .then((results) => {
             // Get the ancestry information out of the contextParameters and store it at the object root
             // This is necessary for the datagrid to be able to access it

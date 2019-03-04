@@ -12,20 +12,20 @@ const FV_FETCH_PORTALS_FETCH_SUCCESS = "FV_FETCH_PORTALS_FETCH_SUCCESS"
 const FV_FETCH_PORTALS_FETCH_ERROR = "FV_FETCH_PORTALS_FETCH_ERROR"
 
 const updatePortal = RESTActions.update("FV_PORTAL", "FVPortal", {
-  headers: { "X-NXenrichers.document": "ancestry,portal" },
+  headers: { "enrichers.document": "ancestry,portal" },
 })
 const publishPortal = RESTActions.execute("FV_PORTAL_PUBLISH", "FVPublish", {
-  headers: { "X-NXenrichers.document": "ancestry,portal" },
+  headers: { "enrichers.document": "ancestry,portal" },
 })
 const unpublishPortal = RESTActions.execute("FV_PORTAL_UNPUBLISH", "FVUnpublishDialect", {
-  headers: { "X-NXenrichers.document": "ancestry,portal" },
+  headers: { "enrichers.document": "ancestry,portal" },
 })
 const fetchPortal = RESTActions.fetch("FV_PORTAL", "FVPortal", {
-  headers: { "X-NXenrichers.document": "ancestry,portal" },
+  headers: { "enrichers.document": "ancestry,portal" },
 })
 // const fetchPortals = RESTActions.query("FV_PORTALS", "FVPortal", {
 //   page_provider: "get_dialects",
-//   headers: { "X-NXenrichers.document": "ancestry,portal", "X-NXproperties": "" },
+//   headers: { "enrichers.document": "ancestry,portal", "properties": "" },
 // })
 
 const fetchPortals = function fetchPortals(page_provider, headers = {}, params = {}) {

@@ -129,7 +129,7 @@ const fetchSharedVideos = function fetchSharedVideos(page_provider, headers = {}
 
     dispatch( { type: FV_VIDEO_FETCH_START, videos: videos, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVVideo', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVVideo', { headers: { 'enrichers.document': 'ancestry' } })
     .then((response) => {
 
       videos[pathOrId] = { response: response };
@@ -158,7 +158,7 @@ const fetchVideoStats = function fetchVideoStats(dialectId) {
     }
 };
 
-const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', {headers: {'X-NXenrichers.document': 'ancestry, media'}});
+const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', {headers: {'enrichers.document': 'ancestry, media'}});
 const createVideo = RESTActions.create('FV_VIDEO', 'FVVideo');
 
 const actions = {fetchSharedVideos, createVideo, fetchVideo, updateVideo, fetchVideoStats};

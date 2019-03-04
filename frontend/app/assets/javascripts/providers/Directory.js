@@ -1,3 +1,5 @@
+import selectn from 'selectn';
+
 // Middleware
 import thunk from 'redux-thunk';
 
@@ -19,7 +21,7 @@ const fetchDirectory = function fetchDirectory(name, headers) {
         return DirectoryOperations.getDirectory(name, {headers: headers})
             .then((response) => {
 
-                let options = response.map(function (directoryEntry) {
+                let options = (selectn("entries", response) || []).map(function (directoryEntry) {
                     return {value: directoryEntry.properties.id, text: directoryEntry.properties.label};
                 });
 

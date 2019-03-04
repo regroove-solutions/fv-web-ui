@@ -1,10 +1,5 @@
 package ca.firstvoices.nuxeo.enrichers;
 
-import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
-import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
-
-import java.io.IOException;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +7,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import java.io.IOException;
+
+import static org.nuxeo.ecm.core.io.registry.reflect.Instantiations.SINGLETON;
+import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 // This example is from https://doc.nuxeo.com/display/NXDOC/Content+Enricher
 
@@ -22,8 +22,8 @@ import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 public class ParentDocEnricher extends AbstractJsonEnricher<DocumentModel> { // You could also enrich a user or anything
                                                                              // else
 
-    // The enricher will be called using X-NXenrichers.document: name (name being parentDoc here)
-    // If you were enriching a user, you would call it using X-NXenrichers.user: name (X-NXenrichers.entity-type)
+    // The enricher will be called using enrichers.document: name (name being parentDoc here)
+    // If you were enriching a user, you would call it using enrichers.user: name (enrichers.entity-type)
     public static final String NAME = "parentDoc";
 
     public ParentDocEnricher() {

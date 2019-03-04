@@ -92,7 +92,7 @@ const fetchCategoriesAll = function fetchCategoriesAll(path, type) {
 
         dispatch({type: FV_CATEGORY_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocuments(path, 'FVCategory', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
+        return DirectoryOperations.getDocuments(path, 'FVCategory', '', {headers: {'enrichers.document': 'ancestry'}})
             .then((response) => {
                 dispatch({type: FV_CATEGORY_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -123,7 +123,7 @@ const fetchCategory = function fetchCategory(pathOrId) {
 
     dispatch( { type: FV_CATEGORY_FETCH_START, categories: categories, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVCategory', { headers: { 'X-NXenrichers.document': 'ancestry, breadcrumb' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVCategory', { headers: { 'enrichers.document': 'ancestry, breadcrumb' } })
     .then((response) => {
 
       categories[pathOrId] = { response: response };
@@ -138,10 +138,10 @@ const fetchCategory = function fetchCategory(pathOrId) {
   }
 };
 */
-const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', {headers: {'X-NXenrichers.document': 'ancestry, breadcrumb'}});
-const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', {headers: {'X-NXenrichers.document': 'ancestry, parentDoc, breadcrumb, children'}});
+const fetchCategory = RESTActions.fetch('FV_CATEGORY', 'FVCategory', {headers: {'enrichers.document': 'ancestry, breadcrumb'}});
+const fetchCategories = RESTActions.query('FV_CATEGORIES', 'FVCategory', {headers: {'enrichers.document': 'ancestry, parentDoc, breadcrumb, children'}});
 const createCategory = RESTActions.create('FV_CATEGORY', 'FVCategory');
-const updateCategory = RESTActions.update('FV_CATEGORY', 'FVCategory', {headers: {'X-NXenrichers.document': 'ancestry,breadcrumb,permissions'}}, false);
+const updateCategory = RESTActions.update('FV_CATEGORY', 'FVCategory', {headers: {'enrichers.document': 'ancestry,breadcrumb,permissions'}}, false);
 const computeCategoryFactory = RESTReducers.computeFetch('category');
 const computeCategoriesFactory = RESTReducers.computeQuery('categories');
 

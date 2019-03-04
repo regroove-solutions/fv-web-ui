@@ -89,7 +89,7 @@ const updateUser = function update(user) {
 
 const selfregisterUser = RESTActions.execute("FV_USER_SELFREGISTER", "User.SelfRegistration", {})
 const userSuggestion = RESTActions.execute("FV_USER_SUGGESTION", "UserGroup.Suggestion", {
-  headers: { "X-NXenrichers.document": "" },
+  headers: { "enrichers.document": "" },
 })
 const userUpdate = RESTActions.execute("FV_USER_UPDATE", "FVUpdateUser")
 const userUpgrade = RESTActions.execute("FV_USER_UPGRADE", "FVChangeUserGroupToDialectGroup", {})

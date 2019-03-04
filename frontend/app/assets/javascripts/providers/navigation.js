@@ -50,7 +50,7 @@ const loadGuide = function loadGuide(currentPage, pageMatch) {
     
     //console.log('GUIDE MATCH = /' + currentPageArray.join('/') + '/');
     
-    return DirectoryOperations.getDocuments('/FV/Workspaces/SharedData/Guides', 'FVGuide', ' AND fvguide:pageMatch LIKE \'/' + currentPageArray.join('/') + '/\'', { 'X-NXenrichers.document': '' })
+    return DirectoryOperations.getDocuments('/FV/Workspaces/SharedData/Guides', 'FVGuide', ' AND fvguide:pageMatch LIKE \'/' + currentPageArray.join('/') + '/\'', { 'enrichers.document': '' })
     .then((response) => {
       dispatch( { type: LOAD_GUIDE_SUCCESS, document: response, page: pageMatch } )
     }).catch((error) => {
@@ -64,7 +64,7 @@ const loadNavigation = function loadNavigation() {
 
     dispatch( { type: LOAD_NAVIGATION_STARTED  } );
 
-    return DirectoryOperations.getDocuments('/FV/sections/Site/Resources', 'FVPage', ' AND fvpage:primary_navigation = 1', {headers: {'X-NXproperties' : 'dublincore,fvpage'}})
+    return DirectoryOperations.getDocuments('/FV/sections/Site/Resources', 'FVPage', ' AND fvpage:primary_navigation = 1', {headers: {'properties' : 'dublincore,fvpage'}})
     .then((response) => {
       dispatch( { type: LOAD_NAVIGATION_SUCCESS, document: response } )
     }).catch((error) => {

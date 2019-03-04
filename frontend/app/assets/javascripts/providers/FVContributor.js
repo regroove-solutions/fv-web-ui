@@ -77,7 +77,7 @@ const fetchContributorsAll = function fetchContributorsAll(path, type) {
 
         dispatch({type: FV_CONTRIBUTOR_FETCH_ALL_START});
 
-        return DirectoryOperations.getDocuments(path, 'FVContributor', '', {headers: {'X-NXenrichers.document': 'ancestry'}})
+        return DirectoryOperations.getDocuments(path, 'FVContributor', '', {headers: {'enrichers.document': 'ancestry'}})
             .then((response) => {
                 dispatch({type: FV_CONTRIBUTOR_FETCH_ALL_SUCCESS, documents: response})
             }).catch((error) => {
@@ -108,7 +108,7 @@ const fetchContributor = function fetchContributor(pathOrId) {
 
     dispatch( { type: FV_CONTRIBUTOR_FETCH_START, contributors: contributors, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVContributor', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVContributor', { headers: { 'enrichers.document': 'ancestry' } })
     .then((response) => {
 
       contributors[pathOrId] = { response: response };
@@ -124,10 +124,10 @@ const fetchContributor = function fetchContributor(pathOrId) {
 };
 */
 
-const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', {headers: {'X-NXenrichers.document': 'ancestry'}});
-const fetchContributors = RESTActions.query('FV_CONTRIBUTORS', 'FVContributor', {headers: {'X-NXenrichers.document': 'ancestry'}});
+const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', {headers: {'enrichers.document': 'ancestry'}});
+const fetchContributors = RESTActions.query('FV_CONTRIBUTORS', 'FVContributor', {headers: {'enrichers.document': 'ancestry'}});
 const createContributor = RESTActions.create('FV_CONTRIBUTOR', 'FVContributor');
-const updateContributor = RESTActions.update('FV_CONTRIBUTOR', 'FVContributor', {headers: {'X-NXenrichers.document': 'ancestry'}}, false);
+const updateContributor = RESTActions.update('FV_CONTRIBUTOR', 'FVContributor', {headers: {'enrichers.document': 'ancestry'}}, false);
 
 const computeContributorFactory = RESTReducers.computeFetch('contributor');
 const computeContributorsFactory = RESTReducers.computeQuery('contributors');

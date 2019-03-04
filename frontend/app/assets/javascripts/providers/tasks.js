@@ -7,8 +7,8 @@ import thunk from 'redux-thunk';
 // Operations
 import UserOperations from 'operations/UserOperations';
 
-const approveTask = RESTActions.execute('FV_USER_TASKS_APPROVE', 'WorkflowTask.Complete', {headers: {'X-NXenrichers.document': 'ancestry'}});
-const rejectTask = RESTActions.execute('FV_USER_TASKS_REJECT', 'WorkflowTask.Complete', {headers: {'X-NXenrichers.document': 'ancestry'}});
+const approveTask = RESTActions.execute('FV_USER_TASKS_APPROVE', 'WorkflowTask.Complete', {headers: {'enrichers.document': 'ancestry'}});
+const rejectTask = RESTActions.execute('FV_USER_TASKS_REJECT', 'WorkflowTask.Complete', {headers: {'enrichers.document': 'ancestry'}});
 
 const approveRegistration = RESTActions.execute('FV_USER_REGISTRATION_APPROVE', 'User.ApproveInvite', {});
 const rejectRegistration = RESTActions.execute('FV_USER_REGISTRATION_REJECT', 'User.RejectInvite', {});

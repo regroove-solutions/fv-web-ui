@@ -14,7 +14,7 @@ export default class BaseOperations {
   }
 
   static initClient() {
-    this.properties.client.header("X-NXproperties", "*")
+    this.properties.client.header("properties", "*")
   }
 
   static setClient(client) {

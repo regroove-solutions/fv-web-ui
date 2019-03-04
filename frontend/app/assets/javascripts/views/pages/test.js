@@ -96,11 +96,11 @@ export default class Test extends Component {
 
     var test123 = client.search({
       index: 'nuxeo',
-      'X-NXenrichers.document': 'breadcrumb', // enrichers -- not working here
+      'enrichers.document': 'breadcrumb', // enrichers -- not working here
       'enrichers.document': 'breadcrumb', // enrichers -- not working here
       'fetch.document' : 'dc:creator', // marshallers - not working here
       headers: {
-        'X-NXenrichers.document': 'breadcrumb', // enrichers -- not working here
+        'enrichers.document': 'breadcrumb', // enrichers -- not working here
         'enrichers.document': 'breadcrumb', // enrichers -- not working here
         'fetch.document' : 'dc:creator' // marshallers - not working here
       },

@@ -128,7 +128,7 @@ const fetchSharedAudios = function fetchSharedAudios(page_provider, headers = {}
 
     dispatch( { type: FV_AUDIO_FETCH_START, audios: audios, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVAudio', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVAudio', { headers: { 'enrichers.document': 'ancestry' } })
     .then((response) => {
 
       audios[pathOrId] = { response: response };
@@ -157,7 +157,7 @@ const fetchAudioStats = function fetchAudioStats(dialectId) {
     }
 };
 
-const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', {headers: {'X-NXenrichers.document': 'ancestry, media'}});
+const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', {headers: {'enrichers.document': 'ancestry, media'}});
 const createAudio = RESTActions.create('FV_AUDIO', 'FVAudio');
 
 const actions = {fetchSharedAudios, createAudio, fetchAudio, updateAudio, fetchAudioStats};

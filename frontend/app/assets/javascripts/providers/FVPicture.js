@@ -131,7 +131,7 @@ const fetchSharedPictures = function fetchSharedPictures(page_provider, headers 
 
     dispatch( { type: FV_PICTURE_FETCH_START, pictures: pictures, pathOrId: pathOrId } );
 
-    return DocumentOperations.getDocument(pathOrId, 'FVPicture', { headers: { 'X-NXenrichers.document': 'ancestry' } })
+    return DocumentOperations.getDocument(pathOrId, 'FVPicture', { headers: { 'enrichers.document': 'ancestry' } })
     .then((response) => {
 
       pictures[pathOrId] = { response: response };
@@ -160,7 +160,7 @@ const fetchPictureStats = function fetchPictureStats(dialectId) {
     }
 };
 
-const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', {headers: {'X-NXenrichers.document': 'ancestry, media'}});
+const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', {headers: {'enrichers.document': 'ancestry, media'}});
 const createPicture = RESTActions.create('FV_PICTURE', 'FVPicture');
 
 const actions = {fetchSharedPictures, createPicture, fetchPicture, updatePicture, fetchPictureStats};

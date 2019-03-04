@@ -27,10 +27,10 @@ const fetchSharedLinks = function fetchSharedLinks(page_provider, headers = {}, 
     }
 };
 
-const fetchLink = RESTActions.fetch('FV_LINK', 'FVLink', {headers: {'X-NXenrichers.document': 'ancestry, breadcrumb'}});
-const fetchLinks = RESTActions.query('FV_LINKS', 'FVLink', {headers: {'X-NXenrichers.document': 'ancestry'}});
+const fetchLink = RESTActions.fetch('FV_LINK', 'FVLink', {headers: {'enrichers.document': 'ancestry, breadcrumb'}});
+const fetchLinks = RESTActions.query('FV_LINKS', 'FVLink', {headers: {'enrichers.document': 'ancestry'}});
 const createLink = RESTActions.create('FV_LINK', 'FVLink');
-const updateLink = RESTActions.update('FV_LINK', 'FVLink', {headers: {'X-NXenrichers.document': 'ancestry,permissions'}}, false);
+const updateLink = RESTActions.update('FV_LINK', 'FVLink', {headers: {'enrichers.document': 'ancestry,permissions'}}, false);
 
 const computeLinkFactory = RESTReducers.computeFetch('link');
 const computeLinksFactory = RESTReducers.computeQuery('links');
