@@ -171,7 +171,7 @@ export default {
         break
     }
 
-    return (path = path.substring(0, path.lastIndexOf("/") + 1) + selectn("uid", item))
+    return (path = "/" + ContextPath().join("/") + path.substring(0, path.lastIndexOf("/") + 1) + selectn("uid", item))
   },
   // Disable link
   disable: function(event) {
