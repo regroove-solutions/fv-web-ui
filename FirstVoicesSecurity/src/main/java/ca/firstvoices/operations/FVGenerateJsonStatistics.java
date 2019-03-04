@@ -4,13 +4,6 @@
 
 package ca.firstvoices.operations;
 
-import java.io.Serializable;
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -19,13 +12,16 @@ import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
+import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
+
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * @author cstuart
@@ -39,10 +35,10 @@ public class FVGenerateJsonStatistics {
     protected CoreSession session;     
 
     @Param(name = "dialectPath")
-    protected String dialectPath;     
+    protected String dialectPath;
 
     @Param(name = "docTypes")
-    protected String[] docTypes;        
+    protected StringList docTypes;
     
     protected String sectionDialectId;
     
