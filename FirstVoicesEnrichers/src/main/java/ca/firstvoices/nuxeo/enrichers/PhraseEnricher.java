@@ -5,14 +5,15 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.firstvoices.nuxeo.utils.EnricherUtils;
 
@@ -53,6 +54,9 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
             // Process "fv-phrase:phrase_books" values
             String[] phraseBookIds = (!doc.isProxy()) ? (String[]) doc.getProperty("fv-phrase", "phrase_books")
                     : (String[]) doc.getProperty("fvproxy", "proxied_categories");
+            if (phraseBookIds == null) {
+                phraseBookIds = new String[0];
+            }
             ArrayNode phraseBookArray = mapper.createArrayNode();
             for (String phraseBookId : phraseBookIds) {
                 ObjectNode phraseBookObj = EnricherUtils.getDocumentIdAndTitleAndPathJsonObject(phraseBookId, session);
