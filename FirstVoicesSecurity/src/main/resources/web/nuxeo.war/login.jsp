@@ -243,7 +243,7 @@ if (selectedLanguage != null) { %>
         <% if (selectedLanguage != null) { %>
         <input type="hidden" name="language" id="language" value="<%= selectedLanguage %>" />
         <% } %>
-        <input type="hidden" name="requestedUrl" id="requestedUrl" value="${fn:escapeXml(param.requestedUrl)}" />
+        <input type="hidden" name="requestedUrl" id="requestedUrl" value="${fn:escapeXml(param.requestedUrl == "app/index.html"?"app":param.requestedUrl)}" />
         <input type="hidden" name="forceAnonymousLogin" id="true" />
         <input type="hidden" name="form_submitted_marker" id="form_submitted_marker" />
         <input class="login_button" type="submit" name="Submit"
