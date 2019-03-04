@@ -25,6 +25,16 @@ nuxeoctl mp-add First-Voices
 nuxeoctl mp-install First-Voices
 ```
 
+## Maven Authentication
+
+Since some of the Maven repositories require authentication, you need to setup a local Maven master password:
+
+1. Use the [following instructions to setup a master password](https://maven.apache.org/guides/mini/guide-encryption.html#How_to_create_a_master_password) that will be used to encrypt additional passwords. Make sure it is stored in settings-security.xml (as mentioned in the instructions)
+
+2. Copy sample.settings.xml from this repo, to your Maven home directory, and rename to settings.xml.
+
+3. Encrypt your password (instructions also in guide above), and replace the username/password values in settings.xml with the encrypted strings.
+
 ## Build
 
 There are 2 ways to get your local packages on your Nuxeo instance. One is by running mvn clean install, and installing the generated package via command line, the other is by hot-reloading. Use the latter if you intend to develop or modify the packages.
