@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import PageExploreArchive from "./explore/archive"
 import PageExploreDialects from "./explore/archive/dialects"
 import PageExploreFamily from "./explore/family"
 import PageExploreLanguage from "./explore/language"
@@ -53,6 +52,7 @@ import PageDialectLearnWordsCategories from "./explore/dialect/learn/words/categ
 import PageDialectLearnPhrasesCategories from "./explore/dialect/learn/phrases/categories"
 
 import PageTest from "./test.js"
+import PageDebugAPI from "./debug-api.js"
 import PageError from "./error.js"
 import PageHome from "./home"
 import PageContent from "./content"
@@ -90,12 +90,12 @@ import { default as PageDialectContributorsCreate } from "./explore/dialect/cont
 
 export {
   PageTest,
+  PageDebugAPI,
   PageError,
   PageIntro,
   PageHome,
   PageContent,
   PageExploreDialects,
-  PageExploreArchive,
   PageExploreFamily,
   PageExploreLanguage,
   PageExploreDialect,

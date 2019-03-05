@@ -116,8 +116,6 @@ export default class AppWrapper extends Component {
     getCurrentUser: PropTypes.func.isRequired,
     fetchDialect2: PropTypes.func.isRequired,
     computeDialect2: PropTypes.object.isRequired,
-    queryDialect2: PropTypes.func.isRequired,
-    computeDialect2Query: PropTypes.object.isRequired,
     computeLogin: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -232,56 +230,15 @@ export default class AppWrapper extends Component {
   }
 
   render() {
-    const dialectQuery = ProviderHelpers.getEntry(this.props.computeDialect2Query, "/FV/Workspaces")
-
     let controller = null
 
-    const computeDialect2 = !this.state.dialect
-      ? null
-      : ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
-    let primaryDialectSearchQuery = selectn("response.entries", dialectQuery)
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
 
     let warnings = {}
 
-    let autoPrimaryDialect
-
-    // If primary dialect was found manually
-    if (primaryDialectSearchQuery && primaryDialectSearchQuery.length > 0) {
-      autoPrimaryDialect = primaryDialectSearchQuery[0]
-
-      if (primaryDialectSearchQuery.length > 1) {
-        warnings["multiple_dialects"] = (
-          <span>
-            <strong>
-              {this.intl.translate({
-                key: "note",
-                default: "Note",
-                case: "first",
-              })}
-              :
-            </strong>{" "}
-            {this.intl.translate({
-              key: "your_a_member_of_more_than_one_dialect",
-              default: "You're a member of more than one dialect",
-              case: "first",
-            })}
-            .{" "}
-            <a href="/profile">
-              {this.intl.translate({
-                key: "configure_or_select_primary_dialect",
-                default: "Please configure a primary dialect or select a default starting page",
-                case: "first",
-              })}
-              .
-            </a>
-          </span>
-        )
-      }
-    }
-
     let preferences = getPreferences(
       this.props.computeLogin,
-      selectn("response", computeDialect2) || autoPrimaryDialect
+      selectn("response", computeDialect2)
     )
 
     return (
