@@ -66,7 +66,8 @@ export default {
       pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1])
     }
 
-    let transformedPath = ContextPath() + pathArray.join("/")
+    // Only add context path if it doesn't exist
+    let transformedPath = (path.indexOf(ContextPath()) === 0) ? pathArray.join("/") : ContextPath() + pathArray.join("/")
 
     if (!navigationFunc) {
       return transformedPath
@@ -171,7 +172,7 @@ export default {
     event.preventDefault()
   },
   getContextPath: function() {
-    return ContextPath
+    return ContextPath()
   },
   // Checks whether a page being accessed is a Workspace
   isWorkspace: function(props) {

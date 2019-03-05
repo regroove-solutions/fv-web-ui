@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react'
 import Immutable, { Set } from 'immutable'
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
+
+import NavigationHelpers from 'common/NavigationHelpers'
+
 // import StringHelpers from 'common/StringHelpers'
 // const FiltersWithToggle = withToggle()
 
@@ -162,7 +165,7 @@ export default class DialectFilterList extends Component {
       const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
       _splitWindowPath.push(urlFragment)
     }
-    const path = _splitWindowPath.join('/')
+    let path = ("/" + _splitWindowPath.join('/')).replace(NavigationHelpers.getContextPath(), "")
 
     filters.forEach((filter) => {
       this._setUidUrlPath(filter, path)
