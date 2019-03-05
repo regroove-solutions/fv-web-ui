@@ -128,12 +128,13 @@ export default class AppFrontController extends Component {
 
   _getInitialState() {
     const routes = Immutable.fromJS(ConfRoutes)
+    let contextPath = ConfGlobal.contextPath.split("/").filter((v) => v != "");
 
     return {
       routes:
-        ConfGlobal.contextPath && ConfGlobal.contextPath.length > 0
+        contextPath && contextPath.length > 0
           ? routes.map((route) =>
-              route ? route.set("path", List(ConfGlobal.contextPath).concat(route.get("path"))) : route
+              route ? route.set("path", List(contextPath).concat(route.get("path"))) : route
             )
           : routes,
       matchedPage: null,
@@ -260,7 +261,7 @@ export default class AppFrontController extends Component {
                   Redirecter,
                   {
                     redirect: () => {
-                      return props.replaceWindowPath("/" + ConfGlobal.contextPath.join("/") + value.get("target")({ props: props }))
+                      return props.replaceWindowPath(ConfGlobal.contextPath + value.get("target")({ props: props }))
                     },
                   },
                   matchedPage.get("page")

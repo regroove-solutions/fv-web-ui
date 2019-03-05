@@ -4,7 +4,7 @@
   "baseWebUIURL": "http://localhost:3001/",
   "baseURL": "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/",
   "apiURL": "https://api.firstvoices.com/v1/",
-  "contextPath": ["nuxeo", "app"],
+  "contextPath": "/nuxeo/app",
   "testData": {
     "sectionOrWorkspaces": "/FV/Workspaces/Data/",
     "languageFamilyPath": "MyTestLanguage",

@@ -26,7 +26,7 @@ const arrayPopImmutable = function(array, sizeToPop = 1) {
  */
 const ContextPath = function() {
   if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
-    return []
+    return ""
   } else {
     return ConfGlobal.contextPath
   }
@@ -69,7 +69,7 @@ export default {
       pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1])
     }
 
-    let transformedPath = "/" + ContextPath().concat(pathArray).join("/")
+    let transformedPath = ContextPath() + pathArray.join("/")
 
     if (!navigationFunc) {
       return transformedPath
@@ -109,8 +109,7 @@ export default {
   },
   // Method will append given path (/path/to/) to context path
   generateStaticURL: function (path) {
-    return ( "/" + 
-      ContextPath().join("/") + AddForwardSlash(path)
+    return ( ContextPath() + AddForwardSlash(path)
     )
   },
   // Method will lookup a path, based on id, in routes, and generate the correct path
@@ -134,10 +133,7 @@ export default {
       })
 
       return (
-        "/" +
-        ContextPath()
-          .concat(matchedRoute.path)
-          .join("/")
+        ContextPath() + matchedRoute.path.join("/")
       )
     } else {
       // TODO: How do we fall back gracefully when no path is found?
@@ -171,7 +167,7 @@ export default {
         break
     }
 
-    return (path = "/" + ContextPath().join("/") + path.substring(0, path.lastIndexOf("/") + 1) + selectn("uid", item))
+    return (path = ContextPath() + path.substring(0, path.lastIndexOf("/") + 1) + selectn("uid", item))
   },
   // Disable link
   disable: function(event) {
