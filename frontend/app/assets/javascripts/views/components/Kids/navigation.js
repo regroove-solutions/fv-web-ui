@@ -168,16 +168,15 @@ export default class Navigation extends Component {
       ""
     )
 
+    const homeURL = !this.props.routeParams.dialect_path ? NavigationHelpers.generateStaticURL("/kids") : NavigationHelpers.generateStaticURL("/kids" + this.props.routeParams.dialect_path);
+
     return (
       <div className="Navigation">
         <AppBar
           title={
             <a
               style={{ textDecoration: "none", color: "#fff" }}
-              onTouchTap={this._onNavigateRequest.bind(
-                this,
-                !this.props.routeParams.dialect_path ? "/kids" : "/kids" + this.props.routeParams.dialect_path
-              )}
+              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
             >
               {avatar}
               <span className="hidden-xs">
@@ -207,7 +206,7 @@ export default class Navigation extends Component {
             <IconButton
               onTouchTap={this._onNavigateRequest.bind(
                 this,
-                "/kids" + (this.props.routeParams.dialect_path ? this.props.routeParams.dialect_path : "")
+                homeURL
               )}
               style={{ paddingTop: 0, top: "8px", left: "-10px" }}
               iconClassName="material-icons"
@@ -218,7 +217,7 @@ export default class Navigation extends Component {
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(this, "/kids/FV/Workspaces/Data")}
+              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL("/kids/FV/Workspaces/Data"))}
               style={{ paddingTop: 0, top: "8px", left: "-10px" }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
@@ -232,7 +231,7 @@ export default class Navigation extends Component {
             <IconButton
               style={{ paddingTop: 0, paddingRight: 0, top: "8px", left: "-10px" }}
               iconClassName="material-icons"
-              onTouchTap={this._onNavigateRequest.bind(this, "/")}
+              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL("/"))}
               tooltipPosition="bottom-left"
               tooltip={intl.trans("back_to_main_site", "Back to Main Site", "words")}
             >
