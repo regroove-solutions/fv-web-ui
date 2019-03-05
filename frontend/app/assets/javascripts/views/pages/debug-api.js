@@ -238,7 +238,7 @@ export default class PageDebugAPI extends Component {
                     let args = argsFunction(method);
     
                     //let test = method.call(this, "/FV/Workspaces/", "");
-                    let output = "test";
+                    //let output = "test";
     
                     if (name == "query") {
                         DirectoryOperations.getDocuments(...mockRequestArgs).then((response) => {
