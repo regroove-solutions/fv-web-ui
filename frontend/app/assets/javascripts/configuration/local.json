@@ -5,6 +5,26 @@
   "baseURL": "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/",
   "apiURL": "https://api.firstvoices.com/v1/",
   "contextPath": ["nuxeo", "app"],
+  "testData": {
+    "sectionOrWorkspaces": "/FV/Workspaces/Data/",
+    "languageFamilyPath": "MyTestLanguage",
+    "languagePath": "MyTestLanguage/MyTestLanguage",
+    "dialectPath": "MyTestLanguage/MyTestLanguage/Test444",
+    "dialect": {
+      "fvdialect:short_url": "test_444_short_url"
+    },
+    "word": {
+      "name": "C̸ÁNET",
+      "properties": {
+        "dc:title": "test",
+        "fv:definitions": {
+          "translation" : "take it",
+          "language": "english"
+        },
+        "fv-word:part_of_speech": "noun"
+      }
+    }
+  },
   "preferences": {
     "fields": {
       "start_page": {

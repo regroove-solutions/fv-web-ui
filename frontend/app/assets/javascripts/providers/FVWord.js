@@ -1,3 +1,5 @@
+import ConfGlobal from 'conf/local.json';
+
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
 
@@ -13,22 +15,6 @@ const DISMISS_ERROR = 'DISMISS_ERROR'
 /**
  * Multiple Word Actions
  */
-const FV_WORDS_FETCH_START = 'FV_WORDS_FETCH_START'
-const FV_WORDS_FETCH_SUCCESS = 'FV_WORDS_FETCH_SUCCESS'
-const FV_WORDS_FETCH_ERROR = 'FV_WORDS_FETCH_ERROR'
-
-const FV_WORDS_UPDATE_START = 'FV_WORDS_UPDATE_START'
-const FV_WORDS_UPDATE_SUCCESS = 'FV_WORDS_UPDATE_SUCCESS'
-const FV_WORDS_UPDATE_ERROR = 'FV_WORDS_UPDATE_ERROR'
-
-const FV_WORDS_CREATE_START = 'FV_WORDS_CREATE_START'
-const FV_WORDS_CREATE_SUCCESS = 'FV_WORDS_CREATE_SUCCESS'
-const FV_WORDS_CREATE_ERROR = 'FV_WORDS_CREATE_ERROR'
-
-const FV_WORDS_DELETE_START = 'FV_WORDS_DELETE_START'
-const FV_WORDS_DELETE_SUCCESS = 'FV_WORDS_DELETE_SUCCESS'
-const FV_WORDS_DELETE_ERROR = 'FV_WORDS_DELETE_ERROR'
-
 const FV_WORDS_SHARED_FETCH_START = 'FV_WORDS_SHARED_FETCH_START'
 const FV_WORDS_SHARED_FETCH_SUCCESS = 'FV_WORDS_SHARED_FETCH_SUCCESS'
 const FV_WORDS_SHARED_FETCH_ERROR = 'FV_WORDS_SHARED_FETCH_ERROR'
@@ -49,7 +35,9 @@ const FV_WORDS_USER_CREATED_QUERY_SUCCESS = 'FV_WORDS_USER_CREATED_QUERY_SUCCESS
 const FV_WORDS_USER_CREATED_QUERY_ERROR = 'FV_WORDS_USER_CREATED_QUERY_ERROR'
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', {
-  headers: { 'enrichers.document': 'ancestry,word,permissions' },
+  headers: {
+    'enrichers.document': 'ancestry,word,permissions'
+  },
 })
 const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', {
   headers: {
@@ -352,6 +340,20 @@ const reducers = {
   },
 }
 
+const mockRequest = {
+  "createWord": {
+      // args PathOrId + type of document
+      "args": [ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.dialectPath + '/Dictionary', {
+        type: 'FVWord',
+        name: ConfGlobal.testData.word.name + Date.now().toString(),
+        properties: ConfGlobal.testData.word.properties
+    }],
+      "evaluateResults": function (response) { 
+          return response.type == "FVDialect" && response.properties != null;
+      }
+  }
+}
+
 const middleware = [thunk]
 
-export default { actions, reducers, middleware }
+export default { actions, reducers, middleware, mockRequest }

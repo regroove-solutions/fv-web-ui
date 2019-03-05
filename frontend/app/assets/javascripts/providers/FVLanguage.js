@@ -1,3 +1,5 @@
+import ConfGlobal from 'conf/local.json';
+
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
 
@@ -16,6 +18,23 @@ const reducers = {
     computeLanguage: computeLanguageFetch.computeLanguage
 };
 
+const mockRequest = {
+    "fetchLanguage": {
+        // args PathOrId + type of document
+        "args": [ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.languagePath, "FVLanguage"],
+        "evaluateResults": function (response) { 
+            return response.type == "FVLanguage" && response.properties != null;
+        }
+    },
+    "fetchLanguages": {
+        // args PathOrId + type of document
+        "args": [ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.languageFamilyPath, "FVLanguage"],
+        "evaluateResults": function (response) { 
+            return response.totalSize > 0;
+        }
+    }
+}
+
 const middleware = [thunk];
 
-export default {actions, reducers, middleware};
+export default {actions, reducers, middleware, mockRequest};

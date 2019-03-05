@@ -1,3 +1,5 @@
+import ConfGlobal from 'conf/local.json';
+
 import RESTActions from "./rest-actions"
 import RESTReducers from "./rest-reducers"
 
@@ -11,25 +13,6 @@ import DocumentOperations from "operations/DocumentOperations"
 const DISMISS_ERROR = "DISMISS_ERROR"
 
 /**
- * Multiple Dialect Actions
- */
-const FV_DIALECTS_FETCH_START = "FV_DIALECTS_FETCH_START"
-const FV_DIALECTS_FETCH_SUCCESS = "FV_DIALECTS_FETCH_SUCCESS"
-const FV_DIALECTS_FETCH_ERROR = "FV_DIALECTS_FETCH_ERROR"
-
-const FV_DIALECTS_UPDATE_START = "FV_DIALECTS_UPDATE_START"
-const FV_DIALECTS_UPDATE_SUCCESS = "FV_DIALECTS_UPDATE_SUCCESS"
-const FV_DIALECTS_UPDATE_ERROR = "FV_DIALECTS_UPDATE_ERROR"
-
-const FV_DIALECTS_CREATE_START = "FV_DIALECTS_CREATE_START"
-const FV_DIALECTS_CREATE_SUCCESS = "FV_DIALECTS_CREATE_SUCCESS"
-const FV_DIALECTS_CREATE_ERROR = "FV_DIALECTS_CREATE_ERROR"
-
-const FV_DIALECTS_DELETE_START = "FV_DIALECTS_DELETE_START"
-const FV_DIALECTS_DELETE_SUCCESS = "FV_DIALECTS_DELETE_SUCCESS"
-const FV_DIALECTS_DELETE_ERROR = "FV_DIALECTS_DELETE_ERROR"
-
-/**
  * Single Dialect Actions
  */
 
@@ -37,25 +20,9 @@ const FV_DIALECT_FETCH_START = "FV_DIALECT_FETCH_START"
 const FV_DIALECT_FETCH_SUCCESS = "FV_DIALECT_FETCH_SUCCESS"
 const FV_DIALECT_FETCH_ERROR = "FV_DIALECT_FETCH_ERROR"
 
-const FV_DIALECT_FETCH_ALL_START = "FV_DIALECT_FETCH_ALL_START"
-const FV_DIALECT_FETCH_ALL_SUCCESS = "FV_DIALECT_FETCH_ALL_SUCCESS"
-const FV_DIALECT_FETCH_ALL_ERROR = "FV_DIALECT_FETCH_ALL_ERROR"
-
 const FV_DIALECT_UPDATE_START = "FV_DIALECT_UPDATE_START"
 const FV_DIALECT_UPDATE_SUCCESS = "FV_DIALECT_UPDATE_SUCCESS"
 const FV_DIALECT_UPDATE_ERROR = "FV_DIALECT_UPDATE_ERROR"
-
-const FV_DIALECT_CREATE_START = "FV_DIALECT_CREATE_START"
-const FV_DIALECT_CREATE_SUCCESS = "FV_DIALECT_CREATE_SUCCESS"
-const FV_DIALECT_CREATE_ERROR = "FV_DIALECT_CREATE_ERROR"
-
-const FV_DIALECT_DELETE_START = "FV_DIALECT_DELETE_START"
-const FV_DIALECT_DELETE_SUCCESS = "FV_DIALECT_DELETE_SUCCESS"
-const FV_DIALECT_DELETE_ERROR = "FV_DIALECT_DELETE_ERROR"
-
-const FV_DIALECT_PUBLISH_START = "FV_DIALECT_PUBLISH_START"
-const FV_DIALECT_PUBLISH_SUCCESS = "FV_DIALECT_PUBLISH_SUCCESS"
-const FV_DIALECT_PUBLISH_ERROR = "FV_DIALECT_PUBLISH_ERROR"
 
 const FV_DIALECT_UNPUBLISH_START = "FV_DIALECT_UNPUBLISH_START"
 const FV_DIALECT_UNPUBLISH_SUCCESS = "FV_DIALECT_UNPUBLISH_SUCCESS"
@@ -83,7 +50,6 @@ const updateDialect2 = RESTActions.update("FV_DIALECT2", "FVDialect", {
 const fetchDialect2 = RESTActions.fetch("FV_DIALECT2", "FVDialect", {
   headers: { "enrichers.document": "ancestry,dialect,permissions,acls" },
 })
-const queryDialect2 = RESTActions.query("FV_DIALECT2_QUERY", "FVDialect", {})
 const queryDialect2ByShortURL = RESTActions.query("FV_DIALECT2_SHORTURL", "FVDialect", {})
 const fetchDialectStats = RESTActions.execute("FV_DIALECT_STATS", "FVGenerateJsonStatistics", {})
 const fetchDialects = RESTActions.query("FV_DIALECTS", "FVDialect", {
@@ -108,7 +74,6 @@ const disableDialect = RESTActions.execute("FV_DIALECT2_DISABLE", "FVDisableDocu
 
 const actions = {
   fetchDialect,
-  queryDialect2,
   queryDialect2ByShortURL,
   updateDialect2,
   fetchDialect2,
@@ -169,8 +134,6 @@ const reducers = {
         break
     }
   },
-
-  computeDialect2Query: computeDialectQuery.computeDialect2Query,
   computeDialect2ByShortURL: computeDialectByShortURL.computeDialect2Shorturl,
   computeDialects: computeDialectsQuery.computeDialects,
   computeDialect2: computeDialectFetch.computeDialect2,
@@ -206,6 +169,32 @@ const reducers = {
   },
 }
 
+const mockRequest = {
+  "fetchDialect2": {
+      // args PathOrId + type of document
+      "args": [ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.dialectPath, "FVDialect"],
+      "evaluateResults": function (response) { 
+          return response.type == "FVDialect" && response.properties != null;
+      }
+  },
+  "queryDialect2ByShortURL": {
+      // args PathOrId + type of document
+      "args": [
+        ConfGlobal.testData.sectionOrWorkspaces, "FVDialect", " AND (fvdialect:short_url = '" + ConfGlobal.testData.dialect["fvdialect:short_url"] + "' OR ecm:name = '') AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"],
+      "evaluateResults": function (response) { 
+          return response.totalSize > 0;
+      }
+  },
+  "fetchDialects": {
+      // args PathOrId + type of document
+      "args": [
+        ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.languagePath, "FVDialect"],
+      "evaluateResults": function (response) { 
+          return response.totalSize > 0;
+      }
+  }
+}
+
 const middleware = [thunk]
 
-export default { actions, reducers, middleware }
+export default { actions, reducers, middleware, mockRequest }

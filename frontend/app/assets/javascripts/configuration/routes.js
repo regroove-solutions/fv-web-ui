@@ -262,6 +262,10 @@ const routes = [
     page: <Pages.PageTest />,
   },
   {
+    path: ["debug", "end-points"],
+    page: <Pages.PageDebugAPI />,
+  },
+  {
     path: [new paramMatch("theme", new RegExp("kids"))],
     frontpage: true,
     title: intl.translate({ key: "kids_home", default: "Kids Home", case: "words" }),
@@ -303,7 +307,6 @@ const routes = [
   },
   {
     path: [KIDS_OR_DEFAULT],
-    page: <Pages.PageExploreArchive />,
     redirects: [
       {
         condition: () => {
