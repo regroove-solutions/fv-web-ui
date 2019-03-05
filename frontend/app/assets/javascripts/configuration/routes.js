@@ -1,6 +1,7 @@
 import selectn from "selectn"
 
 import ProviderHelpers from "common/ProviderHelpers"
+import NavigationHelpers from "common/NavigationHelpers"
 
 import IntlService from "views/services/intl"
 
@@ -68,10 +69,8 @@ const WORKSPACE_TO_SECTION_REDIRECT = {
     // Condition 1: Guest and trying to access Workspaces
     // Condition 2: User is a site member (not specific dialect) and trying to access Workspaces
     return (
-      (selectn("isConnected", params.props.computeLogin) === false &&
-        params.props.splitWindowPath[2] === "Workspaces") ||
-      (ProviderHelpers.isSiteMember(selectn("response.properties.groups", params.props.computeLogin)) &&
-        params.props.splitWindowPath[2] === "Workspaces")
+      (selectn("isConnected", params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)) ||
+      (ProviderHelpers.isSiteMember(selectn("response.properties.groups", params.props.computeLogin)) && NavigationHelpers.isWorkspace(params.props))
     )
   },
   target: (params) => {

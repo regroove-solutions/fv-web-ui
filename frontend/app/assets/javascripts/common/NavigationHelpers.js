@@ -46,6 +46,9 @@ const AddForwardSlash = function(path){
   return addForwardSlash + path;
 }
 
+/**
+ * Stores some default route parameters
+ */
 const DefaultRouteParams = {
     theme: "explore",
     area: "sections",
@@ -170,4 +173,8 @@ export default {
   getContextPath: function() {
     return ContextPath
   },
+  // Checks whether a page being accessed is a Workspace
+  isWorkspace: function(props) {
+    return (props.windowPath && props.windowPath.indexOf("/Workspaces/") != -1);
+  }
 }

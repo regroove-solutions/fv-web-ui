@@ -261,7 +261,7 @@ export default class AppFrontController extends Component {
                   Redirecter,
                   {
                     redirect: () => {
-                      return props.replaceWindowPath(ConfGlobal.contextPath + value.get("target")({ props: props }))
+                      return props.replaceWindowPath(value.get("target")({ props: props }))
                     },
                   },
                   matchedPage.get("page")

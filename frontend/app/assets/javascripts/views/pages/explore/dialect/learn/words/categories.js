@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import CategoryList from 'views/components/Browsing/category-list';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -101,7 +102,7 @@ export default class Categories extends Component {
         if (this.props.action) {
             this.props.action(category);
         } else {
-            this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/words/categories/' + category.uid);
+            NavigationHelpers.navigate('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/words/categories/' + category.uid, this.props.pushWindowPath, true);
         }
     }
 

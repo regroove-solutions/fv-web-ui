@@ -23,6 +23,7 @@ import classNames from 'classnames';
 import RaisedButton from 'material-ui/lib/raised-button';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 import IntlService from "views/services/intl";
 
 const intl = IntlService.instance;
@@ -47,13 +48,6 @@ export default class PageKidsHome extends Component {
         this.state = {
             pathOrId: null
         };
-
-        // Bind methods to 'this'
-        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
-    }
-
-    _onNavigateRequest(path) {
-        this.props.pushWindowPath('/kids' + path);
     }
 
     render() {
@@ -79,7 +73,10 @@ export default class PageKidsHome extends Component {
                 <span style={{width: '45%'}}>
                   <RaisedButton fullWidth={true}
                                 label={intl.trans('views.pages.kids.enter', 'Enter Kids Area', 'words')}
-                                onTouchTap={this._onNavigateRequest.bind(this, '/FV/Workspaces/Data/')}
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    NavigationHelpers.navigate('/kids/FV/Workspaces/Data/', this.props.pushWindowPath, false)
+                                  }}
                                 style={{marginTop: '20vh'}}/>
                 </span>
                     </div>
