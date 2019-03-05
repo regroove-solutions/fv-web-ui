@@ -100,7 +100,7 @@ export default class AppLeftNav extends Component {
       const nestedItems = [
         <ListItem
           key="Workspaces"
-          value="/explore/FV/Workspaces/Data/"
+          value={NavigationHelpers.generateStaticURL("/explore/FV/Workspaces/Data/")}
           secondaryText={
             <p>
               {this.intl.translate({
@@ -119,7 +119,7 @@ export default class AppLeftNav extends Component {
 
         <ListItem
           key="sections"
-          value="/explore/FV/sections/Data/"
+          value={NavigationHelpers.generateStaticURL("/explore/FV/sections/Data/")}
           secondaryText={
             <p>
               {this.intl.translate({
