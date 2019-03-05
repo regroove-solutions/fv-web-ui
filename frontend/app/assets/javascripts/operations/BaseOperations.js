@@ -14,7 +14,7 @@ export default class BaseOperations {
   }
 
   static initClient() {
-    this.properties.client.header("properties", "*")
+    this.properties.client.schemas("*");
   }
 
   static setClient(client) {
