@@ -325,6 +325,8 @@ export default class Navigation extends Component {
       selectn("response.contextParameters.ancestry.dialect.dc:title", computePortal) ||
       selectn("response.properties.dc:title", computeDialect)
 
+    const dialectLink = "/explore" + this.props.routeParams.dialect_path;
+
     return (
       <div>
         <AppBar
@@ -673,8 +675,12 @@ export default class Navigation extends Component {
           <div className="row" style={{ backgroundColor: themePalette.primary2Color, minHeight: "64px", margin: "0" }}>
             <h2 className="NavigationDialectHeader">
               <a
+                href={NavigationHelpers.generateStaticURL(dialectLink)}
                 className="NavigationDialectLink"
-                onTouchTap={this._onNavigateRequest.bind(this, "/explore" + this.props.routeParams.dialect_path)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  NavigationHelpers.navigate(dialectLink, this.props.pushWindowPath, false)
+                }}
               >
                 <Avatar src={UIHelpers.getThumbnail(portalLogo, "Thumbnail")} size={50} />
                 <span className="NavigationDialectName fontAboriginalSans">
