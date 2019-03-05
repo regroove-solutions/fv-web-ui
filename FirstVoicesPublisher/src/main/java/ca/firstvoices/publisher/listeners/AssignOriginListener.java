@@ -16,7 +16,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * Listener assigning origin document (Word/Phrase) to a media item (Photos, Videos, Audio) created within that word.
- * 
+ *
  * @author dyona
  */
 public class AssignOriginListener implements EventListener {
@@ -26,6 +26,9 @@ public class AssignOriginListener implements EventListener {
     private void saveOrigin(DocumentModel doc, String[] relatedMedia) {
         CoreSession session = doc.getCoreSession();
 
+        if (relatedMedia == null) {
+            return;
+        }
         for (String relatedMediaItem : relatedMedia) {
             DocumentModel mediaDoc = session.getDocument(new IdRef(relatedMediaItem));
             String currentOrigin = (String) mediaDoc.getPropertyValue("fvm:origin");
