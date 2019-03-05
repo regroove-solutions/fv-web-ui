@@ -57,12 +57,6 @@ export default {
   // Will add context path unless already provided
   navigate: function(path, navigationFunc, encodeLastPart = false) {
 
-    // If path starts with `/`, remove it to avoid `//` being outputted
-    if(path.charAt(0) === "/")
-    {
-      path = path.substr(1);
-    }
-
     let pathArray = path.split("/")
 
     if (encodeLastPart) {
@@ -133,7 +127,7 @@ export default {
       })
 
       return (
-        ContextPath() + matchedRoute.path.join("/")
+        ContextPath() + "/" + matchedRoute.path.join("/")
       )
     } else {
       // TODO: How do we fall back gracefully when no path is found?
