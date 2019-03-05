@@ -45,6 +45,16 @@ const reducers = {
     computePageDisableWorkflow: computePageDisableOperationFactory.computePageDisableWorkflow
 };
 
+const mockRequest = {
+    "queryPage": {
+        // args PathOrId + type of document
+        "args": ['/FV/sections/Site/Resources/', 'FVPage', ' AND fvpage:url LIKE \'/home/\'&sortOrder=ASC&sortBy=dc:title'],
+        "evaluateResults": function (response) { 
+            return response.entries.length === 1 && response.entries[0].properties != null;
+        }
+    }
+  }
+  
 const middleware = [thunk];
 
-export default {actions, reducers, middleware};
+export default {actions, reducers, middleware, mockRequest};
