@@ -41,7 +41,7 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
         final String docId = doc.getId();
         ObjectMapper mapper = new ObjectMapper();
 
-        CoreInstance.doPrivileged(doc.getCoreSession(), session -> {
+        return CoreInstance.doPrivileged(doc.getCoreSession(), session -> {
             // JSON object to be returned
             ObjectNode jsonObj = mapper.createObjectNode();
             /*
@@ -93,7 +93,6 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
             }
             return jsonObj;
         });
-        return mapper.createObjectNode();
     }
 
     protected DocumentModel resolveTargetDoc(String docIdRef, boolean isProxy, CoreSession session) {
