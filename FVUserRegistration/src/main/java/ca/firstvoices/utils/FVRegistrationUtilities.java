@@ -47,6 +47,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationComponent;
 import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
@@ -349,6 +350,7 @@ public class FVRegistrationUtilities {
         info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
         info.put("fvuserinfo:comment", userInfo.getComment());
         info.put("fvuserinfo:language_team_member", userInfo.getLanguageTeamMember());
+        info.put(UserInvitationComponent.PARAM_ORIGINATING_USER, session.getPrincipal().getName());
 
         // Add status of dialect for email
         info.put("dialect_current_status", dialect.getCurrentLifeCycleState());
