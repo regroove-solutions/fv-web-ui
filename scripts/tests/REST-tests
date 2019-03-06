@@ -1,0 +1,16 @@
+
+# Requires Visual Studio Code REST Client add-on
+
+# Get WORKSPACE dialects via page provider
+
+GET {{host}}/nuxeo/api/v1/query/get_dialects?pageProvider=get_dialects&queryParams=Workspaces HTTP/1.1
+enrichers.document: ancestry,portal
+Authorization: Basic _____ _____
+
+# User quick regsitration
+
+POST {{host}}/nuxeo/api/v1/automation/User.SelfRegistration
+Content-Type: application/json
+
+{"params":{},"context":{},"input":{"entity-type":"document","type":"FVUserRegistration","id":"dy2288@gmail.com","properties":{"userinfo:firstName":"DY-1","userinfo:lastName":"DY-1","userinfo:email":"dy2288@gmail.com","fvuserinfo:requestedSpace":"13e3f46d-72aa-4afc-8687-207926f644e5","fvuserinfo:role":"teacher","fvuserinfo:ageGroup":"6-10","fvuserinfo:comment":"just testing...","userinfo:groups":[]}}}
+Authorization: Basic _____ _____
