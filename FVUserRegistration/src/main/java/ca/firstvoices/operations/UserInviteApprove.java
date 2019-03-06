@@ -18,13 +18,12 @@
  */
 package ca.firstvoices.operations;
 
-import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-import org.nuxeo.ecm.core.api.security.ACE;
-import org.nuxeo.ecm.core.api.security.ACL;
-import org.nuxeo.ecm.core.api.security.ACP;
-import org.nuxeo.ecm.core.api.security.SecurityConstants;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -32,16 +31,10 @@ import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
-
-import ca.firstvoices.utils.CustomSecurityConstants;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 //TODO Do we need it?
 
@@ -87,7 +80,7 @@ public class UserInviteApprove {
 
         // Add current user to contributors
         String[] contributors = (String[]) registrationDoc.getProperty("dublincore", "contributors");
-        NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
+        NuxeoPrincipal currentUser = session.getPrincipal();
 
         String[] newContributors = Arrays.copyOf(contributors, contributors.length + 1);
         newContributors[newContributors.length - 1] = currentUser.getName();
@@ -115,95 +108,4 @@ public class UserInviteApprove {
         registrationService.acceptRegistrationRequest(registrationId, additionalInfo);
     }
 
-    protected static class UnrestrictedSourceDocumentResolver extends UnrestrictedSessionRunner {
-
-        private final String docid;
-
-        public DocumentModel dialect;
-
-        protected UnrestrictedSourceDocumentResolver(CoreSession session, String docId) {
-            super(session);
-            docid = docId;
-        }
-
-        @Override
-        public void run() {
-            // Get requested space (dialect)
-            dialect = session.getDocument(new IdRef(docid));
-
-            if (dialect.isProxy()) {
-                dialect = session.getSourceDocument(dialect.getRef());
-
-                if (dialect.isVersion()) {
-                    dialect = session.getSourceDocument(dialect.getRef());
-                }
-            }
-        }
-
-    }
-
-    protected static class UnrestrictedGroupResolver extends UnrestrictedSessionRunner {
-
-        private DocumentModel dialect;
-
-        public ArrayList<String> member_groups = new ArrayList<String>();
-
-        public String language_admin_group;
-
-        protected UnrestrictedGroupResolver(CoreSession session, DocumentModel dialect) {
-            super(session);
-            this.dialect = dialect;
-        }
-
-        @Override
-        public void run() {
-
-            // Add user to relevant group
-            for (ACE ace : dialect.getACP().getACL(ACL.LOCAL_ACL).getACEs()) {
-
-                String username = ace.getUsername();
-
-                if (SecurityConstants.READ.equals(ace.getPermission())) {
-                    if (username.contains("_members") && ace.isGranted()) {
-                        member_groups.add(username);
-                        break;
-                    }
-                }
-
-                if (SecurityConstants.EVERYTHING.equals(ace.getPermission()) && ace.isGranted()) {
-                    if (username.contains(CustomSecurityConstants.LANGUAGE_ADMINS_GROUP)) {
-                        language_admin_group = username;
-                        break;
-                    }
-                }
-            }
-        }
-
-    }
-
-    protected static class UnrestrictedRequestPermissionResolver extends UnrestrictedSessionRunner {
-
-        private String registrationDocId;
-
-        private String language_admin_group;
-
-        protected UnrestrictedRequestPermissionResolver(CoreSession session, String registrationDocId,
-                String language_admin_group) {
-            super(session);
-            this.registrationDocId = registrationDocId;
-            this.language_admin_group = language_admin_group;
-        }
-
-        @Override
-        public void run() {
-            DocumentModel registrationDoc = session.getDocument(new IdRef(registrationDocId));
-
-            ACE registrationACE = new ACE(language_admin_group, "Everything");
-
-            ACP registrationDocACP = registrationDoc.getACP();
-            registrationDocACP.addACE("local", registrationACE);
-            registrationDoc.setACP(registrationDocACP, false);
-        }
-
-    }
 }

@@ -4,14 +4,41 @@
  */
 package ca.firstvoices.utils;
 
-import ca.firstvoices.user.FVUserRegistrationInfo;
+import static ca.firstvoices.utils.FVRegistrationConstants.EMAIL_EXISTS_ERROR;
+import static ca.firstvoices.utils.FVRegistrationConstants.GROUP_NAME_ARG;
+import static ca.firstvoices.utils.FVRegistrationConstants.LOGIN_AND_EMAIL_EXIST_ERROR;
+import static ca.firstvoices.utils.FVRegistrationConstants.LOGIN_EXISTS_ERROR;
+import static ca.firstvoices.utils.FVRegistrationConstants.NEW_USER_SELF_REGISTRATION_ACT;
+import static ca.firstvoices.utils.FVRegistrationConstants.REGISTRATION_CAN_PROCEED;
+import static ca.firstvoices.utils.FVRegistrationConstants.REGISTRATION_EXISTS_ERROR;
+import static ca.firstvoices.utils.FVRegistrationConstants.SYSTEM_APPROVED_GROUP_CHANGE;
+import static ca.firstvoices.utils.FVRegistrationConstants.USER_NAME_ARG;
+
+import java.io.Serializable;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.security.auth.login.LoginContext;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
-import org.nuxeo.ecm.core.api.*;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoGroup;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
@@ -20,18 +47,13 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventProducer;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.invite.UserRegistrationException;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 import org.nuxeo.runtime.api.Framework;
 
-import javax.security.auth.login.LoginContext;
-import java.io.Serializable;
-import java.time.Year;
-import java.util.*;
-
-import static ca.firstvoices.utils.FVRegistrationConstants.*;
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
+import ca.firstvoices.user.FVUserRegistrationInfo;
 
 public class FVRegistrationUtilities {
     private static final Log log = LogFactory.getLog(FVRegistrationUtilities.class);
@@ -118,8 +140,7 @@ public class FVRegistrationUtilities {
      * @param s
      * @param uM
      */
-    public void registrationCommonSetup(DocumentModel registrationRequest, CoreSession s, UserManager uM )
-    {
+    public void registrationCommonSetup(DocumentModel registrationRequest, CoreSession s, UserManager uM) {
         session = s;
         userManager = uM;
 
@@ -133,7 +154,7 @@ public class FVRegistrationUtilities {
         UnrestrictedSourceDocumentResolver usdr = new UnrestrictedSourceDocumentResolver(session, requestedSpaceId);
         usdr.runUnrestricted();
 
-        // Source document
+        // Source document, should be detached if we read properties on it at this point
         dialect = usdr.dialect;
 
         if (dialect.getCurrentLifeCycleState().equals("disabled")) {
@@ -172,10 +193,11 @@ public class FVRegistrationUtilities {
         userInfo.setEmail((String) registrationRequest.getPropertyValue("userinfo:email"));
         userInfo.setFirstName((String) registrationRequest.getPropertyValue("userinfo:firstName"));
         userInfo.setLastName((String) registrationRequest.getPropertyValue("userinfo:lastName"));
-        userInfo.setComment( (String) registrationRequest.getPropertyValue("fvuserinfo:comment") );
-        userInfo.setLanguageTeamMember( (Boolean) registrationRequest.getPropertyValue("fvuserinfo:language_team_member") );
+        userInfo.setComment((String) registrationRequest.getPropertyValue("fvuserinfo:comment"));
+        userInfo.setLanguageTeamMember(
+                (Boolean) registrationRequest.getPropertyValue("fvuserinfo:language_team_member"));
 
-        userInfo.setLogin( userInfo.getEmail() );
+        userInfo.setLogin(userInfo.getEmail());
 
         try {
             FVUserPreferencesSetup up = new FVUserPreferencesSetup();
@@ -228,9 +250,9 @@ public class FVRegistrationUtilities {
         options.put("lName", (String) ureg.getPropertyValue("userinfo:lastName"));
         options.put("email", (String) ureg.getPropertyValue("userinfo:email"));
         options.put("comment", (String) ureg.getPropertyValue("fvuserinfo:comment"));
-        options.put("dialectId", dialect.getId() );
-        options.put("dialect", dialect.getTitle() );
-        options.put("dialectState", dialect.getCurrentLifeCycleState() );
+        options.put("dialectId", dialect.getId());
+        options.put("dialect", dialect.getTitle());
+        options.put("dialectState", dialect.getCurrentLifeCycleState());
 
         String adminTO = mailUtil.getLanguageAdministratorEmail(dialect);
         mailUtil.registrationAdminMailSender(NEW_USER_SELF_REGISTRATION_ACT, options, adminTO);
@@ -283,13 +305,9 @@ public class FVRegistrationUtilities {
      * @param autoAccept
      * @return
      */
-    public String registrationCommonFinish(UserRegistrationService  registrationService,
-                                           DocumentModel            registrationRequest,
-                                           Map<String, Serializable> info,
-                                           String                   comment,
-                                           ValidationMethod         validationMethod,
-                                           boolean                  autoAccept ) throws RestOperationException, Exception
-    {
+    public String registrationCommonFinish(UserRegistrationService registrationService,
+            DocumentModel registrationRequest, Map<String, Serializable> info, String comment,
+            ValidationMethod validationMethod, boolean autoAccept) throws RestOperationException, Exception {
         LoginContext lctx;
         CoreSession s = null;
 
@@ -330,10 +348,10 @@ public class FVRegistrationUtilities {
         info.put("fvuserinfo:preferences", userInfo.getPreferences());
         info.put("fvuserinfo:requestedSpace", userInfo.getRequestedSpace());
         info.put("fvuserinfo:comment", userInfo.getComment());
-        info.put("fvuserinfo:language_team_member", userInfo.getLanguageTeamMember() );
+        info.put("fvuserinfo:language_team_member", userInfo.getLanguageTeamMember());
 
         // Add status of dialect for email
-        info.put("dialect_current_status", dialect.getCurrentLifeCycleState() );
+        info.put("dialect_current_status", dialect.getCurrentLifeCycleState());
 
         // Set permissions on registration document
         String registrationId = null;
@@ -370,6 +388,7 @@ public class FVRegistrationUtilities {
             if (dialect.isProxy()) {
                 dialect = session.getSourceDocument(dialect.getRef());
             }
+            dialect.detach(true);
         }
     }
 
@@ -498,12 +517,11 @@ public class FVRegistrationUtilities {
 
         LoginContext lctx;
 
-        try
-        {
+        try {
             lctx = Framework.login();
             session = CoreInstance.openCoreSession(null);
 
-            dialect = session.getDocument( new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
+            dialect = session.getDocument(new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
             String dialectLifeCycleState = dialect.getCurrentLifeCycleState();
 
             String username = (String) ureg.getPropertyValue("userinfo:login");
@@ -514,7 +532,7 @@ public class FVRegistrationUtilities {
                 Calendar cEventDate = Calendar.getInstance();
                 cEventDate.setTime(new Date(System.currentTimeMillis()));
 
-                //String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
+                // String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration( ureg );
 
                 // If user requested access to a private (i.e. Enabled) dialect; do not set user preferences
                 // so that the user is not redirected to the private dialect and gets a 404.
@@ -534,22 +552,18 @@ public class FVRegistrationUtilities {
                 log.warn("Exception while updating user preferences " + e);
             }
 
-
             // check if dialect is private ie. Enabled
             // In this case we always notify Language Administrator regardless of the user's role
-            if( dialectLifeCycleState.equals("Enabled") )
-            {
+            if (dialectLifeCycleState.equals("Enabled")) {
                 // user membership does not change until action of the language admin
                 // until than user belongs only to global 'members' group
-                notificationEmailsAndReminderTasks( dialect, ureg );
-            }
-            else if( dialectLifeCycleState.equals("Published") )
-            {
+                notificationEmailsAndReminderTasks(dialect, ureg);
+            } else if (dialectLifeCycleState.equals("Published")) {
                 // send system authorized group change event
                 String newUserGroup = "members";
-                EventProducer eventProducer = Framework.getService( EventProducer.class );
-                DocumentEventContext group_ctx =  new DocumentEventContext( session, session.getPrincipal(), dialect );
-                group_ctx.setProperty(USER_NAME_ARG, username );
+                EventProducer eventProducer = Framework.getService(EventProducer.class);
+                DocumentEventContext group_ctx = new DocumentEventContext(session, session.getPrincipal(), dialect);
+                group_ctx.setProperty(USER_NAME_ARG, username);
                 group_ctx.setProperty(GROUP_NAME_ARG, newUserGroup);
                 Event event;
                 event = group_ctx.newEvent(SYSTEM_APPROVED_GROUP_CHANGE);
@@ -557,7 +571,7 @@ public class FVRegistrationUtilities {
 
                 // Only email language admins if user stated they are part of an FV language team
                 if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
-                    notificationEmailsAndReminderTasks( dialect, ureg );
+                    notificationEmailsAndReminderTasks(dialect, ureg);
                 }
             }
 
