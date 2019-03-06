@@ -1,7 +1,9 @@
 package ca.firstvoices.nuxeo.operations;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -18,10 +20,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 @Operation(id = ListDialects.ID, category = Constants.CAT_DOCUMENT, label = "List dialects in FV tree", description = "Returns a list of dialects based on selection criteria")
 public class ListDialects {
@@ -87,18 +85,16 @@ public class ListDialects {
         UnrestrictedDialectQuery dialectListQueryRunner = new UnrestrictedDialectQuery(session, query);
         dialectListQueryRunner.runUnrestricted();
 
-        return Blobs.createJSONBlobFromValue(dialectListQueryRunner.resultSetArray);
+        return Blobs.createJSONBlobFromValue(dialectListQueryRunner.results);
     }
 
     protected static class UnrestrictedDialectQuery extends UnrestrictedSessionRunner {
 
         private String query;
 
-        private ArrayNode resultSetArray;
-
-        protected ObjectMapper mapper;
-
         private IterableQueryResult result;
+
+        protected List<Map<String, Serializable>> results;
 
         protected UnrestrictedDialectQuery(CoreSession session, String query) {
             super(session);
@@ -108,20 +104,14 @@ public class ListDialects {
         @Override
         public void run() {
             try {
+                results = new ArrayList<>();
                 result = session.queryAndFetch(query, "NXQL");
                 Iterator<Map<String, Serializable>> it = result.iterator();
 
-                mapper = new ObjectMapper();
-                resultSetArray = mapper.createArrayNode();
-
                 while (it.hasNext()) {
                     Map<String, Serializable> item = it.next();
-                    // JSONObject object = new JSONObject();
-                    // object.accumulateAll(item);
-                    resultSetArray.add(mapper.writeValueAsString(item));
+                    results.add(item);
                 }
-            } catch (JsonProcessingException e) {
-                log.error(e);
             } finally {
                 result.close();
             }
