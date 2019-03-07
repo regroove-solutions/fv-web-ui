@@ -4,7 +4,13 @@
  */
 package ca.firstvoices.operations;
 
-import ca.firstvoices.utils.FVRegistrationUtilities;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.OperationContext;
@@ -17,15 +23,11 @@ import org.nuxeo.ecm.automation.server.jaxrs.RestOperationException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
+import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
 import org.nuxeo.ecm.user.registration.UserRegistrationService;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
+import ca.firstvoices.utils.FVRegistrationUtilities;
 
 @Operation(id = FVQuickUserRegistration.ID, category = Constants.CAT_USERS_GROUPS, label = "Guest self registration", description = "Starts guest registration.")
 public class FVQuickUserRegistration {
@@ -97,12 +99,8 @@ public class FVQuickUserRegistration {
 
             utilCommon.QuickUserRegistrationCondition(registrationRequest, session);
 
-            String registrationId = utilCommon.registrationCommonFinish(registrationService,
-                    registrationRequest,
-                    info,
-                    null,
-                    validationMethod,
-                    true); // we always autoAccept quick registration
+            String registrationId = utilCommon.registrationCommonFinish(registrationService, registrationRequest, info,
+                    null, validationMethod, true, session); // we always autoAccept quick registration
         } catch (RestOperationException e) {
             // Pass validation errors back to UI
             if (e.getStatus() == 400) {
