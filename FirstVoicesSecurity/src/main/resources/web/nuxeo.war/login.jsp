@@ -263,9 +263,9 @@ if (selectedLanguage != null) { %>
         </div>
         <%}%>
       </form>
-      <div style="text-align: center;padding: 20px 0 0 25px;margin-top: 20px;border-top:1px solid gray;">
-                <a href="<%=NUXEO_URL%>register/" class="buttonLink">New to FirstVoices? Register here!</a>
-                <a href="<%=NUXEO_URL%>forgotpassword/" class="buttonLink">Forgot your password?</a>
+     <div style="text-align: center;padding: 20px 0 0 25px;margin-top: 20px;border-top:1px solid gray;">
+        <a href="<%=NUXEO_URL%>app/register?requestedUrl=app/register" class="buttonLink">New to FirstVoices? Register here!</a>
+        <a href="<%=NUXEO_URL%>app/forgotpassword?requestedUrl=app/forgotpassword" class="buttonLink">Forgot your password?</a>
       </div>
     </div>
 </div>
