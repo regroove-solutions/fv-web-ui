@@ -33,6 +33,7 @@ import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
@@ -428,8 +429,6 @@ public class FVRegistrationUtilities {
 
     protected static class UnrestrictedRequestPermissionResolver extends UnrestrictedSessionRunner {
 
-        private final CoreSession session;
-
         private String registrationDocId;
 
         private String language_admin_group;
@@ -437,7 +436,6 @@ public class FVRegistrationUtilities {
         protected UnrestrictedRequestPermissionResolver(CoreSession session, String registrationDocId,
                 String language_admin_group) {
             super(session);
-            this.session = session;
             this.registrationDocId = registrationDocId;
             this.language_admin_group = language_admin_group;
         }
@@ -508,11 +506,12 @@ public class FVRegistrationUtilities {
     /**
      * @param ureg
      */
-    public void registrationValidationHandler(DocumentModel ureg) {
+    public void registrationValidationHandler(DocumentRef uregRef, CoreSession s) {
         UserManager userManager = Framework.getService(UserManager.class);
 
-        CoreInstance.doPrivileged(ureg.getCoreSession(), session -> {
+        CoreInstance.doPrivileged(s, session -> {
 
+            DocumentModel ureg = session.getDocument(uregRef);
             dialect = session.getDocument(new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
             String dialectLifeCycleState = dialect.getCurrentLifeCycleState();
 
@@ -567,7 +566,8 @@ public class FVRegistrationUtilities {
                 eventProducer.fireEvent(event);
 
                 // Only email language admins if user stated they are part of an FV language team
-                if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
+                if (ureg.getPropertyValue("fvuserinfo:language_team_member") != null
+                        && (boolean) ureg.getPropertyValue("fvuserinfo:language_team_member")) {
                     try {
                         notificationEmailsAndReminderTasks(dialect, ureg);
                     } catch (Exception e) {

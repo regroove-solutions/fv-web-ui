@@ -45,7 +45,7 @@ public class FVValidateRegistrationAttempt {
     @OperationMethod
     public int run() {
 
-        CoreInstance.doPrivileged(session, s -> {
+        return CoreInstance.doPrivileged(session, s -> {
 
             DocumentModelList registrations = null;
             DocumentModel userE = null;
@@ -85,6 +85,5 @@ public class FVValidateRegistrationAttempt {
             return verificationState;
 
         });
-        return REGISTRATION_CAN_PROCEED;
     }
 }
