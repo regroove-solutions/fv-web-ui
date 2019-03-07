@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.LoginContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -36,6 +34,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoGroup;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
@@ -72,8 +71,6 @@ public class FVRegistrationUtilities {
     private DocumentModel dialect;
 
     private UserManager userManager;
-
-    private CoreSession session;
 
     private FVRegistrationMailUtilities mailUtil = new FVRegistrationMailUtilities();
 
@@ -141,8 +138,7 @@ public class FVRegistrationUtilities {
      * @param s
      * @param uM
      */
-    public void registrationCommonSetup(DocumentModel registrationRequest, CoreSession s, UserManager uM) {
-        session = s;
+    public void registrationCommonSetup(DocumentModel registrationRequest, CoreSession session, UserManager uM) {
         userManager = uM;
 
         requestedSpaceId = (String) registrationRequest.getPropertyValue("fvuserinfo:requestedSpace");
@@ -308,10 +304,8 @@ public class FVRegistrationUtilities {
      */
     public String registrationCommonFinish(UserRegistrationService registrationService,
             DocumentModel registrationRequest, Map<String, Serializable> info, String comment,
-            ValidationMethod validationMethod, boolean autoAccept) throws RestOperationException, Exception {
-        LoginContext lctx;
-        CoreSession s = null;
-
+            ValidationMethod validationMethod, boolean autoAccept, CoreSession session)
+            throws RestOperationException, Exception {
         int validationStatus;
 
         try {
@@ -362,7 +356,7 @@ public class FVRegistrationUtilities {
                 registrationService.getConfiguration(UserRegistrationService.CONFIGURATION_NAME).getName(), userInfo,
                 docInfo, info, validationMethod, autoAccept, userInfo.getEmail());
 
-        UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(s, registrationId,
+        UnrestrictedRequestPermissionResolver urpr = new UnrestrictedRequestPermissionResolver(session, registrationId,
                 ugdr.language_admin_group);
         urpr.runUnrestricted();
 
@@ -517,11 +511,7 @@ public class FVRegistrationUtilities {
     public void registrationValidationHandler(DocumentModel ureg) {
         UserManager userManager = Framework.getService(UserManager.class);
 
-        LoginContext lctx;
-
-        try {
-            lctx = Framework.login();
-            session = CoreInstance.openCoreSession(null);
+        CoreInstance.doPrivileged(ureg.getCoreSession(), session -> {
 
             dialect = session.getDocument(new IdRef((String) ureg.getPropertyValue("docinfo:documentId")));
             String dialectLifeCycleState = dialect.getCurrentLifeCycleState();
@@ -559,7 +549,12 @@ public class FVRegistrationUtilities {
             if (dialectLifeCycleState.equals("Enabled")) {
                 // user membership does not change until action of the language admin
                 // until than user belongs only to global 'members' group
-                notificationEmailsAndReminderTasks(dialect, ureg);
+                try {
+                    notificationEmailsAndReminderTasks(dialect, ureg);
+                } catch (Exception e) {
+                    log.error(e);
+                    throw new NuxeoException(e);
+                }
             } else if (dialectLifeCycleState.equals("Published")) {
                 // send system authorized group change event
                 String newUserGroup = "members";
@@ -573,15 +568,15 @@ public class FVRegistrationUtilities {
 
                 // Only email language admins if user stated they are part of an FV language team
                 if (ureg.getPropertyValue("fvuserinfo:language_team_member").equals(true)) {
-                    notificationEmailsAndReminderTasks(dialect, ureg);
+                    try {
+                        notificationEmailsAndReminderTasks(dialect, ureg);
+                    } catch (Exception e) {
+                        log.error(e);
+                        throw new NuxeoException(e);
+                    }
                 }
             }
+        });
 
-            lctx.logout();
-        } catch (Exception e) {
-            log.warn(e);
-        } finally {
-            session.close();
-        }
     }
 }

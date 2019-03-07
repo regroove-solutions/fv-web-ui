@@ -19,7 +19,10 @@
  */
 package ca.firstvoices.operations;
 
-import ca.firstvoices.utils.FVRegistrationUtilities;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
@@ -32,14 +35,11 @@ import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
-import org.nuxeo.ecm.user.registration.UserRegistrationService;
+import org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
 import org.nuxeo.ecm.user.registration.DocumentRegistrationInfo;
+import org.nuxeo.ecm.user.registration.UserRegistrationService;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.nuxeo.ecm.user.invite.UserInvitationService.ValidationMethod;
+import ca.firstvoices.utils.FVRegistrationUtilities;
 
 /**
  * Operation to invite a User.
@@ -85,27 +85,18 @@ public class UserInvite {
     public String run(DocumentModel registrationRequest) throws Exception {
         FVRegistrationUtilities utilCommon = new FVRegistrationUtilities();
         /*
-            This operation has for most part similar code to sister operation FVQuickUserRegistration.
-            The main difference is in conditions we apply for both.
-            Common code is split into 2 parts
-            - registrationCommonSetup
-            - registrationCommonFinish
-            Each of the operations executes it own, context specific conditions and any other operations
-            following if appropriate.
+         * This operation has for most part similar code to sister operation FVQuickUserRegistration. The main
+         * difference is in conditions we apply for both. Common code is split into 2 parts - registrationCommonSetup -
+         * registrationCommonFinish Each of the operations executes it own, context specific conditions and any other
+         * operations following if appropriate. In this case email to the user is sent by Nuxeo and since administrator
+         * initiated invitation we do not send an email.
+         */
+        utilCommon.registrationCommonSetup(registrationRequest, session, userManager);
 
-            In this case email to the user is sent by Nuxeo and since administrator initiated invitation
-            we do not send an email.
-        */
-        utilCommon.registrationCommonSetup(registrationRequest, session, userManager );
+        autoAccept = utilCommon.UserInviteCondition(registrationRequest, session, autoAccept);
 
-        autoAccept = utilCommon.UserInviteCondition( registrationRequest, session, autoAccept );
-
-        String registrationId = utilCommon.registrationCommonFinish(registrationService,
-                registrationRequest,
-                info,
-                comment,
-                validationMethod,
-                autoAccept);
+        String registrationId = utilCommon.registrationCommonFinish(registrationService, registrationRequest, info,
+                comment, validationMethod, autoAccept, session);
 
         return registrationId;
     }
