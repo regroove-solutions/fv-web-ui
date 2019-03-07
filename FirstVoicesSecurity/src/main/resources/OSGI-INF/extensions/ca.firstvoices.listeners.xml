@@ -6,7 +6,11 @@
       class="ca.firstvoices.listeners.RestrictFVDialectPublishing" priority="50">
       <event>workflowTaskStart</event>
     </listener>
-    <listener name="fvdocumentvalidationeventlistener" async="false" postCommit="true"
+    <!--
+      DY: This listener is disabled since communities require the ability to add duplicates.
+      Better validation needs to be developed.
+    -->
+    <listener name="fvdocumentvalidationeventlistener" enabled="false" async="false" postCommit="true"
       class="ca.firstvoices.listeners.FVDocumentValidationEventListener" priority="100">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>      
