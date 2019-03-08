@@ -128,12 +128,6 @@ module.exports = {
    */
   plugins: [
     new CleanWebpackPlugin([outputDirectory], { root: rootDirectory }),
-    new HtmlWebpackPlugin({
-      template: path.resolve(frontEndRootDirectory, "index.html"),
-      templateParameters: {
-        VERSION: gitRevisionPlugin.version(),
-      },
-    }),
     new MiniCssExtractPlugin({
       filename: path.join(outputStylesDirectory, "[name].[hash].css"),
       chunkFilename: path.join(outputStylesDirectory, "[id].[hash].css"),
