@@ -18,7 +18,7 @@
       "properties": {
         "dc:title": "test",
         "fv:definitions": {
-          "translation" : "take it",
+          "translation": "take it",
           "language": "english"
         },
         "fv-word:part_of_speech": "noun"

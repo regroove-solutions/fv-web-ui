@@ -3,3 +3,4 @@ target/
 .classpath
 .settings/
 yarn-error.log
+coverage
