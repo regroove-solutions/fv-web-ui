@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`automatic snapshot 1`] = `
+<form
+  class="JestTestSetup"
+  data-reactid=".1"
+  id="JestTestSetup"
+>
+  <h1
+    data-reactid=".1.0"
+  >
+    This is the form
+  </h1>
+  <input
+    data-reactid=".1.1"
+    name="username"
+    type="text"
+  />
+  <input
+    data-reactid=".1.2"
+    name="password"
+    type="text"
+  />
+</form>
+`;
