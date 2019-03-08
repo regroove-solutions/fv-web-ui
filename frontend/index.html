@@ -59,6 +59,15 @@
     <script type="text/javascript">
         // Alloy editor configuration
         window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = '/assets/vendor/alloyeditor/';
+
+        // Hotfix: Attempt to keep session alive until 10.10 is deployed - ping every 1 min if window shown
+        setInterval(function(){
+            if (!document.hidden) {
+                var refreshSessionIframe = document.getElementById("refreshSession");
+                refreshSessionIframe.src = "<%= BASE_URL %>nxstartup.faces?requestedUrl=login_welcome.jsp?id=" + new Date().getTime()
+            }
+        }, 30000);
+
     </script>
 
     <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -85,5 +94,8 @@
         </div>
         <!-- /#page-wrapper -->
     </div>
+
+    <iframe id="refreshSession" src="" style="display:none;"></iframe>
+
 </body>
 </html>

@@ -9,7 +9,7 @@ export default class BaseOperations {
       baseURL: ConfGlobal.baseURL,
       restPath: "site/api/v1",
       automationPath: "site/automation",
-      timeout: 60000,
+      timeout: 300,
     }),
   }
 
