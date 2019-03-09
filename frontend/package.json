@@ -78,6 +78,7 @@
     "babel-eslint": "~10.0.1",
     "babel-jest": "^24.3.0",
     "babel-loader": "~8.0.5",
+    "babel-plugin-dynamic-import-node": "^2.2.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-react-jsx-component-data-ids": "https://github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git",

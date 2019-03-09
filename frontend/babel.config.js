@@ -17,9 +17,10 @@ module.exports = function babelConfig(api) {
     '@babel/react',
   ]
   const plugins = [
-    // 'syntax-dynamic-import',
-    // 'transform-class-properties',
-    // ['@babel/plugin-proposal-decorators', { legacy: true }],
+    'syntax-dynamic-import',
+    'transform-class-properties',
+    ['@babel/plugin-proposal-decorators', { legacy: true }],
+    'dynamic-import-node',
   ]
 
   return {

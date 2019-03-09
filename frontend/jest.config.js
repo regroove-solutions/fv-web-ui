@@ -11,10 +11,10 @@
 // }
 // console.log('!!!', webpackAliases)
 const moduleNameMapper = {
-  // '^models(.*)$': '<rootDir>/app/assets/javascripts/models$1',
+  '^models(.*)$': '<rootDir>/app/assets/javascripts/models$1',
   '^views(.*)$': '<rootDir>/app/assets/javascripts/views$1',
   '^conf(.*)$': '<rootDir>/app/assets/javascripts/configuration$1',
-  // '^operations(.*)$': '<rootDir>/app/assets/javascripts/operations$1',
+  '^operations(.*)$': '<rootDir>/app/assets/javascripts/operations$1',
   '^components(.*)$': '<rootDir>/app/assets/javascripts/components$1',
   '^common(.*)$': '<rootDir>/app/assets/javascripts/common$1',
   '^images(.*)$': '<rootDir>/app/assets/images$1',
@@ -29,6 +29,9 @@ module.exports = {
     '/app/assets/games/',
     '/app/assets/javascripts/views/pages/test.js',
     '/app/assets/javascripts/__tests__/test.js',
+    '/cypress/',
+    '/app/assets/javascripts/views/components/Legacy/',
+    // '/app/assets/javascripts/views/pages/explore/dialect/play/jigsaw/wrapper.js',
   ],
   // Note: jsdom is a bit slower to run than `node`
   testEnvironment: 'jsdom',
