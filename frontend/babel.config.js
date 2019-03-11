@@ -14,11 +14,11 @@ module.exports = function babelConfig(api) {
         },
       },
     ],
-    '@babel/react',
+    '@babel/react'
   ]
   const plugins = [
+    // 'transform-class-properties', // This breaks Jest & Cypress
     'syntax-dynamic-import',
-    'transform-class-properties',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     'dynamic-import-node',
   ]
