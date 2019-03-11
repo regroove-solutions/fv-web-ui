@@ -13,21 +13,27 @@
     "development": "webpack --color --progress --mode development --config build/webpack.development.js",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
-    "test": "jest",
+    "test": "jest --bail --coverage --findRelatedTests",
     "test:coverage": "jest --coverage",
     "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
     "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3001 cy:run",
     "test:watch": "jest --watch"
   },
   "lint-staged": {
-    "*.{js,json,css,md}": [
-      "npm run prettier",
-      "git add"
-    ],
-    "*.js": [
-      "npm run eslint",
-      "npm run test",
-      "git add"
+    "linters": {
+      "*.{js,json,css,md}": [
+        "npm run prettier",
+        "git add"
+      ],
+      "*.js": [
+        "npm run eslint",
+        "npm run test",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "/build/",
+      "/cypress/"
     ]
   },
   "husky": {
