@@ -1,12 +1,10 @@
 package ca.firstvoices.utils;
 
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.schema.FacetNames;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +30,11 @@ public class FVLoginUtils {
                     + " AND ecm:isProxy = 0 ";
 
             dialects = session.query(query);
+        }
+
+        if( dialects == null )
+        {
+            dialects = (DocumentModelList)new ArrayList<DocumentModel>();
         }
 
         return dialects;
