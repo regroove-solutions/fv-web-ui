@@ -1,5 +1,4 @@
-import React, { Component } from 'react'
-import { PropTypes } from 'react'
+import React from 'react'
 
 // class JestTestSetup extends Component {
 //   static propTypes = {
@@ -16,7 +15,7 @@ import { PropTypes } from 'react'
 //     )
 //   }
 // }
-functionJestTestSetup({ onSubmit }) {
+function JestTestSetup({ onSubmit }) {
   return (
     <form
       id="JestTestSetup"
