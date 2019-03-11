@@ -18,10 +18,6 @@ import React from 'react'
 function JestTestSetup({ onSubmit }) {
   return (
     <form
-      key=""
-      data-test=""
-      data-test2=""
-      data-test3=""
       id="JestTestSetup"
       className="JestTestSetup"
       onSubmit={(e) => {
