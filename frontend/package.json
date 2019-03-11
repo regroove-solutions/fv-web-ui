@@ -20,12 +20,13 @@
     "test:watch": "jest --watch"
   },
   "lint-staged": {
-    "*.js": [
-      "npm run eslint",
-      "git add"
-    ],
     "*.{js,json,css,md}": [
       "npm run prettier",
+      "git add"
+    ],
+    "*.js": [
+      "npm run eslint",
+      "npm run test",
       "git add"
     ]
   },
