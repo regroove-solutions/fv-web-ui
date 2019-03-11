@@ -14,7 +14,7 @@ module.exports = function babelConfig(api) {
         },
       },
     ],
-    '@babel/react'
+    @babel/react'
   ]
   const plugins = [
     // 'transform-class-properties', // This breaks Jest & Cypress
