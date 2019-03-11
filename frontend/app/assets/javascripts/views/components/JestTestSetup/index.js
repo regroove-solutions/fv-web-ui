@@ -1,20 +1,4 @@
 import React from 'react'
-
-// class JestTestSetup extends Component {
-//   static propTypes = {
-//     onSubmit: PropTypes.func,
-//   }
-//   componentDidMount() {}
-//   render() {
-//     return (
-//       <form id="JestTestSetup" className="JestTestSetup" onSubmit={this.props.onSubmit}>
-//         <input name="username" type="text" />
-//         <input name="password" type="text" />
-//         <input name="passwordAgain" type="text" />
-//       </form>
-//     )
-//   }
-// }
 function JestTestSetup({ onSubmit }) {
   return (
     <form
