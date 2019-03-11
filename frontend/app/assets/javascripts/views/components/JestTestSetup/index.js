@@ -13,7 +13,8 @@ function JestTestSetup({ onSubmit }) {
         })
       }}
     >
-      <h1>This is the form</h1> <input name="username" type="text" /> <input name="password" type="text" />
+      <input name="username" type="text" />
+      <input name="password" type="text" />
     </form>
   )
 }

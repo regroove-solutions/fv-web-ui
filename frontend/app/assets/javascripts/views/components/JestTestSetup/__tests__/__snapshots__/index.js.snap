@@ -6,18 +6,13 @@ exports[`automatic snapshot 1`] = `
   data-reactid=".1"
   id="JestTestSetup"
 >
-  <h1
-    data-reactid=".1.0"
-  >
-    This is the form
-  </h1>
   <input
-    data-reactid=".1.1"
+    data-reactid=".1.0"
     name="username"
     type="text"
   />
   <input
-    data-reactid=".1.2"
+    data-reactid=".1.1"
     name="password"
     type="text"
   />
