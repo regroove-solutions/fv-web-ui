@@ -13,8 +13,10 @@ function JestTestSetup({ onSubmit }) {
         })
       }}
     >
-      <input name="username" type="text" />
-      <input name="password" type="text" />
+      <label htmlFor="username">User name</label>
+      <input id="username" name="username" type="text" />
+      <label htmlFor="password">Password</label>
+      <input id="password" name="password" type="text" />
     </form>
   )
 }

@@ -1,3 +1,7 @@
+const { axe, toHaveNoViolations } = require('jest-axe')
+expect.extend(toHaveNoViolations)
+import ReactDOMServer from 'react-dom/server'
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { JestTestSetup } from '..'
@@ -69,4 +73,10 @@ test('automatic snapshot', () => {
   password.value = 'pasword from jest test'
 
   expect(form).toMatchSnapshot()
+})
+
+test('Accessibility', async() => {
+  const html = ReactDOMServer.renderToString(<JestTestSetup onSubmit={() => {}} />)
+  const results = await axe(html)
+  expect(results).toHaveNoViolations()
 })
