@@ -74,12 +74,12 @@ module.exports = {
         {
           from: /\/assets\/(.*)$/,
           to: function(context) {
-            return '/assets/' + context.match[1];
-          }
-        }
+            return "/assets/" + context.match[1]
+          },
+        },
       ],
-      disableDotRule: true
-    }
+      disableDotRule: true,
+    },
   },
 
   /**
@@ -276,5 +276,11 @@ module.exports = {
     net: "empty",
     tls: "empty",
     console: true,
+  },
+  // https://webpack.js.org/configuration/performance/
+  performance: {
+    maxAssetSize: 250000,
+    maxEntrypointSize: 250000,
+    hints: "warning",
   },
 }
