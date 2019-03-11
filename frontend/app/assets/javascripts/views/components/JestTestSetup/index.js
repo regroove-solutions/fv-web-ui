@@ -17,16 +17,23 @@ import React from 'react'
 // }
 function JestTestSetup({ onSubmit }) {
   return (
-    <form      id="JestTestSetup"      className="JestTestSetup"      onSubmit={(e) => {
-      e.preventDefault()
-      const { username, password } = e.target.elements
-      onSubmit({
-        username: username.value,
-        password: password.value,
-      })
-    }}
+    <form
+      key=""
+      data-test=""
+      data-test2=""
+      data-test3=""
+      id="JestTestSetup"
+      className="JestTestSetup"
+      onSubmit={(e) => {
+        e.preventDefault()
+        const { username, password } = e.target.elements
+        onSubmit({
+          username: username.value,
+          password: password.value,
+        })
+      }}
     >
-      <h1>This is the form</h1>      <input name="username" type="text" />      <input name="password" type="text" />
+      <h1>This is the form</h1> <input name="username" type="text" /> <input name="password" type="text" />
     </form>
   )
 }
