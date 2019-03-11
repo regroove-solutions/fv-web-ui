@@ -31,7 +31,7 @@ module.exports = {
     '/app/assets/javascripts/__tests__/test.js',
     '/cypress/',
     '/app/assets/javascripts/views/components/Legacy/',
-    // '/app/assets/javascripts/views/pages/explore/dialect/play/jigsaw/wrapper.js',
+    '/build/',
   ],
   // Note: jsdom is a bit slower to run than `node`
   testEnvironment: 'jsdom',
