@@ -31,9 +31,9 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader {
         Object[] categoryIds = (Object[]) word.getPropertyValue(propertyToRead);
         if (categoryIds == null) {
             log.warn("No category set on the word: " + word.getTitle());
-            return new ArrayList<FV_DataBinding>();
-
+            return writeEmptyRow();
         }
+
         Object[] colA = columns.toArray();
         // StringList categories = new StringList();
 
