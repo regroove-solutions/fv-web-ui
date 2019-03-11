@@ -5,6 +5,8 @@
   "repository": "https://github.com/First-Peoples-Cultural-Council/fv-web-ui",
   "license": "Apache-2.0",
   "scripts": {
+    "eslint": "npx eslint -c ./eslint.config.js --fix",
+    "prettier": "npx prettier --config ./prettier.config.js --write",
     "build": "gulp build:production",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
@@ -16,6 +18,21 @@
     "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
     "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3001 cy:run",
     "test:watch": "jest --watch"
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run eslint",
+      "git add"
+    ],
+    "*.{js,json,css,md}": [
+      "npm run prettier",
+      "git add"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "engines": {
     "node": ">=8.10"
@@ -91,8 +108,8 @@
     "css-loader": "~0.14.5",
     "cypress": "^3.1.5",
     "del": "~1.2.1",
-    "eslint": "^5.12.0",
-    "eslint-plugin-react": "^7.12.3",
+    "eslint": "^5.15.1",
+    "eslint-plugin-react": "^7.12.4",
     "expect": "^23.5.0",
     "expose-loader": "^0.7.1",
     "express": "~4.12.2",
@@ -100,14 +117,17 @@
     "git-revision-webpack-plugin": "^3.0.3",
     "happypack": "^5.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^1.3.1",
     "image-webpack-loader": "^4.2.0",
     "jest": "^24.3.0",
     "json-loader": "~0.5.2",
     "jsx-loader": "~0.13.2",
     "less": "~2.5.1",
     "less-loader": "^4.1.0",
+    "lint-staged": "^8.1.5",
     "mini-css-extract-plugin": "^0.5.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "prettier": "^1.16.4",
     "react-hot-loader": "~1.3.0",
     "react-test-renderer": "^16.8.4",
     "redux-devtools": "~3.1.1",
