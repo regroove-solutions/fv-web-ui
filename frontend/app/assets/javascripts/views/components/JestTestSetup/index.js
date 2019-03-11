@@ -16,9 +16,9 @@ import { PropTypes } from 'react'
 //     )
 //   }
 // }
-functionzJestTestSetup({ onSubmit }) {
+function JestTestSetup({ onSubmit }) {
   return (
-    form
+    <form
       id="JestTestSetup"
       className="JestTestSetup"
       onSubmit={(e) => {
