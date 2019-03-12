@@ -30,53 +30,54 @@ import { JestTestSetup } from '..'
 // afterEach(() => {
 //   clearCityDatabase();
 // });
+describe('JestTestSetup', () => {
+  test('Mounts', () => {
+    // const div = document.createElement('div')
+    // await flushPromises()
+    // expect(fakeHistory.push).toHaveBeenCalledTimes(1)
+    // expect(utilsMock.posts.create).toHaveBeenCalledWith({date: expect.any(String)})
+    // ReactDOM.render(<JestTestSetup />, div)
 
-test('JestTestSetup Mounts', () => {
-  // const div = document.createElement('div')
-  // await flushPromises()
-  // expect(fakeHistory.push).toHaveBeenCalledTimes(1)
-  // expect(utilsMock.posts.create).toHaveBeenCalledWith({date: expect.any(String)})
-  // ReactDOM.render(<JestTestSetup />, div)
+    // Structure: Arrange
+    const handleSubmit = jest.fn()
+    const container = document.createElement('div')
+    ReactDOM.render(<JestTestSetup onSubmit={handleSubmit} />, container)
 
-  // Structure: Arrange
-  const handleSubmit = jest.fn()
-  const container = document.createElement('div')
-  ReactDOM.render(<JestTestSetup onSubmit={handleSubmit} />, container)
+    const form = container.querySelector('form')
+    const { username, password } = form.elements
+    username.value = 'name from jest test'
+    password.value = 'pasword from jest test'
 
-  const form = container.querySelector('form')
-  const { username, password } = form.elements
-  username.value = 'name from jest test'
-  password.value = 'pasword from jest test'
+    // form.dispatchEvent(new Event('submit'))
+    form.dispatchEvent(new window.Event('submit'))
 
-  // form.dispatchEvent(new Event('submit'))
-  form.dispatchEvent(new window.Event('submit'))
+    // expect(container.querySelector('h1').textContent).toMatch('This is the form')
 
-  // expect(container.querySelector('h1').textContent).toMatch('This is the form')
-
-  expect(handleSubmit).toHaveBeenCalledTimes(1)
-  expect(handleSubmit).toHaveBeenCalledWith({
-    username: username.value,
-    password: password.value,
+    expect(handleSubmit).toHaveBeenCalledTimes(1)
+    expect(handleSubmit).toHaveBeenCalledWith({
+      username: username.value,
+      password: password.value,
+    })
+    // Structure: Act
+    // Structure: Assert
   })
-  // Structure: Act
-  // Structure: Assert
-})
 
-test('automatic snapshot', () => {
-  const handleSubmit = jest.fn()
-  const container = document.createElement('div')
-  ReactDOM.render(<JestTestSetup onSubmit={handleSubmit} />, container)
+  test('Snapshot', () => {
+    const handleSubmit = jest.fn()
+    const container = document.createElement('div')
+    ReactDOM.render(<JestTestSetup onSubmit={handleSubmit} />, container)
 
-  const form = container.querySelector('form')
-  const { username, password } = form.elements
-  username.value = 'name from jest test'
-  password.value = 'pasword from jest test'
+    const form = container.querySelector('form')
+    const { username, password } = form.elements
+    username.value = 'name from jest test'
+    password.value = 'pasword from jest test'
 
-  expect(form).toMatchSnapshot()
-})
+    expect(form).toMatchSnapshot()
+  })
 
-test('Accessibility', async() => {
-  const html = ReactDOMServer.renderToString(<JestTestSetup onSubmit={() => {}} />)
-  const results = await axe(html)
-  expect(results).toHaveNoViolations()
+  test('Accessibility', async() => {
+    const html = ReactDOMServer.renderToString(<JestTestSetup onSubmit={() => {}} />)
+    const results = await axe(html)
+    expect(results).toHaveNoViolations()
+  })
 })

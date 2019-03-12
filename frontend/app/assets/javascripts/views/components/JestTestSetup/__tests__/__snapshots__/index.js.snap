@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`automatic snapshot 1`] = `
+exports[`JestTestSetup Snapshot 1`] = `
 <form
   class="JestTestSetup"
   data-reactid=".1"
