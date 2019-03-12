@@ -5,8 +5,8 @@
   "repository": "https://github.com/First-Peoples-Cultural-Council/fv-web-ui",
   "license": "Apache-2.0",
   "scripts": {
-    "eslint": "npx eslint -c ./eslint.config.js --fix",
-    "prettier": "npx prettier --config ./prettier.config.js --write",
+    "eslint": "npx eslint --config .eslintrc --fix",
+    "prettier": "npx prettier --config .prettierrc --write",
     "build": "gulp build:production",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
@@ -23,19 +23,21 @@
   },
   "lint-staged": {
     "linters": {
-      "*.{js,json,css,md}": [
+      "*.{json,css,md}": [
         "npm run prettier",
         "git add"
       ],
       "*.js": [
         "npm run eslint",
+        "npm run prettier",
         "npm run test:lint-staged",
         "git add"
       ]
     },
     "ignore": [
       "/build/",
-      "/cypress/"
+      "/cypress/",
+      "**/__tests__/"
     ]
   },
   "husky": {
