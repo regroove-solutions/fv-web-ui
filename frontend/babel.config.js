@@ -17,7 +17,7 @@ module.exports = function babelConfig(api) {
     '@babel/react',
   ]
   const plugins = [
-    // 'transform-class-properties', // This breaks Jest & Cypress
+    // NOTE: Adding 'transform-class-properties' will break Cypress testing
     'syntax-dynamic-import',
     ['@babel/plugin-proposal-decorators', { legacy: true }],
     'dynamic-import-node',
@@ -26,5 +26,15 @@ module.exports = function babelConfig(api) {
   return {
     presets,
     plugins,
+    env: {
+      test: {
+        plugins: [
+          'transform-class-properties',
+          'syntax-dynamic-import',
+          ['@babel/plugin-proposal-decorators', { legacy: true }],
+          'dynamic-import-node',
+        ],
+      },
+    },
   }
 }

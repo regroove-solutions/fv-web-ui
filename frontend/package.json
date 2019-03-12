@@ -13,7 +13,8 @@
     "development": "webpack --color --progress --mode development --config build/webpack.development.js",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
-    "test": "jest --bail --coverage --findRelatedTests",
+    "test": "jest",
+    "test:lint-staged": "jest --bail --coverage --findRelatedTests",
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
     "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
@@ -28,7 +29,7 @@
       ],
       "*.js": [
         "npm run eslint",
-        "npm run test",
+        "npm run test:lint-staged",
         "git add"
       ]
     },
