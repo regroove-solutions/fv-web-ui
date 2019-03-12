@@ -4,22 +4,22 @@
 // import ReactDOMServer from 'react-dom/server'
 
 // Standard
-import React from "react"
-import ReactDOM from "react-dom"
+import React from 'react'
+import ReactDOM from 'react-dom'
 
 // Component to test
 // import { JestTestSetup } from 'views/components/JestTestSetup'
 
 // import injectTapEventPlugin from 'react-tap-event-plugin'
-import ThemeManager from "material-ui/lib/styles/theme-manager"
-import FirstVoicesTheme from "views/themes/FirstVoicesTheme.js"
-import ConfGlobal from "conf/local.json"
+import ThemeManager from 'material-ui/lib/styles/theme-manager'
+import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
+import ConfGlobal from 'conf/local.json'
 
 // Providers provide reducers and actions
-import providers from "../../providers/index"
+import providers from '../../providers/index'
 
 // Views
-import AppWrapper from "../AppWrapper"
+import AppWrapper from '../AppWrapper'
 
 // require('!style-loader!css-loader!normalize.css')
 // require('!style-loader!css-loader!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css')
@@ -41,28 +41,28 @@ const context = {
       domain: ConfGlobal.domain,
       theme: {
         palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
-        id: "default",
+        id: 'default',
       },
     },
   },
 }
-describe("AppWrapper", () => {
-  test("Mounts", () => {
+describe('AppWrapper', () => {
+  test('Mounts', () => {
     // Structure: Arrange
-    const container = document.createElement("div")
+    const container = document.createElement('div')
     ReactDOM.render(<AppWrapper {...context} />, container)
 
-    expect(container.querySelector("#pageNavigation").textContent).toMatch("SIGN IN")
-    expect(container.querySelector("#pageFooter").textContent).toMatch("support@fpcc.ca")
+    expect(container.querySelector('#pageNavigation').textContent).toMatch('SIGN IN')
+    expect(container.querySelector('#pageFooter').textContent).toMatch('support@fpcc.ca')
 
     // Structure: Act
     // Structure: Assert
   })
 
-  test("Snapshot", () => {
-    const container = document.createElement("div")
+  test('Snapshot', () => {
+    const container = document.createElement('div')
     ReactDOM.render(<AppWrapper {...context} />, container)
-    const element = container.querySelector("#AppWrapper")
+    const element = container.querySelector('#AppWrapper')
     expect(element).toMatchSnapshot()
   })
 
