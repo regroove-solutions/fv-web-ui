@@ -234,8 +234,6 @@ class AppWrapper extends Component {
   }
 
   render() {
-    // const controller = null
-
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
 
     const warnings = {}
@@ -245,8 +243,10 @@ class AppWrapper extends Component {
     return (
       <div
         id="AppWrapper"
-        style={{ backgroundColor: selectn("theme.palette.basePalette.wrapper.backgroundColor", this.props.properties) }}
-        style={{ fontSize: UIHelpers.getPreferenceVal("font_size", preferences) }}
+        style={{
+          backgroundColor: selectn("theme.palette.basePalette.wrapper.backgroundColor", this.props.properties),
+          fontSize: UIHelpers.getPreferenceVal("font_size", preferences),
+        }}
       >
         <AppFrontController preferences={preferences} warnings={warnings} />
 
