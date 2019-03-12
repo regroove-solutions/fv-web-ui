@@ -13,29 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
-import React, { Component, PropTypes } from "react"
+import React, { Component, PropTypes } from 'react'
 // import ReactDOM from 'react-dom'
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
 // import classNames from 'classnames'
 
-import ProviderHelpers from "common/ProviderHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
 // import StringHelpers from 'common/StringHelpers'
-import UIHelpers from "common/UIHelpers"
+import UIHelpers from 'common/UIHelpers'
 
 // import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
-import AppFrontController from "./AppFrontController"
+import AppFrontController from './AppFrontController'
 
-import Shepherd from "tether-shepherd"
+import Shepherd from 'tether-shepherd'
 
 // import FontIcon from 'material-ui/lib/font-icon'
 // import Paper from 'material-ui/lib/paper'
 // import FlatButton from 'material-ui/lib/flat-button'
 
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
 // const getPosition = function getPosition() {
 //   const doc = document
@@ -64,22 +63,22 @@ function findComponentParents(_el) {
   let el = _el
   const originalEl = el
 
-  if (!el.getAttribute("data-component-id")) {
+  if (!el.getAttribute('data-component-id')) {
     return null
   }
 
   while (el.parentNode) {
     el = el.parentNode
 
-    if (el.getAttribute("id") === "app-wrapper") {
+    if (el.getAttribute('id') === 'app-wrapper') {
       break
     }
 
     if (el.tagName) {
-      const appendClass = el.className ? "." + el.className.replace(/\s/g, ".").replace(/\:/g, "\\:") : "" // eslint-disable-line
-      const appendData = el.getAttribute("data-component-id")
-        ? "[data-component-id='" + el.getAttribute("data-component-id") + "']"
-        : ""
+      const appendClass = el.className ? '.' + el.className.replace(/\s/g, '.').replace(/\:/g, '\\:') : '' // eslint-disable-line
+      const appendData = el.getAttribute('data-component-id')
+        ? "[data-component-id='" + el.getAttribute('data-component-id') + "']"
+        : ''
 
       parents.push(el.tagName.toLowerCase() + appendClass + appendData)
     }
@@ -87,14 +86,14 @@ function findComponentParents(_el) {
 
   parents = parents.reverse()
   parents.push(
-    originalEl.tagName.toLowerCase() + "[data-component-id='" + originalEl.getAttribute("data-component-id") + "']"
+    originalEl.tagName.toLowerCase() + "[data-component-id='" + originalEl.getAttribute('data-component-id') + "']"
   )
 
-  return parents.join(" ")
+  return parents.join(' ')
 }
 
 const getPreferences = function getPreferences(login, dialect) {
-  const preferenceString = selectn("response.properties.preferences", login)
+  const preferenceString = selectn('response.properties.preferences', login)
   const parsedPreferences = preferenceString ? JSON.parse(preferenceString) : {}
   const flattenedPreferences = {}
 
@@ -105,7 +104,7 @@ const getPreferences = function getPreferences(login, dialect) {
   }
 
   // Dialect assignment
-  flattenedPreferences.primary_dialect_path = selectn("path", dialect)
+  flattenedPreferences.primary_dialect_path = selectn('path', dialect)
 
   return flattenedPreferences
 }
@@ -113,7 +112,7 @@ const getPreferences = function getPreferences(login, dialect) {
 @provide
 class AppWrapper extends Component {
   intl = IntlService.instance
-  intlBaseKey = "views"
+  intlBaseKey = 'views'
 
   static propTypes = {
     connect: PropTypes.func.isRequired,
@@ -160,7 +159,7 @@ class AppWrapper extends Component {
     }
 
     // Bind methods to 'this'
-    ;["_startAdminGuideAssist"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_startAdminGuideAssist'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Force update of theme if out of sync
@@ -178,11 +177,11 @@ class AppWrapper extends Component {
     }*/
 
   _startAdminGuideAssist() {
-    const doms = document.querySelectorAll("[data-component-id]")
+    const doms = document.querySelectorAll('[data-component-id]')
 
     const tour = new Shepherd.Tour({
       defaults: {
-        classes: "shepherd-theme-arrows",
+        classes: 'shepherd-theme-arrows',
       },
     })
 
@@ -208,19 +207,19 @@ class AppWrapper extends Component {
       //}
 
       if (xpath != null) {
-        tour.addStep("step" + i, {
-          title: "Element xPath",
-          text: xpath + "<textarea>" + dom.textContent + "</textarea>",
-          classes: "shepherd-theme-arrows admin-guide-step",
-          attachTo: xpath + " bottom",
+        tour.addStep('step' + i, {
+          title: 'Element xPath',
+          text: xpath + '<textarea>' + dom.textContent + '</textarea>',
+          classes: 'shepherd-theme-arrows admin-guide-step',
+          attachTo: xpath + ' bottom',
           showCancelLink: true,
           scrollTo: true,
           when: {
             show: () => {
-              dom.style.border = "2px blue dashed"
+              dom.style.border = '2px blue dashed'
             },
             hide: () => {
-              dom.style.border = "initial"
+              dom.style.border = 'initial'
             },
           },
         })
@@ -239,14 +238,14 @@ class AppWrapper extends Component {
 
     const warnings = {}
 
-    const preferences = getPreferences(this.props.computeLogin, selectn("response", computeDialect2))
+    const preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
 
     return (
       <div
         id="AppWrapper"
         style={{
-          backgroundColor: selectn("theme.palette.basePalette.wrapper.backgroundColor", this.props.properties),
-          fontSize: UIHelpers.getPreferenceVal("font_size", preferences),
+          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
+          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
         }}
       >
         <AppFrontController preferences={preferences} warnings={warnings} />
