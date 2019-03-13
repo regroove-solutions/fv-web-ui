@@ -2,7 +2,7 @@
   "title": "FirstVoices",
   "domain": "FV",
   "baseWebUIURL": "http://localhost:3001/",
-  "baseURL": "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/",
+  "baseURL": "https://fv2.preprod.nuxeocloud.com/nuxeo/",
   "apiURL": "https://api.firstvoices.com/v1/",
   "contextPath": "/nuxeo/app",
   "testData": {
