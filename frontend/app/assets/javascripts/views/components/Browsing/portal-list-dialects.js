@@ -69,8 +69,8 @@ export default class PortalListDialects extends Component {
           }
 
           // Dialect title
-          const title = selectn(this.props.fieldMapping.title, tile)
-          const logo = selectn(this.props.fieldMapping.logo, tile)
+          const title = selectn("contextParameters.ancestry.dialect.dc:title", tile)
+          const logo = selectn("contextParameters.portal.fv-portal:logo", tile)
           const dialectCoverImage = encodeURI(UIHelpers.getThumbnail(logo, "Medium"))
           const dialectDescription = IntlService.instance.searchAndReplace(tile.description) || null
           const href = `/${this.props.theme}${tile.path.replace("/Portal", "")}`
