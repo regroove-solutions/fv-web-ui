@@ -4,7 +4,7 @@
 
   <properties>
     <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
-    <fv.studio.version>migration-10-10-SNAPSHOT</fv.studio.version>
+    <fv.studio.version>0.0.84-migration</fv.studio.version>
   </properties>
 
   <parent>
