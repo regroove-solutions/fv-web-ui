@@ -133,7 +133,7 @@ export default class Test extends Component {
                       ,
                       "must_not": [
                         {"term": {
-                          "ecm:currentLifeCycleState": "deleted"
+                          "ecm:isTrashed": "0"
                         }}
                       ]
                     }

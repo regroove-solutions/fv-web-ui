@@ -16,6 +16,8 @@ In their registration they specified that they are part of your FirstVoices lang
 
 <p>You can also connect with them directly here ${email} or choose to ignore this email.</p>
 
+<p>Please do not reply to this email.</p>
+
 <p>Please feel free to contact us at support@fpcc.ca for assistance or if you have any issues.</p>
 
 <p>Regards,<br/>

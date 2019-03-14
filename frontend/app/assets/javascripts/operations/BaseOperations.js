@@ -4,7 +4,7 @@ import IntlService from "views/services/intl"
 
 export default class BaseOperations {
   static properties = {
-    condition: "ecm:currentLifeCycleState <> 'deleted'",
+    condition: "ecm:isTrashed = 0 ",
     client: new Nuxeo({
       baseURL: ConfGlobal.baseURL,
       restPath: "site/api/v1",
