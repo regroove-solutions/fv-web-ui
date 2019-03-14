@@ -180,7 +180,7 @@ const mockRequest = {
   "queryDialect2ByShortURL": {
       // args PathOrId + type of document
       "args": [
-        ConfGlobal.testData.sectionOrWorkspaces, "FVDialect", " AND (fvdialect:short_url = '" + ConfGlobal.testData.dialect["fvdialect:short_url"] + "' OR ecm:name = '') AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"],
+        ConfGlobal.testData.sectionOrWorkspaces, "FVDialect", " AND (fvdialect:short_url = '" + ConfGlobal.testData.dialect["fvdialect:short_url"] + "' OR ecm:name = '') AND ecm:isTrashed = 0 AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"],
       "evaluateResults": function (response) { 
           return response.totalSize > 0;
       }

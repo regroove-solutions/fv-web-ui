@@ -136,7 +136,7 @@ export default class DirectoryOperations extends BaseOperations {
         language: "NXQL",
       },
       StringHelpers.queryStringToObject(
-        `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:currentLifeCycleState <> 'deleted'${_queryAppend}`,
+        `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:isTrashed = 0 ${_queryAppend}`,
         true
       )
     )
@@ -292,7 +292,7 @@ export default class DirectoryOperations extends BaseOperations {
 
   client.operation('Document.Query')
   .params({
-  query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace' AND ecm:currentLifeCycleState <> 'deleted'))"
+  query: "SELECT * FROM Document WHERE (dc:title = '" + language + "' AND ecm:primaryType = 'Workspace' AND ecm:isTrashed = 0))"
   })
   .execute(function(error, response) {
   if (error) {
@@ -305,7 +305,7 @@ export default class DirectoryOperations extends BaseOperations {
 
   client.operation('Document.Query')
   .params({
-  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:currentLifeCycleState <> 'deleted')"
+  query: "SELECT * FROM Document WHERE (ecm:parentId = '" + workspaceID + "' AND ecm:primaryType = 'Word' AND ecm:isTrashed = 0)"
   })
   .execute(function(error, response) {
 

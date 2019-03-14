@@ -53,7 +53,7 @@ export default class ServiceShortURL extends Component {
         newProps.routeParams.dialectFriendlyName +
         "' OR ecm:name = '" +
         newProps.routeParams.dialectFriendlyName +
-        "') AND ecm:currentLifeCycleState <> 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+        "') AND ecm:isTrashed = 0 AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
     )
   }
 

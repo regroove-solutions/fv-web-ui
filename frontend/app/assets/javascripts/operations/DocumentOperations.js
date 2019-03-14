@@ -367,7 +367,7 @@ export default class DocumentOperations extends BaseOperations {
         const defaultParams = {
           query: ` SELECT * FROM ${documentList.model.prototype.entityTypeName}  WHERE (fva:dialect = '${
             dialect.get('id')
-          }' AND ecm:currentLifeCycleState <> 'deleted') ${
+          }' AND ecm:isTrashed = 0) ${
             query ? `AND ${query}` : ''
           } ORDER BY dc:title`,
         }
@@ -444,7 +444,7 @@ export default class DocumentOperations extends BaseOperations {
         const defaultParams = {
           query: `SELECT * FROM FVCharacter WHERE (ecm:path STARTSWITH '${
             cleanedDialectPath
-          }' AND ecm:currentLifeCycleState <> 'deleted') ORDER BY fvcharacter:alphabet_order ASC`,
+          }' AND ecm:isTrashed = 0) ORDER BY fvcharacter:alphabet_order ASC`,
         }
 
         params = Object.assign(defaultParams, params)
@@ -470,7 +470,7 @@ export default class DocumentOperations extends BaseOperations {
         const defaultParams = {
           query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${
             cleanedDialectPath
-          }' AND ecm:currentLifeCycleState <> 'deleted')${
+          }' AND ecm:isTrashed = 0)${
             queryAppend
           } ORDER BY dc:title ASC`,
         }
@@ -497,7 +497,7 @@ export default class DocumentOperations extends BaseOperations {
         const defaultParams = {
           query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${
             queryPath
-          }' AND ecm:currentLifeCycleState <> 'deleted') AND ecm:primaryType IN (${
+          }' AND ecm:isTrashed = 0) AND ecm:primaryType IN (${
             docTypes
           }) AND ecm:fulltext = '*${
             queryParam

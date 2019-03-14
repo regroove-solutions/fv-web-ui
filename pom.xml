@@ -1,11 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <properties>
     <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
     <fv.studio.version>migration-10-10-SNAPSHOT</fv.studio.version>
-    <fv.plugin.version>1.0.23-SNAPSHOT</fv.plugin.version>
   </properties>
 
   <parent>
@@ -18,7 +16,7 @@
   <artifactId>firstvoices-modules-parent</artifactId>
   <name>First Voices Project Parent</name>
   <packaging>pom</packaging>
-  <version>1.0.23-SNAPSHOT</version>
+  <version>3.0-SNAPSHOT</version>
 
   <modules>
     <module>FirstVoices-marketplace</module>
@@ -36,37 +34,37 @@
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoicesPublisher</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoicesEnrichers</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoicesSecurity</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoicesExport</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FVUserRegistration</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>ca.firstvoices</groupId>
         <artifactId>FirstVoices-marketplace</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
        <groupId>ca.firstvoices</groupId>
         <artifactId>firstvoices-web-ui</artifactId>
-        <version>${fv.plugin.version}</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
@@ -158,4 +156,17 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <profiles>
+   <profile>
+     <id>release</id>
+     <distributionManagement>
+       <repository>
+         <id>external-releases</id>
+         <name>External Releases</name>
+         <url>${external.releases.url}</url>
+       </repository>
+     </distributionManagement>
+   </profile>
+  </profiles>
 </project>

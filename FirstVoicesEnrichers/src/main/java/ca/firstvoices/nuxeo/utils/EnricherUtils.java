@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -40,7 +41,8 @@ public class EnricherUtils {
         blobUrl += doc.getRepositoryName() + "/";
         blobUrl += doc.getId() + "/";
         blobUrl += xpath + "/";
-        blobUrl += filename + "jpg";
+        blobUrl += !StringUtils.isEmpty(filename) && filename.endsWith("jpg") ? filename : filename + "jpg";
+        // MC_nuxeo: Why do we force the extention to jpg?
         return blobUrl;
     }
 
@@ -229,36 +231,35 @@ public class EnricherUtils {
         }
 
         return roles;
-	}
-	
-	public static String expandCategoriesToChildren(CoreSession session, String query) {
-		if (query != null && !query.isEmpty()) {
-			// Expand value of fv-word:categories so that it includes children
-			String REGEX = "(fv-word:categories|fvproxy:proxied_categories)\\/\\* IN \\(\"([a-zA-Z0-9\\-]*)\"\\)";
+    }
 
-			Pattern pattern = Pattern.compile(REGEX);
-			Matcher m = pattern.matcher(query);
+    public static String expandCategoriesToChildren(CoreSession session, String query) {
+        if (query != null && !query.isEmpty()) {
+            // Expand value of fv-word:categories so that it includes children
+            String REGEX = "(fv-word:categories|fvproxy:proxied_categories)\\/\\* IN \\(\"([a-zA-Z0-9\\-]*)\"\\)";
 
-			if (m.find() && !m.group(2).isEmpty())
-			{
-				String categoryProperty = m.group(1);
-				String categoryID = m.group(2);
+            Pattern pattern = Pattern.compile(REGEX);
+            Matcher m = pattern.matcher(query);
 
-				Iterator<DocumentModel> it = session.getChildren(new IdRef(categoryID)).iterator();
+            if (m.find() && !m.group(2).isEmpty()) {
+                String categoryProperty = m.group(1);
+                String categoryID = m.group(2);
 
-				String inClause = "(\""+ categoryID + "\"";
+                Iterator<DocumentModel> it = session.getChildren(new IdRef(categoryID)).iterator();
 
-				while (it.hasNext()) {
-					DocumentModel doc = (DocumentModel) it.next();
-					inClause += ",\"" + doc.getId() + "\"";
-				}
+                String inClause = "(\"" + categoryID + "\"";
 
-				inClause += ")";
+                while (it.hasNext()) {
+                    DocumentModel doc = it.next();
+                    inClause += ",\"" + doc.getId() + "\"";
+                }
 
-				query = query.replaceFirst(REGEX , categoryProperty + "/* IN " + inClause);
-			}
-		}
+                inClause += ")";
 
-		return query;
-	}
+                query = query.replaceFirst(REGEX, categoryProperty + "/* IN " + inClause);
+            }
+        }
+
+        return query;
+    }
 }
