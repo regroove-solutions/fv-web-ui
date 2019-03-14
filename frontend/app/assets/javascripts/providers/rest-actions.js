@@ -267,7 +267,7 @@ export default {
             }) + "...",
         })
 
-        return DocumentOperations.executeOperation(pathOrId, "Document.FollowLifecycleTransition", { value: "delete" })
+        return DocumentOperations.executeOperation(pathOrId, "Document.Trash", {})
           .then((response) => {
             dispatch({
               type: key + "_DELETE_SUCCESS",

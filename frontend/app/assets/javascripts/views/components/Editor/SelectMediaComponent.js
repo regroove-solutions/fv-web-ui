@@ -259,7 +259,7 @@ class SelectMediaComponent extends React.Component {
         " AND ecm:primaryType ILIKE '" +
           this.props.type +
           "'" +
-          " AND ecm:isCheckedInVersion = 0 AND ecm:currentLifeCycleState != 'deleted' AND ecm:currentLifeCycleState != 'Disabled'" +
+          " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
           " AND (ecm:path STARTSWITH '" +
           StringHelpers.clean(selectn('path', this.props.dialect)) +
           "/Resources/'" +

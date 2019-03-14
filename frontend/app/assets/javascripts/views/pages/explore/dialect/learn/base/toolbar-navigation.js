@@ -62,16 +62,16 @@ export default class ToolbarNavigation extends Component {
     //     'sortOrder': 'ASC'
     // });
     // this.props.fetchResultSet('count_songs', {
-    //     'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:currentLifeCycleState <> "deleted"',
+    //     'query': 'SELECT COUNT(ecm:uuid) FROM FVBook WHERE fvbook:type="song" AND ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Stories & Songs" AND ecm:isTrashed = 0',
     //     'language': 'nxql',
     //     'sortOrder': 'ASC'
     // });
     // this.props.fetchResultSet('count_words', {
-    //     'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"',
+    //     'query': 'SELECT COUNT(ecm:uuid) FROM FVWord WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:isTrashed = 0',
     //     'language': 'nxql',
     //     'sortOrder': 'ASC'
     // });
-    // this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:currentLifeCycleState <> "deleted"'});
+    // this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:isTrashed = 0'});
   }
 
   _onNavigateRequest(pathArray) {
