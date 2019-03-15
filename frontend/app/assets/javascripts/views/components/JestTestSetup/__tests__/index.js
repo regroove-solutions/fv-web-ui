@@ -62,20 +62,7 @@ describe('JestTestSetup', () => {
     // Structure: Assert
   })
 
-  test('Snapshot', () => {
-    const handleSubmit = jest.fn()
-    const container = document.createElement('div')
-    ReactDOM.render(<JestTestSetup onSubmit={handleSubmit} />, container)
-
-    const form = container.querySelector('form')
-    const { username, password } = form.elements
-    username.value = 'name from jest test'
-    password.value = 'pasword from jest test'
-
-    expect(form).toMatchSnapshot()
-  })
-
-  test('Accessibility', async() => {
+  test('Accessibility', async () => {
     const html = ReactDOMServer.renderToString(<JestTestSetup onSubmit={() => {}} />)
     const results = await axe(html)
     expect(results).toHaveNoViolations()
