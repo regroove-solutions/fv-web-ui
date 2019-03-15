@@ -5,16 +5,16 @@
   "repository": "https://github.com/First-Peoples-Cultural-Council/fv-web-ui",
   "license": "Apache-2.0",
   "scripts": {
-    "eslint": "npx eslint --config .eslintrc --fix",
-    "prettier": "npx prettier --config .prettierrc --write",
     "build": "gulp build:production",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "development": "webpack --color --progress --mode development --config build/webpack.development.js",
+    "lint-staged:eslint": "npx eslint --config .eslintrc --fix",
+    "lint-staged:prettier": "npx prettier --config .prettierrc --write",
+    "lint-staged:test": "jest --bail --coverage --findRelatedTests",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
     "test": "jest",
-    "test:lint-staged": "jest --bail --coverage --findRelatedTests",
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
     "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
@@ -24,13 +24,13 @@
   "lint-staged": {
     "linters": {
       "*.{json,css,md}": [
-        "npm run prettier",
+        "npm run lint-staged:prettier",
         "git add"
       ],
       "*.js": [
-        "npm run eslint",
-        "npm run prettier",
-        "npm run test:lint-staged",
+        "npm run lint-staged:eslint",
+        "npm run lint-staged:prettier",
+        "npm run lint-staged:test",
         "git add"
       ]
     },
