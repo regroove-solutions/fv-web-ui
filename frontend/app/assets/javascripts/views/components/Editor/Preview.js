@@ -110,7 +110,7 @@ const GetMetaData = function (type, response) {
      */
     if (selectn("path", response)) {
 
-        let directLinkValue = ConfGlobal.baseWebUIURL.substring(0, ConfGlobal.baseWebUIURL.length - 1) + NavigationHelpers.generateUIDPath("explore", response, 'media');
+        let directLinkValue = NavigationHelpers.generateUIDPath("explore", response, 'media');
 
         metadata.push({
             label: intl.trans('direct_link', 'Direct Link', 'words'),
