@@ -59,13 +59,6 @@ describe('AppWrapper', () => {
     // Structure: Assert
   })
 
-  test('Snapshot', () => {
-    const container = document.createElement('div')
-    ReactDOM.render(<AppWrapper {...context} />, container)
-    const element = container.querySelector('#AppWrapper')
-    expect(element).toMatchSnapshot()
-  })
-
   // test('Accessibility', async() => {
   //   const html = ReactDOMServer.renderToString(<AppWrapper {...context} />)
   //   const results = await axe(html)
