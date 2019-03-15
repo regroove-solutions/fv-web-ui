@@ -8,11 +8,10 @@ import selectn from 'selectn'
 import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-const { any, func, string, bool, object, number } = PropTypes
+const { any, func, object } = PropTypes
 const intl = IntlService.instance
 
-@provide
-class AlphabetListView extends Component {
+export class AlphabetListView extends Component {
   static propTypes = {
     handleClick: func,
     routeParams: object.isRequired,
@@ -58,6 +57,7 @@ class AlphabetListView extends Component {
       this.props.computeCharacters,
       `${routeParams.dialect_path}/Alphabet`
     )
+
     const computePortal = await ProviderHelpers.getEntry(this.props.computePortal, `${routeParams.dialect_path}/Portal`)
 
     const entries = selectn('response.entries', computedCharacters)
@@ -119,7 +119,11 @@ class AlphabetListView extends Component {
   render() {
     const { renderCycle } = this.state
     const content = renderCycle !== 0 ? this._generateTiles() : null
-    return <div className="AlphabetListView">{content}</div>
+    return (
+      <div className="AlphabetListView" data-testid="AlphabetListView">
+        {content}
+      </div>
+    )
   }
 
   _generateDialectFilterUrl(letter) {
@@ -170,4 +174,4 @@ class AlphabetListView extends Component {
   }
 }
 
-export { AlphabetListView }
+export default provide(AlphabetListView)
