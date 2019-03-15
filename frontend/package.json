@@ -11,7 +11,7 @@
     "development": "webpack --color --progress --mode development --config build/webpack.development.js",
     "lint-staged:eslint": "npx eslint --config .eslintrc --fix",
     "lint-staged:prettier": "npx prettier --config .prettierrc --write",
-    "lint-staged:test": "jest --bail --coverage --findRelatedTests",
+    "lint-staged:test": "jest --bail --findRelatedTests",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
     "test": "jest",
