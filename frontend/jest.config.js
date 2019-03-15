@@ -32,6 +32,7 @@ module.exports = {
     '/cypress/',
     '/app/assets/javascripts/views/components/Legacy/',
     '/build/',
+    '__tests__/__mocks__/',
   ],
   // Note: jsdom is a bit slower to run than `node`
   testEnvironment: 'jsdom',
