@@ -5,7 +5,7 @@
       "jsx": true
     }
   },
-  "plugins": ["react"],
+  "plugins": ["react", "cypress"],
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "settings": {
     "react": {
@@ -17,7 +17,8 @@
     "es6": true,
     "browser": true,
     "node": true,
-    "jest": true
+    "jest": true,
+    "cypress/globals": true
   },
   "rules": {
     "block-scoped-var": 0, // http://eslint.org/docs/rules/block-scoped-var

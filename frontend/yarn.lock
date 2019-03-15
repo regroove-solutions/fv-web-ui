@@ -3922,6 +3922,12 @@ escodegen@~1.9.0:
   optionalDependencies:
     source-map "~0.6.1"
 
+eslint-plugin-cypress@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-cypress/-/eslint-plugin-cypress-2.2.1.tgz#17295d8ef76984fe05886c7c5830ba216c1f9717"
+  dependencies:
+    globals "^11.0.1"
+
 eslint-plugin-react@^7.12.4:
   version "7.12.4"
   resolved "https://registry.yarnpkg.com/eslint-plugin-react/-/eslint-plugin-react-7.12.4.tgz#b1ecf26479d61aee650da612e425c53a99f48c8c"
@@ -5015,7 +5021,7 @@ global@^4.3.1:
     min-document "^2.19.0"
     process "~0.5.1"
 
-globals@^11.1.0, globals@^11.7.0:
+globals@^11.0.1, globals@^11.1.0, globals@^11.7.0:
   version "11.11.0"
   resolved "https://registry.yarnpkg.com/globals/-/globals-11.11.0.tgz#dcf93757fa2de5486fbeed7118538adf789e9c2e"
 
