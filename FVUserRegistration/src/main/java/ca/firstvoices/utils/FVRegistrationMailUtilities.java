@@ -283,11 +283,10 @@ public class FVRegistrationMailUtilities {
         options.put("comment", (String) registrationRequest.getPropertyValue("fvuserinfo:comment"));
         options.put("dialect", dialectTitle);
 
-        String toStr = getLanguageAdministratorEmail(dialect);
-
         registrationMailSender(variant, new UserReminderMailContent(), options, "");
 
         // TODO Decide if we need to send reminders to admins
+        // String toStr = getLanguageAdministratorEmail(dialect);
         // registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }
