@@ -179,24 +179,25 @@ public class EnricherUtils {
     public static String getPartOfSpeechLabel(String partOfSpeechId) {
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Session directorySession = directoryService.open("parts_of_speech");
-        String partOfSpeechLabel = "";
-        if (partOfSpeechId != null && !partOfSpeechId.isEmpty()) {
-            // Create a query filter
-            Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
-            queryFilter.put("id", partOfSpeechId);
+        try (Session directorySession = directoryService.open("parts_of_speech")) {
+            String partOfSpeechLabel = "";
+            if (partOfSpeechId != null && !partOfSpeechId.isEmpty()) {
+                // Create a query filter
+                Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
+                queryFilter.put("id", partOfSpeechId);
 
-            // Execute the query, wrapped in a DocumentModel list
-            DocumentModelList queryResult = directorySession.query(queryFilter);
-            if (!queryResult.isEmpty()) {
-                DocumentModel partOfSpeechDoc = queryResult.get(0);
-                if (partOfSpeechDoc != null) {
-                    partOfSpeechLabel = partOfSpeechDoc.getProperty("xvocabulary:label").getValue(String.class);
+                // Execute the query, wrapped in a DocumentModel list
+                DocumentModelList queryResult = directorySession.query(queryFilter);
+                if (!queryResult.isEmpty()) {
+                    DocumentModel partOfSpeechDoc = queryResult.get(0);
+                    if (partOfSpeechDoc != null) {
+                        partOfSpeechLabel = partOfSpeechDoc.getProperty("xvocabulary:label").getValue(String.class);
+                    }
                 }
             }
-        }
 
-        return partOfSpeechLabel;
+            return partOfSpeechLabel;
+        }
     }
 
     /**

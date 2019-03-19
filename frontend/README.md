@@ -95,13 +95,13 @@ Important Note: when running Yarn for the first time you will be silently prompt
 8. Start the dev server:
 
 ```bash
-$ yarn run start
+$ npm run start
 ```
 
 9. Building development files (used for debugging development build files)
 
 ```bash
-$ yarn run development
+$ npm run development
 ```
 
 10. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
@@ -113,7 +113,7 @@ You can build for production after completing the steps found in the _Setting Up
 1. Run the following command to build for production:
 
 ```
-$ yarn run production
+$ npm run production
 ```
 
 2. Copy the generated files in `/public` folder to your webserver.
