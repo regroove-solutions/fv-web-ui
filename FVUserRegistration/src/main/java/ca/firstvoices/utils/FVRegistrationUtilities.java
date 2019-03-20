@@ -202,7 +202,7 @@ public class FVRegistrationUtilities {
             String defaultUserPrefs = up.createDefaultUserPreferencesWithRegistration(registrationRequest);
             userInfo.setPreferences(defaultUserPrefs);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         docInfo = new DocumentRegistrationInfo();

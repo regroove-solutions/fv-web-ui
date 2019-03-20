@@ -59,7 +59,7 @@ public class FV_CategoryPropertyReader extends FV_AbstractPropertyReader {
                 log.warn("Null category document in FV_CategoryPropertyReader.");
                 readValues.add(new FV_DataBinding((String) colA[colCounter], "Null category document"));
                 colCounter++;
-                e.printStackTrace();
+                log.error(e);
             }
         }
 

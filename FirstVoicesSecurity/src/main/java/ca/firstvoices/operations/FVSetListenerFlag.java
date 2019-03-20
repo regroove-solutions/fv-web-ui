@@ -17,6 +17,8 @@
 
 package ca.firstvoices.operations;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
@@ -31,6 +33,8 @@ import org.nuxeo.runtime.api.Framework;
  */
 @Operation(id = FVSetListenerFlag.ID, category = Constants.CAT_SERVICES, label = "FVSetListenerFlag", description = "")
 public class FVSetListenerFlag {
+
+    private static Log log = LogFactory.getLog(FVSetListenerFlag.class);
 
     public static final String ID = "FVSetListenerFlag";
 
@@ -47,13 +51,7 @@ public class FVSetListenerFlag {
 
     @OperationMethod
     public void run() {
-
-        try {
-            eventServiceAdmin.setListenerEnabledFlag(listenerName, (state.equals("Enabled")) ? true : false);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        eventServiceAdmin.setListenerEnabledFlag(listenerName, (state.equals("Enabled")) ? true : false);
     }
 
 }
