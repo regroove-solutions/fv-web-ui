@@ -25,6 +25,7 @@ export class AlphabetListView extends Component {
   }
   static defaultProps = {
     handleClick: () => {},
+    fetchCharacters: () => {},
   }
 
   _isMounted = false
