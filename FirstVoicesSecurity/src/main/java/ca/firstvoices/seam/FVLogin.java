@@ -1,9 +1,8 @@
 package ca.firstvoices.seam;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -66,9 +65,9 @@ public class FVLogin extends StartupHelper {
         }
 
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(redirectTo);
+            FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
             return null;
-        } catch (IOException e) {
+        } catch (URISyntaxException | IOException e) {
             log.error(e);
             throw new NuxeoException(e);
         }
@@ -133,11 +132,8 @@ public class FVLogin extends StartupHelper {
                 finalPath = "Workspaces/" + primary_dialect_short_url;
             }
         } else if (primary_dialect_path != null) {
-            try {
-                finalPath = "app/explore" + URLDecoder.decode(primary_dialect_path, StandardCharsets.UTF_8.name());
-            } catch (UnsupportedEncodingException e) {
-                // TODO: capture in audit log?
-            }
+            // must encode only Dialect..
+            finalPath = "app/explore" + primary_dialect_path;
         }
 
         return finalPath;
