@@ -5,6 +5,9 @@ describe('Word', () => {
   const create =
     'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
   const prefix = '/nuxeo/app'
+  const waitLong = 5000
+  const waitMedium = 2000
+  const waitShort = 50
   it('Edit', () => {
     // Note: need to set environment variables in your bash_profile, eg:
     // export ADMIN_USERNAME='THE_USERNAME'
@@ -15,6 +18,7 @@ describe('Word', () => {
     expect(Cypress.env('ADMIN_PASSWORD')).not.to.be.undefined
 
     // Login
+    cy.log('Login')
     cy.request({
       method: 'POST',
       url: login,
@@ -31,6 +35,7 @@ describe('Word', () => {
     })
 
     // Create
+    cy.log('Word > create')
     const nowCreate = Date.now()
     const title = `Cypress: Word > CRUD | Test ran at ${nowCreate}`
     const word = {
@@ -50,23 +55,28 @@ describe('Word', () => {
     }).then((response) => {
       // Visit
       const page = `${host}${prefix}/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`
-      cy.log(`Visit: ${page}`)
       cy.visit(page)
-      const waitLong = 4000
-      const waitShort = 50
+      cy.log('Word > read')
+      cy.wait(waitMedium)
+      cy.getByText(title, { exact: false })
+
       // Update
+      cy.log('Word > update')
       cy.getByText('Edit word', { exact: false }).click()
       const nowEdit = Date.now()
-      cy.log('Update Reference')
       cy.get('input[label="Reference"].form-control').type(nowEdit)
       cy.getByText('save', { exact: false }).click()
 
+      cy.log(
+        `Using an explicit cy.wait(${waitLong}). Suspect when testing a SPA, the 'load' event is unreliable indicator of done`
+      )
       cy.wait(waitLong)
       cy.getByText(title).should('exist')
       cy.getByText('METADATA', { exact: false }).click()
       cy.get('aside').contains(nowEdit)
 
       // Delete
+      cy.log('Word > delete')
       cy.getByText('delete word', { exact: false }).click()
       cy.wait(waitShort)
       cy.getByText('Deleting word', { exact: false })
