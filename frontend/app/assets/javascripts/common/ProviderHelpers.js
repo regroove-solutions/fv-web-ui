@@ -51,10 +51,12 @@ const proxiesKeys = [
 // @action - the action to perform if nothing found in store.
 // @reducer - the reducer to look for
 function fetchIfMissing(key, action, reducer) {
-  // console.log({ key, action, reducer })
-  // debugger
-  if (!selectn('success', getEntry(reducer, key))) {
+  if (!selectn('success', getEntry(reducer, key)) && typeof action === 'function') {
     action(key)
+  } else {
+    // Note: temp
+    // eslint-disable-next-line
+    console.log('fetchIfMissing not provided with action()')
   }
 }
 
