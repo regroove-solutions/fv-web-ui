@@ -1,7 +1,7 @@
 describe('Authentication', () => {
   it('Logins to //firstvoices-dev.apps.prod.nuxeo.io as SENCOTEN_ADMIN and updates the portal About Us on //0.0.0.0:3001', () => {
     // Image 404 will tank the test
-    cy.on('uncaught:exception', (err, runnable) => {
+    cy.on('uncaught:exception', () => {
       // return false to prevent the error from
       // failing this test
       return false
