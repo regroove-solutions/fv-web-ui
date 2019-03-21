@@ -132,7 +132,7 @@
     "no-var": 2, // http://eslint.org/docs/rules/no-var
     "no-with": 2, // http://eslint.org/docs/rules/no-with
     "one-var": [2, "never"], // http://eslint.org/docs/rules/one-var
-    "padded-blocks": [2, "never"], // http://eslint.org/docs/rules/padded-blocks
+    "padded-blocks": [1, "never"], // http://eslint.org/docs/rules/padded-blocks
     "prefer-const": 2, // http://eslint.org/docs/rules/prefer-const
     "quotes": [
       2,
