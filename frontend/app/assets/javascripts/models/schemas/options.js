@@ -313,12 +313,12 @@ const options = {
           factory: SelectSuggestFactory,
           type: 'FVPhrase',
           locals: {
-            labelBrowseComponent: 'Browse phrases',
+            labelBrowseComponent: intl.trans('phrases_browse', 'Browse phrases', 'first'),
           },
         },
         i18n: {
           ...i18nExt,
-          add: `+ ${intl.trans('add_related_phrase', 'Add related phrase', 'first')}`,
+          add: `+ ${intl.trans('add_related_phrases', 'Add related phrases', 'first')}`,
         },
       },
       'fv-word:categories': {
@@ -335,12 +335,12 @@ const options = {
             hideCreate: true,
           },
           locals: {
-            labelBrowseComponent: 'Browse categories',
+            labelBrowseComponent: intl.trans('categories_browse', 'Browse categories', 'first'),
           },
         },
         i18n: {
           ...i18nExt,
-          add: `+ ${intl.trans('add_category', 'Add category', 'first')}`,
+          add: `+ ${intl.trans('add_categories', 'Add categories', 'first')}`,
         },
       },
       'fv:related_audio': {
@@ -349,8 +349,8 @@ const options = {
           factory: MediaFactory,
           type: 'FVAudio',
           locals: {
-            labelAddMediaComponent: 'Upload audio',
-            labelSelectMediaComponent: 'Browse audio',
+            labelAddMediaComponent: intl.trans('audio_upload', 'Upload audio', 'first'),
+            labelSelectMediaComponent: intl.trans('audio_browse', 'Browse audio', 'first'),
           },
         },
         template: RelatedMediaLayout,
@@ -365,8 +365,8 @@ const options = {
           factory: MediaFactory,
           type: 'FVPicture',
           locals: {
-            labelAddMediaComponent: 'Upload picture',
-            labelSelectMediaComponent: 'Browse pictures',
+            labelAddMediaComponent: intl.trans('picture_upload', 'Upload picture', 'first'),
+            labelSelectMediaComponent: intl.trans('pictures_browse', 'Browse pictures', 'first'),
           },
         },
         template: RelatedMediaLayout,
@@ -381,8 +381,8 @@ const options = {
           factory: MediaFactory,
           type: 'FVVideo',
           locals: {
-            labelAddMediaComponent: 'Upload video',
-            labelSelectMediaComponent: 'Browse videos',
+            labelAddMediaComponent: intl.trans('video_upload', 'Upload video', 'first'),
+            labelSelectMediaComponent: intl.trans('videos_browse', 'Browse videos', 'first'),
           },
         },
         template: RelatedMediaLayout,
@@ -421,7 +421,7 @@ const options = {
             allowEdit: true,
           },
           locals: {
-            labelBrowseComponent: 'Browse contributors',
+            labelBrowseComponent: intl.trans('contributors_browse', 'Browse contributors', 'first'),
           },
         },
         i18n: {
