@@ -88,7 +88,7 @@ const RelatedMediaLayout = (locals) => (
         {locals.label}{' '}
         <FlatButton
           style={{
-            border: '1px solid rgb(204, 204, 204);',
+            border: '1px solid rgb(204, 204, 204)',
             borderRadius: '4px',
             fontSize: '1.4rem',
             color: 'rgb(51, 51, 51)',
@@ -312,6 +312,9 @@ const options = {
         item: {
           factory: SelectSuggestFactory,
           type: 'FVPhrase',
+          locals: {
+            labelBrowseComponent: 'Browse phrases',
+          },
         },
         i18n: {
           ...i18nExt,
@@ -331,6 +334,9 @@ const options = {
             },
             hideCreate: true,
           },
+          locals: {
+            labelBrowseComponent: 'Browse categories',
+          },
         },
         i18n: {
           ...i18nExt,
@@ -342,6 +348,10 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVAudio',
+          locals: {
+            labelAddMediaComponent: 'Upload audio',
+            labelSelectMediaComponent: 'Browse audio',
+          },
         },
         template: RelatedMediaLayout,
         i18n: {
@@ -354,6 +364,10 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVPicture',
+          locals: {
+            labelAddMediaComponent: 'Upload picture',
+            labelSelectMediaComponent: 'Browse pictures',
+          },
         },
         template: RelatedMediaLayout,
         i18n: {
@@ -366,6 +380,10 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVVideo',
+          locals: {
+            labelAddMediaComponent: 'Upload video',
+            labelSelectMediaComponent: 'Browse videos',
+          },
         },
         template: RelatedMediaLayout,
         i18n: {
@@ -401,6 +419,9 @@ const options = {
           type: 'FVContributor',
           attrs: {
             allowEdit: true,
+          },
+          locals: {
+            labelBrowseComponent: 'Browse contributors',
           },
         },
         i18n: {
