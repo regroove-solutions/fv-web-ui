@@ -125,11 +125,11 @@ public class FVLogin extends StartupHelper {
         if (primary_dialect_short_url != null && !primary_dialect_short_url.isEmpty()) {
             // Users who are global 'members' should just go to the Sections URL
             if (currentUser.getGroups().contains("members")) {
-                finalPath = "sections/" + primary_dialect_short_url;
+                finalPath = "app/sections/" + primary_dialect_short_url;
             }
             // Other users can go to Workspaces
             else {
-                finalPath = "Workspaces/" + primary_dialect_short_url;
+                finalPath = "app/Workspaces/" + primary_dialect_short_url;
             }
         } else if (primary_dialect_path != null) {
             // must encode only Dialect..
