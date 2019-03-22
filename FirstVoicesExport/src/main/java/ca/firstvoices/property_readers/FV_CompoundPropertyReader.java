@@ -2,6 +2,9 @@ package ca.firstvoices.property_readers;
 
 import ca.firstvoices.format_producers.FV_AbstractProducer;
 import ca.firstvoices.utils.ExportColumnRecord;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.core.util.StringList;
 import org.nuxeo.ecm.core.api.*;
 
@@ -19,6 +22,8 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
 {
     private FV_DataBinding[]    compound;
     private List<FV_AbstractPropertyReader>     compoundReaders;
+    
+    private static final Log log = LogFactory.getLog(FV_CompoundPropertyReader.class);
 
     public ReaderType readerType()
     {
@@ -178,7 +183,7 @@ public class FV_CompoundPropertyReader extends FV_AbstractPropertyReader
             }
             catch ( Exception e )
             {
-                e.printStackTrace();
+                log.error(e);
             }
         }
     }

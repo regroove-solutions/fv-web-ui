@@ -1,5 +1,16 @@
 package ca.firstvoices.operations;
 
+import static ca.firstvoices.utils.FVExportConstants.CSV_FORMAT;
+import static ca.firstvoices.utils.FVExportConstants.DIALECT_RESOURCES_TYPE;
+import static ca.firstvoices.utils.FVExportConstants.PDF_FORMAT;
+import static ca.firstvoices.utils.FVExportUtils.findDialectChildWithRef;
+import static ca.firstvoices.utils.FVExportUtils.makePrincipalWorkDigest;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -13,18 +24,14 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import static ca.firstvoices.utils.FVExportConstants.*;
-import static ca.firstvoices.utils.FVExportUtils.*;
-
 /*
  * This end-point will return all the documents export by a specific principal
  */
 @Operation(id = FVFormattedDocumentGetter.ID, category = Constants.CAT_DOCUMENT, label = "Get exported documents", description = "Retrieve formatted (CSV or PDF) documents from principals home directory.")
 public class FVFormattedDocumentGetter {
     public static final String ID = "Document.GetFormattedDocument";
+
+    private static final Log log = LogFactory.getLog(FVFormattedDocumentGetter.class);
 
     protected AutomationService automation = Framework.getService(AutomationService.class);
 
@@ -62,7 +69,7 @@ public class FVFormattedDocumentGetter {
                 automation.run(ctx, "WebUI.AddInfoMessage", parameters);
             }
         } catch (OperationException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         return result;

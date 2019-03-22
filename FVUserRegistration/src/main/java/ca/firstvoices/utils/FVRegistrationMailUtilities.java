@@ -157,7 +157,8 @@ public class FVRegistrationMailUtilities {
             RenderingHelper rh = new RenderingHelper();
 
             // Add site url to options
-            String siteURL = Framework.getProperty("nuxeo.url").replace("/nuxeo", "").replace("8080", "3001");
+            String siteURL = Framework.getProperty("nuxeo.url");
+            ;
 
             options.put("siteURL", siteURL);
 
