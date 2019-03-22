@@ -117,6 +117,8 @@ export default class Navigation extends Component {
       "handleChangeRequestLeftNav",
       "handleRequestChangeList",
       "_handleNavigationSearchSubmit",
+      "_searchInteractionOut",
+      "_searchInteractionIn",
       "_startTour",
       "_removePopoverUnlessOptionSelected",
       "_handleOpenMenuRequest",
@@ -233,7 +235,19 @@ export default class Navigation extends Component {
 
     newTour.start()
   }
-
+  _searchInteractionIn(state = {}) {
+    this.setState({
+      searchContextPopoverOpen: true,
+      searchLastInteracted: Date.now(),
+      ...state,
+    })
+  }
+  _searchInteractionOut() {
+    const searchInteractionIdleLimit = 1000
+    if (Date.now() - this.state.searchLastInteracted > searchInteractionIdleLimit) {
+      this.setState({ searchContextPopoverOpen: false })
+    }
+  }
   _handleNavigationSearchSubmit(e) {
     // If search bar is not visible, this button should show it
     if (this.refs.navigationSearchField._getInputNode().offsetParent === null) {
@@ -458,6 +472,9 @@ export default class Navigation extends Component {
                 "hidden-xs": !this.state.searchBarVisibleInMobile,
                 "search-bar-mobile": this.state.searchBarVisibleInMobile,
               })}
+              onClick={(e) => {
+                this._searchInteractionIn()
+              }}
             >
               <TextField
                 underlineStyle={{ width: "79%" }}
@@ -474,10 +491,11 @@ export default class Navigation extends Component {
                 }}
                 ref="navigationSearchField"
                 hintText={this.intl.translate({ key: "general.search", default: "Search", case: "first", append: ":" })}
-                onBlur={() => this.setState({ searchContextPopoverOpen: isDialect ? true : false })}
-                onFocus={(e) =>
-                  this.setState({ searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target })
-                }
+                onFocus={(e) => {
+                  this._searchInteractionIn({
+                    searchContextPopoverAnchorEl: e.target,
+                  })
+                }}
                 className={getDialectClassname()}
                 onEnterKeyDown={this._handleNavigationSearchSubmit}
                 name="searchbox"
@@ -514,6 +532,12 @@ export default class Navigation extends Component {
               }}
               anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
               targetOrigin={{ horizontal: "middle", vertical: "top" }}
+              onRequestClose={(reason) => {
+                this._searchInteractionOut()
+              }}
+              onClick={(e) => {
+                this._searchInteractionIn()
+              }}
             >
               <div>
                 <img
