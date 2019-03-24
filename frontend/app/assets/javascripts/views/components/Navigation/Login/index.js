@@ -32,6 +32,8 @@ import ActionExitToAppIcon from "material-ui/lib/svg-icons/action/exit-to-app"
 
 import CircularProgress from "material-ui/lib/circular-progress"
 
+import NavigationHelpers from "common/NavigationHelpers"
+
 import { BrowserView, MobileView, isBrowser, isMobile } from "react-device-detect"
 import IntlService from "views/services/intl"
 
@@ -146,7 +148,7 @@ export default class Login extends Component {
 
     return (
       <div style={{ display: "inline-block", padding: "0 0 0 10px" }}>
-        <a className="nav_link" href={ConfGlobal.baseURL + "login.jsp"}>
+        <a className="nav_link" href={NavigationHelpers.getBaseURL() + "login.jsp"}>
           SIGN IN
         </a>
       </div>

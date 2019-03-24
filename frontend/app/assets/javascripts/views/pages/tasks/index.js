@@ -19,9 +19,6 @@ import Immutable, { List, Map } from "immutable"
 import classNames from "classnames"
 import provide from "react-redux-provide"
 import selectn from "selectn"
-
-import ConfGlobal from "conf/local.json"
-
 import t from "tcomb-form"
 
 import Dialog from "material-ui/lib/dialog"
@@ -175,7 +172,7 @@ export default class Tasks extends React.Component {
       {
         comment: properties.comment,
         group: properties.group,
-        appurl: ConfGlobal.baseWebUIURL,
+        appurl: NavigationHelpers.getBaseWebUIURL(),
       },
       null,
       intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
