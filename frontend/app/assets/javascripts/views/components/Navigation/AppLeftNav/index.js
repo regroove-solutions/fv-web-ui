@@ -29,6 +29,8 @@ import NavigationClose from "material-ui/lib/svg-icons/navigation/close"
 import { SelectableContainerEnhance } from "material-ui/lib/hoc/selectable-enhance"
 import IntlService from "views/services/intl"
 
+import NavigationHelpers from "common/NavigationHelpers"
+
 const SelectableList = SelectableContainerEnhance(List)
 
 @provide
@@ -165,8 +167,8 @@ export default class AppLeftNav extends Component {
     if (path === null) {
       return
     }
-    if (path === ConfGlobal.baseURL + "logout") {
-      window.location.href = ConfGlobal.baseURL + "logout?requestedUrl=logout-success.jsp"
+    if (path === NavigationHelpers.getBaseURL() + "logout") {
+      window.location.href = NavigationHelpers.getBaseURL() + "logout?requestedUrl=logout-success.jsp"
     } else {
       // Request to navigate to
       this.props.pushWindowPath(path)
@@ -254,7 +256,7 @@ export default class AppLeftNav extends Component {
 
                 <ListItem
                   key="sign-out"
-                  value={ConfGlobal.baseURL + "logout"}
+                  value={NavigationHelpers.getBaseURL() + "logout"}
                   primaryText={this.intl.translate({
                     key: "sign_out",
                     default: "Sign Out",

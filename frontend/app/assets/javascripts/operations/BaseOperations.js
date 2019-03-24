@@ -1,12 +1,12 @@
-import ConfGlobal from "conf/local.json"
 import Nuxeo from "nuxeo"
 import IntlService from "views/services/intl"
 
+import NavigationHelpers from "common/NavigationHelpers"
 export default class BaseOperations {
   static properties = {
     condition: "ecm:currentLifeCycleState <> 'deleted'",
     client: new Nuxeo({
-      baseURL: ConfGlobal.baseURL,
+      baseURL: NavigationHelpers.getBaseURL(),
       restPath: "site/api/v1",
       automationPath: "site/automation",
       timeout: 300,

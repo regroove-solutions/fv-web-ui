@@ -418,7 +418,7 @@ export default class ExploreDialect extends Component {
                         <audio
                           id="portalFeaturedAudio"
                           src={
-                            ConfGlobal.baseURL +
+                            NavigationHelpers.getBaseURL() +
                             selectn("response.contextParameters.portal.fv-portal:featured_audio", computePortal).path
                           }
                           controls

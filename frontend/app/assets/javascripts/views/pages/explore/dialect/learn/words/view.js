@@ -460,7 +460,7 @@ export default class DialectViewWord extends Component {
       videoThumbnails.push(
         <video
           key={video.uid}
-          src={ConfGlobal.baseURL + video.path}
+          src={NavigationHelpers.getBaseURL() + video.path}
           controls
           style={{ margin: "15px", maxWidth: "150px" }}
         />
@@ -532,7 +532,7 @@ export default class DialectViewWord extends Component {
 
     ;(selectn("response.contextParameters.word.related_videos", computeWord) || []).map((video, key) => {
       const vid = {
-        original: ConfGlobal.baseURL + video.path,
+        original: NavigationHelpers.getBaseURL() + video.path,
         thumbnail: selectn("views[0].url", video) || "/assets/images/cover.png",
         description: video["dc:description"],
         key: key,

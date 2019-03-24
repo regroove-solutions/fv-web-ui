@@ -29,6 +29,8 @@ import AuthenticationFilter from "views/components/Document/AuthenticationFilter
 
 import { EditableComponentHelper } from "views/components/Editor/EditableComponent"
 
+import NavigationHelpers from "common/NavigationHelpers"
+
 import IntlService from "views/services/intl"
 
 const intl = IntlService.instance
@@ -69,7 +71,7 @@ export default class Header extends Component {
     let portalBackgroundImagePath = "/assets/images/cover.png"
 
     if (backgroundImage && backgroundImage.length > 0) {
-      portalBackgroundImagePath = ConfGlobal.baseURL + backgroundImage
+      portalBackgroundImagePath = NavigationHelpers.getBaseURL() + backgroundImage
     }
 
     const portalBackgroundStyles = {
