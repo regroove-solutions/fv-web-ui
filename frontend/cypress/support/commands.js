@@ -11,7 +11,28 @@ import 'cypress-testing-library/add-commands'
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
+Cypress.Commands.add('login', () => {
+  // NB: Cypress drops the `CYPRESS__` prefix when using:
+  expect(Cypress.env('ADMIN_USERNAME')).not.to.be.undefined
+  expect(Cypress.env('ADMIN_PASSWORD')).not.to.be.undefined
+  const login = 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/startup'
+  // Login
+  cy.log('--- LOGIN ---')
+  cy.request({
+    method: 'POST',
+    url: login,
+    form: true, // we are submitting a regular form body
+    body: {
+      user_name: Cypress.env('ADMIN_USERNAME'),
+      user_password: Cypress.env('ADMIN_PASSWORD'),
+      language: 'en',
+      requestedUrl: 'app',
+      forceAnonymousLogin: true,
+      form_submitted_marker: undefined,
+      Submit: 'Log+In',
+    },
+  })
+})
 //
 //
 // -- This is a child command --

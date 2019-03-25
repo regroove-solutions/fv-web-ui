@@ -1,14 +1,5 @@
 describe('Word', () => {
-  // NOTE: turn off all uncaught exception handling
-  cy.on('uncaught:exception', () => {
-    // returning false here prevents Cypress from
-    // failing the test
-    return false
-  })
-
   const host = 'http://0.0.0.0:3001'
-  //   const page = `${host}/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/f1464526-9022-4103-9174-9a7fffc71419`
-  const login = 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/startup'
   const create =
     'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
   const prefix = '/nuxeo/app'
@@ -21,26 +12,9 @@ describe('Word', () => {
     // export ADMIN_USERNAME='THE_USERNAME'
     // export ADMIN_PASSWORD='THE_PASSWORD'
 
-    // NB: Cypress drops the `CYPRESS__` prefix when using:
-    expect(Cypress.env('ADMIN_USERNAME')).not.to.be.undefined
-    expect(Cypress.env('ADMIN_PASSWORD')).not.to.be.undefined
-
     // Login
     cy.log('--- LOGIN ---')
-    cy.request({
-      method: 'POST',
-      url: login,
-      form: true, // we are submitting a regular form body
-      body: {
-        user_name: Cypress.env('ADMIN_USERNAME'),
-        user_password: Cypress.env('ADMIN_PASSWORD'),
-        language: 'en',
-        requestedUrl: 'app',
-        forceAnonymousLogin: true,
-        form_submitted_marker: undefined,
-        Submit: 'Log+In',
-      },
-    })
+    cy.login()
 
     // Create
     cy.log('--- CREATE ---')
