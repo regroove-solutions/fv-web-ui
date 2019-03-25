@@ -1,15 +1,11 @@
 package ca.firstvoices.resetpassword.runner;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.UnrestrictedSessionRunner;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
@@ -54,29 +50,18 @@ public class SetNewPasswordUnrestricted extends UnrestrictedSessionRunner {
             return;
         }
         String email = registration.getProperty("resetPasswordKeys:email").getValue(String.class);
-
         UserManager userManager = Framework.getService(UserManager.class);
-        DocumentModel userModel = searchCorrectUserByEmail(email);
-        userModel.setPropertyValue("user:password", password);
-        userManager.updateUser(userModel);
-
+        NuxeoPrincipal currentUser = userManager.getPrincipal(email);
+        currentUser.setPassword(password);
+        userManager.updateUser(currentUser.getModel());
+        if (!userManager.checkUsernamePassword(currentUser.getName(), password)) {
+            errorMessage = "label.resetPassForm.error";
+            return;
+        }
         try (Session session = Framework.getService(DirectoryService.class).open("resetPasswordKeys")) {
             session.deleteEntry(passwordKey);
         }
 
-    }
-
-    public DocumentModel searchCorrectUserByEmail(String email) {
-
-        Map<String, Serializable> params = new HashMap<String, Serializable>();
-        params.put("email", email);
-
-        DocumentModelList users = Framework.getService(UserManager.class).searchUsers(params, null);
-        if (users.size() > 0) {
-            // normally we should have only one registered email
-            return users.get(0);
-        }
-        return null;
     }
 
     public String getErrorMessage() {

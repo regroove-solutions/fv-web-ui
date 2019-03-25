@@ -13,99 +13,141 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable from 'immutable'
+import NavigationHelpers from 'common/NavigationHelpers'
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
 
-import classNames from 'classnames';
-import provide from 'react-redux-provide';
+import selectn from 'selectn'
 
-import selectn from 'selectn';
+import GridList from 'material-ui/lib/grid-list/grid-list'
+import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
+import UIHelpers from 'common/UIHelpers'
+import IntlService from 'views/services/intl'
 
-import UIHelpers from 'common/UIHelpers';
-import IntlService from 'views/services/intl';
+const intl = IntlService.instance
 
-const intl = IntlService.instance;
-
-@provide
-export default class Kids extends Component {
-
+export class Kids extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
     portal: PropTypes.object.isRequired,
     routeParams: PropTypes.object.isRequired,
-  };
+  }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired
-  };
+    muiTheme: PropTypes.object.isRequired,
+  }
 
-  constructor(props, context){
-    super(props, context);
+  constructor(props, context) {
+    super(props, context)
   }
 
   render() {
+    const tileTitleStyle = { fontSize: '18px', marginLeft: '-16px' }
+    const tileStyle = { textAlign: 'center', textTransform: 'uppercase' }
 
-    const tileTitleStyle = {fontSize: '18px', marginLeft: '-16px'};
-    const tileStyle = {textAlign: 'center', textTransform: 'uppercase'};
+    return (
+      <div>
+        <div
+          className="row"
+          style={{
+            backgroundSize: 'cover',
+            backgroundPosition: 'center center',
+            backgroundImage:
+              'url("' +
+              selectn(
+                'response.contextParameters.portal.fv-portal:background_top_image.views[3].url',
+                this.props.portal
+              ) +
+              '?inline=true")',
+          }}
+        >
+          <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
+            <div
+              style={{
+                marginTop: '40px',
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-around',
+                border: '15px rgba(255,255,255,0) solid',
+                borderRadius: '15px',
+                backgroundColor: 'rgba(255,255,255,0.4)',
+              }}
+            >
+              <GridList
+                cols={UIHelpers.isViewSize('xs') ? 1 : 2}
+                cellHeight={200}
+                style={{ width: '100%', overflowY: 'auto', marginBottom: 0 }}
+              >
+                <GridTile
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/words/categories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
+                  key="words"
+                  title={<span style={tileTitleStyle}>Words</span>}
+                  style={tileStyle}
+                >
+                  <div className={classNames('kids-image-grid-container', 'words-main')} />
+                </GridTile>
 
-    return <div>
+                <GridTile
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/phrases/categories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
+                  key="phrases"
+                  title={<span style={tileTitleStyle}>Phrases</span>}
+                  style={tileStyle}
+                >
+                  <div className={classNames('kids-image-grid-container', 'phrases-main')} />
+                </GridTile>
 
-            <div className="row" style={{backgroundSize: 'cover', backgroundPosition: 'center center', backgroundImage: 'url("' + selectn('response.contextParameters.portal.fv-portal:background_top_image.views[3].url', this.props.portal) + '?inline=true")'}}>
+                <GridTile
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/songs-stories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
+                  key="songs-stories"
+                  title={<span style={tileTitleStyle}>Songs and Stories</span>}
+                  style={tileStyle}
+                >
+                  <div className={classNames('kids-image-grid-container', 'songs-stories-main')} />
+                </GridTile>
 
-              <div className={classNames('col-xs-12', 'col-md-8', 'col-md-offset-2')}>
-
-                  <div style={{marginTop: '40px', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', border: '15px rgba(255,255,255,0) solid', borderRadius: '15px', backgroundColor: 'rgba(255,255,255,0.4)'}}>
-                    <GridList
-                      cols={UIHelpers.isViewSize('xs') ? 1 : 2}
-                      cellHeight={200}
-                      style={{width: '100%', overflowY: 'auto', marginBottom: 0}}
-                      >
-                      <GridTile
-                            onTouchTap={NavigationHelpers.navigate(this.props.windowPath + '/learn/words/categories', this.props.pushWindowPath, false)}
-                            key='words'
-                            title={<span style={tileTitleStyle}>Words</span>}
-                            style={tileStyle}
-                            >
-                          <div className={classNames('kids-image-grid-container', 'words-main')} />
-                      </GridTile>
-
-                      <GridTile
-                            onTouchTap={NavigationHelpers.navigate(this.props.windowPath + '/learn/phrases/categories', this.props.pushWindowPath, false)}
-                            key='phrases'
-                            title={<span style={tileTitleStyle}>Phrases</span>}
-                            style={tileStyle}
-                            >
-                          <div className={classNames('kids-image-grid-container', 'phrases-main')} />
-                      </GridTile>
-
-                      <GridTile
-                            onTouchTap={NavigationHelpers.navigate(this.props.windowPath + '/learn/songs-stories', this.props.pushWindowPath, false)}
-                            key='songs-stories'
-                            title={<span style={tileTitleStyle}>Songs and Stories</span>}
-                            style={tileStyle}
-                            >
-                          <div className={classNames('kids-image-grid-container', 'songs-stories-main')} />
-                      </GridTile>
-
-                      <GridTile
-                            onTouchTap={NavigationHelpers.navigate(this.props.windowPath + '/play', this.props.pushWindowPath, false)}
-                            key='games'
-                            title={<span style={tileTitleStyle}>Games</span>}
-                            style={tileStyle}
-                            >
-                          <div className={classNames('kids-image-grid-container', 'games-main')} />
-                      </GridTile>
-
-                    </GridList>
-                  </div>
-              </div>
+                <GridTile
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(this.props.windowPath + '/play', this.props.pushWindowPath, false)
+                  }}
+                  key="games"
+                  title={<span style={tileTitleStyle}>Games</span>}
+                  style={tileStyle}
+                >
+                  <div className={classNames('kids-image-grid-container', 'games-main')} />
+                </GridTile>
+              </GridList>
             </div>
-
-        </div>;
+          </div>
+        </div>
+      </div>
+    )
   }
-};
+}
+export default provide(Kids)

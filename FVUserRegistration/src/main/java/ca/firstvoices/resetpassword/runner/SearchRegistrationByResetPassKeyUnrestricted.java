@@ -32,7 +32,6 @@ public class SearchRegistrationByResetPassKeyUnrestricted extends UnrestrictedSe
     public void run() {
         try (Session session = Framework.getService(DirectoryService.class).open("resetPasswordKeys")) {
             DocumentModel entry = session.getEntry(passwordKey);
-            session.close();
             if (entry == null) {
                 // No key found
                 errorMessage = "label.resetPassForm.registrationnotfound";

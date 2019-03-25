@@ -3,6 +3,8 @@ package ca.firstvoices.nativeorder.operations;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -24,6 +26,8 @@ import ca.firstvoices.nativeorder.services.NativeOrderComputeService;
 public class ComputeNativeOrderForDialect {
 
     public static final String ID = "Document.ComputeNativeOrderForDialect";
+
+    private static final Log log = LogFactory.getLog(ComputeNativeOrderForDialect.class);
 
     protected NativeOrderComputeService service = Framework.getService(NativeOrderComputeService.class);
 
@@ -51,7 +55,7 @@ public class ComputeNativeOrderForDialect {
             try {
                 automation.run(ctx, "WebUI.AddInfoMessage", parameters);
             } catch (OperationException e) {
-                e.printStackTrace();
+                log.error(e);
             }
         }
 

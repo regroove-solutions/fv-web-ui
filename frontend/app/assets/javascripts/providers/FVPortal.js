@@ -7,6 +7,8 @@ import DirectoryOperations from "operations/DirectoryOperations"
 import RESTActions from "./rest-actions"
 import RESTReducers from "./rest-reducers"
 
+const DISMISS_ERROR = "DISMISS_ERROR"
+
 const FV_FETCH_PORTALS_START = "FV_FETCH_PORTALS_START"
 const FV_FETCH_PORTALS_FETCH_SUCCESS = "FV_FETCH_PORTALS_FETCH_SUCCESS"
 const FV_FETCH_PORTALS_FETCH_ERROR = "FV_FETCH_PORTALS_FETCH_ERROR"
