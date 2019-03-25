@@ -84,11 +84,14 @@ export class Kids extends Component {
                 style={{ width: '100%', overflowY: 'auto', marginBottom: 0 }}
               >
                 <GridTile
-                  onTouchTap={NavigationHelpers.navigate(
-                    this.props.windowPath + '/learn/words/categories',
-                    this.props.pushWindowPath,
-                    false
-                  )}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/words/categories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
                   key="words"
                   title={<span style={tileTitleStyle}>Words</span>}
                   style={tileStyle}
@@ -97,11 +100,14 @@ export class Kids extends Component {
                 </GridTile>
 
                 <GridTile
-                  onTouchTap={NavigationHelpers.navigate(
-                    this.props.windowPath + '/learn/phrases/categories',
-                    this.props.pushWindowPath,
-                    false
-                  )}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/phrases/categories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
                   key="phrases"
                   title={<span style={tileTitleStyle}>Phrases</span>}
                   style={tileStyle}
@@ -110,11 +116,14 @@ export class Kids extends Component {
                 </GridTile>
 
                 <GridTile
-                  onTouchTap={NavigationHelpers.navigate(
-                    this.props.windowPath + '/learn/songs-stories',
-                    this.props.pushWindowPath,
-                    false
-                  )}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(
+                      this.props.windowPath + '/learn/songs-stories',
+                      this.props.pushWindowPath,
+                      false
+                    )
+                  }}
                   key="songs-stories"
                   title={<span style={tileTitleStyle}>Songs and Stories</span>}
                   style={tileStyle}
@@ -123,11 +132,10 @@ export class Kids extends Component {
                 </GridTile>
 
                 <GridTile
-                  onTouchTap={NavigationHelpers.navigate(
-                    this.props.windowPath + '/play',
-                    this.props.pushWindowPath,
-                    false
-                  )}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(this.props.windowPath + '/play', this.props.pushWindowPath, false)
+                  }}
                   key="games"
                   title={<span style={tileTitleStyle}>Games</span>}
                   style={tileStyle}
