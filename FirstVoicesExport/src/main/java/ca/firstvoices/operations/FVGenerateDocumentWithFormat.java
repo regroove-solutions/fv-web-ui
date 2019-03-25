@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.OperationException;
@@ -67,6 +69,8 @@ public class FVGenerateDocumentWithFormat {
     }
 
     public static final String ID = "Document.FVGenerateDocumentWithFormat";
+
+    private static final Log log = LogFactory.getLog(FVGenerateDocumentWithFormat.class);
 
     @Param(name = "query")
     protected String query;
@@ -179,7 +183,7 @@ public class FVGenerateDocumentWithFormat {
             automation.run(ctx, "WebUI.AddInfoMessage", parameters);
 
         } catch (OperationException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         return wrapper;

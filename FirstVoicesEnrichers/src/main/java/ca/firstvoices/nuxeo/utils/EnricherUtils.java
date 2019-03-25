@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -56,9 +57,17 @@ public class EnricherUtils {
         ObjectNode binaryJsonObj = mapper.createObjectNode();
 
         try {
+            if (!session.exists(ref)) {
+                log.warn("Document with id: " + binaryId + " does not exist");
+                return binaryJsonObj;
+            }
             binaryDoc = session.getDocument(ref);
+
             // Retrieve binary details, including the path to the file
-            BinaryBlob fileObj = (BinaryBlob) binaryDoc.getProperty("file", "content");
+            Blob fileObj = (Blob) binaryDoc.getPropertyValue("file:content");
+            if (fileObj == null) {
+                return binaryJsonObj;
+            }
             String filename = fileObj.getFilename();
             String mimeType = fileObj.getMimeType();
             // TODO: not sure how to retrieve this value from the object, so build it manually for now
