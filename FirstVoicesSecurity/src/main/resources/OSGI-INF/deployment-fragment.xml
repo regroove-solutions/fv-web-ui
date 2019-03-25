@@ -7,4 +7,12 @@
       <include>web/nuxeo.war/**</include>
     </unzip>
   </install>
+  
+  
+  <extension target="pages#PAGES">
+
+ <page view-id="/nxstartup.xhtml"
+      action="#{startupHelper.initDomainAndFindStartupPage('Domain', 'view')}" />
+
+    </extension>
 </fragment>

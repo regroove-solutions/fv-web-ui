@@ -19,6 +19,7 @@ import provide from "react-redux-provide"
 import selectn from "selectn"
 
 import ProviderHelpers from "common/ProviderHelpers"
+import NavigationHelpers from "common/NavigationHelpers"
 
 /**
  * Dialect portal page showing all the various components of this dialect.
@@ -53,7 +54,7 @@ export default class ServiceShortURL extends Component {
         newProps.routeParams.dialectFriendlyName +
         "' OR ecm:name = '" +
         newProps.routeParams.dialectFriendlyName +
-        "') AND ecm:isTrashed = 0 AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0"
+        "') AND ecm:isTrashed = 0 AND ecm:isCheckedInVersion = 0"
     )
   }
 
@@ -74,9 +75,9 @@ export default class ServiceShortURL extends Component {
 
     if (dialectQuery.success) {
       if (dialectFullPath) {
-        nextProps.replaceWindowPath("/explore" + dialectFullPath + appendPath)
+        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL( "/explore" + dialectFullPath + appendPath))
       } else {
-        nextProps.replaceWindowPath("/404-page-not-found")
+        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL( "/404-page-not-found"))
       }
     }
   }

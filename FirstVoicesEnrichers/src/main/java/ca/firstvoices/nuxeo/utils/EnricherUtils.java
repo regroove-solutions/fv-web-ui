@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -56,9 +57,17 @@ public class EnricherUtils {
         ObjectNode binaryJsonObj = mapper.createObjectNode();
 
         try {
+            if (!session.exists(ref)) {
+                log.warn("Document with id: " + binaryId + " does not exist");
+                return binaryJsonObj;
+            }
             binaryDoc = session.getDocument(ref);
+
             // Retrieve binary details, including the path to the file
-            BinaryBlob fileObj = (BinaryBlob) binaryDoc.getProperty("file", "content");
+            Blob fileObj = (Blob) binaryDoc.getPropertyValue("file:content");
+            if (fileObj == null) {
+                return binaryJsonObj;
+            }
             String filename = fileObj.getFilename();
             String mimeType = fileObj.getMimeType();
             // TODO: not sure how to retrieve this value from the object, so build it manually for now
@@ -179,24 +188,25 @@ public class EnricherUtils {
     public static String getPartOfSpeechLabel(String partOfSpeechId) {
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        Session directorySession = directoryService.open("parts_of_speech");
-        String partOfSpeechLabel = "";
-        if (partOfSpeechId != null && !partOfSpeechId.isEmpty()) {
-            // Create a query filter
-            Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
-            queryFilter.put("id", partOfSpeechId);
+        try (Session directorySession = directoryService.open("parts_of_speech")) {
+            String partOfSpeechLabel = "";
+            if (partOfSpeechId != null && !partOfSpeechId.isEmpty()) {
+                // Create a query filter
+                Map<String, Serializable> queryFilter = new HashMap<String, Serializable>();
+                queryFilter.put("id", partOfSpeechId);
 
-            // Execute the query, wrapped in a DocumentModel list
-            DocumentModelList queryResult = directorySession.query(queryFilter);
-            if (!queryResult.isEmpty()) {
-                DocumentModel partOfSpeechDoc = queryResult.get(0);
-                if (partOfSpeechDoc != null) {
-                    partOfSpeechLabel = partOfSpeechDoc.getProperty("xvocabulary:label").getValue(String.class);
+                // Execute the query, wrapped in a DocumentModel list
+                DocumentModelList queryResult = directorySession.query(queryFilter);
+                if (!queryResult.isEmpty()) {
+                    DocumentModel partOfSpeechDoc = queryResult.get(0);
+                    if (partOfSpeechDoc != null) {
+                        partOfSpeechLabel = partOfSpeechDoc.getProperty("xvocabulary:label").getValue(String.class);
+                    }
                 }
             }
-        }
 
-        return partOfSpeechLabel;
+            return partOfSpeechLabel;
+        }
     }
 
     /**

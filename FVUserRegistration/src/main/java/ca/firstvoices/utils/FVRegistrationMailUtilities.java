@@ -157,7 +157,8 @@ public class FVRegistrationMailUtilities {
             RenderingHelper rh = new RenderingHelper();
 
             // Add site url to options
-            String siteURL = Framework.getProperty("nuxeo.url").replace("/nuxeo", "").replace("8080", "3001");
+            String siteURL = Framework.getProperty("nuxeo.url");
+            ;
 
             options.put("siteURL", siteURL);
 
@@ -283,11 +284,10 @@ public class FVRegistrationMailUtilities {
         options.put("comment", (String) registrationRequest.getPropertyValue("fvuserinfo:comment"));
         options.put("dialect", dialectTitle);
 
-        String toStr = getLanguageAdministratorEmail(dialect);
-
         registrationMailSender(variant, new UserReminderMailContent(), options, "");
 
         // TODO Decide if we need to send reminders to admins
+        // String toStr = getLanguageAdministratorEmail(dialect);
         // registrationMailSender( variant, new AdminMailContent(), options , toStr );
     }
 }
