@@ -468,6 +468,7 @@ const options = {
               attrs: {
                 defaultValue: 'english',
                 directory: 'fv_language',
+                fancy: false,
               },
             },
           },
@@ -478,6 +479,10 @@ const options = {
             {intl.trans('models.describe_what_the_phrase_means', 'Describe what the phrase actually means.', 'first')}
           </i>
         ),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_definition', 'Add definition', 'first')}`,
+        },
       },
       'fv-phrase:phrase_books': {
         label: intl.trans('phrase_books', 'Phrase Books', 'first'),
@@ -493,33 +498,65 @@ const options = {
             },
           },
         },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('phrase_add_book', 'Add phrase book', 'first')}`,
+        },
       },
       'fv:related_audio': {
         label: intl.trans('related_audio', 'Related Audio', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVAudio',
+          locals: {
+            labelAddMediaComponent: intl.trans('audio_upload', 'Upload audio', 'first'),
+            labelSelectMediaComponent: intl.trans('audio_browse', 'Browse audio', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_audio', 'Add related audio', 'first')}`,
+        },
       },
       'fv:related_pictures': {
         label: intl.trans('related_pictures', 'Related Pictures', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVPicture',
+          locals: {
+            labelAddMediaComponent: intl.trans('picture_upload', 'Upload picture', 'first'),
+            labelSelectMediaComponent: intl.trans('pictures_browse', 'Browse pictures', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_pictures', 'Add related pictures', 'first')}`,
+        },
       },
       'fv:related_videos': {
         label: intl.trans('related_videos', 'Related Videos', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVVideo',
+          locals: {
+            labelAddMediaComponent: intl.trans('video_upload', 'Upload video', 'first'),
+            labelSelectMediaComponent: intl.trans('videos_browse', 'Browse videos', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_videos', 'Add related videos', 'first')}`,
+        },
       },
       'fv:cultural_note': {
         label: intl.trans('views.pages.explore.dialect.learn.words.cultural_notes', 'Cultural Notes', 'first'),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_cultural_note', 'Add cultural note', 'first')}`,
+        },
       },
       'fv:reference': {
         label: intl.trans('reference', 'Reference', 'first'),
@@ -535,6 +572,13 @@ const options = {
         item: {
           factory: SelectSuggestFactory,
           type: 'FVContributor',
+          locals: {
+            labelBrowseComponent: intl.trans('contributors_browse', 'Browse contributors', 'first'),
+          },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_source', 'Add source', 'first')}`,
         },
       },
       'fv:available_in_childrens_archive': {
