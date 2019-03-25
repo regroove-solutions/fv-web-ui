@@ -19,8 +19,7 @@ import classNames from "classnames"
 import provide from "react-redux-provide"
 import selectn from "selectn"
 
-import ConfGlobal from "conf/local.json"
-
+import NavigationHelpers from "common/NavigationHelpers"
 import ProviderHelpers from "common/ProviderHelpers"
 import StringHelpers from "common/StringHelpers"
 
@@ -203,7 +202,7 @@ export default class View extends Component {
 
     ;(selectn("response.contextParameters.phrase.related_videos", computePhrase) || []).map(function(video, key) {
       let vid = {
-        original: ConfGlobal.baseURL + video.path,
+        original: NavigationHelpers.getBaseURL() + video.path,
         thumbnail: selectn("views[0].url", video) || "/assets/images/cover.png",
         description: video["dc:description"],
         key: key,
@@ -214,7 +213,7 @@ export default class View extends Component {
       videoThumbnails.push(
         <video
           key={video.uid}
-          src={ConfGlobal.baseURL + video.path}
+          src={NavigationHelpers.getBaseURL() + video.path}
           controls
           style={{ margin: "15px", maxWidth: "150px" }}
         />

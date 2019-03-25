@@ -19,8 +19,6 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import UIHelpers from 'common/UIHelpers'
@@ -185,7 +183,7 @@ export default class View extends Component {
 
       (selectn('response.contextParameters.word.related_videos', computeCharacter) || []).map(function(video, key) {
         const vid = {
-          original: ConfGlobal.baseURL + video.path,
+          original: NavigationHelpers.getBaseURL() + video.path,
           thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'),
           description: video['dc:description'],
           key: key,

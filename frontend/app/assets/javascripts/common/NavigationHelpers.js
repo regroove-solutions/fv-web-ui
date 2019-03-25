@@ -34,24 +34,24 @@ const ContextPath = function() {
 
 /**
  * Adds a forward slash to path if it is missing to help generate URLs
- * @param String path 
+ * @param String path
  */
-const AddForwardSlash = function(path){
-  let addForwardSlash = "/";
+const AddForwardSlash = function(path) {
+  let addForwardSlash = "/"
 
   if (path.indexOf("/") === 0) {
-    addForwardSlash = "";
+    addForwardSlash = ""
   }
 
-  return addForwardSlash + path;
+  return addForwardSlash + path
 }
 
 /**
  * Stores some default route parameters
  */
 const DefaultRouteParams = {
-    theme: "explore",
-    area: "sections",
+  theme: "explore",
+  area: "sections",
 }
 
 export default {
@@ -59,7 +59,6 @@ export default {
   // If no NavigationFunc is provided, will return the path
   // Will add context path unless already provided
   navigate: function(path, navigationFunc, encodeLastPart = false) {
-
     let pathArray = path.split("/")
 
     if (encodeLastPart) {
@@ -67,7 +66,7 @@ export default {
     }
 
     // Only add context path if it doesn't exist
-    let transformedPath = (path.indexOf(ContextPath()) === 0) ? pathArray.join("/") : ContextPath() + pathArray.join("/")
+    let transformedPath = path.indexOf(ContextPath()) === 0 ? pathArray.join("/") : ContextPath() + pathArray.join("/")
 
     if (!navigationFunc) {
       return transformedPath
@@ -106,9 +105,8 @@ export default {
     window.history.back()
   },
   // Method will append given path (/path/to/) to context path
-  generateStaticURL: function (path) {
-    return ( ContextPath() + AddForwardSlash(path)
-    )
+  generateStaticURL: function(path) {
+    return ContextPath() + AddForwardSlash(path)
   },
   // Method will lookup a path, based on id, in routes, and generate the correct path
   generateDynamicURL: function(routeId, routeParams, moreParams) {
@@ -130,9 +128,7 @@ export default {
         }
       })
 
-      return (
-        ContextPath() + "/" + matchedRoute.path.join("/")
-      )
+      return ContextPath() + "/" + matchedRoute.path.join("/")
     } else {
       // TODO: How do we fall back gracefully when no path is found?
     }
@@ -176,6 +172,18 @@ export default {
   },
   // Checks whether a page being accessed is a Workspace
   isWorkspace: function(props) {
-    return (props.windowPath && props.windowPath.indexOf("/Workspaces/") != -1);
-  }
+    return props.windowPath && props.windowPath.indexOf("/Workspaces/") != -1
+  },
+  getBaseWebUIURL: function() {
+    return (
+      window.location.protocol +
+      "//" +
+      window.location.hostname +
+      (window.location.port ? ":" + window.location.port : "")
+    )
+  },
+  getBaseURL: function() {
+    // Return https://www.YOURNUXEOINSTANCE.com/nuxeo/ to point UI at different instance
+    return "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/";
+  },
 }

@@ -16,7 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from "react"
 import ReactDOM from "react-dom"
 
-import ConfGlobal from "conf/local.json"
+import NavigationHelpers from "common/NavigationHelpers"
 
 import provide from "react-redux-provide"
 import selectn from "selectn"
@@ -146,7 +146,7 @@ export default class Login extends Component {
 
     return (
       <div style={{ display: "inline-block", padding: "0 0 0 10px" }}>
-        <a className="nav_link" href={ConfGlobal.baseURL + "logout"}>
+        <a className="nav_link" href={NavigationHelpers.getBaseURL() + "logout"}>
           SIGN IN
         </a>
       </div>

@@ -23,6 +23,7 @@ import DOMPurify from 'dompurify';
 import ConfGlobal from 'conf/local.json';
 
 import UIHelpers from 'common/UIHelpers';
+import NavigationHelpers from "common/NavigationHelpers"
 
 import Preview from 'views/components/Editor/Preview';
 
@@ -42,7 +43,6 @@ import IconButton from 'material-ui/lib/icon-button';
 import Tabs from 'material-ui/lib/tabs/tabs';
 import Tab from 'material-ui/lib/tabs/tab';
 import IntlService from 'views/services/intl';
-import NavigationHelpers from "common/NavigationHelpers"
 
 
 const intl = IntlService.instance;
@@ -122,7 +122,13 @@ class CardView extends Component {
     }
 
     return <div style={Object.assign(defaultStyle, this.props.style)} key={this.props.item.uid} className={classNames('col-xs-12', 'col-md-12', {'col-md-4': !this.props.fullWidth})}>
-            &#8226; <a href={NavigationHelpers.generateStaticURL('/explore' + this.props.dialectPath + '/reports/' + encodeURI(this.props.item.name))}>{this.props.item.name}</a>
+            &#8226; <a href={
+	            NavigationHelpers.getBaseWebUIURL() +
+	            "/explore" +
+	            this.props.dialectPath +
+	            "/reports/" +
+	            encodeURI(this.props.item.name)
+	          }>{this.props.item.name}</a>
            </div>;
   }
 }

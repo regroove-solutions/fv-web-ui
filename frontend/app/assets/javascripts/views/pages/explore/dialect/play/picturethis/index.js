@@ -22,12 +22,11 @@ import classNames from 'classnames';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-import ConfGlobal from 'conf/local.json';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from "common/NavigationHelpers"
 import UIHelpers from 'common/UIHelpers';
 import IntlService from 'views/services/intl';
 
@@ -388,7 +387,7 @@ export default class Picturethis extends Component {
                 if (selectn('audio', wordInList)) {
                     UIHelpers.playAudio(this.state, function (state) {
                         this.setState(state);
-                    }.bind(this), ConfGlobal.baseURL + selectn('audio', wordInList));
+                    }.bind(this), NavigationHelpers.getBaseURL() + selectn('audio', wordInList));
                 }
 
                 this.setState({
@@ -565,7 +564,7 @@ export default class Picturethis extends Component {
                         <div style={tableCellStyle}>{selectn('translation.translation', word) || key}</div>
                         <div style={tableCellStyle}>
                             {(word.audio) ? <audio controls style={{verticalAlign: 'middle'}}>
-                                <source src={ConfGlobal.baseURL + word.audio} type="audio/mpeg"/>
+                                <source src={NavigationHelpers.getBaseURL() + word.audio} type="audio/mpeg"/>
                             </audio> : 'N/A'}
                         </div>
                     </div>

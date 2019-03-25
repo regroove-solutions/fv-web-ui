@@ -16,7 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 import classNames from 'classnames';
 
-import ConfGlobal from 'conf/local.json';
+import NavigationHelpers from "common/NavigationHelpers"
 import IntlService from "views/services/intl";
 
 const intl = IntlService.instance;
@@ -44,7 +44,7 @@ export default class ForgotPassword extends Component {
             <div className="row" style={{marginTop: '15px'}}>
 
                 <div className={classNames('col-xs-12', 'col-md-5')}>
-                    <iframe src={ConfGlobal.baseURL + "site/resetPassword"} width="100%" style={{minHeight: '350px'}}
+                    <iframe src={NavigationHelpers.getBaseURL() + "site/resetPassword"} width="100%" style={{minHeight: '350px'}}
                             frameBorder="0"/>
                 </div>
 

@@ -18,8 +18,6 @@ import React, { Component, PropTypes } from "react"
 import classNames from "classnames"
 import selectn from "selectn"
 
-import ConfGlobal from "conf/local.json"
-
 import provide from "react-redux-provide"
 
 import ProviderHelpers from "common/ProviderHelpers"
@@ -163,7 +161,7 @@ export default class Navigation extends Component {
     const portalLogo = selectn("response.contextParameters.portal.fv-portal:logo.path", computePortal)
 
     const avatar = portalLogo ? (
-      <Avatar src={ConfGlobal.baseURL + portalLogo} size={50} style={{ marginRight: "10px" }} />
+      <Avatar src={NavigationHelpers.getBaseURL() + portalLogo} size={50} style={{ marginRight: "10px" }} />
     ) : (
       ""
     )

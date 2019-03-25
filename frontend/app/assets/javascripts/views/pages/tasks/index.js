@@ -14,32 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-import React, { Component, PropTypes } from "react"
-import Immutable, { List, Map } from "immutable"
-import classNames from "classnames"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import ConfGlobal from "conf/local.json"
+import ConfGlobal from 'conf/local.json'
 
-import t from "tcomb-form"
+import t from 'tcomb-form'
 
-import Dialog from "material-ui/lib/dialog"
+import Dialog from 'material-ui/lib/dialog'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import StringHelpers from "common/StringHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import StringHelpers from 'common/StringHelpers'
 
-import RaisedButton from "material-ui/lib/raised-button"
-import FlatButton from "material-ui/lib/flat-button"
+import RaisedButton from 'material-ui/lib/raised-button'
+import FlatButton from 'material-ui/lib/flat-button'
 
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from "material-ui/lib/table"
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/lib/table'
 
-import SelectFactory from "views/components/Editor/fields/select"
-import DocumentView from "views/components/Document/view"
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import SelectFactory from 'views/components/Editor/fields/select'
+import DocumentView from 'views/components/Document/view'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import GroupAssignmentDialog from "views/pages/users/group-assignment-dialog"
-import IntlService from "views/services/intl"
+import GroupAssignmentDialog from 'views/pages/users/group-assignment-dialog'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
@@ -72,44 +72,44 @@ export default class Tasks extends React.Component {
       selectedTask: null,
       selectedPreapprovalTask: null,
       lastActionedTaskId: null,
-      userRegistrationTasksPath: "/management/registrationRequests/",
+      userRegistrationTasksPath: '/management/registrationRequests/',
     }
 
     // Bind methods to 'this'
     ;[
-      "_handleTaskActions",
-      "_handleRegistrationActions",
-      "_handleOpen",
-      "_handlePreApprovalOpen",
-      "_handleClose",
-      "fetchData",
-      "_saveMethod",
+      '_handleTaskActions',
+      '_handleRegistrationActions',
+      '_handleOpen',
+      '_handlePreApprovalOpen',
+      '_handleClose',
+      'fetchData',
+      '_saveMethod',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   _handleTaskActions(id, action) {
     switch (action) {
-      case "approve":
+      case 'approve':
         this.props.approveTask(
           id,
           {
-            comment: "",
-            status: "validate",
+            comment: '',
+            status: 'validate',
           },
           null,
-          intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
         )
         break
 
-      case "reject":
+      case 'reject':
         this.props.rejectTask(
           id,
           {
-            comment: "",
-            status: "reject",
+            comment: '',
+            status: 'reject',
           },
           null,
-          intl.trans("views.pages.tasks.request_rejected", "Request Rejected Successfully", "words")
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
         )
         break
     }
@@ -119,25 +119,25 @@ export default class Tasks extends React.Component {
 
   _handleRegistrationActions(id, action) {
     switch (action) {
-      case "approve":
+      case 'approve':
         this.props.approveRegistration(
           id,
           {
-            value: "approve",
+            value: 'approve',
           },
           null,
-          intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
         )
         break
 
-      case "reject":
+      case 'reject':
         this.props.rejectRegistration(
           id,
           {
-            value: "reject",
+            value: 'reject',
           },
           null,
-          intl.trans("views.pages.tasks.request_rejected", "Request Rejected Successfully", "words")
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
         )
         break
     }
@@ -146,7 +146,7 @@ export default class Tasks extends React.Component {
   }
 
   fetchData(newProps) {
-    let userId = selectn("response.id", newProps.computeLogin)
+    let userId = selectn('response.id', newProps.computeLogin)
     newProps.fetchUserTasks(userId)
     ProviderHelpers.fetchIfMissing(userId, newProps.fetchUserDialects, newProps.computeUserDialects)
   }
@@ -175,10 +175,10 @@ export default class Tasks extends React.Component {
       {
         comment: properties.comment,
         group: properties.group,
-        appurl: ConfGlobal.baseWebUIURL,
+        appurl: NavigationHelpers.getBaseWebUIURL(),
       },
       null,
-      intl.trans("views.pages.tasks.request_approved", "Request Approved Successfully", "words")
+      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
     )
 
     this.setState({
@@ -192,7 +192,7 @@ export default class Tasks extends React.Component {
   }
 
   _handlePreApprovalOpen(task) {
-    this.props.fetchDialect2(selectn("properties.docinfo:documentId", task))
+    this.props.fetchDialect2(selectn('properties.docinfo:documentId', task))
     this.setState({ preApprovalDialogOpen: true, selectedPreapprovalTask: task })
   }
 
@@ -201,7 +201,7 @@ export default class Tasks extends React.Component {
   }
 
   render() {
-    const userID = selectn("response.id", this.props.computeLogin)
+    const userID = selectn('response.id', this.props.computeLogin)
 
     const computeEntities = Immutable.fromJS([
       {
@@ -223,14 +223,14 @@ export default class Tasks extends React.Component {
 
     const computeDialect = ProviderHelpers.getEntry(
       this.props.computeDialect2,
-      selectn("properties.docinfo:documentId", this.state.selectedPreapprovalTask)
+      selectn('properties.docinfo:documentId', this.state.selectedPreapprovalTask)
     )
 
     let userTasks = []
     let userRegistrationTasks = []
 
     // Compute General Tasks
-    ;(selectn("response", computeUserTasks) || []).map(
+    ;(selectn('response', computeUserTasks) || []).map(
       function(task, i) {
         let tableRow = (
           <TableRow key={i}>
@@ -242,15 +242,15 @@ export default class Tasks extends React.Component {
             </TableRowColumn>
             <TableRowColumn>
               <RaisedButton
-                label={intl.trans("approve", "Approve", "first")}
+                label={intl.trans('approve', 'Approve', 'first')}
                 secondary={true}
-                onTouchTap={this._handleTaskActions.bind(this, task.id, "approve")}
-              />{" "}
+                onTouchTap={this._handleTaskActions.bind(this, task.id, 'approve')}
+              />{' '}
               &nbsp;
               <RaisedButton
-                label={intl.trans("reject", "Reject", "first")}
+                label={intl.trans('reject', 'Reject', 'first')}
                 secondary={true}
-                onTouchTap={this._handleTaskActions.bind(this, task.id, "reject")}
+                onTouchTap={this._handleTaskActions.bind(this, task.id, 'reject')}
               />
             </TableRowColumn>
             <TableRowColumn>{task.dueDate}</TableRowColumn>
@@ -262,15 +262,15 @@ export default class Tasks extends React.Component {
     )
 
     // Compute User Registration Tasks
-    ;(selectn("response.entries", computeUserDialects) || []).map(
+    ;(selectn('response.entries', computeUserDialects) || []).map(
       function(dialect, i) {
-        let uid = selectn("uid", dialect)
+        let uid = selectn('uid', dialect)
 
         let tableRow = (
           <li key={i}>
-            <a href={"/tasks/users/" + uid}>
-              Click here to view user registration requests to join{" "}
-              <strong>{selectn("properties.dc:title", dialect)}</strong>
+            <a href={'/tasks/users/' + uid}>
+              Click here to view user registration requests to join{' '}
+              <strong>{selectn('properties.dc:title', dialect)}</strong>
             </a>
           </li>
         )
@@ -282,17 +282,17 @@ export default class Tasks extends React.Component {
     return (
       <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
         <div>
-          <h1>{intl.trans("tasks", "Tasks", "first")}</h1>
+          <h1>{intl.trans('tasks', 'Tasks', 'first')}</h1>
 
           <ul>{userRegistrationTasks}</ul>
 
           <Table>
             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
               <TableRow>
-                <TableHeaderColumn>{intl.trans("document_title", "Document Title", "words")}</TableHeaderColumn>
-                <TableHeaderColumn>{intl.trans("task_type", "Task Type", "words")}</TableHeaderColumn>
-                <TableHeaderColumn>{intl.trans("actions", "Actions", "words")}</TableHeaderColumn>
-                <TableHeaderColumn>{intl.trans("task_due_date", "Task Due Date", "words")}</TableHeaderColumn>
+                <TableHeaderColumn>{intl.trans('document_title', 'Document Title', 'words')}</TableHeaderColumn>
+                <TableHeaderColumn>{intl.trans('task_type', 'Task Type', 'words')}</TableHeaderColumn>
+                <TableHeaderColumn>{intl.trans('actions', 'Actions', 'words')}</TableHeaderColumn>
+                <TableHeaderColumn>{intl.trans('task_due_date', 'Task Due Date', 'words')}</TableHeaderColumn>
               </TableRow>
             </TableHeader>
             <TableBody displayRowCheckbox={false}>{userTasks}</TableBody>
@@ -300,8 +300,8 @@ export default class Tasks extends React.Component {
 
           <p>
             {userTasks.length == 0 && userRegistrationTasks.length == 0
-              ? intl.trans("views.pages.tasks.no_tasks", "There are currently No tasks.")
-              : ""}
+              ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.')
+              : ''}
           </p>
 
           <Dialog open={this.state.open} onRequestClose={this._handleClose} autoScrollBodyContent={true}>
@@ -309,10 +309,10 @@ export default class Tasks extends React.Component {
           </Dialog>
 
           <GroupAssignmentDialog
-            title={intl.trans("approve", "Approve", "first")}
+            title={intl.trans('approve', 'Approve', 'first')}
             fieldMapping={{
-              id: "uid",
-              title: "properties.dc:title",
+              id: 'uid',
+              title: 'properties.dc:title',
             }}
             open={this.state.preApprovalDialogOpen}
             saveMethod={this._saveMethod}

@@ -1,46 +1,46 @@
 // Path
-const path = require("path")
+const path = require('path')
 
 // Root Directories
-const frontEndRootDirectory = path.resolve(__dirname, "..")
-const rootDirectory = path.resolve(frontEndRootDirectory, "..")
+const frontEndRootDirectory = path.resolve(__dirname, '..')
+const rootDirectory = path.resolve(frontEndRootDirectory, '..')
 
 // Source Directories
-const sourceDirectory = path.resolve(frontEndRootDirectory, "app")
-const sourceAssetsDirectory = path.resolve(sourceDirectory, "assets")
-const sourceScriptsDirectory = path.resolve(sourceAssetsDirectory, "javascripts")
-const sourceStylesDirectory = path.resolve(sourceAssetsDirectory, "stylesheets")
-const sourceImagesDirectory = path.resolve(sourceAssetsDirectory, "images")
-const sourceFontsDirectory = path.resolve(sourceAssetsDirectory, "fonts")
-const sourceLibrariesDirectory = path.resolve(sourceAssetsDirectory, "libraries")
-const sourceFaviconsDirectory = path.resolve(sourceAssetsDirectory, "favicons")
-const sourceGamesDirectory = path.resolve(sourceAssetsDirectory, "games")
+const sourceDirectory = path.resolve(frontEndRootDirectory, 'app')
+const sourceAssetsDirectory = path.resolve(sourceDirectory, 'assets')
+const sourceScriptsDirectory = path.resolve(sourceAssetsDirectory, 'javascripts')
+const sourceStylesDirectory = path.resolve(sourceAssetsDirectory, 'stylesheets')
+const sourceImagesDirectory = path.resolve(sourceAssetsDirectory, 'images')
+const sourceFontsDirectory = path.resolve(sourceAssetsDirectory, 'fonts')
+const sourceLibrariesDirectory = path.resolve(sourceAssetsDirectory, 'libraries')
+const sourceFaviconsDirectory = path.resolve(sourceAssetsDirectory, 'favicons')
+const sourceGamesDirectory = path.resolve(sourceAssetsDirectory, 'games')
 
 // Output Directories
-const outputAssetsDirectory = "assets"
-const outputDirectory = path.resolve(frontEndRootDirectory, "public")
-const outputScriptsDirectory = path.join(outputAssetsDirectory, "javascripts")
-const outputFontsDirectory = path.join(outputAssetsDirectory, "fonts")
-const outputImagesDirectory = path.join(outputAssetsDirectory, "images")
-const outputStylesDirectory = path.join(outputAssetsDirectory, "styles")
-const outputLibrariesDirectory = path.join(outputAssetsDirectory, "libraries")
-const outputGamesDirectory = path.join(outputAssetsDirectory, "games")
+const outputAssetsDirectory = 'assets'
+const outputDirectory = path.resolve(frontEndRootDirectory, 'public')
+const outputScriptsDirectory = path.join(outputAssetsDirectory, 'javascripts')
+const outputFontsDirectory = path.join(outputAssetsDirectory, 'fonts')
+const outputImagesDirectory = path.join(outputAssetsDirectory, 'images')
+const outputStylesDirectory = path.join(outputAssetsDirectory, 'styles')
+const outputLibrariesDirectory = path.join(outputAssetsDirectory, 'libraries')
+const outputGamesDirectory = path.join(outputAssetsDirectory, 'games')
 
 // Plugins
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const CopyPlugin = require("copy-webpack-plugin")
-const CleanWebpackPlugin = require("clean-webpack-plugin")
-const GitRevisionPlugin = require("git-revision-webpack-plugin")
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
+const GitRevisionPlugin = require('git-revision-webpack-plugin')
 
 var gitRevisionPlugin = new GitRevisionPlugin()
 
 // Phaser webpack config , requried by fv-games
 // TODO : Move this as a peer dependency of games and have games to import them
-const phaserModule = path.resolve("./node_modules/phaser-ce/")
-const phaser = path.join(phaserModule, "build/custom/phaser-split.js")
-const pixi = path.join(phaserModule, "build/custom/pixi.js")
-const p2 = path.join(phaserModule, "build/custom/p2.js")
+const phaserModule = path.resolve('./node_modules/phaser-ce/')
+const phaser = path.join(phaserModule, 'build/custom/phaser-split.js')
+const pixi = path.join(phaserModule, 'build/custom/pixi.js')
+const p2 = path.join(phaserModule, 'build/custom/p2.js')
 
 /**
  * Common Webpack Configuration
@@ -54,70 +54,74 @@ module.exports = {
   /**
    * Set the mode to development mode
    **/
-  mode: "development",
+  mode: 'development',
 
   /**
    * Source Mapping
    * enhance debugging by adding meta info for the browser devtools
    * source-map most detailed at the expense of build speed.
    **/
-  devtool: "#source-map",
+  devtool: '#source-map',
 
   /**
    * Development Server
    **/
   devServer: {
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     port: 3001,
     historyApiFallback: {
       rewrites: [
         {
           from: /\/assets\/(.*)$/,
           to: function(context) {
-            return '/assets/' + context.match[1];
-          }
-        }
+            return '/assets/' + context.match[1]
+          },
+        },
       ],
-      disableDotRule: true
-    }
+      disableDotRule: true,
+    },
+    // Ensure locally /nuxeo requests are rewritten to localhost:8080
+    proxy: {
+      '/nuxeo': 'http://localhost:8080',
+    },
   },
 
   /**
    * Entry
    */
   entry: {
-    app: path.resolve(sourceScriptsDirectory, "app.js"),
-    game_libs: ["pixi", "p2", "phaser"],
+    app: path.resolve(sourceScriptsDirectory, 'app.js'),
+    game_libs: ['pixi', 'p2', 'phaser'],
   },
 
   // These options change how modules are resolved
   resolve: {
     alias: {
       styles: sourceStylesDirectory,
-      models: path.resolve(sourceScriptsDirectory, "models"),
-      views: path.resolve(sourceScriptsDirectory, "views"),
-      conf: path.resolve(sourceScriptsDirectory, "configuration"),
-      operations: path.resolve(sourceScriptsDirectory, "operations"),
-      components: path.resolve(sourceScriptsDirectory, "components"),
-      common: path.resolve(sourceScriptsDirectory, "common"),
-      games: path.resolve(sourceAssetsDirectory, "games"),
-      images: path.resolve(sourceAssetsDirectory, "images"),
+      models: path.resolve(sourceScriptsDirectory, 'models'),
+      views: path.resolve(sourceScriptsDirectory, 'views'),
+      conf: path.resolve(sourceScriptsDirectory, 'configuration'),
+      operations: path.resolve(sourceScriptsDirectory, 'operations'),
+      components: path.resolve(sourceScriptsDirectory, 'components'),
+      common: path.resolve(sourceScriptsDirectory, 'common'),
+      games: path.resolve(sourceAssetsDirectory, 'games'),
+      images: path.resolve(sourceAssetsDirectory, 'images'),
       phaser: phaser,
       pixi: pixi,
       p2: p2,
     },
 
     // Automatically resolve certain extensions.
-    extensions: [".js", ".less"],
+    extensions: ['.js', '.less'],
   },
 
   /**
    * Optimizations
    */
   optimization: {
-    runtimeChunk: "single",
+    runtimeChunk: 'single',
     splitChunks: {
-      chunks: "all",
+      chunks: 'all',
     },
   },
 
@@ -127,10 +131,10 @@ module.exports = {
    * assets and anything else you bundle or load with webpack.
    **/
   output: {
-    filename: path.join(outputScriptsDirectory, "[name].[hash].js"),
-    chunkFilename: path.join(outputScriptsDirectory, "[name].[hash].js"),
+    filename: path.join(outputScriptsDirectory, '[name].[hash].js'),
+    chunkFilename: path.join(outputScriptsDirectory, '[name].[hash].js'),
     path: outputDirectory,
-    publicPath: "",
+    publicPath: '',
   },
 
   /**
@@ -139,14 +143,14 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin([outputDirectory], { root: rootDirectory }),
     new HtmlWebpackPlugin({
-      template: path.resolve(frontEndRootDirectory, "index.html"),
+      template: path.resolve(frontEndRootDirectory, 'index.html'),
       templateParameters: {
         VERSION: gitRevisionPlugin.version(),
       },
     }),
     new MiniCssExtractPlugin({
-      filename: path.join(outputStylesDirectory, "[name].[hash].css"),
-      chunkFilename: path.join(outputStylesDirectory, "[id].[hash].css"),
+      filename: path.join(outputStylesDirectory, '[name].[hash].css'),
+      chunkFilename: path.join(outputStylesDirectory, '[id].[hash].css'),
     }),
     new CopyPlugin([
       { from: sourceFontsDirectory, to: outputFontsDirectory },
@@ -167,22 +171,22 @@ module.exports = {
        */
       {
         test: /\.js$/,
-        loader: "babel-loader",
+        loader: 'babel-loader',
         exclude: /node_modules\/(?!@fpcc)/,
         options: {
           cacheDirectory: true,
-          presets: ["@babel/preset-env", "@babel/preset-react"],
+          presets: ['@babel/preset-env', '@babel/preset-react'],
           plugins: [
-            ["transform-react-jsx-component-data-ids"],
-            ["@babel/plugin-syntax-dynamic-import"],
-            ["@babel/plugin-proposal-decorators", { legacy: true }],
-            ["@babel/plugin-proposal-class-properties", { loose: true }],
+            ['transform-react-jsx-component-data-ids'],
+            ['@babel/plugin-syntax-dynamic-import'],
+            ['@babel/plugin-proposal-decorators', { legacy: true }],
+            ['@babel/plugin-proposal-class-properties', { loose: true }],
           ],
         },
       },
       {
-        test: require.resolve("react"),
-        use: "expose-loader?React",
+        test: require.resolve('react'),
+        use: 'expose-loader?React',
       },
       /**
        * Look at removing this and just having peer dependencies
@@ -190,22 +194,22 @@ module.exports = {
       {
         test: /pixi\.js/,
         use: {
-          loader: "expose-loader",
-          query: "PIXI",
+          loader: 'expose-loader',
+          query: 'PIXI',
         },
       },
       {
         test: /phaser-split\.js$/,
         use: {
-          loader: "expose-loader",
-          query: "Phaser",
+          loader: 'expose-loader',
+          query: 'Phaser',
         },
       },
       {
         test: /p2\.js/,
         use: {
-          loader: "expose-loader",
-          query: "p2",
+          loader: 'expose-loader',
+          query: 'p2',
         },
       },
       /**
@@ -213,34 +217,34 @@ module.exports = {
        */
       {
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "less-loader"],
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
       },
       /**
        * Font loaders
        */
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: "url-loader?limit=10000&minetype=application/font-woff",
+        loader: 'url-loader?limit=10000&minetype=application/font-woff',
         options: {
           limit: 10000,
-          mimetype: "application/font-woff",
-          name: path.join(outputFontsDirectory, "[name].[hash].[ext]"),
+          mimetype: 'application/font-woff',
+          name: path.join(outputFontsDirectory, '[name].[hash].[ext]'),
         },
       },
       {
         test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "url-loader",
+        loader: 'url-loader',
         options: {
           limit: 10000,
-          mimetype: "application/octet-stream",
-          name: path.join(outputFontsDirectory, "[name].[hash].[ext]"),
+          mimetype: 'application/octet-stream',
+          name: path.join(outputFontsDirectory, '[name].[hash].[ext]'),
         },
       },
       {
         test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "file-loader",
+        loader: 'file-loader',
         options: {
-          name: path.join(outputFontsDirectory, "[name].[hash].[ext]"),
+          name: path.join(outputFontsDirectory, '[name].[hash].[ext]'),
         },
       },
       /**
@@ -248,18 +252,18 @@ module.exports = {
        */
       {
         test: /\.(jpg|jpeg|png|gif)$/,
-        loader: "file-loader",
+        loader: 'file-loader',
         options: {
-          name: path.join(outputImagesDirectory, "[name].[hash].[ext]"),
+          name: path.join(outputImagesDirectory, '[name].[hash].[ext]'),
         },
       },
       {
         test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
-        loader: "url-loader",
+        loader: 'url-loader',
         options: {
-          name: path.join(outputImagesDirectory, "[name].[hash].[ext]"),
+          name: path.join(outputImagesDirectory, '[name].[hash].[ext]'),
           limit: 10000,
-          mimetype: "image/svg+xml",
+          mimetype: 'image/svg+xml',
         },
       },
     ],
@@ -272,9 +276,9 @@ module.exports = {
    * to run in other environments like the browser.
    */
   node: {
-    fs: "empty",
-    net: "empty",
-    tls: "empty",
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
     console: true,
   },
 }

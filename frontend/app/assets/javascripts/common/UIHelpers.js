@@ -16,6 +16,7 @@ limitations under the License.
 
 import ConfGlobal from 'conf/local.json';
 import selectn from 'selectn';
+import NavigationHelpers from 'common/NavigationHelpers'
 
 export default {
     renderComplexArrayRow(dataItems = [], render) {
@@ -66,7 +67,7 @@ export default {
         } else if (selectn('properties.file:content.data', imgObj)) {
             return (returnObj) ? selectn('properties.file:content.data', imgObj) : selectn('properties.file:content.data', imgObj);
         } else if (selectn('path', imgObj)) {
-            return ConfGlobal.baseURL + selectn('path', imgObj).replace("nxfile", "nxpicsfile").replace("file:", view + ":");
+            return NavigationHelpers.getBaseURL() + selectn('path', imgObj).replace("nxfile", "nxpicsfile").replace("file:", view + ":");
         } else if (selectn('data', imgObj)) {
             return selectn('data', imgObj);
         }

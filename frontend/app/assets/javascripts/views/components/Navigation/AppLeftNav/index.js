@@ -16,8 +16,6 @@ limitations under the License.
 import React, { Component, PropTypes } from "react"
 import Immutable, { Map } from "immutable"
 
-import ConfGlobal from "conf/local.json"
-
 import NavigationHelpers from "common/NavigationHelpers"
 
 import provide from "react-redux-provide"
@@ -168,7 +166,7 @@ export default class AppLeftNav extends Component {
       return
     }
     if (path ===  "logout") {
-      window.location.href = ConfGlobal.baseURL + "logout"
+      window.location.href = NavigationHelpers.getBaseURL() + "logout"
     } else {
       // Request to navigate to
       this.props.pushWindowPath(path)

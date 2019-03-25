@@ -19,7 +19,6 @@ import selectn from 'selectn'
 
 import DOMPurify from 'dompurify'
 
-import ConfGlobal from 'conf/local.json'
 
 import UIHelpers from 'common/UIHelpers'
 import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow'
@@ -142,14 +141,14 @@ class CardView extends Component {
         this.setState(state)
       }.bind(this)
 
-      const isStopped = decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj
+      const isStopped = decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audioObj
       audioIcon = isStopped ? (
         <AVPlayArrow style={{ marginRight: '10px' }} />
       ) : (
         <AVStop style={{ marginRight: '10px' }} />
       )
       audioCallback = isStopped
-        ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audioObj)
+        ? UIHelpers.playAudio.bind(this, this.state, stateFunc, NavigationHelpers.getBaseURL() + audioObj)
         : UIHelpers.stopAudio.bind(this, this.state, stateFunc)
     }
 
