@@ -1,27 +1,29 @@
 // Middleware
-import thunk from "redux-thunk"
+import thunk from 'redux-thunk'
 
 // Operations
-import DirectoryOperations from "operations/DirectoryOperations"
+import DirectoryOperations from 'operations/DirectoryOperations'
 
-import RESTActions from "./rest-actions"
-import RESTReducers from "./rest-reducers"
+import RESTActions from './rest-actions'
+import RESTReducers from './rest-reducers'
 
-const FV_FETCH_PORTALS_START = "FV_FETCH_PORTALS_START"
-const FV_FETCH_PORTALS_FETCH_SUCCESS = "FV_FETCH_PORTALS_FETCH_SUCCESS"
-const FV_FETCH_PORTALS_FETCH_ERROR = "FV_FETCH_PORTALS_FETCH_ERROR"
+const DISMISS_ERROR = 'DISMISS_ERROR'
 
-const updatePortal = RESTActions.update("FV_PORTAL", "FVPortal", {
-  headers: { "enrichers.document": "ancestry,portal" },
+const FV_FETCH_PORTALS_START = 'FV_FETCH_PORTALS_START'
+const FV_FETCH_PORTALS_FETCH_SUCCESS = 'FV_FETCH_PORTALS_FETCH_SUCCESS'
+const FV_FETCH_PORTALS_FETCH_ERROR = 'FV_FETCH_PORTALS_FETCH_ERROR'
+
+const updatePortal = RESTActions.update('FV_PORTAL', 'FVPortal', {
+  headers: { 'enrichers.document': 'ancestry,portal' },
 })
-const publishPortal = RESTActions.execute("FV_PORTAL_PUBLISH", "FVPublish", {
-  headers: { "enrichers.document": "ancestry,portal" },
+const publishPortal = RESTActions.execute('FV_PORTAL_PUBLISH', 'FVPublish', {
+  headers: { 'enrichers.document': 'ancestry,portal' },
 })
-const unpublishPortal = RESTActions.execute("FV_PORTAL_UNPUBLISH", "FVUnpublishDialect", {
-  headers: { "enrichers.document": "ancestry,portal" },
+const unpublishPortal = RESTActions.execute('FV_PORTAL_UNPUBLISH', 'FVUnpublishDialect', {
+  headers: { 'enrichers.document': 'ancestry,portal' },
 })
-const fetchPortal = RESTActions.fetch("FV_PORTAL", "FVPortal", {
-  headers: { "enrichers.document": "ancestry,portal" },
+const fetchPortal = RESTActions.fetch('FV_PORTAL', 'FVPortal', {
+  headers: { 'enrichers.document': 'ancestry,portal' },
 })
 // const fetchPortals = RESTActions.query("FV_PORTALS", "FVPortal", {
 //   page_provider: "get_dialects",
@@ -32,7 +34,7 @@ const fetchPortals = function fetchPortals(page_provider, headers = {}, params =
   return function(dispatch) {
     dispatch({ type: FV_FETCH_PORTALS_START })
 
-    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, "FVPortal", "", headers, params)
+    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVPortal', '', headers, params)
       .then((response) => {
         dispatch({ type: FV_FETCH_PORTALS_FETCH_SUCCESS, documents: response })
       })
@@ -44,8 +46,8 @@ const fetchPortals = function fetchPortals(page_provider, headers = {}, params =
 
 const actions = { fetchPortal, fetchPortals, updatePortal, publishPortal, unpublishPortal }
 
-const computePortalQuery = RESTReducers.computeQuery("portals")
-const computePortalFactory = RESTReducers.computeFetch("portal")
+const computePortalQuery = RESTReducers.computeQuery('portals')
+const computePortalFactory = RESTReducers.computeFetch('portal')
 
 const reducers = {
   computePortal: computePortalFactory.computePortal,
@@ -55,7 +57,7 @@ const reducers = {
       isFetching: false,
       response: {
         get: function() {
-          return ""
+          return ''
         },
       },
       success: false,

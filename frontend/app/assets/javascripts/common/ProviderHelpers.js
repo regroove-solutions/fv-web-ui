@@ -157,7 +157,7 @@ function getDialectPathFromURLArray(urlArray) {
     return el.match(/^FV$/)
   })
   if (index !== -1) {
-    const _url = urlArray.slice(index, index + 5)
+    const _url = urlArray.slice(index, index + 6)
     return decodeURI(`/${_url.join('/')}`)
   }
   return null
