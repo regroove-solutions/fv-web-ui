@@ -24,6 +24,7 @@ describe('Authentication', () => {
           .click()
         // Note: need to wait for WYSIWYG editor to init
         cy.wait(500)
+        // TODO: need user visible hook, not implementation detail
         cy.get('#editablePortal_introduction')
           .clear()
           .type(updateMessage)
