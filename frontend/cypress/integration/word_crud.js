@@ -15,7 +15,8 @@ describe('Word', () => {
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
-  it('Edit', () => {
+
+  it('CRUD', () => {
     // Note: need to set environment variables in your bash_profile, eg:
     // export ADMIN_USERNAME='THE_USERNAME'
     // export ADMIN_PASSWORD='THE_PASSWORD'
