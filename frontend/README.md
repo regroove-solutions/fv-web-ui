@@ -137,9 +137,9 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 
 <a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
-### End to end testing
+### Frontend: End to end testing
 
-- [Cypress](https://www.cypress.io/)
+Via [Cypress](https://www.cypress.io/)
 
 Launch the Cypress app:
 
@@ -147,9 +147,9 @@ Launch the Cypress app:
 $ npm run test:e2e
 ```
 
-### Unit testing
+### Frontend: Unit testing
 
-- [Jest](https://jestjs.io/)
+Via [Jest](https://jestjs.io/)
 
 Run tests once:
 
@@ -181,11 +181,21 @@ You can skip the commit checks by adding the `--no-verify` flag to a `git commit
 
 `git commit -m 'pull update & conflict resolution' --no-verify`
 
-Please edit the `.eslintrc` config and adjust the rules to preference.
+[Husky](https://github.com/typicode/husky) runs the `pre-commit` hooks for us.
 
-For example, downgrading a rule to a warning instead of an error.
+Configure Husky in `package.json`, for example:
 
-Configure the commands that are run in `package.json`, for example:
+```
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+```
+
+[lint-staged](https://github.com/okonet/lint-staged) runs linters against staged git files.
+
+Configure lint-staged in `package.json`, for example:
 
 ```
   "lint-staged": {
@@ -208,6 +218,14 @@ Configure the commands that are run in `package.json`, for example:
     ]
   },
 ```
+
+[ESLint](https://eslint.org/) is checking the code
+
+Please adjust the rules to suit your preference.
+
+Configure ESLint in `.eslintrc`, for example:
+
+For example, downgrading a rule to a warning instead of an error.
 
 ## Licensing
 
