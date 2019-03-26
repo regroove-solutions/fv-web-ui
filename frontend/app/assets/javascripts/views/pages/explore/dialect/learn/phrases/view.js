@@ -179,7 +179,7 @@ export default class View extends Component {
     ;(selectn("response.contextParameters.phrase.related_pictures", computePhrase) || []).map(function(picture, key) {
       let image = {
         original: selectn("views[2].url", picture),
-        thumbnail: selectn("views[0].url", picture) || "/assets/images/cover.png",
+        thumbnail: selectn("views[0].url", picture) || "assets/images/cover.png",
         description: picture["dc:description"],
         key: key,
         id: picture.uid,
@@ -189,7 +189,7 @@ export default class View extends Component {
       photosThumbnails.push(
         <img
           key={picture.uid}
-          src={selectn("views[0].url", picture) || "/assets/images/cover.png"}
+          src={selectn("views[0].url", picture) || "assets/images/cover.png"}
           alt={selectn("title", picture)}
           style={{ margin: "15px", maxWidth: "150px" }}
         />
@@ -203,7 +203,7 @@ export default class View extends Component {
     ;(selectn("response.contextParameters.phrase.related_videos", computePhrase) || []).map(function(video, key) {
       let vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
-        thumbnail: selectn("views[0].url", video) || "/assets/images/cover.png",
+        thumbnail: selectn("views[0].url", video) || "assets/images/cover.png",
         description: video["dc:description"],
         key: key,
         id: video.uid,

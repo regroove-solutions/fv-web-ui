@@ -525,7 +525,7 @@ export default class Navigation extends Component {
               <div>
                 <img
                   style={{ position: "relative", top: "14px", zIndex: 999999, paddingTop: "14px", left: "80%" }}
-                  src="/assets/images/popover-arrow.png"
+                  src="assets/images/popover-arrow.png"
                   alt=""
                 />
                 {(() => {

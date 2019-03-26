@@ -67,7 +67,7 @@ export default class Game extends Component {
 
     initJigsawGame() {
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/fv-games-jigsaw';
+        const defaultAssetsPath = 'assets/games/fv-games-jigsaw';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config

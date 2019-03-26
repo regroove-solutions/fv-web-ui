@@ -72,7 +72,7 @@ export default {
             return selectn('data', imgObj);
         }
 
-        return '/assets/images/cover.png';
+        return 'assets/images/cover.png';
     },
     playAudio(state, stateFunc, audioUrl, e) {
 
