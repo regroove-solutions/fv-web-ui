@@ -183,7 +183,12 @@ export default {
     )
   },
   getBaseURL: function() {
-    // Return https://www.YOURNUXEOINSTANCE.com/nuxeo/ to point UI at different instance
-    return "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/";
+    return (
+      window.location.protocol +
+      "//" +
+      window.location.hostname +
+      (window.location.port ? ":" + window.location.port : "") +
+      "/nuxeo/"
+    )
   },
 }

@@ -21,5 +21,9 @@ export default class BaseOperations {
     this.properties.client = client
   }
 
+  static getProperties() {
+    return this.properties;
+  }
+
   static intl = IntlService.instance
 }

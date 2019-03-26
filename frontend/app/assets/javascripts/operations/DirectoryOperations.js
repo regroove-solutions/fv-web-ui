@@ -25,7 +25,7 @@ import IntlService from "views/services/intl"
 
 const TIMEOUT = 60000
 
-export default class DirectoryOperations extends BaseOperations {
+export default class DirectoryOperations {
   /**
    * Gets one or more documents based on a path or id.
    * Allows for additional complex queries to be executed.
@@ -86,7 +86,7 @@ export default class DirectoryOperations extends BaseOperations {
     const _params = Object.assign(defaultParams, params)
     const _headers = Object.assign(defaultHeaders, headers)
 
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     const _queryAppend = queryAppend
 
@@ -184,7 +184,7 @@ export default class DirectoryOperations extends BaseOperations {
     const _params = Object.assign(defaultParams, params)
     const _headers = Object.assign(defaultHeaders, headers)
 
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
       properties.client
@@ -210,7 +210,7 @@ export default class DirectoryOperations extends BaseOperations {
   }
 
   static getDirectory(name = "") {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
       properties.client
@@ -335,7 +335,7 @@ export default class DirectoryOperations extends BaseOperations {
     // Expose fields to promise
     const client = this.client
     const selectDefault = this.selectDefault
-    const domain = this.properties.domain
+    const domain = BaseOperations.getProperties().domain
 
     const _path = StringHelpers.clean(path)
 
