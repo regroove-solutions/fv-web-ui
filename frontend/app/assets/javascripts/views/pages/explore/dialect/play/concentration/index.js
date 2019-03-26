@@ -19,13 +19,12 @@ import Immutable, {List, Map} from 'immutable';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-import ConfGlobal from 'conf/local.json';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
+import NavigationHelpers from "common/NavigationHelpers"
 
 import Game from './wrapper'
 import IntlService from 'views/services/intl';
@@ -107,7 +106,7 @@ export default class Concentration extends Component {
             return {
                 word: selectn('properties.dc:title', word),
                 translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
-                audio: (selectn('contextParameters.word.related_audio[0].path', word)) ? ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true' : null,
+                audio: (selectn('contextParameters.word.related_audio[0].path', word)) ? NavigationHelpers.getBaseURL() + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true' : null,
                 image: UIHelpers.getThumbnail(selectn('contextParameters.word.related_pictures[0]', word), 'Thumbnail')
             };
         });

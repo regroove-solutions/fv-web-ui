@@ -19,12 +19,11 @@ import Immutable, {List, Map} from 'immutable';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-import ConfGlobal from 'conf/local.json';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
+import NavigationHelpers from "common/NavigationHelpers"
 
 import Game from './wrapper'
 import IntlService from 'views/services/intl';
@@ -101,8 +100,8 @@ export default class Jigsaw extends Component {
             return {
                 word: selectn('properties.dc:title', word),
                 translation: selectn('properties.fv:literal_translation[0].translation', word) || selectn('properties.fv:definitions[0].translation', word),
-                audio: ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true',
-                picture: ConfGlobal.baseURL + selectn('contextParameters.word.related_pictures[0].path', word) + '?inline=true'
+                audio: NavigationHelpers.getBaseURL() + selectn('contextParameters.word.related_audio[0].path', word) + '?inline=true',
+                picture: NavigationHelpers.getBaseURL() + selectn('contextParameters.word.related_pictures[0].path', word) + '?inline=true'
             };
         })
 

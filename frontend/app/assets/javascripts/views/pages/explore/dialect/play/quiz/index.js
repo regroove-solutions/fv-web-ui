@@ -20,8 +20,7 @@ import classNames from 'classnames';
 
 import {IconButton, RaisedButton, LinearProgress} from 'material-ui';
 
-import ConfGlobal from 'conf/local.json';
-
+import NavigationHelpers from "common/NavigationHelpers"
 import ProviderHelpers from 'common/ProviderHelpers';
 import UIHelpers from 'common/UIHelpers';
 import StringHelpers from 'common/StringHelpers';
@@ -214,7 +213,7 @@ export default class Quiz extends Component {
             uid: selectn('uid', wordObj),
             word: selectn('properties.dc:title', wordObj),
             translation: selectn('properties.fv:literal_translation[0].translation', wordObj) || selectn('properties.fv:definitions[0].translation', wordObj),
-            audio: ConfGlobal.baseURL + selectn('contextParameters.word.related_audio[0].path', wordObj) + '?inline=true',
+            audio: NavigationHelpers.getBaseURL() + selectn('contextParameters.word.related_audio[0].path', wordObj) + '?inline=true',
             image: UIHelpers.getThumbnail(selectn('contextParameters.word.related_pictures[0]', wordObj), 'Medium')
         };
     }

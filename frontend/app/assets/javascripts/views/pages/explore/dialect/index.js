@@ -18,7 +18,7 @@ import Immutable from "immutable"
 
 import classNames from "classnames"
 import provide from "react-redux-provide"
-import ConfGlobal from "conf/local.json"
+
 import selectn from "selectn"
 
 import ProviderHelpers from "common/ProviderHelpers"
@@ -418,7 +418,7 @@ export default class ExploreDialect extends Component {
                         <audio
                           id="portalFeaturedAudio"
                           src={
-                            ConfGlobal.baseURL +
+                            NavigationHelpers.getBaseURL() +
                             selectn("response.contextParameters.portal.fv-portal:featured_audio", computePortal).path
                           }
                           controls

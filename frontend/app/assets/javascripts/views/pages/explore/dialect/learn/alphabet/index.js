@@ -17,7 +17,7 @@ import React, { Component, PropTypes } from 'react'
 import Immutable, { List, Map } from 'immutable'
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.json'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -25,6 +25,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
 import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from "common/NavigationHelpers"
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 
@@ -294,7 +295,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                             />
                             {audioFile ? (
                               <span>
-                                <audio id={'charAudio' + char.uid} src={ConfGlobal.baseURL + audioFile} />
+                                <audio id={'charAudio' + char.uid} src={NavigationHelpers.getBaseURL() + audioFile} />
                               </span>
                             ) : (
                               ''

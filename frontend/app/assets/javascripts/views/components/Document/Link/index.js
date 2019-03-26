@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import ConfGlobal from 'conf/local.json';
+import NavigationHelpers from 'common/NavigationHelpers'
 
 export default class Link extends Component {
 
@@ -15,7 +15,7 @@ export default class Link extends Component {
 
         // Title if the link document contains an attached file
         if (link.path) {
-            linkedTitle = <a href={ConfGlobal.baseURL + link.path}>{link.title}</a>;
+            linkedTitle = <a href={NavigationHelpers.getBaseURL() + link.path}>{link.title}</a>;
         }
         // Title if the link document has no attached file and points to an external link
         else {

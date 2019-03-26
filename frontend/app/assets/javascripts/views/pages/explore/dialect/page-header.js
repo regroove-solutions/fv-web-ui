@@ -16,7 +16,7 @@ limitations under the License.
 import React, {Component, PropTypes} from 'react';
 
 import classNames from 'classnames';
-import ConfGlobal from 'conf/local.json';
+import NavigationHelpers from "common/NavigationHelpers"
 import selectn from 'selectn';
 import IntlService from 'views/services/intl';
 
@@ -43,7 +43,7 @@ export default class PageHeader extends Component {
 
         return <div className="page-header" style={{minHeight: '100px', marginTop: '10px'}}>
             {(portalLogo) ? <img className="pull-left" style={{maxHeight: '100px', marginRight: '45px'}}
-                                 src={ConfGlobal.baseURL + portalLogo}/> : ''}
+                                 src={NavigationHelpers.getBaseURL() + portalLogo}/> : ''}
             <h1 style={{fontSize: "2em"}}>{dialectName} {intl.searchAndReplace(title)}</h1>
             {/*<div>
                 <span className={classNames('label', 'label-primary')}><strong>543</strong> Words</span> <span className={classNames('label', 'label-primary')}><strong>143</strong> Phrases</span> <span className={classNames('label', 'label-primary')}><strong>243</strong> Songs</span> <span className={classNames('label', 'label-primary')}><strong>43</strong> Stories</span> 

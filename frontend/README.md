@@ -139,13 +139,7 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 
 ## Switching Targets for test purposes
 
-Note: local.json is where you change the target you run against.
-Location: <your-front-end-work-directory>/app/assets/javascript/configuration/local.json
-
-For running against local server configure to
-
-"baseWebUIURL":"http://localhost:3001/"
-"baseURL":"http://localhost:8080/nuxeo/"
+If you need to point your UI at a different NUXEO instance for whatever reason, modify the return value for `getBaseURL` in `NavigationHelpers`.
 
 ## Licensing
 

@@ -27,10 +27,9 @@ import AVStop from 'material-ui/lib/svg-icons/av/stop';
 
 import classNames from 'classnames';
 
-import ConfGlobal from 'conf/local.json';
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
 
+import NavigationHelpers from "common/NavigationHelpers"
 import ProviderHelpers from 'common/ProviderHelpers';
 import StringHelpers from 'common/StringHelpers';
 import UIHelpers from 'common/UIHelpers';
@@ -238,10 +237,10 @@ export class Scramble extends Component {
                 this.setState(state);
             }.bind(this);
 
-            audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ?
+            audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audio) ?
                 <AVPlayArrow style={{marginRight: '10px'}}/> : <AVStop style={{marginRight: '10px'}}/>;
 
-            audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audio) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audio) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
+            audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audio) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, NavigationHelpers.getBaseURL() + audio) : UIHelpers.stopAudio.bind(this, this.state, stateFunc);
         }
 
         return <div style={{marginTop: '15px'}}>

@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from "react"
 
-import ConfGlobal from "conf/local.json"
+import NavigationHelpers from "common/NavigationHelpers"
 import selectn from "selectn"
 import classNames from "classnames"
 
@@ -69,7 +69,7 @@ export default class Header extends Component {
     let portalBackgroundImagePath = "/assets/images/cover.png"
 
     if (backgroundImage && backgroundImage.length > 0) {
-      portalBackgroundImagePath = ConfGlobal.baseURL + backgroundImage
+      portalBackgroundImagePath = NavigationHelpers.getBaseURL() + backgroundImage
     }
 
     const portalBackgroundStyles = {

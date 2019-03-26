@@ -80,6 +80,10 @@ module.exports = {
       ],
       disableDotRule: true,
     },
+    // Ensure locally /nuxeo requests are rewritten to localhost:8080
+    proxy: {
+      '/nuxeo': 'http://localhost:8080',
+    },
   },
 
   /**

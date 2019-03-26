@@ -17,8 +17,6 @@ import React, {Component, PropTypes} from 'react';
 import provide from 'react-redux-provide';
 import selectn from 'selectn';
 
-import ConfGlobal from 'conf/local.json';
-
 import ProviderHelpers from 'common/ProviderHelpers';
 import NavigationHelpers from 'common/NavigationHelpers';
 import StringHelpers from 'common/StringHelpers';
@@ -284,13 +282,13 @@ export default class Preview extends Component {
                         body = <div><strong>{selectn('properties.dc:title', wordResponse)}</strong></div>;
                     } else {
                         body = <div>
-                            {(image) ? <Avatar src={ConfGlobal.baseURL + image} size={45} className="pull-left"
+                            {(image) ? <Avatar src={NavigationHelpers.getBaseURL() + image} size={45} className="pull-left"
                                                style={{marginRight: '10px', marginTop: '10px'}}/> : ''}
                             <strong
                                 style={{lineHeight: '200%'}}>{selectn('properties.dc:title', wordResponse)} ({selectn('properties.dc:title', wordResponse)})</strong><br/>
                             {translations.map((translation, j) => <span
                                 key={j}>{translation.translation}<br/></span>)}<br/>
-                            {(audio) ? <audio src={ConfGlobal.baseURL + audio} controls/> : ''}
+                            {(audio) ? <audio src={NavigationHelpers.getBaseURL() + audio} controls/> : ''}
                         </div>;
                     }
                 }
@@ -464,7 +462,7 @@ export default class Preview extends Component {
                 if (audioResponse && audio.success) {
 
                     audioTag = <audio {...this.props.tagProps} style={this.props.tagStyles}
-                                      src={selectn('properties.file:content.data', audioResponse) || (ConfGlobal.baseURL + selectn('path', audioResponse))}
+                                      src={selectn('properties.file:content.data', audioResponse) || (NavigationHelpers.getBaseURL() + selectn('path', audioResponse))}
                                       alt={selectn('title', audioResponse)} controls />;
 
                     if (this.props.minimal) {
@@ -541,7 +539,7 @@ export default class Preview extends Component {
                 if (videoResponse && video.success) {
 
                     videoTag = <video width="100%" height="auto"
-                                      src={selectn('properties.file:content.data', videoResponse) || (ConfGlobal.baseURL + selectn('path', videoResponse))}
+                                      src={selectn('properties.file:content.data', videoResponse) || (NavigationHelpers.getBaseURL() + selectn('path', videoResponse))}
                                       alt={selectn('title', videoResponse)} controls/>;
 
                     if (this.props.minimal) {

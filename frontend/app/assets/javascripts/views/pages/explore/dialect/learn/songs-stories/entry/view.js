@@ -19,9 +19,9 @@ import selectn from 'selectn'
 
 import DOMPurify from 'dompurify'
 
-import ConfGlobal from 'conf/local.json'
-
 import Paper from 'material-ui/lib/paper'
+
+import NavigationHelpers from "common/NavigationHelpers"
 
 import Preview from 'views/components/Editor/Preview'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
@@ -246,7 +246,7 @@ export default class View extends Component {
 
     ;(selectn('contextParameters.book.related_videos', this.props.entry) || []).map(function(video, key) {
       const vid = {
-        original: ConfGlobal.baseURL + video.path,
+        original: NavigationHelpers.getBaseURL() + video.path,
         thumbnail: selectn('views[0].url', video) || '/assets/images/cover.png',
         description: video['dc:description'],
         key: key,
@@ -257,7 +257,7 @@ export default class View extends Component {
       videoThumbnails.push(
         <video
           key={video.uid}
-          src={ConfGlobal.baseURL + video.path}
+          src={NavigationHelpers.getBaseURL() + video.path}
           controls
           style={{ margin: '15px', maxWidth: '150px' }}
         />

@@ -21,13 +21,13 @@ import StringHelpers from 'common/StringHelpers'
 import BaseOperations from 'operations/BaseOperations'
 import IntlService from 'views/services/intl'
 
-export default class DocumentOperations extends BaseOperations {
+export default class DocumentOperations {
   /**
  * Get a single document of a certain type based on a path and title match
  * This document may or may not contain children
  */
   static getDocument(pathOrUid = '', type, headers = {}, params = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -64,7 +64,7 @@ export default class DocumentOperations extends BaseOperations {
   * Publish a document
   */
   static publishDocument(pathOrUid = '', params = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -90,7 +90,7 @@ export default class DocumentOperations extends BaseOperations {
   * Update a document
   */
   static updateDocument(doc, headers = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -122,7 +122,7 @@ export default class DocumentOperations extends BaseOperations {
   * Disable document
   */
   static disableDocument(pathOrUid) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -147,7 +147,7 @@ export default class DocumentOperations extends BaseOperations {
   * Enable document
   */
   static enableDocument(pathOrUid) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -172,7 +172,7 @@ export default class DocumentOperations extends BaseOperations {
   * Publish dialect
   */
   static publishDialect(pathOrUid) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -197,7 +197,7 @@ export default class DocumentOperations extends BaseOperations {
   * Unpublish dialect
   */
   static unpublishDialect(pathOrUid) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -222,7 +222,7 @@ export default class DocumentOperations extends BaseOperations {
   * Create a document
   */
   static createDocument(parentDocPathOrId, docParams) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -246,7 +246,7 @@ export default class DocumentOperations extends BaseOperations {
   * Create a document with a file attached
   */
   static createDocumentWithBlob(parentDoc, docParams, file) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {
@@ -396,7 +396,7 @@ export default class DocumentOperations extends BaseOperations {
   static executeOperation(input, operationName, operationParams, headers = {}, params = {}) {
     const sanitizeKeys = ['dialectPath']
 
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     for (const paramKey in operationParams) {
       if (sanitizeKeys.indexOf(paramKey) !== -1) {
@@ -436,7 +436,7 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   static getCharactersByDialect(path, headers = {}, params = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
     const cleanedDialectPath = StringHelpers.clean(path)
 
     return new Promise(
@@ -462,7 +462,7 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   static queryDocumentsByDialect(path, queryAppend, headers = {}, params = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
     const cleanedDialectPath = StringHelpers.clean(path)
 
     return new Promise(
@@ -490,7 +490,7 @@ export default class DocumentOperations extends BaseOperations {
   }
 
   static searchDocuments(queryParam, queryPath, docTypes, headers = {}, params = {}) {
-    const properties = this.properties
+    const properties = BaseOperations.getProperties()
 
     return new Promise(
       (resolve, reject) => {

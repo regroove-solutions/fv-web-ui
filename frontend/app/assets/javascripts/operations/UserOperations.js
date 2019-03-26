@@ -19,11 +19,11 @@ import StringHelpers from 'common/StringHelpers';
 import BaseOperations from 'operations/BaseOperations';
 import IntlService from "views/services/intl";
 
-export default class UserOperations extends BaseOperations {
+export default class UserOperations {
 
     static getUser(username = "", headers = {}, params = {}) {
 
-        let properties = this.properties;
+        let properties = BaseOperations.getProperties();
 
         return new Promise(
             function (resolve, reject) {
@@ -45,7 +45,7 @@ export default class UserOperations extends BaseOperations {
 
     static createUser(newUser) {
 
-        let properties = this.properties;
+        let properties = BaseOperations.getProperties();
 
         return new Promise(
             function (resolve, reject) {
@@ -67,7 +67,7 @@ export default class UserOperations extends BaseOperations {
 
     static updateUser(user) {
 
-        let properties = this.properties;
+        let properties = BaseOperations.getProperties();
 
         return new Promise(
             function (resolve, reject) {
@@ -92,7 +92,7 @@ export default class UserOperations extends BaseOperations {
      */
     static getCurrentUser(headers = {}, params = {}) {
 
-        let properties = this.properties;
+        let properties = BaseOperations.getProperties();
 
         return new Promise(
             function (resolve, reject) {
@@ -125,7 +125,7 @@ export default class UserOperations extends BaseOperations {
     }
 
     static getUserTasks(params = {}) {
-        let properties = this.properties;
+        let properties = BaseOperations.getProperties();
 
         return new Promise(
             function (resolve, reject) {
