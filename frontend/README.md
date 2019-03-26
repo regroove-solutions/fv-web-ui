@@ -137,6 +137,38 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 
 <a href="https://www.browserstack.com" target="_blank"><img src="app/assets/images/browserstack-logo-600x315.png?raw=true" width="160" alt="BrowserStack" /></a>
 
+### End to end testing
+
+- [Cypress](https://www.cypress.io/)
+
+Launch the Cypress app:
+
+```
+$ npm run test:e2e
+```
+
+### Unit testing
+
+- [Jest](https://jestjs.io/)
+
+Run tests once:
+
+```
+$ npm run test
+```
+
+Watch mode, tests rerun after save:
+
+```
+$ npm run test:watch
+```
+
+Runs tests and generates a test coverage report
+
+```
+$ npm run test:coverage
+```
+
 ## Switching Targets for test purposes
 
 If you need to point your UI at a different NUXEO instance for whatever reason, modify the return value for `getBaseURL` in `NavigationHelpers`.
@@ -146,10 +178,36 @@ If you need to point your UI at a different NUXEO instance for whatever reason, 
 Git hooks are validating the frontend code on commit.
 
 You can skip the commit checks by adding the `--no-verify` flag to a `git commit`, eg:
+
 `git commit -m 'pull update & conflict resolution' --no-verify`
 
-Please edit the eslint config and adjust the rules to preference.
+Please edit the `.eslintrc` config and adjust the rules to preference.
+
 For example, downgrading a rule to a warning instead of an error.
+
+Configure the commands that are run in `package.json`, for example:
+
+```
+  "lint-staged": {
+    "linters": {
+      "*.{json,css,md}": [
+        "npm run lint-staged:prettier",
+        "git add"
+      ],
+      "*.js": [
+        "npm run lint-staged:eslint",
+        "npm run lint-staged:prettier",
+        "npm run lint-staged:test",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "/build/",
+      "/cypress/",
+      "**/__tests__/"
+    ]
+  },
+```
 
 ## Licensing
 
