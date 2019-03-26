@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 import selectn from 'selectn'
 import classNames from 'classnames'
 
-import NavigationHelpers from "common/NavigationHelpers"
+import NavigationHelpers from 'common/NavigationHelpers'
 
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'

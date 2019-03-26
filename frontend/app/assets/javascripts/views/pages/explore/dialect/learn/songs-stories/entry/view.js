@@ -21,7 +21,7 @@ import DOMPurify from 'dompurify'
 
 import Paper from 'material-ui/lib/paper'
 
-import NavigationHelpers from "common/NavigationHelpers"
+import NavigationHelpers from 'common/NavigationHelpers'
 
 import Preview from 'views/components/Editor/Preview'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'

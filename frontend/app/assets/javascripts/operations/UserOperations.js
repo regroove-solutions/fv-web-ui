@@ -13,130 +13,124 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import Nuxeo from 'nuxeo';
+import Nuxeo from 'nuxeo'
 
-import StringHelpers from 'common/StringHelpers';
-import BaseOperations from 'operations/BaseOperations';
-import IntlService from "views/services/intl";
+import StringHelpers from 'common/StringHelpers'
+import BaseOperations from 'operations/BaseOperations'
+import IntlService from 'views/services/intl'
 
 export default class UserOperations {
+  static getUser(username = '', headers = {}, params = {}) {
+    const properties = BaseOperations.getProperties()
 
-    static getUser(username = "", headers = {}, params = {}) {
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+          .users()
+          .fetch(username)
+          .then((user) => {
+            resolve(user)
+          })
+          .catch((error) => {
+            reject(IntlService.instance.translate({
+              key: 'operations.could_not_retrieve_current_user',
+              default: 'Could not retrieve current user',
+              case: 'first',
+            }) + '.')
+          })
+      })
+  }
 
-        let properties = BaseOperations.getProperties();
+  static createUser(newUser) {
+    const properties = BaseOperations.getProperties()
 
-        return new Promise(
-            function (resolve, reject) {
-                properties.client
-                    .users()
-                    .fetch(username)
-                    .then((user) => {
-                        resolve(user);
-                    })
-                    .catch((error) => {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.could_not_retrieve_current_user',
-                            default: 'Could not retrieve current user',
-                            case: 'first'
-                        }) + '.');
-                    });
-            });
-    }
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+          .users()
+          .create(newUser)
+          .then((user) => {
+            resolve(user)
+          })
+          .catch((error) => {
+            reject(IntlService.instance.translate({
+              key: 'operations.could_not_create_new_user',
+              default: 'Could not create new user',
+              case: 'first',
+            }) + '.')
+          })
+      })
+  }
 
-    static createUser(newUser) {
+  static updateUser(user) {
+    const properties = BaseOperations.getProperties()
 
-        let properties = BaseOperations.getProperties();
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+          .users()
+          .update(user)
+          .then((user) => {
+            resolve(user)
+          })
+          .catch((error) => {
+            reject(IntlService.instance.translate({
+              key: 'operations.could_not_update_user',
+              default: 'Could not update user',
+              case: 'first',
+            }) + '.')
+          })
+      })
+  }
 
-        return new Promise(
-            function (resolve, reject) {
-                properties.client
-                    .users()
-                    .create(newUser)
-                    .then((user) => {
-                        resolve(user);
-                    })
-                    .catch((error) => {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.could_not_create_new_user',
-                            default: 'Could not create new user',
-                            case: 'first'
-                        }) + '.');
-                    });
-            });
-    }
-
-    static updateUser(user) {
-
-        let properties = BaseOperations.getProperties();
-
-        return new Promise(
-            function (resolve, reject) {
-                properties.client
-                    .users()
-                    .update(user)
-                    .then((user) => {
-                        resolve(user);
-                    })
-                    .catch((error) => {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.could_not_update_user',
-                            default: 'Could not update user',
-                            case: 'first'
-                        }) + '.');
-                    });
-            });
-    }
-
-    /**
+  /**
      * Gets current user object
      */
-    static getCurrentUser(headers = {}, params = {}) {
+  static getCurrentUser(headers = {}, params = {}) {
+    const properties = BaseOperations.getProperties()
 
-        let properties = BaseOperations.getProperties();
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+          .operation('User.Get')
+          .params(params)
+          .input()
+          .execute()
+          .then((user) => {
+            properties.client.request('/user/' + user.uid, params)
+              .get(headers)
+              .then((userObj) => {
+                resolve(userObj)
+              }).catch((error) => {
+                reject(IntlService.instance.translate({
+                  key: 'operations.could_not_retrieve_current_user',
+                  default: 'Could not retrieve current user',
+                  case: 'first',
+                }) + '.')
+              })
+          })
+          .catch((error) => {
+            reject(IntlService.instance.translate({
+              key: 'operations.could_not_retrieve_current_user',
+              default: 'Could not retrieve current user',
+              case: 'first',
+            }) + '.')
+          })
+      })
+  }
 
-        return new Promise(
-            function (resolve, reject) {
-                properties.client
-                    .operation('User.Get')
-                    .params(params)
-                    .input()
-                    .execute()
-                    .then((user) => {
-                        properties.client.request('/user/' + user.uid, params)
-                            .get(headers)
-                            .then((userObj) => {
-                                resolve(userObj);
-                            }).catch((error) => {
-                            reject(IntlService.instance.translate({
-                                key: 'operations.could_not_retrieve_current_user',
-                                default: 'Could not retrieve current user',
-                                case: 'first'
-                            }) + '.');
-                        });
-                    })
-                    .catch((error) => {
-                        reject(IntlService.instance.translate({
-                            key: 'operations.could_not_retrieve_current_user',
-                            default: 'Could not retrieve current user',
-                            case: 'first'
-                        }) + '.');
-                    });
-            });
-    }
+  static getUserTasks(params = {}) {
+    const properties = BaseOperations.getProperties()
 
-    static getUserTasks(params = {}) {
-        let properties = BaseOperations.getProperties();
-
-        return new Promise(
-            function (resolve, reject) {
-                properties.client
-                    .operation('Task.GetAssigned')
-                    .params(params)
-                    .execute()
-                    .then((tasks) => {
-
-                        // Go through each task and do another request to figure out what document type each one is
-                        /*tasks.map(function(task, i) {
+    return new Promise(
+      function(resolve, reject) {
+        properties.client
+          .operation('Task.GetAssigned')
+          .params(params)
+          .execute()
+          .then((tasks) => {
+            // Go through each task and do another request to figure out what document type each one is
+            /*tasks.map(function(task, i) {
                             properties.client.request('/id/' + task.docref)
                             .get()
                             .then((document) => {
@@ -146,15 +140,14 @@ export default class UserOperations {
                         })
 
                       console.log(tasks);*/
-                        resolve(tasks);
-                    }).catch((error) => {
-                    reject(IntlService.instance.translate({
-                        key: 'operations.could_not_retrieve_user_tasks',
-                        default: 'Could not retrieve user tasks',
-                        case: 'first'
-                    }) + '.');
-                });
-            });
-    }
-
+            resolve(tasks)
+          }).catch((error) => {
+            reject(IntlService.instance.translate({
+              key: 'operations.could_not_retrieve_user_tasks',
+              default: 'Could not retrieve user tasks',
+              case: 'first',
+            }) + '.')
+          })
+      })
+  }
 }
