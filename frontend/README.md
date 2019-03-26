@@ -141,6 +141,16 @@ We use BroswerStack in order to ensure our UI functions in the latest version of
 
 If you need to point your UI at a different NUXEO instance for whatever reason, modify the return value for `getBaseURL` in `NavigationHelpers`.
 
+## Git Hooks
+
+Git hooks are validating the frontend code on commit.
+
+You can skip the commit checks by adding the `--no-verify` flag to a `git commit`, eg:
+`git commit -m 'pull update & conflict resolution' --no-verify`
+
+Please edit the eslint config and adjust the rules to preference.
+For example, downgrading a rule to a warning instead of an error.
+
 ## Licensing
 
 The data and code in this repository is licensed under multiple licenses.
