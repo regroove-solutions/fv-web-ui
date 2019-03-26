@@ -223,7 +223,7 @@ Configure lint-staged in `package.json`, for example:
 
 Please adjust the rules to suit your preference.
 
-Configure ESLint in `.eslintrc`, for example:
+Configure ESLint in `.eslintrc`.
 
 For example, downgrading a rule to a warning instead of an error.
 
