@@ -184,12 +184,6 @@ export default {
     )
   },
   getBaseURL: function() {
-    return (
-      window.location.protocol +
-      "//" +
-      window.location.hostname +
-      (window.location.port ? ":" + window.location.port : "") +
-      "/nuxeo/"
-    )
+    return "https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/"
   },
 }
