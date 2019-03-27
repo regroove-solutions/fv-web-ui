@@ -3,12 +3,15 @@ package ca.firstvoices.seam;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.jboss.seam.ScopeType;
@@ -23,6 +26,7 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.webapp.helpers.StartupHelper;
+import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +41,9 @@ public class FVLogin extends StartupHelper {
 
     private static final Log log = LogFactory.getLog(FVLogin.class);
 
+    // this is configured with a property to be set easily in nuxeo.conf in different envs
+    String fvContextPath = Framework.getProperty("fv.contextPath", "app");
+
     @Override
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public String initDomainAndFindStartupPage(String domainTitle, String viewId) {
@@ -46,7 +53,13 @@ public class FVLogin extends StartupHelper {
         }
 
         String NUXEO_URL = restHelper.getBaseURL();
-        String redirectTo = NUXEO_URL + "app/";
+        if (StringUtils.isEmpty(fvContextPath)) {
+            // if we don't serve /app we don;t need /nuxeo in the url either
+            NUXEO_URL = restHelper.getBaseURL().replaceAll(restHelper.getContextPath(), "");
+
+        }
+        String redirectTo = (NUXEO_URL + fvContextPath).endsWith("/") ? (NUXEO_URL + fvContextPath)
+                : (NUXEO_URL + fvContextPath) + "/";
         String backToPath = RestHelper.getHttpServletRequest().getParameter("backTo");
 
         NuxeoPrincipal currentUser = documentManager.getPrincipal();
@@ -60,13 +73,22 @@ public class FVLogin extends StartupHelper {
             // Otherwise, send to default dialect
             else {
                 String dialect = getDefaultDialect(currentUser);
-                redirectTo = NUXEO_URL + (dialect == null ? "app/" : dialect);
+
+                redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
+                                   .stream()
+                                   .map(s -> ((s != null && s.endsWith("/"))) ? s.substring(0, s.length() - 1) : s)
+                                   .map(s -> ((s != null && s.startsWith("/"))) ? s.substring(1) : s)
+                                   .collect(Collectors.joining("/"));
+
             }
         }
 
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
-            return null;
+            if (!redirectTo.equals(NUXEO_URL)) {
+                FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
+                return null;
+            }
+            return "login";
         } catch (URISyntaxException | IOException e) {
             log.error(e);
             throw new NuxeoException(e);
@@ -125,15 +147,15 @@ public class FVLogin extends StartupHelper {
         if (primary_dialect_short_url != null && !primary_dialect_short_url.isEmpty()) {
             // Users who are global 'members' should just go to the Sections URL
             if (currentUser.getGroups().contains("members")) {
-                finalPath = "app/sections/" + primary_dialect_short_url;
+                finalPath = fvContextPath + "/sections/" + primary_dialect_short_url;
             }
             // Other users can go to Workspaces
             else {
-                finalPath = "app/Workspaces/" + primary_dialect_short_url;
+                finalPath = fvContextPath + "/Workspaces/" + primary_dialect_short_url;
             }
         } else if (primary_dialect_path != null) {
             // must encode only Dialect..
-            finalPath = "app/explore" + primary_dialect_path;
+            finalPath = fvContextPath + "/explore" + primary_dialect_path;
         }
 
         return finalPath;
