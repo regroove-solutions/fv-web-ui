@@ -70,7 +70,7 @@ export default class Footer extends React.Component {
                                     key: 'general.phone',
                                     default: 'Phone',
                                     case: 'first'
-                                })} : +1-250-652-5952 · {this.intl.translate({
+                                })} : +1-250-882-8919 · {this.intl.translate({
                                     key: 'general.email',
                                     default: 'Email',
                                     case: 'first'
