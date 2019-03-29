@@ -136,7 +136,7 @@ export default class DirectoryOperations {
         language: "NXQL",
       },
       StringHelpers.queryStringToObject(
-        `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:isTrashed = 0 ${_queryAppend}`,
+        `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:isVersion = 0 AND ecm:isTrashed = 0 ${_queryAppend}`,
         true
       )
     )
