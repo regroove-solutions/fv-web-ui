@@ -82,13 +82,10 @@ public class FVLogin extends StartupHelper {
 
             }
         }
-
+        log.error("IN FVLlogin, redirecting to " + redirectTo);
         try {
-            if (!redirectTo.equals(NUXEO_URL)) {
-                FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
-                return null;
-            }
-            return "login";
+            FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
+            return null;
         } catch (URISyntaxException | IOException e) {
             log.error(e);
             throw new NuxeoException(e);
