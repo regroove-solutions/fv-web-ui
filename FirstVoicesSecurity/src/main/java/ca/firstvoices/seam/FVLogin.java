@@ -47,7 +47,6 @@ public class FVLogin extends StartupHelper {
     @Override
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
     public String initDomainAndFindStartupPage(String domainTitle, String viewId) {
-
         if (documentManager == null) {
             super.initServerAndFindStartupPage();
         }
@@ -64,25 +63,26 @@ public class FVLogin extends StartupHelper {
 
         NuxeoPrincipal currentUser = documentManager.getPrincipal();
         if (currentUser.isAdministrator()) {
-            return dashboardNavigationHelper.navigateToDashboard();
-        }
-        if (!currentUser.isAdministrator() && !currentUser.isAnonymous()) {
-            if (validatePath(backToPath)) {
-                redirectTo = NUXEO_URL + backToPath;
-            }
-            // Otherwise, send to default dialect
-            else {
-                String dialect = getDefaultDialect(currentUser);
+            redirectTo = NUXEO_URL.endsWith("/") ? NUXEO_URL + "nuxeo/view_home.faces"
+                    : NUXEO_URL + "/nuxeo/view_home.faces";
+        } else {
+            if (!currentUser.isAnonymous()) {
+                if (validatePath(backToPath)) {
+                    redirectTo = NUXEO_URL + backToPath;
+                }
+                // Otherwise, send to default dialect
+                else {
+                    String dialect = getDefaultDialect(currentUser);
 
-                redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
-                                   .stream()
-                                   .map(s -> ((s != null && s.endsWith("/"))) ? s.substring(0, s.length() - 1) : s)
-                                   .map(s -> ((s != null && s.startsWith("/"))) ? s.substring(1) : s)
-                                   .collect(Collectors.joining("/"));
+                    redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
+                                       .stream()
+                                       .map(s -> ((s != null && s.endsWith("/"))) ? s.substring(0, s.length() - 1) : s)
+                                       .map(s -> ((s != null && s.startsWith("/"))) ? s.substring(1) : s)
+                                       .collect(Collectors.joining("/"));
 
+                }
             }
         }
-        log.error("IN FVLlogin, redirecting to " + redirectTo);
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
             return null;
@@ -113,7 +113,7 @@ public class FVLogin extends StartupHelper {
                         });
             } catch (IOException e) {
                 log.error(e);
-                throw new NuxeoException(e);
+                return null;
             }
 
             String primary_dialect_obj = (String) userPreferencesSettings.get("General").get("primary_dialect");
