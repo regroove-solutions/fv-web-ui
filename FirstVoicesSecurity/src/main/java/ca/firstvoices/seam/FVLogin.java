@@ -64,8 +64,7 @@ public class FVLogin extends StartupHelper {
 
         NuxeoPrincipal currentUser = documentManager.getPrincipal();
         if (currentUser.isAdministrator()) {
-            redirectTo = NUXEO_URL.endsWith("/") ? NUXEO_URL + "nuxeo/view_home.faces"
-                    : NUXEO_URL + "/nuxeo/view_home.faces";
+            return "view_home";
         } else {
             if (!currentUser.isAnonymous()) {
                 if (validatePath(backToPath)) {
