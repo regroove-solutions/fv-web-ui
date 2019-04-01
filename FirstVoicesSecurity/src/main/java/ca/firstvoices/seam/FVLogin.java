@@ -1,8 +1,10 @@
 package ca.firstvoices.seam;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.faces.context.FacesContext;
 
+import org.apache.catalina.util.URLEncoder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +25,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 import org.nuxeo.ecm.webapp.helpers.StartupHelper;
@@ -66,32 +68,35 @@ public class FVLogin extends StartupHelper {
         if (currentUser.isAdministrator()) {
             redirectTo = NUXEO_URL.endsWith("/") ? NUXEO_URL + "nuxeo/view_home.faces"
                     : NUXEO_URL + "/nuxeo/view_home.faces";
-        } else {
-            if (!currentUser.isAnonymous()) {
-                if (validatePath(backToPath)) {
-                    redirectTo = NUXEO_URL + backToPath;
-                }
-                // Otherwise, send to default dialect
-                else {
-                    String dialect = getDefaultDialect(documentManager, currentUser);
+        }
+        if (!currentUser.isAnonymous()) {
+            if (validatePath(backToPath)) {
+                redirectTo = NUXEO_URL + backToPath;
+            }
+            // Otherwise, send to default dialect
+            else {
+                String dialect = getDefaultDialect(documentManager, currentUser);
 
-                    redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
-                                       .stream()
-                                       .map(s -> ((s != null && s.endsWith("/"))) ? s.substring(0, s.length() - 1) : s)
-                                       .map(s -> ((s != null && s.startsWith("/"))) ? s.substring(1) : s)
-                                       .collect(Collectors.joining("/"));
+                redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
+                                   .stream()
+                                   .map(s -> ((s != null && s.endsWith("/"))) ? s.substring(0, s.length() - 1) : s)
+                                   .map(s -> ((s != null && s.startsWith("/"))) ? s.substring(1) : s)
+                                   .collect(Collectors.joining("/"));
 
-                }
             }
         }
         try {
-            FacesContext.getCurrentInstance().getExternalContext().redirect(new URI(redirectTo).toASCIIString());
-            return null;
+            FacesContext.getCurrentInstance().getExternalContext().redirect(getURIFromPath(redirectTo));
+
         } catch (URISyntaxException | IOException e) {
             log.error(e);
-            throw new NuxeoException(e);
         }
+        return null;
+    }
 
+    public static String getURIFromPath(String redirectTo) throws URISyntaxException, UnsupportedEncodingException {
+        redirectTo = URLEncoder.DEFAULT.encode(redirectTo, Charset.availableCharsets().get("UTF-8"));
+        return new URI(redirectTo).toASCIIString();
     }
 
     public static String getDefaultDialect(CoreSession documentManager, NuxeoPrincipal currentUser) {

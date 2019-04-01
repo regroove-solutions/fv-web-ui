@@ -9,6 +9,9 @@ import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.LASTNAME_COLUMN;
 import static org.nuxeo.ecm.platform.usermanager.UserConfig.USERNAME_COLUMN;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -86,6 +89,37 @@ public class TestUserPreferences {
         redirectionUrl = FVLogin.getDefaultDialect(session, userManager.getPrincipal("test@test.com"));
 
         assertEquals("app/sections/dialect", redirectionUrl);
+
+    }
+
+    @Test
+    public void testSpecialCharactersInDialec() {
+        Exception e = null;
+        String redirectPath = "/app/explore/FV/Workspaces/Data/TEST my dialect /xTest Dialect portal";
+        try {
+            redirectPath = FVLogin.getURIFromPath(redirectPath);
+        } catch (URISyntaxException | UnsupportedEncodingException e1) {
+            e = e1;
+        }
+        assertNull(e);
+
+        e = null;
+        redirectPath = "explore/FV/Workspaces/Data/SENĆOŦEN/SENĆOŦEN/SENĆOŦEN";
+        try {
+            redirectPath = FVLogin.getURIFromPath(redirectPath);
+        } catch (URISyntaxException | UnsupportedEncodingException e1) {
+            e = e1;
+        }
+        assertNull(e);
+
+        e = null;
+        redirectPath = "/app/explore/FV/Workspaces/Data/TEST x̣ƏƏpɬ LANG/TEST x̣ƏƏpɬ Dialect/x̣ƏƏpɬ-Dialect";
+        try {
+            redirectPath = FVLogin.getURIFromPath(redirectPath);
+        } catch (URISyntaxException | UnsupportedEncodingException e1) {
+            e = e1;
+        }
+        assertNull(e);
 
     }
 
