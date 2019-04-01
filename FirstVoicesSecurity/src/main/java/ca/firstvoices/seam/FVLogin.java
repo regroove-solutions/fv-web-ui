@@ -67,8 +67,8 @@ public class FVLogin extends StartupHelper {
 
         NuxeoPrincipal currentUser = documentManager.getPrincipal();
         if (currentUser.isAdministrator()) {
-            redirectTo = NUXEO_URL.endsWith("/") ? NUXEO_URL + "nuxeo/view_home.faces"
-                    : NUXEO_URL + "/nuxeo/view_home.faces";
+
+            return "view_home";
         }
         if (!currentUser.isAnonymous()) {
             if (validatePath(backToPath)) {
@@ -88,7 +88,6 @@ public class FVLogin extends StartupHelper {
         }
         try {
             FacesContext.getCurrentInstance().getExternalContext().redirect(getURIFromPath(redirectTo));
-
         } catch (URISyntaxException | IOException e) {
             log.error(e);
         }
