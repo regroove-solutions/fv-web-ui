@@ -4,20 +4,20 @@
  */
 package ca.firstvoices.utils;
 
-import ca.firstvoices.models.CustomPreferencesObject;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.nuxeo.ecm.core.api.DocumentModel;
-
-import javax.ws.rs.HEAD;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.NuxeoException;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import ca.firstvoices.models.CustomPreferencesObject;
+
 public class FVUserPreferencesSetup {
 
-    private String createDefaultUserPreferencesWithDialectID(String dialectID) throws Exception {
+    public String createDefaultUserPreferencesWithDialectID(String dialectID) {
         CustomPreferencesObject userPreferencesObj = new CustomPreferencesObject();
 
         // Create general preferences
@@ -39,7 +39,11 @@ public class FVUserPreferencesSetup {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        return mapper.writeValueAsString(userPreferencesObj);
+        try {
+            return mapper.writeValueAsString(userPreferencesObj);
+        } catch (JsonProcessingException e) {
+            throw new NuxeoException(e);
+        }
     }
 
     public String createDefaultUserPreferencesWithRegistration(DocumentModel registration) throws Exception {

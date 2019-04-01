@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -19,6 +18,7 @@ import org.jboss.seam.annotations.Begin;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -31,6 +31,7 @@ import org.nuxeo.runtime.api.Framework;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ca.firstvoices.models.CustomPreferencesObject;
 import ca.firstvoices.utils.FVLoginUtils;
 
 @Name("startupHelper")
@@ -42,7 +43,7 @@ public class FVLogin extends StartupHelper {
     private static final Log log = LogFactory.getLog(FVLogin.class);
 
     // this is configured with a property to be set easily in nuxeo.conf in different envs
-    String fvContextPath = Framework.getProperty("fv.contextPath", "app");
+    static String fvContextPath = Framework.getProperty("fv.contextPath", "app");
 
     @Override
     @Begin(id = "#{conversationIdGenerator.nextMainConversationId}", join = true)
@@ -72,7 +73,7 @@ public class FVLogin extends StartupHelper {
                 }
                 // Otherwise, send to default dialect
                 else {
-                    String dialect = getDefaultDialect(currentUser);
+                    String dialect = getDefaultDialect(documentManager, currentUser);
 
                     redirectTo = Arrays.asList(NUXEO_URL, dialect == null ? fvContextPath : dialect)
                                        .stream()
@@ -93,7 +94,7 @@ public class FVLogin extends StartupHelper {
 
     }
 
-    private String getDefaultDialect(NuxeoPrincipal currentUser) {
+    public static String getDefaultDialect(CoreSession documentManager, NuxeoPrincipal currentUser) {
         String primary_dialect_path = null;
         String primary_dialect_short_url = null;
         String userPreferences = (String) currentUser.getModel().getPropertyValue("user:preferences");
@@ -106,17 +107,18 @@ public class FVLogin extends StartupHelper {
         if (userPreferences != null) {
             DocumentModel dialect = null;
 
-            Map<String, Map<String, Object>> userPreferencesSettings;
+            CustomPreferencesObject userPreferencesSettings;
             try {
                 userPreferencesSettings = new ObjectMapper().readValue(userPreferences,
-                        new TypeReference<Map<String, Map<String, Object>>>() {
+                        new TypeReference<CustomPreferencesObject>() {
                         });
             } catch (IOException e) {
                 log.error(e);
                 return null;
             }
 
-            String primary_dialect_obj = (String) userPreferencesSettings.get("General").get("primary_dialect");
+            String primary_dialect_obj = (String) userPreferencesSettings.getGeneralPreferences()
+                                                                         .get("primary_dialect");
             if (primary_dialect_obj != null && documentManager.exists(new IdRef(primary_dialect_obj))) {
                 // MC-Nuxeo : I see that new inviated users don't have acess to this document even if the dialect its
                 // set in theire preferences
