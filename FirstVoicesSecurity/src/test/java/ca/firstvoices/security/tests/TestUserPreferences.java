@@ -72,10 +72,6 @@ public class TestUserPreferences {
         // add a dialect but the dialect does not have a short url
         String json = new FVUserPreferencesSetup().createDefaultUserPreferencesWithDialectID(dialectDoc.getId());
         assertNotNull(json);
-        assertEquals(String.format(
-                "{\"General\":{\"primary_dialect\":\"%s\"},\"Navigation\":{\"start_page\":\"my_dialect\"},"
-                        + "\"Theme\":{\"font_size\":\"default\"}}",
-                dialectDoc.getId()), json);
         testUser.setPropertyValue("user:preferences", json);
         userManager.updateUser(testUser);
         redirectionUrl = FVLogin.getDefaultDialect(session, userManager.getPrincipal("test@test.com"));
@@ -90,6 +86,19 @@ public class TestUserPreferences {
 
         assertEquals("app/sections/dialect", redirectionUrl);
 
+    }
+
+    @Test
+    public void testDifferentUserPreferences() {
+        DocumentModel testUser = createUserWithPassword("test@test.com", "Test", "X", "members");
+        assertNotNull(testUser);
+        String json = String.format(
+                "{\"navigationPreferences\":{\"start_page\":\"my_dialect\"},\"themePreferences\":{\"font_size\":\"default\"},\"generalPreferences\":{\"primary_dialect\":\"%s\"}}",
+                dialectDoc.getId());
+        testUser.setPropertyValue("user:preferences", json);
+        userManager.updateUser(testUser);
+        String redirectionUrl = FVLogin.getDefaultDialect(session, userManager.getPrincipal("test@test.com"));
+        assertEquals("app/explore/Family/Language/Dialect", redirectionUrl);
     }
 
     @Test

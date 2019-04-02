@@ -31,6 +31,7 @@ import org.nuxeo.ecm.webapp.helpers.StartupHelper;
 import org.nuxeo.runtime.api.Framework;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.firstvoices.models.CustomPreferencesObject;
@@ -114,7 +115,9 @@ public class FVLogin extends StartupHelper {
 
             CustomPreferencesObject userPreferencesSettings;
             try {
-                userPreferencesSettings = new ObjectMapper().readValue(userPreferences,
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                userPreferencesSettings = objectMapper.readValue(userPreferences,
                         new TypeReference<CustomPreferencesObject>() {
                         });
             } catch (IOException e) {
