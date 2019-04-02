@@ -98,6 +98,10 @@
           "analyzer": "fulltext",
           "type": "text",
           "boost": 2
+        },
+        "lowercase" : {
+            "type": "text",
+            "analyzer" : "lowercase_analyzer"
         }
       }
     },
@@ -164,6 +168,44 @@
           "type": "text"
         }
       }
+    },
+    "fv:definitions" : {
+      "properties": {
+         "translation":{
+          "type": "text",
+             "copy_to": "all_field",
+             "fields" : {
+                "lowercase" : {
+                "type": "text",
+                "analyzer" : "lowercase_analyzer"
+              }
+            }
+          }
+       }
+    },
+    "fv:literal_translation" : {
+        "properties": {
+           "translation":{
+            "type": "text",
+               "copy_to": "all_field",
+               "fields" : {
+                  "lowercase" : {
+                  "type": "text",
+                  "analyzer" : "lowercase_analyzer"
+                }
+              }
+            }
+         }
+      },
+      "fv:cultural_note" : {
+          "type" : "keyword",
+          "copy_to" : "all_field",
+          "fields" : {
+            "lowercase" : {
+              "type": "text",
+              "analyzer" : "lowercase_analyzer"
+            }
+          }
+       }
     }
-  }
 }
