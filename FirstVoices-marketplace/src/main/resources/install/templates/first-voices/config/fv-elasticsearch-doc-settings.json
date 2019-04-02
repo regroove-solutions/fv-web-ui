@@ -14,7 +14,7 @@
       },
       "en_stop_filter": {
         "stopwords": [
-          "_english_"
+          "_none_"
         ],
         "type": "stop"
       },
