@@ -13,19 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { Map } from "immutable"
-import classNames from "classnames"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+import classNames from 'classnames'
+import selectn from 'selectn'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import StringHelpers from "common/StringHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import StringHelpers from 'common/StringHelpers'
 
-import t from "tcomb-form"
+import t from 'tcomb-form'
 
-import FlatButton from "material-ui/lib/flat-button"
-import Dialog from "material-ui/lib/dialog"
-import IntlService from "views/services/intl"
+import FlatButton from 'material-ui/lib/flat-button'
+import Dialog from 'material-ui/lib/dialog'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
@@ -44,7 +44,7 @@ function renderSelect(locals) {
       </select>
     )
   } else {
-    return <div>{StringHelpers.toTitleCase(locals.value.replace(/_/g, " "))}</div>
+    return <div>{StringHelpers.toTitleCase(locals.value.replace(/_/g, ' '))}</div>
   }
 }
 
@@ -57,7 +57,7 @@ class SelectGroupFactory extends t.form.Select {
 }
 
 function conditionalRenderRow(row, locals) {
-  let buttonRow = ""
+  let buttonRow = ''
   if (locals.config.allAvailableGroups.indexOf(row.input.props.value) != -1) {
     buttonRow = <div className="col-sm-4 col-xs-6">{list.renderButtonGroup(row.buttons, locals)}</div>
   }
@@ -96,23 +96,23 @@ export default class GroupAssignmentDialog extends Component {
     }
 
     this.isUserRegistration = false
-    ;["_onRequestSaveForm"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_onRequestSaveForm'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentWillReceiveProps(nextProps) {
-    this.isUserRegistration = selectn("type", nextProps.selectedItem) === "FVUserRegistration"
+    this.isUserRegistration = selectn('type', nextProps.selectedItem) === 'FVUserRegistration'
   }
 
   _onRequestSaveForm(e) {
     e.preventDefault()
 
     // tcomb validation not required, will not work with groups
-    let formValue = this.refs["form_group_assignment"].getValue()
+    let formValue = this.refs['form_group_assignment'].getValue()
     let properties = {}
 
     for (let key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != "") {
+        if (formValue[key] && formValue[key] != '') {
           properties[key] = formValue[key]
         }
       }
@@ -129,14 +129,14 @@ export default class GroupAssignmentDialog extends Component {
     let currentlyAssignedGroups = selectn(this.props.fieldMapping.groups, this.props.selectedItem) || []
     let currentlyAssignedGroupsLabels = currentlyAssignedGroups.map((group) => {
       return (
-        <span className={classNames("label", "label-default")} style={{ marginRight: "5px" }}>
-          {StringHelpers.toTitleCase(group.replace(/_/g, " "))}
+        <span className={classNames('label', 'label-default')} style={{ marginRight: '5px' }}>
+          {StringHelpers.toTitleCase(group.replace(/_/g, ' '))}
         </span>
       )
     })
 
     let dialectGroups = ProviderHelpers.getDialectGroups(
-      selectn("response.contextParameters.acls[0].aces", this.props.dialect),
+      selectn('response.contextParameters.acls[0].aces', this.props.dialect),
       currentlyAssignedGroups
     )
 
@@ -153,12 +153,12 @@ export default class GroupAssignmentDialog extends Component {
     let formOptions = {
       fields: {
         id: {
-          type: "hidden",
+          type: 'hidden',
         },
         group: {
           label: this.isUserRegistration
-            ? intl.trans("views.pages.users.group.group_to_add_user_to", "Group to add user to", "first") + ":"
-            : intl.trans("groups", "Groups", "first") + ":",
+            ? intl.trans('views.pages.users.group.group_to_add_user_to', 'Group to add user to', 'first') + ':'
+            : intl.trans('groups', 'Groups', 'first') + ':',
           // help: (this.isUserRegistration) ? intl.trans('views.pages.users.group.only_one_per_user', 'Note: Only one group per user (for each dialect) is required due to permission inheritance.', 'first')
           //     : intl.trans('views.pages.users.group.group_permissions', 'Note: Groups with more permissions will inherit permissions from groups with less permissions. Example: \'Recorders with Approval\' get permissions that both \'Recorders\' and a \'Members\' have.)'),
           disableOrder: true,
@@ -184,12 +184,12 @@ export default class GroupAssignmentDialog extends Component {
         open={this.props.open}
         actions={[
           <FlatButton
-            label={intl.trans("cancel", "Cancel", "first")}
+            label={intl.trans('cancel', 'Cancel', 'first')}
             secondary={true}
             onTouchTap={this.props.closeMethod}
           />,
           <FlatButton
-            label={intl.trans("submit", "Submit", "first")}
+            label={intl.trans('submit', 'Submit', 'first')}
             primary={true}
             keyboardFocused={true}
             onTouchTap={this._onRequestSaveForm}
@@ -199,8 +199,9 @@ export default class GroupAssignmentDialog extends Component {
         autoScrollBodyContent={true}
       >
         <h1>
-          {selectn("properties.userinfo:firstName", this.props.selectedItem)}
-          &nbsp;{selectn("properties.userinfo:lastName", this.props.selectedItem)}: {this.props.title}
+          {selectn('properties.userinfo:firstName', this.props.selectedItem)}
+          &nbsp;
+          {selectn('properties.userinfo:lastName', this.props.selectedItem)}: {this.props.title}
         </h1>
 
         <form onSubmit={this._onRequestSaveForm}>

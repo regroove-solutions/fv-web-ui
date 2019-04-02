@@ -13,23 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
+import React, { Component, PropTypes } from 'react'
 
-import classNames from "classnames"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
-import EditorInsertChart from "material-ui/lib/svg-icons/editor/insert-chart"
-import Toolbar from "material-ui/lib/toolbar/toolbar"
-import ToolbarGroup from "material-ui/lib/toolbar/toolbar-group"
-import ToolbarSeparator from "material-ui/lib/toolbar/toolbar-separator"
-import FlatButton from "material-ui/lib/flat-button"
+import EditorInsertChart from 'material-ui/lib/svg-icons/editor/insert-chart'
+import Toolbar from 'material-ui/lib/toolbar/toolbar'
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
+import FlatButton from 'material-ui/lib/flat-button'
 
-import AuthenticationFilter from "views/components/Document/AuthenticationFilter"
-import IntlService from "views/services/intl"
+import AuthenticationFilter from 'views/components/Document/AuthenticationFilter'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 /**
@@ -51,7 +51,7 @@ export default class ToolbarNavigation extends Component {
 
   constructor(props, context) {
     super(props, context)
-    ;["_onNavigateRequest", "_getNavigationURL"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_onNavigateRequest', '_getNavigationURL'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentDidMount() {
@@ -75,7 +75,7 @@ export default class ToolbarNavigation extends Component {
   }
 
   _onNavigateRequest(pathArray) {
-    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == "learn") {
+    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
       NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     } else {
       NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
@@ -83,40 +83,40 @@ export default class ToolbarNavigation extends Component {
   }
 
   _getNavigationURL(path) {
-    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == "learn") {
-      return this.props.windowPath + "/" + path
+    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
+      return this.props.windowPath + '/' + path
     } else {
-      return this.props.windowPath + "/learn/" + path
+      return this.props.windowPath + '/learn/' + path
     }
   }
 
   render() {
     // TODO: Find out why the results sometimes in field1 and sometimes in field2?
-    const COUNT_FIELD1 = "response.entries[0].COUNT(ecm:uuid)"
-    const COUNT_FIELD2 = "response.entries[1].COUNT(ecm:uuid)"
+    const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)'
+    const COUNT_FIELD2 = 'response.entries[1].COUNT(ecm:uuid)'
 
     //const { label, items, type } = this.props;
 
-    const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, "count_songs")
-    const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, "count_stories")
-    const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, "count_words")
-    const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, "count_phrases")
+    const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_songs')
+    const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_stories')
+    const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_words')
+    const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_phrases')
 
     let wordCount =
       selectn(COUNT_FIELD1, computeWordsCount) == undefined
-        ? "..."
+        ? '...'
         : selectn(COUNT_FIELD1, computeWordsCount) + selectn(COUNT_FIELD2, computeWordsCount)
     let phraseCount =
       selectn(COUNT_FIELD1, computePhrasesCount) == undefined
-        ? "..."
+        ? '...'
         : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount)
     let songCount =
       selectn(COUNT_FIELD1, computeSongsCount) == undefined
-        ? "..."
+        ? '...'
         : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount)
     let storyCount =
       selectn(COUNT_FIELD1, computeStoriesCount) == undefined
-        ? "..."
+        ? '...'
         : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount)
 
     return (
@@ -124,20 +124,20 @@ export default class ToolbarNavigation extends Component {
         <div className="row">
           <div className="col-xs-12 col-md-10">
             <div firstChild={true} float="left">
-              <a href={this._getNavigationURL("words")} onTouchTap={this._onNavigateRequest.bind(this, "words")}>
-                {intl.trans("words", "Words", "first") + ""}
+              <a href={this._getNavigationURL('words')} onTouchTap={this._onNavigateRequest.bind(this, 'words')}>
+                {intl.trans('words', 'Words', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL("phrases")} onTouchTap={this._onNavigateRequest.bind(this, "phrases")}>
-                {intl.trans("phrases", "Phrases", "first") + ""}
+              <a href={this._getNavigationURL('phrases')} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')}>
+                {intl.trans('phrases', 'Phrases', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL("songs")} onTouchTap={this._onNavigateRequest.bind(this, "songs")}>
-                {intl.trans("songs", "Songs", "first") + ""}
+              <a href={this._getNavigationURL('songs')} onTouchTap={this._onNavigateRequest.bind(this, 'songs')}>
+                {intl.trans('songs', 'Songs', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL("stories")} onTouchTap={this._onNavigateRequest.bind(this, "stories")}>
-                {intl.trans("stories", "Stories", "first") + ""}
+              <a href={this._getNavigationURL('stories')} onTouchTap={this._onNavigateRequest.bind(this, 'stories')}>
+                {intl.trans('stories', 'Stories', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL("alphabet")} onTouchTap={this._onNavigateRequest.bind(this, "alphabet")}>
-                {intl.trans("alphabet", "Alphabet", "first")}
+              <a href={this._getNavigationURL('alphabet')} onTouchTap={this._onNavigateRequest.bind(this, 'alphabet')}>
+                {intl.trans('alphabet', 'Alphabet', 'first')}
               </a>
             </div>
           </div>
@@ -148,15 +148,15 @@ export default class ToolbarNavigation extends Component {
               routeParams={this.props.routeParams}
             >
               <div
-                className={classNames("hidden-xs", { hidden: !this.props.showStats })}
+                className={classNames('hidden-xs', { hidden: !this.props.showStats })}
                 firstChild={false}
                 float="right"
               >
                 <FlatButton
                   icon={<EditorInsertChart />}
-                  style={{ color: "#fff" }}
+                  style={{ color: '#fff' }}
                   onTouchTap={this.props.showStats}
-                  label={intl.trans("language_statistics", "Language Statistics")}
+                  label={intl.trans('language_statistics', 'Language Statistics')}
                 />
               </div>
             </AuthenticationFilter>

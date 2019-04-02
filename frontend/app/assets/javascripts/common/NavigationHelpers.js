@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import selectn from "selectn"
-import ConfGlobal from "conf/local.json"
-import ConfRoutes, { paramMatch } from "conf/routes"
+import selectn from 'selectn'
+import ConfGlobal from 'conf/local.json'
+import ConfRoutes, { paramMatch } from 'conf/routes'
 
 const arrayPopImmutable = function(array, sizeToPop = 1) {
   return array.slice(0, array.length - sizeToPop)
@@ -26,7 +26,7 @@ const arrayPopImmutable = function(array, sizeToPop = 1) {
  */
 const ContextPath = function() {
   if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
-    return ""
+    return ''
   } else {
     return ConfGlobal.contextPath
   }
@@ -37,10 +37,10 @@ const ContextPath = function() {
  * @param String path
  */
 const AddForwardSlash = function(path) {
-  let addForwardSlash = "/"
+  let addForwardSlash = '/'
 
-  if (path.indexOf("/") === 0) {
-    addForwardSlash = ""
+  if (path.indexOf('/') === 0) {
+    addForwardSlash = ''
   }
 
   return addForwardSlash + path
@@ -50,8 +50,8 @@ const AddForwardSlash = function(path) {
  * Stores some default route parameters
  */
 const DefaultRouteParams = {
-  theme: "explore",
-  area: "sections",
+  theme: 'explore',
+  area: 'sections',
 }
 
 export default {
@@ -59,14 +59,14 @@ export default {
   // If no NavigationFunc is provided, will return the path
   // Will add context path unless already provided
   navigate: function(path, navigationFunc, encodeLastPart = false) {
-    let pathArray = path.split("/")
+    let pathArray = path.split('/')
 
     if (encodeLastPart) {
       pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1])
     }
 
     // Only add context path if it doesn't exist
-    let transformedPath = path.indexOf(ContextPath()) === 0 ? pathArray.join("/") : ContextPath() + pathArray.join("/")
+    let transformedPath = path.indexOf(ContextPath()) === 0 ? pathArray.join('/') : ContextPath() + pathArray.join('/')
 
     if (!navigationFunc) {
       return transformedPath
@@ -76,29 +76,29 @@ export default {
   },
   // Navigate up by removing the last page from the URL
   navigateUp: function(currentPathArray, navigationFunc) {
-    navigationFunc("/" + arrayPopImmutable(currentPathArray).join("/"))
+    navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'))
   },
   // Navigate forward, replacing the current page within the URL
   navigateForwardReplace: function(currentPathArray, forwardPathArray, navigationFunc) {
     navigationFunc(
-      "/" +
+      '/' +
         arrayPopImmutable(currentPathArray)
           .concat(forwardPathArray)
-          .join("/")
+          .join('/')
     )
   },
   // Navigate forward, replacing the current page within the URL
   navigateForwardReplaceMultiple: function(currentPathArray, forwardPathArray, navigationFunc) {
     navigationFunc(
-      "/" +
+      '/' +
         arrayPopImmutable(currentPathArray, forwardPathArray.length)
           .concat(forwardPathArray)
-          .join("/")
+          .join('/')
     )
   },
   // Navigate forward by appending the forward path
   navigateForward: function(currentPathArray, forwardPathArray, navigationFunc) {
-    navigationFunc("/" + currentPathArray.concat(forwardPathArray).join("/"))
+    navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'))
   },
   // Navigate back to previous page
   navigateBack: function() {
@@ -128,40 +128,40 @@ export default {
         }
       })
 
-      return ContextPath() + "/" + matchedRoute.path.join("/")
+      return ContextPath() + '/' + matchedRoute.path.join('/')
     } else {
       // TODO: How do we fall back gracefully when no path is found?
     }
   },
   // Generate a UID link from a Nuxeo document path
   generateUIDPath: function(theme, item, pluralPathId) {
-    let path = "/" + theme + selectn("path", item)
-    let type = selectn("type", item)
+    let path = '/' + theme + selectn('path', item)
+    let type = selectn('type', item)
 
     switch (pluralPathId) {
-      case "words":
-      case "phrases":
-        path = path.replace("/Dictionary/", "/learn/" + pluralPathId + "/")
+      case 'words':
+      case 'phrases':
+        path = path.replace('/Dictionary/', '/learn/' + pluralPathId + '/')
         break
 
-      case "songs-stories":
-      case "songs":
-      case "stories":
-        path = path.replace("/Stories & Songs/", "/learn/" + pluralPathId + "/")
+      case 'songs-stories':
+      case 'songs':
+      case 'stories':
+        path = path.replace('/Stories & Songs/', '/learn/' + pluralPathId + '/')
         break
 
-      case "gallery":
-        path = path.replace("/Portal/", "/" + pluralPathId + "/")
+      case 'gallery':
+        path = path.replace('/Portal/', '/' + pluralPathId + '/')
         break
 
-      case "media":
+      case 'media':
         // Resources can be in folders, so ensure everything after 'Resources' is ignored
-        path = path.substring(0, path.lastIndexOf("/Resources/") + 11)
-        path = path.replace("/Resources/", "/" + pluralPathId + "/")
+        path = path.substring(0, path.lastIndexOf('/Resources/') + 11)
+        path = path.replace('/Resources/', '/' + pluralPathId + '/')
         break
     }
 
-    return (path = ContextPath() + path.substring(0, path.lastIndexOf("/") + 1) + selectn("uid", item))
+    return (path = ContextPath() + path.substring(0, path.lastIndexOf('/') + 1) + selectn('uid', item))
   },
   // Disable link
   disable: function(event) {
@@ -172,24 +172,24 @@ export default {
   },
   // Checks whether a page being accessed is a Workspace
   isWorkspace: function(props) {
-    return props.windowPath && props.windowPath.indexOf("/Workspaces/") != -1
+    return props.windowPath && props.windowPath.indexOf('/Workspaces/') != -1
   },
   getBaseWebUIURL: function() {
     return (
       window.location.protocol +
-      "//" +
+      '//' +
       window.location.hostname +
-      (window.location.port ? ":" + window.location.port : "") +
+      (window.location.port ? ':' + window.location.port : '') +
       ContextPath()
     )
   },
   getBaseURL: function() {
     return (
       window.location.protocol +
-      "//" +
+      '//' +
       window.location.hostname +
-      (window.location.port ? ":" + window.location.port : "") +
-      "/nuxeo/"
+      (window.location.port ? ':' + window.location.port : '') +
+      '/nuxeo/'
     )
   },
 }

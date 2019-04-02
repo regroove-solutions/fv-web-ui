@@ -13,232 +13,291 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react');
-var PubSub = require('pubsub-js');
+var React = require('react')
+var PubSub = require('pubsub-js')
 
-var _ = require('underscore');
+var _ = require('underscore')
 
-var classNames = require('classnames');
-var Mui = require('material-ui');
+var classNames = require('classnames')
+var Mui = require('material-ui')
 
-var {
-      IconButton, RaisedButton, LinearProgress, Snackbar
-    } = Mui;
+var { IconButton, RaisedButton, LinearProgress, Snackbar } = Mui
 
-var ThemeManager = new Mui.Styles.ThemeManager();
+var ThemeManager = new Mui.Styles.ThemeManager()
 
-var WordOperations = require('operations/WordOperations');
+var WordOperations = require('operations/WordOperations')
 
-var AnswerMQ = require('./AnswerMQ');
+var AnswerMQ = require('./AnswerMQ')
 
-var loadingComponent = <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">Loading...</div>;
+var loadingComponent = (
+  <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">
+    Loading...
+  </div>
+)
 
 class MultiQuiz extends React.Component {
-
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.eventName = this.constructor.name.toUpperCase();
+    this.eventName = this.constructor.name.toUpperCase()
 
     // Theme changes
-    this.linearProgressStyle = {height: '15px', marginBottom: '10px'};
+    this.linearProgressStyle = { height: '15px', marginBottom: '10px' }
 
     ThemeManager.setComponentThemes({
       snackbar: {
-        actionColor: '#ffffff'
-      }
-    });
+        actionColor: '#ffffff',
+      },
+    })
 
-    this.handleNavigate = this.handleNavigate.bind(this);
-    this.checkAnswer = this.checkAnswer.bind(this);
-    this.handleAnswerSelected = this.handleAnswerSelected.bind(this);
-    this.displayAnswers = this.displayAnswers.bind(this);
+    this.handleNavigate = this.handleNavigate.bind(this)
+    this.checkAnswer = this.checkAnswer.bind(this)
+    this.handleAnswerSelected = this.handleAnswerSelected.bind(this)
+    this.displayAnswers = this.displayAnswers.bind(this)
 
-    this.totalQuestion = 10;
+    this.totalQuestion = 10
 
     this.state = {
       word: props.word,
       questions: [],
       displayedAnswers: [],
-      selectedAnswers:[],
-      checkedAnswers:[],
+      selectedAnswers: [],
+      checkedAnswers: [],
       currentAnswer: null,
       currentAnswerIndex: 0,
-      correctAnswerMedia: loadingComponent
-    };
+      correctAnswerMedia: loadingComponent,
+    }
 
     // TODO: Combine into one single query or nicer chaining
-    WordOperations.getWordsByLangauge(props.client, props.language, "(dc:subjects LIKE '%" + props.category + "')").then((function(words){
+    WordOperations.getWordsByLangauge(
+      props.client,
+      props.language,
+      "(dc:subjects LIKE '%" + props.category + "')"
+    ).then(
+      function(words) {
+        words = _.sample(words, this.totalQuestion)
 
-      words = _.sample(words, this.totalQuestion);
+        this.setState({
+          questions: words,
+          currentAnswer: words[this.state.currentAnswerIndex],
+        })
 
-      this.setState({
-        questions: words,
-        currentAnswer: words[this.state.currentAnswerIndex]
-      });
-
-      PubSub.publish( this.eventName + ":DATALOADED" );
-
-    }).bind(this));
+        PubSub.publish(this.eventName + ':DATALOADED')
+      }.bind(this)
+    )
 
     // Subscribers
-    PubSub.subscribe( 'ANSWERMQ:SELECTED', this.handleAnswerSelected );
-    PubSub.subscribe( this.eventName + ':DATALOADED', this.displayAnswers );
+    PubSub.subscribe('ANSWERMQ:SELECTED', this.handleAnswerSelected)
+    PubSub.subscribe(this.eventName + ':DATALOADED', this.displayAnswers)
   }
 
   getChildContext() {
     return {
-      muiTheme: ThemeManager.getCurrentTheme()
+      muiTheme: ThemeManager.getCurrentTheme(),
     }
   }
 
   displayAnswers(selectedAnswerKey = null) {
-
-    var selected = false;
-    var tmpAnswers = [];
-    var incorrectAnswers = _.without(_.shuffle(this.state.questions), this.state.currentAnswer);
+    var selected = false
+    var tmpAnswers = []
+    var incorrectAnswers = _.without(_.shuffle(this.state.questions), this.state.currentAnswer)
 
     // If question being displayed for the first time
     if (!(this.state.currentAnswerIndex in this.state.displayedAnswers)) {
-      if (incorrectAnswers.length != 0 ) {
-        tmpAnswers.push(<AnswerMQ key={this.state.questions[this.state.currentAnswerIndex].uid} client={this.props.client} selected={selected} data={this.state.questions[this.state.currentAnswerIndex]} correct="true" />);
+      if (incorrectAnswers.length != 0) {
+        tmpAnswers.push(
+          <AnswerMQ
+            key={this.state.questions[this.state.currentAnswerIndex].uid}
+            client={this.props.client}
+            selected={selected}
+            data={this.state.questions[this.state.currentAnswerIndex]}
+            correct="true"
+          />
+        )
 
-        for (var i=0; i < 3; i++) {
-          tmpAnswers.push(<AnswerMQ key={incorrectAnswers[i].uid} client={this.props.client} selected={selected} data={incorrectAnswers[i]} correct="false" />);
+        for (var i = 0; i < 3; i++) {
+          tmpAnswers.push(
+            <AnswerMQ
+              key={incorrectAnswers[i].uid}
+              client={this.props.client}
+              selected={selected}
+              data={incorrectAnswers[i]}
+              correct="false"
+            />
+          )
         }
 
-        var arrayvar = this.state.displayedAnswers.slice();
-        var newelement = _.shuffle(tmpAnswers);
-        arrayvar[this.state.currentAnswerIndex] = newelement;
+        var arrayvar = this.state.displayedAnswers.slice()
+        var newelement = _.shuffle(tmpAnswers)
+        arrayvar[this.state.currentAnswerIndex] = newelement
 
-        this.setState({displayedAnswers: arrayvar});
+        this.setState({ displayedAnswers: arrayvar })
       }
     }
     // Question already displayed, and answer specificed
     else if (selectedAnswerKey != null) {
+      var arrayvar = this.state.displayedAnswers.slice()
 
-      var arrayvar = this.state.displayedAnswers.slice();
-
-      _.each(this.state.displayedAnswers[this.state.currentAnswerIndex], function(element, index, list){
-
-        var selected = false;
+      _.each(this.state.displayedAnswers[this.state.currentAnswerIndex], function(element, index, list) {
+        var selected = false
 
         if (element.key === selectedAnswerKey) {
-          selected = true;
+          selected = true
         }
 
-        tmpAnswers.push(React.cloneElement(element, { selected: selected }));
-      });
+        tmpAnswers.push(React.cloneElement(element, { selected: selected }))
+      })
 
-      arrayvar[this.state.currentAnswerIndex] = tmpAnswers;
+      arrayvar[this.state.currentAnswerIndex] = tmpAnswers
 
-      this.setState({displayedAnswers: arrayvar});
+      this.setState({ displayedAnswers: arrayvar })
     }
   }
 
-  handleAnswerSelected( msg, data ){
-    var arrayvar = this.state.selectedAnswers.slice();
-    arrayvar[this.state.currentAnswerIndex] = data;
+  handleAnswerSelected(msg, data) {
+    var arrayvar = this.state.selectedAnswers.slice()
+    arrayvar[this.state.currentAnswerIndex] = data
 
-    this.setState({selectedAnswers: arrayvar});
+    this.setState({ selectedAnswers: arrayvar })
 
     // Re-render answers
-    this.displayAnswers(data);
+    this.displayAnswers(data)
   }
 
   checkAnswer() {
-
-    var correct = false;
+    var correct = false
 
     // Build utility for this...
-    var arrayvar = this.state.checkedAnswers.slice();
+    var arrayvar = this.state.checkedAnswers.slice()
 
     if (this.state.selectedAnswers[this.state.currentAnswerIndex] == this.state.currentAnswer.uid) {
-      correct = true;
+      correct = true
     }
 
-    arrayvar[this.state.currentAnswerIndex] = correct;
-    this.setState({checkedAnswers: arrayvar});
+    arrayvar[this.state.currentAnswerIndex] = correct
+    this.setState({ checkedAnswers: arrayvar })
 
-    this.refs.feedback.show();
+    this.refs.feedback.show()
   }
 
   handleNavigate(direction) {
+    var newIndex
 
-    var newIndex;
+    if (direction == 'next') newIndex = this.state.currentAnswerIndex + 1
+    else newIndex = this.state.currentAnswerIndex - 1
 
-    if (direction == 'next')
-      newIndex = this.state.currentAnswerIndex + 1;
-    else
-      newIndex = this.state.currentAnswerIndex - 1;
-
-    if (newIndex <= (this.totalQuestion - 1) && newIndex >= 0)
-    {
+    if (newIndex <= this.totalQuestion - 1 && newIndex >= 0) {
       this.setState({
         currentAnswer: this.state.questions[newIndex],
         currentAnswerIndex: newIndex,
-        correctAnswerMedia: loadingComponent
-      });
+        correctAnswerMedia: loadingComponent,
+      })
 
-      WordOperations.getMediaByWord(this.props.client, this.state.questions[newIndex].uid, "(ecm:primaryType='Picture')").then((function(correctAnswerMedia){
-        WordOperations.getMediaBlobById(this.props.client, correctAnswerMedia[0].uid, correctAnswerMedia[0].properties['file:content']['mime-type']).then((function(response){
-          this.setState({
-            correctAnswerMedia: <div className="imgCont"><img className="image" src={response.dataUri} alt=""/></div>
-          });
+      WordOperations.getMediaByWord(
+        this.props.client,
+        this.state.questions[newIndex].uid,
+        "(ecm:primaryType='Picture')"
+      ).then(
+        function(correctAnswerMedia) {
+          WordOperations.getMediaBlobById(
+            this.props.client,
+            correctAnswerMedia[0].uid,
+            correctAnswerMedia[0].properties['file:content']['mime-type']
+          ).then(
+            function(response) {
+              this.setState({
+                correctAnswerMedia: (
+                  <div className="imgCont">
+                    <img className="image" src={response.dataUri} alt="" />
+                  </div>
+                ),
+              })
 
-          this.displayAnswers();
-
-        }).bind(this));
-      }).bind(this));
+              this.displayAnswers()
+            }.bind(this)
+          )
+        }.bind(this)
+      )
     }
   }
 
   render() {
-
-    var main = (this.state.currentAnswer != null) ? <h2>{this.state.currentAnswer.title}</h2> : loadingComponent;
+    var main = this.state.currentAnswer != null ? <h2>{this.state.currentAnswer.title}</h2> : loadingComponent
 
     if (this.state.questions.length == 0) {
-      main = <div className={classNames('alert', 'alert-danger', 'text-center')} role="alert">No words found for this quiz yet. Please try a different category or add new words.</div>;
+      main = (
+        <div className={classNames('alert', 'alert-danger', 'text-center')} role="alert">
+          No words found for this quiz yet. Please try a different category or add new words.
+        </div>
+      )
     }
 
-    return <div className="multiquiz-container">
-      <div className="row">
-        <div className="col-xs-12">
-          <LinearProgress style={this.linearProgressStyle} mode="determinate" value={((this.state.currentAnswerIndex + 1) / this.totalQuestion) * 100} />
+    return (
+      <div className="multiquiz-container">
+        <div className="row">
+          <div className="col-xs-12">
+            <LinearProgress
+              style={this.linearProgressStyle}
+              mode="determinate"
+              value={((this.state.currentAnswerIndex + 1) / this.totalQuestion) * 100}
+            />
+          </div>
         </div>
-      </div>      
-      <div className="row">
-        <div className={classNames('col-xs-12', 'text-center')}>
-          {main}
+        <div className="row">
+          <div className={classNames('col-xs-12', 'text-center')}>{main}</div>
+        </div>
+        <div context="test" className={classNames('row', 'row-answers')}>
+          {this.state.displayedAnswers[this.state.currentAnswerIndex]}
+        </div>
+        <div className={classNames('row', 'row-navigation')}>
+          <div className={classNames('col-xs-2', 'text-left')}>
+            <IconButton
+              onTouchTap={this.handleNavigate.bind(this, 'previous')}
+              iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')}
+              tooltip="Previous Question"
+            />
+          </div>
+          <div className={classNames('col-xs-8', 'text-center')}>
+            <div>
+              <RaisedButton
+                secondary={true}
+                disabled={this.state.currentAnswerIndex in this.state.selectedAnswers ? false : true}
+                onTouchTap={this.checkAnswer.bind(this)}
+                label="Check Answer"
+              />
+            </div>
+            <Snackbar
+              ref="feedback"
+              style={
+                this.state.checkedAnswers[this.state.currentAnswerIndex] === true ? { backgroundColor: 'green' } : {}
+              }
+              message={
+                this.state.checkedAnswers[this.state.currentAnswerIndex] === true ? 'Great job!' : 'Try Again...'
+              }
+              action="close"
+              autoHideDuration={1500}
+            />
+          </div>
+          <div className={classNames('col-xs-2', 'text-right')}>
+            <IconButton
+              onTouchTap={this.handleNavigate.bind(this, 'next')}
+              iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')}
+              tooltip="Next Question"
+            />
+          </div>
         </div>
       </div>
-      <div context="test" className={classNames('row', 'row-answers')}>
-        {this.state.displayedAnswers[this.state.currentAnswerIndex]}
-      </div>
-      <div className={classNames('row', 'row-navigation')}>
-        <div className={classNames('col-xs-2', 'text-left')}>
-          <IconButton onTouchTap={this.handleNavigate.bind(this, 'previous')} iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')} tooltip="Previous Question"/>
-        </div>
-        <div className={classNames('col-xs-8', 'text-center')}>
-          <div><RaisedButton secondary={true} disabled={(this.state.currentAnswerIndex in this.state.selectedAnswers) ? false : true} onTouchTap={this.checkAnswer.bind(this)} label="Check Answer" /></div>
-          <Snackbar ref="feedback" style={(this.state.checkedAnswers[this.state.currentAnswerIndex] === true) ? {backgroundColor: 'green'} : {}} message={(this.state.checkedAnswers[this.state.currentAnswerIndex] === true) ? 'Great job!' : 'Try Again...'} action="close" autoHideDuration={1500} />
-        </div>
-        <div className={classNames('col-xs-2', 'text-right')}>
-          <IconButton onTouchTap={this.handleNavigate.bind(this, 'next')} iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')} tooltip="Next Question"/>
-        </div>
-      </div>
-    </div>;
+    )
   }
 }
 
 MultiQuiz.contextTypes = {
   muiTheme: React.PropTypes.object,
-  router: React.PropTypes.func
-};
+  router: React.PropTypes.func,
+}
 
 MultiQuiz.childContextTypes = {
-  muiTheme: React.PropTypes.object
-};
+  muiTheme: React.PropTypes.object,
+}
 
-
-export default MultiQuiz;
+export default MultiQuiz

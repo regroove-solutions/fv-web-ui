@@ -13,17 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import Colors from 'material-ui/lib/styles/colors';
-import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
-import Spacing from 'material-ui/lib/styles/spacing';
-import zIndex from 'material-ui/lib/styles/zIndex';
+import Colors from 'material-ui/lib/styles/colors'
+import ColorManipulator from 'material-ui/lib/utils/color-manipulator'
+import Spacing from 'material-ui/lib/styles/spacing'
+import zIndex from 'material-ui/lib/styles/zIndex'
 
 export default {
   spacing: Spacing,
   zIndex: zIndex,
   fontFamily: 'Arial, sans-serif',
   palette: {
-    primary1Color: "#b40000",
+    primary1Color: '#b40000',
     primary2Color: Colors.cyan700,
     primary3Color: Colors.lightBlack,
     accent1Color: Colors.pinkA200,
@@ -34,9 +34,9 @@ export default {
     canvasColor: Colors.white,
     borderColor: Colors.grey300,
     disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3),
-    pickerHeaderColor: Colors.cyan500
+    pickerHeaderColor: Colors.cyan500,
   },
   wrapper: {
-    backgroundColor: Colors.white
-  }
-};
+    backgroundColor: Colors.white,
+  },
+}

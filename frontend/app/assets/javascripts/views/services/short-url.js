@@ -13,13 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
+import React, { Component, PropTypes } from 'react'
 
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
 /**
  * Dialect portal page showing all the various components of this dialect.
@@ -49,7 +49,7 @@ export default class ServiceShortURL extends Component {
 
   fetchData(newProps) {
     newProps.queryDialect2ByShortURL(
-      "/FV/" + newProps.routeParams.area,
+      '/FV/' + newProps.routeParams.area,
       " AND (fvdialect:short_url = '" +
         newProps.routeParams.dialectFriendlyName +
         "' OR ecm:name = '" +
@@ -61,23 +61,23 @@ export default class ServiceShortURL extends Component {
   componentWillReceiveProps(nextProps) {
     const dialectQuery = ProviderHelpers.getEntry(
       nextProps.computeDialect2ByShortURL,
-      "/FV/" + nextProps.routeParams.area
+      '/FV/' + nextProps.routeParams.area
     )
-    const isSection = nextProps.routeParams.area === "sections"
+    const isSection = nextProps.routeParams.area === 'sections'
 
-    let appendPath = ""
+    let appendPath = ''
 
     if (nextProps.routeParams.appendPath) {
-      appendPath = "/" + nextProps.routeParams.appendPath.replace(/_/g, "/")
+      appendPath = '/' + nextProps.routeParams.appendPath.replace(/_/g, '/')
     }
 
-    let dialectFullPath = selectn("response.entries[0].path", dialectQuery)
+    let dialectFullPath = selectn('response.entries[0].path', dialectQuery)
 
     if (dialectQuery.success) {
       if (dialectFullPath) {
-        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL( "/explore" + dialectFullPath + appendPath))
+        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL('/explore' + dialectFullPath + appendPath))
       } else {
-        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL( "/404-page-not-found"))
+        nextProps.replaceWindowPath(NavigationHelpers.generateStaticURL('/404-page-not-found'))
       }
     }
   }

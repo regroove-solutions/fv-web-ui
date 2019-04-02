@@ -16,7 +16,4 @@ limitations under the License.
 
 import ServiceShortURL from './short-url'
 
-export  {
-  ServiceShortURL
-}
-
+export { ServiceShortURL }

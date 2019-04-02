@@ -13,15 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import _ from "underscore"
-import StringHelpers from "common/StringHelpers"
+import _ from 'underscore'
+import StringHelpers from 'common/StringHelpers'
 
-import request from "request"
+import request from 'request'
 
-import Nuxeo from "nuxeo"
+import Nuxeo from 'nuxeo'
 
-import BaseOperations from "operations/BaseOperations"
-import IntlService from "views/services/intl"
+import BaseOperations from 'operations/BaseOperations'
+import IntlService from 'views/services/intl'
 
 const TIMEOUT = 60000
 
@@ -30,7 +30,7 @@ export default class DirectoryOperations {
    * Gets one or more documents based on a path or id.
    * Allows for additional complex queries to be executed.
    */
-  static getDocumentsViaAPI(path = "", headers) {
+  static getDocumentsViaAPI(path = '', headers) {
     return new Promise((resolve, reject) => {
       const options = {
         url: path,
@@ -39,7 +39,7 @@ export default class DirectoryOperations {
 
       request(options, (error, response, body) => {
         if (error || response.statusCode !== 200) {
-          if (error.hasOwnProperty("response")) {
+          if (error.hasOwnProperty('response')) {
             error.response.json().then((jsonError) => {
               reject(StringHelpers.extractErrorMessage(jsonError))
             })
@@ -47,18 +47,18 @@ export default class DirectoryOperations {
             let errorMessage = `Attempting to retrieve ${path}`
 
             if (error) {
-              errorMessage += " has resulted in "
+              errorMessage += ' has resulted in '
             } else {
-              errorMessage += " - "
+              errorMessage += ' - '
             }
 
             return reject(
               errorMessage +
                 (error ||
                   IntlService.instance.translate({
-                    key: "operations.could_not_access_server",
-                    default: "Could not access server",
-                    case: "first",
+                    key: 'operations.could_not_access_server',
+                    default: 'Could not access server',
+                    case: 'first',
                   }))
             )
           }
@@ -66,11 +66,11 @@ export default class DirectoryOperations {
           resolve(JSON.parse(body))
         }
 
-        reject("An unknown error has occured.")
+        reject('An unknown error has occured.')
       })
 
       setTimeout(() => {
-        reject("Server timeout while attempting to get documents.")
+        reject('Server timeout while attempting to get documents.')
       }, TIMEOUT)
     })
   }
@@ -79,7 +79,7 @@ export default class DirectoryOperations {
    * Gets one or more documents based on a path or id.
    * Allows for additional complex queries to be executed.
    */
-  static getDocuments(path = "", type = "Document", queryAppend = " ORDER BY dc:title", headers = null, params = null) {
+  static getDocuments(path = '', type = 'Document', queryAppend = ' ORDER BY dc:title', headers = null, params = null) {
     const defaultParams = {}
     const defaultHeaders = {}
 
@@ -93,9 +93,9 @@ export default class DirectoryOperations {
     let requestBody
 
     // Switch between direct REST access and controlled mode
-    if (path.indexOf("/api") === 0) {
+    if (path.indexOf('/api') === 0) {
       // NOTE: Do not escape single quotes in this mode
-      requestBody = path.replace("/api/v1", "")
+      requestBody = path.replace('/api/v1', '')
       return new Promise((resolve, reject) => {
         properties.client
           .request(requestBody, _params)
@@ -104,7 +104,7 @@ export default class DirectoryOperations {
             resolve(docs)
           })
           .catch((error) => {
-            if (error.hasOwnProperty("response")) {
+            if (error.hasOwnProperty('response')) {
               error.response.json().then((jsonError) => {
                 reject(StringHelpers.extractErrorMessage(jsonError))
               })
@@ -112,16 +112,16 @@ export default class DirectoryOperations {
               return reject(
                 error ||
                   IntlService.instance.translate({
-                    key: "operations.could_not_access_server",
-                    default: "Could not access server",
-                    case: "first",
+                    key: 'operations.could_not_access_server',
+                    default: 'Could not access server',
+                    case: 'first',
                   })
               )
             }
           })
 
         setTimeout(() => {
-          reject("Server timeout while attempting to get documents.")
+          reject('Server timeout while attempting to get documents.')
         }, TIMEOUT)
       })
     }
@@ -133,7 +133,7 @@ export default class DirectoryOperations {
     const nxqlQueryParams = Object.assign(
       _params,
       {
-        language: "NXQL",
+        language: 'NXQL',
       },
       StringHelpers.queryStringToObject(
         `?query=SELECT * FROM ${type} WHERE ${where} AND ecm:isVersion = 0 AND ecm:isTrashed = 0 ${_queryAppend}`,
@@ -142,14 +142,14 @@ export default class DirectoryOperations {
     )
     return new Promise((resolve, reject) => {
       properties.client
-        .operation("Document.EnrichedQuery")
+        .operation('Document.EnrichedQuery')
         .params(nxqlQueryParams)
         .execute(_headers)
         .then((docs) => {
           resolve(docs)
         })
         .catch((error) => {
-          if (error.hasOwnProperty("response")) {
+          if (error.hasOwnProperty('response')) {
             error.response.json().then((jsonError) => {
               reject(StringHelpers.extractErrorMessage(jsonError))
             })
@@ -157,24 +157,24 @@ export default class DirectoryOperations {
             return reject(
               error ||
                 IntlService.instance.translate({
-                  key: "operations.could_not_access_server",
-                  default: "Could not access server",
-                  case: "first",
+                  key: 'operations.could_not_access_server',
+                  default: 'Could not access server',
+                  case: 'first',
                 })
             )
           }
         })
 
       setTimeout(() => {
-        reject("Server timeout while attempting to get documents.")
+        reject('Server timeout while attempting to get documents.')
       }, TIMEOUT)
     })
   }
 
   static getDocumentsViaPageProvider(
-    pageProvider = "",
-    type = "Document", // eslint-disable-line
-    queryAppend = "",
+    pageProvider = '',
+    type = 'Document', // eslint-disable-line
+    queryAppend = '',
     headers = null,
     params = null
   ) {
@@ -200,16 +200,16 @@ export default class DirectoryOperations {
         .catch(() => {
           reject(
             IntlService.instance.translate({
-              key: "operations.could_not_access_server",
-              default: "Could not access server",
-              case: "first",
+              key: 'operations.could_not_access_server',
+              default: 'Could not access server',
+              case: 'first',
             })
           )
         })
     })
   }
 
-  static getDirectory(name = "") {
+  static getDirectory(name = '') {
     const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
@@ -222,9 +222,9 @@ export default class DirectoryOperations {
         .catch(() => {
           reject(
             IntlService.instance.translate({
-              key: "operations.could_not_retrieve_directory",
-              default: "Could not retrieve directory",
-              case: "first",
+              key: 'operations.could_not_retrieve_directory',
+              default: 'Could not retrieve directory',
+              case: 'first',
             })
           )
         })
@@ -234,7 +234,7 @@ export default class DirectoryOperations {
   // Unused methods below (needs refactoring or removing soon)
   getSubjects(client) {
     return new Promise((resolve, reject) => {
-      client.request("directory/subtopic").get((error, data) => {
+      client.request('directory/subtopic').get((error, data) => {
         if (error) {
           // something went wrong
           throw error
@@ -247,9 +247,9 @@ export default class DirectoryOperations {
         } else {
           reject(
             IntlService.instance.translate({
-              key: "operations.workspace_not_found",
-              default: "Workspace not found",
-              case: "first",
+              key: 'operations.workspace_not_found',
+              default: 'Workspace not found',
+              case: 'first',
             })
           )
         }
@@ -259,7 +259,7 @@ export default class DirectoryOperations {
 
   getPartsOfSpeech(client) {
     return new Promise((resolve, reject) => {
-      client.request("directory/parts_speech").get((error, data) => {
+      client.request('directory/parts_speech').get((error, data) => {
         if (error) {
           // something went wrong
           throw error
@@ -272,9 +272,9 @@ export default class DirectoryOperations {
         } else {
           reject(
             IntlService.instance.translate({
-              key: "operations.workspace_not_found",
-              default: "Workspace not found",
-              case: "first",
+              key: 'operations.workspace_not_found',
+              default: 'Workspace not found',
+              case: 'first',
             })
           )
         }
@@ -331,7 +331,7 @@ export default class DirectoryOperations {
    * These documents are expected to contain other entries
    * E.g. FVFamily, FVLanguage, FVDialect
    */
-  getDocumentsByPath(path = "", headers = null, params = null) {
+  getDocumentsByPath(path = '', headers = null, params = null) {
     // Expose fields to promise
     const client = this.client
     const selectDefault = this.selectDefault
@@ -358,7 +358,7 @@ export default class DirectoryOperations {
         const _headers = Object.assign(defaultHeaders, headers)
 
         client
-          .operation("Document.Query")
+          .operation('Document.Query')
           .params(_params)
           .execute(_headers)
           .then((response) => {
@@ -370,11 +370,11 @@ export default class DirectoryOperations {
             } else {
               reject(
                 IntlService.instance.translate({
-                  key: "operations.no_found",
+                  key: 'operations.no_found',
                   default: `No ${documentList.model.prototype.entityTypeName} found`,
                   params: [documentList.model.prototype.entityTypeName],
-                  case: "first",
-                  append: "!",
+                  case: 'first',
+                  append: '!',
                 })
               )
             }

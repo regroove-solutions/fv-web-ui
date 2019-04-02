@@ -15,114 +15,116 @@ limitations under the License.
 */
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import IntlService from 'views/services/intl';
-import PromiseHelpers from 'common/PromiseHelpers';
-const intl = IntlService.instance;
+import IntlService from 'views/services/intl'
+import PromiseHelpers from 'common/PromiseHelpers'
+const intl = IntlService.instance
 /**
  * Play games
  */
 export default class ColouringBook extends Component {
+  /**
+   * Constructor
+   */
+  constructor(props, context) {
+    super(props, context)
+    this.gameContainer = null
+  }
 
-    /**
-     * Constructor
-     */
-    constructor(props, context) {
-        super(props, context);
-        this.gameContainer = null;
-    }
-
-    loadGameScript() {
-        return PromiseHelpers.makeCancelablePromise((() => {
-            return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "coloringbook" */ '@fpcc/fv-game-colouring-book').then(({ default: coloringbook }) => {
-                    resolve(coloringbook);
-                }).catch(reject);
+  loadGameScript() {
+    return PromiseHelpers.makeCancelablePromise(
+      (() => {
+        return new Promise((resolve, reject) => {
+          import(/* webpackChunkName: "coloringbook" */ '@fpcc/fv-game-colouring-book')
+            .then(({ default: coloringbook }) => {
+              resolve(coloringbook)
             })
-        })());
-    }
+            .catch(reject)
+        })
+      })()
+    )
+  }
 
+  /**
+   * componentDidMount
+   */
+  componentDidMount() {
+    //Setup default asset paths
+    const defaultAssetsPath = 'assets/games/fv-games-colouring-book'
+    const defaultImagesPath = `${defaultAssetsPath}/images`
+
+    //Default game config
     /**
-     * componentDidMount
+     * @todo Setup image paths based on dialect
      */
-    componentDidMount() {
 
-        //Setup default asset paths
-        const defaultAssetsPath = 'assets/games/fv-games-colouring-book';
-        const defaultImagesPath = `${defaultAssetsPath}/images`;
-
-        //Default game config
-        /**
-         * @todo Setup image paths based on dialect
-         */
-
-        let gameConfig = {
-
-            images: {
-                preloaderLoading: `${defaultImagesPath}/loading.png`,
-                preloaderLogo: `${defaultImagesPath}/logo.png`,
-                swatch: `${defaultImagesPath}/swatch.png`,
-                selected: `${defaultImagesPath}/selected.png`,
-                print: `${defaultImagesPath}/print.png`,
-                save: `${defaultImagesPath}/save.png`,
-                picture1: `${defaultImagesPath}/picture1.png`,
-                picture2: `${defaultImagesPath}/picture2.png`,
-                picture3: `${defaultImagesPath}/picture3.png`,
-                picture4: `${defaultImagesPath}/picture4.png`,
-                thumb1: `${defaultImagesPath}/thumb1.png`,
-                thumb2: `${defaultImagesPath}/thumb2.png`,
-                thumb3: `${defaultImagesPath}/thumb3.png`,
-                thumb4: `${defaultImagesPath}/thumb4.png`,
-                background: `${defaultImagesPath}/background.png`
-            }
-
-        };
-
-        this.loadGameScriptTask = this.loadGameScript();
-        this.loadGameScriptTask.promise.then((coloringBook) => {
-            this.coloringBook = coloringBook;
-
-            /**
-             * Create the game, with container and game config
-             */
-            const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-            coloringBook.init(gameContainerNode, gameConfig);
-        });
+    let gameConfig = {
+      images: {
+        preloaderLoading: `${defaultImagesPath}/loading.png`,
+        preloaderLogo: `${defaultImagesPath}/logo.png`,
+        swatch: `${defaultImagesPath}/swatch.png`,
+        selected: `${defaultImagesPath}/selected.png`,
+        print: `${defaultImagesPath}/print.png`,
+        save: `${defaultImagesPath}/save.png`,
+        picture1: `${defaultImagesPath}/picture1.png`,
+        picture2: `${defaultImagesPath}/picture2.png`,
+        picture3: `${defaultImagesPath}/picture3.png`,
+        picture4: `${defaultImagesPath}/picture4.png`,
+        thumb1: `${defaultImagesPath}/thumb1.png`,
+        thumb2: `${defaultImagesPath}/thumb2.png`,
+        thumb3: `${defaultImagesPath}/thumb3.png`,
+        thumb4: `${defaultImagesPath}/thumb4.png`,
+        background: `${defaultImagesPath}/background.png`,
+      },
     }
 
-    /**
-     * Component Will Unmount
-     * Cleanup the game / assets for coloringbook management
-     */
-    componentWillUnmount() {
-        if (this.coloringBook) {
-            this.coloringBook.destroy();
-        }
-        else if (this.loadGameScriptTask) {
-            this.loadGameScriptTask.cancel();
-        }
+    this.loadGameScriptTask = this.loadGameScript()
+    this.loadGameScriptTask.promise.then((coloringBook) => {
+      this.coloringBook = coloringBook
+
+      /**
+       * Create the game, with container and game config
+       */
+      const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer)
+      coloringBook.init(gameContainerNode, gameConfig)
+    })
+  }
+
+  /**
+   * Component Will Unmount
+   * Cleanup the game / assets for coloringbook management
+   */
+  componentWillUnmount() {
+    if (this.coloringBook) {
+      this.coloringBook.destroy()
+    } else if (this.loadGameScriptTask) {
+      this.loadGameScriptTask.cancel()
+    }
+  }
+
+  /**
+   * Render
+   */
+  render() {
+    //Setup game styles
+    const gameContainerStyles = {
+      maxWidth: 800,
+      margin: 'auto',
     }
 
-
-    /**
-     * Render
-     */
-    render() {
-
-        //Setup game styles
-        const gameContainerStyles = {
-            maxWidth: 800,
-            margin: 'auto'
-        }
-
-        return <div>
-            <div className="row">
-                <div className="col-xs-12">
-                    <h1>{intl.trans('colouring_book', 'Colouring Book', 'words')}</h1>
-                    <div style={gameContainerStyles} ref={(el) => {
-                        this.gameContainer = el
-                    }}></div>
-                </div>
-            </div>
-        </div>;
-    }
+    return (
+      <div>
+        <div className="row">
+          <div className="col-xs-12">
+            <h1>{intl.trans('colouring_book', 'Colouring Book', 'words')}</h1>
+            <div
+              style={gameContainerStyles}
+              ref={(el) => {
+                this.gameContainer = el
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    )
+  }
 }

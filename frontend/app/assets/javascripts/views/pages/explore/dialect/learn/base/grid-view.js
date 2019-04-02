@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 import selectn from 'selectn'
 import classNames from 'classnames'
 
-import NavigationHelpers from "common/NavigationHelpers"
+import NavigationHelpers from 'common/NavigationHelpers'
 
 import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
@@ -115,7 +115,8 @@ export default class GridView extends Component {
                 }.bind(this)
 
                 audioIcon =
-                  decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audio ? (
+                  decodeURIComponent(selectn('src', this.state.nowPlaying)) !==
+                  NavigationHelpers.getBaseURL() + audio ? (
                     <AVPlayArrow color="white" />
                   ) : (
                     <AVStop color="white" />

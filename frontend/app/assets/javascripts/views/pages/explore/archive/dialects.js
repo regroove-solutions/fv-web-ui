@@ -13,20 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { List, Map } from "immutable"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
 
-import ConfGlobal from "conf/local.json"
+import ConfGlobal from 'conf/local.json'
 
-import provide from "react-redux-provide"
-import selectn from "selectn"
-import classNames from "classnames"
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+import classNames from 'classnames'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
-import PortalListDialects from "views/components/Browsing/portal-list-dialects"
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import PortalListDialects from 'views/components/Browsing/portal-list-dialects'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Operations
 // import DirectoryOperations from "operations/DirectoryOperations"
@@ -39,7 +39,7 @@ import PromiseWrapper from "views/components/Document/PromiseWrapper"
 
 // import withPagination from "views/hoc/grid-list/with-pagination"
 // import withFilter from "views/hoc/grid-list/with-filter"
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
@@ -69,20 +69,20 @@ export default class ExploreDialects extends Component {
       open: false,
     }
 
-    this.titleFieldMapping = "contextParameters.ancestry.dialect.dc:title"
-    this.logoFieldMapping = "contextParameters.portal.fv-portal:logo"
+    this.titleFieldMapping = 'contextParameters.ancestry.dialect.dc:title'
+    this.logoFieldMapping = 'contextParameters.portal.fv-portal:logo'
 
     // Bind methods to 'this'
-    ;["_portalEntriesSort"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_portalEntriesSort'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Fetch data on initial render
   componentDidMount() {
     this._fetchData(this.props)
 
-    if (this.props.routeParams.area == "sections") {
-      this.titleFieldMapping = "title"
-      this.logoFieldMapping = "logo"
+    if (this.props.routeParams.area == 'sections') {
+      this.titleFieldMapping = 'title'
+      this.logoFieldMapping = 'logo'
     }
   }
 
@@ -95,12 +95,12 @@ export default class ExploreDialects extends Component {
 
   render() {
     let introText1,
-      introText2 = ""
+      introText2 = ''
 
     // TODO: determine which of the following can be moved to componentDidMount()
     // TODO: no need to re-declare/fetch data that doesn't change between renders
     //const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this._getQueryPath())
-    const portalsEntries = selectn("response.entries", this.props.computePortals) || []
+    const portalsEntries = selectn('response.entries', this.props.computePortals) || []
     // Sort based on dialect name (all FVPortals have dc:title 'Portal')
     const sortedPortals = portalsEntries.sort(this._portalEntriesSort)
 
@@ -113,7 +113,7 @@ export default class ExploreDialects extends Component {
         title: this.titleFieldMapping,
         logo: this.logoFieldMapping,
       },
-      showOnlyUserDialects: isLoggedIn && this.props.routeParams.area == "Workspaces" ? true : false,
+      showOnlyUserDialects: isLoggedIn && this.props.routeParams.area == 'Workspaces' ? true : false,
       items: sortedPortals,
     }
 
@@ -124,15 +124,17 @@ export default class ExploreDialects extends Component {
       },
     ])
 
-    if (this.props.routeParams.area == "Workspaces") {
+    if (this.props.routeParams.area == 'Workspaces') {
       if (isLoggedIn) {
         introText1 = <p>You are part of the following Workspaces (community portals):</p>
       }
 
       introText2 = (
         <p>
-          <a href={NavigationHelpers.generateStaticURL("/explore/FV/sections/Data")}>Click here to view all publicly available portals</a> or click on "Public
-          View" (top right).
+          <a href={NavigationHelpers.generateStaticURL('/explore/FV/sections/Data')}>
+            Click here to view all publicly available portals
+          </a>{' '}
+          or click on "Public View" (top right).
         </p>
       )
     }
@@ -141,8 +143,8 @@ export default class ExploreDialects extends Component {
       <div computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12">
-            <div className={classNames({ hidden: this.props.routeParams.theme === "kids" })}>
-              <h1>{intl.translate({ key: "general.explore", default: "Explore Languages", case: "title" })}</h1>
+            <div className={classNames({ hidden: this.props.routeParams.theme === 'kids' })}>
+              <h1>{intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'title' })}</h1>
             </div>
             {introText1}
             <PortalListDialects {...portalListProps} />
@@ -155,24 +157,24 @@ export default class ExploreDialects extends Component {
 
   _fetchData(newProps) {
     newProps.fetchPortals(
-      "get_dialects",
-      { "enrichers.document": "ancestry,portal", "properties": "" },
+      'get_dialects',
+      { 'enrichers.document': 'ancestry,portal', properties: '' },
       { area: newProps.routeParams.area }
     )
   }
 
   _getQueryPath(props = this.props) {
     // Perform an API query for sections
-    if (props.routeParams.area == "sections") {
+    if (props.routeParams.area == 'sections') {
       // From s3 (static) (NOTE: when fetchPortals is fully switched remove headers from FVPortal to save OPTIONS call)
-      return ConfGlobal.apiURL + "s3dialects/?area=" + props.routeParams.area
+      return ConfGlobal.apiURL + 's3dialects/?area=' + props.routeParams.area
 
       // Proxy (not cached at the moment)
       //return 'https://api.firstvoices.com/v1/api/v1/query/get_dialects?queryParams=' + props.routeParams.area;
     }
 
     // Direct method
-    return "/api/v1/query/get_dialects?queryParams=" + props.routeParams.area
+    return '/api/v1/query/get_dialects?queryParams=' + props.routeParams.area
   }
 
   _portalEntriesSort(a, b) {

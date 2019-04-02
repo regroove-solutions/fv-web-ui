@@ -13,25 +13,25 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { List, Map } from "immutable"
-import classNames from "classnames"
-import provide from "react-redux-provide"
-import selectn from "selectn"
-import t from "tcomb-form"
-import { User } from "nuxeo"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+import t from 'tcomb-form'
+import { User } from 'nuxeo'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Views
-import RaisedButton from "material-ui/lib/raised-button"
+import RaisedButton from 'material-ui/lib/raised-button'
 
-import fields from "models/schemas/fields"
-import options from "models/schemas/options"
-import IntlService from "views/services/intl"
+import fields from 'models/schemas/fields'
+import options from 'models/schemas/options'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 /**
@@ -62,11 +62,11 @@ export default class Register extends Component {
     }
 
     // Bind methods to 'this'
-    ;["_onRequestSaveForm"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_onRequestSaveForm'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   fetchData(newProps) {
-    if (newProps.routeParams.hasOwnProperty("dialect_path")) {
+    if (newProps.routeParams.hasOwnProperty('dialect_path')) {
       newProps.fetchDialect2(newProps.routeParams.dialect_path)
     }
   }
@@ -90,7 +90,7 @@ export default class Register extends Component {
     }
 
     // 'Redirect' on success
-    if (selectn("success", currentWord) != selectn("success", nextWord) && selectn("success", nextWord) === true) {
+    if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
       //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
     }
   }
@@ -117,13 +117,13 @@ export default class Register extends Component {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs["form_user_create"].getValue()
+    let formValue = this.refs['form_user_create'].getValue()
 
     let properties = {}
 
     for (let key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != "") {
+        if (formValue[key] && formValue[key] != '') {
           properties[key] = formValue[key]
         }
       }
@@ -134,15 +134,15 @@ export default class Register extends Component {
     })
 
     let payload = Object.assign({}, properties, {
-      "userinfo:groups": [properties["userinfo:groups"]],
+      'userinfo:groups': [properties['userinfo:groups']],
     })
 
     // Passed validation
     if (formValue) {
       let userRequest = {
-        "entity-type": "document",
-        type: "FVUserRegistration",
-        id: selectn("userinfo:email", properties),
+        'entity-type': 'document',
+        type: 'FVUserRegistration',
+        id: selectn('userinfo:email', properties),
         properties: payload,
       }
 
@@ -150,7 +150,7 @@ export default class Register extends Component {
         userRequest,
         null,
         null,
-        intl.trans("views.pages.users.register.user_request_success", "User request submitted successfully!")
+        intl.trans('views.pages.users.register.user_request_success', 'User request submitted successfully!')
       )
       this.setState({ userRequest })
     } else {
@@ -159,10 +159,10 @@ export default class Register extends Component {
   }
 
   render() {
-    let serverErrorMessage = ""
+    let serverErrorMessage = ''
 
-    let FVUserFields = selectn("FVUser", fields)
-    let FVUserOptions = Object.assign({}, selectn("FVUser", options))
+    let FVUserFields = selectn('FVUser', fields)
+    let FVUserOptions = Object.assign({}, selectn('FVUser', options))
 
     const computeEntities = ProviderHelpers.toJSKeepId([
       {
@@ -179,36 +179,36 @@ export default class Register extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Hide requested space field is pre-set.
-    if (selectn("fields.fvuserinfo:requestedSpace", FVUserOptions) && selectn("response.uid", computeDialect2)) {
-      FVUserOptions["fields"]["fvuserinfo:requestedSpace"]["type"] = "hidden"
+    if (selectn('fields.fvuserinfo:requestedSpace', FVUserOptions) && selectn('response.uid', computeDialect2)) {
+      FVUserOptions['fields']['fvuserinfo:requestedSpace']['type'] = 'hidden'
     }
 
     let dialectGroups = ProviderHelpers.getDialectGroups(
-      selectn("response.contextParameters.acls[0].aces", computeDialect2)
+      selectn('response.contextParameters.acls[0].aces', computeDialect2)
     )
 
     if (dialectGroups.all != null) {
-      FVUserFields["userinfo:groups"] = t.enums(dialectGroups.all)
-      FVUserOptions["fields"]["userinfo:groups"] = {
-        label: intl.trans("group", "Group", "first"),
+      FVUserFields['userinfo:groups'] = t.enums(dialectGroups.all)
+      FVUserOptions['fields']['userinfo:groups'] = {
+        label: intl.trans('group', 'Group', 'first'),
       }
     }
 
     // Show success message
-    if (selectn("success", computeUserSelfregister)) {
-      switch (selectn("response.value.status", computeUserSelfregister)) {
+    if (selectn('success', computeUserSelfregister)) {
+      switch (selectn('response.value.status', computeUserSelfregister)) {
         case 400:
           serverErrorMessage = (
-            <div className={classNames("alert", "alert-danger")} role="alert">
-              {selectn("response.value.entity", computeUserSelfregister)}
+            <div className={classNames('alert', 'alert-danger')} role="alert">
+              {selectn('response.value.entity', computeUserSelfregister)}
             </div>
           )
           break
 
         case 200:
           return (
-            <div className="row" style={{ marginTop: "15px" }}>
-              <div className={classNames("col-xs-12")}>
+            <div className="row" style={{ marginTop: '15px' }}>
+              <div className={classNames('col-xs-12')}>
                 <h1>Thank you for your registration!</h1>
                 <p>
                   You should receive a confirmation email from us shortly asking you to validate your email address and
@@ -219,7 +219,7 @@ export default class Register extends Component {
                   us for support.
                 </p>
                 <p>
-                  Go to our <a href="/">home page</a> or{" "}
+                  Go to our <a href="/">home page</a> or{' '}
                   <a href="/explore/FV/sections/Data/">explore our community portals</a>.
                 </p>
               </div>
@@ -232,18 +232,18 @@ export default class Register extends Component {
     return (
       <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
         <h1>
-          {selectn("response.title", computeDialect2)} {intl.trans("register", "Register", "first")}
+          {selectn('response.title', computeDialect2)} {intl.trans('register', 'Register', 'first')}
         </h1>
 
-        <div className="row" style={{ marginTop: "15px" }}>
-          <div className={classNames("col-xs-12", "col-md-8")}>
+        <div className="row" style={{ marginTop: '15px' }}>
+          <div className={classNames('col-xs-12', 'col-md-8')}>
             <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
               <t.form.Form
                 ref="form_user_create"
                 type={t.struct(FVUserFields)}
-                context={selectn("response", computeDialect2)}
+                context={selectn('response', computeDialect2)}
                 value={
-                  this.state.formValue || { "fvuserinfo:requestedSpace": selectn("response.uid", computeDialect2) }
+                  this.state.formValue || { 'fvuserinfo:requestedSpace': selectn('response.uid', computeDialect2) }
                 }
                 options={FVUserOptions}
               />
@@ -257,12 +257,12 @@ export default class Register extends Component {
                 <RaisedButton
                   onTouchTap={this._onRequestSaveForm.bind(this, this.props.computeLogin)}
                   primary={true}
-                  label={intl.trans("register", "Register", "first")}
+                  label={intl.trans('register', 'Register', 'first')}
                 />
               </div>
             </form>
           </div>
-          <div className={classNames("col-xs-12", "col-md-4")}>
+          <div className={classNames('col-xs-12', 'col-md-4')}>
             <h2>Did you know?</h2>
             <p>
               Becoming a member allows us to present you with content that is personalized to you, however most content
@@ -276,9 +276,9 @@ export default class Register extends Component {
               ", and then picking your language/community.
             </p>
             <RaisedButton
-              label={intl.translate("choose_lang", "Choose a Language", "first")}
+              label={intl.translate('choose_lang', 'Choose a Language', 'first')}
               primary={true}
-              onClick={(e) => NavigationHelpers.navigate("/explore/FV/sections/Data", this.props.pushWindowPath)}
+              onClick={(e) => NavigationHelpers.navigate('/explore/FV/sections/Data', this.props.pushWindowPath)}
             />
           </div>
         </div>

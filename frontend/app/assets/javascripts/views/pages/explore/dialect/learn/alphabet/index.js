@@ -25,7 +25,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from "common/NavigationHelpers"
+import NavigationHelpers from 'common/NavigationHelpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import AlphabetListView from 'views/pages/explore/dialect/learn/alphabet/list-view'
 
@@ -87,237 +87,237 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     print: false,
   }
 
-    static propTypes = {
-      properties: PropTypes.object.isRequired,
-      navigateTo: PropTypes.func.isRequired,
-      windowPath: PropTypes.string.isRequired,
-      pushWindowPath: PropTypes.func.isRequired,
-      splitWindowPath: PropTypes.array.isRequired,
-      fetchDocument: PropTypes.func.isRequired,
-      computeDocument: PropTypes.object.isRequired,
-      computeLogin: PropTypes.object.isRequired,
-      fetchDialect2: PropTypes.func.isRequired,
-      computeDialect2: PropTypes.object.isRequired,
-      fetchCharacters: PropTypes.func.isRequired,
-      computeCharacters: PropTypes.object.isRequired,
-      updateDialect2: PropTypes.func.isRequired,
-      fetchPortal: PropTypes.func.isRequired,
-      computePortal: PropTypes.object.isRequired,
-      updatePortal: PropTypes.func.isRequired,
-      routeParams: PropTypes.object.isRequired,
-      print: PropTypes.bool,
-    };
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    navigateTo: PropTypes.func.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    fetchDocument: PropTypes.func.isRequired,
+    computeDocument: PropTypes.object.isRequired,
+    computeLogin: PropTypes.object.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
+    computeDialect2: PropTypes.object.isRequired,
+    fetchCharacters: PropTypes.func.isRequired,
+    computeCharacters: PropTypes.object.isRequired,
+    updateDialect2: PropTypes.func.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
+    updatePortal: PropTypes.func.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    print: PropTypes.bool,
+  }
 
-    constructor(props, context) {
-      super(props, context)
+  constructor(props, context) {
+    super(props, context)
 
-      this.state = {
-        current_char: null,
-      };
-
-      // Bind methods to 'this'
-      ['_onNavigateRequest', '_onCharAudioTouchTap'].forEach((method => this[method] = this[method].bind(this)))
+    this.state = {
+      current_char: null,
     }
 
-    // NOTE: PageDialectLearnBase calls `fetchData`
-    fetchData(newProps) {
-      newProps.fetchDialect2(newProps.routeParams.dialect_path)
-      newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
+    // Bind methods to 'this'
+    ;['_onNavigateRequest', '_onCharAudioTouchTap'].forEach((method) => (this[method] = this[method].bind(this)))
+  }
 
-      newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
+  // NOTE: PageDialectLearnBase calls `fetchData`
+  fetchData(newProps) {
+    newProps.fetchDialect2(newProps.routeParams.dialect_path)
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
 
-      newProps.fetchCharacters(
-        newProps.routeParams.dialect_path + '/Alphabet',
-        '&sortOrder=asc&sortBy=fvcharacter:alphabet_order'
-      )
+    newProps.fetchDocument(newProps.routeParams.dialect_path + '/Dictionary')
+
+    newProps.fetchCharacters(
+      newProps.routeParams.dialect_path + '/Alphabet',
+      '&sortOrder=asc&sortBy=fvcharacter:alphabet_order'
+    )
+  }
+
+  _onCharAudioTouchTap(char) {
+    const charElement = document.getElementById('charAudio' + char.uid)
+
+    if (charElement) {
+      document.getElementById('charAudio' + char.uid).play()
     }
 
-    _onCharAudioTouchTap(char) {
-      const charElement = document.getElementById('charAudio' + char.uid)
+    this.setState({
+      current_char: char,
+    })
+  }
 
-      if (charElement) {
-        document.getElementById('charAudio' + char.uid).play()
-      }
+  _onNavigateRequest(path) {
+    const destination = this.props.navigateTo(path)
+    const newPathArray = this.props.splitWindowPath.slice()
 
-      this.setState({
-        current_char: char,
-      })
-    }
+    newPathArray.push(destination.path)
 
-    _onNavigateRequest(path) {
-      const destination = this.props.navigateTo(path)
-      const newPathArray = this.props.splitWindowPath.slice()
+    this.props.pushWindowPath('/' + newPathArray.join('/'))
+  }
 
-      newPathArray.push(destination.path)
+  render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.props.routeParams.dialect_path,
+        entity: this.props.computeDialect2,
+      },
+      {
+        id: this.props.routeParams.dialect_path + '/Portal',
+        entity: this.props.computePortal,
+      },
+    ])
 
-      this.props.pushWindowPath('/' + newPathArray.join('/'))
-    }
+    const { updatePortal, updateDialect2, computeLogin } = this.props
 
-    render() {
-      const computeEntities = Immutable.fromJS([
-        {
-          id: this.props.routeParams.dialect_path,
-          entity: this.props.computeDialect2,
-        },
-        {
-          id: this.props.routeParams.dialect_path + '/Portal',
-          entity: this.props.computePortal,
-        },
-      ])
+    const computeDocument = ProviderHelpers.getEntry(
+      this.props.computeDocument,
+      this.props.routeParams.dialect_path + '/Dictionary'
+    )
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
+    const computePortal = ProviderHelpers.getEntry(
+      this.props.computePortal,
+      this.props.routeParams.dialect_path + '/Portal'
+    )
 
-      const { updatePortal, updateDialect2, computeLogin } = this.props
+    const computeCharacters = ProviderHelpers.getEntry(
+      this.props.computeCharacters,
+      this.props.routeParams.dialect_path + '/Alphabet'
+    )
 
-      const computeDocument = ProviderHelpers.getEntry(
-        this.props.computeDocument,
-        this.props.routeParams.dialect_path + '/Dictionary'
-      )
-      const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
-      const computePortal = ProviderHelpers.getEntry(
-        this.props.computePortal,
-        this.props.routeParams.dialect_path + '/Portal'
-      )
+    const isSection = this.props.routeParams.area === 'sections'
 
-      const computeCharacters = ProviderHelpers.getEntry(
-        this.props.computeCharacters,
-        this.props.routeParams.dialect_path + '/Alphabet'
-      )
+    const alphabetListView = (
+      <AlphabetListView
+        pagination={false}
+        routeParams={this.props.routeParams}
+        dialect={selectn('response', computeDialect2)}
+      />
+    )
 
-      const isSection = this.props.routeParams.area === 'sections'
-
-      const alphabetListView = (
-        <AlphabetListView
-          pagination={false}
-          routeParams={this.props.routeParams}
-          dialect={selectn('response', computeDialect2)}
-        />
-      )
-
-      if (this.props.print) {
-        return (
-          <PromiseWrapper renderOnError computeEntities={computeEntities}>
-            <div className="row">
-              <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
-                <h1>
-                  {intl.trans(
-                    'views.pages.explore.dialect.learn.alphabet.x_alphabet',
-                    selectn('response.title', computeDialect2) + ' Alphabet',
-                    'words',
-                    [selectn('response.title', computeDialect2)]
-                  )}
-                </h1>
-                {React.cloneElement(alphabetListView, {
-                  gridListView: true,
-                  gridViewProps: { style: { overflowY: 'auto', maxHeight: '100%' } },
-                  gridListTile: AlphabetGridTile,
-                  dialect: selectn('response', computeDialect2),
-                })}
-              </div>
-            </div>
-          </PromiseWrapper>
-        )
-      }
-
+    if (this.props.print) {
       return (
-        <PromiseWrapper computeEntities={computeEntities}>
-          <Header
-            portal={{ compute: computePortal, update: updatePortal }}
-            dialect={{ compute: computeDialect2, update: updateDialect2 }}
-            login={computeLogin}
-            routeParams={this.props.routeParams}
-          >
-            <ToolbarNavigation showStats={this._showStats} routeParams={this.props.routeParams} />
-          </Header>
-
-          <div className={classNames('row', 'dialect-body-container')} style={{ marginTop: '15px' }}>
-            <div className={classNames('col-xs-12', 'col-md-7')}>
-              <div className="fontAboriginalSans">
-                <TextHeader
-                  title={intl.trans(
-                    'views.pages.explore.dialect.learn.alphabet.x_alphabet',
-                    selectn('response.title', computeDialect2) + ' Alphabet',
-                    null,
-                    [selectn('response.title', computeDialect2)]
-                  )}
-                  tag="h1"
-                  properties={this.props.properties}
-                  appendToTitle={
-                    <a href="alphabet/print" target="_blank">
-                      <i className="material-icons">print</i>
-                    </a>
-                  }
-                />
-              </div>
-
-              {(() => {
-                if (this.state.current_char !== null) {
-                  return (
-                    <RaisedButton
-                      primary
-                      label={'View Words and Phrases that start with ' + this.state.current_char.title}
-                      onTouchTap={this._onNavigateRequest.bind(
-                        this,
-                        this.state.current_char.path.split('/')[this.state.current_char.path.split('/').length - 1]
-                      )}
-                      style={{ minWidth: 'inherit', textTransform: 'initial', margin: '10px 0' }}
-                    />
-                  )
-                }
-              })()}
-
-              {(() => {
-                const characters = selectn('response.entries', computeCharacters)
-
-                if (characters && characters.length > 0) {
-                  const _this = this
-                  return (
-                    <div style={{ marginBottom: '20px' }}>
-                      {selectn('response.entries', computeCharacters).map(function(char, i) {
-                        const text = <span className="fontAboriginalSans">{char.title}</span>
-                        const audioFile = selectn('contextParameters.character.related_audio[0].path', char)
-
-                        return (
-                          <Paper
-                            key={char.uid}
-                            style={{
-                              textAlign: 'center',
-                              margin: '5px',
-                              padding: '5px 10px',
-                              width: '100px',
-                              display: 'inline-block',
-                            }}
-                          >
-                            <FlatButton
-                              icon={audioFile ? <FontIcon className="material-icons">play_arrow</FontIcon> : ''}
-                              onTouchTap={_this._onCharAudioTouchTap.bind(this, char)}
-                              //onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
-                              label={text}
-                              style={{ minWidth: 'inherit', textTransform: 'initial' }}
-                            />
-                            {audioFile ? (
-                              <span>
-                                <audio id={'charAudio' + char.uid} src={NavigationHelpers.getBaseURL() + audioFile} />
-                              </span>
-                            ) : (
-                              ''
-                            )}
-                          </Paper>
-                        )
-                      })}
-                    </div>
-                  )
-                }
-              })()}
-            </div>
-
-            <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
-              <LearningSidebar
-                isSection={isSection}
-                properties={this.props.properties}
-                dialect={{ compute: computeDialect2, update: updateDialect2 }}
-              />
+        <PromiseWrapper renderOnError computeEntities={computeEntities}>
+          <div className="row">
+            <div className={classNames('col-xs-8', 'col-xs-offset-2')}>
+              <h1>
+                {intl.trans(
+                  'views.pages.explore.dialect.learn.alphabet.x_alphabet',
+                  selectn('response.title', computeDialect2) + ' Alphabet',
+                  'words',
+                  [selectn('response.title', computeDialect2)]
+                )}
+              </h1>
+              {React.cloneElement(alphabetListView, {
+                gridListView: true,
+                gridViewProps: { style: { overflowY: 'auto', maxHeight: '100%' } },
+                gridListTile: AlphabetGridTile,
+                dialect: selectn('response', computeDialect2),
+              })}
             </div>
           </div>
         </PromiseWrapper>
       )
     }
+
+    return (
+      <PromiseWrapper computeEntities={computeEntities}>
+        <Header
+          portal={{ compute: computePortal, update: updatePortal }}
+          dialect={{ compute: computeDialect2, update: updateDialect2 }}
+          login={computeLogin}
+          routeParams={this.props.routeParams}
+        >
+          <ToolbarNavigation showStats={this._showStats} routeParams={this.props.routeParams} />
+        </Header>
+
+        <div className={classNames('row', 'dialect-body-container')} style={{ marginTop: '15px' }}>
+          <div className={classNames('col-xs-12', 'col-md-7')}>
+            <div className="fontAboriginalSans">
+              <TextHeader
+                title={intl.trans(
+                  'views.pages.explore.dialect.learn.alphabet.x_alphabet',
+                  selectn('response.title', computeDialect2) + ' Alphabet',
+                  null,
+                  [selectn('response.title', computeDialect2)]
+                )}
+                tag="h1"
+                properties={this.props.properties}
+                appendToTitle={
+                  <a href="alphabet/print" target="_blank">
+                    <i className="material-icons">print</i>
+                  </a>
+                }
+              />
+            </div>
+
+            {(() => {
+              if (this.state.current_char !== null) {
+                return (
+                  <RaisedButton
+                    primary
+                    label={'View Words and Phrases that start with ' + this.state.current_char.title}
+                    onTouchTap={this._onNavigateRequest.bind(
+                      this,
+                      this.state.current_char.path.split('/')[this.state.current_char.path.split('/').length - 1]
+                    )}
+                    style={{ minWidth: 'inherit', textTransform: 'initial', margin: '10px 0' }}
+                  />
+                )
+              }
+            })()}
+
+            {(() => {
+              const characters = selectn('response.entries', computeCharacters)
+
+              if (characters && characters.length > 0) {
+                const _this = this
+                return (
+                  <div style={{ marginBottom: '20px' }}>
+                    {selectn('response.entries', computeCharacters).map(function(char, i) {
+                      const text = <span className="fontAboriginalSans">{char.title}</span>
+                      const audioFile = selectn('contextParameters.character.related_audio[0].path', char)
+
+                      return (
+                        <Paper
+                          key={char.uid}
+                          style={{
+                            textAlign: 'center',
+                            margin: '5px',
+                            padding: '5px 10px',
+                            width: '100px',
+                            display: 'inline-block',
+                          }}
+                        >
+                          <FlatButton
+                            icon={audioFile ? <FontIcon className="material-icons">play_arrow</FontIcon> : ''}
+                            onTouchTap={_this._onCharAudioTouchTap.bind(this, char)}
+                            //onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
+                            label={text}
+                            style={{ minWidth: 'inherit', textTransform: 'initial' }}
+                          />
+                          {audioFile ? (
+                            <span>
+                              <audio id={'charAudio' + char.uid} src={NavigationHelpers.getBaseURL() + audioFile} />
+                            </span>
+                          ) : (
+                            ''
+                          )}
+                        </Paper>
+                      )
+                    })}
+                  </div>
+                )
+              }
+            })()}
+          </div>
+
+          <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+            <LearningSidebar
+              isSection={isSection}
+              properties={this.props.properties}
+              dialect={{ compute: computeDialect2, update: updateDialect2 }}
+            />
+          </div>
+        </div>
+      </PromiseWrapper>
+    )
+  }
 }

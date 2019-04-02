@@ -13,21 +13,21 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { PropTypes } from "react"
-import Immutable, { Map } from "immutable"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import StringHelpers from "common/StringHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
-import DocumentListView from "views/components/Document/DocumentListView"
+import ProviderHelpers from 'common/ProviderHelpers'
+import StringHelpers from 'common/StringHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
+import DocumentListView from 'views/components/Document/DocumentListView'
 
-import DataListView from "views/pages/explore/dialect/learn/base/data-list-view"
+import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
 
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 /**
@@ -37,12 +37,12 @@ const intl = IntlService.instance
 export default class ListViewAlt extends DataListView {
   static defaultProps = {
     disableClickItem: true,
-    DISABLED_SORT_COLS: ["state", "related_audio", "related_pictures"],
+    DISABLED_SORT_COLS: ['state', 'related_audio', 'related_pictures'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 10,
-    DEFAULT_LANGUAGE: "english",
-    DEFAULT_SORT_COL: "dc:title",
-    DEFAULT_SORT_TYPE: "asc",
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
     gridListView: false,
@@ -81,13 +81,13 @@ export default class ListViewAlt extends DataListView {
     this.state = {
       columns: [
         {
-          name: "title",
-          title: intl.trans("title", "Title", "first"),
+          name: 'title',
+          title: intl.trans('title', 'Title', 'first'),
           render: (v, data, cellProps) => {
             const href = NavigationHelpers.generateUIDPath(
-              currentTheme || "explore",
+              currentTheme || 'explore',
               data,
-              selectn("properties.fvbook:type", data) === "story" ? "stories" : "songs"
+              selectn('properties.fvbook:type', data) === 'story' ? 'stories' : 'songs'
             )
             const clickHandler = props.disableClickItem
               ? NavigationHelpers.disable
@@ -95,28 +95,27 @@ export default class ListViewAlt extends DataListView {
                   // e.preventDefault()
                   // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
                 }
-            return (<a
-              onClick={clickHandler}
-              href={href}
-            >
-              {v}
-            </a>)
+            return (
+              <a onClick={clickHandler} href={href}>
+                {v}
+              </a>
+            )
           },
         },
         {
-          name: "dc:modified",
+          name: 'dc:modified',
           width: 250,
-          title: intl.trans("date_modified", "Date Modified"),
+          title: intl.trans('date_modified', 'Date Modified'),
           render: function(v, data, cellProps) {
-            return StringHelpers.formatUTCDateString(selectn("lastModified", data))
+            return StringHelpers.formatUTCDateString(selectn('lastModified', data))
           },
         },
         {
-          name: "dc:created",
+          name: 'dc:created',
           width: 210,
-          title: intl.trans("date_created", "Date Created"),
+          title: intl.trans('date_created', 'Date Created'),
           render: function(v, data, cellProps) {
-            return StringHelpers.formatUTCDateString(selectn("properties.dc:created", data))
+            return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data))
           },
         },
       ],
@@ -133,12 +132,12 @@ export default class ListViewAlt extends DataListView {
 
     // Bind methods to 'this'
     ;[
-      "_onNavigateRequest",
-      "_onEntryNavigateRequest",
-      "_handleRefetch",
-      "_handleSortChange",
-      "_handleColumnOrderChange",
-      "_resetColumns",
+      '_onNavigateRequest',
+      '_onEntryNavigateRequest',
+      '_handleRefetch',
+      '_handleSortChange',
+      '_handleColumnOrderChange',
+      '_resetColumns',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
@@ -163,31 +162,31 @@ export default class ListViewAlt extends DataListView {
     } else {
       this.props.pushWindowPath(
         NavigationHelpers.generateUIDPath(
-          this.props.theme || "explore",
+          this.props.theme || 'explore',
           item,
-          selectn("properties.fvbook:type", item) === "story" ? "stories" : "songs"
+          selectn('properties.fvbook:type', item) === 'story' ? 'stories' : 'songs'
         )
       )
     }
   }
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    let currentAppliedFilter = ""
+    let currentAppliedFilter = ''
 
-    if (props.filter.has("currentAppliedFilter")) {
-      currentAppliedFilter = Object.values(props.filter.get("currentAppliedFilter").toJS()).join("")
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
 
     props.fetchBooks(
       props.routeParams.dialect_path,
       currentAppliedFilter +
-        "&currentPageIndex=" +
+        '&currentPageIndex=' +
         (pageIndex - 1) +
-        "&pageSize=" +
+        '&pageSize=' +
         pageSize +
-        "&sortOrder=" +
+        '&sortOrder=' +
         sortOrder +
-        "&sortBy=" +
+        '&sortBy=' +
         sortBy
     )
   }
@@ -220,7 +219,7 @@ export default class ListViewAlt extends DataListView {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         {(() => {
-          if (selectn("response.entries", computeBooks)) {
+          if (selectn('response.entries', computeBooks)) {
             return (
               <DocumentListView
                 objectDescriptions="books"
@@ -236,7 +235,7 @@ export default class ListViewAlt extends DataListView {
                 columns={this.state.columns}
                 sortInfo={this.state.sortInfo.uiSortOrder}
                 className="browseDataGrid"
-                dialect={selectn("response", computeDialect2)}
+                dialect={selectn('response', computeDialect2)}
               />
             )
           }

@@ -13,39 +13,39 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import ReactDOM from "react-dom"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import ReactDOM from 'react-dom'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import classNames from "classnames"
+import classNames from 'classnames'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import StringHelpers from "common/StringHelpers"
-import UIHelpers from "common/UIHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import StringHelpers from 'common/StringHelpers'
+import UIHelpers from 'common/UIHelpers'
 
-import AuthorizationFilter from "views/components/Document/AuthorizationFilter"
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
-import AppFrontController from "./AppFrontController"
+import AppFrontController from './AppFrontController'
 
-import Shepherd from "tether-shepherd"
+import Shepherd from 'tether-shepherd'
 
-import FontIcon from "material-ui/lib/font-icon"
-import Paper from "material-ui/lib/paper"
-import FlatButton from "material-ui/lib/flat-button"
+import FontIcon from 'material-ui/lib/font-icon'
+import Paper from 'material-ui/lib/paper'
+import FlatButton from 'material-ui/lib/flat-button'
 
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
 const getPosition = function getPosition() {
   var doc = document,
     w = window
   var x, y, docEl
 
-  if (typeof w.pageYOffset === "number") {
+  if (typeof w.pageYOffset === 'number') {
     x = w.pageXOffset
     y = w.pageYOffset
   } else {
-    docEl = doc.compatMode && doc.compatMode === "CSS1Compat" ? doc.documentElement : doc.body
+    docEl = doc.compatMode && doc.compatMode === 'CSS1Compat' ? doc.documentElement : doc.body
     x = docEl.scrollLeft
     y = docEl.scrollTop
   }
@@ -60,22 +60,22 @@ function findComponentParents(el) {
   let parents = []
   let originalEl = el
 
-  if (!el.getAttribute("data-component-id")) {
+  if (!el.getAttribute('data-component-id')) {
     return null
   }
 
   while (el.parentNode) {
     el = el.parentNode
 
-    if (el.getAttribute("id") === "app-wrapper") {
+    if (el.getAttribute('id') === 'app-wrapper') {
       break
     }
 
     if (el.tagName) {
-      let appendClass = el.className ? "." + el.className.replace(/\s/g, ".").replace(/\:/g, "\\:") : ""
-      let appendData = el.getAttribute("data-component-id")
-        ? "[data-component-id='" + el.getAttribute("data-component-id") + "']"
-        : ""
+      let appendClass = el.className ? '.' + el.className.replace(/\s/g, '.').replace(/\:/g, '\\:') : ''
+      let appendData = el.getAttribute('data-component-id')
+        ? "[data-component-id='" + el.getAttribute('data-component-id') + "']"
+        : ''
 
       parents.push(el.tagName.toLowerCase() + appendClass + appendData)
     }
@@ -83,14 +83,14 @@ function findComponentParents(el) {
 
   parents = parents.reverse()
   parents.push(
-    originalEl.tagName.toLowerCase() + "[data-component-id='" + originalEl.getAttribute("data-component-id") + "']"
+    originalEl.tagName.toLowerCase() + "[data-component-id='" + originalEl.getAttribute('data-component-id') + "']"
   )
 
-  return parents.join(" ")
+  return parents.join(' ')
 }
 
 const getPreferences = function(login, dialect) {
-  let preferenceString = selectn("response.properties.preferences", login)
+  let preferenceString = selectn('response.properties.preferences', login)
   let parsedPreferences = preferenceString ? JSON.parse(preferenceString) : {}
   let flattenedPreferences = {}
 
@@ -101,7 +101,7 @@ const getPreferences = function(login, dialect) {
   }
 
   // Dialect assignment
-  flattenedPreferences["primary_dialect_path"] = selectn("path", dialect)
+  flattenedPreferences['primary_dialect_path'] = selectn('path', dialect)
 
   return flattenedPreferences
 }
@@ -109,7 +109,7 @@ const getPreferences = function(login, dialect) {
 @provide
 export default class AppWrapper extends Component {
   intl = IntlService.instance
-  intlBaseKey = "views"
+  intlBaseKey = 'views'
 
   static propTypes = {
     connect: PropTypes.func.isRequired,
@@ -156,7 +156,7 @@ export default class AppWrapper extends Component {
     }
 
     // Bind methods to 'this'
-    ;["_startAdminGuideAssist"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_startAdminGuideAssist'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Force update of theme if out of sync
@@ -174,11 +174,11 @@ export default class AppWrapper extends Component {
     }*/
 
   _startAdminGuideAssist() {
-    let doms = document.querySelectorAll("[data-component-id]")
+    let doms = document.querySelectorAll('[data-component-id]')
 
     let tour = new Shepherd.Tour({
       defaults: {
-        classes: "shepherd-theme-arrows",
+        classes: 'shepherd-theme-arrows',
       },
     })
 
@@ -203,19 +203,19 @@ export default class AppWrapper extends Component {
       //}
 
       if (xpath != null) {
-        tour.addStep("step" + i, {
-          title: "Element xPath",
-          text: xpath + "<textarea>" + dom.textContent + "</textarea>",
-          classes: "shepherd-theme-arrows admin-guide-step",
-          attachTo: xpath + " bottom",
+        tour.addStep('step' + i, {
+          title: 'Element xPath',
+          text: xpath + '<textarea>' + dom.textContent + '</textarea>',
+          classes: 'shepherd-theme-arrows admin-guide-step',
+          attachTo: xpath + ' bottom',
           showCancelLink: true,
           scrollTo: true,
           when: {
             show: function() {
-              dom.style.border = "2px blue dashed"
+              dom.style.border = '2px blue dashed'
             },
             hide: function() {
-              dom.style.border = "initial"
+              dom.style.border = 'initial'
             },
           },
         })
@@ -232,19 +232,16 @@ export default class AppWrapper extends Component {
   render() {
     let controller = null
 
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect);
+    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
 
     let warnings = {}
 
-    let preferences = getPreferences(
-      this.props.computeLogin,
-      selectn("response", computeDialect2)
-    )
+    let preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
 
     return (
       <div
-        style={{ backgroundColor: selectn("theme.palette.basePalette.wrapper.backgroundColor", this.props.properties) }}
-        style={{ fontSize: UIHelpers.getPreferenceVal("font_size", preferences) }}
+        style={{ backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties) }}
+        style={{ fontSize: UIHelpers.getPreferenceVal('font_size', preferences) }}
       >
         <AppFrontController preferences={preferences} warnings={warnings} />
 

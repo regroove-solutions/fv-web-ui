@@ -14,36 +14,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { Component, PropTypes } from "react"
-import classNames from "classnames"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import classNames from 'classnames'
+import selectn from 'selectn'
 
-import provide from "react-redux-provide"
+import provide from 'react-redux-provide'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
 // Components
-import AppBar from "material-ui/lib/app-bar"
+import AppBar from 'material-ui/lib/app-bar'
 
-import TextField from "material-ui/lib/text-field"
+import TextField from 'material-ui/lib/text-field'
 
-import Avatar from "material-ui/lib/avatar"
-import IconMenu from "material-ui/lib/menus/icon-menu"
-import MenuItem from "material-ui/lib/menus/menu-item"
-import ToolbarSeparator from "material-ui/lib/toolbar/toolbar-separator"
+import Avatar from 'material-ui/lib/avatar'
+import IconMenu from 'material-ui/lib/menus/icon-menu'
+import MenuItem from 'material-ui/lib/menus/menu-item'
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
 
-import Badge from "material-ui/lib/badge"
-import FlatButton from "material-ui/lib/flat-button"
-import Toolbar from "material-ui/lib/toolbar/toolbar"
-import ToolbarGroup from "material-ui/lib/toolbar/toolbar-group"
-import IconButton from "material-ui/lib/icon-button"
-import MoreVertIcon from "material-ui/lib/svg-icons/navigation/more-vert"
-import NotificationsIcon from "material-ui/lib/svg-icons/social/notifications"
+import Badge from 'material-ui/lib/badge'
+import FlatButton from 'material-ui/lib/flat-button'
+import Toolbar from 'material-ui/lib/toolbar/toolbar'
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
+import IconButton from 'material-ui/lib/icon-button'
+import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert'
+import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications'
 
-import Login from "views/components/Navigation/Login"
-import AppLeftNav from "views/components/Navigation/AppLeftNav"
-import IntlService from "views/services/intl"
+import Login from 'views/components/Navigation/Login'
+import AppLeftNav from 'views/components/Navigation/AppLeftNav'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 @provide
@@ -85,7 +85,7 @@ export default class Navigation extends Component {
     super(props, context)
 
     this.state = {
-      hintTextSearch: intl.trans("search_site", "Search Site", "words") + ":",
+      hintTextSearch: intl.trans('search_site', 'Search Site', 'words') + ':',
     }
 
     this._handleMenuToggle = this._handleMenuToggle.bind(this)
@@ -97,7 +97,7 @@ export default class Navigation extends Component {
 
   componentWillReceiveProps(newProps) {
     if (newProps.computeLogin != this.props.computeLogin) {
-      this.props.fetchUserTasks(selectn("response.id", newProps.computeLogin))
+      this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin))
     }
   }
 
@@ -129,109 +129,111 @@ export default class Navigation extends Component {
 
   _handleNavigationSearchSubmit() {
     const searchQueryParam = this.refs.navigationSearchField.getValue()
-    const path = "/" + this.props.splitWindowPath.join("/")
-    let queryPath = ""
+    const path = '/' + this.props.splitWindowPath.join('/')
+    let queryPath = ''
 
     // Do a global search in either the workspace or section
-    if (path.includes("/explore/FV/Workspaces/Data")) {
-      queryPath = "/explore/FV/Workspaces/Data"
-    } else if (path.includes("/explore/FV/sections/Data")) {
-      queryPath = "/explore/FV/sections/Data"
+    if (path.includes('/explore/FV/Workspaces/Data')) {
+      queryPath = '/explore/FV/Workspaces/Data'
+    } else if (path.includes('/explore/FV/sections/Data')) {
+      queryPath = '/explore/FV/sections/Data'
     } else {
-      queryPath = "/explore/FV/sections/Data"
+      queryPath = '/explore/FV/sections/Data'
     }
 
     // Clear out the input field
-    this.refs.navigationSearchField.setValue("")
-    this.props.replaceWindowPath(queryPath + "/search/" + searchQueryParam)
+    this.refs.navigationSearchField.setValue('')
+    this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam)
   }
 
   render() {
     const computeUserTasks = ProviderHelpers.getEntry(
       this.props.computeUserTasks,
-      selectn("response.id", this.props.computeLogin)
+      selectn('response.id', this.props.computeLogin)
     )
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
-      this.props.routeParams.dialect_path + "/Portal"
+      this.props.routeParams.dialect_path + '/Portal'
     )
 
-    const userTaskCount = selectn("response.length", computeUserTasks) || 0
+    const userTaskCount = selectn('response.length', computeUserTasks) || 0
 
-    const portalLogo = selectn("response.contextParameters.portal.fv-portal:logo.path", computePortal)
+    const portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)
 
     const avatar = portalLogo ? (
-      <Avatar src={NavigationHelpers.getBaseURL() + portalLogo} size={50} style={{ marginRight: "10px" }} />
+      <Avatar src={NavigationHelpers.getBaseURL() + portalLogo} size={50} style={{ marginRight: '10px' }} />
     ) : (
-      ""
+      ''
     )
 
-    const homeURL = !this.props.routeParams.dialect_path ? NavigationHelpers.generateStaticURL("/kids") : NavigationHelpers.generateStaticURL("/kids" + this.props.routeParams.dialect_path);
+    const homeURL = !this.props.routeParams.dialect_path
+      ? NavigationHelpers.generateStaticURL('/kids')
+      : NavigationHelpers.generateStaticURL('/kids' + this.props.routeParams.dialect_path)
 
     return (
       <div className="Navigation">
         <AppBar
           title={
             <a
-              style={{ textDecoration: "none", color: "#fff" }}
+              style={{ textDecoration: 'none', color: '#fff' }}
               onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
             >
               {avatar}
               <span className="hidden-xs">
-                {(selectn("response.contextParameters.ancestry.dialect.dc:title", computePortal) ||
+                {(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
                   this.props.properties.title) +
-                  " " +
-                  intl.trans("views.pages.explore.dialect.for_kids", "for Kids")}
+                  ' ' +
+                  intl.trans('views.pages.explore.dialect.for_kids', 'for Kids')}
               </span>
             </a>
           }
           iconClassNameRight="muidocs-icon-navigation-expand-more"
           showMenuIconButton={false}
-          onRightIconButtonTouchTap={() => this.props.toggleMenuAction("AppLeftNav")}
+          onRightIconButtonTouchTap={() => this.props.toggleMenuAction('AppLeftNav')}
         >
-          <ToolbarGroup style={{ paddingTop: "5px" }}>
+          <ToolbarGroup style={{ paddingTop: '5px' }}>
             <IconButton
               className={classNames({ hidden: this.props.frontpage })}
               onTouchTap={(e) => NavigationHelpers.navigateBack()}
-              style={{ paddingTop: 0, top: "8px", left: "-10px" }}
+              style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
-              tooltip={intl.trans("back", "Back", "first")}
+              tooltip={intl.trans('back', 'Back', 'first')}
             >
               keyboard_backspace
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(
-                this,
-                homeURL
-              )}
-              style={{ paddingTop: 0, top: "8px", left: "-10px" }}
+              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
+              style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
-              tooltip={intl.trans("home", "Home", "first")}
+              tooltip={intl.trans('home', 'Home', 'first')}
             >
               home
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL("/kids/FV/Workspaces/Data"))}
-              style={{ paddingTop: 0, top: "8px", left: "-10px" }}
+              onTouchTap={this._onNavigateRequest.bind(
+                this,
+                NavigationHelpers.generateStaticURL('/kids/FV/Workspaces/Data')
+              )}
+              style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
-              tooltip={intl.trans("choose_lang", "Choose a Language", "first")}
+              tooltip={intl.trans('choose_lang', 'Choose a Language', 'first')}
             >
               apps
             </IconButton>
 
-            <ToolbarSeparator style={{ float: "none", marginLeft: "0", marginRight: "15px" }} />
+            <ToolbarSeparator style={{ float: 'none', marginLeft: '0', marginRight: '15px' }} />
 
             <IconButton
-              style={{ paddingTop: 0, paddingRight: 0, top: "8px", left: "-10px" }}
+              style={{ paddingTop: 0, paddingRight: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
-              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL("/"))}
+              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/'))}
               tooltipPosition="bottom-left"
-              tooltip={intl.trans("back_to_main_site", "Back to Main Site", "words")}
+              tooltip={intl.trans('back_to_main_site', 'Back to Main Site', 'words')}
             >
               clear
             </IconButton>

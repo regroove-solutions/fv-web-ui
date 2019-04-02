@@ -211,7 +211,7 @@ class ListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onEntryNavigateRequest',
       '_handleRefetch',
       '_handleSortChange',
