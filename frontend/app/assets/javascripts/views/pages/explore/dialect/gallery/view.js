@@ -67,7 +67,6 @@ export default class Gallery extends React.Component {
 
   constructor(props, context) {
     super(props, context)
-
     ;['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
@@ -113,7 +112,6 @@ export default class Gallery extends React.Component {
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
     const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())
-
     ;(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
       let image = { original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description'] }
       images.push(image)

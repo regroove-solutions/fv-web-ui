@@ -176,7 +176,6 @@ export default class View extends Component {
 
     // Generate photos
     const photos = []
-
     ;(selectn('response.contextParameters.word.related_pictures', computeCharacter) || []).map(function(picture, key) {
       const image = {
         original: selectn('views[2].url', picture),
@@ -191,7 +190,6 @@ export default class View extends Component {
 
     // Generate videos
     const videos = []
-
     ;(selectn('response.contextParameters.word.related_videos', computeCharacter) || []).map(function(video, key) {
       const vid = {
         original: NavigationHelpers.getBaseURL() + video.path,

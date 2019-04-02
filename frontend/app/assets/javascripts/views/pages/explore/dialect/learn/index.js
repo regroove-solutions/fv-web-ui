@@ -120,7 +120,6 @@ export default class DialectLearn extends Component {
       fetchedStats: false,
       fetchedRecentActivityLists: new Set(),
     }
-
     ;['_showStats', '_publishChangesAction', '_loadRecentActivity'].forEach(
       (method) => (this[method] = this[method].bind(this))
     )

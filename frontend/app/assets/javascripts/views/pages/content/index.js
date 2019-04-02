@@ -74,7 +74,6 @@ export default class PageContent extends Component {
       pagePath: '/' + this.props.properties.domain + '/' + this.props.area + '/Site/Resources/',
       dialectsPath: '/' + this.props.properties.domain + '/' + this.props.area + '/',
     }
-
     ;['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 

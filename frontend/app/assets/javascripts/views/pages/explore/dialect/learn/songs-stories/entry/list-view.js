@@ -37,7 +37,6 @@ export default class ListView extends Component {
       originalItems: List(this.props.items),
       reorderWarning: false,
     }
-
     ;['_moveUp', '_moveDown', '_reset'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 

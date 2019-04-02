@@ -46,7 +46,6 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
         showCancelWarning: false,
         saved: false,
       }
-
       ;['_onRequestSaveForm', '_onRequestCancelForm'].forEach((method) => (this[method] = this[method].bind(this)))
     }
 

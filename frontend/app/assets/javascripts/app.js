@@ -13,52 +13,52 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import 'babel-polyfill';
+import 'babel-polyfill'
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react'
 import { render } from 'react-dom'
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
+import injectTapEventPlugin from 'react-tap-event-plugin'
 
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import ThemeManager from 'material-ui/lib/styles/theme-manager'
 
-import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js';
+import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 
-import ConfGlobal from 'conf/local.json';
+import ConfGlobal from 'conf/local.json'
 
 // Providers provide reducers and actions
-import providers from './providers/index';
+import providers from './providers/index'
 
 // Views
-import AppWrapper from 'views/AppWrapper';
+import AppWrapper from 'views/AppWrapper'
 
-require('!style-loader!css-loader!normalize.css');
-require('!style-loader!css-loader!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css');
-require('!style-loader!css-loader!tether-shepherd/dist/css/shepherd-theme-arrows.css');
-require('bootstrap/less/bootstrap');
-require("styles/main");
+require('!style-loader!css-loader!normalize.css')
+require('!style-loader!css-loader!alloyeditor/dist/alloy-editor/assets/alloy-editor-ocean-min.css')
+require('!style-loader!css-loader!tether-shepherd/dist/css/shepherd-theme-arrows.css')
+require('bootstrap/less/bootstrap')
+require('styles/main')
 
-injectTapEventPlugin();
+injectTapEventPlugin()
 
 const context = {
-    providers,
-    /*combinedProviders: [
+  providers,
+  /*combinedProviders: [
       providers // OK for all providers to share the same store for now, make sure actions are unique
     ],*/
-    providedState: {
-        properties: {
-            title: ConfGlobal.title,
-            pageTitleParams: null,
-            domain: ConfGlobal.domain,
-            theme: {
-                palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
-                id: 'default'
-            }
-        }
-    }
-};
+  providedState: {
+    properties: {
+      title: ConfGlobal.title,
+      pageTitleParams: null,
+      domain: ConfGlobal.domain,
+      theme: {
+        palette: ThemeManager.getMuiTheme(FirstVoicesTheme),
+        id: 'default',
+      },
+    },
+  },
+}
 
-render(<AppWrapper {...context} />, document.getElementById('app-wrapper'));
+render(<AppWrapper {...context} />, document.getElementById('app-wrapper'))
 
 /*window.addEventListener("unhandledrejection", function(err, promise) {
 // handle error here, for example log

@@ -58,7 +58,6 @@ export default class PageStats extends Component {
 
   constructor(props, context) {
     super(props, context)
-
     ;[].forEach((method) => (this[method] = this[method].bind(this)))
   }
 

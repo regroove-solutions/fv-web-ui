@@ -371,7 +371,6 @@ export default class Preview extends Component {
 
         if (categoryResponse && category.success) {
           let breadcrumb = []
-
           ;(selectn('contextParameters.breadcrumb.entries', categoryResponse) || []).map(function(entry, i) {
             if (entry.type === 'FVCategory') {
               let shared = ''

@@ -7,7 +7,6 @@ export default class AlloyEditorComponent extends Component {
     this._nativeEditor = this._editor.get('nativeEditor')
 
     var _this = this
-
     ;['actionPerformed', 'change'].forEach((event) =>
       this._nativeEditor.on(event, function() {
         _this.props.onContentChange(_this._nativeEditor.getData())

@@ -58,7 +58,6 @@ export default class ExploreFamily extends Component {
     this.state = {
       filteredList: null,
     }
-
     ;['_onNavigateRequest', 'fixedListFetcher'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 

@@ -40,7 +40,6 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
         prePublishCompleteAction: null,
         publishToggleCancelled: false,
       }
-
       ;['_publishToggleAction', '_enableToggleAction', '_publishChangesAction', '_delete'].forEach(
         (method) => (this[method] = this[method].bind(this))
       )

@@ -87,7 +87,6 @@ export default class Quiz extends Component {
 
   constructor(props, context) {
     super(props, context)
-
     ;['_handleNavigate', '_handleAnswerSelected', '_restart', '_changeContent'].forEach(
       (method) => (this[method] = this[method].bind(this))
     )

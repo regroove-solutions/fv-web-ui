@@ -58,7 +58,6 @@ export default class PageHome extends Component {
       pagePath: '/' + this.props.properties.domain + '/sections/Site/Resources/',
       dialectsPath: '/' + this.props.properties.domain + '/sections/',
     }
-
     ;['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
