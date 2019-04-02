@@ -1,7 +1,8 @@
 <component name="ca.firstvoices.listeners.contrib">
-
+  <require>org.nuxeo.ecm.platform.audit.service.NXAuditEventsService</require>
+  
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-
+    
     <listener name="restrictfvdialectpublishing" async="false" postCommit="true"
       class="ca.firstvoices.listeners.RestrictFVDialectPublishing" priority="50">
       <event>workflowTaskStart</event>
@@ -15,6 +16,9 @@
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event>      
     </listener>
+    
+    <listener name="auditLoggerListener" async="false" postCommit="false" priority="500"
+              class="ca.firstvoices.listeners.FVStreamAuditEventListener" />
   </extension>
 
 </component>

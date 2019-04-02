@@ -21,6 +21,7 @@ import selectn from 'selectn';
 import classNames from 'classnames';
 
 import ProviderHelpers from 'common/ProviderHelpers';
+import NavigationHelpers from 'common/NavigationHelpers';
 
 import CategoryList from 'views/components/Browsing/category-list';
 import PromiseWrapper from 'views/components/Document/PromiseWrapper';
@@ -56,6 +57,7 @@ export default class Categories extends Component {
         pushWindowPath: PropTypes.func.isRequired,
         replaceWindowPath: PropTypes.func.isRequired,
         windowPath: PropTypes.string.isRequired,
+        splitWindowPath: PropTypes.array.isRequired,
         routeParams: PropTypes.object.isRequired,
         action: PropTypes.func
     };
@@ -105,7 +107,7 @@ export default class Categories extends Component {
 
         // 'Redirect' if no Phrase Books found (show all phrases)
         if (nextComputeCategoriesResultCount === 0) {
-            nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + nextProps.routeParams.dialect_path + '/learn/phrases/');
+            NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
         }
     }
 
@@ -113,7 +115,7 @@ export default class Categories extends Component {
         if (this.props.action) {
             this.props.action(category);
         } else {
-            this.props.pushWindowPath('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/phrases/categories/' + category.uid);
+            NavigationHelpers.navigate('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/phrases/categories/' + category.uid, this.props.pushWindowPath, true);
         }
     }
 

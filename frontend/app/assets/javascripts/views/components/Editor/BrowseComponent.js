@@ -164,7 +164,7 @@ class BrowseComponent extends React.Component {
 
     this.props.fetchResources(
       '/FV/Workspaces/',
-      " AND ecm:primaryType ILIKE '" +
+      " AND ecm:primaryType LIKE '" +
         this.props.type +
         "'" +
         " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +

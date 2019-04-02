@@ -169,7 +169,7 @@ export default class View extends Component {
       (selectn('response.contextParameters.word.related_pictures', computeCharacter) || []).map(function(picture, key) {
         const image = {
           original: selectn('views[2].url', picture),
-          thumbnail: (selectn('views[0].url', picture) || '/assets/images/cover.png'),
+          thumbnail: (selectn('views[0].url', picture) || 'assets/images/cover.png'),
           description: picture['dc:description'],
           key: key,
           id: picture.uid,
@@ -184,7 +184,7 @@ export default class View extends Component {
       (selectn('response.contextParameters.word.related_videos', computeCharacter) || []).map(function(video, key) {
         const vid = {
           original: NavigationHelpers.getBaseURL() + video.path,
-          thumbnail: (selectn('views[0].url', video) || '/assets/images/cover.png'),
+          thumbnail: (selectn('views[0].url', video) || 'assets/images/cover.png'),
           description: video['dc:description'],
           key: key,
           id: video.uid,

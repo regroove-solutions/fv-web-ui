@@ -51,7 +51,7 @@ export default class Game extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/fv-games-wordsearch';
+        const defaultAssetsPath = 'assets/games/fv-games-wordsearch';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config

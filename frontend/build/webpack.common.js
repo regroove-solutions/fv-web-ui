@@ -72,6 +72,14 @@ module.exports = {
     historyApiFallback: {
       rewrites: [
         {
+          // #context-path-issue
+          // Ensure relative paths from CSS files are rewritten in local dev server
+          from: /\/assets\/styles\/(.*)$/,
+          to: function(context) {
+            return '/' + context.match[1]
+          },
+        },
+        {
           from: /\/assets\/(.*)$/,
           to: function(context) {
             return '/assets/' + context.match[1]
@@ -79,11 +87,13 @@ module.exports = {
         },
       ],
       disableDotRule: true,
+      // verbose: true
     },
-    // Ensure locally /nuxeo requests are rewritten to localhost:8080
-    proxy: {
-      '/nuxeo': 'http://localhost:8080',
-    },
+    // Ensure locally /nuxeo requests are rewritten to localhost:8080, unless rendering app
+    proxy: [{
+      context: ['/nuxeo/**', '!/nuxeo/app/**'],
+      target: 'http://localhost:8080'
+    }]
   },
 
   /**
@@ -217,7 +227,18 @@ module.exports = {
        */
       {
         test: /\.less$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
+        use: [{
+          loader: MiniCssExtractPlugin.loader
+        }, {
+          loader: 'css-loader', options: {
+            // #context-path-issue
+            // Disable resolving URLs because of context path - /nuxeo/app/
+            // Absolute path /assets/image.jpg won't work on dev/uat, relative paths will throw compilation error otherwise.
+            url: false
+          }
+        }, {
+          loader: 'less-loader'
+        }]
       },
       /**
        * Font loaders

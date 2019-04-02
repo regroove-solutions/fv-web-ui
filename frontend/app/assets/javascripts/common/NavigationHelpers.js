@@ -65,7 +65,8 @@ export default {
     }
 
     // Only add context path if it doesn't exist
-    const transformedPath = path.indexOf(ContextPath()) === 0 ? pathArray.join('/') : ContextPath() + pathArray.join('/')
+    const transformedPath =
+      path.indexOf(ContextPath()) === 0 ? pathArray.join('/') : ContextPath() + pathArray.join('/')
 
     if (!navigationFunc) {
       return transformedPath
@@ -176,7 +177,8 @@ export default {
       window.location.protocol +
       '//' +
       window.location.hostname +
-      (window.location.port ? ':' + window.location.port : '')
+      (window.location.port ? ':' + window.location.port : '') +
+      ContextPath()
     )
   },
   getBaseURL: function() {

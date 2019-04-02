@@ -47,7 +47,7 @@ export default class ColouringBook extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/fv-games-colouring-book';
+        const defaultAssetsPath = 'assets/games/fv-games-colouring-book';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config

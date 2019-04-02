@@ -79,7 +79,7 @@ const ResourcesFields = {
         case: 'words',
       }),
       factory: t.form.Select,
-      nxql: " ecm:primaryType ILIKE '${value}'",
+      nxql: " ecm:primaryType LIKE '${value}'",
     },
     'common:size': {
       label: intl.translate({

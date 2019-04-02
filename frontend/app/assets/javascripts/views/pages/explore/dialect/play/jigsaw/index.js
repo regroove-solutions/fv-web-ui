@@ -112,26 +112,26 @@ export default class Jigsaw extends Component {
                 words = [{
                     word: 'Bear',
                     translation: 'Bear',
-                    audio: '/assets/games/fv-games-jigsaw/sounds/sample.mp3',
-                    picture: '/assets/games/fv-games-jigsaw/images/picture1.jpg'
+                    audio: 'assets/games/fv-games-jigsaw/sounds/sample.mp3',
+                    picture: 'assets/games/fv-games-jigsaw/images/picture1.jpg'
                 },
                     {
                         word: 'Totem',
                         translation: 'Totem',
-                        audio: '/assets/games/fv-games-jigsaw/sounds/sample.mp3',
-                        picture: '/assets/games/fv-games-jigsaw/images/picture2.jpg'
+                        audio: 'assets/games/fv-games-jigsaw/sounds/sample.mp3',
+                        picture: 'assets/games/fv-games-jigsaw/images/picture2.jpg'
                     },
                     {
                         word: 'Fish',
                         translation: 'Fish',
-                        audio: '/assets/games/fv-games-jigsaw/sounds/sample.mp3',
-                        picture: '/assets/games/fv-games-jigsaw/images/picture3.jpg'
+                        audio: 'assets/games/fv-games-jigsaw/sounds/sample.mp3',
+                        picture: 'assets/games/fv-games-jigsaw/images/picture3.jpg'
                     },
                     {
                         word: 'Fire',
                         translation: 'Fire',
-                        audio: '/assets/games/fv-games-jigsaw/sounds/sample.mp3',
-                        picture: '/assets/games/fv-games-jigsaw/images/picture4.jpg'
+                        audio: 'assets/games/fv-games-jigsaw/sounds/sample.mp3',
+                        picture: 'assets/games/fv-games-jigsaw/images/picture4.jpg'
                     }]
             }
 

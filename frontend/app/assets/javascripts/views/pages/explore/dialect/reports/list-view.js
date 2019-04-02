@@ -44,41 +44,54 @@ import Tabs from 'material-ui/lib/tabs/tabs'
 import Tab from 'material-ui/lib/tabs/tab'
 import IntlService from 'views/services/intl'
 
-
 const intl = IntlService.instance
-const defaultStyle = {marginBottom: '20px'}
+const defaultStyle = { marginBottom: '20px' }
 
 class Introduction extends Component {
   render() {
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
-    const introTabStyle = {width: '99%', position: 'relative', overflowY: 'scroll', padding: '15px', height: '100px'}
+    const introTabStyle = { width: '99%', position: 'relative', overflowY: 'scroll', padding: '15px', height: '100px' }
 
     const introduction = selectn('properties.fvbook:introduction', this.props.item)
     const introductionTranslations = selectn('properties.fvbook:introduction_literal_translation', this.props.item)
-    const introductionDiv = <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(introduction)}} style={Object.assign(introTabStyle, this.props.style)} />
+    const introductionDiv = (
+      <div
+        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(introduction) }}
+        style={Object.assign(introTabStyle, this.props.style)}
+      />
+    )
 
     if (!introductionTranslations || introductionTranslations.length == 0) {
       if (!introduction) {
         return null
       }
 
-      return <div style={{padding: '10px'}}><div><h1 style={{fontSize: '1.2em', marginTop: 0}}>{intl.trans('introduction', 'Introduction', 'first')} {this.props.audio}</h1></div>{introductionDiv}</div>
+      return (
+        <div style={{ padding: '10px' }}>
+          <div>
+            <h1 style={{ fontSize: '1.2em', marginTop: 0 }}>
+              {intl.trans('introduction', 'Introduction', 'first')} {this.props.audio}
+            </h1>
+          </div>
+          {introductionDiv}
+        </div>
+      )
     }
 
-    return <Tabs>
-      <Tab label={intl.trans('introduction', 'Introduction', 'first')}>
-        {introductionDiv}
-      </Tab>
-      <Tab label={DEFAULT_LANGUAGE}>
-        <div style={Object.assign(introTabStyle, this.props.style)}>
-          {introductionTranslations.map(function(translation, i) {
-            if (translation.language == DEFAULT_LANGUAGE) {
-              return <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(translation.translation)}} key={i} />
-            }
-          })}
-        </div>
-      </Tab>
-    </Tabs>
+    return (
+      <Tabs>
+        <Tab label={intl.trans('introduction', 'Introduction', 'first')}>{introductionDiv}</Tab>
+        <Tab label={DEFAULT_LANGUAGE}>
+          <div style={Object.assign(introTabStyle, this.props.style)}>
+            {introductionTranslations.map(function(translation, i) {
+              if (translation.language == DEFAULT_LANGUAGE) {
+                return <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(translation.translation) }} key={i} />
+              }
+            })}
+          </div>
+        </Tab>
+      </Tabs>
+    )
   }
 }
 
@@ -107,30 +120,48 @@ class CardView extends Component {
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
 
     const mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item)
-    const coverImage = selectn('url', mediumImage) || '/assets/images/cover.png'
+    const coverImage = selectn('url', mediumImage) || 'assets/images/cover.png'
     const audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item)
 
     if (audioObj) {
-      const stateFunc = function(state) { this.setState(state) }.bind(this)
+      const stateFunc = function(state) {
+        this.setState(state)
+      }.bind(this)
 
-      audioIcon = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj) ? <AVPlayArrow style={{marginRight: '10px'}} /> : <AVStop style={{marginRight: '10px'}} />
+      audioIcon =
+        decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj ? (
+          <AVPlayArrow style={{ marginRight: '10px' }} />
+        ) : (
+          <AVStop style={{ marginRight: '10px' }} />
+        )
 
-      audioCallback = (decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj) ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audioObj) : UIHelpers.stopAudio.bind(this, this.state, stateFunc)
+      audioCallback =
+        decodeURIComponent(selectn('src', this.state.nowPlaying)) !== ConfGlobal.baseURL + audioObj
+          ? UIHelpers.playAudio.bind(this, this.state, stateFunc, ConfGlobal.baseURL + audioObj)
+          : UIHelpers.stopAudio.bind(this, this.state, stateFunc)
     }
 
-    return <div style={Object.assign(defaultStyle, this.props.style)} key={this.props.item.uid} className={classNames('col-xs-12', 'col-md-12', {'col-md-4': !this.props.fullWidth})}>
-            &#8226; <a href={
-	            NavigationHelpers.getBaseWebUIURL() +
-	            '/explore' +
-	            this.props.dialectPath +
-	            '/reports/' +
-	            encodeURI(this.props.item.name)
-	          }>{this.props.item.name}</a>
-    </div>
+    return (
+      <div
+        style={Object.assign(defaultStyle, this.props.style)}
+        key={this.props.item.uid}
+        className={classNames('col-xs-12', 'col-md-12', { 'col-md-4': !this.props.fullWidth })}
+      >
+        &#8226;{' '}
+        <a
+          href={
+            NavigationHelpers.getBaseWebUIURL() +
+            '/explore' +
+            this.props.dialectPath +
+            '/reports/' +
+            encodeURI(this.props.item.name)
+          }
+        >
+          {this.props.item.name}
+        </a>
+      </div>
+    )
   }
 }
 
-export {
-  Introduction,
-  CardView,
-}
+export { Introduction, CardView }

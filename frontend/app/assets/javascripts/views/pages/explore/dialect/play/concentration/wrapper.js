@@ -50,7 +50,7 @@ export default class Game extends Component {
     componentDidMount() {
 
         //Setup default asset paths
-        const defaultAssetsPath = '/assets/games/fv-games-memory/';
+        const defaultAssetsPath = 'assets/games/fv-games-memory/';
         const defaultImagesPath = `${defaultAssetsPath}/images`;
 
         //Default game config

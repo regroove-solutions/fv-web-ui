@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<component name="ca.firstvoices.es.provider.contrib">
+
+ <require>org.nuxeo.ecm.webapp.pageproviders.contrib</require>
+  <extension target="org.nuxeo.ecm.platform.query.api.PageProviderService"
+   point="providers">
+   
+    <genericPageProvider name="es_nxql_search" 
+       class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
+       <property name="coreSession">#{documentManager}</property>
+       <property name="maxResults">-1</property>
+       <aggregates></aggregates>
+       <maxPageSize>5000</maxPageSize>
+       <property name="maxResults">5000</property>
+    </genericPageProvider>
+   </extension>
+</component>

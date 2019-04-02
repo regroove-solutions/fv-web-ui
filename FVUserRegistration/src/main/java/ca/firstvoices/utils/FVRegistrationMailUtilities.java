@@ -158,8 +158,8 @@ public class FVRegistrationMailUtilities {
 
             // Add site url to options
             String siteURL = Framework.getProperty("nuxeo.url");
-            ;
-
+            String fvContextPath = Framework.getProperty("fv.contextPath");
+            options.put("appURL", siteURL + "/" + fvContextPath);
             options.put("siteURL", siteURL);
 
             try {

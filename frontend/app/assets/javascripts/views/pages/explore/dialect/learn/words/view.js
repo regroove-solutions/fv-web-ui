@@ -353,7 +353,7 @@ export default class DialectViewWord extends Component {
     ;(selectn("response.contextParameters.word.related_pictures", computeWord) || []).map((picture, key) => {
       const image = {
         original: selectn("views[2].url", picture),
-        thumbnail: selectn("views[0].url", picture) || "/assets/images/cover.png",
+        thumbnail: selectn("views[0].url", picture) || "assets/images/cover.png",
         description: picture["dc:description"],
         key: key,
         id: picture.uid,
@@ -438,7 +438,7 @@ export default class DialectViewWord extends Component {
       photosThumbnails.push(
         <img
           key={picture.uid}
-          src={selectn("views[0].url", picture) || "/assets/images/cover.png"}
+          src={selectn("views[0].url", picture) || "assets/images/cover.png"}
           alt={selectn("title", picture)}
           style={{ margin: "15px", maxWidth: "150px" }}
         />
@@ -531,7 +531,7 @@ export default class DialectViewWord extends Component {
     ;(selectn("response.contextParameters.word.related_videos", computeWord) || []).map((video, key) => {
       const vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
-        thumbnail: selectn("views[0].url", video) || "/assets/images/cover.png",
+        thumbnail: selectn("views[0].url", video) || "assets/images/cover.png",
         description: video["dc:description"],
         key: key,
         id: video.uid,
