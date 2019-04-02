@@ -13,106 +13,108 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
-import PromiseHelpers from 'common/PromiseHelpers';
+import React, { Component, PropTypes } from 'react'
+import ReactDOM from 'react-dom'
+import PromiseHelpers from 'common/PromiseHelpers'
 
 /**
  * Test game wrapper
  */
 export default class Game extends Component {
+  static propTypes = {
+    cards: PropTypes.array.isRequired,
+  }
 
-    static propTypes = {
-        cards: PropTypes.array.isRequired
-    }
+  /**
+   * Constructor
+   */
+  constructor(props, context) {
+    super(props, context)
+    this.gameContainer = null
+  }
 
-    /**
-     * Constructor
-     */
-    constructor(props, context) {
-        super(props, context);
-        this.gameContainer = null;
-    }
-
-    loadGameScript() {
-        return PromiseHelpers.makeCancelablePromise((() => {
-            return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "memory" */ '@fpcc/fv-game-memory').then(({ default: memory }) => {
-                    resolve(memory);
-                }).catch(reject);
+  loadGameScript() {
+    return PromiseHelpers.makeCancelablePromise(
+      (() => {
+        return new Promise((resolve, reject) => {
+          import(/* webpackChunkName: "memory" */ '@fpcc/fv-game-memory')
+            .then(({ default: memory }) => {
+              resolve(memory)
             })
-        })());
+            .catch(reject)
+        })
+      })()
+    )
+  }
+
+  /**
+   * componentDidMount
+   */
+  componentDidMount() {
+    //Setup default asset paths
+    const defaultAssetsPath = 'assets/games/fv-games-memory/'
+    const defaultImagesPath = `${defaultAssetsPath}/images`
+
+    //Default game config
+    /**
+     * @todo Setup image paths based on dialect
+     */
+
+    let gameConfig = {
+      images: {
+        preloaderLoading: `${defaultImagesPath}/loading.png`,
+        preloaderLogo: `${defaultImagesPath}/logo.png`,
+        background: `${defaultImagesPath}/background.png`,
+        card: `${defaultImagesPath}/card.png`,
+        cardFlipped: `${defaultImagesPath}/card_flipped.png`,
+        wellDone: `${defaultImagesPath}/well-done.png`,
+        title: `${defaultImagesPath}/title.png`,
+        time: `${defaultImagesPath}/time.png`,
+      },
+
+      cards: this.props.cards,
     }
 
     /**
-     * componentDidMount
+     * Create the game, with container and game config
      */
-    componentDidMount() {
+    this.loadGameScriptTask = this.loadGameScript()
+    this.loadGameScriptTask.promise.then((memory) => {
+      this.memory = memory
+      const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer)
+      memory.init(gameContainerNode, gameConfig)
+    })
+  }
 
-        //Setup default asset paths
-        const defaultAssetsPath = 'assets/games/fv-games-memory/';
-        const defaultImagesPath = `${defaultAssetsPath}/images`;
+  /**
+   * Component Will Unmount
+   * Cleanup the game / assets for memory management
+   */
+  componentWillUnmount() {
+    if (this.memory) {
+      this.memory.destroy()
+    } else if (this.loadGameScriptTask) {
+      this.loadGameScriptTask.cancel()
+    }
+  }
 
-        //Default game config
-        /**
-         * @todo Setup image paths based on dialect
-         */
-
-
-        let gameConfig = {
-
-            images: {
-                preloaderLoading: `${defaultImagesPath}/loading.png`,
-                preloaderLogo: `${defaultImagesPath}/logo.png`,
-                background: `${defaultImagesPath}/background.png`,
-                card: `${defaultImagesPath}/card.png`,
-                cardFlipped: `${defaultImagesPath}/card_flipped.png`,
-                wellDone: `${defaultImagesPath}/well-done.png`,
-                title: `${defaultImagesPath}/title.png`,
-                time: `${defaultImagesPath}/time.png`
-            },
-
-            cards: this.props.cards
-
-        };
-
-        /**
-         * Create the game, with container and game config
-         */
-        this.loadGameScriptTask = this.loadGameScript();
-        this.loadGameScriptTask.promise.then((memory) => {
-            this.memory = memory;
-            const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-            memory.init(gameContainerNode, gameConfig);
-        });
+  /**
+   * Render
+   */
+  render() {
+    //Setup game styles
+    const gameContainerStyles = {
+      maxWidth: 800,
+      margin: 'auto',
     }
 
-    /**
-     * Component Will Unmount
-     * Cleanup the game / assets for memory management
-     */
-    componentWillUnmount() {
-        if (this.memory) {
-            this.memory.destroy();
-        }
-        else if (this.loadGameScriptTask) {
-            this.loadGameScriptTask.cancel();
-        }
-    }
-
-    /**
-     * Render
-     */
-    render() {
-
-        //Setup game styles
-        const gameContainerStyles = {
-            maxWidth: 800,
-            margin: 'auto'
-        }
-
-        return <div style={gameContainerStyles} ref={(el) => {
-            this.gameContainer = el
-        }}></div>;
-    }
+    return (
+      <div
+        style={gameContainerStyles}
+        ref={(el) => {
+          this.gameContainer = el
+        }}
+      />
+    )
+  }
 }

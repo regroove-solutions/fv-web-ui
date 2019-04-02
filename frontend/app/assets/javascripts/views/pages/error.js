@@ -13,39 +13,37 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react'
 
-import selectn from 'selectn';
-import classNames from 'classnames';
+import selectn from 'selectn'
+import classNames from 'classnames'
 
 /**
-* Page for displaying error for the user
-*/
+ * Page for displaying error for the user
+ */
 export default class PageError extends Component {
-
   static propTypes = {
     title: PropTypes.string.isRequired,
-    body: PropTypes.object.isRequired
-  };
+    body: PropTypes.object.isRequired,
+  }
 
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
   }
 
   render() {
+    return (
+      <div>
+        <div className="row">
+          <div className={classNames('col-xs-12')}>
+            <h1>{this.props.title}</h1>
+          </div>
+        </div>
 
-    return <div>
-                <div className="row">
-                    <div className={classNames('col-xs-12')}>
-                        <h1>{this.props.title}</h1>
-                    </div>
-                </div>
-
-                <div className="row">
-                    <div className={classNames('col-xs-12')}>
-                        {this.props.body}
-                    </div>
-                </div>
-           </div>;
+        <div className="row">
+          <div className={classNames('col-xs-12')}>{this.props.body}</div>
+        </div>
+      </div>
+    )
   }
 }

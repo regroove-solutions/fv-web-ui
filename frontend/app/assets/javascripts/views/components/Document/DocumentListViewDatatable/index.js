@@ -93,7 +93,7 @@ export default class DocumentListViewDatatable extends Component {
 
     // Bind methods to 'this'
     // eslint-disable-next-line
-    ;["_handleSelectionChange", "_onPageChange", "_onPageSizeChange", "_gridListFetcher"].forEach(
+    ;['_handleSelectionChange', '_onPageChange', '_onPageSizeChange', '_gridListFetcher'].forEach(
       (method) => (this[method] = this[method].bind(this))
     )
   }

@@ -165,7 +165,7 @@ export default class DialectFilterList extends Component {
       const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
       _splitWindowPath.push(urlFragment)
     }
-    let path = ("/" + _splitWindowPath.join('/')).replace(NavigationHelpers.getContextPath(), "")
+    let path = ('/' + _splitWindowPath.join('/')).replace(NavigationHelpers.getContextPath(), '')
 
     filters.forEach((filter) => {
       this._setUidUrlPath(filter, path)

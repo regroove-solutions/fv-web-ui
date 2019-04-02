@@ -13,129 +13,145 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, {List, Map} from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
 
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
-import classNames from 'classnames';
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+import classNames from 'classnames'
 
-import ProviderHelpers from 'common/ProviderHelpers';
-import NavigationHelpers from 'common/NavigationHelpers';
+import ProviderHelpers from 'common/ProviderHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
-import CategoryList from 'views/components/Browsing/category-list';
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import CategoryList from 'views/components/Browsing/category-list'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
+import DirectoryOperations from 'operations/DirectoryOperations'
 
-import Checkbox from 'material-ui/lib/checkbox';
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import Checkbox from 'material-ui/lib/checkbox'
+import TextField from 'material-ui/lib/text-field'
+import RaisedButton from 'material-ui/lib/raised-button'
+import SelectField from 'material-ui/lib/select-field'
+import MenuItem from 'material-ui/lib/menus/menu-item'
 
-import withPagination from 'views/hoc/grid-list/with-pagination';
-import withFilter from 'views/hoc/grid-list/with-filter';
-import IntlService from 'views/services/intl';
+import withPagination from 'views/hoc/grid-list/with-pagination'
+import withFilter from 'views/hoc/grid-list/with-filter'
+import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance;
-const FilteredCategoryList = withFilter(CategoryList);
+const intl = IntlService.instance
+const FilteredCategoryList = withFilter(CategoryList)
 
 /**
  * Categories page for words
  */
 @provide
 export default class Categories extends Component {
+  static propTypes = {
+    properties: PropTypes.object.isRequired,
+    fetchCategories: PropTypes.func.isRequired,
+    computeCategories: PropTypes.object.isRequired,
+    fetchPortal: PropTypes.func.isRequired,
+    computePortal: PropTypes.object.isRequired,
+    pushWindowPath: PropTypes.func.isRequired,
+    replaceWindowPath: PropTypes.func.isRequired,
+    windowPath: PropTypes.string.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    routeParams: PropTypes.object.isRequired,
+    action: PropTypes.func,
+  }
 
-    static propTypes = {
-        properties: PropTypes.object.isRequired,
-        fetchCategories: PropTypes.func.isRequired,
-        computeCategories: PropTypes.object.isRequired,
-        fetchPortal: PropTypes.func.isRequired,
-        computePortal: PropTypes.object.isRequired,
-        pushWindowPath: PropTypes.func.isRequired,
-        replaceWindowPath: PropTypes.func.isRequired,
-        windowPath: PropTypes.string.isRequired,
-        splitWindowPath: PropTypes.array.isRequired,
-        routeParams: PropTypes.object.isRequired,
-        action: PropTypes.func
-    };
-
-    /*static contextTypes = {
+  /*static contextTypes = {
         muiTheme: React.PropTypes.object.isRequired
     };*/
 
-    constructor(props, context) {
-        super(props, context);
+  constructor(props, context) {
+    super(props, context)
 
-        this.state = {
-            pathOrId: null,
-            filteredList: null,
-            open: false,
-            categoriesPath: null
-        };
-
-        // Bind methods to 'this'
-        ['_onNavigateRequest'].forEach((method => this[method] = this[method].bind(this)));
+    this.state = {
+      pathOrId: null,
+      filteredList: null,
+      open: false,
+      categoriesPath: null,
     }
 
-    fetchData(newProps) {
-        const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area;
-        const categoriesPath = '/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children';
+    // Bind methods to 'this'
+    ;['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)))
+  }
 
-        newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal');
-        newProps.fetchCategories(categoriesPath);
-        this.setState({categoriesPath})
+  fetchData(newProps) {
+    const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area
+    const categoriesPath = '/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children'
+
+    newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
+    newProps.fetchCategories(categoriesPath)
+    this.setState({ categoriesPath })
+  }
+
+  // Fetch data on initial render
+  componentDidMount() {
+    this.fetchData(this.props)
+  }
+
+  // Refetch data on URL change
+  componentWillReceiveProps(nextProps) {
+    let computeCategoriesResultCount = selectn(
+      'response.totalSize',
+      ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
+    )
+    let nextComputeCategoriesResultCount = selectn(
+      'response.totalSize',
+      ProviderHelpers.getEntry(nextProps.computeCategories, this.state.categoriesPath)
+    )
+
+    if (nextProps.routeParams.area != this.props.routeParams.area) {
+      this.fetchData(nextProps)
     }
 
-    // Fetch data on initial render
-    componentDidMount() {
-        this.fetchData(this.props);
+    // 'Redirect' if no Phrase Books found (show all phrases)
+    if (nextComputeCategoriesResultCount === 0) {
+      NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath)
     }
+  }
 
-    // Refetch data on URL change
-    componentWillReceiveProps(nextProps) {
-
-        let computeCategoriesResultCount = selectn('response.totalSize', ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath));
-        let nextComputeCategoriesResultCount = selectn('response.totalSize', ProviderHelpers.getEntry(nextProps.computeCategories, this.state.categoriesPath));
-
-
-        if (nextProps.routeParams.area != this.props.routeParams.area) {
-            this.fetchData(nextProps);
-        }
-
-        // 'Redirect' if no Phrase Books found (show all phrases)
-        if (nextComputeCategoriesResultCount === 0) {
-            NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath);
-        }
+  _onNavigateRequest(category) {
+    if (this.props.action) {
+      this.props.action(category)
+    } else {
+      NavigationHelpers.navigate(
+        '/' +
+          this.props.routeParams.theme +
+          this.props.routeParams.dialect_path +
+          '/learn/phrases/categories/' +
+          category.uid,
+        this.props.pushWindowPath,
+        true
+      )
     }
+  }
 
-    _onNavigateRequest(category) {
-        if (this.props.action) {
-            this.props.action(category);
-        } else {
-            NavigationHelpers.navigate('/' + this.props.routeParams.theme + this.props.routeParams.dialect_path + '/learn/phrases/categories/' + category.uid, this.props.pushWindowPath, true);
-        }
-    }
+  render() {
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.state.categoriesPath,
+        entity: this.props.computeCategories,
+      },
+    ])
 
-    render() {
+    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
 
-        const computeEntities = Immutable.fromJS([{
-            'id': this.state.categoriesPath,
-            'entity': this.props.computeCategories
-        }])
-
-        const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath);
-
-        return <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
-            <div className="row">
-
-                <div className="col-xs-12">
-                    <CategoryList action={this._onNavigateRequest}
-                                  items={selectn('response.entries', computeCategories)} cols={6}/>
-                </div>
-            </div>
-        </PromiseWrapper>;
-    }
+    return (
+      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+        <div className="row">
+          <div className="col-xs-12">
+            <CategoryList
+              action={this._onNavigateRequest}
+              items={selectn('response.entries', computeCategories)}
+              cols={6}
+            />
+          </div>
+        </div>
+      </PromiseWrapper>
+    )
+  }
 }

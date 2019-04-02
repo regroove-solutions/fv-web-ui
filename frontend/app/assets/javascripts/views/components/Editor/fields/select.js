@@ -1,10 +1,10 @@
-import React, { Component, PropTypes } from "react"
-import t from "tcomb-form"
+import React, { Component, PropTypes } from 'react'
+import t from 'tcomb-form'
 
-import DirectoryList from "views/components/Editor/DirectoryList"
-import QueryList from "views/components/Editor/QueryList"
-import DialectList from "views/components/Editor/DialectList"
-import IntlService from "views/services/intl"
+import DirectoryList from 'views/components/Editor/DirectoryList'
+import QueryList from 'views/components/Editor/QueryList'
+import DialectList from 'views/components/Editor/DialectList'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
@@ -43,7 +43,7 @@ function renderInput(locals) {
   }
 
   // Render dialect list
-  if (locals.attrs.query == "dialect_list") {
+  if (locals.attrs.query == 'dialect_list') {
     list = (
       <DialectList
         label={locals.attrs.label}

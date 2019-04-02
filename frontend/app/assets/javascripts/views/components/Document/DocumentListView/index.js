@@ -72,7 +72,7 @@ export default class DocumentListView extends Component {
 
     // Bind methods to 'this'
     // eslint-disable-next-line
-    ;["_gridListFetcher"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_gridListFetcher'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   intl = IntlService.instance
