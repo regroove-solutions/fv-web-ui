@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
-export const CLEAN_NXQL = "NXQL"
-export const CLEAN_FULLTEXT = "fulltext"
+export const CLEAN_NXQL = 'NXQL'
+export const CLEAN_FULLTEXT = 'fulltext'
 
 export default {
   clean: (str, mode = CLEAN_NXQL) => {
@@ -29,7 +29,7 @@ export default {
       _str = decodeURIComponent(str.replace(/'/g, "\\'"))
 
       // Escape '&' operator
-      _str = _str.replace(/&/g, "%26")
+      _str = _str.replace(/&/g, '%26')
     }
 
     if (mode === CLEAN_FULLTEXT) {
@@ -37,16 +37,16 @@ export default {
       _str = str.replace(/'/g, "\\'")
 
       // Replace colon
-      _str = _str.replace(/:/g, "\\:")
+      _str = _str.replace(/:/g, '\\:')
 
       // Escape double quotes
       _str = _str.replace(/"/g, '\\"')
 
       // Remove parentheses
-      _str = _str.replace(/[()]/g, "")
+      _str = _str.replace(/[()]/g, '')
 
       // Escape single quotes and URL decode
-      _str = _str.replace(/!/g, "\\!")
+      _str = _str.replace(/!/g, '\\!')
 
       // Escape colon
       _str = decodeURIComponent(_str)
@@ -57,13 +57,13 @@ export default {
   extractErrorMessage: (jsonError) => {
     let errorMessage = jsonError.message
 
-    if (jsonError.message !== null && jsonError.message.indexOf(": ") !== -1) {
-      errorMessage = jsonError.message.split(": ")[1]
+    if (jsonError.message !== null && jsonError.message.indexOf(': ') !== -1) {
+      errorMessage = jsonError.message.split(': ')[1]
       errorMessage =
         IntlService.instance.translate({
-          key: "error",
-          default: "Error",
-          append: ": ",
+          key: 'error',
+          default: 'Error',
+          append: ': ',
         }) + IntlService.instance.searchAndReplace(errorMessage)
     }
 
@@ -71,7 +71,7 @@ export default {
   },
   getReadableFileSize: (size) => {
     const e = (Math.log(size) / Math.log(1e3)) | 0 // TODO: Confirm use of `Bitwise OR`
-    return +(size / Math.pow(1e3, e)).toFixed(2) + " " + ("kMGTPEZY"[e - 1] || "") + "B"
+    return +(size / Math.pow(1e3, e)).toFixed(2) + ' ' + ('kMGTPEZY'[e - 1] || '') + 'B'
   },
   toTitleCase: (string) => {
     return string[0].toUpperCase() + string.substring(1)
@@ -97,36 +97,36 @@ export default {
     //     intl.trans('dec', 'Dec', 'first')
     // ];
     // @todo translate using the above?
-    const m = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"]
+    const m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']
 
     switch (d.getDate().toString()[d.getDate().toString().length - 1]) {
-      case "1":
-        dayDesc = "st"
+      case '1':
+        dayDesc = 'st'
         break
 
-      case "2":
-        dayDesc = "nd"
+      case '2':
+        dayDesc = 'nd'
         break
 
-      case "3":
-        dayDesc = "rd"
+      case '3':
+        dayDesc = 'rd'
         break
 
       default:
-        dayDesc = "th"
+        dayDesc = 'th'
     }
 
     return (
       m[d.getMonth()] +
-      " " +
+      ' ' +
       d.getDate() +
       dayDesc +
-      ", " +
+      ', ' +
       d.getFullYear() +
-      " @ " +
-      ("0" + d.getUTCHours()).slice(-2) +
-      ":" +
-      ("0" + d.getUTCMinutes()).slice(-2)
+      ' @ ' +
+      ('0' + d.getUTCHours()).slice(-2) +
+      ':' +
+      ('0' + d.getUTCMinutes()).slice(-2)
     )
   },
   isUUID: (str) => {
@@ -137,13 +137,13 @@ export default {
     return str.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
   },
   queryStringToObject: (str, skipDecode = false) => {
-    const _str = str.substring(str.indexOf("?") + 1).split("&")
+    const _str = str.substring(str.indexOf('?') + 1).split('&')
     const params = {}
     let pair
     const d = skipDecode ? (s) => s : decodeURIComponent
     for (let i = _str.length - 1; i >= 0; i--) {
       pair = _str[i].split(/=(.+)/)
-      params[d(pair[0])] = d(pair[1] || "")
+      params[d(pair[0])] = d(pair[1] || '')
     }
 
     return params

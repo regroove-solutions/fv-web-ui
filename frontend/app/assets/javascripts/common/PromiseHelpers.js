@@ -14,24 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 export default {
+  makeCancelablePromise: (promise) => {
+    let hasCanceled_ = false
 
-    makeCancelablePromise: (promise) => {
-        let hasCanceled_ = false;
+    const wrappedPromise = new Promise((resolve, reject) => {
+      promise.then((val) => (hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)))
+      promise.catch((error) => (hasCanceled_ ? reject({ isCanceled: true }) : reject(error)))
+    })
 
-        const wrappedPromise = new Promise((resolve, reject) => {
-            promise.then((val) =>
-                hasCanceled_ ? reject({ isCanceled: true }) : resolve(val)
-            );
-            promise.catch((error) =>
-                hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
-            );
-        });
-
-        return {
-            promise: wrappedPromise,
-            cancel() {
-                hasCanceled_ = true;
-            },
-        };
+    return {
+      promise: wrappedPromise,
+      cancel() {
+        hasCanceled_ = true
+      },
     }
+  },
 }
