@@ -177,7 +177,8 @@
              "fields" : {
                 "lowercase" : {
                 "type": "text",
-                "analyzer" : "lowercase_analyzer"
+                "analyzer" : "lowercase_analyzer",
+                "boost": 2
               }
             }
           }
@@ -191,7 +192,8 @@
                "fields" : {
                   "lowercase" : {
                   "type": "text",
-                  "analyzer" : "lowercase_analyzer"
+                  "analyzer" : "lowercase_analyzer",
+                  "boost": 2
                 }
               }
             }
@@ -203,9 +205,21 @@
           "fields" : {
             "lowercase" : {
               "type": "text",
-              "analyzer" : "lowercase_analyzer"
+              "analyzer" : "lowercase_analyzer",
+              "boost": 2
             }
           }
-       }
+       },
+       "fv-word:part_of_speech" : {
+           "type" : "keyword",
+           "copy_to" : "all_field",
+           "fields" : {
+             "lowercase" : {
+               "type": "text",
+               "analyzer" : "fulltext",
+               "boost": 2
+             }
+           }
+        }
     }
 }
