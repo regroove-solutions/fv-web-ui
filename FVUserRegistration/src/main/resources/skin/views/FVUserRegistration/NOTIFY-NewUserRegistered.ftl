@@ -11,7 +11,7 @@ In their registration they specified that they are part of your FirstVoices lang
 
 <p>
     If you are expecting this registration, you may want to promote them to an active role in your community portal by going here:<br/>
-    <a href="${siteURL}/app/tasks/users/${dialectId}">${siteURL}/app/tasks/users/${dialectId}</a> (Note: you must be logged in to perform that action)
+    <a href="${appURL}/tasks/users/${dialectId}">${appURL}/tasks/users/${dialectId}</a> (Note: you must be logged in to perform that action)
 </p>
 
 <p>You can also connect with them directly here ${email} or choose to ignore this email.</p>

@@ -29,6 +29,7 @@ String productVersion = Framework.getProperty(Environment.PRODUCT_VERSION);
 String testerName = Framework.getProperty("org.nuxeo.ecm.tester.name");
 boolean isTesting = "Nuxeo-Selenium-Tester".equals(testerName);
 String context = request.getContextPath();
+String fvContext = Framework.getProperty("fv.contextPath");
 
 HttpSession httpSession = request.getSession(false);
 if (httpSession!=null && httpSession.getAttribute(NXAuthConstants.USERIDENT_KEY)!=null) {
@@ -69,6 +70,8 @@ String muted = screenConfig.getVideoMuted() ? "muted " : "";
 String loop = screenConfig.getVideoLoop() ? "loop " : "";
 String NUXEO_URL = VirtualHostHelper.getBaseURL(request);
 boolean displayMobileBanner = !"false".equals(request.getParameter("displayMobileBanner"));
+
+String urlWithContext =  fvContext.equals("") ? "" : ( NUXEO_URL + fvContext);
 %>
 
 <html>
@@ -243,7 +246,7 @@ if (selectedLanguage != null) { %>
         <% if (selectedLanguage != null) { %>
         <input type="hidden" name="language" id="language" value="<%= selectedLanguage %>" />
         <% } %>
-        <input type="hidden" name="requestedUrl" id="requestedUrl" value="${fn:escapeXml(param.requestedUrl == "app/index.html"?"app":param.requestedUrl)}" />
+        <input type="hidden" name="requestedUrl" id="requestedUrl" value="${fn:escapeXml(param.requestedUrl == "'<%= fvContext %>'/index.html"?"'<%= fvContext %>'":param.requestedUrl)}" />
         <input type="hidden" name="forceAnonymousLogin" id="true" />
         <input type="hidden" name="form_submitted_marker" id="form_submitted_marker" />
         <input class="login_button" type="submit" name="Submit"
@@ -264,8 +267,8 @@ if (selectedLanguage != null) { %>
         <%}%>
       </form>
      <div style="text-align: center;padding: 20px 0 0 25px;margin-top: 20px;border-top:1px solid gray;">
-        <a href="<%=NUXEO_URL%>app/register?requestedUrl=app/register" class="buttonLink">New to FirstVoices? Register here!</a>
-        <a href="<%=NUXEO_URL%>app/forgotpassword?requestedUrl=app/forgotpassword" class="buttonLink">Forgot your password?</a>
+        <a href="<%=urlWithContext%>/register?requestedUrl=<%=fvContext%>/register" class="buttonLink">New to FirstVoices? Register here!</a>
+        <a href="<%=urlWithContext%>/forgotpassword?requestedUrl=<%=fvContext%>/forgotpassword" class="buttonLink">Forgot your password?</a>
       </div>
     </div>
 </div>
