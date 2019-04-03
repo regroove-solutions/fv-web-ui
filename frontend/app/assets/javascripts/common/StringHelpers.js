@@ -54,7 +54,9 @@ export default {
     }
 
     if (mode === CLEAN_ID) {
+      // Swap : to -
       _str = str.replace(/:/g, '-')
+      // Swap [] to empty string
       _str = _str.replace(/[[\]]/g, '')
     }
 
