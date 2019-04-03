@@ -27,9 +27,8 @@ const arrayPopImmutable = function(array, sizeToPop = 1) {
 const ContextPath = function() {
   if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
     return ''
-  } else {
-    return ConfGlobal.contextPath
   }
+  return ConfGlobal.contextPath
 }
 
 /**
@@ -59,20 +58,20 @@ export default {
   // If no NavigationFunc is provided, will return the path
   // Will add context path unless already provided
   navigate: function(path, navigationFunc, encodeLastPart = false) {
-    let pathArray = path.split('/')
+    const pathArray = path.split('/')
 
     if (encodeLastPart) {
       pathArray[pathArray.length - 1] = encodeURIComponent(pathArray[pathArray.length - 1])
     }
 
     // Only add context path if it doesn't exist
-    let transformedPath = path.indexOf(ContextPath()) === 0 ? pathArray.join('/') : ContextPath() + pathArray.join('/')
+    const transformedPath =
+      path.indexOf(ContextPath()) === 0 ? pathArray.join('/') : ContextPath() + pathArray.join('/')
 
     if (!navigationFunc) {
       return transformedPath
-    } else {
-      navigationFunc(transformedPath)
     }
+    navigationFunc(transformedPath)
   },
   // Navigate up by removing the last page from the URL
   navigateUp: function(currentPathArray, navigationFunc) {
@@ -110,12 +109,12 @@ export default {
   },
   // Method will lookup a path, based on id, in routes, and generate the correct path
   generateDynamicURL: function(routeId, routeParams, moreParams) {
-    let matchedRoute = ConfRoutes.find((route) => route && route.id && route.id == routeId)
+    const matchedRoute = ConfRoutes.find((route) => route && route.id && route.id == routeId)
 
-    let _params = Object.assign({}, DefaultRouteParams, routeParams, moreParams)
+    const _params = Object.assign({}, DefaultRouteParams, routeParams, moreParams)
 
     if (matchedRoute && matchedRoute.path) {
-      let outputPath = matchedRoute.path
+      const outputPath = matchedRoute.path
 
       matchedRoute.path.forEach((value, key) => {
         if (value instanceof paramMatch) {
@@ -129,14 +128,13 @@ export default {
       })
 
       return ContextPath() + '/' + matchedRoute.path.join('/')
-    } else {
-      // TODO: How do we fall back gracefully when no path is found?
     }
+    // TODO: How do we fall back gracefully when no path is found?
   },
   // Generate a UID link from a Nuxeo document path
   generateUIDPath: function(theme, item, pluralPathId) {
     let path = '/' + theme + selectn('path', item)
-    let type = selectn('type', item)
+    const type = selectn('type', item)
 
     switch (pluralPathId) {
       case 'words':

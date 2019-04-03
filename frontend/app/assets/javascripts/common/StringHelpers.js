@@ -17,6 +17,7 @@ import IntlService from 'views/services/intl'
 
 export const CLEAN_NXQL = 'NXQL'
 export const CLEAN_FULLTEXT = 'fulltext'
+export const CLEAN_ID = 'CLEAN_ID'
 
 export default {
   clean: (str, mode = CLEAN_NXQL) => {
@@ -50,6 +51,13 @@ export default {
 
       // Escape colon
       _str = decodeURIComponent(_str)
+    }
+
+    if (mode === CLEAN_ID) {
+      // Swap : to -
+      _str = str.replace(/:/g, '-')
+      // Swap [] to empty string
+      _str = _str.replace(/[[\]]/g, '')
     }
 
     return _str

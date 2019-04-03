@@ -6,9 +6,44 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "gulp build:production",
-    "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "development": "webpack --color --progress --mode development --config build/webpack.development.js",
-    "production": "webpack --color --progress --mode production --config build/webpack.production.js"
+    "lint-staged:eslint": "npx eslint --config .eslintrc --fix",
+    "lint-staged:prettier": "npx prettier --config .prettierrc --write",
+    "lint-staged:test": "jest --bail --findRelatedTests",
+    "production": "webpack --color --progress --mode production --config build/webpack.production.js",
+    "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
+    "test": "jest",
+    "test:update": "jest -u",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
+    "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3001 cy:run",
+    "test:watch": "jest --watch"
+  },
+  "lint-staged": {
+    "linters": {
+      "*.{json,css,md}": [
+        "npm run lint-staged:prettier",
+        "git add"
+      ],
+      "*.js": [
+        "npm run lint-staged:eslint",
+        "npm run lint-staged:prettier",
+        "npm run lint-staged:test",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "/build/",
+      "/cypress/",
+      "**/__tests__/"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "engines": {
     "node": ">=8.10"
@@ -69,7 +104,11 @@
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-react": "^7.0.0",
     "babel-eslint": "~10.0.1",
+    "babel-jest": "^24.3.0",
     "babel-loader": "~8.0.5",
+    "babel-plugin-dynamic-import-node": "^2.2.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-react-jsx-component-data-ids": "https://github.com/First-Peoples-Cultural-Council/babel-plugin-transform-react-jsx-component-data-ids.git",
     "babel-plugin-transform-react-jsx-location": "^0.2.0",
     "bootstrap-webpack": "0.0.3",
@@ -78,9 +117,13 @@
     "compression": "~1.4.1",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "~0.14.5",
+    "cypress": "^3.1.5",
+    "cypress-testing-library": "^2.3.6",
     "del": "~1.2.1",
-    "eslint": "^5.12.0",
-    "eslint-plugin-react": "^7.12.3",
+    "dom-testing-library": "^3.17.1",
+    "eslint": "^5.15.1",
+    "eslint-plugin-cypress": "^2.2.1",
+    "eslint-plugin-react": "^7.12.4",
     "expect": "^23.5.0",
     "expose-loader": "^0.7.1",
     "express": "~4.12.2",
@@ -88,16 +131,25 @@
     "git-revision-webpack-plugin": "^3.0.3",
     "happypack": "^5.0.1",
     "html-webpack-plugin": "^3.2.0",
+    "husky": "^1.3.1",
     "image-webpack-loader": "^4.2.0",
+    "jest": "^24.3.0",
+    "jest-axe": "^3.1.1",
+    "jest-dom": "^3.1.3",
     "json-loader": "~0.5.2",
     "jsx-loader": "~0.13.2",
     "less": "~2.5.1",
     "less-loader": "^4.1.0",
+    "lint-staged": "^8.1.5",
     "mini-css-extract-plugin": "^0.5.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
+    "prettier": "^1.16.4",
     "react-hot-loader": "~1.3.0",
+    "react-test-renderer": "^16.8.4",
+    "react-testing-library": "^6.0.0",
     "redux-devtools": "~3.1.1",
     "script-loader": "^0.7.2",
+    "start-server-and-test": "^1.7.11",
     "style-loader": "^0.23.1",
     "terser-webpack-plugin": "^1.2.2",
     "url-loader": "~0.5.6",

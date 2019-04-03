@@ -119,9 +119,9 @@ class CardView extends Component {
 
     const DEFAULT_LANGUAGE = this.props.defaultLanguage
 
-    let mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item)
-    let coverImage = selectn('url', mediumImage) || 'assets/images/cover.png'
-    let audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item)
+    const mediumImage = selectn('contextParameters.book.related_pictures[0].views[2]', this.props.item)
+    const coverImage = selectn('url', mediumImage) || 'assets/images/cover.png'
+    const audioObj = selectn('contextParameters.book.related_audio[0].path', this.props.item)
 
     if (audioObj) {
       const stateFunc = function(state) {
