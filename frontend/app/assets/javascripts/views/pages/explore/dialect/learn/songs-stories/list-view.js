@@ -182,7 +182,7 @@ class CardView extends Component {
           className="CardViewPopoverClose"
           style={{ position: 'absolute' }}
           iconClassName="material-icons"
-          onTouchTap={() => this.setState({ showIntro: false })}
+          onClick={() => this.setState({ showIntro: false })}
         >
           clear
         </IconButton>
@@ -195,7 +195,7 @@ class CardView extends Component {
                 <IconButton
                   style={{ verticalAlign: 'middle', padding: '0', width: '25px', height: '25px' }}
                   iconStyle={{ width: '25px', height: '25px' }}
-                  onTouchTap={audioCallback}
+                  onClick={audioCallback}
                 >
                   {audioIcon}
                 </IconButton>
@@ -218,18 +218,18 @@ class CardView extends Component {
     return (
       <div key={item.uid} className={CardClasses} style={this.props.style}>
         <div className="CardViewCard">
-          <div className="CardViewMediaContainer" onTouchTap={this.props.action.bind(this, item)}>
+          <div className="CardViewMediaContainer" onClick={this.props.action.bind(this, item)}>
             {cardImage}
           </div>
           <div className="CardViewCopy">
             <div className="CardViewTitles">
               <h2
                 className={classNames('CardViewTitle', 'fontAboriginalSans')}
-                onTouchTap={this.props.action.bind(this, item)}
+                onClick={this.props.action.bind(this, item)}
               >
                 {title}
               </h2>
-              <h3 className="CardViewSubtitle" onTouchTap={this.props.action.bind(this, item)}>
+              <h3 className="CardViewSubtitle" onClick={this.props.action.bind(this, item)}>
                 {subtitle}
               </h3>
             </div>
@@ -246,7 +246,7 @@ class CardView extends Component {
                     height: '24px',
                   }}
                   tooltipPosition="top-left"
-                  onTouchTap={() => this.setState({ showIntro: !this.state.showIntro })}
+                  onClick={() => this.setState({ showIntro: !this.state.showIntro })}
                   touch
                 >
                   flip_to_front

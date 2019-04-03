@@ -50,7 +50,7 @@ export default class PortalList extends Component {
   }
 
   render() {
-    let items = this.props.filteredItems || this.props.items
+    const items = this.props.filteredItems || this.props.items
 
     return (
       <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around' }}>
@@ -62,7 +62,7 @@ export default class PortalList extends Component {
           {items.map(
             function(tile, i) {
               // Switch roles
-              let dialectRoles = selectn('contextParameters.portal.roles', tile)
+              const dialectRoles = selectn('contextParameters.portal.roles', tile)
               //let roleDesc = '';
               let actionIcon = null
 
@@ -72,12 +72,12 @@ export default class PortalList extends Component {
               }
 
               // Dialect title
-              let title = selectn(this.props.fieldMapping.title, tile)
-              let logo = selectn(this.props.fieldMapping.logo, tile)
+              const title = selectn(this.props.fieldMapping.title, tile)
+              const logo = selectn(this.props.fieldMapping.logo, tile)
 
               return (
                 <GridTile
-                  onTouchTap={this.props.action.bind(this, tile.path.replace('/Portal', ''))}
+                  onClick={this.props.action.bind(this, tile.path.replace('/Portal', ''))}
                   key={tile.uid}
                   title={IntlService.instance.searchAndReplace(title)}
                   actionPosition="right"

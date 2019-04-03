@@ -212,7 +212,7 @@ export default class View extends Component {
               <RaisedButton
                 label={intl.trans('views.pages.explore.dialect.learn.songs_stories.close_book', 'Close Book', 'first')}
                 key="close"
-                onTouchTap={() => {
+                onClick={() => {
                   this.setState({ bookOpen: false })
                 }}
               />

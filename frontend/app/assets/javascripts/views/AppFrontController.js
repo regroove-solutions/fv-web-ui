@@ -504,7 +504,7 @@ export default class AppFrontController extends Component {
                     default: 'Dismiss',
                     case: 'words',
                   })}
-                  onTouchTap={() => this.setState({ warningsDismissed: true })}
+                  onClick={() => this.setState({ warningsDismissed: true })}
                 />
               </div>
             )

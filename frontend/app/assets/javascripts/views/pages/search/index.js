@@ -284,7 +284,7 @@ export class Search extends DataListView {
                       options={selectn('Search', options)}
                     />
                   </div>
-                  <RaisedButton onTouchTap={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
+                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
                   &nbsp;
                   <RaisedButton type="submit" label={intl.trans('search', 'Search', 'first')} primary />
                 </FiltersWithToggle>

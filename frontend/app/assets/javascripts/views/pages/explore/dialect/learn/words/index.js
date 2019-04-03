@@ -239,7 +239,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
                   'Create New Word',
                   'words'
                 )}
-                onTouchTap={this._onNavigateRequest.bind(this, 'create')}
+                onClick={this._onNavigateRequest.bind(this, 'create')}
                 primary
               />
             </AuthorizationFilter>

@@ -104,7 +104,7 @@ export default class ListView extends Component {
             <RaisedButton
               style={{ marginLeft: '15px' }}
               label={intl.trans('reset_order', 'Reset Order', 'words')}
-              onTouchTap={this._reset}
+              onClick={this._reset}
             />
           </div>
         ) : (
@@ -120,7 +120,7 @@ export default class ListView extends Component {
                   key="up"
                   label={intl.trans('move_up', 'move up', 'words')}
                   disabled={i == 0}
-                  onTouchTap={this._moveUp.bind(this, entry)}
+                  onClick={this._moveUp.bind(this, entry)}
                 />
               )
               entryControls.push(
@@ -128,7 +128,7 @@ export default class ListView extends Component {
                   key="down"
                   label={intl.trans('move_down', 'move down', 'words')}
                   disabled={i == this.state.items.size - 1}
-                  onTouchTap={this._moveDown.bind(this, entry)}
+                  onClick={this._moveDown.bind(this, entry)}
                 />
               )
             }

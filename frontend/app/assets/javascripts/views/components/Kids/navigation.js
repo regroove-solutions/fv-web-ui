@@ -174,10 +174,7 @@ export default class Navigation extends Component {
       <div className="Navigation">
         <AppBar
           title={
-            <a
-              style={{ textDecoration: 'none', color: '#fff' }}
-              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
-            >
+            <a style={{ textDecoration: 'none', color: '#fff' }} onClick={this._onNavigateRequest.bind(this, homeURL)}>
               {avatar}
               <span className="hidden-xs">
                 {(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
@@ -189,12 +186,13 @@ export default class Navigation extends Component {
           }
           iconClassNameRight="muidocs-icon-navigation-expand-more"
           showMenuIconButton={false}
+          // TODO: see about removing onRightIconButtonTouchTap
           onRightIconButtonTouchTap={() => this.props.toggleMenuAction('AppLeftNav')}
         >
           <ToolbarGroup style={{ paddingTop: '5px' }}>
             <IconButton
               className={classNames({ hidden: this.props.frontpage })}
-              onTouchTap={(e) => NavigationHelpers.navigateBack()}
+              onClick={(e) => NavigationHelpers.navigateBack()}
               style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
@@ -204,7 +202,7 @@ export default class Navigation extends Component {
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
+              onClick={this._onNavigateRequest.bind(this, homeURL)}
               style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
@@ -214,7 +212,7 @@ export default class Navigation extends Component {
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(
+              onClick={this._onNavigateRequest.bind(
                 this,
                 NavigationHelpers.generateStaticURL('/kids/FV/Workspaces/Data')
               )}
@@ -231,7 +229,7 @@ export default class Navigation extends Component {
             <IconButton
               style={{ paddingTop: 0, paddingRight: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
-              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/'))}
+              onClick={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/'))}
               tooltipPosition="bottom-left"
               tooltip={intl.trans('back_to_main_site', 'Back to Main Site', 'words')}
             >

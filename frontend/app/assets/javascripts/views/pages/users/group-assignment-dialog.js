@@ -186,13 +186,13 @@ export default class GroupAssignmentDialog extends Component {
           <FlatButton
             label={intl.trans('cancel', 'Cancel', 'first')}
             secondary={true}
-            onTouchTap={this.props.closeMethod}
+            onClick={this.props.closeMethod}
           />,
           <FlatButton
             label={intl.trans('submit', 'Submit', 'first')}
             primary={true}
             keyboardFocused={true}
-            onTouchTap={this._onRequestSaveForm}
+            onClick={this._onRequestSaveForm}
           />,
         ]}
         onRequestClose={this.props.closeMethod}

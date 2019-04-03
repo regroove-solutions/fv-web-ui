@@ -242,7 +242,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                   'Create New Phrase',
                   'words'
                 )}
-                onTouchTap={this._onNavigateRequest.bind(this, 'create')}
+                onClick={this._onNavigateRequest.bind(this, 'create')}
                 primary
               />
             </AuthorizationFilter>

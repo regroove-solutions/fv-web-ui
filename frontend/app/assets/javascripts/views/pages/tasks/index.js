@@ -235,7 +235,7 @@ export default class Tasks extends React.Component {
         let tableRow = (
           <TableRow key={i}>
             <TableRowColumn>
-              <a onTouchTap={this._handleOpen.bind(this, task.docref)}>{task.documentTitle}</a>
+              <a onClick={this._handleOpen.bind(this, task.docref)}>{task.documentTitle}</a>
             </TableRowColumn>
             <TableRowColumn>
               <span>{intl.searchAndReplace(task.name)}</span>
@@ -244,13 +244,13 @@ export default class Tasks extends React.Component {
               <RaisedButton
                 label={intl.trans('approve', 'Approve', 'first')}
                 secondary={true}
-                onTouchTap={this._handleTaskActions.bind(this, task.id, 'approve')}
+                onClick={this._handleTaskActions.bind(this, task.id, 'approve')}
               />{' '}
               &nbsp;
               <RaisedButton
                 label={intl.trans('reject', 'Reject', 'first')}
                 secondary={true}
-                onTouchTap={this._handleTaskActions.bind(this, task.id, 'reject')}
+                onClick={this._handleTaskActions.bind(this, task.id, 'reject')}
               />
             </TableRowColumn>
             <TableRowColumn>{task.dueDate}</TableRowColumn>

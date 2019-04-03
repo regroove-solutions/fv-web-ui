@@ -323,7 +323,7 @@ export default class HangmanGame extends Component {
         <div style={{ margin: '15px 0' }}>
           <RaisedButton
             secondary={true}
-            onTouchTap={this.props.newPuzzle}
+            onClick={this.props.newPuzzle}
             label={intl.trans('views.pages.explore.dialect.play.hangman.new_puzzle', 'New Puzzle', 'words')}
             style={{ marginRight: '10px' }}
           />

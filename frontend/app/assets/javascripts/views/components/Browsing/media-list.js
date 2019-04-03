@@ -87,7 +87,7 @@ export default class MediaList extends Component {
   render() {
     let fileTypeCellHeight = this.props.cellHeight
     let fileTypeTilePosition = 'bottom'
-    let items = this.props.filteredItems || this.props.items
+    const items = this.props.filteredItems || this.props.items
 
     switch (this.props.type) {
       case 'FVAudio':
@@ -134,7 +134,7 @@ export default class MediaList extends Component {
 
               return (
                 <GridTile
-                  onTouchTap={action.bind(this, tile)}
+                  onClick={action.bind(this, tile)}
                   key={tile.uid}
                   title={<a href={NavigationHelpers.generateUIDPath(this.props.theme, tile, 'media')}>{tile.title}</a>}
                   titlePosition={fileTypeTilePosition}

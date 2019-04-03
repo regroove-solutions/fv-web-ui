@@ -177,7 +177,7 @@ export default class PageHome extends Component {
                       }) + '!'
                     }
                     primary={true}
-                    onTouchTap={this._onNavigateRequest.bind(
+                    onClick={this._onNavigateRequest.bind(
                       this,
                       NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/')
                     )}
@@ -193,7 +193,7 @@ export default class PageHome extends Component {
                         default: 'Language Map',
                         case: 'words',
                       })}
-                      onTouchTap={() => this.setState({ mapVisible: !this.state.mapVisible })}
+                      onClick={() => this.setState({ mapVisible: !this.state.mapVisible })}
                     />
                   </div>
                 </div>

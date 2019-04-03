@@ -13,23 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react')
-var PubSub = require('pubsub-js')
+const React = require('react')
+const PubSub = require('pubsub-js')
 
-var _ = require('underscore')
+const _ = require('underscore')
 
-var classNames = require('classnames')
-var Mui = require('material-ui')
+const classNames = require('classnames')
+const Mui = require('material-ui')
 
-var { IconButton, RaisedButton, LinearProgress, Snackbar } = Mui
+const { IconButton, RaisedButton, LinearProgress, Snackbar } = Mui
 
-var ThemeManager = new Mui.Styles.ThemeManager()
+const ThemeManager = new Mui.Styles.ThemeManager()
 
-var WordOperations = require('operations/WordOperations')
+const WordOperations = require('operations/WordOperations')
 
-var Answer = require('./Answer')
+const Answer = require('./Answer')
 
-var loadingComponent = (
+const loadingComponent = (
   <div className={classNames('alert', 'alert-info', 'text-center')} role="alert">
     Loading...
   </div>
@@ -123,9 +123,9 @@ class Quiz extends React.Component {
   }
 
   displayAnswers(selectedAnswerKey = null) {
-    var selected = false
-    var tmpAnswers = []
-    var incorrectAnswers = _.without(_.shuffle(this.state.questions), this.state.currentAnswer)
+    const selected = false
+    const tmpAnswers = []
+    const incorrectAnswers = _.without(_.shuffle(this.state.questions), this.state.currentAnswer)
 
     // If question being displayed for the first time
     if (!(this.state.currentAnswerIndex in this.state.displayedAnswers)) {
@@ -139,14 +139,14 @@ class Quiz extends React.Component {
           />
         )
 
-        for (var i = 0; i < 3; i++) {
+        for (let i = 0; i < 3; i++) {
           tmpAnswers.push(
             <Answer key={incorrectAnswers[i].uid} selected={selected} data={incorrectAnswers[i]} correct="false" />
           )
         }
 
         var arrayvar = this.state.displayedAnswers.slice()
-        var newelement = _.shuffle(tmpAnswers)
+        const newelement = _.shuffle(tmpAnswers)
         arrayvar[this.state.currentAnswerIndex] = newelement
 
         this.setState({ displayedAnswers: arrayvar })
@@ -157,7 +157,7 @@ class Quiz extends React.Component {
       var arrayvar = this.state.displayedAnswers.slice()
 
       _.each(this.state.displayedAnswers[this.state.currentAnswerIndex], function(element, index, list) {
-        var selected = false
+        let selected = false
 
         if (element.key === selectedAnswerKey) {
           selected = true
@@ -173,7 +173,7 @@ class Quiz extends React.Component {
   }
 
   handleAnswerSelected(msg, data) {
-    var arrayvar = this.state.selectedAnswers.slice()
+    const arrayvar = this.state.selectedAnswers.slice()
     arrayvar[this.state.currentAnswerIndex] = data
 
     this.setState({ selectedAnswers: arrayvar })
@@ -183,10 +183,10 @@ class Quiz extends React.Component {
   }
 
   checkAnswer() {
-    var correct = false
+    let correct = false
 
     // Build utility for this...
-    var arrayvar = this.state.checkedAnswers.slice()
+    const arrayvar = this.state.checkedAnswers.slice()
 
     if (this.state.selectedAnswers[this.state.currentAnswerIndex] == this.state.currentAnswer.uid) {
       correct = true
@@ -199,7 +199,7 @@ class Quiz extends React.Component {
   }
 
   handleNavigate(direction) {
-    var newIndex
+    let newIndex
 
     if (direction == 'next') newIndex = this.state.currentAnswerIndex + 1
     else newIndex = this.state.currentAnswerIndex - 1
@@ -240,7 +240,7 @@ class Quiz extends React.Component {
   }
 
   render() {
-    var main = this.state.correctAnswerMedia
+    let main = this.state.correctAnswerMedia
 
     if (this.state.questions.length == 0) {
       main = (
@@ -270,7 +270,7 @@ class Quiz extends React.Component {
         <div className={classNames('row', 'row-navigation')}>
           <div className={classNames('col-xs-2', 'text-left')}>
             <IconButton
-              onTouchTap={this.handleNavigate.bind(this, 'previous')}
+              onClick={this.handleNavigate.bind(this, 'previous')}
               iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')}
               tooltip="Previous Question"
             />
@@ -278,9 +278,9 @@ class Quiz extends React.Component {
           <div className={classNames('col-xs-8', 'text-center')}>
             <div>
               <RaisedButton
-                secondary={true}
+                secondary
                 disabled={this.state.currentAnswerIndex in this.state.selectedAnswers ? false : true}
-                onTouchTap={this.checkAnswer.bind(this)}
+                onClick={this.checkAnswer.bind(this)}
                 label="Check Answer"
               />
             </div>
@@ -298,7 +298,7 @@ class Quiz extends React.Component {
           </div>
           <div className={classNames('col-xs-2', 'text-right')}>
             <IconButton
-              onTouchTap={this.handleNavigate.bind(this, 'next')}
+              onClick={this.handleNavigate.bind(this, 'next')}
               iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')}
               tooltip="Next Question"
             />

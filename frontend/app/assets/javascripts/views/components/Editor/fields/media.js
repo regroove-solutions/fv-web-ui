@@ -27,7 +27,7 @@ function renderInput(locals) {
   }
 
   const onCancel = function() {
-    let initialValue = selectn('context.initialValues.' + locals.attrs.name, locals)
+    const initialValue = selectn('context.initialValues.' + locals.attrs.name, locals)
 
     if (initialValue) locals.onChange(initialValue)
   }
@@ -38,7 +38,7 @@ function renderInput(locals) {
         id={locals.value}
         expandedValue={selectn(locals.value, expandedValues)}
         type={locals.type}
-        crop={true}
+        crop
         tagStyles={locals.type == 'FVPicture' ? { height: '200px' } : null}
       />
       <FlatButton
@@ -54,7 +54,7 @@ function renderInput(locals) {
           borderTop: 0,
           borderRight: 0,
         }}
-        onTouchTap={_onRequestEdit}
+        onClick={_onRequestEdit}
         label={intl.trans('replace', 'Replace', 'first')}
         labelPosition="after"
       >
@@ -81,7 +81,7 @@ function renderInput(locals) {
           dialect={locals.context}
         />
         {selectn('context.initialValues.' + locals.attrs.name, locals) ? (
-          <FlatButton onTouchTap={onCancel} label={intl.trans('cancel', 'Cancel', 'first')} />
+          <FlatButton onClick={onCancel} label={intl.trans('cancel', 'Cancel', 'first')} />
         ) : (
           ''
         )}

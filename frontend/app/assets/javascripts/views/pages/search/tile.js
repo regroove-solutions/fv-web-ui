@@ -190,7 +190,7 @@ export default class SearchResultTile extends Component {
           <a
             href={targetPath}
             className="SearchResultTileTitle fontAboriginalSans"
-            //onTouchTap={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null}
+            //onClick={(typeof this.props.action === "function") ? this.props.action.bind(this, targetPath) : null}
           >
             {title}
             <small className="SearchResultTileTitleType">[{SearchResultTileTitleType}]</small>

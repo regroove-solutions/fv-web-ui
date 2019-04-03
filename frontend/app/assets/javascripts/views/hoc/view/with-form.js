@@ -61,7 +61,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
       // Prevent default behaviour
       e.preventDefault()
 
-      let formValue = this.refs['form_' + this.props.type].getValue()
+      const formValue = this.refs['form_' + this.props.type].getValue()
 
       // Passed validation
       if (formValue) {
@@ -95,14 +95,14 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
 
     componentWillReceiveProps(nextProps) {
       if (this.state.saved) {
-        let currentWord = this._getComputeItem(this.props)
-        let nextWord = this._getComputeItem(nextProps)
+        const currentWord = this._getComputeItem(this.props)
+        const nextWord = this._getComputeItem(nextProps)
 
-        let currentWordWasUpdated = selectn('wasUpdated', currentWord)
-        let currentWordWasCreated = selectn('wasCreated', currentWord)
+        const currentWordWasUpdated = selectn('wasUpdated', currentWord)
+        const currentWordWasCreated = selectn('wasCreated', currentWord)
 
-        let nextWordWasUpdated = selectn('wasUpdated', nextWord)
-        let nextWordWasCreated = selectn('wasCreated', nextWord)
+        const nextWordWasUpdated = selectn('wasUpdated', nextWord)
+        const nextWordWasCreated = selectn('wasCreated', nextWord)
 
         // 'Redirect' on update or creation success
         if (
@@ -126,18 +126,18 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
       return (
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-9')}>
-            <ComposedFilter renderOnError={true} {...this.props} {...this.state}>
+            <ComposedFilter renderOnError {...this.props} {...this.state}>
               <div className="form-horizontal" style={{ padding: '0 15px' }}>
                 <form onSubmit={this._onRequestSaveForm.bind(this, computeItem)}>
                   <div className="form-group" style={{ textAlign: 'right' }}>
                     <FlatButton
-                      onTouchTap={this._onRequestCancelForm}
+                      onClick={this._onRequestCancelForm}
                       style={{ marginRight: '10px' }}
                       label={intl.trans('cancel', 'Cancel', 'first')}
                     />
                     <RaisedButton
-                      onTouchTap={this._onRequestSaveForm.bind(this, computeItem)}
-                      primary={true}
+                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      primary
                       label={intl.trans('save', 'Save', 'first')}
                     />
                   </div>
@@ -156,13 +156,13 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
 
                   <div className="form-group" style={{ textAlign: 'right' }}>
                     <FlatButton
-                      onTouchTap={this._onRequestCancelForm}
+                      onClick={this._onRequestCancelForm}
                       style={{ marginRight: '10px' }}
                       label={intl.trans('cancel', 'Cancel', 'first')}
                     />
                     <RaisedButton
-                      onTouchTap={this._onRequestSaveForm.bind(this, computeItem)}
-                      primary={true}
+                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      primary
                       label={intl.trans('save', 'Save', 'first')}
                     />
 
@@ -185,12 +185,12 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                         />
                         <FlatButton
                           style={confirmationButtonsStyle}
-                          onTouchTap={this._onRequestCancelForm.bind(this, true)}
+                          onClick={this._onRequestCancelForm.bind(this, true)}
                           label={intl.trans('yes', 'Yes', 'first') + '!'}
                         />
                         <FlatButton
                           style={confirmationButtonsStyle}
-                          onTouchTap={() => this.setState({ showCancelWarning: false })}
+                          onClick={() => this.setState({ showCancelWarning: false })}
                           label={intl.trans('no', 'No', 'first') + '!'}
                         />
                       </div>

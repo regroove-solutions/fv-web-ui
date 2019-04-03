@@ -65,7 +65,7 @@ export default class CardView extends Component {
 
     coverImage = coverImage || { url: 'assets/images/cover.png' }
 
-    let introduction = this.props.introduction ? React.cloneElement(this.props.introduction, { ...this.props }) : ''
+    const introduction = this.props.introduction ? React.cloneElement(this.props.introduction, { ...this.props }) : ''
 
     return (
       <div
@@ -111,7 +111,7 @@ export default class CardView extends Component {
               <IconButton
                 iconClassName="material-icons"
                 style={{ position: 'absolute', right: 0, zIndex: 1000 }}
-                onTouchTap={() => this.setState({ showIntro: false })}
+                onClick={() => this.setState({ showIntro: false })}
               >
                 clear
               </IconButton>
@@ -122,8 +122,8 @@ export default class CardView extends Component {
 
           <CardText style={{ padding: '4px' }}>
             <FlatButton
-              onTouchTap={this.props.action.bind(this, this.props.item)}
-              primary={true}
+              onClick={this.props.action.bind(this, this.props.item)}
+              primary
               label={this.intl.translate({
                 key: 'views.pages.dialect.learn.songs_stories.continue_to_entry',
                 default: 'Continue to Entry',
@@ -144,8 +144,8 @@ export default class CardView extends Component {
                       float: 'right',
                     }}
                     tooltipPosition="top-left"
-                    onTouchTap={() => this.setState({ showIntro: !this.state.showIntro })}
-                    touch={true}
+                    onClick={() => this.setState({ showIntro: !this.state.showIntro })}
+                    touch
                   >
                     flip_to_front
                   </IconButton>

@@ -120,7 +120,7 @@ class Cover extends Component {
                 style={{ marginRight: '10px' }}
                 primary
                 label="Open Book"
-                onTouchTap={this.props.openBookAction}
+                onClick={this.props.openBookAction}
                 icon={<ActionLaunch />}
               />
             ) : (
@@ -196,7 +196,7 @@ class Page extends Component {
             {this.props.editAction ? (
               <RaisedButton
                 label={intl.trans('edit', 'Edit', 'first')}
-                onTouchTap={this.props.editAction.bind(this, this.props.entry)}
+                onClick={this.props.editAction.bind(this, this.props.entry)}
               />
             ) : (
               ''

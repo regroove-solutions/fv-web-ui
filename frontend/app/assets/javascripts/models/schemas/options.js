@@ -85,7 +85,7 @@ const RelatedMediaLayout = (locals) => (
   <div className="row" style={{ margin: '15px 0' }}>
     <fieldset>
       <legend>
-        {locals.label} <FlatButton label={locals.add.label} onTouchTap={locals.add.click} />
+        {locals.label} <FlatButton label={locals.add.label} onClick={locals.add.click} />
       </legend>
       {(locals.items || []).map((item, i) => (
         <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
