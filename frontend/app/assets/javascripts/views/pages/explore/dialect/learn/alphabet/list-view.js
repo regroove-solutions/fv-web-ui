@@ -97,12 +97,11 @@ export default class ListView extends DataListView {
         {
           name: 'related_words',
           title: intl.trans('related_words', 'Related Words', 'words'),
-          render: (v, data, cellProps) => (
+          render: (v, data, cellProps) =>
             UIHelpers.renderComplexArrayRow(
               selectn('contextParameters.character.' + cellProps.name, data),
               (entry, i) => <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>
-            )
-          ),
+            ),
           sortName: 'fv:literal_translation/0/translation',
         },
         {
@@ -141,7 +140,7 @@ export default class ListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onNavigateRequest',
       '_onEntryNavigateRequest',
       '_handleRefetch',

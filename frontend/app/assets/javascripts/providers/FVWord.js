@@ -1,4 +1,4 @@
-import ConfGlobal from 'conf/local.json';
+import ConfGlobal from 'conf/local.json'
 
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'
@@ -36,13 +36,13 @@ const FV_WORDS_USER_CREATED_QUERY_ERROR = 'FV_WORDS_USER_CREATED_QUERY_ERROR'
 
 const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', {
   headers: {
-    'enrichers.document': 'ancestry,word,permissions'
+    'enrichers.document': 'ancestry,word,permissions',
   },
 })
 const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', {
   headers: {
     'enrichers.document': 'word',
-    'properties': 'dublincore, fv-word, fvcore, fvproxy',
+    properties: 'dublincore, fv-word, fvcore, fvproxy',
   },
 })
 const createWord = RESTActions.create('FV_WORD', 'FVWord', {
@@ -118,13 +118,13 @@ const fetchWordsAll = (path, type) => {
 
 const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:modified&sortOrder=DESC&pageSize=4',
-  headers: { 'properties': 'dublincore' },
+  headers: { properties: 'dublincore' },
 })
 const computeRecentlyModifiedWordsQuery = RESTReducers.computeQuery('modified_words')
 
 const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:created&sortOrder=DESC&pageSize=4',
-  headers: { 'properties': 'dublincore' },
+  headers: { properties: 'dublincore' },
 })
 const computeRecentlyCreatedWordsQuery = RESTReducers.computeQuery('created_words')
 
@@ -136,7 +136,7 @@ const queryUserModifiedWords = (pathOrId, user) => {
       pathOrId,
       'FVWord',
       " AND dc:lastContributor='" + user + "'&sortBy=dc:modified&sortOrder=DESC&pageSize=4",
-      { 'properties': 'dublincore' }
+      { properties: 'dublincore' }
     )
       .then((response) => {
         dispatch({ type: FV_WORDS_USER_MODIFIED_QUERY_SUCCESS, document: response })
@@ -155,7 +155,7 @@ const queryUserCreatedWords = (pathOrId, user) => {
       pathOrId,
       'FVWord',
       " AND dc:lastContributor='" + user + "'&sortBy=dc:created&sortOrder=DESC&pageSize=4",
-      { 'properties': 'dublincore' }
+      { properties: 'dublincore' }
     )
       .then((response) => {
         dispatch({ type: FV_WORDS_USER_CREATED_QUERY_SUCCESS, document: response })
@@ -341,17 +341,20 @@ const reducers = {
 }
 
 const mockRequest = {
-  "createWord": {
-      // args PathOrId + type of document
-      "args": [ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.dialectPath + '/Dictionary', {
+  createWord: {
+    // args PathOrId + type of document
+    args: [
+      ConfGlobal.testData.sectionOrWorkspaces + ConfGlobal.testData.dialectPath + '/Dictionary',
+      {
         type: 'FVWord',
         name: ConfGlobal.testData.word.name + Date.now().toString(),
-        properties: ConfGlobal.testData.word.properties
-    }],
-      "evaluateResults": function (response) { 
-          return response.type == "FVDialect" && response.properties != null;
-      }
-  }
+        properties: ConfGlobal.testData.word.properties,
+      },
+    ],
+    evaluateResults: function(response) {
+      return response.type == 'FVDialect' && response.properties != null
+    },
+  },
 }
 
 const middleware = [thunk]

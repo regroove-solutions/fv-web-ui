@@ -139,7 +139,6 @@ class Page extends Component {
 
     // Audio
     const audios = []
-
     ;(selectn('contextParameters.book.related_audio', this.props.entry) || []).map(function(audio, key) {
       audios.push(<Preview minimal key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />)
     })
@@ -219,7 +218,6 @@ export default class View extends Component {
     // Photos
     const photos = []
     const photosThumbnails = []
-
     ;(selectn('contextParameters.book.related_pictures', this.props.entry) || []).map(function(picture, key) {
       const image = {
         original: selectn('views[2].url', picture),
@@ -243,7 +241,6 @@ export default class View extends Component {
     // Videos
     const videos = []
     const videoThumbnails = []
-
     ;(selectn('contextParameters.book.related_videos', this.props.entry) || []).map(function(video, key) {
       const vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
@@ -266,7 +263,6 @@ export default class View extends Component {
 
     // Audio
     const audios = []
-
     ;(selectn('contextParameters.book.related_audio', this.props.entry) || []).map(function(audio, key) {
       audios.push(<Preview minimal key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />)
     })

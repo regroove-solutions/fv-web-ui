@@ -13,24 +13,23 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react');
-var _ = require('underscore');
-var t = require('tcomb-form');
-var Form = t.form.Form;
+var React = require('react')
+var _ = require('underscore')
+var t = require('tcomb-form')
+var Form = t.form.Form
 
-var classNames = require('classnames');
+var classNames = require('classnames')
 
-var Word = require('models/Word');
+var Word = require('models/Word')
 
-var DirectoryOperations = require('../../../operations/DirectoryOperations');
+var DirectoryOperations = require('../../../operations/DirectoryOperations')
 
 class CreateForm extends React.Component {
-
   constructor(props) {
-    super(props);
+    super(props)
 
-    this._change = this._change.bind(this);
-    this._save = this._save.bind(this);
+    this._change = this._change.bind(this)
+    this._save = this._save.bind(this)
     this.state = {
       schema: null,
       options: {
@@ -38,110 +37,117 @@ class CreateForm extends React.Component {
         config: {
           horizontal: {
             md: [3, 9],
-            sm: [6, 6]
-          }
+            sm: [6, 6],
+          },
         },
         i18n: {
           add: 'New Item',
           down: '▼',
           remove: 'X',
           up: '▲',
-          optional: '(optional)'
-        }
+          optional: '(optional)',
+        },
       },
       word: props.word,
-    };
+    }
 
-    DirectoryOperations.getPartsOfSpeech(props.client).then((function(parts_speech_val){
-      this.setState({
-        schema: props.word.getFormSchema({parts_speech: parts_speech_val})
-      });
-    }).bind(this));
+    DirectoryOperations.getPartsOfSpeech(props.client).then(
+      function(parts_speech_val) {
+        this.setState({
+          schema: props.word.getFormSchema({ parts_speech: parts_speech_val }),
+        })
+      }.bind(this)
+    )
 
-    DirectoryOperations.getSubjects(props.client).then((function(subjects_val){
-      this.setState({
-        schema: props.word.getFormSchema({subjects: subjects_val})
-      });
-    }).bind(this));
+    DirectoryOperations.getSubjects(props.client).then(
+      function(subjects_val) {
+        this.setState({
+          schema: props.word.getFormSchema({ subjects: subjects_val }),
+        })
+      }.bind(this)
+    )
   }
 
   _change(value) {
-    this.setState({value});
+    this.setState({ value })
   }
 
   _save(evt) {
+    var client = this.props.client
+    var value = this.refs.form.getValue()
 
-    var client = this.props.client;
-    var value = this.refs.form.getValue();
-
-    var self = this;
+    var self = this
 
     if (value) {
+      client
+        .operation('Document.Create')
+        .params({
+          type: 'Word',
+          name: value['dc:title'],
+          properties: value,
+        })
+        .input('doc:/default-domain/workspaces/' + self.props.language)
+        .execute(function(error, doc) {
+          if (error) {
+            throw error
+          }
 
-      client.operation('Document.Create')
-       .params({
-         type: 'Word',
-         name: value['dc:title'],
-         properties: value
-       })
-       .input('doc:/default-domain/workspaces/' + self.props.language)
-       .execute(function(error, doc) {
-         if (error) {
-           throw error;
-         }
+          self.props.router.navigate('browse/word/' + doc.uid, { trigger: true })
+        })
+    }
 
-         self.props.router.navigate("browse/word/" + doc.uid , {trigger: true});
-       });
-   }
-
-   evt.preventDefault();    
+    evt.preventDefault()
   }
 
   render() {
+    var form = ''
 
-    var form = "";
-
-    if (this.state.schema != undefined){
-     form = <form onSubmit={this._save}>
-            <Form
-              ref="form"
-              options={this.state.options}
-              type={this.state.schema} 
-              value={this.state.value}
-              onChange={this._change} />
-              <button type="submit" className={classNames('btn', 'btn-primary')}>Save Changes</button>
-          </form>;
+    if (this.state.schema != undefined) {
+      form = (
+        <form onSubmit={this._save}>
+          <Form
+            ref="form"
+            options={this.state.options}
+            type={this.state.schema}
+            value={this.state.value}
+            onChange={this._change}
+          />
+          <button type="submit" className={classNames('btn', 'btn-primary')}>
+            Save Changes
+          </button>
+        </form>
+      )
     }
 
-    return (
-      <div className="form-horizontal">
-        {form}
-      </div>
-    );
+    return <div className="form-horizontal">{form}</div>
   }
 }
 
 class WordCreateView extends React.Component {
-
   constructor(props) {
-    super(props);
+    super(props)
 
-   this.state = {
-      word: new Word()
-   };
-
+    this.state = {
+      word: new Word(),
+    }
   }
 
   render() {
-
-    return <div>
-      <CreateForm client={this.props.client} router={this.props.router} word={this.state.word} language={this.props.language} />
-    </div>;
+    return (
+      <div>
+        <CreateForm
+          client={this.props.client}
+          router={this.props.router}
+          word={this.state.word}
+          language={this.props.language}
+        />
+      </div>
+    )
   }
 }
 
 WordCreateView.contextTypes = {
-  router: React.PropTypes.func
-};
+  router: React.PropTypes.func,
+}
 
-export default WordCreateView;
+export default WordCreateView

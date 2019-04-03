@@ -86,7 +86,8 @@ export class DirectoryList extends Component {
             ))}
           </SelectField>
         ) : (
-          <select data-testid={dataTestId} onChange={this._handleStandardSelectChange}>
+          <select onChange={this._handleStandardSelectChange} data-testid={dataTestId}>
+          {/* <select value={this.props.value} onChange={this._handleStandardSelectChange} data-testid={dataTestId}> */}
             {entries.map((entry) => (
               <option key={entry.value} value={entry.value}>
                 {entry.text}

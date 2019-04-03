@@ -13,94 +13,106 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
-import Immutable, {List, Map} from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
 
-import classNames from 'classnames';
-import ConfGlobal from 'conf/local.json';
-import selectn from 'selectn';
+import classNames from 'classnames'
+import ConfGlobal from 'conf/local.json'
+import selectn from 'selectn'
 
-import provide from 'react-redux-provide';
+import provide from 'react-redux-provide'
 
-import ProviderHelpers from 'common/ProviderHelpers';
+import ProviderHelpers from 'common/ProviderHelpers'
 
-import Paper from 'material-ui/lib/paper';
+import Paper from 'material-ui/lib/paper'
 
-import Toolbar from 'material-ui/lib/toolbar/toolbar';
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group';
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator';
-import RaisedButton from 'material-ui/lib/raised-button';
-import Toggle from 'material-ui/lib/toggle';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import IconButton from 'material-ui/lib/icon-button';
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import Toolbar from 'material-ui/lib/toolbar/toolbar'
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
+import RaisedButton from 'material-ui/lib/raised-button'
+import Toggle from 'material-ui/lib/toggle'
+import IconMenu from 'material-ui/lib/menus/icon-menu'
+import MenuItem from 'material-ui/lib/menus/menu-item'
+import IconButton from 'material-ui/lib/icon-button'
+import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
+import CircularProgress from 'material-ui/lib/circular-progress'
 
-import Tabs from 'material-ui/lib/tabs/tabs';
-import Tab from 'material-ui/lib/tabs/tab';
-import Statistics from 'views/components/Dashboard/Statistics';
+import Tabs from 'material-ui/lib/tabs/tabs'
+import Tab from 'material-ui/lib/tabs/tab'
+import Statistics from 'views/components/Dashboard/Statistics'
 
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter';
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
-import IntlService from 'views/services/intl';
+import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance;
+const intl = IntlService.instance
 
 @provide
 export default class PageStats extends Component {
+  static propTypes = {
+    windowPath: PropTypes.string.isRequired,
+    handleNavigateRequest: PropTypes.func,
+    computeDialectStats: PropTypes.object.isRequired,
+    dialectPath: PropTypes.string.isRequired,
+  }
 
-    static propTypes = {
-        windowPath: PropTypes.string.isRequired,
-        handleNavigateRequest: PropTypes.func,
-        computeDialectStats: PropTypes.object.isRequired,
-        dialectPath: PropTypes.string.isRequired
-    };
+  constructor(props, context) {
+    super(props, context)
+    ;[].forEach((method) => (this[method] = this[method].bind(this)))
+  }
 
-    constructor(props, context) {
-        super(props, context);
+  render() {
+    const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.dialectPath)
 
-        [].forEach((method => this[method] = this[method].bind(this)));
+    if (!selectn('response', computeDialectStats)) {
+      return <div>Loading...</div>
     }
 
-    render() {
-        const computeDialectStats = ProviderHelpers.getEntry(this.props.computeDialectStats, this.props.dialectPath);
+    return (
+      <Tabs>
+        <Tab label="Words" id="statisticsWords">
+          <Paper style={{ padding: '15px' }} zDepth={2}>
+            <Statistics
+              data={selectn('response', computeDialectStats)}
+              docType="words"
+              headerText={intl.trans('words', 'Words', 'first')}
+            />
+          </Paper>
+        </Tab>
 
-        if (!selectn('response', computeDialectStats)) {
-            return <div>Loading...</div>;
-        }
+        <Tab label="Phrases" id="statisticsPhrases">
+          <Paper style={{ padding: '15px' }} zDepth={2}>
+            <Statistics
+              data={selectn('response', computeDialectStats)}
+              docType="phrases"
+              headerText={intl.trans('phrases', 'Phrases', 'first')}
+            />
+          </Paper>
+        </Tab>
 
-        return <Tabs>
-            <Tab label="Words" id="statisticsWords">
-                <Paper style={{padding: '15px'}} zDepth={2}>
-                    <Statistics data={selectn('response', computeDialectStats)} docType="words"
-                                headerText={intl.trans('words', 'Words', 'first')}/>
-                </Paper>
-            </Tab>
+        <Tab label="Songs" id="statisticsSongs">
+          <Paper style={{ padding: '15px' }} zDepth={2}>
+            <Statistics
+              data={selectn('response', computeDialectStats)}
+              docType="songs"
+              headerText={intl.trans('songs', 'Songs', 'first')}
+            />
+          </Paper>
+        </Tab>
 
-            <Tab label="Phrases" id="statisticsPhrases">
-                <Paper style={{padding: '15px'}} zDepth={2}>
-                    <Statistics data={selectn('response', computeDialectStats)} docType="phrases"
-                                headerText={intl.trans('phrases', 'Phrases', 'first')}/>
-                </Paper>
-            </Tab>
+        <Tab label="Stories" id="statisticsStories">
+          <Paper style={{ padding: '15px' }} zDepth={2}>
+            <Statistics
+              data={selectn('response', computeDialectStats)}
+              docType="stories"
+              headerText={intl.trans('stories', 'Stories', 'first')}
+            />
+          </Paper>
+        </Tab>
+      </Tabs>
+    )
 
-            <Tab label="Songs" id="statisticsSongs">
-                <Paper style={{padding: '15px'}} zDepth={2}>
-                    <Statistics data={selectn('response', computeDialectStats)} docType="songs"
-                                headerText={intl.trans('songs', 'Songs', 'first')}/>
-                </Paper>
-            </Tab>
-
-            <Tab label="Stories" id="statisticsStories">
-                <Paper style={{padding: '15px'}} zDepth={2}>
-                    <Statistics data={selectn('response', computeDialectStats)} docType="stories"
-                                headerText={intl.trans('stories', 'Stories', 'first')}/>
-                </Paper>
-            </Tab>
-        </Tabs>;
-
-        /*return <Toolbar>
+    /*return <Toolbar>
 
                       <ToolbarGroup float="left">
 
@@ -210,5 +222,5 @@ export default class PageStats extends Component {
                       </ToolbarGroup>
 
                     </Toolbar>;*/
-    }
+  }
 }

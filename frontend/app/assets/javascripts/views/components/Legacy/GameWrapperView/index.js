@@ -13,47 +13,36 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react');
+var React = require('react')
 
-var Quiz = require('./Games/Quiz');
-var MultiQuiz = require('./Games/MultiQuiz');
+var Quiz = require('./Games/Quiz')
+var MultiQuiz = require('./Games/MultiQuiz')
 
 class GameWrapperView extends React.Component {
-
   constructor(props) {
-    super(props);
+    super(props)
 
-    this.state = {};
+    this.state = {}
   }
 
   render() {
+    var label,
+      content = ''
 
-    var label, content ="";
-
-    switch (this.props.game){
+    switch (this.props.game) {
       case 'quiz':
-        label = "Single Photo Quiz";
-        content = <Quiz
-                    client={this.props.client}
-                    category={this.props.category} 
-                    language={this.props.language} />;
-      break;
+        label = 'Single Photo Quiz'
+        content = <Quiz client={this.props.client} category={this.props.category} language={this.props.language} />
+        break
 
       case 'multi-quiz':
-        label = "Multiple Photo Quiz";
-        content = <MultiQuiz
-                    client={this.props.client}
-                    category={this.props.category} 
-                    language={this.props.language} />;
-      break;
+        label = 'Multiple Photo Quiz'
+        content = <MultiQuiz client={this.props.client} category={this.props.category} language={this.props.language} />
+        break
     }
 
-    return (
-      <div className="gameWrapperView">
-        {content}
-      </div>
-    );
+    return <div className="gameWrapperView">{content}</div>
   }
 }
 
-module.exports = GameWrapperView;
+module.exports = GameWrapperView

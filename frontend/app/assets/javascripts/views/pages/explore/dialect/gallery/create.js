@@ -60,7 +60,7 @@ export class PageDialectGalleryCreate extends Component {
 
     // Bind methods to 'this'
     // eslint-disable-next-line
-    ;["_onRequestSaveForm"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_onRequestSaveForm'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   fetchData(newProps) {

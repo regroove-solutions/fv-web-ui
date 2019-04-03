@@ -1,20 +1,20 @@
 // Middleware
-import thunk from "redux-thunk"
-import Request from "request"
+import thunk from 'redux-thunk'
+import Request from 'request'
 
 // Configuration
-import ConfGlobal from "conf/local.json"
+import ConfGlobal from 'conf/local.json'
 
 // Operations
-import BaseOperations from "operations/BaseOperations"
-import UserOperations from "operations/UserOperations"
+import BaseOperations from 'operations/BaseOperations'
+import UserOperations from 'operations/UserOperations'
 
 // Actions
-const CONNECT = "CONNECT"
+const CONNECT = 'CONNECT'
 
-const GET_CURRENT_USER_START = "GET_CURRENT_USER_START"
-const GET_CURRENT_USER_SUCCESS = "GET_CURRENT_USER_SUCCESS"
-const GET_CURRENT_USER_ERROR = "GET_CURRENT_USER_ERROR"
+const GET_CURRENT_USER_START = 'GET_CURRENT_USER_START'
+const GET_CURRENT_USER_SUCCESS = 'GET_CURRENT_USER_SUCCESS'
+const GET_CURRENT_USER_ERROR = 'GET_CURRENT_USER_ERROR'
 
 let isNewLoginValue = false
 
@@ -64,7 +64,7 @@ const reducers = {
       isFetching: false,
       response: {
         get: function() {
-          return ""
+          return ''
         },
       },
       success: false,

@@ -1,0 +1,24 @@
+<#escape x as x?xml>
+<?xml version="1.0"?>
+<component name="org.nuxeo.elasticsearch.fv.config">
+  <require>org.nuxeo.elasticsearch.defaultConfig</require>
+
+<!-- this is coming from https://github.com/nuxeo/nuxeo/blob/10.10/nuxeo-distribution/nuxeo-nxr-server/src/
+main/resources/templates/common-base/nxserver/config/elasticsearch-config.xml.nxftl -->
+  
+<extension target="org.nuxeo.elasticsearch.ElasticSearchComponent"
+    point="elasticSearchIndex">
+    <elasticSearchIndex name="${elasticsearch.indexName}" type="doc" repository="default">
+      <fetchFromSource>
+        <include>ecm:*</include>
+        <include>dc:*</include>
+        <exclude>ecm:binarytext</exclude>
+      </fetchFromSource>
+      <settings file="fv-elasticsearch-doc-settings.json" />
+      <mapping file="fv-elasticsearch-doc-mapping.json" />
+  
+  </elasticSearchIndex>
+  </extension>
+
+</component>
+</#escape>

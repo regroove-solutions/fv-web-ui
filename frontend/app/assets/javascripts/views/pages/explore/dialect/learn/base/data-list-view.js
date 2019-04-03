@@ -31,12 +31,12 @@ export default class DataListView extends Component {
 
     if (typeof this.fetchData === 'undefined') {
       // eslint-disable-next-line
-      console.warn("The `class` that `extends` `DataListView` must define a `fetchData` function")
+      console.warn('The `class` that `extends` `DataListView` must define a `fetchData` function')
     }
 
     if (typeof this._fetchListViewData === 'undefined') {
       // eslint-disable-next-line
-      console.warn("The `class` that `extends` `DataListView` must define a `_fetchListViewData` function")
+      console.warn('The `class` that `extends` `DataListView` must define a `_fetchListViewData` function')
     }
   }
 
@@ -60,13 +60,13 @@ export default class DataListView extends Component {
   // NOTE: The `class` that `extends` `DataListView` must define a `fetchData` function
   fetchData() {
     // eslint-disable-next-line
-    console.warn("The `class` that `extends` `DataListView` must define a `fetchData` function")
+    console.warn('The `class` that `extends` `DataListView` must define a `fetchData` function')
   }
 
   // NOTE: The `class` that `extends` `DataListView` must define a `_fetchListViewData` function
   _fetchListViewData() {
     // eslint-disable-next-line
-    console.warn("The `class` that `extends` `DataListView` must define a `_fetchListViewData` function")
+    console.warn('The `class` that `extends` `DataListView` must define a `_fetchListViewData` function')
   }
 
   // Fetch data on initial render

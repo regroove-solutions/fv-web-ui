@@ -115,7 +115,8 @@ export default class GridView extends Component {
                 }.bind(this)
 
                 audioIcon =
-                  decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audio ? (
+                  decodeURIComponent(selectn('src', this.state.nowPlaying)) !==
+                  NavigationHelpers.getBaseURL() + audio ? (
                     <AVPlayArrow color="white" />
                   ) : (
                     <AVStop color="white" />

@@ -13,14 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
+import React, { Component, PropTypes } from 'react'
 
-import classNames from "classnames"
-import selectn from "selectn"
+import classNames from 'classnames'
+import selectn from 'selectn'
 
-import ImageGallery from "react-image-gallery"
-import Preview from "views/components/Editor/Preview"
-import IntlService from "views/services/intl"
+import ImageGallery from 'react-image-gallery'
+import Preview from 'views/components/Editor/Preview'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 /**
@@ -42,12 +42,12 @@ export default class MediaPanel extends Component {
     const { label, items, type, minimal } = this.props
 
     return items.length === 0 ? null : (
-      <div className={classNames("row", "media-panel", "media-panel-" + type)}>
+      <div className={classNames('row', 'media-panel', 'media-panel-' + type)}>
         <div className="col-xs-12">
           {label && <h3>{label}</h3>}
           {items.length === 1 ? (
             <Preview
-              key={selectn("uid", items[0].object)}
+              key={selectn('uid', items[0].object)}
               expandedValue={items[0].object}
               type={type}
               minimal={minimal}
@@ -62,8 +62,8 @@ export default class MediaPanel extends Component {
                 return (
                   <div className="image-gallery-image">
                     <Preview
-                      key={selectn("id", item)}
-                      expandedValue={items[selectn("key", item)].object}
+                      key={selectn('id', item)}
+                      expandedValue={items[selectn('key', item)].object}
                       type={type}
                       minimal={minimal}
                     />

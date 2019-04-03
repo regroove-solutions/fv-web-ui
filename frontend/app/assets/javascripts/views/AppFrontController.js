@@ -1,63 +1,63 @@
-import React, { Component, PropTypes } from "react"
-import Immutable, { List } from "immutable"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List } from 'immutable'
 
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import classNames from "classnames"
+import classNames from 'classnames'
 
-import ConfGlobal from "conf/local.json"
-import ConfRoutes, { paramMatch } from "conf/routes"
+import ConfGlobal from 'conf/local.json'
+import ConfRoutes, { paramMatch } from 'conf/routes'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import UIHelpers from "common/UIHelpers"
-import StringHelpers from "common/StringHelpers"
-import AnalyticsHelpers from "common/AnalyticsHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
+import UIHelpers from 'common/UIHelpers'
+import StringHelpers from 'common/StringHelpers'
+import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
-import { Link } from "provide-page"
+import { Link } from 'provide-page'
 
-import FlatButton from "material-ui/lib/flat-button"
-import Navigation from "views/components/Navigation"
-import WorkspaceSwitcher from "views/components/Navigation/workspace-switcher"
-import KidsNavigation from "views/components/Kids/navigation"
-import Footer from "views/components/Navigation/Footer"
+import FlatButton from 'material-ui/lib/flat-button'
+import Navigation from 'views/components/Navigation'
+import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher'
+import KidsNavigation from 'views/components/Kids/navigation'
+import Footer from 'views/components/Navigation/Footer'
 
-import IntlService from "views/services/intl"
+import IntlService from 'views/services/intl'
 
-import { PageError } from "views/pages"
+import { PageError } from 'views/pages'
 
 const intl = IntlService.instance
 
 const PAGE_NOT_FOUND_TITLE =
-  "404 - " +
+  '404 - ' +
   intl.translate({
-    key: "errors.page_not_found",
-    default: "Page Not Found",
-    case: "first",
+    key: 'errors.page_not_found',
+    default: 'Page Not Found',
+    case: 'first',
   })
 
 const PAGE_NOT_FOUND_BODY = (
   <div>
     <p>
       {intl.translate({
-        key: "errors.report_via_feedback",
-        default: "Please report this error so that we can fix it",
-        case: "first",
+        key: 'errors.report_via_feedback',
+        default: 'Please report this error so that we can fix it',
+        case: 'first',
       })}
       .
     </p>
     <p>
       {intl.translate({
-        key: "errors.feedback_include_link",
-        default: "Include what link or action you took to get to this page",
+        key: 'errors.feedback_include_link',
+        default: 'Include what link or action you took to get to this page',
       })}
       .
     </p>
     <p>
       {intl.translate({
-        key: "thank_you!",
-        default: "Thank You!",
-        case: "words",
+        key: 'thank_you!',
+        default: 'Thank You!',
+        case: 'words',
       })}
     </p>
   </div>
@@ -74,11 +74,11 @@ class Redirecter extends Component {
 
   render() {
     return (
-      <div style={{ backgroundColor: "#fff", height: "100vh" }}>
+      <div style={{ backgroundColor: '#fff', height: '100vh' }}>
         {intl.translate({
-          key: "redirecting",
-          default: "Redirecting",
-          case: "first",
+          key: 'redirecting',
+          default: 'Redirecting',
+          case: 'first',
         })}
         ...
       </div>
@@ -89,10 +89,10 @@ class Redirecter extends Component {
 const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
   // Don't perform any redirect if these aren't available.
   if (
-    !selectn("success", computeLogin) ||
+    !selectn('success', computeLogin) ||
     !computeDialect2 ||
     !computeDialect2.get(0) ||
-    !computeDialect2.get(0).get("response")
+    !computeDialect2.get(0).get('response')
   ) {
     return false
   }
@@ -123,19 +123,17 @@ export default class AppFrontController extends Component {
     this.state = this._getInitialState()
 
     // Bind methods to 'this'
-    ;["_matchPath", "_route", "_updateTitle"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_matchPath', '_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   _getInitialState() {
     const routes = Immutable.fromJS(ConfRoutes)
-    let contextPath = ConfGlobal.contextPath.split("/").filter((v) => v != "");
+    let contextPath = ConfGlobal.contextPath.split('/').filter((v) => v != '')
 
     return {
       routes:
         contextPath && contextPath.length > 0
-          ? routes.map((route) =>
-              route ? route.set("path", List(contextPath).concat(route.get("path"))) : route
-            )
+          ? routes.map((route) => (route ? route.set('path', List(contextPath).concat(route.get('path'))) : route))
           : routes,
       matchedPage: null,
       matchedRouteParams: {},
@@ -154,30 +152,30 @@ export default class AppFrontController extends Component {
 
     if (
       this.state.matchedPage &&
-      this.state.matchedPage.has("title") &&
-      this.state.matchedPage.get("title") &&
-      this.state.matchedPage.get("title") !== document.title
+      this.state.matchedPage.has('title') &&
+      this.state.matchedPage.get('title') &&
+      this.state.matchedPage.get('title') !== document.title
     ) {
       const combinedRouteParams = Object.assign({}, this.state.matchedRouteParams, pageTitleParams)
 
-      title = this.state.matchedPage.get("title")
+      title = this.state.matchedPage.get('title')
       Object.keys(combinedRouteParams).forEach((route) => {
-        title = title.replace("{$" + route + "}", StringHelpers.toTitleCase(combinedRouteParams[route]))
+        title = title.replace('{$' + route + '}', StringHelpers.toTitleCase(combinedRouteParams[route]))
       })
 
-      title = title + " | " + this.props.properties.title
+      title = title + ' | ' + this.props.properties.title
     }
 
-    if (title.search(" | ") >= 0) {
+    if (title.search(' | ') >= 0) {
       const newTitle = []
 
-      const parts = title.split("|")
+      const parts = title.split('|')
 
       let i
       for (i in parts) {
         newTitle.push(intl.searchAndReplace(parts[i].trim()))
       }
-      title = newTitle.join(" | ")
+      title = newTitle.join(' | ')
     }
 
     document.title = title
@@ -197,45 +195,45 @@ export default class AppFrontController extends Component {
     const routes = routesOverride || this.state.routes
 
     routes.forEach((value) => {
-      const matchTest = this._matchPath(value.get("path"), pathArray)
-      const matchAlias = this._matchPath(value.get("alias"), pathArray)
+      const matchTest = this._matchPath(value.get('path'), pathArray)
+      const matchAlias = this._matchPath(value.get('alias'), pathArray)
 
       // If only the alias matched, redirect to the original path
       if (matchAlias.matched && !matchTest.matched) {
-        window.location.replace("/" + value.get("path").join())
+        window.location.replace('/' + value.get('path').join())
       }
 
       if (matchTest.matched) {
         const routeParams = matchTest.routeParams
 
         // Extract common paths from URL
-        if (value.has("extractPaths") && value.get("extractPaths")) {
-
-          let domainPathLocation = pathArray.indexOf(ConfGlobal.domain);
-          let dialectPathLocation = 5;
-          let languagePathLocation = 4;
-          let languageFamilyPathLocation = 3;
+        if (value.has('extractPaths') && value.get('extractPaths')) {
+          let domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
+          let dialectPathLocation = 5
+          let languagePathLocation = 4
+          let languageFamilyPathLocation = 3
 
           // If domain is specified in the URL, these are Nuxeo paths that can be extracted
           if (domainPathLocation != -1) {
-
             // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
             let nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
 
             if (nuxeoPath.length >= dialectPathLocation) {
               routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
-              routeParams.dialect_path = decodeURI("/" + nuxeoPath.slice(0, dialectPathLocation + 1).join("/"))
+              routeParams.dialect_path = decodeURI('/' + nuxeoPath.slice(0, dialectPathLocation + 1).join('/'))
             }
 
             if (nuxeoPath.length >= languagePathLocation) {
               routeParams.language_name = decodeURI(nuxeoPath[languagePathLocation])
-              routeParams.language_path = decodeURI("/" + nuxeoPath.slice(0, languagePathLocation + 1).join("/"))
+              routeParams.language_path = decodeURI('/' + nuxeoPath.slice(0, languagePathLocation + 1).join('/'))
             }
 
             if (nuxeoPath.length >= languageFamilyPathLocation) {
               routeParams.language_family_name = decodeURI(nuxeoPath[languageFamilyPathLocation])
-              routeParams.language_family_path = decodeURI("/" + nuxeoPath.slice(0, languageFamilyPathLocation + 1).join("/"))
-            }      
+              routeParams.language_family_path = decodeURI(
+                '/' + nuxeoPath.slice(0, languageFamilyPathLocation + 1).join('/')
+              )
+            }
           }
         }
 
@@ -250,21 +248,21 @@ export default class AppFrontController extends Component {
     // Match found
     if (matchedPage !== null) {
       // Redirect if required
-      if (matchedPage.has("redirects")) {
-        matchedPage.get("redirects").forEach((value) => {
-          if (value.get("condition")({ props: props })) {
+      if (matchedPage.has('redirects')) {
+        matchedPage.get('redirects').forEach((value) => {
+          if (value.get('condition')({ props: props })) {
             // Avoid invariant violations during rendering by setting temporary placeholder component as matched page, and 'redirecting' after mount.
             matchedPage = matchedPage.set(
-              "page",
+              'page',
               Immutable.fromJS(
                 React.createElement(
                   Redirecter,
                   {
                     redirect: () => {
-                      return props.replaceWindowPath(value.get("target")({ props: props }))
+                      return props.replaceWindowPath(value.get('target')({ props: props }))
                     },
                   },
-                  matchedPage.get("page")
+                  matchedPage.get('page')
                 )
               )
             )
@@ -275,23 +273,23 @@ export default class AppFrontController extends Component {
       }
 
       // Switch themes based on route params
-      if (matchedRouteParams.hasOwnProperty("theme")) {
+      if (matchedRouteParams.hasOwnProperty('theme')) {
         let newTheme = matchedRouteParams.theme
 
         // Switch to workspace theme if available
         if (
-          ((matchedRouteParams.hasOwnProperty("area") && matchedRouteParams.area === "Workspaces") ||
-            matchedPage.get("path").indexOf("Workspaces") !== -1) &&
-          matchedRouteParams.theme === "explore"
+          ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') ||
+            matchedPage.get('path').indexOf('Workspaces') !== -1) &&
+          matchedRouteParams.theme === 'explore'
         ) {
-          newTheme = "workspace"
+          newTheme = 'workspace'
         }
 
         if (props.properties.theme.id != newTheme) {
           props.changeTheme(newTheme)
         }
       } else {
-        props.changeTheme("default")
+        props.changeTheme('default')
       }
 
       const matchReturn = {
@@ -332,23 +330,23 @@ export default class AppFrontController extends Component {
     if (prevProps.windowPath !== this.props.windowPath) {
       // Track page view
       if (window.snowplow) {
-        window.snowplow("trackPageView")
+        window.snowplow('trackPageView')
       }
     }
 
-    if (selectn("computeLogin.isConnected", this.props) && selectn("computeLogin.isNewLogin", this.props)) {
-      let primary_dialect_path = selectn("primary_dialect_path", this.props.preferences)
+    if (selectn('computeLogin.isConnected', this.props) && selectn('computeLogin.isNewLogin', this.props)) {
+      let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences)
 
       if (primary_dialect_path && prevProps.preferences.primary_dialect_path === undefined) {
-        primary_dialect_path = "/explore" + primary_dialect_path
+        primary_dialect_path = '/explore' + primary_dialect_path
         this.props.pushWindowPath(primary_dialect_path)
       }
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const primary_dialect_path = selectn("primary_dialect_path", this.props.preferences)
-    const next_primary_dialect_path = selectn("primary_dialect_path", nextProps.preferences)
+    const primary_dialect_path = selectn('primary_dialect_path', this.props.preferences)
+    const next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences)
 
     // Re-route on window path change
     if (nextProps.windowPath !== this.props.windowPath) {
@@ -370,7 +368,7 @@ export default class AppFrontController extends Component {
       ProviderHelpers.isDialectPath(nextProps.windowPath) &&
       allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)
     ) {
-      window.location.href = nextProps.windowPath.replace("Workspaces", "sections")
+      window.location.href = nextProps.windowPath.replace('Workspaces', 'sections')
     }
   }
 
@@ -382,13 +380,13 @@ export default class AppFrontController extends Component {
         <div className="breadcrumbContainer row">
           <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
             {(() => {
-              const area = selectn("routeParams.area", reactElement.props)
+              const area = selectn('routeParams.area', reactElement.props)
 
               if (
                 area &&
-                selectn("isConnected", props.computeLogin) &&
-                matchedPage.get("disableWorkspaceSectionNav") !== true &&
-                !ProviderHelpers.isSiteMember(selectn("response.properties.groups", props.computeLogin))
+                selectn('isConnected', props.computeLogin) &&
+                matchedPage.get('disableWorkspaceSectionNav') !== true &&
+                !ProviderHelpers.isSiteMember(selectn('response.properties.groups', props.computeLogin))
               ) {
                 return <WorkspaceSwitcher area={area} />
               }
@@ -396,7 +394,7 @@ export default class AppFrontController extends Component {
           </div>
         </div>
 
-        <div className={"page-" + theme + "-theme"}>{reactElement}</div>
+        <div className={'page-' + theme + '-theme'}>{reactElement}</div>
       </div>
     )
   }
@@ -427,7 +425,7 @@ export default class AppFrontController extends Component {
       if (value instanceof RegExp) {
         return value.test(currentPathArray.get(key))
       } else if (value instanceof paramMatch) {
-        if (value.hasOwnProperty("matcher")) {
+        if (value.hasOwnProperty('matcher')) {
           const testMatch = value.matcher.test(currentPathArray.get(key))
 
           if (testMatch) {
@@ -447,37 +445,37 @@ export default class AppFrontController extends Component {
   render() {
     const { matchedPage, matchedRouteParams } = this.state
 
-    const isFrontPage = !matchedPage ? false : matchedPage.get("frontpage")
-    const hideNavigation = matchedPage && matchedPage.has("navigation") && matchedPage.get("navigation") === false
+    const isFrontPage = !matchedPage ? false : matchedPage.get('frontpage')
+    const hideNavigation = matchedPage && matchedPage.has('navigation') && matchedPage.get('navigation') === false
 
     let page
 
     let navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
-    const theme = matchedRouteParams.hasOwnProperty("theme") ? matchedRouteParams.theme : "default"
+    const theme = matchedRouteParams.hasOwnProperty('theme') ? matchedRouteParams.theme : 'default'
     const print = matchedPage
       ? matchedPage
-          .get("page")
-          .get("props")
-          .get("print") === true
+          .get('page')
+          .get('props')
+          .get('print') === true
       : false
 
-    let footer = <Footer className={"footer-" + theme + "-theme"} />
+    let footer = <Footer className={'footer-' + theme + '-theme'} />
 
-    const clonedElement = React.cloneElement(matchedPage.get("page").toJS(), { routeParams: matchedRouteParams })
+    const clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams })
 
     // For print view return page only
     if (print) {
-      return <div style={{ margin: "25px" }}>{clonedElement}</div>
+      return <div style={{ margin: '25px' }}>{clonedElement}</div>
     }
 
     // Remove breadcrumbs for Kids portal
     // TODO: Make more generic if additional themes are added in the future.
-    if (theme == "kids") {
+    if (theme == 'kids') {
       page = clonedElement
       navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
     } else {
       // Without breadcrumbs
-      if (matchedPage.get("breadcrumbs") === false) {
+      if (matchedPage.get('breadcrumbs') === false) {
         page = clonedElement
       } else {
         // With breadcrumbs
@@ -487,24 +485,24 @@ export default class AppFrontController extends Component {
 
     // Hide navigation
     if (hideNavigation) {
-      navigation = footer = ""
+      navigation = footer = ''
     }
 
     return (
       <div>
-        {(matchedPage && matchedPage.hasOwnProperty("warnings") ? matchedPage.get("warnings") : []).map((warning) => {
+        {(matchedPage && matchedPage.hasOwnProperty('warnings') ? matchedPage.get('warnings') : []).map((warning) => {
           if (this.props.warnings.hasOwnProperty(warning) && !this.state.warningsDismissed) {
             return (
               <div
-                style={{ position: "fixed", bottom: 0, zIndex: 99999 }}
-                className={classNames("alert", "alert-warning")}
+                style={{ position: 'fixed', bottom: 0, zIndex: 99999 }}
+                className={classNames('alert', 'alert-warning')}
               >
                 {selectn(warning, this.props.warnings)}
                 <FlatButton
                   label={intl.translate({
-                    key: "dismiss",
-                    default: "Dismiss",
-                    case: "words",
+                    key: 'dismiss',
+                    default: 'Dismiss',
+                    case: 'words',
                   })}
                   onTouchTap={() => this.setState({ warningsDismissed: true })}
                 />

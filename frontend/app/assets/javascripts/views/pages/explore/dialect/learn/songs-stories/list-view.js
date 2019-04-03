@@ -19,7 +19,6 @@ import selectn from 'selectn'
 
 import DOMPurify from 'dompurify'
 
-
 import UIHelpers from 'common/UIHelpers'
 import AVPlayArrow from 'material-ui/lib/svg-icons/av/play-arrow'
 import AVStop from 'material-ui/lib/svg-icons/av/stop'
@@ -141,7 +140,8 @@ class CardView extends Component {
         this.setState(state)
       }.bind(this)
 
-      const isStopped = decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audioObj
+      const isStopped =
+        decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audioObj
       audioIcon = isStopped ? (
         <AVPlayArrow style={{ marginRight: '10px' }} />
       ) : (
@@ -218,7 +218,9 @@ class CardView extends Component {
     return (
       <div key={item.uid} className={CardClasses} style={this.props.style}>
         <div className="CardViewCard">
-          <div className="CardViewMediaContainer" onTouchTap={this.props.action.bind(this, item)}>{cardImage}</div>
+          <div className="CardViewMediaContainer" onTouchTap={this.props.action.bind(this, item)}>
+            {cardImage}
+          </div>
           <div className="CardViewCopy">
             <div className="CardViewTitles">
               <h2 className={classNames('CardViewTitle', 'fontAboriginalSans')} onTouchTap={this.props.action.bind(this, item)}>{title}</h2>

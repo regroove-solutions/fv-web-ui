@@ -37,7 +37,12 @@ import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
 import NavigationHelpers from 'common/NavigationHelpers'
 import { SearchDialect } from 'views/components/SearchDialect'
-import { SEARCH_SORT_DEFAULT, SEARCH_BY_ALPHABET, SEARCH_BY_DEFAULT, SEARCH_BY_PHRASE_BOOK } from 'views/components/SearchDialect/constants'
+import {
+  SEARCH_SORT_DEFAULT,
+  SEARCH_BY_ALPHABET,
+  SEARCH_BY_DEFAULT,
+  SEARCH_BY_PHRASE_BOOK,
+} from 'views/components/SearchDialect/constants'
 
 const intl = IntlService.instance
 
@@ -247,7 +252,6 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
           <div
             className={classNames('col-xs-12', 'col-md-3', computePhraseBooksSize === 0 ? 'hidden' : null, 'PrintHide')}
           >
-
             <AlphabetListView
               dialect={selectn('response', computePortal)}
               handleClick={this.handleAlphabetClick}

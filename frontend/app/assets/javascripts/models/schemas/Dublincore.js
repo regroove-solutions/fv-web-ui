@@ -1,8 +1,8 @@
-import t from 'tcomb-form';
+import t from 'tcomb-form'
 
 const Dublincore = {
-    'dc:title': t.String,
-    'dc:description': t.maybe(t.String)
-};
+  'dc:title': t.String,
+  'dc:description': t.maybe(t.String),
+}
 
-export default Dublincore;
+export default Dublincore

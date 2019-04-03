@@ -13,18 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import { List } from "immutable"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import { List } from 'immutable'
+import selectn from 'selectn'
 
-import Colors from "material-ui/lib/styles/colors"
+import Colors from 'material-ui/lib/styles/colors'
 
-import ActionGrade from "material-ui/lib/svg-icons/action/grade"
-import provide from "react-redux-provide"
-import ProviderHelpers from "common/ProviderHelpers"
-import UIHelpers from "common/UIHelpers"
-import NavigationHelpers from "common/NavigationHelpers"
-import IntlService from "views/services/intl"
+import ActionGrade from 'material-ui/lib/svg-icons/action/grade'
+import provide from 'react-redux-provide'
+import ProviderHelpers from 'common/ProviderHelpers'
+import UIHelpers from 'common/UIHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 @provide
@@ -40,8 +40,8 @@ export default class PortalListDialects extends Component {
 
   static defaultProps = {
     fieldMapping: {
-      title: "properties.dc:title",
-      logo: "properties.file:content",
+      title: 'properties.dc:title',
+      logo: 'properties.file:content',
     },
     showOnlyUserDialects: false,
   }
@@ -54,26 +54,26 @@ export default class PortalListDialects extends Component {
     let items = this.props.filteredItems || this.props.items
 
     if (this.props.showOnlyUserDialects) {
-      items = items.filter((tile) => ProviderHelpers.isActiveRole(selectn("contextParameters.portal.roles", tile)))
+      items = items.filter((tile) => ProviderHelpers.isActiveRole(selectn('contextParameters.portal.roles', tile)))
     }
 
     return (
       <div className="DialectList">
         {items.map((tile, i) => {
           // Switch roles
-          const dialectRoles = selectn("contextParameters.portal.roles", tile)
+          const dialectRoles = selectn('contextParameters.portal.roles', tile)
           let actionIcon = null
 
           if (ProviderHelpers.isActiveRole(dialectRoles)) {
-            actionIcon = <ActionGrade style={{ margin: "0 15px" }} color={Colors.amber200} />
+            actionIcon = <ActionGrade style={{ margin: '0 15px' }} color={Colors.amber200} />
           }
 
           // Dialect title
-          const title = selectn("contextParameters.ancestry.dialect.dc:title", tile)
-          const logo = selectn("contextParameters.portal.fv-portal:logo", tile)
-          const dialectCoverImage = encodeURI(UIHelpers.getThumbnail(logo, "Medium"))
+          const title = selectn('contextParameters.ancestry.dialect.dc:title', tile)
+          const logo = selectn('contextParameters.portal.fv-portal:logo', tile)
+          const dialectCoverImage = encodeURI(UIHelpers.getThumbnail(logo, 'Medium'))
           const dialectDescription = IntlService.instance.searchAndReplace(tile.description) || null
-          const href = `/${this.props.theme}${tile.path.replace("/Portal", "")}`
+          const href = `/${this.props.theme}${tile.path.replace('/Portal', '')}`
 
           return (
             <a

@@ -13,72 +13,81 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component} from 'react';
-import selectn from 'selectn';
+import React, { Component } from 'react'
+import selectn from 'selectn'
 
-import NavigationHelpers from 'common/NavigationHelpers';
-import IntlService from "views/services/intl";
+import NavigationHelpers from 'common/NavigationHelpers'
+import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance;
+const intl = IntlService.instance
 
 export default class RecentActivityList extends Component {
+  constructor(props, context) {
+    super(props, context)
+  }
 
-    constructor(props, context) {
-        super(props, context);
+  // Convert timestamps in the format "2016-05-19T16:56:27.43Z" to "2016-05-19 16:56:27"
+  _formatDate(date) {
+    const dateString = date.slice(0, 10)
+    const timeString = date.slice(11, 19)
+    return dateString + ' ' + timeString
+  }
+
+  // Convert Nuxeo paths to webui links
+  _formatLink(object, docType) {
+    switch (docType) {
+      case 'word':
+        return NavigationHelpers.generateUIDPath(this.props.theme, object, 'words')
+        break
+
+      case 'phrase':
+        return NavigationHelpers.generateUIDPath(this.props.theme, object, 'phrases')
+        break
+
+      case 'song':
+        return NavigationHelpers.generateUIDPath(this.props.theme, object, 'songs')
+        break
+
+      case 'stories':
+        return NavigationHelpers.generateUIDPath(this.props.theme, object, 'stories')
+        break
+    }
+  }
+
+  render() {
+    if (this.props.data == undefined || this.props.data.entries == undefined) {
+      return (
+        <div>
+          Loading <strong>{this.props.title}</strong>
+          ...
+        </div>
+      )
     }
 
-    // Convert timestamps in the format "2016-05-19T16:56:27.43Z" to "2016-05-19 16:56:27"
-    _formatDate(date) {
-        const dateString = date.slice(0, 10);
-        const timeString = date.slice(11, 19);
-        return dateString + " " + timeString;
+    if (selectn('entries.length', this.props.data) === 0) {
+      return null
     }
 
-    // Convert Nuxeo paths to webui links
-    _formatLink(object, docType) {
-
-        switch (docType) {
-            case "word":
-                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'words');
-            break;
-
-            case "phrase":
-                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'phrases');
-            break;
-
-            case "song":
-                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'songs');
-            break;
-
-            case "stories":
-                return NavigationHelpers.generateUIDPath(this.props.theme, object, 'stories');
-            break;
-        }
-    }
-
-    render() {
-
-        if (this.props.data == undefined || this.props.data.entries == undefined) {
-            return <div>Loading <strong>{this.props.title}</strong>...</div>;
-        }
-
-        if (selectn('entries.length', this.props.data) === 0) {
-            return null;
-        }
-
-        return (
-            <div>
-                <h3 style={{margin: '0', padding: '10px 0', fontSize: '1.2em'}}>{this.props.title}</h3>
-                <ul>
-                    {this.props.data.entries.map((document, i) =>
-                        <li style={{padding: '0 0 5px 0'}} key={document['uid']}><a
-                            href={this._formatLink(document, this.props.docType)}>{document['title']}</a> <br/>
-                            {this._formatDate(document.properties['dc:modified'])} {(document.properties['dc:lastContributor'].indexOf("Administrator") != -1 || document.properties['dc:lastContributor'].indexOf("dyona") != -1) ? '' :
-                                <span>{intl.trans('by','by','lower')} <strong>{document.properties['dc:lastContributor']}</strong></span>}
-                        </li>
-                    )}
-                </ul>
-            </div>
-        );
-    }
+    return (
+      <div>
+        <h3 style={{ margin: '0', padding: '10px 0', fontSize: '1.2em' }}>{this.props.title}</h3>
+        <ul>
+          {this.props.data.entries.map((document, i) => (
+            <li style={{ padding: '0 0 5px 0' }} key={document['uid']}>
+              <a href={this._formatLink(document, this.props.docType)}>{document['title']}</a> <br />
+              {this._formatDate(document.properties['dc:modified'])}{' '}
+              {document.properties['dc:lastContributor'].indexOf('Administrator') != -1 ||
+              document.properties['dc:lastContributor'].indexOf('dyona') != -1 ? (
+                ''
+              ) : (
+                <span>
+                  {intl.trans('by', 'by', 'lower')} <strong>{document.properties['dc:lastContributor']}</strong>
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
 }

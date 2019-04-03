@@ -175,19 +175,21 @@ function getEntry(wordResults, path) {
   }
   return null
 }
-// function hasExtendedGroup(extendedGroups, group) {
-//   if (extendedGroups && extendedGroups.size > 0) {
-//     if (
-//       extendedGroups.findIndex(function extendedGroupsFindIndex(entry) {
-//         return entry.get('name') === group
-//       }) === -1
-//     ) {
-//       return false
-//     }
-//     return true
-//   }
-//   return false
-// }
+
+// TODO: confirm if this can be delted
+function hasExtendedGroup(extendedGroups, group) {
+  if (extendedGroups && extendedGroups.size > 0) {
+    if (
+      extendedGroups.findIndex(function extendedGroupsFindIndex(entry) {
+        return entry.get('name') === group
+      }) === -1
+    ) {
+      return false
+    }
+    return true
+  }
+  return false
+}
 
 function isActiveRole(roles) {
   if (roles && roles.length > 0) {
@@ -260,14 +262,8 @@ function isSiteMember(groups) {
 }
 
 function replaceAllWorkspaceSectionKeys(string, area) {
-  // const searchKey = area === 'sections' ? 'workspace' : 'section'
-  // const replaceKey = area === 'sections' ? 'section' : 'workspace'
-  let searchKey = 'section'
-  let replaceKey = 'workspace'
-  if (area === 'sections') {
-    searchKey = 'workspace'
-    replaceKey = 'section'
-  }
+  const searchKey = area === 'sections' ? 'workspace' : 'section'
+  const replaceKey = area === 'sections' ? 'section' : 'workspace'
   let _string = string
   for (const proxyKey in proxiesKeys) {
     _string = _string.replace(new RegExp(proxiesKeys[proxyKey][searchKey], 'g'), proxiesKeys[proxyKey][replaceKey])
@@ -324,7 +320,7 @@ export default {
   getEntry,
   getDialectGroups,
   getDialectPathFromURLArray,
-  // hasExtendedGroup,
+  hasExtendedGroup, // TODO: confirm if this can be delted
   isAdmin,
   isActiveRole,
   isDialectMember,
