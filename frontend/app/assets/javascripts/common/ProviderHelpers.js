@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import StringHelpers from './StringHelpers'
 import selectn from 'selectn'
 
@@ -51,8 +51,12 @@ const proxiesKeys = [
 // @action - the action to perform if nothing found in store.
 // @reducer - the reducer to look for
 function fetchIfMissing(key, action, reducer) {
-  if (!selectn('success', getEntry(reducer, key))) {
+  if (!selectn('success', getEntry(reducer, key)) && typeof action === 'function') {
     action(key)
+  } else {
+    // Note: temp
+    // eslint-disable-next-line
+    console.log('fetchIfMissing not provided with action()')
   }
 }
 
@@ -98,6 +102,16 @@ function filtersToNXQL(filterArray) {
   return nxqlFilterString + appendGroupNXQL
 }
 
+/*
+getDialectGroups()
+
+Input:
+  aces = [],
+  currentlyAssignedGroups = []
+Output:
+  - null
+  - {all, new}
+*/
 function getDialectGroups(aces = [], currentlyAssignedGroups = []) {
   if (aces.length === 0) {
     return {
@@ -112,10 +126,10 @@ function getDialectGroups(aces = [], currentlyAssignedGroups = []) {
   // Generate list of all groups related to this dialect
   const newAvailableGroups = {}
 
-  aces.forEach(function acesForEach(group, i) {
+  aces.forEach(function acesForEach(group) {
     const groupArray = group.username.split('_')
     if (group.username.match(/members|recorders|administrators/g) != null) {
-      const groupLabel = groupArray.map((group) => StringHelpers.toTitleCase(group)).join(' ')
+      const groupLabel = groupArray.map((_group) => StringHelpers.toTitleCase(_group)).join(' ')
 
       allAvailableGroups[group.username] = groupLabel
 
@@ -153,17 +167,16 @@ function getEntry(wordResults, path) {
   if (!wordResults || wordResults.isEmpty() || !path) {
     return null
   }
-
   const result = wordResults.find(function wordResultsFind(entry) {
     return entry.get('id') === path
   })
-
   if (result) {
     return result.toJS()
   }
-
   return null
 }
+
+// TODO: confirm if this can be delted
 function hasExtendedGroup(extendedGroups, group) {
   if (extendedGroups && extendedGroups.size > 0) {
     if (
@@ -195,6 +208,10 @@ function isActiveRole(roles) {
 
 /**
  * A site admin
+ *
+ * Returns:
+ * - boolean
+ * - undefined
  */
 function isAdmin(computeLogin) {
   const userGroups = selectn('response.properties.groups', computeLogin)
@@ -209,10 +226,9 @@ function isDialectMember(computeLogin, computeDialect) {
 
   let groupsToCheck = []
   if (computeDialect && computeDialect.size > 0) {
-    const dialect = computeDialect.get(0).get('response')
-
-    if (dialect && dialect != undefined) {
-      groupsToCheck = selectn('contextParameters.acls[0].aces', dialect).map((a) => a.username)
+    if (computeDialect.getIn(['0', 'response'])) {
+      const aces = computeDialect.getIn(['0', 'response', 'contextParameters', 'acls', '0', 'aces'], [])
+      groupsToCheck = aces.map((a) => a.username)
     }
   }
 
@@ -225,7 +241,7 @@ function isDialectMember(computeLogin, computeDialect) {
   return arrayIntersection.length >= 1
 }
 
-function isDialectPath(windowPath) {
+function isDialectPath(windowPath = '') {
   return windowPath.indexOf('/FV/Workspaces/Data/') !== -1
 }
 
@@ -246,14 +262,13 @@ function isSiteMember(groups) {
 }
 
 function replaceAllWorkspaceSectionKeys(string, area) {
-  const searchKey = area == 'sections' ? 'workspace' : 'section'
-  const replaceKey = area == 'sections' ? 'section' : 'workspace'
-
+  const searchKey = area === 'sections' ? 'workspace' : 'section'
+  const replaceKey = area === 'sections' ? 'section' : 'workspace'
+  let _string = string
   for (const proxyKey in proxiesKeys) {
-    string = string.replace(new RegExp(proxiesKeys[proxyKey][searchKey], 'g'), proxiesKeys[proxyKey][replaceKey])
+    _string = _string.replace(new RegExp(proxiesKeys[proxyKey][searchKey], 'g'), proxiesKeys[proxyKey][replaceKey])
   }
-
-  return string
+  return _string
 }
 
 function switchWorkspaceSectionKeys(workspaceKey, area) {
@@ -305,7 +320,7 @@ export default {
   getEntry,
   getDialectGroups,
   getDialectPathFromURLArray,
-  // hasExtendedGroup,
+  hasExtendedGroup, // TODO: confirm if this can be delted
   isAdmin,
   isActiveRole,
   isDialectMember,

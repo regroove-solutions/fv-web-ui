@@ -1,15 +1,14 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import t from 'tcomb-form'
 
 import DirectoryList from 'views/components/Editor/DirectoryList'
 import QueryList from 'views/components/Editor/QueryList'
 import DialectList from 'views/components/Editor/DialectList'
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
+// import IntlService from 'views/services/intl'
+// const intl = IntlService.instance
 
 function renderInput(locals) {
-  const onChange = function(value) {
+  const onChange = function onChange(value) {
     locals.onChange(value)
   }
 
@@ -24,6 +23,7 @@ function renderInput(locals) {
         onChange={onChange}
         fancy={locals.attrs.fancy}
         directory={locals.attrs.directory}
+        dataTestId={locals.attrs.name}
       />
     )
   }
@@ -43,7 +43,7 @@ function renderInput(locals) {
   }
 
   // Render dialect list
-  if (locals.attrs.query == 'dialect_list') {
+  if (locals.attrs.query === 'dialect_list') {
     list = (
       <DialectList
         label={locals.attrs.label}

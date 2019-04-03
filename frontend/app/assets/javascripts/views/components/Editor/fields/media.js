@@ -17,17 +17,17 @@ const intl = IntlService.instance
  * Define auto-suggest factory
  */
 function renderInput(locals) {
-  const _onRequestEdit = function(event) {
+  const _onRequestEdit = function _onRequestEdit() {
     locals.onChange(null)
   }
 
-  const onComplete = function(fullValue) {
+  const onComplete = function onComplete(fullValue) {
     locals.onChange(fullValue.uid)
     locals.setExpandedValue(fullValue, fullValue.uid)
   }
 
-  const onCancel = function() {
-    let initialValue = selectn('context.initialValues.' + locals.attrs.name, locals)
+  const onCancel = function onCancel() {
+    const initialValue = selectn('context.initialValues.' + locals.attrs.name, locals)
 
     if (initialValue) locals.onChange(initialValue)
   }
@@ -38,7 +38,7 @@ function renderInput(locals) {
         id={locals.value}
         expandedValue={selectn(locals.value, expandedValues)}
         type={locals.type}
-        crop={true}
+        crop
         tagStyles={locals.type == 'FVPicture' ? { height: '200px' } : null}
       />
       <FlatButton
@@ -70,13 +70,15 @@ function renderInput(locals) {
       <div>
         <AddMediaComponent
           type={locals.type}
-          label={intl.trans('views.components.editor.upload_new', 'Upload New')}
+          label={locals.labelAddMediaComponent || intl.trans('views.components.editor.upload_new', 'Upload New')}
           onComplete={onComplete}
           dialect={locals.context}
         />
         <SelectMediaComponent
           type={locals.type}
-          label={intl.trans('views.components.editor.browse_existing', 'Browse Existing')}
+          label={
+            locals.labelSelectMediaComponent || intl.trans('views.components.editor.browse_existing', 'Browse Existing')
+          }
           onComplete={onComplete}
           dialect={locals.context}
         />
@@ -125,8 +127,8 @@ export default class MediaFactory extends t.form.Textbox {
     locals.attrs = this.getAttrs()
     locals.setExpandedValue = this.setExpandedValue
     locals.attrs.expandedValue = this.state.expandedValue
-
-    return locals
+    const localsOptions = this.props.options.locals || {}
+    return { ...locals, ...localsOptions }
   }
 
   getTemplate() {
