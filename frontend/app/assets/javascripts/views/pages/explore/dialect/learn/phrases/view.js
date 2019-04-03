@@ -13,53 +13,53 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { List, Map } from "immutable"
-import classNames from "classnames"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
+import classNames from 'classnames'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import NavigationHelpers from "common/NavigationHelpers"
-import ProviderHelpers from "common/ProviderHelpers"
-import StringHelpers from "common/StringHelpers"
+import NavigationHelpers from 'common/NavigationHelpers'
+import ProviderHelpers from 'common/ProviderHelpers'
+import StringHelpers from 'common/StringHelpers'
 
-import Preview from "views/components/Editor/Preview"
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
-import MetadataPanel from "views/pages/explore/dialect/learn/base/metadata-panel"
-import MediaPanel from "views/pages/explore/dialect/learn/base/media-panel"
-import PageToolbar from "views/pages/explore/dialect/page-toolbar"
-import SubViewTranslation from "views/pages/explore/dialect/learn/base/subview-translation"
-import { getDialectClassname } from "views/pages/explore/dialect/helpers"
-import TextHeader from "views/components/Document/Typography/text-header"
+import Preview from 'views/components/Editor/Preview'
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
+import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
+import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
+import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
+import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
+import TextHeader from 'views/components/Document/Typography/text-header'
 
-import AuthorizationFilter from "views/components/Document/AuthorizationFilter"
+import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
-import Dialog from "material-ui/lib/dialog"
+import Dialog from 'material-ui/lib/dialog'
 
-import Avatar from "material-ui/lib/avatar"
-import FlatButton from "material-ui/lib/flat-button"
-import Divider from "material-ui/lib/divider"
+import Avatar from 'material-ui/lib/avatar'
+import FlatButton from 'material-ui/lib/flat-button'
+import Divider from 'material-ui/lib/divider'
 
-import ListUI from "material-ui/lib/lists/list"
-import ListItem from "material-ui/lib/lists/list-item"
+import ListUI from 'material-ui/lib/lists/list'
+import ListItem from 'material-ui/lib/lists/list-item'
 
-import Toolbar from "material-ui/lib/toolbar/toolbar"
-import ToolbarGroup from "material-ui/lib/toolbar/toolbar-group"
-import ToolbarSeparator from "material-ui/lib/toolbar/toolbar-separator"
-import FontIcon from "material-ui/lib/font-icon"
-import RaisedButton from "material-ui/lib/raised-button"
+import Toolbar from 'material-ui/lib/toolbar/toolbar'
+import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
+import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
+import FontIcon from 'material-ui/lib/font-icon'
+import RaisedButton from 'material-ui/lib/raised-button'
 
-import Tab from "material-ui/lib/tabs/tab"
+import Tab from 'material-ui/lib/tabs/tab'
 
-import CircularProgress from "material-ui/lib/circular-progress"
+import CircularProgress from 'material-ui/lib/circular-progress'
 
-import "!style-loader!css-loader!react-image-gallery/build/image-gallery.css"
+import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 
-import withActions from "views/hoc/view/with-actions"
-import IntlService from "views/services/intl"
+import withActions from 'views/hoc/view/with-actions'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 const DetailsViewWithActions = withActions(PromiseWrapper, true)
@@ -101,7 +101,7 @@ export default class View extends Component {
     }
 
     // Bind methods to 'this'
-    ;["_onNavigateRequest"].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_onNavigateRequest'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   fetchData(newProps) {
@@ -127,13 +127,13 @@ export default class View extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    let phrase = selectn("response", ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
-    let title = selectn("properties.dc:title", phrase)
-    let uid = selectn("uid", phrase)
+    let phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
+    let title = selectn('properties.dc:title', phrase)
+    let uid = selectn('uid', phrase)
 
-    if (title && selectn("pageTitleParams.phrase", this.props.properties) != title) {
+    if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
       this.props.changeTitleParams({ phrase: title })
-      this.props.overrideBreadcrumbs({ find: uid, replace: "pageTitleParams.phrase" })
+      this.props.overrideBreadcrumbs({ find: uid, replace: 'pageTitleParams.phrase' })
     }
   }
 
@@ -145,7 +145,7 @@ export default class View extends Component {
     if (StringHelpers.isUUID(props.routeParams.phrase)) {
       return props.routeParams.phrase
     } else {
-      return props.routeParams.dialect_path + "/Dictionary/" + StringHelpers.clean(props.routeParams.phrase)
+      return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase)
     }
   }
 
@@ -155,7 +155,7 @@ export default class View extends Component {
 
   render() {
     const tabItemStyles = {
-      userSelect: "none",
+      userSelect: 'none',
     }
 
     const computeEntities = Immutable.fromJS([
@@ -175,12 +175,11 @@ export default class View extends Component {
     // Photos
     let photos = []
     let photosThumbnails = []
-
-    ;(selectn("response.contextParameters.phrase.related_pictures", computePhrase) || []).map(function(picture, key) {
+    ;(selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
       let image = {
-        original: selectn("views[2].url", picture),
-        thumbnail: selectn("views[0].url", picture) || "assets/images/cover.png",
-        description: picture["dc:description"],
+        original: selectn('views[2].url', picture),
+        thumbnail: selectn('views[0].url', picture) || 'assets/images/cover.png',
+        description: picture['dc:description'],
         key: key,
         id: picture.uid,
         object: picture,
@@ -189,9 +188,9 @@ export default class View extends Component {
       photosThumbnails.push(
         <img
           key={picture.uid}
-          src={selectn("views[0].url", picture) || "assets/images/cover.png"}
-          alt={selectn("title", picture)}
-          style={{ margin: "15px", maxWidth: "150px" }}
+          src={selectn('views[0].url', picture) || 'assets/images/cover.png'}
+          alt={selectn('title', picture)}
+          style={{ margin: '15px', maxWidth: '150px' }}
         />
       )
     })
@@ -199,12 +198,11 @@ export default class View extends Component {
     // Videos
     let videos = []
     let videoThumbnails = []
-
-    ;(selectn("response.contextParameters.phrase.related_videos", computePhrase) || []).map(function(video, key) {
+    ;(selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
       let vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
-        thumbnail: selectn("views[0].url", video) || "assets/images/cover.png",
-        description: video["dc:description"],
+        thumbnail: selectn('views[0].url', video) || 'assets/images/cover.png',
+        description: video['dc:description'],
         key: key,
         id: video.uid,
         object: video,
@@ -215,17 +213,16 @@ export default class View extends Component {
           key={video.uid}
           src={NavigationHelpers.getBaseURL() + video.path}
           controls
-          style={{ margin: "15px", maxWidth: "150px" }}
+          style={{ margin: '15px', maxWidth: '150px' }}
         />
       )
     })
 
     // Audio
     let audios = []
-
-    ;(selectn("response.contextParameters.phrase.related_audio", computePhrase) || []).map(function(audio, key) {
+    ;(selectn('response.contextParameters.phrase.related_audio', computePhrase) || []).map(function(audio, key) {
       audios.push(
-        <Preview styles={{ maxWidth: "350px" }} key={selectn("uid", audio)} expandedValue={audio} type="FVAudio" />
+        <Preview styles={{ maxWidth: '350px' }} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />
       )
     })
 
@@ -233,15 +230,15 @@ export default class View extends Component {
 
     if (photos.length > 0) {
       tabs.push(
-        <Tab key="pictures" label={intl.trans("pictures", "Pictures", "first")}>
-          <div style={{ maxHeight: "400px" }}>{photosThumbnails}</div>
+        <Tab key="pictures" label={intl.trans('pictures', 'Pictures', 'first')}>
+          <div style={{ maxHeight: '400px' }}>{photosThumbnails}</div>
         </Tab>
       )
     }
 
     if (videos.length > 0) {
       tabs.push(
-        <Tab key="videos" label={intl.trans("videos", "Videos", "first")}>
+        <Tab key="videos" label={intl.trans('videos', 'Videos', 'first')}>
           <div>{videoThumbnails}</div>
         </Tab>
       )
@@ -249,7 +246,7 @@ export default class View extends Component {
 
     if (audios.length > 0) {
       tabs.push(
-        <Tab key="audio" label={intl.trans("audio", "Audio", "first")}>
+        <Tab key="audio" label={intl.trans('audio', 'Audio', 'first')}>
           <div>{audios}</div>
         </Tab>
       )
@@ -259,15 +256,15 @@ export default class View extends Component {
     let phrase_books = []
 
     {
-      ;(selectn("response.contextParameters.phrase.phrase_books", computePhrase) || []).map(function(phrase_book, key) {
-        phrase_books.push(<span key={key}>{selectn("dc:title", phrase_book)}</span>)
+      ;(selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []).map(function(phrase_book, key) {
+        phrase_books.push(<span key={key}>{selectn('dc:title', phrase_book)}</span>)
       })
     }
     // Cultural notes
     let cultural_notes = []
 
     {
-      ;(selectn("response.properties.fv:cultural_note", computePhrase) || []).map(function(cultural_note, key) {
+      ;(selectn('response.properties.fv:cultural_note', computePhrase) || []).map(function(cultural_note, key) {
         cultural_notes.push(<div key={key}>{intl.searchAndReplace(cultural_note)}</div>)
       })
     }
@@ -278,9 +275,9 @@ export default class View extends Component {
      */
     return (
       <DetailsViewWithActions
-        labels={{ single: "phrase" }}
+        labels={{ single: 'phrase' }}
         itemPath={this._getPhrasePath()}
-        actions={["workflow", "edit", "publish-toggle", "enable-toggle", "publish"]}
+        actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
         publishAction={this.props.publishPhrase}
         unpublishAction={this.props.unpublishPhrase}
         askToPublishAction={this.props.askToPublishPhrase}
@@ -297,12 +294,12 @@ export default class View extends Component {
         computeEntities={computeEntities}
         {...this.props}
       >
-        <div className="row" style={{ marginTop: "15px" }}>
-          <div className={classNames("col-xs-12", "col-md-7")}>
+        <div className="row" style={{ marginTop: '15px' }}>
+          <div className={classNames('col-xs-12', 'col-md-7')}>
             <div>
               <div className={dialectClassName}>
                 <TextHeader
-                  title={selectn("response.title", computePhrase)}
+                  title={selectn('response.title', computePhrase)}
                   tag="h1"
                   properties={this.props.properties}
                 />
@@ -313,43 +310,43 @@ export default class View extends Component {
                 if (phrase_books.length > 0) {
                   return (
                     <span>
-                      <strong>{intl.trans("phrase_books", "Phrase Books", "words")}</strong>: {phrase_books}
+                      <strong>{intl.trans('phrase_books', 'Phrase Books', 'words')}</strong>: {phrase_books}
                     </span>
                   )
                 }
               })()}
 
               <SubViewTranslation
-                group={selectn("response.properties.fv:definitions", computePhrase)}
+                group={selectn('response.properties.fv:definitions', computePhrase)}
                 groupByElement="language"
                 groupValue="translation"
               >
                 <p>
-                  <strong>{intl.trans("definitions", "Definitions", "first")}:</strong>
+                  <strong>{intl.trans('definitions', 'Definitions', 'first')}:</strong>
                 </p>
               </SubViewTranslation>
 
               <SubViewTranslation
-                group={selectn("response.properties.fv:literal_translation", computePhrase)}
+                group={selectn('response.properties.fv:literal_translation', computePhrase)}
                 groupByElement="language"
                 groupValue="translation"
               >
                 <p>
-                  <strong>{intl.trans("literal_translations", "Literal Translations", "words")}:</strong>
+                  <strong>{intl.trans('literal_translations', 'Literal Translations', 'words')}:</strong>
                 </p>
               </SubViewTranslation>
 
               {(() => {
                 if (cultural_notes.length > 0) {
                   return (
-                    <div style={{ margin: "10px 0" }}>
+                    <div style={{ margin: '10px 0' }}>
                       <hr />
                       <p>
                         <strong>
                           {intl.trans(
-                            "views.pages.explore.dialect.learn.words.cultural_notes",
-                            "Cultural Notes",
-                            "words"
+                            'views.pages.explore.dialect.learn.words.cultural_notes',
+                            'Cultural Notes',
+                            'words'
                           )}
                           :
                         </strong>
@@ -362,23 +359,23 @@ export default class View extends Component {
 
               <hr />
 
-              {selectn("response", computePhrase) ? (
+              {selectn('response', computePhrase) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} />
               ) : (
-                ""
+                ''
               )}
             </div>
           </div>
 
-          <div className={classNames("col-xs-12", "col-md-3")}>
-            <h3>{intl.trans("audio", "Audio", "upper")}</h3>
+          <div className={classNames('col-xs-12', 'col-md-3')}>
+            <h3>{intl.trans('audio', 'Audio', 'upper')}</h3>
             <div>
               {audios.length === 0 ? (
                 <span>
                   {intl.trans(
-                    "views.pages.explore.dialect.learn.words.no_audio_yet",
-                    "No audio is available yet",
-                    "first"
+                    'views.pages.explore.dialect.learn.words.no_audio_yet',
+                    'No audio is available yet',
+                    'first'
                   )}
                   .
                 </span>
@@ -387,8 +384,8 @@ export default class View extends Component {
               )}
             </div>
 
-            <MediaPanel label={intl.trans("photo_s", "PHOTO(s)", "upper")} type="FVPicture" items={photos} />
-            <MediaPanel label={intl.trans("video_s", "VIDEO(s)", "upper")} type="FVVideo" items={videos} />
+            <MediaPanel label={intl.trans('photo_s', 'PHOTO(s)', 'upper')} type="FVPicture" items={photos} />
+            <MediaPanel label={intl.trans('video_s', 'VIDEO(s)', 'upper')} type="FVVideo" items={videos} />
           </div>
         </div>
       </DetailsViewWithActions>

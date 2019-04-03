@@ -13,18 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable from "immutable"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import Immutable from 'immutable'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import ProviderHelpers from "common/ProviderHelpers"
+import ProviderHelpers from 'common/ProviderHelpers'
 
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import SelectField from "material-ui/lib/SelectField"
-import MenuItem from "material-ui/lib/menus/menu-item"
-import IntlService from "views/services/intl"
+import SelectField from 'material-ui/lib/SelectField'
+import MenuItem from 'material-ui/lib/menus/menu-item'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
@@ -69,17 +69,17 @@ export default class DirectoryList extends Component {
 
   componentDidMount() {
     this.props.fetchDialectList(this.props.queryId, {
-      dialectState: "to-join",
+      dialectState: 'to-join',
     })
   }
 
   render() {
     let previewStyles = {
-      padding: "10px",
+      padding: '10px',
     }
 
     const computeDialectList = ProviderHelpers.getEntry(this.props.computeDialectList, this.props.queryId)
-    let entries = selectn("response", computeDialectList) || []
+    let entries = selectn('response', computeDialectList) || []
 
     const computeEntities = Immutable.fromJS([
       {
@@ -97,14 +97,14 @@ export default class DirectoryList extends Component {
             value={this.props.value}
             onChange={this._handleChange}
             floatingLabelText={
-              intl.trans("select", "Select", "first") + " " + intl.searchAndReplace(this.props.label) + ":"
+              intl.trans('select', 'Select', 'first') + ' ' + intl.searchAndReplace(this.props.label) + ':'
             }
           >
             {entries.map((entry) => (
               <MenuItem
-                key={selectn("ecm:uuid", entry)}
-                value={selectn("ecm:uuid", entry)}
-                primaryText={selectn("dc:title", entry)}
+                key={selectn('ecm:uuid', entry)}
+                value={selectn('ecm:uuid', entry)}
+                primaryText={selectn('dc:title', entry)}
               />
             ))}
           </SelectField>
@@ -112,8 +112,8 @@ export default class DirectoryList extends Component {
           <select className="form-control" value={this.props.value} onChange={this._handleStandardSelectChange}>
             <option value>Please select:</option>
             {entries.map((entry) => (
-              <option key={selectn("ecm:uuid", entry)} value={selectn("ecm:uuid", entry)}>
-                {selectn("dc:title", entry)}
+              <option key={selectn('ecm:uuid', entry)} value={selectn('ecm:uuid', entry)}>
+                {selectn('dc:title', entry)}
               </option>
             ))}
           </select>

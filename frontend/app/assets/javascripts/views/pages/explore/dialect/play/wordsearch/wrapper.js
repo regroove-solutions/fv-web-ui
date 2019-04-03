@@ -13,102 +13,107 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
-import PromiseHelpers from 'common/PromiseHelpers';
+import React, { Component, PropTypes } from 'react'
+import ReactDOM from 'react-dom'
+import PromiseHelpers from 'common/PromiseHelpers'
 
 /**
-* Test game wrapper
-*/
+ * Test game wrapper
+ */
 export default class Game extends Component {
+  static propTypes = {
+    characters: PropTypes.array.isRequired,
+    words: PropTypes.array.isRequired,
+  }
 
-    static propTypes = {
-        characters: PropTypes.array.isRequired,
-        words: PropTypes.array.isRequired
-    }
+  /**
+   * Constructor
+   */
+  constructor(props, context) {
+    super(props, context)
+    this.gameContainer = null
+  }
 
-    /**
-     * Constructor
-     */
-    constructor(props, context) {
-        super(props, context);
-        this.gameContainer = null;
-    }
-
-    loadGameScript() {
-        return PromiseHelpers.makeCancelablePromise((() => {
-            return new Promise((resolve, reject) => {
-                import(/* webpackChunkName: "wordsearch" */ '@fpcc/fv-game-wordsearch').then(({ default: wordsearch }) => {
-                resolve(wordsearch);
-                }).catch(reject);
+  loadGameScript() {
+    return PromiseHelpers.makeCancelablePromise(
+      (() => {
+        return new Promise((resolve, reject) => {
+          import(/* webpackChunkName: "wordsearch" */ '@fpcc/fv-game-wordsearch')
+            .then(({ default: wordsearch }) => {
+              resolve(wordsearch)
             })
-        })());
-    }
+            .catch(reject)
+        })
+      })()
+    )
+  }
 
+  /**
+   * componentDidMount
+   */
+  componentDidMount() {
+    //Setup default asset paths
+    const defaultAssetsPath = 'assets/games/fv-games-wordsearch'
+    const defaultImagesPath = `${defaultAssetsPath}/images`
+
+    //Default game config
     /**
-     * componentDidMount
+     * @todo Setup image paths based on dialect
      */
-    componentDidMount() {
 
-        //Setup default asset paths
-        const defaultAssetsPath = 'assets/games/fv-games-wordsearch';
-        const defaultImagesPath = `${defaultAssetsPath}/images`;
+    let gameConfig = {
+      images: {
+        preloaderLoading: `${defaultImagesPath}/loading.png`,
+        preloaderLogo: `${defaultImagesPath}/logo.png`,
+        tile: `${defaultImagesPath}/tile.png`,
+        title: `${defaultImagesPath}/title.png`,
+        playAudio: `${defaultImagesPath}/play_audio.png`,
+        background: `${defaultImagesPath}/background.png`,
+      },
 
-        //Default game config
-        /**
-         * @todo Setup image paths based on dialect
-         */
+      letters: this.props.characters,
 
-        let gameConfig = {
-
-            images: {
-                preloaderLoading: `${defaultImagesPath}/loading.png`,
-                preloaderLogo: `${defaultImagesPath}/logo.png`,
-                tile: `${defaultImagesPath}/tile.png`,
-                title: `${defaultImagesPath}/title.png`,
-                playAudio: `${defaultImagesPath}/play_audio.png`,
-                background: `${defaultImagesPath}/background.png`
-            },
-
-            letters: this.props.characters,
-
-            words: this.props.words
-
-        };
-
-        this.loadScriptTask = this.loadGameScript();
-        this.loadScriptTask.promise.then((wordsearch) => {
-            const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer);
-            wordsearch.init(gameContainerNode, gameConfig);
-            this.wordsearch = wordsearch;
-        });
-
+      words: this.props.words,
     }
 
-    /**
-     * Component Will Unmount
-     * Cleanup the game / assets for memory management
-     */
-    componentWillUnmount() {
-        if (this.loadScriptTask) {
-            this.loadScriptTask.cancel();
-        }
-        if (this.wordsearch) {
-            this.wordsearch.destroy();
-        }
+    this.loadScriptTask = this.loadGameScript()
+    this.loadScriptTask.promise.then((wordsearch) => {
+      const gameContainerNode = ReactDOM.findDOMNode(this.gameContainer)
+      wordsearch.init(gameContainerNode, gameConfig)
+      this.wordsearch = wordsearch
+    })
+  }
+
+  /**
+   * Component Will Unmount
+   * Cleanup the game / assets for memory management
+   */
+  componentWillUnmount() {
+    if (this.loadScriptTask) {
+      this.loadScriptTask.cancel()
+    }
+    if (this.wordsearch) {
+      this.wordsearch.destroy()
+    }
+  }
+
+  /**
+   * Render
+   */
+  render() {
+    //Setup game styles
+    const gameContainerStyles = {
+      maxWidth: 800,
+      margin: 'auto',
     }
 
-    /**
-     * Render
-     */
-    render() {
-
-        //Setup game styles
-        const gameContainerStyles = {
-            maxWidth: 800,
-            margin: 'auto'
-        }
-
-        return <div style={gameContainerStyles} ref={(el) => { this.gameContainer = el }}></div>;
-    }
+    return (
+      <div
+        style={gameContainerStyles}
+        ref={(el) => {
+          this.gameContainer = el
+        }}
+      />
+    )
+  }
 }

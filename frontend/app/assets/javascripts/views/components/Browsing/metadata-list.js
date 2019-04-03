@@ -13,46 +13,47 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react'
 
-import classNames from 'classnames';
-import selectn from 'selectn';
+import classNames from 'classnames'
+import selectn from 'selectn'
 
-import Preview from 'views/components/Editor/Preview';
-import IntlService from "views/services/intl";
+import Preview from 'views/components/Editor/Preview'
+import IntlService from 'views/services/intl'
 
 /**
  * Metadata list
  */
 export default class MetadataList extends Component {
+  static propTypes = {
+    metadata: PropTypes.array.isRequired,
+    style: PropTypes.object,
+  }
 
-    static propTypes = {
-        metadata: PropTypes.array.isRequired,
-        style: PropTypes.object
-    };
+  constructor(props, context) {
+    super(props, context)
+  }
 
-    constructor(props, context) {
-        super(props, context);
-    }
+  render() {
+    const { metadata, style } = this.props
 
-    render() {
+    return (
+      <ul style={{ overflow: 'scroll', listStyleType: 'none', padding: 0, maxHeight: '200px', ...style }}>
+        {metadata.map(function(item, key) {
+          let value = selectn('value', item)
 
-        const {metadata, style} = this.props;
-
-        return <ul style={{overflow: 'scroll', listStyleType: 'none', padding: 0, maxHeight: '200px', ...style}}>
-
-            {metadata.map(function (item, key) {
-
-                let value = selectn("value", item);
-
-                if ((value && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
-                    return <li key={key} style={{paddingBottom: '5px'}}>
-                        <strong>{IntlService.instance.searchAndReplace(selectn("label", item))}:</strong><br/>{value}
-                        <hr style={{margin: '5px 0'}}/>
-                    </li>;
-                }
-            })}
-
-        </ul>;
-    }
+          if ((value && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
+            return (
+              <li key={key} style={{ paddingBottom: '5px' }}>
+                <strong>{IntlService.instance.searchAndReplace(selectn('label', item))}:</strong>
+                <br />
+                {value}
+                <hr style={{ margin: '5px 0' }} />
+              </li>
+            )
+          }
+        })}
+      </ul>
+    )
+  }
 }

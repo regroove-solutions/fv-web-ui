@@ -183,7 +183,9 @@ export class Search extends DataListView {
         )
       }
 
-      this.props.replaceWindowPath(`${NavigationHelpers.getContextPath()}/explore${this._getQueryPath()}/search/${properties.searchTerm}`)
+      this.props.replaceWindowPath(
+        `${NavigationHelpers.getContextPath()}/explore${this._getQueryPath()}/search/${properties.searchTerm}`
+      )
     }
   }
 

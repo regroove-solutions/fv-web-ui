@@ -32,7 +32,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import GeneralList from 'views/components/Browsing/general-list'
 import { CardView } from './list-view'
-import {getDialectClassname} from 'views/pages/explore/dialect/helpers'
+import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import withFilter from 'views/hoc/grid-list/with-filter'
 import IntlService from 'views/services/intl'
 

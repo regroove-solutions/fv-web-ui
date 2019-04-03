@@ -13,44 +13,41 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react';
-import Immutable, { List, Map } from 'immutable';
+import React, { Component, PropTypes } from 'react'
+import Immutable, { List, Map } from 'immutable'
 
-import provide from 'react-redux-provide';
-import selectn from 'selectn';
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 //import QueryString from 'query-string';
 
-import PromiseWrapper from 'views/components/Document/PromiseWrapper';
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Operations
-import DirectoryOperations from 'operations/DirectoryOperations';
+import DirectoryOperations from 'operations/DirectoryOperations'
 
-import GridList from 'material-ui/lib/grid-list/grid-list';
-import GridTile from 'material-ui/lib/grid-list/grid-tile';
-import CircularProgress from 'material-ui/lib/circular-progress';
+import GridList from 'material-ui/lib/grid-list/grid-list'
+import GridTile from 'material-ui/lib/grid-list/grid-tile'
+import CircularProgress from 'material-ui/lib/circular-progress'
 
-import ProviderHelpers from 'common/ProviderHelpers';
+import ProviderHelpers from 'common/ProviderHelpers'
 
-import {RaisedButton} from 'material-ui';
+import { RaisedButton } from 'material-ui'
 
-import MediaList from 'views/components/Browsing/media-list';
-import withPagination from 'views/hoc/grid-list/with-pagination';
-import withFilter from 'views/hoc/grid-list/with-filter';
+import MediaList from 'views/components/Browsing/media-list'
+import withPagination from 'views/hoc/grid-list/with-pagination'
+import withFilter from 'views/hoc/grid-list/with-filter'
 
 //import elasticsearch from 'elasticsearch';
 
-const DefaultFetcherParams = { filters: {'properties.dc:title': '', 'dialect': '78086057-9c34-48f7-995f-9dc3b313231b' } };
+const DefaultFetcherParams = { filters: { 'properties.dc:title': '', dialect: '78086057-9c34-48f7-995f-9dc3b313231b' } }
 
-
-
-const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams);
+const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams)
 
 /**
-* Explore Archive page shows all the families in the archive
-*/
+ * Explore Archive page shows all the families in the archive
+ */
 @provide
 export default class Test extends Component {
-
   static propTypes = {
     properties: PropTypes.object.isRequired,
     fetchPortal: PropTypes.func.isRequired,
@@ -60,15 +57,15 @@ export default class Test extends Component {
     fetchSharedPictures: PropTypes.func.isRequired,
     computeSharedPictures: PropTypes.object.isRequired,
     fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired
-  };
+    computeWord: PropTypes.object.isRequired,
+  }
 
   /*static contextTypes = {
       muiTheme: React.PropTypes.object.isRequired
   };*/
 
-  constructor(props, context){
-    super(props, context);
+  constructor(props, context) {
+    super(props, context)
 
     /*let computeEntities = new List();
 
@@ -77,16 +74,18 @@ export default class Test extends Component {
 
     this.state = {
       filteredList: null,
-      fetcherParams: Object.assign({
-        currentPageIndex: 0,
-        pageSize: 10
-      }, DefaultFetcherParams),
-      pathOrId: "/FV/Workspaces/Data/Athabascan/Beaver/Tsaaʔ%20Dane%20-%20Beaver%20People/Dictionary/119430"
+      fetcherParams: Object.assign(
+        {
+          currentPageIndex: 0,
+          pageSize: 10,
+        },
+        DefaultFetcherParams
+      ),
+      pathOrId: '/FV/Workspaces/Data/Athabascan/Beaver/Tsaaʔ%20Dane%20-%20Beaver%20People/Dictionary/119430',
     }
 
-    this.fetchData = this.fetchData.bind(this);
-    this.fixedListFetcher = this.fixedListFetcher.bind(this);
-
+    this.fetchData = this.fetchData.bind(this)
+    this.fixedListFetcher = this.fixedListFetcher.bind(this)
 
     /*var client = new elasticsearch.Client({
       host: 'https://preprod.firstvoices.com/nuxeo/site/es',
@@ -150,19 +149,17 @@ export default class Test extends Component {
 
   fixedListFetcher(list) {
     this.setState({
-      filteredList: list
-    });
+      filteredList: list,
+    })
   }
 
   fetchData() {
-    this.props.fetchWord(this.state.pathOrId);
-
-
+    this.props.fetchWord(this.state.pathOrId)
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData();
+    this.fetchData()
   }
 
   // Refetch data on URL change
@@ -181,20 +178,18 @@ export default class Test extends Component {
     return true;
   }*/
 
-  _onNavigateRequest() {
-
-  }
+  _onNavigateRequest() {}
 
   render() {
-
     //let computeEntities = new List();
     //let computePortal = new Map([['id', '/FV/sections/Data/TestFamily/TestLanguage/PopoDialect'], ['entity', this.props.computePortal]]);
 
-    const computeEntities = Immutable.fromJS([{
-      'id': this.state.pathOrId,
-      'entity': this.props.computeWord
-    }])
-
+    const computeEntities = Immutable.fromJS([
+      {
+        id: this.state.pathOrId,
+        entity: this.props.computeWord,
+      },
+    ])
 
     /*let portalOperation = ProviderHelpers.getEntry(computePortal, '/FV/sections/Data/TestFamily/TestLanguage/PopoDialect');
     console.log(portalOperation);
@@ -210,12 +205,14 @@ export default class Test extends Component {
 
     let portalResponse = selectn('response', portalOperation);*/
 
-    return <div className="row">
-            <pre>
-              <PromiseWrapper computeEntities={computeEntities}>
-                {JSON.stringify(this.props.computeWord, null, '\t')}
-              </PromiseWrapper>
-            </pre>
-          </div>;
+    return (
+      <div className="row">
+        <pre>
+          <PromiseWrapper computeEntities={computeEntities}>
+            {JSON.stringify(this.props.computeWord, null, '\t')}
+          </PromiseWrapper>
+        </pre>
+      </div>
+    )
   }
 }

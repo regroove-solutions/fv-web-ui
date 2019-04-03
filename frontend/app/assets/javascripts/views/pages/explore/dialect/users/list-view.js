@@ -112,7 +112,7 @@ export default class ListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    [
+    ;[
       '_onNavigateRequest',
       '_onUserSelected',
       '_handleRefetch',
@@ -149,7 +149,10 @@ export default class ListView extends DataListView {
   }
 
   _saveMethod(properties, userObj) {
-    const whoWhen = `[${new Date().toLocaleString()}] ${selectn('response.properties.username', this.props.computeLogin)}`
+    const whoWhen = `[${new Date().toLocaleString()}] ${selectn(
+      'response.properties.username',
+      this.props.computeLogin
+    )}`
 
     this.props.updateUser(
       {

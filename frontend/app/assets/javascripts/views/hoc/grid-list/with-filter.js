@@ -95,7 +95,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
       if (this.props.area) {
         // TODO: fields already declared by import, see about fixing this
         // eslint-disable-next-line
-        const fields = Map(options.get("fields")).map(
+        const fields = Map(options.get('fields')).map(
           function fieldsMap(field) {
             if (field.hasOwnProperty('nxql')) {
               field.nxql = ProviderHelpers.replaceAllWorkspaceSectionKeys(field.nxql, this.props.area)

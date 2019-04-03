@@ -22,7 +22,7 @@ export default class BaseOperations {
   }
 
   static getProperties() {
-    return this.properties;
+    return this.properties
   }
 
   static intl = IntlService.instance

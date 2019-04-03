@@ -510,9 +510,9 @@ class SearchDialect extends Component {
 
     return searchTerm
       ? {
-        DEFAULT_SORT_COL: searchSortBy,
-        DEFAULT_SORT_TYPE: 'asc',
-      }
+          DEFAULT_SORT_COL: searchSortBy,
+          DEFAULT_SORT_TYPE: 'asc',
+        }
       : {}
   }
 

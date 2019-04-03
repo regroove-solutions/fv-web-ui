@@ -13,18 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from "react"
-import Immutable, { Map } from "immutable"
-import provide from "react-redux-provide"
-import selectn from "selectn"
+import React, { Component, PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
 
-import PromiseWrapper from "views/components/Document/PromiseWrapper"
+import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import ProviderHelpers from "common/ProviderHelpers"
-import DocumentListView from "views/components/Document/DocumentListView"
-import DocumentListViewDatatable from "views/components/Document/DocumentListViewDatatable"
-import DataListView from "views/pages/explore/dialect/learn/base/data-list-view"
-import IntlService from "views/services/intl"
+import ProviderHelpers from 'common/ProviderHelpers'
+import DocumentListView from 'views/components/Document/DocumentListView'
+import DocumentListViewDatatable from 'views/components/Document/DocumentListViewDatatable'
+import DataListView from 'views/pages/explore/dialect/learn/base/data-list-view'
+import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 /**
@@ -33,12 +33,12 @@ const intl = IntlService.instance
 @provide
 class ListView extends DataListView {
   static defaultProps = {
-    DISABLED_SORT_COLS: ["state", "parent"],
+    DISABLED_SORT_COLS: ['state', 'parent'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
-    DEFAULT_LANGUAGE: "english",
-    DEFAULT_SORT_COL: "fv:custom_order",
-    DEFAULT_SORT_TYPE: "asc",
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'fv:custom_order',
+    DEFAULT_SORT_TYPE: 'asc',
     dialect: null,
     filter: new Map(),
     gridListView: false,
@@ -79,16 +79,16 @@ class ListView extends DataListView {
     this.state = {
       columns: [
         {
-          name: "title",
-          title: intl.trans("category", "Category", "first"),
+          name: 'title',
+          title: intl.trans('category', 'Category', 'first'),
           render: (v, data, cellProps) => v,
         },
         {
-          name: "parent",
-          title: intl.trans("views.pages.explore.dialect.learn.words.parent_category", "Parent Category", "words"),
+          name: 'parent',
+          title: intl.trans('views.pages.explore.dialect.learn.words.parent_category', 'Parent Category', 'words'),
           render: (v, data, cellProps) => {
-            const parentCategory = selectn("contextParameters.parentDoc.title", data)
-            return parentCategory === "Shared Categories" ? "" : parentCategory
+            const parentCategory = selectn('contextParameters.parentDoc.title', data)
+            return parentCategory === 'Shared Categories' ? '' : parentCategory
           },
         },
       ],
@@ -105,12 +105,12 @@ class ListView extends DataListView {
 
     // Bind methods to 'this'
     ;[
-      "_onNavigateRequest",
-      "_onEntryNavigateRequest",
-      "_handleRefetch",
-      "_handleSortChange",
-      "_handleColumnOrderChange",
-      "_resetColumns",
+      '_onNavigateRequest',
+      '_onEntryNavigateRequest',
+      '_handleRefetch',
+      '_handleSortChange',
+      '_handleColumnOrderChange',
+      '_resetColumns',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
   // NOTE: DataListView calls `fetchData`
@@ -132,16 +132,16 @@ class ListView extends DataListView {
       this.props.action(item)
     } else {
       this.props.pushWindowPath(
-        `/${this.props.routeParams.theme}${item.path.replace("Dictionary", `words/categories/${item.uid}`)}`
+        `/${this.props.routeParams.theme}${item.path.replace('Dictionary', `words/categories/${item.uid}`)}`
       )
     }
   }
 
   _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
-    let currentAppliedFilter = ""
+    let currentAppliedFilter = ''
 
-    if (props.filter.has("currentAppliedFilter")) {
-      currentAppliedFilter = Object.values(props.filter.get("currentAppliedFilter").toJS()).join("")
+    if (props.filter.has('currentAppliedFilter')) {
+      currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
 
     props.fetchCategories(
@@ -182,7 +182,7 @@ class ListView extends DataListView {
         columns={this.state.columns}
         sortInfo={this.state.sortInfo.uiSortOrder}
         className="browseDataGrid"
-        dialect={selectn("response", computeDialect2)}
+        dialect={selectn('response', computeDialect2)}
       />
     ) : (
       <DocumentListView
@@ -200,12 +200,12 @@ class ListView extends DataListView {
         columns={this.state.columns}
         sortInfo={this.state.sortInfo.uiSortOrder}
         className="browseDataGrid"
-        dialect={selectn("response", computeDialect2)}
+        dialect={selectn('response', computeDialect2)}
       />
     )
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
-        {selectn("response.entries", computeCategories) && DocumentView}
+        {selectn('response.entries', computeCategories) && DocumentView}
       </PromiseWrapper>
     )
   }
