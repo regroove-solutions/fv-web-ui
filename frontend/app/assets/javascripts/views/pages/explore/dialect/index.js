@@ -454,24 +454,27 @@ export default class ExploreDialect extends Component {
             </div>
 
             <div>
-              {selectn('response.properties.fv-portal:news', computePortal) ||
-                (!isSection && (
-                  <AuthorizationFilter
-                    filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
-                    renderPartial
-                  >
-                    <div>
-                      <h3>{intl.trans('news', 'News', 'first')}</h3>
-                      <EditableComponentHelper
-                        isSection={isSection}
-                        computeEntity={computePortal}
-                        updateEntity={updatePortal}
-                        property="fv-portal:news"
-                        entity={selectn('response', computePortal)}
-                      />
-                    </div>
-                  </AuthorizationFilter>
-                ))}
+              {(() => {
+                  if (!isSection || selectn('response.properties.fv-portal:news', computePortal)) {
+                    return (
+                      <AuthorizationFilter
+                        filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
+                        renderPartial
+                      >
+                      <div>
+                        <h3>{intl.trans('news', 'News', 'first')}</h3>
+                        <EditableComponentHelper
+                          isSection={isSection}
+                          computeEntity={computePortal}
+                          updateEntity={updatePortal}
+                          property="fv-portal:news"
+                          entity={selectn('response', computePortal)}
+                        />
+                      </div>
+                    </AuthorizationFilter>
+                    )
+                  }
+                })()}
             </div>
           </div>
 
