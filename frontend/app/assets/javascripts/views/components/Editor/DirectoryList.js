@@ -87,6 +87,7 @@ export class DirectoryList extends Component {
           </SelectField>
         ) : (
           <select onChange={this._handleStandardSelectChange} data-testid={dataTestId}>
+          {/* Note: Had a conflict and `value={this.props.value}` was the incoming change */}
           {/* <select value={this.props.value} onChange={this._handleStandardSelectChange} data-testid={dataTestId}> */}
             {entries.map((entry) => (
               <option key={entry.value} value={entry.value}>
