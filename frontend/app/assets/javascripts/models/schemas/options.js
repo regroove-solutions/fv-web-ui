@@ -26,15 +26,15 @@ const i18nExt = {
 
 window.intl = IntlService.instance
 
-const configExt = {
-  config: {
-    // for each of lg md sm xs you can specify the columns width
-    horizontal: {
-      md: [3, 9],
-      sm: [6, 6],
-    },
-  },
-}
+// const configExt = {
+//   config: {
+//     // for each of lg md sm xs you can specify the columns width
+//     horizontal: {
+//       md: [3, 9],
+//       sm: [6, 6],
+//     },
+//   },
+// }
 
 const FVPortalTemplate = function template(locals) {
   return (
@@ -85,7 +85,18 @@ const RelatedMediaLayout = (locals) => (
   <div className="row" style={{ margin: '15px 0' }}>
     <fieldset>
       <legend>
-        {locals.label} <FlatButton label={locals.add.label} onTouchTap={locals.add.click} />
+        {locals.label}{' '}
+        <FlatButton
+          style={{
+            border: '1px solid rgb(204, 204, 204)',
+            borderRadius: '4px',
+            fontSize: '1.4rem',
+            color: 'rgb(51, 51, 51)',
+            textTransform: 'none',
+          }}
+          label={locals.add.label}
+          onTouchTap={locals.add.click}
+        />
       </legend>
       {(locals.items || []).map((item, i) => (
         <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
@@ -98,7 +109,7 @@ const RelatedMediaLayout = (locals) => (
               borderRadius: '0 0 10px 10px',
             }}
           >
-            {item.buttons.map((button, i) => {
+            {item.buttons.map((button, j) => {
               let icon = ''
               let label = ''
 
@@ -124,7 +135,7 @@ const RelatedMediaLayout = (locals) => (
                 <IconButton
                   tooltip={label}
                   iconClassName="material-icons"
-                  key={i}
+                  key={j}
                   onClick={button.click}
                   style={{ verticalAlign: '-8px' }}
                 >
@@ -237,6 +248,7 @@ const options = {
               attrs: {
                 defaultValue: 'english',
                 directory: 'fv_language',
+                fancy: false,
               },
             },
           },
@@ -245,6 +257,10 @@ const options = {
         help: (
           <i>{intl.trans('models.describe_what_the_word_means', 'Describe what the word actually means.', 'first')}</i>
         ),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_definition', 'Add definition', 'first')}`,
+        },
       },
       'fv:literal_translation': {
         label: intl.trans('literal_translation', 'Literal Translation', 'first'),
@@ -274,12 +290,17 @@ const options = {
             )}
           </i>
         ),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_literal_translation', 'Add literal translation', 'first')}`,
+        },
       },
       'fv-word:part_of_speech': {
         label: intl.trans('views.pages.search.part_of_speech', 'Part of Speech', 'first'),
         factory: SelectFactory,
         attrs: {
           directory: 'parts_of_speech',
+          fancy: false,
         },
       },
       'fv-word:pronunciation': {
@@ -291,6 +312,13 @@ const options = {
         item: {
           factory: SelectSuggestFactory,
           type: 'FVPhrase',
+          locals: {
+            labelBrowseComponent: intl.trans('phrases_browse', 'Browse phrases', 'first'),
+          },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_phrases', 'Add related phrases', 'first')}`,
         },
       },
       'fv-word:categories': {
@@ -306,6 +334,13 @@ const options = {
             },
             hideCreate: true,
           },
+          locals: {
+            labelBrowseComponent: intl.trans('categories_browse', 'Browse categories', 'first'),
+          },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_categories', 'Add categories', 'first')}`,
         },
       },
       'fv:related_audio': {
@@ -313,30 +348,58 @@ const options = {
         item: {
           factory: MediaFactory,
           type: 'FVAudio',
+          locals: {
+            labelAddMediaComponent: intl.trans('audio_upload', 'Upload audio', 'first'),
+            labelSelectMediaComponent: intl.trans('audio_browse', 'Browse audio', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_audio', 'Add related audio', 'first')}`,
+        },
       },
       'fv:related_pictures': {
         label: intl.trans('related_pictures', 'Related Pictures', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVPicture',
+          locals: {
+            labelAddMediaComponent: intl.trans('picture_upload', 'Upload picture', 'first'),
+            labelSelectMediaComponent: intl.trans('pictures_browse', 'Browse pictures', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_pictures', 'Add related pictures', 'first')}`,
+        },
       },
       'fv:related_videos': {
         label: intl.trans('related_videos', 'Related Videos', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVVideo',
+          locals: {
+            labelAddMediaComponent: intl.trans('video_upload', 'Upload video', 'first'),
+            labelSelectMediaComponent: intl.trans('videos_browse', 'Browse videos', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_videos', 'Add related videos', 'first')}`,
+        },
       },
       'fv:cultural_note': {
         label: intl.trans('views.pages.explore.dialect.learn.words.cultural_note', 'Cultural Note', 'first'),
         item: {
           factory: VirtualKeyboardFactory,
           type: 'FVVideo',
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_cultural_note', 'Add cultural note', 'first')}`,
         },
       },
       'fv:reference': {
@@ -357,6 +420,13 @@ const options = {
           attrs: {
             allowEdit: true,
           },
+          locals: {
+            labelBrowseComponent: intl.trans('contributors_browse', 'Browse contributors', 'first'),
+          },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_source', 'Add source', 'first')}`,
         },
       },
       'fv:available_in_childrens_archive': {
@@ -398,6 +468,7 @@ const options = {
               attrs: {
                 defaultValue: 'english',
                 directory: 'fv_language',
+                fancy: false,
               },
             },
           },
@@ -408,6 +479,10 @@ const options = {
             {intl.trans('models.describe_what_the_phrase_means', 'Describe what the phrase actually means.', 'first')}
           </i>
         ),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_definition', 'Add definition', 'first')}`,
+        },
       },
       'fv-phrase:phrase_books': {
         label: intl.trans('phrase_books', 'Phrase Books', 'first'),
@@ -423,33 +498,65 @@ const options = {
             },
           },
         },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('phrase_add_book', 'Add phrase book', 'first')}`,
+        },
       },
       'fv:related_audio': {
         label: intl.trans('related_audio', 'Related Audio', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVAudio',
+          locals: {
+            labelAddMediaComponent: intl.trans('audio_upload', 'Upload audio', 'first'),
+            labelSelectMediaComponent: intl.trans('audio_browse', 'Browse audio', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_audio', 'Add related audio', 'first')}`,
+        },
       },
       'fv:related_pictures': {
         label: intl.trans('related_pictures', 'Related Pictures', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVPicture',
+          locals: {
+            labelAddMediaComponent: intl.trans('picture_upload', 'Upload picture', 'first'),
+            labelSelectMediaComponent: intl.trans('pictures_browse', 'Browse pictures', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_pictures', 'Add related pictures', 'first')}`,
+        },
       },
       'fv:related_videos': {
         label: intl.trans('related_videos', 'Related Videos', 'first'),
         item: {
           factory: MediaFactory,
           type: 'FVVideo',
+          locals: {
+            labelAddMediaComponent: intl.trans('video_upload', 'Upload video', 'first'),
+            labelSelectMediaComponent: intl.trans('videos_browse', 'Browse videos', 'first'),
+          },
         },
         template: RelatedMediaLayout,
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_related_videos', 'Add related videos', 'first')}`,
+        },
       },
       'fv:cultural_note': {
         label: intl.trans('views.pages.explore.dialect.learn.words.cultural_notes', 'Cultural Notes', 'first'),
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_cultural_note', 'Add cultural note', 'first')}`,
+        },
       },
       'fv:reference': {
         label: intl.trans('reference', 'Reference', 'first'),
@@ -465,6 +572,13 @@ const options = {
         item: {
           factory: SelectSuggestFactory,
           type: 'FVContributor',
+          locals: {
+            labelBrowseComponent: intl.trans('contributors_browse', 'Browse contributors', 'first'),
+          },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_source', 'Add source', 'first')}`,
         },
       },
       'fv:available_in_childrens_archive': {

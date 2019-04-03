@@ -127,9 +127,9 @@ class ListView extends DataListView {
             const clickHandler = props.disableClickItem
               ? NavigationHelpers.disable
               : (e) => {
-                  // e.preventDefault()
-                  // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
-                }
+                // e.preventDefault()
+                // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+              }
             return (
               <a onClick={clickHandler} href={href}>
                 {v}
@@ -241,7 +241,7 @@ class ListView extends DataListView {
     }
 
     // Bind methods to 'this'
-    ;[
+    [
       '_onNavigateRequest',
       '_onEntryNavigateRequest',
       '_handleRefetch',

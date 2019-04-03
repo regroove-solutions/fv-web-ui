@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, {Component, PropTypes} from 'react'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 export default class Link extends Component {
@@ -8,9 +8,9 @@ export default class Link extends Component {
 
   render() {
     let linkedTitle
-    let link = this.props.data
+    const link = this.props.data
     let description
-    let showDescription = this.props.showDescription
+    const showDescription = this.props.showDescription
 
     // Title if the link document contains an attached file
     if (link.path) {

@@ -173,7 +173,7 @@ export default class DirectoryOperations {
 
   static getDocumentsViaPageProvider(
     pageProvider = '',
-    type = 'Document', // eslint-disable-line
+    type = "Document", // eslint-disable-line
     queryAppend = '',
     headers = null,
     params = null

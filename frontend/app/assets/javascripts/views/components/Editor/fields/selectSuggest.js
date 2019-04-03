@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import t from 'tcomb-form'
 import selectn from 'selectn'
 
@@ -66,7 +66,10 @@ function renderInput(locals) {
         )}
         <BrowseComponent
           type={locals.type}
-          label={intl.trans('views.components.editor.browse_existing', 'Browse Existing', 'words')}
+          label={
+            locals.labelBrowseComponent ||
+            intl.trans('views.components.editor.browse_existing', 'Browse Existing', 'words')
+          }
           onComplete={onComplete}
           dialect={locals.context}
           containerType={locals.attrs.containerType}
@@ -97,8 +100,8 @@ export default class SelectSuggestFactory extends t.form.Textbox {
     locals.attrs = this.getAttrs()
     locals.setExpandedValue = this.setExpandedValue
     locals.attrs.expandedValue = this.state.expandedValue
-
-    return locals
+    const localsOptions = this.props.options.locals || {}
+    return { ...locals, ...localsOptions }
   }
 
   getTemplate() {

@@ -223,15 +223,8 @@ class CardView extends Component {
           </div>
           <div className="CardViewCopy">
             <div className="CardViewTitles">
-              <h2
-                className={classNames('CardViewTitle', 'fontAboriginalSans')}
-                onTouchTap={this.props.action.bind(this, item)}
-              >
-                {title}
-              </h2>
-              <h3 className="CardViewSubtitle" onTouchTap={this.props.action.bind(this, item)}>
-                {subtitle}
-              </h3>
+              <h2 className={classNames('CardViewTitle', 'fontAboriginalSans')} onTouchTap={this.props.action.bind(this, item)}>{title}</h2>
+              <h3 className="CardViewSubtitle" onTouchTap={this.props.action.bind(this, item)}>{subtitle}</h3>
             </div>
             <div className="CardViewCardActions">
               <a className="FlatButton" href={href}>
