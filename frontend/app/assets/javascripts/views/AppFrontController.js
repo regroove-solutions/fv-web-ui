@@ -10,9 +10,9 @@ import ConfGlobal from 'conf/local.json'
 import ConfRoutes, { paramMatch } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import UIHelpers from 'common/UIHelpers'
+// import UIHelpers from 'common/UIHelpers'
 import StringHelpers from 'common/StringHelpers'
-import AnalyticsHelpers from 'common/AnalyticsHelpers'
+// import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
 import { Link } from 'provide-page'
 
@@ -64,6 +64,12 @@ const PAGE_NOT_FOUND_BODY = (
 )
 
 class Redirecter extends Component {
+  static propTypes = {
+    redirect: PropTypes.func,
+  }
+  static defaultProps = {
+    redirect: () => {},
+  }
   constructor(props, context) {
     super(props, context)
   }
@@ -86,7 +92,7 @@ class Redirecter extends Component {
   }
 }
 
-const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
+const allowedToAccessWorkspaces = function allowedToAccessWorkspaces(windowPath, computeLogin, computeDialect2) {
   // Don't perform any redirect if these aren't available.
   if (
     !selectn('success', computeLogin) ||
@@ -100,8 +106,8 @@ const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDial
   return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
 }
 
-@provide
-export default class AppFrontController extends Component {
+
+export class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
     preferences: PropTypes.object,
@@ -128,7 +134,7 @@ export default class AppFrontController extends Component {
 
   _getInitialState() {
     const routes = Immutable.fromJS(ConfRoutes)
-    let contextPath = ConfGlobal.contextPath.split('/').filter((v) => v != '')
+    const contextPath = ConfGlobal.contextPath.split('/').filter((v) => v !== '')
 
     return {
       routes:
@@ -208,15 +214,15 @@ export default class AppFrontController extends Component {
 
         // Extract common paths from URL
         if (value.has('extractPaths') && value.get('extractPaths')) {
-          let domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
-          let dialectPathLocation = 5
-          let languagePathLocation = 4
-          let languageFamilyPathLocation = 3
+          const domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
+          const dialectPathLocation = 5
+          const languagePathLocation = 4
+          const languageFamilyPathLocation = 3
 
           // If domain is specified in the URL, these are Nuxeo paths that can be extracted
-          if (domainPathLocation != -1) {
+          if (domainPathLocation !== -1) {
             // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
-            let nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
+            const nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
 
             if (nuxeoPath.length >= dialectPathLocation) {
               routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
@@ -355,16 +361,15 @@ export default class AppFrontController extends Component {
       // Re-route on login
       this._route(nextProps)
     } else if (
-      // Re-route if preferences change
       next_primary_dialect_path !== undefined &&
       next_primary_dialect_path != primary_dialect_path &&
       next_primary_dialect_path.length > 0
     ) {
+      // Re-route if preferences change
       this._route(nextProps)
-    }
-    // Re-route if trying to view Workspaces from different group
-    // TODO: Handle on back-end; hide all areas where you can access workspaces
-    else if (
+    } else if (
+      // Re-route if trying to view Workspaces from different group
+      // TODO: Handle on back-end; hide all areas where you can access workspaces
       ProviderHelpers.isDialectPath(nextProps.windowPath) &&
       allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)
     ) {
@@ -454,9 +459,9 @@ export default class AppFrontController extends Component {
     const theme = matchedRouteParams.hasOwnProperty('theme') ? matchedRouteParams.theme : 'default'
     const print = matchedPage
       ? matchedPage
-          .get('page')
-          .get('props')
-          .get('print') === true
+        .get('page')
+        .get('props')
+        .get('print') === true
       : false
 
     let footer = <Footer className={'footer-' + theme + '-theme'} />
@@ -522,3 +527,5 @@ export default class AppFrontController extends Component {
     )
   }
 }
+
+export default provide(AppFrontController)
