@@ -476,6 +476,8 @@ export default class ExploreDialect extends Component {
           </div>
 
           <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+            <div className="row">
+            <div className={classNames('col-xs-12')}>
             {featuredWords.length > 0 ? (
               <TextHeader
                 tag="h2"
@@ -536,7 +538,7 @@ export default class ExploreDialect extends Component {
             </div>
           </div>
 
-          <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+          <div className={classNames('col-xs-12')}>
             <TextHeader
               tag="h2"
               title={intl.trans('views.pages.explore.dialect.about', 'REGION DATA', 'upper')}
@@ -593,6 +595,10 @@ export default class ExploreDialect extends Component {
               </div>
             </div>
           </div>
+            </div>
+          </div>
+
+
         </div>
       </PromiseWrapper>
     )
