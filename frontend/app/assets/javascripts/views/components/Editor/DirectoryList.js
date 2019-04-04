@@ -19,12 +19,11 @@ import selectn from 'selectn'
 
 import SelectField from 'material-ui/lib/SelectField'
 import MenuItem from 'material-ui/lib/menus/menu-item'
-
+import StringHelpers, { CLEAN_ID } from 'common/StringHelpers'
 import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 
-@provide
-export default class DirectoryList extends Component {
+export class DirectoryList extends Component {
   static propTypes = {
     fetchDirectory: PropTypes.func.isRequired,
     computeDirectory: PropTypes.object.isRequired,
@@ -33,6 +32,7 @@ export default class DirectoryList extends Component {
     label: PropTypes.string.isRequired,
     fancy: PropTypes.bool,
     value: PropTypes.string,
+    dataTestId: PropTypes.string,
   }
 
   static defaultProps = {
@@ -56,7 +56,7 @@ export default class DirectoryList extends Component {
 
   componentWillReceiveProps(nextProps) {
     // Ensure value is in sync -- relevant for setting default value dynamically
-    if (nextProps.value != undefined) {
+    if (nextProps.value !== undefined) {
       this.props.onChange(nextProps.value)
     }
   }
@@ -66,20 +66,17 @@ export default class DirectoryList extends Component {
   }
 
   render() {
-    let previewStyles = {
-      padding: '10px',
-    }
-
     const { computeDirectory } = this.props
 
-    let entries = selectn('directories.' + this.props.directory, computeDirectory) || []
-
+    const entries = selectn('directories.' + this.props.directory, computeDirectory) || []
+    const dataTestId = StringHelpers.clean(this.props.dataTestId, CLEAN_ID)
     return (
       <div>
         {this.props.fancy ? (
           <SelectField
+            data-testid={dataTestId}
             maxHeight={300}
-            autoWidth={true}
+            autoWidth
             value={this.props.value}
             onChange={this._handleChange}
             floatingLabelText={intl.trans('select_x', 'Select ' + this.props.label, 'first', [this.props.label]) + ':'}
@@ -89,7 +86,9 @@ export default class DirectoryList extends Component {
             ))}
           </SelectField>
         ) : (
-          <select value={this.props.value} onChange={this._handleStandardSelectChange}>
+          <select onChange={this._handleStandardSelectChange} data-testid={dataTestId}>
+          {/* Note: Had a conflict and `value={this.props.value}` was the incoming change */}
+          {/* <select value={this.props.value} onChange={this._handleStandardSelectChange} data-testid={dataTestId}> */}
             {entries.map((entry) => (
               <option key={entry.value} value={entry.value}>
                 {entry.text}
@@ -101,3 +100,4 @@ export default class DirectoryList extends Component {
     )
   }
 }
+export default provide(DirectoryList)

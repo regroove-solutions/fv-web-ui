@@ -13,16 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-
+import React from 'react'
 import ConfGlobal from 'conf/local.json'
 import selectn from 'selectn'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 export default {
   renderComplexArrayRow(dataItems = [], render) {
-    let rows = []
+    const rows = []
 
-    dataItems.map(function(entry, i) {
+    dataItems.map(function dataItemsMap(entry, i) {
       rows.push(render(entry, i))
     })
 
@@ -61,6 +61,7 @@ export default {
       case 'OriginalJpeg':
         i = 3
         break
+      default: // Note: do nothing
     }
 
     if (selectn('views[' + i + ']', imgObj)) {
@@ -92,7 +93,7 @@ export default {
       e.stopPropagation()
     }
 
-    let audioItem = new Audio(audioUrl)
+    const audioItem = new Audio(audioUrl)
 
     if (state.nowPlaying != null) {
       state.nowPlaying.pause()
@@ -105,7 +106,7 @@ export default {
 
     audioItem.play()
 
-    audioItem.onended = function() {
+    audioItem.onended = function audioItemOnended() {
       stateFunc({
         nowPlaying: null,
       })
@@ -134,7 +135,7 @@ export default {
     switch (size) {
       case 'xs':
         return window.innerWidth <= 420
-        break
+      default: // Note: do nothing
     }
 
     return false

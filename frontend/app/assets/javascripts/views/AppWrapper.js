@@ -14,51 +14,52 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
+// import ReactDOM from 'react-dom'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import classNames from 'classnames'
-
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
+// import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
 
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+// import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 import AppFrontController from './AppFrontController'
 
 import Shepherd from 'tether-shepherd'
 
-import FontIcon from 'material-ui/lib/font-icon'
-import Paper from 'material-ui/lib/paper'
-import FlatButton from 'material-ui/lib/flat-button'
+// import FontIcon from 'material-ui/lib/font-icon'
+// import Paper from 'material-ui/lib/paper'
+// import FlatButton from 'material-ui/lib/flat-button'
 
 import IntlService from 'views/services/intl'
 
-const getPosition = function getPosition() {
-  var doc = document,
-    w = window
-  var x, y, docEl
+// const getPosition = function getPosition() {
+//   const doc = document
+//   const w = window
+//   let x
+//   let y
+//   let docEl
 
-  if (typeof w.pageYOffset === 'number') {
-    x = w.pageXOffset
-    y = w.pageYOffset
-  } else {
-    docEl = doc.compatMode && doc.compatMode === 'CSS1Compat' ? doc.documentElement : doc.body
-    x = docEl.scrollLeft
-    y = docEl.scrollTop
-  }
-  return { x: x, y: y }
-}
+//   if (typeof w.pageYOffset === 'number') {
+//     x = w.pageXOffset
+//     y = w.pageYOffset
+//   } else {
+//     docEl = doc.compatMode && doc.compatMode === 'CSS1Compat' ? doc.documentElement : doc.body
+//     x = docEl.scrollLeft
+//     y = docEl.scrollTop
+//   }
+//   return { x: x, y: y }
+// }
 
 /**
  * Finds the xPath for a component, leading up to the 'app-wrapper'.
  * Used as a utility for creating Shepherd tours
  */
-function findComponentParents(el) {
+function findComponentParents(_el) {
   let parents = []
-  let originalEl = el
+  let el = _el
+  const originalEl = el
 
   if (!el.getAttribute('data-component-id')) {
     return null
@@ -72,8 +73,8 @@ function findComponentParents(el) {
     }
 
     if (el.tagName) {
-      let appendClass = el.className ? '.' + el.className.replace(/\s/g, '.').replace(/\:/g, '\\:') : ''
-      let appendData = el.getAttribute('data-component-id')
+      const appendClass = el.className ? '.' + el.className.replace(/\s/g, '.').replace(/\:/g, '\\:') : '' // eslint-disable-line
+      const appendData = el.getAttribute('data-component-id')
         ? "[data-component-id='" + el.getAttribute('data-component-id') + "']"
         : ''
 
@@ -89,25 +90,25 @@ function findComponentParents(el) {
   return parents.join(' ')
 }
 
-const getPreferences = function(login, dialect) {
-  let preferenceString = selectn('response.properties.preferences', login)
-  let parsedPreferences = preferenceString ? JSON.parse(preferenceString) : {}
-  let flattenedPreferences = {}
+const getPreferences = function getPreferences(login, dialect) {
+  const preferenceString = selectn('response.properties.preferences', login)
+  const parsedPreferences = preferenceString ? JSON.parse(preferenceString) : {}
+  const flattenedPreferences = {}
 
-  for (var preferenceCat in parsedPreferences) {
-    for (var preference in parsedPreferences[preferenceCat]) {
+  for (const preferenceCat in parsedPreferences) {
+    for (const preference in parsedPreferences[preferenceCat]) {
       flattenedPreferences[preference] = parsedPreferences[preferenceCat][preference]
     }
   }
 
   // Dialect assignment
-  flattenedPreferences['primary_dialect_path'] = selectn('path', dialect)
+  flattenedPreferences.primary_dialect_path = selectn('path', dialect)
 
   return flattenedPreferences
 }
 
 @provide
-export default class AppWrapper extends Component {
+class AppWrapper extends Component {
   intl = IntlService.instance
   intlBaseKey = 'views'
 
@@ -136,7 +137,7 @@ export default class AppWrapper extends Component {
    * Pass essential context to all children
    */
   getChildContext() {
-    let newContext = {
+    const newContext = {
       muiTheme: this.props.properties.theme.palette,
     }
 
@@ -174,16 +175,16 @@ export default class AppWrapper extends Component {
     }*/
 
   _startAdminGuideAssist() {
-    let doms = document.querySelectorAll('[data-component-id]')
+    const doms = document.querySelectorAll('[data-component-id]')
 
-    let tour = new Shepherd.Tour({
+    const tour = new Shepherd.Tour({
       defaults: {
         classes: 'shepherd-theme-arrows',
       },
     })
 
-    document.onkeydown = function(e) {
-      e = e || window.event
+    document.onkeydown = function documentOnkeydown(_e) {
+      const e = _e || window.event
       switch (e.which || e.keyCode) {
         case 37:
           tour.back()
@@ -192,11 +193,12 @@ export default class AppWrapper extends Component {
         case 39:
           tour.next()
           break
+        default: // Note: do nothing
       }
     }
 
-    doms.forEach(function(dom, i) {
-      let xpath = findComponentParents(dom)
+    doms.forEach(function domsForEach(dom, i) {
+      const xpath = findComponentParents(dom)
 
       //if (!document.querySelector(xpath)) {
       //  console.log(xpath);
@@ -211,10 +213,10 @@ export default class AppWrapper extends Component {
           showCancelLink: true,
           scrollTo: true,
           when: {
-            show: function() {
+            show: () => {
               dom.style.border = '2px blue dashed'
             },
-            hide: function() {
+            hide: () => {
               dom.style.border = 'initial'
             },
           },
@@ -230,18 +232,19 @@ export default class AppWrapper extends Component {
   }
 
   render() {
-    let controller = null
-
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
 
-    let warnings = {}
+    const warnings = {}
 
-    let preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
+    const preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
 
     return (
       <div
-        style={{ backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties) }}
-        style={{ fontSize: UIHelpers.getPreferenceVal('font_size', preferences) }}
+        id="AppWrapper"
+        style={{
+          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
+          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
+        }}
       >
         <AppFrontController preferences={preferences} warnings={warnings} />
 
@@ -273,3 +276,5 @@ export default class AppWrapper extends Component {
     )
   }
 }
+
+export default AppWrapper

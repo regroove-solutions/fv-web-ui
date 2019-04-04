@@ -1,4 +1,5 @@
-import selectn from 'selectn'
+import React from 'react'
+import selectn from "selectn"
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'

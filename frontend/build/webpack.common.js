@@ -33,7 +33,7 @@ const CopyPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const GitRevisionPlugin = require('git-revision-webpack-plugin')
 
-var gitRevisionPlugin = new GitRevisionPlugin()
+const gitRevisionPlugin = new GitRevisionPlugin()
 
 // Phaser webpack config , requried by fv-games
 // TODO : Move this as a peer dependency of games and have games to import them
@@ -301,5 +301,11 @@ module.exports = {
     net: 'empty',
     tls: 'empty',
     console: true,
+  },
+  // https://webpack.js.org/configuration/performance/
+  performance: {
+    maxAssetSize: 250000,
+    maxEntrypointSize: 250000,
+    hints: 'warning',
   },
 }

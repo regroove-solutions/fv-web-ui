@@ -1,11 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import t from 'tcomb-form'
+import StringHelpers, { CLEAN_ID } from 'common/StringHelpers'
 
 function renderInput(locals) {
-  const onChange = function(event) {
+  const onChange = function virtualKeyboardOnChange(event) {
     locals.onChange(event.target.value)
   }
-
   return (
     <div>
       <input
@@ -18,7 +18,8 @@ function renderInput(locals) {
       />
       <input
         type="text"
-        id={'virtual-keyboard-helper-' + locals.attrs.name}
+        data-testid={StringHelpers.clean(locals.attrs.name, CLEAN_ID)}
+        id={'virtual-keyboard-helper-' + StringHelpers.clean(locals.attrs.name, CLEAN_ID)}
         value={locals.value}
         className="form-control"
         label={locals.label}

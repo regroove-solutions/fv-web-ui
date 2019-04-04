@@ -5,18 +5,20 @@
       "jsx": true
     }
   },
-  "plugins": ["react"],
+  "plugins": ["react", "cypress"],
   "extends": ["eslint:recommended", "plugin:react/recommended"],
   "settings": {
     "react": {
-      "version": "detect" // React version. "detect" automatically picks the version you have installed.
+      "version": "0.14.9" // React version. "detect" automatically picks the version you have installed.
       // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
     }
   },
   "env": {
     "es6": true,
     "browser": true,
-    "node": true
+    "node": true,
+    "jest": true,
+    "cypress/globals": true
   },
   "rules": {
     "block-scoped-var": 0, // http://eslint.org/docs/rules/block-scoped-var
@@ -113,7 +115,7 @@
     "no-param-reassign": 2, // http://eslint.org/docs/rules/no-param-reassign
     "no-proto": 2, // http://eslint.org/docs/rules/no-proto
     "no-redeclare": 2, // http://eslint.org/docs/rules/no-redeclare
-    "no-return-assign": 2, // http://eslint.org/docs/rules/no-return-assign
+    "no-return-assign": 1, // http://eslint.org/docs/rules/no-return-assign
     "no-script-url": 2, // http://eslint.org/docs/rules/no-script-url
     "no-self-compare": 2, // http://eslint.org/docs/rules/no-self-compare
     "no-sequences": 2, // http://eslint.org/docs/rules/no-sequences
@@ -130,7 +132,7 @@
     "no-var": 2, // http://eslint.org/docs/rules/no-var
     "no-with": 2, // http://eslint.org/docs/rules/no-with
     "one-var": [2, "never"], // http://eslint.org/docs/rules/one-var
-    "padded-blocks": [2, "never"], // http://eslint.org/docs/rules/padded-blocks
+    "padded-blocks": [1, "never"], // http://eslint.org/docs/rules/padded-blocks
     "prefer-const": 2, // http://eslint.org/docs/rules/prefer-const
     "quotes": [
       2,
@@ -159,12 +161,12 @@
     "react/jsx-sort-prop-types": 0, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-sort-prop-types.md
     "react/jsx-uses-react": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-uses-react.md
     "react/jsx-uses-vars": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/jsx-uses-vars.md
-    "react/no-did-mount-set-state": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-mount-set-state.md
-    "react/no-did-update-set-state": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-update-set-state.md
+    "react/no-did-mount-set-state": 1, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-mount-set-state.md
+    "react/no-did-update-set-state": 1, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-did-update-set-state.md
     "react/no-multi-comp": 0, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-multi-comp.md
     "react/no-string-refs": 1, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-string-refs.md
     "react/no-unknown-property": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-unknown-property.md
-    "react/prop-types": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
+    "react/prop-types": 1, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/prop-types.md
     "react/react-in-jsx-scope": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/react-in-jsx-scope.md
     "react/self-closing-comp": 2, // https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/self-closing-comp.md
     "react/sort-comp": [
