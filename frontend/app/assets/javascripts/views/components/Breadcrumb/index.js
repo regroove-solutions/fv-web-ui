@@ -10,14 +10,13 @@ import { PropTypes } from 'react'
 import provide from 'react-redux-provide'
 import { Link } from 'provide-page'
 import Immutable from 'immutable'
-
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
 
 const { array, string, object } = PropTypes
 
 const intl = IntlService.instance
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search']
+const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search', 'nuxeo', 'app', 'explore']
 
 export class Breadcrumb extends Component {
   static propTypes = {
@@ -50,7 +49,12 @@ export class Breadcrumb extends Component {
   }
   _renderBreadcrumb() {
     const { matchedPage, findReplace, routeParams, splitWindowPath, routes } = this.props
-
+    // console.log('!!!', {
+    //   matchedPage: JSON.stringify(matchedPage.toJS()),
+    //   findReplace: JSON.stringify(findReplace),
+    //   routeParams: JSON.stringify(routeParams),
+    //   splitWindowPath: JSON.stringify(splitWindowPath),
+    // })
     // Note: `splitPath` could be the `splitWindowPath` prop or what is returned from `breadcrumbPathOverride()`,
     //       `breadcrumbPathOverride` is an optional property on a route item, typically added via `addPagination()`
     let splitPath = splitWindowPath
@@ -59,20 +63,36 @@ export class Breadcrumb extends Component {
       splitPath = breadcrumbPathOverride(splitPath)
     }
 
+    // Figure out the index of the Dialect in splitPath
+    let indexDialect = -1
+    if (routeParams.dialect_path) {
+      const dialectPathSplit = routeParams.dialect_path.split('/').filter((path) => {
+        return path !== ''
+      })
+      const indexFV = splitPath.indexOf('FV')
+      indexDialect = indexFV !== -1 ? indexFV + dialectPathSplit.length - 1 : -1
+    }
+
     const breadcrumbs = splitPath.map((splitPathItem, splitPathIndex) => {
-      // PSUEDO: check if have an invaild item or one that should be exluded
-      if (splitPathItem && splitPathItem !== '' && REMOVE_FROM_BREADCRUMBS.indexOf(splitPathItem) === -1) {
+      if (
+        splitPathItem &&
+        splitPathItem !== '' &&
+        REMOVE_FROM_BREADCRUMBS.indexOf(splitPathItem) === -1 &&
+        splitPathIndex >= indexDialect // Omits Language and Language Family from breadcrumb
+      ) {
         let pathTitle = splitPathItem
 
         if (findReplace) {
           pathTitle = splitPathItem.replace(findReplace.find, findReplace.replace)
         }
 
+        const DialectHomePage = splitPathIndex === indexDialect ? intl.trans('home_page', 'Home Page') : ''
+
         // Last element (i.e. current page)
         if (splitPathIndex === splitPath.length - 1) {
           return (
             <li key={splitPathIndex} className="active">
-              {decodeURIComponent(pathTitle)}
+              {`${decodeURIComponent(pathTitle)} ${DialectHomePage}`}
             </li>
           )
         }
@@ -118,7 +138,7 @@ export class Breadcrumb extends Component {
         return (
           <li key={splitPathIndex}>
             <Link key={splitPathIndex} href={hrefPath}>
-              {intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}
+              {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}
             </Link>
           </li>
         )

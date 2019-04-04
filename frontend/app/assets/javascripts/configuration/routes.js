@@ -313,10 +313,12 @@ const routes = [
   {
     path: ['test'],
     page: <Pages.PageTest />,
+    breadcrumbs: false,
   },
   {
     path: ['debug', 'end-points'],
     page: <Pages.PageDebugAPI />,
+    breadcrumbs: false,
   },
   {
     path: [new paramMatch('theme', new RegExp('kids'))],
@@ -351,6 +353,7 @@ const routes = [
     title: intl.translate({ key: 'user_profile', default: 'User Profile', case: 'words' }),
     page: <Pages.PageUsersProfile />,
     redirects: [NOT_CONNECTED_REDIRECT],
+    breadcrumbs: false,
   },
   {
     path: ['forgotpassword'],
@@ -491,6 +494,7 @@ const routes = [
     page: <Pages.PageExploreFamily />,
     extractPaths: true,
     redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+    breadcrumbs: false,
   },
   {
     path: [
@@ -511,6 +515,7 @@ const routes = [
     page: <Pages.PageExploreLanguage />,
     extractPaths: true,
     redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+    breadcrumbs: false,
   },
   {
     id: 'page_explore_dialect',
