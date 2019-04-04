@@ -140,9 +140,9 @@ export class Search extends DataListView {
           ' AND ecm:primaryType IN (' +
           documentTypeFilter +
           ')' +
-          " AND ecm:fulltext = '*" +
+          " AND ecm:fulltext LIKE '" +
           StringHelpers.clean(props.routeParams.searchTerm, CLEAN_FULLTEXT) +
-          "*'" +
+          "'" +
           // More specific: ' AND (ecm:fulltext_description = \'' + props.routeParams.searchTerm + '\' OR ecm:fulltext_title = \'' + props.routeParams.searchTerm + '\')' +
           '&currentPageIndex=' +
           (pageIndex - 1) +
