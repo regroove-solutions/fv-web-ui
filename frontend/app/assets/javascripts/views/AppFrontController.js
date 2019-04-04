@@ -7,20 +7,19 @@ import selectn from 'selectn'
 import classNames from 'classnames'
 
 import ConfGlobal from 'conf/local.json'
-import ConfRoutes, { paramMatch } from 'conf/routes'
+import ConfRoutes, { matchPath } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 // import UIHelpers from 'common/UIHelpers'
 import StringHelpers from 'common/StringHelpers'
 // import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
-import { Link } from 'provide-page'
-
 import FlatButton from 'material-ui/lib/flat-button'
 import Navigation from 'views/components/Navigation'
 import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher'
 import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
+import Breadcrumb from 'views/components/Breadcrumb'
 
 import IntlService from 'views/services/intl'
 
@@ -106,7 +105,6 @@ const allowedToAccessWorkspaces = function allowedToAccessWorkspaces(windowPath,
   return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
 }
 
-
 export class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -129,7 +127,7 @@ export class AppFrontController extends Component {
     this.state = this._getInitialState()
 
     // Bind methods to 'this'
-    ;['_matchPath', '_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   _getInitialState() {
@@ -201,8 +199,8 @@ export class AppFrontController extends Component {
     const routes = routesOverride || this.state.routes
 
     routes.forEach((value) => {
-      const matchTest = this._matchPath(value.get('path'), pathArray)
-      const matchAlias = this._matchPath(value.get('alias'), pathArray)
+      const matchTest = matchPath(value.get('path'), pathArray)
+      const matchAlias = matchPath(value.get('alias'), pathArray)
 
       // If only the alias matched, redirect to the original path
       if (matchAlias.matched && !matchTest.matched) {
@@ -376,75 +374,43 @@ export class AppFrontController extends Component {
       window.location.href = nextProps.windowPath.replace('Workspaces', 'sections')
     }
   }
-
   _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {
     const themePalette = props.properties.theme.palette.rawTheme.palette
-
+    const { routeParams } = reactElement.props
+    const { splitWindowPath, computeLogin } = props
+    const { routes } = this.state
+    let _workspaceSwitcher = null
+    const area = selectn('routeParams.area', reactElement.props)
+    if (
+      area &&
+      selectn('isConnected', computeLogin) &&
+      matchedPage.get('disableWorkspaceSectionNav') !== true &&
+      !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
+    ) {
+      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
+    }
+    const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
+    const findReplace = overrideBreadcrumbs
+      ? { find: overrideBreadcrumbs.find, replace: selectn(overrideBreadcrumbs.replace, this.props.properties) }
+      : undefined
     return (
       <div>
         <div className="breadcrumbContainer row">
           <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
-            {(() => {
-              const area = selectn('routeParams.area', reactElement.props)
-
-              if (
-                area &&
-                selectn('isConnected', props.computeLogin) &&
-                matchedPage.get('disableWorkspaceSectionNav') !== true &&
-                !ProviderHelpers.isSiteMember(selectn('response.properties.groups', props.computeLogin))
-              ) {
-                return <WorkspaceSwitcher area={area} />
-              }
-            })()}
+            {_workspaceSwitcher}
+            <Breadcrumb
+              className="pull-left"
+              matchedPage={matchedPage}
+              routes={routes}
+              routeParams={routeParams}
+              splitWindowPath={splitWindowPath}
+              findReplace={findReplace}
+            />
           </div>
         </div>
-
         <div className={'page-' + theme + '-theme'}>{reactElement}</div>
       </div>
     )
-  }
-
-  /**
-   * Tests to see if current URL matches route.
-   * Return object with matched boolean and route params returned
-   */
-  _matchPath(pathMatchArray, urlPath) {
-    // Remove empties from path array, return Immutable list
-    const currentPathArray = Immutable.fromJS(
-      urlPath.filter((e) => {
-        return e
-      })
-    )
-
-    if (!pathMatchArray) {
-      return false
-    }
-
-    if (pathMatchArray.size != currentPathArray.size) {
-      return { matched: false, routeParams: {} }
-    }
-
-    const matchedRouteParams = {}
-
-    const matched = pathMatchArray.every((value, key) => {
-      if (value instanceof RegExp) {
-        return value.test(currentPathArray.get(key))
-      } else if (value instanceof paramMatch) {
-        if (value.hasOwnProperty('matcher')) {
-          const testMatch = value.matcher.test(currentPathArray.get(key))
-
-          if (testMatch) {
-            matchedRouteParams[value.id] = decodeURI(currentPathArray.get(key))
-            return true
-          }
-        }
-
-        return false
-      }
-      return value === currentPathArray.get(key)
-    })
-
-    return { matched: matched, routeParams: matchedRouteParams }
   }
 
   render() {
@@ -459,9 +425,9 @@ export class AppFrontController extends Component {
     const theme = matchedRouteParams.hasOwnProperty('theme') ? matchedRouteParams.theme : 'default'
     const print = matchedPage
       ? matchedPage
-        .get('page')
-        .get('props')
-        .get('print') === true
+          .get('page')
+          .get('props')
+          .get('print') === true
       : false
 
     let footer = <Footer className={'footer-' + theme + '-theme'} />
