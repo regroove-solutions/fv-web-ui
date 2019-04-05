@@ -494,7 +494,7 @@ export default class DocumentOperations {
 
     return new Promise((resolve, reject) => {
       const defaultParams = {
-        query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${queryPath}' AND ecm:isTrashed = 0) AND ecm:primaryType IN (${docTypes}) AND ecm:fulltext = '*${queryParam}*' ORDER BY dc:title ASC`,
+        query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${queryPath}' AND ecm:isTrashed = 0) AND ecm:primaryType IN (${docTypes}) AND ecm:fulltext LIKE '${queryParam}' ORDER BY dc:title ASC`,
       }
 
       params = Object.assign(defaultParams, params)

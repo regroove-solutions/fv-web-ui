@@ -69,8 +69,8 @@ export default class ExploreDialects extends Component {
       open: false,
     }
 
-    this.titleFieldMapping = 'contextParameters.ancestry.dialect.dc:title'
-    this.logoFieldMapping = 'contextParameters.portal.fv-portal:logo'
+    this.titleFieldMapping = 'contextParameters.lightancestry.dialect.dc:title'
+    this.logoFieldMapping = 'contextParameters.lightportal.fv-portal:logo'
 
     // Bind methods to 'this'
     ;['_portalEntriesSort'].forEach((method) => (this[method] = this[method].bind(this)))
@@ -158,7 +158,7 @@ export default class ExploreDialects extends Component {
   _fetchData(newProps) {
     newProps.fetchPortals(
       'get_dialects',
-      { 'enrichers.document': 'ancestry,portal', properties: '*' },
+      { 'enrichers.document': 'lightancestry,lightportal', properties: '' },
       { queryParams: newProps.routeParams.area }
     )
   }
