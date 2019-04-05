@@ -42,17 +42,11 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
 import RadioButton from 'material-ui/lib/radio-button'
 import RadioButtonGroup from 'material-ui/lib/radio-button-group'
 
-import Badge from 'material-ui/lib/badge'
 import DropDownMenu from 'material-ui/lib/DropDownMenu'
-// import RaisedButton from 'material-ui/lib/raised-button'
 import FlatButton from 'material-ui/lib/flat-button'
-
 import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import IconButton from 'material-ui/lib/icon-button'
-// import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert'
-import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications'
-// import ActionHelp from 'material-ui/lib/svg-icons/action/help'
 import Popover from 'material-ui/lib/popover/popover'
 import Avatar from 'material-ui/lib/avatar'
 
@@ -68,8 +62,7 @@ import IntlService from 'views/services/intl'
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
-@provide
-export default class Navigation extends Component {
+export class Navigation extends Component {
   intl = IntlService.instance
 
   static defaultProps = {
@@ -271,7 +264,7 @@ export default class Navigation extends Component {
       this.refs.navigationSearchField.setValue('')
 
       if (searchQueryParam && searchQueryParam != '') {
-        let finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
+        const finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
         this.props.replaceWindowPath(finalPath)
       }
     }
@@ -336,7 +329,10 @@ export default class Navigation extends Component {
           }
           showMenuIconButton={isDialect ? true : true}
           // TODO: see about removing onLeftIconButtonTouchTap
-          onLeftIconButtonTouchTap={this._handleOpenMenuRequest}
+          onLeftIconButtonTouchTap={() => {
+            // debugger
+            this._handleOpenMenuRequest()
+          }}
         >
           <ToolbarGroup style={{ position: 'relative', color: '#fff' }}>
             <div
@@ -694,3 +690,5 @@ export default class Navigation extends Component {
     )
   }
 }
+
+export default provide(Navigation)
