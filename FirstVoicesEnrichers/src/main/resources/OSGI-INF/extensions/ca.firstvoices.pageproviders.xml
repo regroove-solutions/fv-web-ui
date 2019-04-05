@@ -8,6 +8,7 @@
     <genericPageProvider name="es_nxql_search" 
        class="org.nuxeo.elasticsearch.provider.ElasticSearchNxqlPageProvider">
        <property name="coreSession">#{documentManager}</property>
+        <property name="checkQueryCache">true</property>
        <property name="maxResults">-1</property>
        <aggregates></aggregates>
        <maxPageSize>5000</maxPageSize>
