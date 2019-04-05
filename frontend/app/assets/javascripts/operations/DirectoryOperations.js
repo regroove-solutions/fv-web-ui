@@ -174,11 +174,13 @@ export default class DirectoryOperations {
   static getDocumentsViaPageProvider(
     pageProvider = '',
     type = "Document", // eslint-disable-line
-    queryAppend = '',
     headers = null,
     params = null
   ) {
-    const defaultParams = {}
+
+    let queryParams = []; 
+
+    const defaultParams = { pageProvider: pageProvider }
     const defaultHeaders = {}
 
     const _params = Object.assign(defaultParams, params)
@@ -190,10 +192,7 @@ export default class DirectoryOperations {
       properties.client
         .headers(_headers)
         .repository()
-        .query({
-          pageProvider: pageProvider,
-          queryParams: Object.values(_params),
-        })
+        .query(_params)
         .then((docs) => {
           resolve(docs)
         })

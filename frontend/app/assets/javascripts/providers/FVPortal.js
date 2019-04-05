@@ -34,7 +34,7 @@ const fetchPortals = function fetchPortals(page_provider, headers = {}, params =
   return function(dispatch) {
     dispatch({ type: FV_FETCH_PORTALS_START })
 
-    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVPortal', '', headers, params)
+    return DirectoryOperations.getDocumentsViaPageProvider(page_provider, 'FVPortal', headers, params)
       .then((response) => {
         dispatch({ type: FV_FETCH_PORTALS_FETCH_SUCCESS, documents: response })
       })

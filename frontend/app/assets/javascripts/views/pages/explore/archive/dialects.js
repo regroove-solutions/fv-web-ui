@@ -103,7 +103,7 @@ export default class ExploreDialects extends Component {
     const portalsEntries = selectn('response.entries', this.props.computePortals) || []
     // Sort based on dialect name (all FVPortals have dc:title 'Portal')
     const sortedPortals = portalsEntries.sort(this._portalEntriesSort)
-
+    
     const isLoggedIn = this.props.computeLogin.success && this.props.computeLogin.isConnected
 
     const portalListProps = {
@@ -159,7 +159,7 @@ export default class ExploreDialects extends Component {
     newProps.fetchPortals(
       'get_dialects',
       { 'enrichers.document': 'lightancestry,lightportal', properties: '' },
-      { area: newProps.routeParams.area }
+      { queryParams: newProps.routeParams.area }
     )
   }
 
