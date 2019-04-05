@@ -6,7 +6,9 @@
 		<register class="ca.firstvoices.nuxeo.enrichers.DialectEnricher" enable="true" />		
 		<register class="ca.firstvoices.nuxeo.enrichers.ParentDocEnricher" enable="true" />
 		<register class="ca.firstvoices.nuxeo.enrichers.PhraseEnricher" enable="true" />
-		<register class="ca.firstvoices.nuxeo.enrichers.PortalEnricher" enable="true" />	
+		<register class="ca.firstvoices.nuxeo.enrichers.PortalEnricher" enable="true" />
+		<register class="ca.firstvoices.nuxeo.enrichers.LightPortalEnricher" enable="true" />
+		<register class="ca.firstvoices.nuxeo.enrichers.LightAncestryEnricher" enable="true" /> 	
 		<register class="ca.firstvoices.nuxeo.enrichers.BookEnricher" enable="true" />	
 		<register class="ca.firstvoices.nuxeo.enrichers.WordEnricher" enable="true" />
 		<register class="ca.firstvoices.nuxeo.enrichers.MediaEnricher" enable="true" />

@@ -454,28 +454,33 @@ export default class ExploreDialect extends Component {
             </div>
 
             <div>
-              {selectn('response.properties.fv-portal:news', computePortal) ||
-                (!isSection && (
-                  <AuthorizationFilter
-                    filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
-                    renderPartial
-                  >
-                    <div>
-                      <h3>{intl.trans('news', 'News', 'first')}</h3>
-                      <EditableComponentHelper
-                        isSection={isSection}
-                        computeEntity={computePortal}
-                        updateEntity={updatePortal}
-                        property="fv-portal:news"
-                        entity={selectn('response', computePortal)}
-                      />
-                    </div>
-                  </AuthorizationFilter>
-                ))}
+              {(() => {
+                  if (!isSection || selectn('response.properties.fv-portal:news', computePortal)) {
+                    return (
+                      <AuthorizationFilter
+                        filter={{ permission: 'Write', entity: selectn('response', computeDialect2) }}
+                        renderPartial
+                      >
+                      <div>
+                        <h3>{intl.trans('news', 'News', 'first')}</h3>
+                        <EditableComponentHelper
+                          isSection={isSection}
+                          computeEntity={computePortal}
+                          updateEntity={updatePortal}
+                          property="fv-portal:news"
+                          entity={selectn('response', computePortal)}
+                        />
+                      </div>
+                    </AuthorizationFilter>
+                    )
+                  }
+                })()}
             </div>
           </div>
 
           <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+            <div className="row">
+            <div className={classNames('col-xs-12')}>
             {featuredWords.length > 0 ? (
               <TextHeader
                 tag="h2"
@@ -536,7 +541,7 @@ export default class ExploreDialect extends Component {
             </div>
           </div>
 
-          <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-1')}>
+          <div className={classNames('col-xs-12')}>
             <TextHeader
               tag="h2"
               title={intl.trans('views.pages.explore.dialect.about', 'REGION DATA', 'upper')}
@@ -593,6 +598,10 @@ export default class ExploreDialect extends Component {
               </div>
             </div>
           </div>
+            </div>
+          </div>
+
+
         </div>
       </PromiseWrapper>
     )
