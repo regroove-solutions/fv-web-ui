@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
@@ -25,9 +25,6 @@ import NavigationHelpers from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-// Views
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
@@ -36,8 +33,8 @@ const intl = IntlService.instance
 /**
  * Create word entry
  */
-@provide
-export default class PageDialectWordsCreate extends Component {
+
+export class PageDialectWordsCreate extends Component {
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
@@ -73,7 +70,8 @@ export default class PageDialectWordsCreate extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentWord, nextWord
+    let currentWord
+    let nextWord
 
     if (this.state.wordPath != null) {
       currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
@@ -94,19 +92,17 @@ export default class PageDialectWordsCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps) {
     switch (true) {
       case newProps.windowPath != this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect2 != this.props.computeDialect2:
         return true
-        break
 
       case newProps.computeWord != this.props.computeWord:
         return true
-        break
+      default: // Note: do nothing
     }
 
     return false
@@ -116,12 +112,12 @@ export default class PageDialectWordsCreate extends Component {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_word_create'].getValue()
+    const formValue = this.refs.form_word_create.getValue()
 
     //let properties = '';
-    let properties = {}
+    const properties = {}
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
         if (formValue[key] && formValue[key] != '') {
           //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
@@ -136,7 +132,7 @@ export default class PageDialectWordsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createWord(
         this.props.routeParams.dialect_path + '/Dictionary',
         {
@@ -158,7 +154,7 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   render() {
-    let FVWordOptions = Object.assign({}, selectn('FVWord', options))
+    const FVWordOptions = Object.assign({}, selectn('FVWord', options))
 
     const computeEntities = Immutable.fromJS([
       {
@@ -171,7 +167,7 @@ export default class PageDialectWordsCreate extends Component {
       },
     ])
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
+    // const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Set default value on form
@@ -179,14 +175,14 @@ export default class PageDialectWordsCreate extends Component {
       selectn('fields.fv:definitions.item.fields.language.attrs', FVWordOptions) &&
       selectn('response.properties.fvdialect:dominant_language', computeDialect2)
     ) {
-      FVWordOptions['fields']['fv:definitions']['item']['fields']['language']['attrs']['defaultValue'] = selectn(
+      FVWordOptions.fields['fv:definitions'].item.fields.language.attrs.defaultValue = selectn(
         'response.properties.fvdialect:dominant_language',
         computeDialect2
       )
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {intl.trans(
             'views.pages.explore.dialect.learn.words.add_new_word_to_x',
@@ -218,3 +214,5 @@ export default class PageDialectWordsCreate extends Component {
     )
   }
 }
+
+export default provide(PageDialectWordsCreate)
