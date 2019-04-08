@@ -92,8 +92,8 @@ module.exports = {
     // Ensure locally /nuxeo requests are rewritten to localhost:8080, unless rendering app
     proxy: [{
       context: ['/nuxeo/**', '!/nuxeo/app/**'],
-      target: 'http://localhost:8080'
-    }]
+      target: 'http://localhost:8080',
+    }],
   },
 
   /**
@@ -101,6 +101,7 @@ module.exports = {
    */
   entry: {
     app: path.resolve(sourceScriptsDirectory, 'app.js'),
+    createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/create.js'),
     game_libs: ['pixi', 'p2', 'phaser'],
   },
 
@@ -130,9 +131,9 @@ module.exports = {
    */
   optimization: {
     runtimeChunk: 'single',
-    splitChunks: {
-      chunks: 'all',
-    },
+    // splitChunks: {
+    //   chunks: 'all',
+    // },
   },
 
   /**
@@ -228,17 +229,17 @@ module.exports = {
       {
         test: /\.less$/,
         use: [{
-          loader: MiniCssExtractPlugin.loader
+          loader: MiniCssExtractPlugin.loader,
         }, {
           loader: 'css-loader', options: {
             // #context-path-issue
             // Disable resolving URLs because of context path - /nuxeo/app/
             // Absolute path /assets/image.jpg won't work on dev/uat, relative paths will throw compilation error otherwise.
-            url: false
-          }
+            url: false,
+          },
         }, {
-          loader: 'less-loader'
-        }]
+          loader: 'less-loader',
+        }],
       },
       /**
        * Font loaders
