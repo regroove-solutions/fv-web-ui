@@ -29,6 +29,7 @@ import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
 
+import { CreateV2 } from './CreateV2'
 const intl = IntlService.instance
 /**
  * Create word entry
@@ -191,7 +192,10 @@ export class PageDialectWordsCreate extends Component {
             [selectn('response.title', computeDialect2)]
           )}
         </h1>
-
+        <h2 style={{ marginTop: '15px' }}>------------START new form------------</h2>
+        <CreateV2 />
+        <h2>------------END new form------------</h2>
+        <h2 style={{ marginTop: '15px' }}>------------START OLD form------------</h2>
         <div className="row" style={{ marginTop: '15px' }}>
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
