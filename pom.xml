@@ -98,6 +98,12 @@
         <artifactId>migration-contributions</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>ca.firstvoices</groupId>
+        <artifactId>FirstVoicesSecurity</artifactId>
+        <type>test-jar</type>
+        <version>${project.version}</version>
+    </dependency>
     </dependencies>
   </dependencyManagement>
 
