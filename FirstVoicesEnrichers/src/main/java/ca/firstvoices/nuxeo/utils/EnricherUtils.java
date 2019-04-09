@@ -59,7 +59,7 @@ public class EnricherUtils {
         try {
             if (!session.exists(ref)) {
                 log.warn("Document with id: " + binaryId + " does not exist");
-                return binaryJsonObj;
+                return null;
             }
             if (!session.hasPermission(ref, SecurityConstants.READ)) {
                 return binaryJsonObj;
@@ -133,7 +133,7 @@ public class EnricherUtils {
 
         try {
             if (!session.hasPermission(ref, SecurityConstants.READ)) {
-                return linkJsonObj;
+                return null;
             }
             linkDoc = session.getDocument(ref);
 
@@ -176,7 +176,7 @@ public class EnricherUtils {
 
         try {
             if (!session.hasPermission(ref, SecurityConstants.READ)) {
-                return jsonObj;
+                return null;
             }
             doc = session.getDocument(ref);
             // Build JSON node

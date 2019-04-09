@@ -55,12 +55,12 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
 
             if (StringUtils.isNotEmpty(languageFamilyId)) {
                 resolvedDoc = resolveTargetDoc(languageFamilyId, doc.isProxy(), session);
+                ObjectNode languageFamilyObj = mapper.createObjectNode();
                 if (resolvedDoc != null) {
-                    ObjectNode languageFamilyObj = mapper.createObjectNode();
                     languageFamilyObj.put("uid", languageFamilyId);
                     languageFamilyObj.put("dc:title", resolvedDoc.getTitle());
-                    jsonObj.set("family", languageFamilyObj);
                 }
+                jsonObj.set("family", languageFamilyObj);
             }
 
             // Process Language
@@ -69,12 +69,12 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
 
             if (StringUtils.isNotEmpty(languageId)) {
                 resolvedDoc = resolveTargetDoc(languageId, doc.isProxy(), session);
+                ObjectNode languageObj = mapper.createObjectNode();
                 if (resolvedDoc != null) {
-                    ObjectNode languageObj = mapper.createObjectNode();
                     languageObj.put("uid", languageId);
                     languageObj.put("dc:title", resolvedDoc.getTitle());
-                    jsonObj.set("language", languageObj);
                 }
+                jsonObj.set("language", languageObj);
             }
 
             // Process Dialect
@@ -83,17 +83,16 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
 
             if (StringUtils.isNotEmpty(dialectId)) {
                 resolvedDoc = resolveTargetDoc(dialectId, doc.isProxy(), session);
+                ObjectNode dialectDoc = mapper.createObjectNode();
                 if (resolvedDoc != null) {
-                    ObjectNode dialectDoc = mapper.createObjectNode();
                     dialectDoc.put("uid", dialectId);
                     dialectDoc.put("dc:title", resolvedDoc.getTitle());
                     dialectDoc.put("path", resolvedDoc.getPathAsString());
-
                     dialectDoc.put("fvdialect:country", (String) resolvedDoc.getPropertyValue("fvdialect:country"));
                     dialectDoc.put("fvdialect:region", (String) resolvedDoc.getPropertyValue("fvdialect:region"));
 
-                    jsonObj.set("dialect", dialectDoc);
                 }
+                jsonObj.set("dialect", dialectDoc);
 
             }
             return jsonObj;
