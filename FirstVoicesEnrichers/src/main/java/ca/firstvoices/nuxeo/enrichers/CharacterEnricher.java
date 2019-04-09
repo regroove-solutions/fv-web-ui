@@ -8,17 +8,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
 import org.nuxeo.ecm.core.api.DocumentSecurityException;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import ca.firstvoices.nuxeo.utils.EnricherUtils;
 
@@ -77,11 +79,13 @@ public class CharacterEnricher extends AbstractJsonEnricher<DocumentModel> {
             if (wordIds != null) {
                 ArrayNode wordArray = mapper.createArrayNode();
                 for (String wordId : wordIds) {
-                    IdRef ref = new IdRef(wordId);
+                    if (!session.hasPermission(new IdRef(wordId), SecurityConstants.READ)) {
+                        continue;
+                    }
                     DocumentModel wordDoc = null;
                     // Try to retrieve Nuxeo document. If it isn't found, continue to next iteration.
                     try {
-                        wordDoc = session.getDocument(ref);
+                        wordDoc = session.getDocument(new IdRef(wordId));
                     } catch (DocumentNotFoundException | DocumentSecurityException de) {
                         continue;
                     }
