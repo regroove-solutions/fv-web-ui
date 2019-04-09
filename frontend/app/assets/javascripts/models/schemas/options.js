@@ -95,7 +95,7 @@ const RelatedMediaLayout = (locals) => (
             textTransform: 'none',
           }}
           label={locals.add.label}
-          onTouchTap={locals.add.click}
+          onClick={locals.add.click}
         />
       </legend>
       {(locals.items || []).map((item, i) => (

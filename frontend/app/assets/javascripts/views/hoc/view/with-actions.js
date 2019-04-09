@@ -279,7 +279,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                 <FlatButton
                   label={intl.trans('cancel', 'Cancel', 'first')}
                   secondary={true}
-                  onTouchTap={() =>
+                  onClick={() =>
                     this.setState({
                       prePublishDialogOpen: false,
                       publishToggleCancelled: true,
@@ -291,7 +291,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                   label={intl.trans('publish', 'Publish', 'first')}
                   primary={true}
                   keyboardFocused={true}
-                  onTouchTap={this.state.prePublishCompleteAction}
+                  onClick={this.state.prePublishCompleteAction}
                 />,
               ]}
               modal={false}
@@ -348,7 +348,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                 <ToolbarGroup key={0} float="right">
                   <RaisedButton
                     icon={<FontIcon className="material-icons">delete</FontIcon>}
-                    onTouchTap={() => this.setState({ deleteDialogOpen: true })}
+                    onClick={() => this.setState({ deleteDialogOpen: true })}
                     secondary={true}
                     label={intl.trans(
                       'views.hoc.view.delete_x',
@@ -371,13 +371,13 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                   <FlatButton
                     label={intl.trans('cancel', 'Cancel', 'first')}
                     secondary={true}
-                    onTouchTap={() => this.setState({ deleteDialogOpen: false })}
+                    onClick={() => this.setState({ deleteDialogOpen: false })}
                   />,
                   <FlatButton
                     label={intl.trans('delete', 'Delete', 'first')}
                     primary={true}
                     keyboardFocused={true}
-                    onTouchTap={this._delete.bind(this, selectn('response', this.props.computeItem))}
+                    onClick={this._delete.bind(this, selectn('response', this.props.computeItem))}
                   />,
                 ]}
                 modal={false}
@@ -414,7 +414,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                   <FlatButton
                     label={intl.trans('views.hoc.view.return_to_previous_page', 'Return to Previous Page', 'words')}
                     secondary={true}
-                    onTouchTap={() => window.history.back()}
+                    onClick={() => window.history.back()}
                   />,
                   <FlatButton
                     label={intl.trans(
@@ -424,7 +424,7 @@ export default function withActions(ComposedFilter, publishWarningEnabled = fals
                     )}
                     primary={true}
                     keyboardFocused={true}
-                    onTouchTap={this.props.onNavigateRequest.bind(
+                    onClick={this.props.onNavigateRequest.bind(
                       this,
                       '/' + this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length - 2).join('/')
                     )}

@@ -150,7 +150,7 @@ export default class Wordscramble extends Component {
         <p style={{ textAlign: 'center' }}>
           <a
             href="#"
-            onTouchTap={this._changeContent.bind(
+            onClick={this._changeContent.bind(
               this,
               selectn('response.currentPageIndex', computePhrases),
               selectn('response.pageCount', computePhrases)
@@ -293,7 +293,7 @@ export class Scramble extends Component {
               src={UIHelpers.getThumbnail(this.props.sentence.picture, 'Thumbnail')}
             />{' '}
             {this.props.sentence.translation}{' '}
-            {this.state.complete ? <IconButton onTouchTap={audioCallback}>{audioIcon}</IconButton> : ''}
+            {this.state.complete ? <IconButton onClick={audioCallback}>{audioIcon}</IconButton> : ''}
           </div>
           <div style={{ minHeight: '50px', borderBottom: '1px solid #CCC', marginBottom: '16px' }}>
             {this.state.selected.map((word, index) => {

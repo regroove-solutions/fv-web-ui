@@ -44,7 +44,7 @@ export default function withToggle() {
               icon={icon}
               label={labelText}
               labelPosition="before"
-              onTouchTap={(e) => {
+              onClick={(e) => {
                 this.setState({ open: !this.state.open })
                 e.preventDefault()
               }}

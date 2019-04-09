@@ -125,7 +125,7 @@ export default class Index extends Component {
             >
               <RaisedButton
                 label={intl.trans('views.pages.explore.dialect.users.create_new_user', 'Create New User', 'words')}
-                onTouchTap={this._onNavigateRequest.bind(this, ['register'])}
+                onClick={this._onNavigateRequest.bind(this, ['register'])}
                 primary={true}
               />
             </AuthorizationFilter>

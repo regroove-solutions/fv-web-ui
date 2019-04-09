@@ -70,8 +70,8 @@ class SharedResourceGridTile extends Component {
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
         ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-            selectn('dc:title', resourceParentDialect),
-          ])
+          selectn('dc:title', resourceParentDialect),
+        ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
         <IconButton tooltip={tooltip} tooltipPosition="top-left">
@@ -82,7 +82,7 @@ class SharedResourceGridTile extends Component {
 
     return (
       <GridTile
-        onTouchTap={this.props.action ? this.props.action.bind(this, this.props.tile) : null}
+        onClick={this.props.action ? this.props.action.bind(this, this.props.tile) : null}
         key={selectn('uid', tile)}
         title={selectn('properties.dc:title', tile)}
         actionPosition="right"
@@ -147,8 +147,8 @@ class BrowseComponent extends React.Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-        })
+        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+      })
       : DefaultFetcherParams
 
     this.state = {
@@ -196,7 +196,7 @@ class BrowseComponent extends React.Component {
     const dialectPath = selectn('path', dialect)
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onTouchTap={this._handleClose} />,
+      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onClick={this._handleClose} />,
     ]
 
     let title = ''
@@ -309,7 +309,7 @@ class BrowseComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
+        <RaisedButton label={this.props.label} onClick={this._handleOpen} />
         <Dialog
           title={title}
           actions={actions}

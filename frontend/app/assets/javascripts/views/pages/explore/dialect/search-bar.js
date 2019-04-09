@@ -69,7 +69,7 @@ export default class SearchBar extends Component {
           onEnterKeyDown={this._handleDialectSearchSubmit}
         />
         <IconButton
-          onTouchTap={this._handleDialectSearchSubmit}
+          onClick={this._handleDialectSearchSubmit}
           iconClassName="material-icons"
           iconStyle={{ fontSize: '24px' }}
           tooltip={intl.trans('search', 'Search', 'first')}

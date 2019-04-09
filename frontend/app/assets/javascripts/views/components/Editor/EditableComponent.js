@@ -162,7 +162,7 @@ export default class EditableComponent extends Component {
             width: '22px',
             display: this.props.accessDenied ? 'none' : 'inline-block',
           }}
-          onTouchTap={this._onEditRequest.bind(this, property)}
+          onClick={this._onEditRequest.bind(this, property)}
           tooltip={intl.trans('edit', 'Edit', 'first')}
         >
           mode_edit

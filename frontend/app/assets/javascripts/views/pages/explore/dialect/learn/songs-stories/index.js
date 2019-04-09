@@ -173,7 +173,7 @@ export default class PageDialectLearnStoriesAndSongs extends Component {
                   'words',
                   [this.props.typeFilter]
                 )}
-                onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')}
+                onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/create')}
                 primary
               />
             </AuthorizationFilter>

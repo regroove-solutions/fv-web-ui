@@ -151,7 +151,7 @@ export default class GridView extends Component {
                 <IconButton
                   style={{ marginRight: '10px' }}
                   iconStyle={{ width: '40px', height: '40px' }}
-                  onTouchTap={audioCallback}
+                  onClick={audioCallback}
                 >
                   {audioIcon}
                 </IconButton>
@@ -159,7 +159,7 @@ export default class GridView extends Component {
 
               return (
                 <GridTile
-                  onTouchTap={this.props.action ? this.props.action.bind(this, tile.uid, tile) : audioCallback}
+                  onClick={this.props.action ? this.props.action.bind(this, tile.uid, tile) : audioCallback}
                   key={i}
                   title={title}
                   titleBackground="rgba(180, 0, 0, 0.75)"

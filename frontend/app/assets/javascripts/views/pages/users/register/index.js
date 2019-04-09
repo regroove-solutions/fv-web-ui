@@ -255,7 +255,7 @@ export default class Register extends Component {
 
               <div className="form-group">
                 <RaisedButton
-                  onTouchTap={this._onRequestSaveForm.bind(this, this.props.computeLogin)}
+                  onClick={this._onRequestSaveForm.bind(this, this.props.computeLogin)}
                   primary={true}
                   label={intl.trans('register', 'Register', 'first')}
                 />

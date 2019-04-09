@@ -13,28 +13,30 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react')
-var classNames = require('classnames')
-var Mui = require('material-ui')
-var _ = require('underscore')
-var PubSub = require('pubsub-js')
-var { RaisedButton } = Mui
+const React = require('react')
+const classNames = require('classnames')
+const Mui = require('material-ui')
+const _ = require('underscore')
+const PubSub = require('pubsub-js')
+// const { RaisedButton } = Mui
 
-var WordOperations = require('operations/WordOperations')
+const WordOperations = require('operations/WordOperations')
 
-var injectTapEventPlugin = require('react-tap-event-plugin')
+const injectTapEventPlugin = require('react-tap-event-plugin')
 
 // https://github.com/facebook/react/issues/3451#issuecomment-83000311
-var ThemeManager = new Mui.Styles.ThemeManager()
+const ThemeManager = new Mui.Styles.ThemeManager()
 
 class AnswerMQ extends React.Component {
   constructor(props) {
     super(props)
 
-    //Needed for onTouchTap
-    //Can go away when react 1.0 release
-    //Check this repo:
-    //https://github.com/zilverline/react-tap-event-plugin
+    // NOTE: SEE ABOUT DROPPING THE BELOW injectTapEventPlugin
+
+    // Needed for onTouchTap
+    // Can go away when react 1.0 release
+    // Check this repo:
+    // https://github.com/zilverline/react-tap-event-plugin
     injectTapEventPlugin()
 
     this.eventName = 'ANSWERMQ'
@@ -55,16 +57,16 @@ class AnswerMQ extends React.Component {
         "(ecm:primaryType='Picture' OR ecm:primaryType='Audio')"
       ).then(
         function(answerMedia) {
-          var tmpArray = []
-          tmpArray['picture'] = _.findWhere(answerMedia, { type: 'Picture' })
-          tmpArray['audio'] = _.findWhere(answerMedia, { type: 'Audio' })
+          const tmpArray = []
+          tmpArray.picture = _.findWhere(answerMedia, { type: 'Picture' })
+          tmpArray.audio = _.findWhere(answerMedia, { type: 'Audio' })
 
           this.setState({ answerMedia: tmpArray })
 
           WordOperations.getMediaBlobById(
             props.client,
-            this.state.answerMedia['picture'].uid,
-            this.state.answerMedia['picture'].properties['file:content']['mime-type'],
+            this.state.answerMedia.picture.uid,
+            this.state.answerMedia.picture.properties['file:content']['mime-type'],
             'picture:views/item[2]/content'
           ).then(
             function(response) {
@@ -88,8 +90,8 @@ class AnswerMQ extends React.Component {
     if (this.state.audio == null) {
       WordOperations.getMediaBlobById(
         this.props.client,
-        this.state.answerMedia['audio'].uid,
-        this.state.answerMedia['audio'].properties['file:content']['mime-type']
+        this.state.answerMedia.audio.uid,
+        this.state.answerMedia.audio.properties['file:content']['mime-type']
       ).then(
         function(response) {
           this.setState({
@@ -100,10 +102,10 @@ class AnswerMQ extends React.Component {
     }
 
     // TODO: Stop all other audio
-    var selectedAudio = document.getElementById(this.state.answer.uid + '-audio')
-    var allAudio = document.getElementsByClassName('audio')
+    const selectedAudio = document.getElementById(this.state.answer.uid + '-audio')
+    const allAudio = document.getElementsByClassName('audio')
 
-    _.each(allAudio, function(element) {
+    _.each(allAudio, function allAudioEach(element) {
       if (element != undefined && element.canplay) {
         element.pause()
         element.currentTime = 0
@@ -120,7 +122,15 @@ class AnswerMQ extends React.Component {
       <div className="col-xs-6">
         <div className={classNames('imgContAnswer', this.props.selected ? 'selectedImgContAnswer' : '')}>
           {this.state.image != null ? (
-            <img onTouchTap={this._handleClick} className="image" src={this.state.image} alt="" />
+            <img
+              onTouchTap={() => {
+                // TODO: SEE ABOUT SWAPPING THE ABOVE `onTouchTap` FOR `onClick`
+                this._handleClick()
+              }}
+              className="image"
+              src={this.state.image}
+              alt=""
+            />
           ) : (
             'Loading...'
           )}

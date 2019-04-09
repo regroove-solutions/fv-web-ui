@@ -13,14 +13,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-var React = require('react')
-var classNames = require('classnames')
-var Mui = require('material-ui')
-var PubSub = require('pubsub-js')
-var { RaisedButton } = Mui
+const React = require('react')
+const classNames = require('classnames')
+const Mui = require('material-ui')
+const PubSub = require('pubsub-js')
+const { RaisedButton } = Mui
 
 // https://github.com/facebook/react/issues/3451#issuecomment-83000311
-var ThemeManager = new Mui.Styles.ThemeManager()
+const ThemeManager = new Mui.Styles.ThemeManager()
 
 class Answer extends React.Component {
   constructor(props) {
@@ -55,7 +55,7 @@ class Answer extends React.Component {
         <RaisedButton
           style={this._getStyles()}
           primary={this.props.selected}
-          onTouchTap={this._handleClick}
+          onClick={this._handleClick}
           label={this.props.data ? this.props.data['dc:title'] : 'Loading...'}
         />
       </div>
