@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACE;
 import org.nuxeo.ecm.core.api.security.ACL;
@@ -20,6 +22,8 @@ import ca.firstvoices.utils.CustomSecurityConstants;
  * Language recorders policies
  */
 public class LanguageRecorders extends AbstractSecurityPolicy {
+
+    private static final Log log = LogFactory.getLog(LanguageRecorders.class);
 
     // A list of document types with ReadWrite Permissions
     private static ArrayList<String> allowedDocumentTypes = new ArrayList<String>();
@@ -66,6 +70,9 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
 
         List<String> resolvedPermissionsList = Arrays.asList(resolvedPermissions);
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
+
+        log.debug("Checking permission: " + permission + " on doc: " + doc.getUUID() + " for user: "
+                + principal.getName());
 
         // Skip administrators, system and users who aren't recorders
         if (additionalPrincipalsList.contains("administrators") || principal.equals("system")
@@ -122,6 +129,8 @@ public class LanguageRecorders extends AbstractSecurityPolicy {
                 || additionalPrincipalsList.contains(CustomSecurityConstants.RECORDERS_APPROVERS_GROUP)) {
             if (!allowedDocumentTypes.contains(docType)
                     && (resolvedPermissionsList.contains(CustomSecurityConstants.CAN_ASK_FOR_PUBLISH))) {
+                log.debug("Access denied on Resolvers: ");
+
                 return Access.DENY;
             }
         }

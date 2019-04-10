@@ -6,6 +6,8 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -21,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(AncestryEnricher.class);
 
     public static final String NAME = "ancestry";
 
@@ -49,6 +53,7 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
              */
 
             // Process Language Family
+            log.debug("Constructing ancestry for doc: " + doc.getId());
 
             DocumentModel resolvedDoc = doc;
             String languageFamilyId = (String) doc.getProperty("fvancestry", "family");
