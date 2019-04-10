@@ -16,7 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import Immutable, { List, Map } from 'immutable'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import provide from 'react-redux-provide'
 import selectn from 'selectn'

@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'

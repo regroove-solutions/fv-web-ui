@@ -20,7 +20,7 @@ For additional dependencies see package.json.
 There are several version dependency requirements to properly build and run the project:
 
 - NodeJS>=v8.10 (10.15.3)
-- Yarn v1.5.1 or NPM v5.6.0
+- NPM v5.6.0
 
 Instructions to install specific project dependencies and running the application are described in the _Setting Up and Running_ section.
 
@@ -68,13 +68,7 @@ $ nvm install 8.10.0
 $ nvm use 8.10.0
 ```
 
-5. Install Yarn v1.5.1 by running:
-
-```bash
-$ npm install -g yarn@1.5.1
-```
-
-6. To successfully run Yarn, you need to configure your `~/.ssh/config` file so that Yarn knows which RSA Key to use when cloning GitHub repositories. If you don't have an RSA Key [generate](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) one and [add](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/) it to your GitHub account. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
+5. To successfully run NPM, you need to configure your `~/.ssh/config` file so that NPM knows which RSA Key to use when cloning GitHub repositories. If you don't have an RSA Key [generate](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/) one and [add](https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/) it to your GitHub account. Create a `~/.ssh/config` file if it does not already exist. Add the following entry to your `~/.ssh/config` file while replacing `<mykey>` as needed:
 
 ```
 # Github RSA Key
@@ -84,27 +78,45 @@ Host github.com
     IdentityFile ~/.ssh/<mykey>_rsa
 ```
 
-7. Run Yarn to download `node_modules` dependencies by running:
+6. Run npm to download `node_modules` dependencies by running:
 
 ```bash
-$ yarn
+$ npm install
 ```
 
-Important Note: when running Yarn for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed. If you recieve an error when running Yarn you may need to close your terminal and try running it again.
+Important Note: when running 'npm install' for the first time you will be silently prompted to enter the Key Phrase for the RSA Key you added to the `~/.ssh/config` file. If progress halts and a small `lock icon` appears, enter your RSA Key Phrase to proceed. If you recieve an error when running 'npm install' you may need to close your terminal and try running it again.
 
-8. Start the dev server:
+7. Assuming you have a local instance of a Nuxeo server running on localhost:8080, you can start the dev server:
 
 ```bash
 $ npm run start
 ```
 
-9. Building development files (used for debugging development build files)
+If you don't have a local Nuxeo instance, you can point the front-end to a different Nuxeo instance like so:
+
+```bash
+$ npm run start -- --env.NUXEO_URL="https://FV_DEV_NUXEO_HOST/nuxeo/"
+```
+
+If you are running the app locally on localhost:3001 (the default) with no context path, you can make sure absolute URLs point to the correct links like so:
+
+```bash
+$ npm run start -- --env.NUXEO_URL="https://FV_DEV_NUXEO_HOST/nuxeo/" --env.WEB_URL="http://localhost:3001/"
+```
+
+If you are in a situation where you need a context path (e.g. /nuxeo/app) for your front-end, you can configure one like so:
+
+```bash
+$ npm run start -- --env.NUXEO_URL="https://FV_DEV_NUXEO_HOST/nuxeo/" --env.WEB_URL="http://localhost:3001/"  --env.CONTEXT_PATH="/nuxeo/app"
+```
+
+8. Building development files (used for debugging development build files)
 
 ```bash
 $ npm run development
 ```
 
-10. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
+9. Visit [localhost:3001](http://localhost:3001) in your web browser to view the FirstVoices Dictionary Prototype app.
 
 ## Building for Production
 
@@ -124,7 +136,7 @@ _Note:_ Remember to configure your web application to rewrite all requests to th
 
 ### Adding New Dependencies
 
-Install dependencies using `yarn add package` or `yarn add package --dev`
+Install dependencies using `npm install --save` or `npm install --save-dev`
 
 ### Tips
 

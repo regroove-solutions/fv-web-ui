@@ -1,8 +1,10 @@
-{
+const CONTEXT_PATH = (ENV_CONTEXT_PATH != null && typeof ENV_CONTEXT_PATH !== 'undefined') ? ENV_CONTEXT_PATH : "";
+
+module.exports = {
   "title": "FirstVoices",
   "domain": "FV",
   "apiURL": "https://api.firstvoices.com/v1/",
-  "contextPath": "/nuxeo/app",
+  "contextPath": CONTEXT_PATH,
   "testData": {
     "sectionOrWorkspaces": "/FV/Workspaces/Data/",
     "languageFamilyPath": "MyTestLanguage",
@@ -53,4 +55,4 @@
       }
     }
   }
-}
+};

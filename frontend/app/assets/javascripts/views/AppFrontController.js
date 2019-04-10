@@ -6,7 +6,7 @@ import selectn from 'selectn'
 
 import classNames from 'classnames'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { matchPath } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'

@@ -24,7 +24,7 @@ import ThemeManager from 'material-ui/lib/styles/theme-manager'
 
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 // Providers provide reducers and actions
 import providers from './providers/index'

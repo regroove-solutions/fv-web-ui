@@ -1,3 +1,6 @@
+// Webpack
+const webpack = require("webpack");
+
 // Path
 const path = require('path')
 
@@ -45,7 +48,7 @@ const p2 = path.join(phaserModule, 'build/custom/p2.js')
 /**
  * Common Webpack Configuration
  */
-module.exports = {
+module.exports = env => ({
   /**
    * The context is an absolute string to the directory that contains the entry files.
    **/
@@ -169,6 +172,11 @@ module.exports = {
       { from: sourceFaviconsDirectory, to: outputDirectory },
       { from: sourceGamesDirectory, to: outputGamesDirectory },
     ]),
+    new webpack.DefinePlugin({
+      ENV_NUXEO_URL: (env && env.NUXEO_URL) ? JSON.stringify(env.NUXEO_URL) : null,
+      ENV_WEB_URL: (env && env.WEB_URL) ? JSON.stringify(env.WEB_URL) : null,
+      ENV_CONTEXT_PATH: (env && env.CONTEXT_PATH) ? JSON.stringify(env.CONTEXT_PATH) : null
+    })
   ],
 
   /**
@@ -308,4 +316,4 @@ module.exports = {
     maxEntrypointSize: 250000,
     hints: 'warning',
   },
-}
+})

@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 import selectn from 'selectn'
 import classNames from 'classnames'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import IntlService from 'views/services/intl'
 
 export default class IntroCardView extends Component {

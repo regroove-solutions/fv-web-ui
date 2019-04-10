@@ -3,7 +3,7 @@ import thunk from 'redux-thunk'
 import Request from 'request'
 
 // Configuration
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 // Operations
 import BaseOperations from 'operations/BaseOperations'

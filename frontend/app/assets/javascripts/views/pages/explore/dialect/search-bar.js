@@ -15,7 +15,7 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
 import provide from 'react-redux-provide'

@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import StatusBar from 'views/components/StatusBar'
 

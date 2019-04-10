@@ -20,7 +20,7 @@ import ImageGallery from 'react-image-gallery'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import RaisedButton from 'material-ui/lib/raised-button'
 

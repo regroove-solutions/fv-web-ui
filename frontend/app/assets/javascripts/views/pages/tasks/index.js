@@ -20,7 +20,7 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import t from 'tcomb-form'
 
