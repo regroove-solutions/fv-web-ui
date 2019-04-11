@@ -133,10 +133,6 @@ export class Search extends DataListView {
       props.searchDocuments(
         this._getQueryPath(props),
         (props.routeParams.area === 'sections' ? ' AND ecm:isLatestVersion = 1' : ' ') +
-          // Exclude Demo from search
-          (!props.routeParams.dialect_path
-            ? " AND ecm:ancestorId <> 'b482d9df-e71b-40b5-9632-79b1fc2782d7' AND ecm:ancestorId <> '732c2ef6-19d3-45a8-97e7-b6cff7d84909' "
-            : ' ') +
           ' AND ecm:primaryType IN (' +
           documentTypeFilter +
           ')' +
