@@ -66,6 +66,7 @@ To install the mp on your Nuxeo:
 ```
 nuxeoctl mp-install FirstVoices-marketplace/target/FirstVoices-marketplace-package-3.0.1-SNAPSHOT.zip
 ```
+*Note:* If you are not running behind a proxy, add this property *fv.contextPath=app* in *nuxeo.conf* on your server
 *Note:* Check the actual package number after it was built. It maybe different than example above.
 
 *Method 2*
@@ -80,4 +81,16 @@ nuxeoctl mp-install FirstVoices-marketplace/target/FirstVoices-marketplace-packa
 ## Apps
 
 Default backend is : http://localhost:8080/nuxeo/jsf or http://localhost:8080/nuxeo/view_documents.faces
-React app at: http://localhost:8080/nuxeo/app/
+React app at: http://localhost:8080/nuxeo/app/ or at http://localhost:8080/ ( see above)
+
+## How to release
+Curently, we are realasing from the branch *dy-v2.2.0*:
+1. Perform a release of your branch in Studio
+2. Change the property *fv.studio.version* in the main *pom.xml* to point to that release instead of *migration-10-10-SNAPSHOT*
+3. Run the pipeline [firstvoices-release-pipeline](https://openshift.prod.nuxeo.io/console/project/cust-firstvoices/browse/pipelines/firstvoices-release-pipeline?tab=history) ; the pipeline will ask you to input the versioning schema you want for this release
+4. The pipeline will ask you if you want to deploy this version to Connect, click YES
+5. After the pipeline has finished and the release has done we want to be in SNAPSHOT again:
+- the poms have been changed to the next SNAPSHOT version. 
+- However, this was not done for the Studio version, so you have to manually change the property
+- *fv.studio.version* in the main *pom.xml*  to *migration-10-10-SNAPSHOT* or *your_branch_in_studio-SNAPSHOT*
+6. Create a SUPNXP and ask for the MP with version from XXX to be deployed in pre -production or prroduction
