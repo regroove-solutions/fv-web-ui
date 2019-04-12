@@ -1,6 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
 import FormContributor from './FormContributor'
+import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 const { string, array } = PropTypes
 
 export default class FormContributors extends React.Component {
@@ -131,11 +132,6 @@ export default class FormContributors extends React.Component {
       items,
     })
   }
-  getIndexOfElementById = (id, items) => {
-    return items.findIndex((element) => {
-      return element.props.id === id
-    })
-  }
   handleClickCreateContributor = () => {
     // console.log('! handleClickCreateContributor', this.index)
   }
@@ -146,47 +142,18 @@ export default class FormContributors extends React.Component {
     // console.log('! handleClickEditContributor')
   }
   handleClickRemoveItem = (id) => {
-    const _items = this.state.items
-    const sourceIndex = this.getIndexOfElementById(id, _items)
-    if (sourceIndex !== -1) {
-      // remove
-      const items = _items.filter((element) => {
-        return element.props.id !== id
-      })
-      // set
-      this.setState({
-        items,
-      })
-    }
+    this.setState({
+      items: removeItem({ id, items: this.state.items }),
+    })
   }
   handleClickMoveItemDown = (id) => {
-    this.handleClickMoveItem(1, id, this.state.items)
+    this.setState({
+      items: moveItemDown({ id, items: this.state.items }),
+    })
   }
   handleClickMoveItemUp = (id) => {
-    this.handleClickMoveItem(-1, id, this.state.items)
-  }
-  handleClickMoveItem = (direction, id, _items) => {
-    const items = [..._items]
-
-    const sourceIndex = this.getIndexOfElementById(id, items)
-    const sourceItem = items[sourceIndex]
-    let destinationIndex = sourceIndex + direction
-
-    // correct for overshoots
-    if (destinationIndex >= items.length) {
-      destinationIndex = items.length - 1
-    }
-    if (destinationIndex < 0) {
-      destinationIndex = 0
-    }
-
-    // swap
-    items[sourceIndex] = items[destinationIndex]
-    items[destinationIndex] = sourceItem
-
-    // set
     this.setState({
-      items,
+      items: moveItemUp({ id, items: this.state.items }),
     })
   }
 }
