@@ -113,7 +113,6 @@ export default class ExploreDialects extends Component {
         title: this.titleFieldMapping,
         logo: this.logoFieldMapping,
       },
-      showOnlyUserDialects: isLoggedIn && this.props.routeParams.area == 'Workspaces' ? true : false,
       items: sortedPortals,
     }
 

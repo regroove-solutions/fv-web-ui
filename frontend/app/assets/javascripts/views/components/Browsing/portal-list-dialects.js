@@ -35,7 +35,6 @@ export default class PortalListDialects extends Component {
     fieldMapping: PropTypes.object,
     pushWindowPath: PropTypes.func.isRequired,
     theme: PropTypes.string.isRequired,
-    showOnlyUserDialects: PropTypes.bool,
   }
 
   static defaultProps = {
@@ -43,7 +42,6 @@ export default class PortalListDialects extends Component {
       title: 'properties.dc:title',
       logo: 'properties.file:content',
     },
-    showOnlyUserDialects: false,
   }
 
   constructor(props, context) {
@@ -52,10 +50,6 @@ export default class PortalListDialects extends Component {
 
   render() {
     let items = this.props.filteredItems || this.props.items
-
-    if (this.props.showOnlyUserDialects) {
-      items = items.filter((tile) => ProviderHelpers.isActiveRole(selectn('contextParameters.lightportal.roles', tile)))
-    }
 
     return (
       <div className="DialectList">

@@ -90,21 +90,6 @@ class Redirecter extends Component {
     )
   }
 }
-
-const allowedToAccessWorkspaces = function allowedToAccessWorkspaces(windowPath, computeLogin, computeDialect2) {
-  // Don't perform any redirect if these aren't available.
-  if (
-    !selectn('success', computeLogin) ||
-    !computeDialect2 ||
-    !computeDialect2.get(0) ||
-    !computeDialect2.get(0).get('response')
-  ) {
-    return false
-  }
-
-  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
-}
-
 export class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
@@ -365,13 +350,6 @@ export class AppFrontController extends Component {
     ) {
       // Re-route if preferences change
       this._route(nextProps)
-    } else if (
-      // Re-route if trying to view Workspaces from different group
-      // TODO: Handle on back-end; hide all areas where you can access workspaces
-      ProviderHelpers.isDialectPath(nextProps.windowPath) &&
-      allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)
-    ) {
-      window.location.href = nextProps.windowPath.replace('Workspaces', 'sections')
     }
   }
   _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {

@@ -120,11 +120,8 @@ const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KID
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
-    // Condition 2: User is a site member (not specific dialect) and trying to access Workspaces
     return (
-      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)) ||
-      (ProviderHelpers.isSiteMember(selectn('response.properties.groups', params.props.computeLogin)) &&
-        NavigationHelpers.isWorkspace(params.props))
+      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props))
     )
   },
   target: (params) => {
