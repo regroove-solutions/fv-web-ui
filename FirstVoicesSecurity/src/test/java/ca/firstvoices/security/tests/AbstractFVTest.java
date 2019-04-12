@@ -1,13 +1,5 @@
 package ca.firstvoices.security.tests;
 
-import static org.nuxeo.ecm.core.api.security.SecurityConstants.EVERYTHING;
-import static org.nuxeo.ecm.platform.usermanager.GroupConfig.DEFAULT_ID_FIELD;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.EMAIL_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.FIRSTNAME_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.GROUPS_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.LASTNAME_COLUMN;
-import static org.nuxeo.ecm.platform.usermanager.UserConfig.USERNAME_COLUMN;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -16,6 +8,9 @@ import org.nuxeo.ecm.core.api.security.ACL;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
+
+import static org.nuxeo.ecm.platform.usermanager.GroupConfig.DEFAULT_ID_FIELD;
+import static org.nuxeo.ecm.platform.usermanager.UserConfig.*;
 
 public abstract class AbstractFVTest {
 
@@ -46,11 +41,11 @@ public abstract class AbstractFVTest {
         return userModel;
     }
 
-    public void setACL(DocumentModel doc, String username) {
+    public void setACL(DocumentModel doc, String username, String permission) {
         ACP acp = doc.getACP();
         ACL acl = acp.getOrCreateACL(ACL.LOCAL_ACL);
-        acl.clear();
-        acl.add(new ACE(username, EVERYTHING, true));
+        //acl.clear();
+        acl.add(new ACE(username, permission, true));
         acp.addACL(acl);
         doc.setACP(acp, true);
     }

@@ -1,33 +1,25 @@
 package ca.firstvoices.search;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import javax.inject.Inject;
-import javax.security.auth.login.LoginContext;
-
+import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
+import ca.firstvoices.security.tests.AbstractFVTest;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.nuxeo.ecm.core.api.CloseableCoreSession;
-import org.nuxeo.ecm.core.api.CoreInstance;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.*;
 import org.nuxeo.ecm.core.api.repository.RepositoryManager;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.PartialDeploy;
-import org.nuxeo.runtime.test.runner.TargetExtensions;
+import org.nuxeo.runtime.test.runner.*;
 
-import ca.firstvoices.publisher.services.FirstVoicesPublisherService;
-import ca.firstvoices.security.tests.AbstractFVTest;
+import javax.inject.Inject;
+import javax.security.auth.login.LoginContext;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(FeaturesRunner.class)
 @Features({ PlatformFeature.class })
@@ -80,7 +72,7 @@ public class TestSecurityPolicies extends AbstractFVTest {
         wordDoc = session.saveDocument(wordDoc);
         wordDoc.setPropertyValue("dc:title", "Test");
         wordDoc = session.saveDocument(wordDoc);
-        setACL(wordDoc, "members");
+        setACL(wordDoc, "members", SecurityConstants.EVERYTHING);
         session.save();
         assertNotNull(wordDoc);
 

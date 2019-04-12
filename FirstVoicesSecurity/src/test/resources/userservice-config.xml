@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<component name="ca.firstvoices.security.test.user-service-config">
+
+    <extension target="org.nuxeo.ecm.platform.usermanager.UserService"
+               point="userManager">
+        <userManager class="org.nuxeo.ecm.platform.usermanager.UserManagerImpl">
+            <userCacheName>userManagerCache</userCacheName>
+            <users>
+                <directory>userDirectory</directory>
+                <anonymousUser id="Guest">
+                    <property name="firstName">Anonymous</property>
+                    <property name="lastName">User</property>
+                </anonymousUser>
+                <virtualUser id="SITE_MEMBER">
+                    <property name="firstName">SITE_MEMBER</property>
+                    <property name="lastName">SITE_MEMBER</property>
+                    <group>members</group>
+                </virtualUser>
+                <virtualUser id="FPCC_ADMIN">
+                    <property name="firstName">FPCC_ADMIN</property>
+                    <property name="lastName">FPCC_ADMIN</property>
+                    <group>administrators</group>
+                </virtualUser>
+            </users>
+        </userManager>
+    </extension>
+
+</component>
