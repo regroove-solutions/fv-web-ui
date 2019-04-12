@@ -38,14 +38,28 @@ Since some of the Maven repositories require authentication, you need to setup a
 ## Build
 
 There are 2 ways to get your local packages on your Nuxeo instance. One is by running mvn clean install, and installing the generated package via command line, the other is by hot-reloading. Use the latter if you intend to develop or modify the packages.
+```
+By default, the packaged React App is running at http://localhost:8080/nuxeo/app. In production, the 
+server is running behind a reverse proxy, hiding the "/nuxeo/app" context path so you have to build the marketplace package and configure the server depending if you are behind a reverse proxy or not.  
+```
 
 *Method 1*
 
-In order to build the FirstVoices marketplace package run on branch migration-10.10:
+In order to build the FirstVoices marketplace package run on branch dy-v2.2.0:
+ - running with *NO reverse proxy*, for example when you run on your localhost
+```
+mvn clean install -Pdev
+```
+and set the following property in nuxeo.conf on your server
+```
+fv.contextPath=app
+```
 
+- running behind a reverse proxy
 ```
-mvn clean install
+mvn clean install -Pdev
 ```
+and dont set anything in nuxeo.conf, the packaged app is deployed at http://localhost:8080 
 
 To install the mp on your Nuxeo:
 
