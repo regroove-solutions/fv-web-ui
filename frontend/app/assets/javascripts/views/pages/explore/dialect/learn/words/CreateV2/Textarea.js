@@ -1,11 +1,12 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string } = PropTypes
+const { string, func } = PropTypes
 
 export default class Textarea extends React.Component {
   static defaultProps = {
     className: 'Textarea',
     value: '',
+    handleChange: () => {},
   }
 
   static propTypes = {
@@ -15,6 +16,7 @@ export default class Textarea extends React.Component {
     ariaDescribedby: string,
     className: string,
     value: string,
+    handleChange: func,
   }
 
   state = {
@@ -34,12 +36,14 @@ export default class Textarea extends React.Component {
           id={id}
           name={name}
           defaultValue={this.state.value}
-          onChange={this.handleChange}
+          onChange={this._handleChange}
         />
       </div>
     )
   }
-  handleChange = (event) => {
-    this.setState({ value: event.target.value })
+  _handleChange = (event) => {
+    const value = event.target.value
+    this.setState({ value })
+    this.props.handleChange(value)
   }
 }
