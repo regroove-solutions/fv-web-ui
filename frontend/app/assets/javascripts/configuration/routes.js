@@ -1,5 +1,5 @@
 import React from 'react'
-import selectn from "selectn"
+import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -8,6 +8,7 @@ import IntlService from 'views/services/intl'
 
 import * as Pages from 'views/pages'
 import { ServiceShortURL } from 'views/services'
+import UIHelpers from 'common/UIHelpers'
 
 const intl = IntlService.instance
 
@@ -63,7 +64,7 @@ const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTI
 const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE)
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT))
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search']
+// const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search']
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
@@ -235,7 +236,7 @@ const routes = [
         },
         target: (params) => {
           const start_page = selectn('preferences.start_page', params.props)
-          const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
+          // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
           return (
             '/' +
             (start_page === 'my_kids_dialect' ? 'kids' : 'explore') +
@@ -1155,6 +1156,35 @@ const routes = [
       }) +
       ' | {$dialect_name}',
     page: <Pages.PageDialectWordsCreate />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'learn',
+      'words',
+      'create2',
+    ],
+    title:
+      intl.translate({
+        key: 'create',
+        default: 'Create',
+        case: 'words',
+      }) +
+      ', ' +
+      intl.translate({
+        key: 'words',
+        default: 'Words',
+        case: 'words',
+      }) +
+      ', {$dialect_name}',
+    page: <Pages.CreateV2 />,
     extractPaths: true,
   },
   {
