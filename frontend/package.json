@@ -51,7 +51,7 @@
   "dependencies": {
     "@fpcc/fv-flash-cards-pdf": "^1.0.1",
     "@fpcc/fv-game-colouring-book": "^1.0.1",
-    "@fpcc/fv-game-jigsaw": "^1.0.0",
+    "@fpcc/fv-game-jigsaw": "^1.0.1",
     "@fpcc/fv-game-memory": "^1.0.0",
     "@fpcc/fv-game-wordsearch": "^1.0.0",
     "alloyeditor": "1.5.16",
