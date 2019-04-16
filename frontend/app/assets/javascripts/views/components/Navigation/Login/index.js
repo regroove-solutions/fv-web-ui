@@ -148,9 +148,30 @@ export default class Login extends Component {
 
     return (
       <div style={{ display: "inline-block", padding: "0 0 0 10px" }}>
-        <a className="nav_link" href={NavigationHelpers.getBaseURL() + "login.jsp"}>
+        <a
+          className="nav_link"
+          ref={(el) => {
+            this.anchorEl = el
+          }}
+          onClick={this._handleOpen}
+        >
           SIGN IN
         </a>
+        <Popover
+          open={this.state.open}
+          anchorEl={ReactDOM.findDOMNode(this.anchorEl)}
+          anchorOrigin={{ horizontal: "left", vertical: "bottom" }}
+          targetOrigin={{ horizontal: "middle", vertical: "top" }}
+          onRequestClose={() => this.setState({ showCancelWarning: false })}
+        >
+          <div style={{ width: "400px", padding: "10px", margin: "0 5px", borderRadius: "5px" }}>
+            <p>
+              Hi! We are performing maintenance on the site. Login, edits and registration are currently disabled. We
+              expect to return to normal operations within less than 24 hours.
+            </p>
+            <input type="button" value="Close Message" onClick={this._handleClose} />
+          </div>
+        </Popover>
       </div>
     )
   }
