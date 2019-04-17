@@ -163,7 +163,7 @@ public class FVRegistrationMailUtilities {
             if (baseRequest.endsWith("/nuxeo")) {
                 baseRequest = baseRequest.substring(0, baseRequest.indexOf("/nuxeo"));
             }
-            options.put("appURL", baseRequest + (baseRequest.endsWith("/") ? "" : "/") + fvContextPath);
+            options.put("appURL", baseRequest + (StringUtils.isEmpty(fvContextPath) ? "" : ("/" + fvContextPath)));
             options.put("siteURL", siteURL);
 
             try {
