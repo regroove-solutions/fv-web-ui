@@ -150,8 +150,9 @@ export default class ExploreDialect extends Component {
     // }
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest(path, e) {
     this.props.pushWindowPath(path)
+    e.preventDefault();
   }
 
   _onSwitchAreaRequest(e, index, value) {
