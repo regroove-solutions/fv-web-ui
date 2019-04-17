@@ -1,29 +1,29 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormContributor from './FormContributor'
+// import Text from './Text'
+import FormRelatedAudioItem from './FormRelatedAudioItem'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
-const { string, array, func } = PropTypes
+const { string, array } = PropTypes
 
-export default class FormContributors extends React.Component {
+export default class FormRelatedAudio extends React.Component {
   static defaultProps = {
-    className: 'FormContributors',
-    idDescribedbyItemBrowse: 'describedbyItemBrowse',
-    idDescribedByItemMove: 'describedByItemMove',
-    name: 'FormContributors',
-    textDescribedbyItemBrowse: 'Select a Contributor from previously created Contributors',
-    textDescribedByItemMove:
-      "If you are adding multiple Contributors, you can change the position of the Contributor with the 'Move Contributor up' and 'Move Contributor down' buttons",
-    textLegendItems: 'Contributors',
-    textBtnAddItem: 'Add Contributor',
-    textLegendItem: 'Contributor',
-    textBtnEditItem: 'Edit Contributor',
-    textBtnRemoveItem: 'Remove Contributor',
-    textBtnMoveItemUp: 'Move Contributor up',
-    textBtnMoveItemDown: 'Move Contributor down',
-    textBtnCreateItem: 'Create new Contributor',
-    textBtnSelectExistingItems: 'Select from existing Contributors',
-    textLabelItemSearch: 'Search existing Contributors',
-    handleItemsUpdate: () => {},
+    className: 'FormRelatedAudio',
+    idDescribedbyItemBrowse: 'describedbyRelatedAudioBrowse',
+    idDescribedByItemMove: 'describedByRelatedAudioMove',
+    name: 'FormRelatedAudio',
+    textDescribedbyItemBrowse: 'Select an audio sample from previously uploaded items',
+    textDescribedByItemMove: `If you are adding multiple Related Audio Items, you can change the position of the item with
+    the 'Move Related Audio Item left' and 'Move Related Audio Item right' buttons`,
+    textLegendItems: 'Related Audio',
+    textBtnAddItem: 'Add Related Audio Item',
+    textLegendItem: 'Related Audio Item',
+    textBtnEditItem: 'Edit Related Audio Item',
+    textBtnRemoveItem: 'Remove Related Audio Item',
+    textBtnMoveItemUp: 'Move Related Audio Item left',
+    textBtnMoveItemDown: 'Move Related Audio Item right',
+    textBtnCreateItem: 'Upload new audio',
+    textBtnSelectExistingItems: 'Select from existing audio',
+    textLabelItemSearch: 'Search existing audio',
   }
 
   static propTypes = {
@@ -45,18 +45,15 @@ export default class FormContributors extends React.Component {
     textBtnCreateItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
-    handleItemsUpdate: func,
   }
 
   state = {
     items: [],
-    itemsIdUid: {},
   }
 
   render() {
     const {
       className,
-      textInfo,
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
       textDescribedbyItemBrowse,
@@ -65,12 +62,11 @@ export default class FormContributors extends React.Component {
       textBtnAddItem,
     } = this.props
 
-    // const items = this.getItems()
     const items = this.state.items
     return (
       <fieldset className={className}>
         <legend>{textLegendItems}</legend>
-        {textInfo && <p className="alert alert-info">{textInfo}</p>}
+
         <button
           type="button"
           onClick={() => {
@@ -92,6 +88,23 @@ export default class FormContributors extends React.Component {
       </fieldset>
     )
   }
+  /*
+// RELATED AUDIO > CREATED ---------------
+<fieldset>
+  <legend>Related Audio Item</legend>
+  <input type="hidden" name="fv:related_audio[0]" value="49d81e97-8220-4e8f-bed2-b58bfc040868" />
+  <div>[AUDIO COMPONENT HERE]</div>
+  <button type="button">Remove Related Audio Item</button>
+  <button type="button" aria-describedby="describedByRelatedAudioMove">
+    Move Related Audio Item left
+  </button>
+  <button type="button" aria-describedby="describedByRelatedAudioMove">
+    Move Related Audio Item right
+  </button>
+</fieldset>
+
+
+*/
 
   handleClickAddItem = () => {
     const {
@@ -109,7 +122,6 @@ export default class FormContributors extends React.Component {
       textLabelItemSearch,
     } = this.props
     const _props = {
-      className,
       name,
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
@@ -130,28 +142,10 @@ export default class FormContributors extends React.Component {
 
     const items = this.state.items
     const id = `${className}_${items.length}_${Date.now()}`
-    items.push(
-      <FormContributor
-        key={id}
-        id={id}
-        {..._props}
-        handleItemChange={({ _id, uid }) => {
-          const { itemsIdUid } = this.state
-          itemsIdUid[_id] = uid
-          this.setState(itemsIdUid, () => {
-            this.props.handleItemsUpdate(this._getFvmSource())
-          })
-        }}
-      />
-    )
-    this.setState(
-      {
-        items,
-      },
-      () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
-      }
-    )
+    items.push(<FormRelatedAudioItem key={id} id={id} {..._props} />)
+    this.setState({
+      items,
+    })
   }
   handleClickCreateItem = () => {
     // console.log('! handleClickCreateItem', this.index)
@@ -163,46 +157,18 @@ export default class FormContributors extends React.Component {
     // console.log('! handleClickEditItem')
   }
   handleClickRemoveItem = (id) => {
-    this.setState(
-      {
-        items: removeItem({ id, items: this.state.items }),
-      },
-      () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
-      }
-    )
+    this.setState({
+      items: removeItem({ id, items: this.state.items }),
+    })
   }
   handleClickMoveItemDown = (id) => {
-    this.setState(
-      {
-        items: moveItemDown({ id, items: this.state.items }),
-      },
-      () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
-      }
-    )
+    this.setState({
+      items: moveItemDown({ id, items: this.state.items }),
+    })
   }
   handleClickMoveItemUp = (id) => {
-    this.setState(
-      {
-        items: moveItemUp({ id, items: this.state.items }),
-      },
-      () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
-      }
-    )
-  }
-  _getFvmSource = () => {
-    const { items, itemsIdUid } = this.state
-    const fvmSource = []
-    items.forEach((element) => {
-      const uid = itemsIdUid[element.props.id]
-      if (uid) {
-        fvmSource.push(uid)
-      }
+    this.setState({
+      items: moveItemUp({ id, items: this.state.items }),
     })
-    return {
-      'fvm:source': fvmSource,
-    }
   }
 }

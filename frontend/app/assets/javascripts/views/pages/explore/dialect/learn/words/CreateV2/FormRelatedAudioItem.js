@@ -2,19 +2,26 @@ import React from 'react'
 import { PropTypes } from 'react'
 import Text from './Text'
 import Textarea from './Textarea'
-import Select from './Select'
-
-import provide from 'react-redux-provide'
+// import Select from './Select`'
+import File from './File'
+import Checkbox from './Checkbox'
+import FormContributors from './FormContributors'
+import FormRecorders from './FormRecorders'
 import ProviderHelpers from 'common/ProviderHelpers'
 // import DocumentListView from 'views/components/Document/DocumentListView'
+
+// see about dropping:
+import selectn from 'selectn'
+import provide from 'react-redux-provide'
+
 const { array, func, object, number, string } = PropTypes
 
-export class FormContributor extends React.Component {
+export class FormRelatedAudioItem extends React.Component {
   STATE_DEFAULT = 1
-  STATE_CREATE_CONTRIBUTOR = 2
-  STATE_CREATED_CONTRIBUTOR = 3
-  STATE_EDIT_CONTRIBUTOR = 4
-  STATE_BROWSE_CONTRIBUTORS = 5
+  STATE_CREATE = 2
+  STATE_CREATED = 3
+  STATE_EDIT = 4
+  STATE_BROWSE = 5
 
   static propTypes = {
     name: string,
@@ -45,7 +52,6 @@ export class FormContributor extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    handleItemChange: func,
     // REDUX/PROVIDE
     computeContributors: object.isRequired,
     createContributor: func.isRequired,
@@ -56,12 +62,15 @@ export class FormContributor extends React.Component {
     computeCreateContributor: object,
     computeContributor: object.isRequired,
     fetchContributors: func.isRequired,
+    fetchResources: func.isRequired,
+    computeResources: object.isRequired,
+    createAudio: func.isRequired,
   }
   static defaultProps = {
+    className: 'FormRelatedAudioItem',
     id: 0,
     index: 0,
     componentState: 1,
-    handleItemChange: () => {},
     handleClickCreateItem: () => {},
     handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
@@ -79,6 +88,11 @@ export class FormContributor extends React.Component {
     componentState: this.props.componentState,
     createItemName: '',
     createItemDescription: '',
+    createItemFile: {},
+    createItemIsShared: false,
+    createItemIsChildFocused: false,
+    createItemContributors: [],
+    createItemRecorders: [],
   }
 
   DIALECT_PATH = undefined
@@ -86,7 +100,7 @@ export class FormContributor extends React.Component {
 
   // Fetch data on initial render
   async componentDidMount() {
-    const { computeDialect, splitWindowPath } = this.props
+    const { computeDialect, fetchContributors, fetchDialect, fetchResources, splitWindowPath } = this.props
 
     // USING this.DIALECT_PATH instead of setting state
     // this.setState({ dialectPath: dialectPath })
@@ -94,7 +108,7 @@ export class FormContributor extends React.Component {
     this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
     // Get data for computeDialect
     if (!computeDialect.success) {
-      await this.props.fetchDialect('/' + this.DIALECT_PATH)
+      await fetchDialect('/' + this.DIALECT_PATH)
     }
 
     const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_TYPE, DEFAULT_SORT_COL } = this.props
@@ -102,10 +116,20 @@ export class FormContributor extends React.Component {
     // if (filter.has('currentAppliedFilter')) {
     //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
     // }
-    await this.props.fetchContributors(
+    // Get contrinbutors
+    await fetchContributors(
       this.CONTRIBUTOR_PATH,
       `${currentAppliedFilter}&currentPageIndex=${DEFAULT_PAGE -
         1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
+    )
+
+    // Get existing audio files
+    // TODO: hardcoded current page and page size!
+    await fetchResources(
+      '/FV/Workspaces/',
+      `AND ecm:primaryType LIKE 'FVAudio' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
+        this.DIALECT_PATH
+      }/Resources/')&currentPageIndex=${0}&pageSize=${10}`
     )
   }
 
@@ -124,9 +148,9 @@ export class FormContributor extends React.Component {
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      textBtnEditItem,
+      // textBtnEditItem,
       textBtnSelectExistingItems,
-      textLabelItemSearch,
+      // textLabelItemSearch,
       textLegendItem,
       // handleClickSelectItem,
       handleClickRemoveItem,
@@ -174,33 +198,85 @@ export class FormContributor extends React.Component {
       </button>
     )
     switch (this.state.componentState) {
-      case this.STATE_CREATE_CONTRIBUTOR:
-        // CREATE A NEW CONTRIBUTOR ------------------------------------
+      case this.STATE_CREATE:
+        // CREATE AUDIO ------------------------------------
         componentContent = (
           <div>
-            <h2>Creating a new contributor</h2>
+            <h2>Create new audio (...)</h2>
+            {/* Name --------------- */}
+            {/* <Text className="CreateAudio__Name" id="CreateAudio__Name" labelText="Name" name="dc:title" value="" /> */}
 
             {/* Name ------------- */}
             <Text
               className={`${className}__ContributorNewName`}
               id={`${className}__Contributor${index}__NewName`}
-              labelText="Contributor name"
+              labelText="Related Audio Item name"
               name={`${name}[${index}]__NewName`}
               value=""
-              handleChange={(_name) => {
-                this.setState({ createItemName: _name })
+              handleChange={(data) => {
+                this.setState({ createItemName: data })
+              }}
+            />
+            {/* Description --------------- */}
+            <Textarea
+              className="CreateAudio__Description"
+              id="CreateAudio__Description"
+              labelText="Description"
+              name="dc:description"
+              value=""
+              handleChange={(data) => {
+                this.setState({ createItemDescription: data })
               }}
             />
 
-            {/* Description ------------- */}
-            <Textarea
-              className={`${className}__ContributorNewDescription`}
-              id={`${className}__Contributor${index}__NewDescription`}
-              labelText="Contributor description"
-              name={`${name}[${index}]__NewDescription`}
+            {/* File --------------- */}
+            <File
+              className="CreateAudio__File"
+              id="CreateAudio__File"
+              labelText="File"
+              name="file"
               value=""
-              handleChange={(description) => {
-                this.setState({ createItemDescription: description })
+              handleChange={(data) => {
+                this.setState({ createItemFile: data })
+              }}
+            />
+
+            {/* Shared --------------- */}
+            <Checkbox
+              className="CreateAudio__Shared"
+              id="CreateAudio__Shared"
+              labelText="Shared accross dialects?"
+              name="fvm:shared"
+              handleChange={(data) => {
+                this.setState({ createItemIsShared: data })
+              }}
+            />
+            {/* Child focused --------------- */}
+            <Checkbox
+              className="CreateAudio__ChildFocused"
+              id="CreateAudio__ChildFocused"
+              labelText="Child focused "
+              name="fvm:child_focused"
+              handleChange={(data) => {
+                this.setState({ createItemIsChildFocused: data })
+              }}
+            />
+
+            {/* Contributors: fvm:source --------------- */}
+            <FormContributors
+              name="fv:source"
+              textInfo="Contributors who helped create this audio."
+              handleItemsUpdate={(data) => {
+                this.setState({ createItemContributors: data })
+              }}
+            />
+
+            {/* Recorders: fvm:recorder --------------- */}
+            <FormRecorders
+              name="fvm:recorder"
+              textInfo="Recorders who helped create this audio."
+              handleItemsUpdate={(data) => {
+                this.setState({ createItemRecorders: data })
               }}
             />
 
@@ -212,7 +288,7 @@ export class FormContributor extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new contributor
+              Create new Audio Item
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -224,30 +300,20 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't create a new contributor"}
+              {"Cancel, don't add a new Audio Item"}
             </button>
           </div>
         )
         break
-      case this.STATE_CREATED_CONTRIBUTOR: {
-        // CONTRIBUTOR CREATED ------------------------------------
-        const { contributorUid } = this.state
+      case this.STATE_CREATED: {
+        // AUDIO CREATED/SELECTED ------------------------------------
+        const { audioUid } = this.state
         componentContent = (
           <fieldset>
             <legend>{textLegendItem}</legend>
 
-            <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
-            <div>[CONTRIBUTOR ({contributorUid}) HERE]</div>
-
-            {/* Edit contributor */}
-            <button
-              onClick={() => {
-                this._handleClickEditItem(id)
-              }}
-              type="button"
-            >
-              {textBtnEditItem}
-            </button>
+            <input type="hidden" name={`${name}[${index}]`} value={audioUid} />
+            <div>[AUDIO ({audioUid}) HERE]</div>
 
             {removeItemBtn}
 
@@ -256,7 +322,7 @@ export class FormContributor extends React.Component {
         )
         break
       }
-      case this.STATE_EDIT_CONTRIBUTOR:
+      case this.STATE_EDIT:
         // EDITING A CONTRIBUTOR ------------------------------------
         componentContent = (
           <div>
@@ -266,7 +332,7 @@ export class FormContributor extends React.Component {
             <Text
               className={`${className}__ContributorEditName`}
               id={`${className}__Contributor${index}__EditName`}
-              labelText="Contributor name"
+              labelText="Related Audio Item name"
               name={`${name}[${index}]__EditName`}
               value="[some prefilled value"
             />
@@ -275,7 +341,7 @@ export class FormContributor extends React.Component {
             <Textarea
               className={`${className}__ContributorEditDescription`}
               id={`${className}__Contributor${index}__EditDescription`}
-              labelText="Contributor description"
+              labelText="Related Audio Item description"
               name={`${name}[${index}]__EditDescription`}
               value=""
             />
@@ -296,64 +362,70 @@ export class FormContributor extends React.Component {
               type="button"
               onClick={() => {
                 this.setState({
-                  componentState: this.STATE_CREATED_CONTRIBUTOR,
+                  componentState: this.STATE_CREATED,
                 })
               }}
             >
-              {"Cancel, don't edit a contributor"}
+              {"Cancel, don't update contributor"}
             </button>
           </div>
         )
         break
-      case this.STATE_BROWSE_CONTRIBUTORS: {
-        // BROWSING CONTRIBUTORS ------------------------------------
-        const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
-        // const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.DIALECT_PATH)
-        let contributors = []
-        if (_computeContributors.response && _computeContributors.response.entries) {
-          contributors = _computeContributors.response.entries.map((element, i) => {
-            return (
-              <option key={i} value={element.uid}>
-                {element.title}, {element.type}, {element.state}
-              </option>
-            )
-          })
-        }
+      case this.STATE_BROWSE: {
+        // Select from existing audio  ------------------------------------
+
+        const { computeResources, computeDialect2 } = this.props // eslint-disable-line
+        const _computeResources = ProviderHelpers.getEntry(computeResources, '/FV/Workspaces/')
+        const items =
+          selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
+        let audioExisting = []
+
+        audioExisting = items.map((element, i) => {
+          const uid = element.uid
+          const audioId = `related_audio_${uid}`
+          return (
+            <div className={`${className}__browseItem`} key={i}>
+              <div className={`${className}__browseItemGroup1`}>
+                <input
+                  className={`${className}__browseItemRadio`}
+                  type="radio"
+                  id={audioId}
+                  name="related_audio"
+                  value={uid}
+                />
+              </div>
+              <div className={`${className}__browseItemGroup2`}>
+                <label htmlFor={audioId}>{`Select '${element.title}'`}</label>
+                <audio src={selectn('properties.file:content.data', element)} preload="none" controls />
+              </div>
+            </div>
+          )
+        })
+
         componentContent = (
           <div>
-            <Select
-              className="FormContributor__NewContributorSelect"
-              id="FormContributor__NewContributorSelect"
-              labelText="Select from existing Contributors"
-              name="FormContributor__NewContributorSelect"
-              refSelect={(input) => {
-                this.newItemSelect = input
+            <div
+              onChange={(event) => {
+                this.setState({
+                  relatedAudioUid: event.target.value,
+                })
               }}
             >
-              {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
-              <optgroup>{contributors}</optgroup>
-            </Select>
+              {audioExisting}
+            </div>
 
             {/* Save/select contributor ------------- */}
             <button
               type="button"
+              disabled={this.state.relatedAudioUid === undefined}
               onClick={() => {
-                const contributorUid = this.newItemSelect.value
-                this.setState(
-                  {
-                    componentState: this.STATE_CREATED_CONTRIBUTOR,
-                    contributorUid,
-                  },
-                  () => {
-                    this.props.handleItemChange({
-                      uid: contributorUid,
-                      id: this.props.id,
-                    })
-                  }
-                )
+                this.setState({
+                  componentState: this.STATE_CREATED,
+                  audioUid: this.state.relatedAudioUid,
+                })
               }}
             >
-              Add selected Contributor
+              Add selected Related Audio Item
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -365,7 +437,7 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a contributor"}
+              {"Cancel, don't add Related Audio Item"}
             </button>
           </div>
         )
@@ -393,17 +465,8 @@ export class FormContributor extends React.Component {
               }}
               type="button"
             >
-              {textBtnSelectExistingItems} (TODO)
+              {textBtnSelectExistingItems}
             </button>
-
-            {/* Search contributors */}
-            <Text
-              className={`${className}__Contributor`}
-              id={`${className}__Contributor${index}`}
-              labelText={textLabelItemSearch}
-              name={`${name}[${index}]`}
-              value=""
-            />
 
             {removeItemBtn}
 
@@ -412,7 +475,7 @@ export class FormContributor extends React.Component {
         )
     }
     return (
-      <fieldset>
+      <fieldset className={className}>
         <legend>{textLegendItem}</legend>
         {componentContent}
       </fieldset>
@@ -422,9 +485,14 @@ export class FormContributor extends React.Component {
     const { handleClickCreateItem } = this.props
     this.setState(
       {
-        componentState: this.STATE_CREATE_CONTRIBUTOR,
+        componentState: this.STATE_CREATE,
       },
       () => {
+        // console.log('!', this.refs.ItemNewName)
+        // if (this.refs.ItemNewName) {
+        //   console.log('!!!!!! focusing!!!!!!!')
+        //   this.refs.ItemNewName.focus()
+        // }
         handleClickCreateItem()
       }
     )
@@ -433,7 +501,7 @@ export class FormContributor extends React.Component {
     const { handleClickEditItem } = this.props
     this.setState(
       {
-        componentState: this.STATE_EDIT_CONTRIBUTOR,
+        componentState: this.STATE_EDIT,
       },
       () => {
         handleClickEditItem(id)
@@ -444,7 +512,7 @@ export class FormContributor extends React.Component {
     const { handleClickSelectItem } = this.props
     this.setState(
       {
-        componentState: this.STATE_BROWSE_CONTRIBUTORS,
+        componentState: this.STATE_BROWSE,
       },
       () => {
         handleClickSelectItem()
@@ -454,55 +522,77 @@ export class FormContributor extends React.Component {
   _handleSubmitExistingItem = (createItemUid) => {
     this.setState(
       {
-        componentState: this.STATE_CREATED_CONTRIBUTOR,
+        componentState: this.STATE_CREATED,
         contributorUid: createItemUid,
       },
-      () => {
-        this.props.handleItemChange({
-          uid: createItemUid,
-          id: this.props.id,
-        })
-      }
+      () => {}
     )
   }
 
   async _handleCreateItemSubmit() {
-    const { createItemName, createItemDescription } = this.state
-    if (createItemName) {
-      const now = Date.now()
-
-      await this.props.createContributor(
-        `${this.DIALECT_PATH}/Contributors`,
-        {
-          type: 'FVContributor',
-          name: createItemName,
-          properties: { 'dc:title': createItemName, 'dc:description': createItemDescription },
-        },
-        null,
-        now
-      )
-
-      const contributor = ProviderHelpers.getEntry(
-        this.props.computeContributor,
-        `${this.DIALECT_PATH}/Contributors/${createItemName}.${now}`
-      )
-      const response = contributor.response
-      if (response && response.uid) {
-        this.setState(
-          {
-            componentState: this.STATE_CREATED_CONTRIBUTOR,
-            contributorUid: response.uid,
-          },
-          () => {
-            this.props.handleItemChange({
-              uid: response.uid,
-              id: this.props.id,
-            })
-          }
-        )
-      }
-    }
+    // const { createItemName, createItemDescription } = this.state
+    // if (createItemName) {
+    //   const now = Date.now()
+    //   await this.props.createContributor(
+    //     `${this.DIALECT_PATH}/Contributors`,
+    //     {
+    //       type: 'FVContributor',
+    //       name: createItemName,
+    //       properties: { 'dc:title': createItemName, 'dc:description': createItemDescription },
+    //     },
+    //     null,
+    //     now
+    //   )
+    //   const contributor = ProviderHelpers.getEntry(
+    //     this.props.computeContributor,
+    //     `${this.DIALECT_PATH}/Contributors/${createItemName}.${now}`
+    //   )
+    //   const response = contributor.response
+    //   if (response && response.uid) {
+    //     this.setState({
+    //       componentState: this.STATE_CREATED,
+    //       contributorUid: response.uid,
+    //     })
+    //   }
+    // }
+    // const timestamp = Date.now()
+    // const {
+    //   createItemName,
+    //   createItemDescription,
+    //   createItemFile,
+    //   createItemIsShared,
+    //   createItemIsChildFocused,
+    //   createItemContributors,
+    //   createItemRecorders,
+    // } = this.state
+    // const docParams = {
+    //   type: 'FVAudio',
+    //   name: createItemName,
+    //   properties: {
+    //   },
+    // }
+    /*
+    {"params":{
+    "type":"FVAudio",
+    "name":"adsf",
+    "properties":{
+        "dc:title":"adsf",
+        "dc:description":"adfs",
+        "fvm:shared":true,
+        "fvm:child_focused":true,
+        "fvm:recorder":[
+            "231bcb24-8aa2-482e-a6b5-ff9360c8fc83",
+            "231bcb24-8aa2-482e-a6b5-ff9360c8fc83"
+        ],
+        "fvm:source":[ // contributor
+            "231bcb24-8aa2-482e-a6b5-ff9360c8fc83",
+            "df08a447-9d7b-44cc-9d6c-07120a1abe6f"
+        ]
+}
+},"context":{},"input":"/FV/Workspaces/Data/Athabascan/Dene/Dene/Resources"}
+*/
+    // await this.props.createAudio(`${this.DIALECT_PATH}/Resources`, docParams, file, timestamp)
   }
 }
 
-export default provide(FormContributor)
+export default provide(FormRelatedAudioItem)

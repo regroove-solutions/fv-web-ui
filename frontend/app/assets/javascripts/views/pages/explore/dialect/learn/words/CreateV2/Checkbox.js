@@ -1,11 +1,12 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, bool } = PropTypes
+const { string, bool, func } = PropTypes
 
 export default class Checkbox extends React.Component {
   static defaultProps = {
     className: 'Checkbox',
     value: '',
+    handleChange: () => {},
   }
 
   static propTypes = {
@@ -15,6 +16,7 @@ export default class Checkbox extends React.Component {
     ariaDescribedby: string,
     className: string,
     selected: bool,
+    handleChange: func,
   }
 
   state = {
@@ -31,7 +33,7 @@ export default class Checkbox extends React.Component {
           id={id}
           name={name}
           defaultChecked={this.state.selected}
-          onChange={this.handleChange}
+          onChange={this._handleChange}
           type="checkbox"
         />
         <label className={`${className}__label Checkbox__label`} htmlFor={id}>
@@ -40,7 +42,10 @@ export default class Checkbox extends React.Component {
       </div>
     )
   }
-  handleChange = () => {
-    this.setState({ selected: !this.state.selected })
+  _handleChange = () => {
+    const newValue = !this.state.selected
+    this.setState({ selected: newValue }, () => {
+      this.handleChange(newValue)
+    })
   }
 }

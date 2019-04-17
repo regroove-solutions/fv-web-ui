@@ -37,7 +37,7 @@ import FormContributors from './FormContributors'
 import FormCulturalNotes from './FormCulturalNotes'
 import FormDefinitions from './FormDefinitions'
 import FormLiteralTranslations from './FormLiteralTranslations'
-
+import FormRelatedAudio from './FormRelatedAudio'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
 /**
@@ -217,7 +217,7 @@ export class CreateV2 extends Component {
               </div>
             </form> */}
         <div style={{ display: 'flex' }}>
-          <form>
+          <form className="CreateV2">
             {/* WORD --------------- */}
             <Text className="Create__Word" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
 
@@ -290,96 +290,7 @@ export class CreateV2 extends Component {
             <FormLiteralTranslations name="fv:literal_translation" />
 
             {/* RELATED AUDIO --------------- */}
-            <fieldset>
-              <legend>Related Audio</legend>
-              <button type="button">Add Related Audio Item</button>
-
-              {/* RELATED AUDIO > RELATED AUDIO ITEM --------------- */}
-              <fieldset>
-                <legend>Related Audio Item</legend>
-                <input type="hidden" name="fv:related_audio[0]" value="49d81e97-8220-4e8f-bed2-b58bfc040868" />
-                <div>[AUDIO COMPONENT HERE]</div>
-                <button type="button">Remove Related Audio Item</button>
-                <button type="button" aria-describedby="describedByRelatedAudioMove">
-                  Move Related Audio Item left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedAudioMove">
-                  Move Related Audio Item right
-                </button>
-              </fieldset>
-
-              {/* RELATED AUDIO > RELATED AUDIO ITEM --------------- */}
-              <fieldset>
-                <legend>Related Audio Item</legend>
-                <input type="hidden" name="fv:related_audio[1]" value="" />
-                <button type="button">Upload new audio</button>
-                <button type="button" aria-describedby="describedbyRelatedAudioBrowse">
-                  Select from existing audio
-                </button>
-                <button type="button">Remove Related Audio Item</button>
-                <button type="button" aria-describedby="describedByRelatedAudioMove">
-                  Move Related Audio Item left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedAudioMove">
-                  Move Related Audio Item right
-                </button>
-              </fieldset>
-
-              {/* SCREEN READER DESCRIPTIONS --------------- */}
-              <span id="describedbyRelatedAudioBrowse" className="visually-hidden">
-                {'Select an audio sample from previously uploaded items'}
-              </span>
-              <span id="describedByRelatedAudioMove" className="visually-hidden">
-                {`If you are adding multiple Related Audio Items, you can change the position of the item with
-the 'Move Related Audio Item left' and 'Move Related Audio Item right' buttons`}
-              </span>
-            </fieldset>
-
-            {/* Related Pictures --------------- */}
-            <fieldset>
-              <legend>Related Pictures</legend>
-              <button type="button">Add Related Picture</button>
-
-              {/* Related Pictures > RELATED PICTURE --------------- */}
-              <fieldset>
-                <legend>Related Picture</legend>
-                <input type="hidden" name="fv:related_pictures[0]" value="23356f30-b75e-4965-a337-baa57e6404d4" />
-                <div>[PICTURE COMPONENT HERE]</div>
-                <button type="button">Remove Related Picture</button>
-                <button type="button" aria-describedby="describedByRelatedPictureMove">
-                  Move Related Picture left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedPictureMove">
-                  Move Related Picture right
-                </button>
-              </fieldset>
-
-              {/* Related Pictures > RELATED PICTURE --------------- */}
-              <fieldset>
-                <legend>Related Picture</legend>
-                <input type="hidden" name="fv:related_pictures[1]" value="" />
-                <button type="button">Upload a new picture</button>
-                <button type="button" aria-describedby="describedbyRelatedPictureBrowse">
-                  Select an existing picture
-                </button>
-                <button type="button">Remove Related Picture</button>
-                <button type="button" aria-describedby="describedByRelatedPictureMove">
-                  Move Related Picture left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedPictureMove">
-                  Move Related Picture right
-                </button>
-              </fieldset>
-
-              {/* SCREEN READER DESCRIPTIONS --------------- */}
-              <span id="describedbyRelatedPictureBrowse" className="visually-hidden">
-                {'Select a picture from previously uploaded items'}
-              </span>
-              <span id="describedByRelatedPictureMove" className="visually-hidden">
-                {`If you are adding multiple Related Pictures, you can change the position of the Related Picture with
-the 'Move Related Picture left' and 'Move Related Picture right' buttons`}
-              </span>
-            </fieldset>
+            <FormRelatedAudio name="fv:related_audio" />
 
             {/* Related Videos --------------- */}
             <fieldset>

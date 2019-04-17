@@ -9,7 +9,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 // import DocumentListView from 'views/components/Document/DocumentListView'
 const { array, func, object, number, string } = PropTypes
 
-export class FormContributor extends React.Component {
+export class FormRecorder extends React.Component {
   STATE_DEFAULT = 1
   STATE_CREATE_CONTRIBUTOR = 2
   STATE_CREATED_CONTRIBUTOR = 3
@@ -37,6 +37,7 @@ export class FormContributor extends React.Component {
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
     handleClickMoveItemDown: func,
+    handleItemChange: func,
     componentState: number,
     value: string,
     DISABLED_SORT_COLS: array,
@@ -45,7 +46,6 @@ export class FormContributor extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    handleItemChange: func,
     // REDUX/PROVIDE
     computeContributors: object.isRequired,
     createContributor: func.isRequired,
@@ -61,13 +61,13 @@ export class FormContributor extends React.Component {
     id: 0,
     index: 0,
     componentState: 1,
-    handleItemChange: () => {},
     handleClickCreateItem: () => {},
     handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
     handleClickMoveItemDown: () => {},
+    handleItemChange: () => {},
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
@@ -139,7 +139,7 @@ export class FormContributor extends React.Component {
 
     const moveItemBtns = (
       <div>
-        {/* Move contributor */}
+        {/* Move item */}
         <button
           aria-describedby={idDescribedByItemMove}
           onClick={() => {
@@ -150,7 +150,7 @@ export class FormContributor extends React.Component {
           {textBtnMoveItemUp}
         </button>
 
-        {/* Move contributor */}
+        {/* Move item */}
         <button
           aria-describedby={idDescribedByItemMove}
           onClick={() => {
@@ -163,7 +163,7 @@ export class FormContributor extends React.Component {
       </div>
     )
     const removeItemBtn = (
-      // Remove contributor
+      // Remove item
       <button
         onClick={() => {
           handleClickRemoveItem(id)
@@ -178,13 +178,13 @@ export class FormContributor extends React.Component {
         // CREATE A NEW CONTRIBUTOR ------------------------------------
         componentContent = (
           <div>
-            <h2>Creating a new contributor</h2>
+            <h2>Creating a new recorder</h2>
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorNewName`}
-              id={`${className}__Contributor${index}__NewName`}
-              labelText="Contributor name"
+              className={`${className}__RecorderNewName`}
+              id={`${className}__Recorder${index}__NewName`}
+              labelText="Recorder name"
               name={`${name}[${index}]__NewName`}
               value=""
               handleChange={(_name) => {
@@ -194,9 +194,9 @@ export class FormContributor extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__ContributorNewDescription`}
-              id={`${className}__Contributor${index}__NewDescription`}
-              labelText="Contributor description"
+              className={`${className}__RecorderNewDescription`}
+              id={`${className}__Recorder${index}__NewDescription`}
+              labelText="Recorder description"
               name={`${name}[${index}]__NewDescription`}
               value=""
               handleChange={(description) => {
@@ -204,7 +204,7 @@ export class FormContributor extends React.Component {
               }}
             />
 
-            {/* BTN: Create contributor ------------- */}
+            {/* BTN: Create recorder ------------- */}
             <button
               type="button"
               onClick={(event) => {
@@ -212,7 +212,7 @@ export class FormContributor extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new contributor
+              Create new recorder
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -224,22 +224,22 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't create a new contributor"}
+              {"Cancel, don't add a new recorder"}
             </button>
           </div>
         )
         break
       case this.STATE_CREATED_CONTRIBUTOR: {
         // CONTRIBUTOR CREATED ------------------------------------
-        const { contributorUid } = this.state
+        const { itemUid } = this.state
         componentContent = (
           <fieldset>
             <legend>{textLegendItem}</legend>
 
-            <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
-            <div>[CONTRIBUTOR ({contributorUid}) HERE]</div>
+            <input type="hidden" name={`${name}[${index}]`} value={itemUid} />
+            <div>[CONTRIBUTOR ({itemUid}) HERE]</div>
 
-            {/* Edit contributor */}
+            {/* Edit recorder */}
             <button
               onClick={() => {
                 this._handleClickEditItem(id)
@@ -260,27 +260,27 @@ export class FormContributor extends React.Component {
         // EDITING A CONTRIBUTOR ------------------------------------
         componentContent = (
           <div>
-            <h2>TODO: Editing contributor</h2>
+            <h2>Editing recorder</h2>
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorEditName`}
-              id={`${className}__Contributor${index}__EditName`}
-              labelText="Contributor name"
+              className={`${className}__RecorderEditName`}
+              id={`${className}__Recorder${index}__EditName`}
+              labelText="Recorder name"
               name={`${name}[${index}]__EditName`}
               value="[some prefilled value"
             />
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__ContributorEditDescription`}
-              id={`${className}__Contributor${index}__EditDescription`}
-              labelText="Contributor description"
+              className={`${className}__RecorderEditDescription`}
+              id={`${className}__Recorder${index}__EditDescription`}
+              labelText="Recorder description"
               name={`${name}[${index}]__EditDescription`}
               value=""
             />
 
-            {/* BTN: Create contributor ------------- */}
+            {/* BTN: Create recorder ------------- */}
             <button
               type="button"
               onClick={(event) => {
@@ -288,7 +288,7 @@ export class FormContributor extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Update contributor
+              Update recorder
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -300,7 +300,7 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't edit a contributor"}
+              {"Cancel, don't update a recorder"}
             </button>
           </div>
         )
@@ -309,9 +309,9 @@ export class FormContributor extends React.Component {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
         // const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.DIALECT_PATH)
-        let contributors = []
+        let items = []
         if (_computeContributors.response && _computeContributors.response.entries) {
-          contributors = _computeContributors.response.entries.map((element, i) => {
+          items = _computeContributors.response.entries.map((element, i) => {
             return (
               <option key={i} value={element.uid}>
                 {element.title}, {element.type}, {element.state}
@@ -322,38 +322,38 @@ export class FormContributor extends React.Component {
         componentContent = (
           <div>
             <Select
-              className="FormContributor__NewContributorSelect"
-              id="FormContributor__NewContributorSelect"
-              labelText="Select from existing Contributors"
-              name="FormContributor__NewContributorSelect"
+              className="FormRecorder__NewRecorderSelect"
+              id="FormRecorder__NewRecorderSelect"
+              labelText="Select from existing Recorders"
+              name="FormRecorder__NewRecorderSelect"
               refSelect={(input) => {
                 this.newItemSelect = input
               }}
             >
               {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
-              <optgroup>{contributors}</optgroup>
+              <optgroup>{items}</optgroup>
             </Select>
 
-            {/* Save/select contributor ------------- */}
+            {/* Save/select recorder ------------- */}
             <button
               type="button"
               onClick={() => {
-                const contributorUid = this.newItemSelect.value
+                const recorderId = this.newItemSelect.value
                 this.setState(
                   {
                     componentState: this.STATE_CREATED_CONTRIBUTOR,
-                    contributorUid,
+                    itemUid: recorderId,
                   },
                   () => {
                     this.props.handleItemChange({
-                      uid: contributorUid,
+                      uid: recorderId,
                       id: this.props.id,
                     })
                   }
                 )
               }}
             >
-              Add selected Contributor
+              Add selected Recorder
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -365,7 +365,7 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a contributor"}
+              {"Cancel, don't add a recorder"}
             </button>
           </div>
         )
@@ -375,7 +375,7 @@ export class FormContributor extends React.Component {
         // INITIAL STATE ------------------------------------
         componentContent = (
           <div>
-            {/* Create contributor */}
+            {/* Create recorder */}
             <button
               type="button"
               onClick={() => {
@@ -385,7 +385,7 @@ export class FormContributor extends React.Component {
               {textBtnCreateItem}
             </button>
 
-            {/* Browse/select contributor */}
+            {/* Browse/select recorder */}
             <button
               aria-describedby={idDescribedbyItemBrowse}
               onClick={() => {
@@ -393,13 +393,13 @@ export class FormContributor extends React.Component {
               }}
               type="button"
             >
-              {textBtnSelectExistingItems} (TODO)
+              {textBtnSelectExistingItems}
             </button>
 
-            {/* Search contributors */}
+            {/* Search recorders */}
             <Text
-              className={`${className}__Contributor`}
-              id={`${className}__Contributor${index}`}
+              className={`${className}__Recorder`}
+              id={`${className}__Recorder${index}`}
               labelText={textLabelItemSearch}
               name={`${name}[${index}]`}
               value=""
@@ -455,7 +455,7 @@ export class FormContributor extends React.Component {
     this.setState(
       {
         componentState: this.STATE_CREATED_CONTRIBUTOR,
-        contributorUid: createItemUid,
+        itemUid: createItemUid,
       },
       () => {
         this.props.handleItemChange({
@@ -482,20 +482,21 @@ export class FormContributor extends React.Component {
         now
       )
 
-      const contributor = ProviderHelpers.getEntry(
+      const item = ProviderHelpers.getEntry(
         this.props.computeContributor,
         `${this.DIALECT_PATH}/Contributors/${createItemName}.${now}`
       )
-      const response = contributor.response
+      const response = item.response
       if (response && response.uid) {
+        const createItemUid = response.uid
         this.setState(
           {
             componentState: this.STATE_CREATED_CONTRIBUTOR,
-            contributorUid: response.uid,
+            itemUid: createItemUid,
           },
           () => {
             this.props.handleItemChange({
-              uid: response.uid,
+              uid: createItemUid,
               id: this.props.id,
             })
           }
@@ -505,4 +506,4 @@ export class FormContributor extends React.Component {
   }
 }
 
-export default provide(FormContributor)
+export default provide(FormRecorder)

@@ -1,28 +1,28 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormContributor from './FormContributor'
+import FormRecorder from './FormRecorder'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 const { string, array, func } = PropTypes
 
-export default class FormContributors extends React.Component {
+export default class FormRecorders extends React.Component {
   static defaultProps = {
-    className: 'FormContributors',
+    className: 'FormRecorders',
     idDescribedbyItemBrowse: 'describedbyItemBrowse',
     idDescribedByItemMove: 'describedByItemMove',
-    name: 'FormContributors',
-    textDescribedbyItemBrowse: 'Select a Contributor from previously created Contributors',
+    name: 'FormRecorders',
+    textDescribedbyItemBrowse: 'Select a Recorder from previously created Recorders',
     textDescribedByItemMove:
-      "If you are adding multiple Contributors, you can change the position of the Contributor with the 'Move Contributor up' and 'Move Contributor down' buttons",
-    textLegendItems: 'Contributors',
-    textBtnAddItem: 'Add Contributor',
-    textLegendItem: 'Contributor',
-    textBtnEditItem: 'Edit Contributor',
-    textBtnRemoveItem: 'Remove Contributor',
-    textBtnMoveItemUp: 'Move Contributor up',
-    textBtnMoveItemDown: 'Move Contributor down',
-    textBtnCreateItem: 'Create new Contributor',
-    textBtnSelectExistingItems: 'Select from existing Contributors',
-    textLabelItemSearch: 'Search existing Contributors',
+      "If you are adding multiple Recorders, you can change the position of the Recorder with the 'Move Recorder up' and 'Move Recorder down' buttons",
+    textLegendItems: 'Recorders',
+    textBtnAddItem: 'Add Recorder',
+    textLegendItem: 'Recorder',
+    textBtnEditItem: 'Edit Recorder',
+    textBtnRemoveItem: 'Remove Recorder',
+    textBtnMoveItemUp: 'Move Recorder up',
+    textBtnMoveItemDown: 'Move Recorder down',
+    textBtnCreateItem: 'Create new Recorder',
+    textBtnSelectExistingItems: 'Select from existing Recorders',
+    textLabelItemSearch: 'Search existing Recorders',
     handleItemsUpdate: () => {},
   }
 
@@ -131,7 +131,7 @@ export default class FormContributors extends React.Component {
     const items = this.state.items
     const id = `${className}_${items.length}_${Date.now()}`
     items.push(
-      <FormContributor
+      <FormRecorder
         key={id}
         id={id}
         {..._props}
@@ -139,7 +139,7 @@ export default class FormContributors extends React.Component {
           const { itemsIdUid } = this.state
           itemsIdUid[_id] = uid
           this.setState(itemsIdUid, () => {
-            this.props.handleItemsUpdate(this._getFvmSource())
+            this.props.handleItemsUpdate(this._getFvmRecorder())
           })
         }}
       />
@@ -149,7 +149,7 @@ export default class FormContributors extends React.Component {
         items,
       },
       () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
+        this.props.handleItemsUpdate(this._getFvmRecorder())
       }
     )
   }
@@ -168,7 +168,7 @@ export default class FormContributors extends React.Component {
         items: removeItem({ id, items: this.state.items }),
       },
       () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
+        this.props.handleItemsUpdate(this._getFvmRecorder())
       }
     )
   }
@@ -178,7 +178,7 @@ export default class FormContributors extends React.Component {
         items: moveItemDown({ id, items: this.state.items }),
       },
       () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
+        this.props.handleItemsUpdate(this._getFvmRecorder())
       }
     )
   }
@@ -188,21 +188,21 @@ export default class FormContributors extends React.Component {
         items: moveItemUp({ id, items: this.state.items }),
       },
       () => {
-        this.props.handleItemsUpdate(this._getFvmSource())
+        this.props.handleItemsUpdate(this._getFvmRecorder())
       }
     )
   }
-  _getFvmSource = () => {
+  _getFvmRecorder = () => {
     const { items, itemsIdUid } = this.state
-    const fvmSource = []
+    const fvmRecorder = []
     items.forEach((element) => {
       const uid = itemsIdUid[element.props.id]
       if (uid) {
-        fvmSource.push(uid)
+        fvmRecorder.push(uid)
       }
     })
     return {
-      'fvm:source': fvmSource,
+      'fvm:recorder': fvmRecorder,
     }
   }
 }
