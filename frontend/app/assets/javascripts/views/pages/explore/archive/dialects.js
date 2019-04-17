@@ -22,6 +22,8 @@ import provide from 'react-redux-provide'
 import selectn from 'selectn'
 import classNames from 'classnames'
 
+import CircularProgress from 'material-ui/lib/circular-progress'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
@@ -79,11 +81,6 @@ export default class ExploreDialects extends Component {
   // Fetch data on initial render
   componentDidMount() {
     this._fetchData(this.props)
-
-    if (this.props.routeParams.area == 'sections') {
-      this.titleFieldMapping = 'title'
-      this.logoFieldMapping = 'logo'
-    }
   }
 
   // Refetch data on URL change
@@ -116,13 +113,6 @@ export default class ExploreDialects extends Component {
       items: sortedPortals,
     }
 
-    const computeEntities = Immutable.fromJS([
-      {
-        id: this._getQueryPath(),
-        entity: this.props.computePortals,
-      },
-    ])
-
     if (this.props.routeParams.area == 'Workspaces') {
       if (isLoggedIn) {
         introText1 = <p>You are part of the following Workspaces (community portals):</p>
@@ -139,14 +129,18 @@ export default class ExploreDialects extends Component {
     }
 
     return (
-      <div computeEntities={computeEntities}>
+      <div>
         <div className="row">
           <div className="col-xs-12">
             <div className={classNames({ hidden: this.props.routeParams.theme === 'kids' })}>
               <h1>{intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'title' })}</h1>
             </div>
             {introText1}
-            <PortalListDialects {...portalListProps} />
+            {(this.props.computePortals && this.props.computePortals.isFetching) ? 
+              <div>
+              <CircularProgress mode="indeterminate" style={{ verticalAlign: 'middle' }} size={1} />{' '}
+                Loading
+              </div> : <PortalListDialects {...portalListProps} />}
             {introText2}
           </div>
         </div>
