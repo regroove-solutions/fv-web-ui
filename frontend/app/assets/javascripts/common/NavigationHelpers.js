@@ -134,7 +134,7 @@ export default {
   // Generate a UID link from a Nuxeo document path
   generateUIDPath: function(theme, item, pluralPathId) {
     let path = '/' + theme + selectn('path', item)
-    const type = selectn('type', item)
+    // const type = selectn('type', item)
 
     switch (pluralPathId) {
       case 'words':
@@ -157,6 +157,7 @@ export default {
         path = path.substring(0, path.lastIndexOf('/Resources/') + 11)
         path = path.replace('/Resources/', '/' + pluralPathId + '/')
         break
+      default: // NOTE: do nothing
     }
 
     return (path = ContextPath() + path.substring(0, path.lastIndexOf('/') + 1) + selectn('uid', item))
@@ -182,12 +183,13 @@ export default {
     )
   },
   getBaseURL: function() {
-    return (
-      window.location.protocol +
-      '//' +
-      window.location.hostname +
-      (window.location.port ? ':' + window.location.port : '') +
-      '/nuxeo/'
-    )
+    return 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo'
+    // return (
+    //   window.location.protocol +
+    //   '//' +
+    //   window.location.hostname +
+    //   (window.location.port ? ':' + window.location.port : '') +
+    //   '/nuxeo/'
+    // )
   },
 }

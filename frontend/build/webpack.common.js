@@ -101,7 +101,7 @@ module.exports = {
    */
   entry: {
     app: path.resolve(sourceScriptsDirectory, 'app.js'),
-    createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/create.js'),
+    // createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/create.js'),
     game_libs: ['pixi', 'p2', 'phaser'],
   },
 
@@ -131,9 +131,9 @@ module.exports = {
    */
   optimization: {
     runtimeChunk: 'single',
-    // splitChunks: {
-    //   chunks: 'all',
-    // },
+    splitChunks: {
+      chunks: 'all',
+    },
   },
 
   /**
