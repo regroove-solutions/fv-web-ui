@@ -261,6 +261,23 @@ function isSiteMember(groups) {
   return groups && groups.length === 1 && groups[0] === 'members'
 }
 
+/**
+ * WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
+ */
+function isStartsWithQuery(currentAppliedFilter) {
+
+  var starts_with_query = "";
+
+  var regex = /^ AND \( dc\:title ILIKE '(.*)%' \)$/g;
+  var regexTest = new RegExp(regex);
+
+  if (regexTest.test(currentAppliedFilter)) {
+    starts_with_query = "&starts_with_query=true"
+  }
+
+  return starts_with_query;
+}
+
 function replaceAllWorkspaceSectionKeys(string, area) {
   const searchKey = area === 'sections' ? 'workspace' : 'section'
   const replaceKey = area === 'sections' ? 'section' : 'workspace'
@@ -327,6 +344,7 @@ export default {
   isDialectPath,
   isRecorderWithApproval,
   isSiteMember,
+  isStartsWithQuery,
   replaceAllWorkspaceSectionKeys,
   switchWorkspaceSectionKeys,
   toJSKeepId,

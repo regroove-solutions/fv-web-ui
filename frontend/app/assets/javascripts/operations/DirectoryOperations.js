@@ -140,9 +140,26 @@ export default class DirectoryOperations {
         true
       )
     )
+
+    /*
+      WORKAROUND: DY @ 17-04-2019:
+      
+      This is a workaround for elasticsearch returning no results for queries that start with 
+      Instead of querying elasticsearch, do a database query in this occurence.
+      
+      TODO: Figure out what elasticsearch configuration is appropriate here.
+
+      starts_with_query is set in learn/words/list-view, and learn/phrases/list-view
+    */
+    let endPointToUse = 'Document.EnrichedQuery';
+
+    if (nxqlQueryParams && nxqlQueryParams.hasOwnProperty("starts_with_query")) {
+      endPointToUse = 'Document.Query';
+    }
+
     return new Promise((resolve, reject) => {
       properties.client
-        .operation('Document.EnrichedQuery')
+        .operation(endPointToUse)
         .params(nxqlQueryParams)
         .execute(_headers)
         .then((docs) => {
