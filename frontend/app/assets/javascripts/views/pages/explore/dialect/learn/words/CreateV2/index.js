@@ -219,11 +219,11 @@ export class CreateV2 extends Component {
         <div style={{ display: 'flex' }}>
           <form className="CreateV2">
             {/* WORD --------------- */}
-            <Text className="Create__Word" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
+            <Text className="CreateV2__group" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
 
             {/* PARTOFSPEECH --------------- */}
             <Select
-              className="Create__PartOfSpeech"
+              className="CreateV2__group"
               id="CreateWord__PartOfSpeech"
               labelText="Part of speech"
               name="fv-word:part_of_speech"
@@ -276,7 +276,7 @@ export class CreateV2 extends Component {
 
             {/* PRONOUNCIATION --------------- */}
             <Text
-              className="Create__Pronounciation"
+              className="CreateV2__group"
               id="CreateWord__Pronounciation"
               labelText="Pronounciation"
               name="fv-word:pronunciation"
@@ -284,21 +284,21 @@ export class CreateV2 extends Component {
             />
 
             {/* Definitions --------------- */}
-            <FormDefinitions name="fv:definitions" />
+            <FormDefinitions className="CreateV2__group" name="fv:definitions" />
 
             {/* Literal Translations --------------- */}
-            <FormLiteralTranslations name="fv:literal_translation" />
+            <FormLiteralTranslations className="CreateV2__group" name="fv:literal_translation" />
 
             {/* RELATED AUDIO --------------- */}
-            <FormRelatedAudio name="fv:related_audio" />
+            <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
 
             {/* Related Videos --------------- */}
-            <fieldset>
+            <fieldset className="CreateV2__group">
               <legend>Related Videos</legend>
-              <button type="button">Add Related Video</button>
+              {/* <button type="button">Add Related Video</button> */}
 
               {/* Related Videos > RELATED VIDEO --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Related Video</legend>
                 <input type="hidden" name="fv:related_videos[0]" value="e597182c-ea7b-4f2a-8666-192ac5d59d3c" />
                 <div>[VIDEO COMPONENT HERE]</div>
@@ -309,10 +309,10 @@ export class CreateV2 extends Component {
                 <button type="button" aria-describedby="describedByRelatedVideoMove">
                   Move Related Video right
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* Related Videos > RELATED VIDEO --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Related Video</legend>
                 <input type="hidden" name="fv:related_videos[1]" value="" />
                 <button type="button">Upload new video</button>
@@ -326,7 +326,7 @@ export class CreateV2 extends Component {
                 <button type="button" aria-describedby="describedByRelatedVideoMove">
                   Move Related Video right
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* SCREEN READER DESCRIPTIONS --------------- */}
               <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
@@ -339,12 +339,12 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
             </fieldset>
 
             {/* Related Phrases --------------- */}
-            <fieldset>
+            <fieldset className="CreateV2__group">
               <legend>Related Phrases</legend>
-              <button type="button">Add Related Phrase</button>
+              {/* <button type="button">Add Related Phrase</button> */}
 
               {/* Related Phrases > RELATED PHRASE --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Related Phrase</legend>
                 <input type="hidden" name="fv:related_phrases[0]" value="14869a80-b371-4e51-a458-1e1adf86e263" />
                 <div>[PHRASE HERE]</div>
@@ -357,10 +357,10 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
                 <button type="button" aria-describedby="describedByRelatedPhraseMove">
                   Move Related Phrase down
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* Related Phrases > RELATED PHRASE --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Related Phrase</legend>
                 <Text
                   className="Create__RelatedPhrase"
@@ -382,7 +382,7 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
                 <button type="button" aria-describedby="describedByRelatedPhraseMove">
                   Move Related Phrase down
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* SCREEN READER DESCRIPTIONS --------------- */}
               <span id="describedbyRelatedPhraseBrowse" className="visually-hidden">
@@ -395,12 +395,12 @@ the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
             </fieldset>
 
             {/* CATEGORIES --------------- */}
-            <fieldset>
+            <fieldset className="CreateV2__group">
               <legend>Categories</legend>
-              <button type="button">Add Category</button>
+              {/* <button type="button">Add Category</button> */}
 
               {/* CATEGORIES > CATEGORY --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Category</legend>
                 <input type="hidden" name="fv-word:categories[0]" value="6cf2f049-8e33-438f-b9f0-720ddb8338b8" />
                 <div>[CATEGORY HERE]</div>
@@ -413,10 +413,10 @@ the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
                 <button type="button" aria-describedby="describedByCategoryMove">
                   Move Category down
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* CATEGORIES > CATEGORY --------------- */}
-              <fieldset>
+              {/* <fieldset className="CreateV2__group">
                 <legend>Category</legend>
                 <Text
                   className="Create__Category"
@@ -435,7 +435,7 @@ the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
                 <button type="button" aria-describedby="describedByCategoryMove">
                   Move Category down
                 </button>
-              </fieldset>
+              </fieldset> */}
 
               {/* SCREEN READER DESCRIPTIONS --------------- */}
               <span id="describedByCategoryMove" className="visually-hidden">
@@ -445,25 +445,31 @@ the 'Move Category up' and 'Move Category down' buttons`}
             </fieldset>
 
             {/* Cultural Notes --------------- */}
-            <FormCulturalNotes name="fv:cultural_note" />
+            <FormCulturalNotes className="CreateV2__group" name="fv:cultural_note" />
 
             {/* REFERENCE --------------- */}
-            <Text
-              className="Create__Reference"
-              id="CreateWord__Reference1"
-              labelText="Reference"
-              name="fv:reference"
-              ariaDescribedby="describedByReference"
-              value=""
-            />
-            <span id="describedByReference">Origin of record (person, book, etc).</span>
+            <div className="CreateV2__group">
+              <Text
+                className=""
+                id="CreateWord__Reference1"
+                labelText="Reference"
+                name="fv:reference"
+                ariaDescribedby="describedByReference"
+                value=""
+              />
+              <span id="describedByReference">Origin of record (person, book, etc).</span>
+            </div>
 
             {/* Contributors --------------- */}
-            <FormContributors textInfo="Contributors who helped create this record." name="fv:source" />
+            <FormContributors
+              className="CreateV2__group"
+              textInfo="Contributors who helped create this record."
+              name="fv:source"
+            />
 
             {/* IN CHILDREN'S ARCHIVE --------------- */}
             <Checkbox
-              className="Create__InKidsArchive"
+              className="CreateV2__group"
               id="CreateWord__InKidsArchive0"
               labelText="Available in children's archive"
               name="fv:available_in_childrens_archive"
@@ -471,7 +477,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
 
             {/* IN GAMES --------------- */}
             <Checkbox
-              className="Create__InGames"
+              className="CreateV2__group"
               id="CreateWord__InGames0"
               labelText="Available in games"
               name="fv-word:available_in_games"

@@ -8,12 +8,14 @@ const { string } = PropTypes
 export default class FormDefinitions extends React.Component {
   static defaultProps = {
     className: 'FormDefinitions',
+    groupName: 'FormDefinitions__group',
     name: 'FormDefinitions',
   }
 
   static propTypes = {
     name: string.isRequired,
     className: string,
+    groupName: string,
   }
 
   state = {
@@ -25,7 +27,7 @@ export default class FormDefinitions extends React.Component {
 
     const items = this.state.items
     return (
-      <fieldset className={className}>
+      <fieldset className={`${className} ${this.props.groupName}`}>
         <legend>Definitions</legend>
         <p className="alert alert-info">Describe what the word actually means</p>
 
@@ -62,7 +64,7 @@ Definition up' and 'Move Definition down' buttons`}
     const id = `${className}_${items.length}_${Date.now()}`
 
     items.push(
-      <fieldset key={id} id={id}>
+      <fieldset key={id} id={id} className={this.props.groupName}>
         <legend>Definition</legend>
         <Select
           ariaDescribedby="describedbyLanguage"

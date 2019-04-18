@@ -66,7 +66,7 @@ export class FormRelatedAudio extends React.Component {
     textBtnRemoveItem: 'Remove Related Audio Item',
     textBtnMoveItemUp: 'Move Related Audio Item left',
     textBtnMoveItemDown: 'Move Related Audio Item right',
-    textBtnCreateItem: 'Upload new audio',
+    textBtnCreateItem: 'Create new audio item',
     textBtnSelectExistingItems: 'Select from existing audio',
     textLabelItemSearch: 'Search existing audio',
     DEFAULT_PAGE: 1,
@@ -178,47 +178,31 @@ export class FormRelatedAudio extends React.Component {
 */
 
   handleClickAddItem = async () => {
-    const {
-      className,
-      name,
-      idDescribedbyItemBrowse,
-      idDescribedByItemMove,
-      textLegendItem,
-      textBtnEditItem,
-      textBtnRemoveItem,
-      textBtnMoveItemUp,
-      textBtnMoveItemDown,
-      textBtnCreateItem,
-      textBtnSelectExistingItems,
-      textLabelItemSearch,
-      computeResources,
-      computeDialect,
-      createAudio,
-    } = this.props
     const _props = {
-      name,
-      idDescribedbyItemBrowse,
-      idDescribedByItemMove,
-      textLegendItem,
-      textBtnEditItem,
-      textBtnRemoveItem,
-      textBtnMoveItemUp,
-      textBtnMoveItemDown,
-      textBtnCreateItem,
-      textBtnSelectExistingItems,
-      textLabelItemSearch,
+      name: this.props.name,
+      className: this.props.className,
+      idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
+      idDescribedByItemMove: this.props.idDescribedByItemMove,
+      textLegendItem: this.props.textLegendItem,
+      textBtnEditItem: this.props.textBtnEditItem,
+      textBtnRemoveItem: this.props.textBtnRemoveItem,
+      textBtnMoveItemUp: this.props.textBtnMoveItemUp,
+      textBtnMoveItemDown: this.props.textBtnMoveItemDown,
+      textBtnCreateItem: this.props.textBtnCreateItem,
+      textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
+      textLabelItemSearch: this.props.textLabelItemSearch,
       handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
-      computeResources,
-      computeDialect,
-      createAudio,
+      computeResources: this.props.computeResources,
+      computeDialect: this.props.computeDialect,
+      createAudio: this.props.createAudio,
     }
 
     const items = this.state.items
-    const id = `${className}_${items.length}_${Date.now()}`
+    const id = `${_props.className}_${items.length}_${Date.now()}`
     items.push(<FormRelatedAudioItem key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
     this.setState({
       items,

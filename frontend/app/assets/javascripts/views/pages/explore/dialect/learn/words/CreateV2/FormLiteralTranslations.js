@@ -9,11 +9,13 @@ export default class FormLiteralTranslations extends React.Component {
   static defaultProps = {
     className: 'FormLiteralTranslations',
     name: 'FormLiteralTranslations',
+    groupName: 'FormLiteralTranslations__group',
   }
 
   static propTypes = {
     name: string.isRequired,
     className: string,
+    groupName: string,
   }
 
   state = {
@@ -21,11 +23,11 @@ export default class FormLiteralTranslations extends React.Component {
   }
 
   render() {
-    const { className } = this.props
+    const { className, groupName } = this.props
 
     const items = this.state.items
     return (
-      <fieldset className={className}>
+      <fieldset className={`${className} ${groupName}`}>
         <legend>Literal Translations</legend>
         <p className="alert alert-info">Describe what the word translates to regardless of context</p>
 
@@ -62,7 +64,7 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
     const id = `${className}_${items.length}_${Date.now()}`
 
     items.push(
-      <fieldset key={id} id={id}>
+      <fieldset key={id} id={id} className={this.props.groupName}>
         <legend>Literal Translation</legend>
         <Select
           ariaDescribedby="describedbyLanguageLiteralTranslation"

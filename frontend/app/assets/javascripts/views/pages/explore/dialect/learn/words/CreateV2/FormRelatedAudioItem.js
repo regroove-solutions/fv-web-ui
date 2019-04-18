@@ -26,6 +26,7 @@ export class FormRelatedAudioItem extends React.Component {
   static propTypes = {
     name: string,
     className: string,
+    groupName: string,
     id: number,
     idDescribedbyItemBrowse: string,
     idDescribedByItemMove: string,
@@ -60,6 +61,7 @@ export class FormRelatedAudioItem extends React.Component {
   }
   static defaultProps = {
     className: 'FormRelatedAudioItem',
+    groupName: 'FormRelatedAudioItem__group',
     id: 0,
     index: 0,
     componentState: 0,
@@ -160,15 +162,15 @@ export class FormRelatedAudioItem extends React.Component {
         // CREATE AUDIO ------------------------------------
         componentContent = (
           <div>
-            <h2>Create new audio (...)</h2>
+            <h2>Create new audio item</h2>
             {/* Name --------------- */}
             {/* <Text className="CreateAudio__Name" id="CreateAudio__Name" labelText="Name" name="dc:title" value="" /> */}
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorNewName`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
-              labelText="Related Audio Item name"
+              labelText="Name of audio item"
               name={`${name}[${index}]__NewName`}
               value=""
               handleChange={(data) => {
@@ -177,9 +179,9 @@ export class FormRelatedAudioItem extends React.Component {
             />
             {/* Description --------------- */}
             <Textarea
-              className="CreateAudio__Description"
+              className={this.props.groupName}
               id="CreateAudio__Description"
-              labelText="Description"
+              labelText="Description of audio item"
               name="dc:description"
               value=""
               handleChange={(data) => {
@@ -189,9 +191,9 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* File --------------- */}
             <File
-              className="CreateAudio__File"
+              className={this.props.groupName}
               id="CreateAudio__File"
-              labelText="File"
+              labelText="Upload audio item"
               name="file"
               value=""
               handleChange={(data) => {
@@ -201,9 +203,9 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* Shared --------------- */}
             <Checkbox
-              className="CreateAudio__Shared"
+              className={this.props.groupName}
               id="CreateAudio__Shared"
-              labelText="Shared accross dialects?"
+              labelText="Share this audio across dialects"
               name="fvm:shared"
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
@@ -211,9 +213,9 @@ export class FormRelatedAudioItem extends React.Component {
             />
             {/* Child focused --------------- */}
             <Checkbox
-              className="CreateAudio__ChildFocused"
+              className={this.props.groupName}
               id="CreateAudio__ChildFocused"
-              labelText="Child focused "
+              labelText="Audio is child focused"
               name="fvm:child_focused"
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
@@ -222,8 +224,9 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
+              className={this.props.groupName}
               name="fv:source"
-              textInfo="Contributors who helped create this audio."
+              textInfo="Contributors who helped create the audio item."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
               }}
@@ -231,8 +234,9 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* Recorders: fvm:recorder --------------- */}
             <FormRecorders
+              className={this.props.groupName}
               name="fvm:recorder"
-              textInfo="Recorders who helped create this audio."
+              textInfo="Recorders who helped create the audio item."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemRecorders: data })
               }}
@@ -246,7 +250,7 @@ export class FormRelatedAudioItem extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new Audio Item
+              Create new audio item
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -258,7 +262,7 @@ export class FormRelatedAudioItem extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a new Audio Item"}
+              {"Cancel, don't create new audio item"}
             </button>
           </div>
         )
@@ -267,7 +271,7 @@ export class FormRelatedAudioItem extends React.Component {
         // AUDIO CREATED/SELECTED ------------------------------------
         const { audioUid } = this.state
         componentContent = (
-          <fieldset>
+          <fieldset className={this.props.groupName}>
             <legend>{textLegendItem}</legend>
 
             <input type="hidden" name={`${name}[${index}]`} value={audioUid} />
@@ -288,7 +292,7 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorEditName`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__EditName`}
               labelText="Related Audio Item name"
               name={`${name}[${index}]__EditName`}
@@ -297,7 +301,7 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__ContributorEditDescription`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__EditDescription`}
               labelText="Related Audio Item description"
               name={`${name}[${index}]__EditDescription`}
@@ -330,6 +334,7 @@ export class FormRelatedAudioItem extends React.Component {
         )
         break
       case this.STATE_BROWSE: {
+        // TODO: REMOVE? USING OLD MODAL CODE INSTEAD
         // Select from existing audio  ------------------------------------
 
         const { computeResources } = this.props
@@ -451,9 +456,123 @@ export class FormRelatedAudioItem extends React.Component {
       }
     }
     return (
-      <fieldset className={className}>
+      <fieldset className={`${className} ${this.props.groupName}`}>
         <legend>{textLegendItem}</legend>
         {componentContent}
+        <div style={{ display: 'none' }}>
+          <div
+            className={`md-modal md-effect-12 ${this.state.componentState === this.STATE_CREATE && 'md-show'}`}
+            id="modal-12"
+          >
+            <div className="md-content">
+              <div>
+                <h2>Create new audio item</h2>
+                {/* Name --------------- */}
+                {/* <Text className="CreateAudio__Name" id="CreateAudio__Name" labelText="Name" name="dc:title" value="" /> */}
+
+                {/* Name ------------- */}
+                <Text
+                  className={this.props.groupName}
+                  id={`${className}__Contributor${index}__NewName`}
+                  labelText="Name of audio item"
+                  name={`${name}[${index}]__NewName`}
+                  value=""
+                  handleChange={(data) => {
+                    this.setState({ createItemName: data })
+                  }}
+                />
+                {/* Description --------------- */}
+                <Textarea
+                  className={this.props.groupName}
+                  id="CreateAudio__Description"
+                  labelText="Description of audio item"
+                  name="dc:description"
+                  value=""
+                  handleChange={(data) => {
+                    this.setState({ createItemDescription: data })
+                  }}
+                />
+
+                {/* File --------------- */}
+                <File
+                  className={this.props.groupName}
+                  id="CreateAudio__File"
+                  labelText="Upload audio item"
+                  name="file"
+                  value=""
+                  handleChange={(data) => {
+                    this.setState({ createItemFile: data })
+                  }}
+                />
+
+                {/* Shared --------------- */}
+                <Checkbox
+                  className={this.props.groupName}
+                  id="CreateAudio__Shared"
+                  labelText="Share this audio across dialects"
+                  name="fvm:shared"
+                  handleChange={(data) => {
+                    this.setState({ createItemIsShared: data })
+                  }}
+                />
+                {/* Child focused --------------- */}
+                <Checkbox
+                  className={this.props.groupName}
+                  id="CreateAudio__ChildFocused"
+                  labelText="Audio is child focused"
+                  name="fvm:child_focused"
+                  handleChange={(data) => {
+                    this.setState({ createItemIsChildFocused: data })
+                  }}
+                />
+
+                {/* Contributors: fvm:source --------------- */}
+                <FormContributors
+                  className={this.props.groupName}
+                  name="fv:source"
+                  textInfo="Contributors who helped create the audio item."
+                  handleItemsUpdate={(data) => {
+                    this.setState({ createItemContributors: data })
+                  }}
+                />
+
+                {/* Recorders: fvm:recorder --------------- */}
+                <FormRecorders
+                  className={this.props.groupName}
+                  name="fvm:recorder"
+                  textInfo="Recorders who helped create the audio item."
+                  handleItemsUpdate={(data) => {
+                    this.setState({ createItemRecorders: data })
+                  }}
+                />
+
+                {/* BTN: Create contributor ------------- */}
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault()
+                    this._handleCreateItemSubmit()
+                  }}
+                >
+                  Create new audio item
+                </button>
+
+                {/* BTN: Cancel, go back ------------- */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    this.setState({
+                      componentState: this.STATE_DEFAULT,
+                    })
+                  }}
+                >
+                  {"Cancel, don't create new audio item"}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="md-overlay" />
+        </div>
       </fieldset>
     )
   }

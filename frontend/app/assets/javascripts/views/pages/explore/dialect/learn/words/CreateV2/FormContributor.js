@@ -19,6 +19,7 @@ export class FormContributor extends React.Component {
   static propTypes = {
     name: string,
     className: string,
+    groupName: string,
     id: number,
     idDescribedbyItemBrowse: string,
     idDescribedByItemMove: string,
@@ -58,6 +59,7 @@ export class FormContributor extends React.Component {
     fetchContributors: func.isRequired,
   }
   static defaultProps = {
+    groupName: 'FormContributor__group',
     id: 0,
     index: 0,
     componentState: 1,
@@ -182,7 +184,7 @@ export class FormContributor extends React.Component {
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorNewName`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
               labelText="Contributor name"
               name={`${name}[${index}]__NewName`}
@@ -194,7 +196,7 @@ export class FormContributor extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__ContributorNewDescription`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__NewDescription`}
               labelText="Contributor description"
               name={`${name}[${index}]__NewDescription`}
@@ -233,7 +235,7 @@ export class FormContributor extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { contributorUid } = this.state
         componentContent = (
-          <fieldset>
+          <fieldset className={this.props.groupName}>
             <legend>{textLegendItem}</legend>
 
             <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
@@ -264,7 +266,7 @@ export class FormContributor extends React.Component {
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__ContributorEditName`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__EditName`}
               labelText="Contributor name"
               name={`${name}[${index}]__EditName`}
@@ -273,7 +275,7 @@ export class FormContributor extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__ContributorEditDescription`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}__EditDescription`}
               labelText="Contributor description"
               name={`${name}[${index}]__EditDescription`}
@@ -320,7 +322,7 @@ export class FormContributor extends React.Component {
           })
         }
         componentContent = (
-          <div>
+          <div className={this.props.groupName}>
             <Select
               className="FormContributor__NewContributorSelect"
               id="FormContributor__NewContributorSelect"
@@ -365,7 +367,7 @@ export class FormContributor extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a contributor"}
+              {"Cancel, don't select from existing Contributors"}
             </button>
           </div>
         )
@@ -398,7 +400,7 @@ export class FormContributor extends React.Component {
 
             {/* Search contributors */}
             <Text
-              className={`${className}__Contributor`}
+              className={this.props.groupName}
               id={`${className}__Contributor${index}`}
               labelText={textLabelItemSearch}
               name={`${name}[${index}]`}
@@ -412,7 +414,7 @@ export class FormContributor extends React.Component {
         )
     }
     return (
-      <fieldset>
+      <fieldset className={this.props.groupName}>
         <legend>{textLegendItem}</legend>
         {componentContent}
       </fieldset>

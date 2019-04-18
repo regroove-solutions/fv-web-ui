@@ -7,12 +7,14 @@ const { string } = PropTypes
 export default class FormCulturalNotes extends React.Component {
   static defaultProps = {
     className: 'FormCulturalNotes',
+    groupName: 'FormCulturalNote__group',
     name: 'FormCulturalNotes',
   }
 
   static propTypes = {
     name: string.isRequired,
     className: string,
+    groupName: string,
   }
 
   state = {
@@ -20,11 +22,11 @@ export default class FormCulturalNotes extends React.Component {
   }
 
   render() {
-    const { className } = this.props
+    const { className, groupName } = this.props
 
     const items = this.state.items
     return (
-      <fieldset className={className}>
+      <fieldset className={`${className} ${groupName}`}>
         <legend>Cultural Notes</legend>
 
         <button
@@ -53,7 +55,7 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
     const id = `${className}_${items.length}_${Date.now()}`
 
     items.push(
-      <fieldset key={id} id={id}>
+      <fieldset key={id} id={id} className={this.props.groupName}>
         <legend className="visually-hidden">Cultural Note</legend>
         <Text
           className="Create__CulturalNote"

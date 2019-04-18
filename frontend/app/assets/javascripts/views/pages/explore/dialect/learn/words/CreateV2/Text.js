@@ -27,12 +27,12 @@ export default class Text extends React.Component {
     const { className, ariaDescribedby, id, labelText, name } = this.props
     return (
       <div className={`${className} Text`}>
-        <label className={`${className}__label Text__label`} htmlFor={id}>
+        <label className="Text__label" htmlFor={id}>
           {labelText}
         </label>
         <input
           aria-describedby={ariaDescribedby}
-          className={`${className}__text Text__text`}
+          className="Text__text"
           id={id}
           name={name}
           defaultValue={this.state.value}

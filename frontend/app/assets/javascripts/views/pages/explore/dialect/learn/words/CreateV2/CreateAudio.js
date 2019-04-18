@@ -33,27 +33,27 @@ export default class CreateAudio extends React.Component {
       <form onSubmit={this.handleFormSubmit} className={`${className} CreateAudio`}>
         <h1>Create new audio (...)</h1>
         {/* Name --------------- */}
-        <Text className="CreateAudio__Name" id="CreateAudio__Name" labelText="Name" name="dc:title" value="" />
+        <Text className="CreateAudio__group " id="CreateAudio__Name" labelText="Name" name="dc:title" value="" />
         {/* Description --------------- */}
         <Textarea
-          className="CreateAudio__Description"
+          className="CreateAudio__group"
           id="CreateAudio__Description"
           labelText="Description"
           name="dc:description"
           value=""
         />
         {/* Name --------------- */}
-        <File className="CreateAudio__File" id="CreateAudio__File" labelText="File" name="file" value="" />
+        <File className="CreateAudio__group" id="CreateAudio__File" labelText="File" name="file" value="" />
         {/* Shared --------------- */}
         <Checkbox
-          className="CreateAudio__Shared"
+          className="CreateAudio__group"
           id="CreateAudio__Shared"
           labelText="Shared accross dialects?"
           name="fvm:shared"
         />
         {/* Child focused --------------- */}
         <Checkbox
-          className="CreateAudio__ChildFocused"
+          className="CreateAudio__group"
           id="CreateAudio__ChildFocused"
           labelText="Child focused "
           name="fvm:child_focused"
@@ -61,6 +61,7 @@ export default class CreateAudio extends React.Component {
 
         {/* Contributors: fvm:source --------------- */}
         <FormContributors
+          className="CreateAudio__group"
           name="fv:source"
           textInfo="Contributors who helped create this audio."
           // textInfo="textInfo"
@@ -79,13 +80,13 @@ export default class CreateAudio extends React.Component {
         />
 
         {/* Recorders: fvm:recorder --------------- */}
-        <fieldset>
+        <fieldset className="CreateAudio__group">
           <legend>Recorders</legend>
           <p className="alert alert-info">Recorders who helped create this audio.</p>
           <button type="button">Add Recorder</button>
 
           {/* Recorders > Recorder --------------- */}
-          <fieldset>
+          <fieldset className="CreateAudio__group">
             <legend>Recorder</legend>
             <input type="hidden" name="fv:source[0]" value="6b295938-1415-42e2-9b40-feb4663c3516" />
             <div>[Recorder HERE]</div>
@@ -102,16 +103,17 @@ export default class CreateAudio extends React.Component {
           </fieldset>
 
           {/* Recorders > Recorder --------------- */}
-          <fieldset>
+          <fieldset className="CreateAudio__group">
             <legend>Recorder</legend>
 
             <Text
-              className="Create__Recorder"
+              className="CreateAudio__group"
               id="CreateWord__Recorder0"
               labelText="Search existing Recorders"
               name="fv:source[1]"
               value=""
             />
+
             <button type="button">Create new Recorder</button>
             <button type="button" aria-describedby="describedbyRecorderBrowse">
               Select from existing Recorders

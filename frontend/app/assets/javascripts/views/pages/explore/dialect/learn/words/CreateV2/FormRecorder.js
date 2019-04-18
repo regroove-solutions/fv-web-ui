@@ -19,6 +19,7 @@ export class FormRecorder extends React.Component {
   static propTypes = {
     name: string,
     className: string,
+    groupName: string,
     id: number,
     idDescribedbyItemBrowse: string,
     idDescribedByItemMove: string,
@@ -58,6 +59,7 @@ export class FormRecorder extends React.Component {
     fetchContributors: func.isRequired,
   }
   static defaultProps = {
+    groupName: 'FormRecorder__group',
     id: 0,
     index: 0,
     componentState: 1,
@@ -177,12 +179,12 @@ export class FormRecorder extends React.Component {
       case this.STATE_CREATE_CONTRIBUTOR:
         // CREATE A NEW CONTRIBUTOR ------------------------------------
         componentContent = (
-          <div>
+          <div className={this.props.groupName}>
             <h2>Creating a new recorder</h2>
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__RecorderNewName`}
+              className={this.props.groupName}
               id={`${className}__Recorder${index}__NewName`}
               labelText="Recorder name"
               name={`${name}[${index}]__NewName`}
@@ -194,7 +196,7 @@ export class FormRecorder extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__RecorderNewDescription`}
+              className={this.props.groupName}
               id={`${className}__Recorder${index}__NewDescription`}
               labelText="Recorder description"
               name={`${name}[${index}]__NewDescription`}
@@ -224,7 +226,7 @@ export class FormRecorder extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a new recorder"}
+              {"Cancel, don't create a new recorder"}
             </button>
           </div>
         )
@@ -233,7 +235,7 @@ export class FormRecorder extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { itemUid } = this.state
         componentContent = (
-          <fieldset>
+          <fieldset className={this.props.groupName}>
             <legend>{textLegendItem}</legend>
 
             <input type="hidden" name={`${name}[${index}]`} value={itemUid} />
@@ -259,12 +261,12 @@ export class FormRecorder extends React.Component {
       case this.STATE_EDIT_CONTRIBUTOR:
         // EDITING A CONTRIBUTOR ------------------------------------
         componentContent = (
-          <div>
+          <div className={this.props.groupName}>
             <h2>Editing recorder</h2>
 
             {/* Name ------------- */}
             <Text
-              className={`${className}__RecorderEditName`}
+              className={this.props.groupName}
               id={`${className}__Recorder${index}__EditName`}
               labelText="Recorder name"
               name={`${name}[${index}]__EditName`}
@@ -273,7 +275,7 @@ export class FormRecorder extends React.Component {
 
             {/* Description ------------- */}
             <Textarea
-              className={`${className}__RecorderEditDescription`}
+              className={this.props.groupName}
               id={`${className}__Recorder${index}__EditDescription`}
               labelText="Recorder description"
               name={`${name}[${index}]__EditDescription`}
@@ -320,7 +322,7 @@ export class FormRecorder extends React.Component {
           })
         }
         componentContent = (
-          <div>
+          <div className={this.props.groupName}>
             <Select
               className="FormRecorder__NewRecorderSelect"
               id="FormRecorder__NewRecorderSelect"
@@ -412,7 +414,7 @@ export class FormRecorder extends React.Component {
         )
     }
     return (
-      <fieldset>
+      <fieldset className={this.props.groupName}>
         <legend>{textLegendItem}</legend>
         {componentContent}
       </fieldset>
