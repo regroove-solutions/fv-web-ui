@@ -15,7 +15,7 @@ export class AlphabetListView extends Component {
   static propTypes = {
     handleClick: func,
     routeParams: object.isRequired,
-    dialect: any.isRequired,
+    dialect: any,
     splitWindowPath: PropTypes.array.isRequired,
     computeCharacters: PropTypes.object.isRequired, // via provide
     computePortal: PropTypes.object.isRequired, // via provide
