@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import { Map } from 'immutable'
 
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
@@ -24,17 +24,18 @@ import classNames from 'classnames'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import IconButton from 'material-ui/lib/icon-button'
+// import ActionInfo from 'material-ui/lib/svg-icons/action/info'
+// import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+import { Dialog } from 'material-ui'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 import MediaList from 'views/components/Browsing/media-list'
 import withPagination from 'views/hoc/grid-list/with-pagination'
 import withFilter from 'views/hoc/grid-list/with-filter'
-import LinearProgress from 'material-ui/lib/linear-progress'
+// import LinearProgress from 'material-ui/lib/linear-progress'
 
-import IconButton from 'material-ui/lib/icon-button'
-import ActionInfo from 'material-ui/lib/svg-icons/action/info'
-import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
 import IntlService from 'views/services/intl'
 
 // const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
@@ -80,9 +81,9 @@ class SharedResourceGridTile extends Component {
           ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
-        <IconButton tooltip={tooltip} tooltipPosition="top-left">
-          {isDialectShared ? <ActionInfoOutline color="white" /> : <ActionInfo color="white" />}
-        </IconButton>
+        <div title={tooltip} className={classNames('action-info', { 'action-info--outline': isDialectShared })}>
+          i
+        </div>
       )
     }
 
@@ -106,7 +107,6 @@ class SharedResourceGridTile extends Component {
   }
 }
 
-@provide
 class SelectMediaComponent extends React.Component {
   static propTypes = {
     onComplete: PropTypes.func.isRequired,
@@ -153,12 +153,9 @@ class SelectMediaComponent extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton
-        key="flatButton1"
-        label={intl.trans('cancel', 'Cancel', 'first')}
-        secondary
-        onTouchTap={this._handleClose}
-      />,
+      <button key="flatButton1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let fileTypeLabel = intl.trans('file', 'file', 'lower')
@@ -201,7 +198,9 @@ class SelectMediaComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
+        <button onClick={this._handleOpen} type="button">
+          {this.props.label}
+        </button>
         <Dialog
           title={`${intl.searchAndReplace(
             `Select existing ${fileTypeLabel} from ${selectn(
@@ -217,10 +216,9 @@ class SelectMediaComponent extends React.Component {
         >
           <div className={classNames('alert', 'alert-info', { hidden: !selectn('isFetching', computeResources) })}>
             {intl.trans('loading_results_please_wait', 'Loading results, please wait.', 'first')}
-            <br />
-            <LinearProgress mode="indeterminate" />
+            {/* <br /> */}
+            {/* <LinearProgress mode="indeterminate" /> */}
           </div>
-
           <FilteredPaginatedMediaList
             action={this._handleSelectElement}
             cols={5}
@@ -292,4 +290,4 @@ class SelectMediaComponent extends React.Component {
   }
 }
 
-export default SelectMediaComponent
+export default provide(SelectMediaComponent)
