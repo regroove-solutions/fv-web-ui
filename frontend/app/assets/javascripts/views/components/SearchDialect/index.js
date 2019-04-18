@@ -557,7 +557,7 @@ class SearchDialect extends Component {
     const _searchByAlphabet = StringHelpers.clean(searchByAlphabet, CLEAN_NXQL) || ''
     const nxqlTmpl = {
       // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, CLEAN_FULLTEXT)}*'`,
-      searchByTitle: `dc:title ILIKE '%${search}%'`,
+      searchByTitle: `/*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ ecm:fulltext.dc:title ILIKE '%${search}%'`,
       searchByAlphabet: `dc:title ILIKE '${_searchByAlphabet}%'`,
       searchByCategory: `dc:title ILIKE '%${search}%'`,
       searchByPhraseBook: `dc:title ILIKE '%${search}%'`,
