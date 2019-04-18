@@ -1,11 +1,12 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string } = PropTypes
+const { string, func } = PropTypes
 
 export default class File extends React.Component {
   static defaultProps = {
     className: 'Text',
     value: '',
+    handleChange: () => {},
   }
 
   static propTypes = {
@@ -15,11 +16,24 @@ export default class File extends React.Component {
     ariaDescribedby: string,
     className: string,
     value: string,
+    handleChange: func,
   }
   //   fileInput = React.createRef()
 
   state = {
     files: [],
+  }
+
+  constructor(props) {
+    super(props)
+
+    // NOTE: Using callback refs since on old React
+    // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
+    this.fileInput = null
+
+    this.setFileInputRef = (element) => {
+      this.fileInput = element
+    }
   }
 
   render() {
@@ -37,15 +51,18 @@ export default class File extends React.Component {
           className={`${className}__text File__input`}
           id={id}
           name={name}
-          onChange={this.handleChange}
-          //   ref={this.fileInput}
-          ref="inputFile" // TODO: UPDATE WHEN ON NEW REACT
+          onChange={() => {
+            this._handleChange()
+          }}
+          ref={this.setFileInputRef}
           type="file"
         />
       </div>
     )
   }
-  handleChange = () => {
-    this.setState({ files: this.fileInput ? this.fileInput.files : this.state.files })
+  _handleChange = () => {
+    this.setState({ files: this.fileInput ? this.fileInput.files[0] : this.state.files }, () => {
+      this.props.handleChange(this.state.files)
+    })
   }
 }
