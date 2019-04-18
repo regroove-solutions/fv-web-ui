@@ -1,31 +1,18 @@
 import React from 'react'
 import { PropTypes } from 'react'
 // import Text from './Text'
-import FormRelatedAudioItem from './FormRelatedAudioItem'
+
+// NOTE: importing the non-wrapped provide() version
+import { FormRelatedAudioItem } from './FormRelatedAudioItem'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
-const { string, array } = PropTypes
+import ProviderHelpers from 'common/ProviderHelpers'
+import provide from 'react-redux-provide'
 
-export default class FormRelatedAudio extends React.Component {
-  static defaultProps = {
-    className: 'FormRelatedAudio',
-    idDescribedbyItemBrowse: 'describedbyRelatedAudioBrowse',
-    idDescribedByItemMove: 'describedByRelatedAudioMove',
-    name: 'FormRelatedAudio',
-    textDescribedbyItemBrowse: 'Select an audio sample from previously uploaded items',
-    textDescribedByItemMove: `If you are adding multiple Related Audio Items, you can change the position of the item with
-    the 'Move Related Audio Item left' and 'Move Related Audio Item right' buttons`,
-    textLegendItems: 'Related Audio',
-    textBtnAddItem: 'Add Related Audio Item',
-    textLegendItem: 'Related Audio Item',
-    textBtnEditItem: 'Edit Related Audio Item',
-    textBtnRemoveItem: 'Remove Related Audio Item',
-    textBtnMoveItemUp: 'Move Related Audio Item left',
-    textBtnMoveItemDown: 'Move Related Audio Item right',
-    textBtnCreateItem: 'Upload new audio',
-    textBtnSelectExistingItems: 'Select from existing audio',
-    textLabelItemSearch: 'Search existing audio',
-  }
+const { string, array, object, func, number } = PropTypes
 
+let SelectMediaComponent = null
+
+export class FormRelatedAudio extends React.Component {
   static propTypes = {
     name: string.isRequired,
     className: string,
@@ -45,10 +32,93 @@ export default class FormRelatedAudio extends React.Component {
     textBtnCreateItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_LANGUAGE: string,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    // REDUX/PROVIDE
+    computeContributor: object.isRequired,
+    computeContributors: object.isRequired,
+    computeCreateContributor: object,
+    computeDialect: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeResources: object.isRequired,
+    createAudio: func.isRequired,
+    createContributor: func.isRequired,
+    fetchContributors: func.isRequired,
+    fetchDialect: func.isRequired,
+    fetchResources: func.isRequired,
+    splitWindowPath: array.isRequired,
+  }
+  static defaultProps = {
+    className: 'FormRelatedAudio',
+    idDescribedbyItemBrowse: 'describedbyRelatedAudioBrowse',
+    idDescribedByItemMove: 'describedByRelatedAudioMove',
+    name: 'FormRelatedAudio',
+    textDescribedbyItemBrowse: 'Select an audio sample from previously uploaded items',
+    textDescribedByItemMove: `If you are adding multiple Related Audio Items, you can change the position of the item with
+    the 'Move Related Audio Item left' and 'Move Related Audio Item right' buttons`,
+    textLegendItems: 'Related Audio',
+    textBtnAddItem: 'Add Related Audio Item',
+    textLegendItem: 'Related Audio Item',
+    textBtnEditItem: 'Edit Related Audio Item',
+    textBtnRemoveItem: 'Remove Related Audio Item',
+    textBtnMoveItemUp: 'Move Related Audio Item left',
+    textBtnMoveItemDown: 'Move Related Audio Item right',
+    textBtnCreateItem: 'Upload new audio',
+    textBtnSelectExistingItems: 'Select from existing audio',
+    textLabelItemSearch: 'Search existing audio',
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 100,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc',
   }
 
   state = {
     items: [],
+    loading: true,
+  }
+
+  // Fetch data on initial render
+  async componentDidMount() {
+    const { computeDialect, fetchContributors, fetchDialect, fetchResources, splitWindowPath } = this.props
+
+    // USING this.DIALECT_PATH instead of setting state
+    // this.setState({ dialectPath: dialectPath })
+    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
+    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
+    // Get data for computeDialect
+    if (!computeDialect.success) {
+      await fetchDialect('/' + this.DIALECT_PATH)
+    }
+
+    const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_TYPE, DEFAULT_SORT_COL } = this.props
+    let currentAppliedFilter = '' // eslint-disable-line
+    // if (filter.has('currentAppliedFilter')) {
+    //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
+    // }
+    // Get contrinbutors
+    await fetchContributors(
+      this.CONTRIBUTOR_PATH,
+      `${currentAppliedFilter}&currentPageIndex=${DEFAULT_PAGE -
+        1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
+    )
+
+    // Get existing audio files
+    // TODO: hardcoded current page and page size!
+    await fetchResources(
+      '/FV/Workspaces/',
+      `AND ecm:primaryType LIKE 'FVAudio' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
+        this.DIALECT_PATH
+      }/Resources/')&currentPageIndex=${0}&pageSize=${1000}`
+    )
+
+    const _SelectMediaComponent = await import('views/components/Editor/SelectMediaComponent')
+    SelectMediaComponent = _SelectMediaComponent.default
+
+    this.setState({ loading: false })
   }
 
   render() {
@@ -69,6 +139,7 @@ export default class FormRelatedAudio extends React.Component {
 
         <button
           type="button"
+          disabled={this.state.loading}
           onClick={() => {
             this.handleClickAddItem()
           }}
@@ -106,7 +177,7 @@ export default class FormRelatedAudio extends React.Component {
 
 */
 
-  handleClickAddItem = () => {
+  handleClickAddItem = async () => {
     const {
       className,
       name,
@@ -120,6 +191,9 @@ export default class FormRelatedAudio extends React.Component {
       textBtnCreateItem,
       textBtnSelectExistingItems,
       textLabelItemSearch,
+      computeResources,
+      computeDialect,
+      createAudio,
     } = this.props
     const _props = {
       name,
@@ -138,11 +212,14 @@ export default class FormRelatedAudio extends React.Component {
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
+      computeResources,
+      computeDialect,
+      createAudio,
     }
 
     const items = this.state.items
     const id = `${className}_${items.length}_${Date.now()}`
-    items.push(<FormRelatedAudioItem key={id} id={id} {..._props} />)
+    items.push(<FormRelatedAudioItem key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
     this.setState({
       items,
     })
@@ -172,3 +249,5 @@ export default class FormRelatedAudio extends React.Component {
     })
   }
 }
+
+export default provide(FormRelatedAudio)

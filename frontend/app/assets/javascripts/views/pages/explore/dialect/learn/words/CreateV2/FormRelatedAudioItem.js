@@ -14,9 +14,9 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
 
-const { array, func, object, number, string } = PropTypes
-
+const { array, func, object, number, string, element } = PropTypes
 export class FormRelatedAudioItem extends React.Component {
+  STATE_LOADING = 0
   STATE_DEFAULT = 1
   STATE_CREATE = 2
   STATE_CREATED = 3
@@ -52,25 +52,17 @@ export class FormRelatedAudioItem extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // REDUX/PROVIDE
-    computeContributors: object.isRequired,
-    createContributor: func.isRequired,
-    splitWindowPath: array.isRequired,
-    fetchDialect: func.isRequired,
+    // NOTE: Redux/Provide passed in from parent prop not via provide()
     computeDialect: object.isRequired,
-    computeDialect2: object.isRequired,
-    computeCreateContributor: object,
-    computeContributor: object.isRequired,
-    fetchContributors: func.isRequired,
-    fetchResources: func.isRequired,
     computeResources: object.isRequired,
     createAudio: func.isRequired,
+    selectMediaComponent: element,
   }
   static defaultProps = {
     className: 'FormRelatedAudioItem',
     id: 0,
     index: 0,
-    componentState: 1,
+    componentState: 0,
     handleClickCreateItem: () => {},
     handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
@@ -83,6 +75,7 @@ export class FormRelatedAudioItem extends React.Component {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
+    selectMediaComponent: null,
   }
   state = {
     componentState: this.props.componentState,
@@ -98,41 +91,6 @@ export class FormRelatedAudioItem extends React.Component {
   DIALECT_PATH = undefined
   CONTRIBUTOR_PATH = undefined
 
-  // Fetch data on initial render
-  async componentDidMount() {
-    const { computeDialect, fetchContributors, fetchDialect, fetchResources, splitWindowPath } = this.props
-
-    // USING this.DIALECT_PATH instead of setting state
-    // this.setState({ dialectPath: dialectPath })
-    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
-    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
-    // Get data for computeDialect
-    if (!computeDialect.success) {
-      await fetchDialect('/' + this.DIALECT_PATH)
-    }
-
-    const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_TYPE, DEFAULT_SORT_COL } = this.props
-    let currentAppliedFilter = '' // eslint-disable-line
-    // if (filter.has('currentAppliedFilter')) {
-    //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
-    // }
-    // Get contrinbutors
-    await fetchContributors(
-      this.CONTRIBUTOR_PATH,
-      `${currentAppliedFilter}&currentPageIndex=${DEFAULT_PAGE -
-        1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
-    )
-
-    // Get existing audio files
-    // TODO: hardcoded current page and page size!
-    await fetchResources(
-      '/FV/Workspaces/',
-      `AND ecm:primaryType LIKE 'FVAudio' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
-        this.DIALECT_PATH
-      }/Resources/')&currentPageIndex=${0}&pageSize=${10}`
-    )
-  }
-
   //   AFTER SUBMITTING NEW CONTRIBUTOR
   // ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response
 
@@ -141,7 +99,7 @@ export class FormRelatedAudioItem extends React.Component {
       className,
       name,
       id,
-      idDescribedbyItemBrowse,
+      // idDescribedbyItemBrowse,
       idDescribedByItemMove,
       index,
       textBtnRemoveItem,
@@ -334,7 +292,7 @@ export class FormRelatedAudioItem extends React.Component {
               id={`${className}__Contributor${index}__EditName`}
               labelText="Related Audio Item name"
               name={`${name}[${index}]__EditName`}
-              value="[some prefilled value"
+              value="[some prefilled value]"
             />
 
             {/* Description ------------- */}
@@ -374,14 +332,14 @@ export class FormRelatedAudioItem extends React.Component {
       case this.STATE_BROWSE: {
         // Select from existing audio  ------------------------------------
 
-        const { computeResources, computeDialect2 } = this.props // eslint-disable-line
+        const { computeResources } = this.props
         const _computeResources = ProviderHelpers.getEntry(computeResources, '/FV/Workspaces/')
         const items =
           selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
         let audioExisting = []
 
-        audioExisting = items.map((element, i) => {
-          const uid = element.uid
+        audioExisting = items.map((_element, i) => {
+          const uid = _element.uid
           const audioId = `related_audio_${uid}`
           return (
             <div className={`${className}__browseItem`} key={i}>
@@ -395,8 +353,8 @@ export class FormRelatedAudioItem extends React.Component {
                 />
               </div>
               <div className={`${className}__browseItemGroup2`}>
-                <label htmlFor={audioId}>{`Select '${element.title}'`}</label>
-                <audio src={selectn('properties.file:content.data', element)} preload="none" controls />
+                <label htmlFor={audioId}>{`Select '${_element.title}'`}</label>
+                <audio src={selectn('properties.file:content.data', _element)} preload="none" controls />
               </div>
             </div>
           )
@@ -443,8 +401,10 @@ export class FormRelatedAudioItem extends React.Component {
         )
         break
       }
-      default:
+      default: {
         // INITIAL STATE ------------------------------------
+        const { computeDialect, selectMediaComponent } = this.props
+        const SelectMediaComponent = selectMediaComponent
         componentContent = (
           <div>
             {/* Create contributor */}
@@ -458,7 +418,7 @@ export class FormRelatedAudioItem extends React.Component {
             </button>
 
             {/* Browse/select contributor */}
-            <button
+            {/* <button
               aria-describedby={idDescribedbyItemBrowse}
               onClick={() => {
                 this._handleClickSelectItem()
@@ -466,13 +426,29 @@ export class FormRelatedAudioItem extends React.Component {
               type="button"
             >
               {textBtnSelectExistingItems}
-            </button>
+            </button> */}
+
+            <SelectMediaComponent
+              type={'FVAudio'}
+              label={textBtnSelectExistingItems}
+              onComplete={(selected) => {
+                // eslint-disable-next-line
+                console.log('!', selected)
+                const uid = selectn('uid', selected)
+                const path = selectn(['properties', 'file:content', 'data'], selected)
+                const title = selectn(['title'], selected)
+                // eslint-disable-next-line
+                console.log('!!! onComplete', { uid, path, title })
+              }}
+              dialect={selectn('response', computeDialect)}
+            />
 
             {removeItemBtn}
 
             {moveItemBtns}
           </div>
         )
+      }
     }
     return (
       <fieldset className={className}>
@@ -555,22 +531,29 @@ export class FormRelatedAudioItem extends React.Component {
     //     })
     //   }
     // }
-    // const timestamp = Date.now()
-    // const {
-    //   createItemName,
-    //   createItemDescription,
-    //   createItemFile,
-    //   createItemIsShared,
-    //   createItemIsChildFocused,
-    //   createItemContributors,
-    //   createItemRecorders,
-    // } = this.state
-    // const docParams = {
-    //   type: 'FVAudio',
-    //   name: createItemName,
-    //   properties: {
-    //   },
-    // }
+    const timestamp = Date.now()
+    const {
+      createItemName,
+      createItemDescription,
+      createItemFile,
+      createItemIsShared,
+      createItemIsChildFocused,
+      createItemContributors,
+      createItemRecorders,
+    } = this.state
+
+    const docParams = {
+      type: 'FVAudio',
+      name: createItemName,
+      properties: {
+        'dc:title': createItemName,
+        'dc:description': createItemDescription,
+        'fvm:shared': createItemIsShared,
+        'fvm:child_focused': createItemIsChildFocused,
+        'fvm:recorder': createItemRecorders,
+        'fvm:source': createItemContributors,
+      },
+    }
     /*
     {"params":{
     "type":"FVAudio",
@@ -590,8 +573,33 @@ export class FormRelatedAudioItem extends React.Component {
         ]
 }
 },"context":{},"input":"/FV/Workspaces/Data/Athabascan/Dene/Dene/Resources"}
+
+FILE:
+lastModified: 1547097175000
+lastModifiedDate: Wed Jan 09 2019 21:12:55 GMT-0800 (Pacific Standard Time)
+__proto__: Object
+name: "sample.mp3"
+size: 20016
+type: "audio/mp3"
 */
-    // await this.props.createAudio(`${this.DIALECT_PATH}/Resources`, docParams, file, timestamp)
+    const uploadAudio = await this.props.createAudio(
+      `${this.DIALECT_PATH}/Resources`,
+      docParams,
+      createItemFile,
+      timestamp
+    )
+    // eslint-disable-next-line
+    console.log('!!!', uploadAudio, {
+      docParams,
+      createItemFile,
+      timestamp,
+    })
+    /*
+
+      this.setState({
+          pathOrId: this.props.dialect.path + '/Resources/' + formValue['dc:title'] + '.' + timestamp,
+        })
+        */
   }
 }
 
