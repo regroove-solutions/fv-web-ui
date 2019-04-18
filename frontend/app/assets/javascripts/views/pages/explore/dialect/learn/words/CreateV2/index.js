@@ -30,9 +30,9 @@ import IntlService from 'views/services/intl'
 import Select from './Select'
 import Text from './Text'
 import Checkbox from './Checkbox'
-import CreateAudio from './CreateAudio'
-import CreatePicture from './CreatePicture'
-import CreateVideo from './CreateVideo'
+// import CreateAudio from './CreateAudio'
+// import CreatePicture from './CreatePicture'
+// import CreateVideo from './CreateVideo'
 import FormContributors from './FormContributors'
 import FormCulturalNotes from './FormCulturalNotes'
 import FormDefinitions from './FormDefinitions'
@@ -480,11 +480,11 @@ the 'Move Category up' and 'Move Category down' buttons`}
           {/* FLEX: Col 2 */}
           <div>
             {/* CreateAudio --------------- */}
-            <CreateAudio />
+            {/* <CreateAudio /> */}
             {/* CreatePicture --------------- */}
-            <CreatePicture />
+            {/* <CreatePicture /> */}
             {/* CreateVideo --------------- */}
-            <CreateVideo />
+            {/* <CreateVideo /> */}
           </div>
         </div>
       </PromiseWrapper>
