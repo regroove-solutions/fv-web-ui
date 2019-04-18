@@ -102,6 +102,10 @@
         "lowercase" : {
             "type": "text",
             "analyzer" : "lowercase_analyzer"
+        },
+        "ngram": {
+            "type": "text",
+            "analyzer": "ngram_analyzer"
         }
       }
     },
