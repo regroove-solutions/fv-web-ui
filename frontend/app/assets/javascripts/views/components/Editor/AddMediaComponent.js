@@ -127,12 +127,8 @@ export class AddMediaComponent extends Component {
           fd.append(k, v)
         }
       }
-      for (var pair of fd.entries()) {
-        console.log(`! fd: ${pair[0]}: ${JSON.stringify(pair[1])}`)
-      }
 
       if (file) {
-        console.log('! 1', file)
         let properties = {}
 
         for (let key in formValue) {
@@ -143,12 +139,6 @@ export class AddMediaComponent extends Component {
             }
           }
         }
-        console.log('! 2', {
-          properties,
-          otherContext: selectn('otherContext.parentId', this.props.dialect)
-            ? { 'fvm:origin': selectn('otherContext.parentId', this.props.dialect) }
-            : {},
-        })
         let timestamp = Date.now()
         let ResourcesPath = this.props.dialect.path + '/Resources'
 
@@ -166,11 +156,6 @@ export class AddMediaComponent extends Component {
         switch (this.props.type) {
           case 'FVAudio':
             if (file.type.indexOf('audio') === 0) {
-              // console.log('! 3', { ResourcesPath, docParams, file, timestamp })
-              console.log('! 3 ResourcesPath', ResourcesPath)
-              console.log('! 3 docParams', docParams) // NOTE: filtered out file prop for some reason
-              console.log('! 3 JSONG then file', file)
-              console.log('! 3 timestamp', timestamp)
               this.props.createAudio(ResourcesPath, docParams, file, timestamp)
               this.setState({ typeError: '' })
             } else {
