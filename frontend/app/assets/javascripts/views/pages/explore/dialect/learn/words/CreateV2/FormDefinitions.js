@@ -2,6 +2,8 @@ import React from 'react'
 import { PropTypes } from 'react'
 import Text from './Text'
 import Select from './Select'
+import FormMoveButtons from './FormMoveButtons'
+import FormRemoveButton from './FormRemoveButton'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 const { string } = PropTypes
 
@@ -87,32 +89,22 @@ Definition up' and 'Move Definition down' buttons`}
           labelText="Translation"
           name="fv:definitions[0][translation]"
         />
-        <button
-          type="button"
-          onClick={() => {
-            this.handleClickRemoveItem(id)
-          }}
-        >
-          Remove Definition
-        </button>
-        <button
-          aria-describedby="describedByDefinitionMove"
-          onClick={() => {
-            this.handleClickMoveItemUp(id)
-          }}
-          type="button"
-        >
-          Move Definition up
-        </button>
-        <button
-          aria-describedby="describedByDefinitionMove"
-          onClick={() => {
-            this.handleClickMoveItemDown(id)
-          }}
-          type="button"
-        >
-          Move Definition down
-        </button>
+
+        <div className="FormItemButtons">
+          <FormMoveButtons
+            id={id}
+            idDescribedByItemMove={'describedByDefinitionMove'}
+            textBtnMoveItemUp={'Move Definition up'}
+            textBtnMoveItemDown={'Move Definition down'}
+            handleClickMoveItemUp={this.handleClickMoveItemUp}
+            handleClickMoveItemDown={this.handleClickMoveItemDown}
+          />
+          <FormRemoveButton
+            id={id}
+            textBtnRemoveItem={'Remove Definition'}
+            handleClickRemoveItem={this.handleClickRemoveItem}
+          />
+        </div>
       </fieldset>
     )
     this.setState({

@@ -3,7 +3,8 @@ import { PropTypes } from 'react'
 import Text from './Text'
 import Textarea from './Textarea'
 import Select from './Select'
-
+import FormMoveButtons from './FormMoveButtons'
+import FormRemoveButton from './FormRemoveButton'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
 // import DocumentListView from 'views/components/Document/DocumentListView'
@@ -139,42 +140,6 @@ export class FormRecorder extends React.Component {
 
     let componentContent = null
 
-    const moveItemBtns = (
-      <div>
-        {/* Move item */}
-        <button
-          aria-describedby={idDescribedByItemMove}
-          onClick={() => {
-            handleClickMoveItemUp(id)
-          }}
-          type="button"
-        >
-          {textBtnMoveItemUp}
-        </button>
-
-        {/* Move item */}
-        <button
-          aria-describedby={idDescribedByItemMove}
-          onClick={() => {
-            handleClickMoveItemDown(id)
-          }}
-          type="button"
-        >
-          {textBtnMoveItemDown}
-        </button>
-      </div>
-    )
-    const removeItemBtn = (
-      // Remove item
-      <button
-        onClick={() => {
-          handleClickRemoveItem(id)
-        }}
-        type="button"
-      >
-        {textBtnRemoveItem}
-      </button>
-    )
     switch (this.state.componentState) {
       case this.STATE_CREATE_CONTRIBUTOR:
         // CREATE A NEW CONTRIBUTOR ------------------------------------
@@ -251,9 +216,21 @@ export class FormRecorder extends React.Component {
               {textBtnEditItem}
             </button>
 
-            {removeItemBtn}
-
-            {moveItemBtns}
+            <div className="FormItemButtons">
+              <FormMoveButtons
+                id={id}
+                idDescribedByItemMove={idDescribedByItemMove}
+                textBtnMoveItemUp={textBtnMoveItemUp}
+                textBtnMoveItemDown={textBtnMoveItemDown}
+                handleClickMoveItemUp={handleClickMoveItemUp}
+                handleClickMoveItemDown={handleClickMoveItemDown}
+              />
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
           </fieldset>
         )
         break
@@ -407,9 +384,21 @@ export class FormRecorder extends React.Component {
               value=""
             />
 
-            {removeItemBtn}
-
-            {moveItemBtns}
+            <div className="FormItemButtons">
+              <FormMoveButtons
+                id={id}
+                idDescribedByItemMove={idDescribedByItemMove}
+                textBtnMoveItemUp={textBtnMoveItemUp}
+                textBtnMoveItemDown={textBtnMoveItemDown}
+                handleClickMoveItemUp={handleClickMoveItemUp}
+                handleClickMoveItemDown={handleClickMoveItemDown}
+              />
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
           </div>
         )
     }

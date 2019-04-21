@@ -3,6 +3,8 @@ import { PropTypes } from 'react'
 import Text from './Text'
 import Textarea from './Textarea'
 import Select from './Select'
+import FormMoveButtons from './FormMoveButtons'
+import FormRemoveButton from './FormRemoveButton'
 
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -139,42 +141,6 @@ export class FormContributor extends React.Component {
 
     let componentContent = null
 
-    const moveItemBtns = (
-      <div>
-        {/* Move contributor */}
-        <button
-          aria-describedby={idDescribedByItemMove}
-          onClick={() => {
-            handleClickMoveItemUp(id)
-          }}
-          type="button"
-        >
-          {textBtnMoveItemUp}
-        </button>
-
-        {/* Move contributor */}
-        <button
-          aria-describedby={idDescribedByItemMove}
-          onClick={() => {
-            handleClickMoveItemDown(id)
-          }}
-          type="button"
-        >
-          {textBtnMoveItemDown}
-        </button>
-      </div>
-    )
-    const removeItemBtn = (
-      // Remove contributor
-      <button
-        onClick={() => {
-          handleClickRemoveItem(id)
-        }}
-        type="button"
-      >
-        {textBtnRemoveItem}
-      </button>
-    )
     switch (this.state.componentState) {
       case this.STATE_CREATE_CONTRIBUTOR:
         // CREATE A NEW CONTRIBUTOR ------------------------------------
@@ -238,6 +204,21 @@ export class FormContributor extends React.Component {
           <fieldset className={this.props.groupName}>
             <legend>{textLegendItem}</legend>
 
+            <div className="FormItemButtons">
+              <FormMoveButtons
+                id={id}
+                idDescribedByItemMove={idDescribedByItemMove}
+                textBtnMoveItemUp={textBtnMoveItemUp}
+                textBtnMoveItemDown={textBtnMoveItemDown}
+                handleClickMoveItemUp={handleClickMoveItemUp}
+                handleClickMoveItemDown={handleClickMoveItemDown}
+              />
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
             <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
             <div>[CONTRIBUTOR ({contributorUid}) HERE]</div>
 
@@ -250,10 +231,6 @@ export class FormContributor extends React.Component {
             >
               {textBtnEditItem}
             </button>
-
-            {removeItemBtn}
-
-            {moveItemBtns}
           </fieldset>
         )
         break
@@ -377,6 +354,13 @@ export class FormContributor extends React.Component {
         // INITIAL STATE ------------------------------------
         componentContent = (
           <div>
+            <div className="FormItemButtons">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
             {/* Create contributor */}
             <button
               type="button"
@@ -406,10 +390,6 @@ export class FormContributor extends React.Component {
               name={`${name}[${index}]`}
               value=""
             />
-
-            {removeItemBtn}
-
-            {moveItemBtns}
           </div>
         )
     }
