@@ -3,7 +3,7 @@ import { PropTypes } from 'react'
 // import Text from './Text'
 
 // NOTE: importing the non-wrapped provide() version
-import { FormRelatedAudioItem } from './FormRelatedAudioItem'
+import FormRelatedAudioItem from './FormRelatedAudioItem'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
@@ -43,8 +43,6 @@ export class FormRelatedAudio extends React.Component {
     computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    computeResources: object.isRequired,
-    createAudio: func.isRequired,
     createContributor: func.isRequired,
     fetchContributors: func.isRequired,
     fetchDialect: func.isRequired,
@@ -177,7 +175,7 @@ export class FormRelatedAudio extends React.Component {
 
 */
 
-  handleClickAddItem = async () => {
+  handleClickAddItem = () => {
     const _props = {
       name: this.props.name,
       className: this.props.className,
@@ -196,11 +194,9 @@ export class FormRelatedAudio extends React.Component {
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
-      computeResources: this.props.computeResources,
-      computeDialect: this.props.computeDialect,
-      createAudio: this.props.createAudio,
+      computeDialectFromParent: this.props.computeDialect,
+      DIALECT_PATH: this.DIALECT_PATH,
     }
-
     const items = this.state.items
     const id = `${_props.className}_${items.length}_${Date.now()}`
     items.push(<FormRelatedAudioItem key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
