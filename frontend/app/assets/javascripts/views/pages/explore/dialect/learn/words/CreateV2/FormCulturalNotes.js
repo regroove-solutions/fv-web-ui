@@ -1,6 +1,8 @@
 import React from 'react'
 import { PropTypes } from 'react'
 import Text from './Text'
+import FormMoveButtons from './FormMoveButtons'
+import FormRemoveButton from './FormRemoveButton'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 const { string } = PropTypes
 
@@ -57,6 +59,23 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
     items.push(
       <fieldset key={id} id={id} className={this.props.groupName}>
         <legend className="visually-hidden">Cultural Note</legend>
+
+        <div className="FormItemButtons">
+          <FormMoveButtons
+            id={id}
+            idDescribedByItemMove={'describedByDefinitionMove'}
+            textBtnMoveItemUp={'Move Definition up'}
+            textBtnMoveItemDown={'Move Definition down'}
+            handleClickMoveItemUp={this.handleClickMoveItemUp}
+            handleClickMoveItemDown={this.handleClickMoveItemDown}
+          />
+          <FormRemoveButton
+            id={id}
+            textBtnRemoveItem={'Remove Definition'}
+            handleClickRemoveItem={this.handleClickRemoveItem}
+          />
+        </div>
+
         <Text
           className="Create__CulturalNote"
           id="CreateWord__CulturalNote0"
@@ -64,33 +83,6 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
           name="fv:cultural_note[0]"
           value=""
         />
-        <button
-          onClick={() => {
-            this.handleClickRemoveItem(id)
-          }}
-          type="button"
-        >
-          Remove Cultural Note
-        </button>
-
-        <button
-          aria-describedby="describedByCulturalNoteMove"
-          onClick={() => {
-            this.handleClickMoveItemUp(id)
-          }}
-          type="button"
-        >
-          Move Cultural Note up
-        </button>
-        <button
-          type="button"
-          aria-describedby="describedByCulturalNoteMove"
-          onClick={() => {
-            this.handleClickMoveItemDown(id)
-          }}
-        >
-          Move Cultural Note down
-        </button>
       </fieldset>
     )
     this.setState({
