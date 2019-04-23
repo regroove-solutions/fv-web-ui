@@ -135,7 +135,7 @@ export default class FormRecorders extends React.Component {
         key={id}
         id={id}
         {..._props}
-        handleItemChange={({ _id, uid }) => {
+        handleItemChange={({ id: _id, uid }) => {
           const { itemsIdUid } = this.state
           itemsIdUid[_id] = uid
           this.setState(itemsIdUid, () => {
