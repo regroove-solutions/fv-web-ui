@@ -1,6 +1,6 @@
 /*
 INPUT:
-{ id, items }
+{ id, items: [jsx] }
 
 Output: index pos or -1
 */
@@ -12,7 +12,7 @@ export const getIndexOfElementById = (arg) => {
 }
 /*
 INPUT:
-{ id, items }
+{ id, items: [jsx] }
 
 Output: items with item removed or unchanged if item not found
 */
@@ -29,7 +29,7 @@ export const removeItem = (arg) => {
   return items
 }
 /*
-Input: { id, items }
+Input: { id, items: [jsx] }
 Output: items but with the element matching the ID moved down in the array (towards index === items.length)
 */
 export const moveItemDown = (arg) => {
@@ -37,7 +37,7 @@ export const moveItemDown = (arg) => {
   return moveItem({ direction: 1, id, items })
 }
 /*
-Input: { id, items }
+Input: { id, items: [jsx] }
 Output: items but with the element matching the ID moved up in the array (towards index === 0)
 */
 export const moveItemUp = (arg) => {
@@ -46,7 +46,7 @@ export const moveItemUp = (arg) => {
 }
 
 /*
-Input: { direction, id, items }
+Input: { direction, id, items: [jsx] }
 Output: items but with the element matching the ID moved up/down in the array (based on direction int)
 */
 const moveItem = (arg) => {
