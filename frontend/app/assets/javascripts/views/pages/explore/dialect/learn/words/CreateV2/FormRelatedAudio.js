@@ -4,12 +4,11 @@ import { PropTypes } from 'react'
 
 // NOTE: importing the non-wrapped provide() version
 import FormRelatedAudioItem from './FormRelatedAudioItem'
-import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
-
 const { string, array, object, func, number } = PropTypes
-
+import selectn from 'selectn'
 let SelectMediaComponent = null
 
 export class FormRelatedAudio extends React.Component {
@@ -77,6 +76,7 @@ export class FormRelatedAudio extends React.Component {
   state = {
     items: [],
     loading: true,
+    audioItems: [],
   }
 
   // Fetch data on initial render
@@ -194,12 +194,27 @@ export class FormRelatedAudio extends React.Component {
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
+      handleAudioItemSelected: this.handleAudioItemSelected,
       computeDialectFromParent: this.props.computeDialect,
       DIALECT_PATH: this.DIALECT_PATH,
     }
     const items = this.state.items
     const id = `${_props.className}_${items.length}_${Date.now()}`
-    items.push(<FormRelatedAudioItem key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
+    items.push(
+      <FormRelatedAudioItem
+        // componentState={2}
+        // SET STATE:
+        // audioItemUid=""
+        // EDIT STATE:
+        // audioItemUid=""
+        // audioItemName=""
+        // audioItemDescription=""
+        key={id}
+        id={id}
+        {..._props}
+        selectMediaComponent={SelectMediaComponent}
+      />
+    )
     this.setState({
       items,
     })
@@ -207,8 +222,66 @@ export class FormRelatedAudio extends React.Component {
   handleClickCreateItem = () => {
     // console.log('! handleClickCreateItem', this.index)
   }
-  handleClickSelectItem = () => {
-    // console.log('! handleClickSelectItem')
+  handleAudioItemSelected = (selected) => {
+    const uid = selectn('uid', selected)
+    // const path = selectn(['properties', 'file:content', 'data'], selected)
+    // const title = selectn(['title'], selected)
+
+    // filter out any pre-added elements
+    // let { audioItems } = this.state
+    // const existingIndex = audioItems.findIndex((element) => {
+    //   return element.uid === uid
+    // })
+    // if (existingIndex !== -1) {
+    //   audioItems = audioItems.filter((element) => {
+    //     return element.uid !== uid
+    //   })
+    // }
+    // // add selected to end
+    // this.setState({
+    //   audioItems: [...audioItems, { uid, path, title }],
+    // })
+    let { items } = this.state
+    const arg = { id: uid, items }
+
+    if (getIndexOfElementById(arg) !== -1) {
+      items = removeItem(arg)
+    }
+
+    const _props = {
+      name: this.props.name,
+      className: this.props.className,
+      idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
+      idDescribedByItemMove: this.props.idDescribedByItemMove,
+      textLegendItem: this.props.textLegendItem,
+      textBtnEditItem: this.props.textBtnEditItem,
+      textBtnRemoveItem: this.props.textBtnRemoveItem,
+      textBtnMoveItemUp: this.props.textBtnMoveItemUp,
+      textBtnMoveItemDown: this.props.textBtnMoveItemDown,
+      textBtnCreateItem: this.props.textBtnCreateItem,
+      textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
+      textLabelItemSearch: this.props.textLabelItemSearch,
+      handleClickCreateItem: this.handleClickCreateItem,
+      handleClickSelectItem: this.handleClickSelectItem,
+      handleClickRemoveItem: this.handleClickRemoveItem,
+      handleClickMoveItemUp: this.handleClickMoveItemUp,
+      handleClickMoveItemDown: this.handleClickMoveItemDown,
+      handleAudioItemSelected: this.handleAudioItemSelected,
+      computeDialectFromParent: this.props.computeDialect,
+      DIALECT_PATH: this.DIALECT_PATH,
+    }
+    this.setState({
+      items: [
+        ...items,
+        <FormRelatedAudioItem
+          componentState={3}
+          key={uid}
+          id={uid}
+          {..._props}
+          selectMediaComponent={SelectMediaComponent}
+        />,
+      ],
+    })
   }
   handleClickEditItem = () => {
     // console.log('! handleClickEditItem')
