@@ -130,7 +130,7 @@ export class FormContributor extends React.Component {
       textBtnCreateItem,
       textBtnEditItem,
       textBtnSelectExistingItems,
-      textLabelItemSearch,
+      // textLabelItemSearch,
       textLegendItem,
       // handleClickSelectItem,
       handleClickRemoveItem,
@@ -201,9 +201,7 @@ export class FormContributor extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { contributorUid } = this.state
         componentContent = (
-          <fieldset className={this.props.groupName}>
-            <legend>{textLegendItem}</legend>
-
+          <div>
             <div className="FormItemButtons">
               <FormMoveButtons
                 id={id}
@@ -231,7 +229,7 @@ export class FormContributor extends React.Component {
             >
               {textBtnEditItem}
             </button>
-          </fieldset>
+          </div>
         )
         break
       }
@@ -379,17 +377,17 @@ export class FormContributor extends React.Component {
               }}
               type="button"
             >
-              {textBtnSelectExistingItems} (TODO)
+              {textBtnSelectExistingItems}
             </button>
 
             {/* Search contributors */}
-            <Text
+            {/* <Text
               className={this.props.groupName}
               id={`${className}__Contributor${index}`}
               labelText={textLabelItemSearch}
               name={`${name}[${index}]`}
               value=""
-            />
+            /> */}
           </div>
         )
     }
