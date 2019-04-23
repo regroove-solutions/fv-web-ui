@@ -9,6 +9,7 @@ import FormContributors from './FormContributors'
 import FormRecorders from './FormRecorders'
 import FormMoveButtons from './FormMoveButtons'
 import FormRemoveButton from './FormRemoveButton'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
 // import DocumentListView from 'views/components/Document/DocumentListView'
@@ -48,6 +49,7 @@ export class FormRelatedAudioItem extends React.Component {
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
     handleClickMoveItemDown: func,
+    handleAudioItemSelected: func,
     componentState: number,
     value: string,
     DISABLED_SORT_COLS: array,
@@ -76,6 +78,7 @@ export class FormRelatedAudioItem extends React.Component {
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
     handleClickMoveItemDown: () => {},
+    handleAudioItemSelected: () => {},
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
@@ -157,9 +160,6 @@ export class FormRelatedAudioItem extends React.Component {
         componentContent = (
           <div>
             <h2>Create new audio item</h2>
-            {/* Name --------------- */}
-            {/* <Text className="CreateAudio__Name" id="CreateAudio__Name" labelText="Name" name="dc:title" value="" /> */}
-
             {/* Name ------------- */}
             <Text
               className={this.props.groupName}
@@ -267,9 +267,7 @@ export class FormRelatedAudioItem extends React.Component {
         // AUDIO CREATED/SELECTED ------------------------------------
         const { audioUid } = this.state
         componentContent = (
-          <fieldset className={this.props.groupName}>
-            <legend>{textLegendItem}</legend>
-
+          <div>
             <div className="FormItemButtons">
               <FormMoveButtons
                 id={id}
@@ -288,7 +286,7 @@ export class FormRelatedAudioItem extends React.Component {
 
             <input type="hidden" name={`${name}[${index}]`} value={audioUid} />
             <div>[AUDIO ({audioUid}) HERE]</div>
-          </fieldset>
+          </div>
         )
         break
       }
@@ -418,8 +416,26 @@ export class FormRelatedAudioItem extends React.Component {
         // INITIAL STATE ------------------------------------
         const { computeDialectFromParent, selectMediaComponent } = this.props
         const SelectMediaComponent = selectMediaComponent
+        const _handleAudioItemSelected = (selected) => {
+          this.props.handleAudioItemSelected(selected)
+        }
         componentContent = (
           <div>
+            <div className="FormItemButtons">
+              {/* <FormMoveButtons
+                id={id}
+                idDescribedByItemMove={idDescribedByItemMove}
+                textBtnMoveItemUp={textBtnMoveItemUp}
+                textBtnMoveItemDown={textBtnMoveItemDown}
+                handleClickMoveItemUp={handleClickMoveItemUp}
+                handleClickMoveItemDown={handleClickMoveItemDown}
+              /> */}
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
             {/* Create contributor */}
             <button
               type="button"
@@ -444,33 +460,9 @@ export class FormRelatedAudioItem extends React.Component {
             <SelectMediaComponent
               type={'FVAudio'}
               label={textBtnSelectExistingItems}
-              onComplete={(selected) => {
-                // eslint-disable-next-line
-                console.log('!', selected)
-                const uid = selectn('uid', selected)
-                const path = selectn(['properties', 'file:content', 'data'], selected)
-                const title = selectn(['title'], selected)
-                // eslint-disable-next-line
-                console.log('!!! onComplete', { uid, path, title })
-              }}
+              onComplete={_handleAudioItemSelected}
               dialect={selectn('response', computeDialectFromParent)}
             />
-
-            <div className="FormItemButtons">
-              <FormMoveButtons
-                id={id}
-                idDescribedByItemMove={idDescribedByItemMove}
-                textBtnMoveItemUp={textBtnMoveItemUp}
-                textBtnMoveItemDown={textBtnMoveItemDown}
-                handleClickMoveItemUp={handleClickMoveItemUp}
-                handleClickMoveItemDown={handleClickMoveItemDown}
-              />
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
-            </div>
           </div>
         )
       }
@@ -617,17 +609,6 @@ export class FormRelatedAudioItem extends React.Component {
       },
       () => {
         handleClickEditItem(id)
-      }
-    )
-  }
-  _handleClickSelectItem = () => {
-    const { handleClickSelectItem } = this.props
-    this.setState(
-      {
-        componentState: this.STATE_BROWSE,
-      },
-      () => {
-        handleClickSelectItem()
       }
     )
   }
