@@ -2,6 +2,8 @@ import React from 'react'
 import { PropTypes } from 'react'
 import Text from './Text'
 import Select from './Select'
+import FormMoveButtons from './FormMoveButtons'
+import FormRemoveButton from './FormRemoveButton'
 import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 const { string } = PropTypes
 
@@ -66,6 +68,22 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
     items.push(
       <fieldset key={id} id={id} className={this.props.groupName}>
         <legend>Literal Translation</legend>
+
+        <div className="FormItemButtons">
+          <FormMoveButtons
+            id={id}
+            idDescribedByItemMove={'describedByDefinitionMove'}
+            textBtnMoveItemUp={'Move Definition up'}
+            textBtnMoveItemDown={'Move Definition down'}
+            handleClickMoveItemUp={this.handleClickMoveItemUp}
+            handleClickMoveItemDown={this.handleClickMoveItemDown}
+          />
+          <FormRemoveButton
+            id={id}
+            textBtnRemoveItem={'Remove Definition'}
+            handleClickRemoveItem={this.handleClickRemoveItem}
+          />
+        </div>
         <Select
           ariaDescribedby="describedbyLanguageLiteralTranslation"
           className="LiteralTranslationLanguage"
@@ -87,33 +105,6 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
           labelText="Translation"
           name="fv:literal_translation[0][translation]"
         />
-
-        <button
-          type="button"
-          onClick={() => {
-            this.handleClickRemoveItem(id)
-          }}
-        >
-          Remove Literal Translation
-        </button>
-        <button
-          aria-describedby="describedByLiteralTranslationMove"
-          type="button"
-          onClick={() => {
-            this.handleClickMoveItemUp(id)
-          }}
-        >
-          Move Literal Translation up
-        </button>
-        <button
-          aria-describedby="describedByLiteralTranslationMove"
-          type="button"
-          onClick={() => {
-            this.handleClickMoveItemDown(id)
-          }}
-        >
-          Move Literal Translation down
-        </button>
       </fieldset>
     )
     this.setState({
