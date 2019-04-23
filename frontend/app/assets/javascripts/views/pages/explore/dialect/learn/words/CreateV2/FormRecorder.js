@@ -129,7 +129,7 @@ export class FormRecorder extends React.Component {
       textBtnCreateItem,
       textBtnEditItem,
       textBtnSelectExistingItems,
-      textLabelItemSearch,
+      // textLabelItemSearch,
       textLegendItem,
       // handleClickSelectItem,
       handleClickRemoveItem,
@@ -376,13 +376,13 @@ export class FormRecorder extends React.Component {
             </button>
 
             {/* Search recorders */}
-            <Text
+            {/* <Text
               className={`${className}__Recorder`}
               id={`${className}__Recorder${index}`}
               labelText={textLabelItemSearch}
               name={`${name}[${index}]`}
               value=""
-            />
+            /> */}
 
             <div className="FormItemButtons">
               <FormMoveButtons
@@ -442,20 +442,21 @@ export class FormRecorder extends React.Component {
       }
     )
   }
-  _handleSubmitExistingItem = (createItemUid) => {
-    this.setState(
-      {
-        componentState: this.STATE_CREATED_CONTRIBUTOR,
-        itemUid: createItemUid,
-      },
-      () => {
-        this.props.handleItemChange({
-          uid: createItemUid,
-          id: this.props.id,
-        })
-      }
-    )
-  }
+  // _handleSubmitExistingItem = (createItemUid) => {
+  //   this.setState(
+  //     {
+  //       componentState: this.STATE_CREATED_CONTRIBUTOR,
+  //       itemUid: createItemUid,
+  //     },
+  //     () => {
+  //       console.log('! 2', createItemUid)
+  //       this.props.handleItemChange({
+  //         uid: createItemUid,
+  //         id: this.props.id,
+  //       })
+  //     }
+  //   )
+  // }
 
   async _handleCreateItemSubmit() {
     const { createItemName, createItemDescription } = this.state
