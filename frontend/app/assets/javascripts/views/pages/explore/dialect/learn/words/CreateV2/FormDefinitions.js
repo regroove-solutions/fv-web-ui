@@ -68,6 +68,22 @@ Definition up' and 'Move Definition down' buttons`}
     items.push(
       <fieldset key={id} id={id} className={this.props.groupName}>
         <legend>Definition</legend>
+
+        <div className="FormItemButtons">
+          <FormMoveButtons
+            id={id}
+            idDescribedByItemMove={'describedByDefinitionMove'}
+            textBtnMoveItemUp={'Move Definition up'}
+            textBtnMoveItemDown={'Move Definition down'}
+            handleClickMoveItemUp={this.handleClickMoveItemUp}
+            handleClickMoveItemDown={this.handleClickMoveItemDown}
+          />
+          <FormRemoveButton
+            id={id}
+            textBtnRemoveItem={'Remove Definition'}
+            handleClickRemoveItem={this.handleClickRemoveItem}
+          />
+        </div>
         <Select
           ariaDescribedby="describedbyLanguage"
           className="DefinitionLanguage"
@@ -89,22 +105,6 @@ Definition up' and 'Move Definition down' buttons`}
           labelText="Translation"
           name="fv:definitions[0][translation]"
         />
-
-        <div className="FormItemButtons">
-          <FormMoveButtons
-            id={id}
-            idDescribedByItemMove={'describedByDefinitionMove'}
-            textBtnMoveItemUp={'Move Definition up'}
-            textBtnMoveItemDown={'Move Definition down'}
-            handleClickMoveItemUp={this.handleClickMoveItemUp}
-            handleClickMoveItemDown={this.handleClickMoveItemDown}
-          />
-          <FormRemoveButton
-            id={id}
-            textBtnRemoveItem={'Remove Definition'}
-            handleClickRemoveItem={this.handleClickRemoveItem}
-          />
-        </div>
       </fieldset>
     )
     this.setState({
