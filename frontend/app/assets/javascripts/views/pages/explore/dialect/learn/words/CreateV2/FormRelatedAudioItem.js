@@ -13,7 +13,7 @@ import FormRemoveButton from './FormRemoveButton'
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
 // import DocumentListView from 'views/components/Document/DocumentListView'
-
+import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
@@ -49,7 +49,7 @@ export class FormRelatedAudioItem extends React.Component {
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
     handleClickMoveItemDown: func,
-    handleAudioItemSelected: func,
+    handleItemSelected: func,
     componentState: number,
     value: string,
     DISABLED_SORT_COLS: array,
@@ -69,7 +69,7 @@ export class FormRelatedAudioItem extends React.Component {
   static defaultProps = {
     className: 'FormRelatedAudioItem',
     groupName: 'FormRelatedAudioItem__group',
-    id: 0,
+    id: -1,
     index: 0,
     componentState: 0,
     handleClickCreateItem: () => {},
@@ -78,7 +78,7 @@ export class FormRelatedAudioItem extends React.Component {
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
     handleClickMoveItemDown: () => {},
-    handleAudioItemSelected: () => {},
+    handleItemSelected: () => {},
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
@@ -128,30 +128,35 @@ export class FormRelatedAudioItem extends React.Component {
     } = this.props
 
     let componentContent = null
+    const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
+    const isFetching = selectn('isFetching', computeCreate)
+    const isSuccess = selectn('success', computeCreate)
+    // let createdUid = null
+    // let createdTitle = null
+    // let createdPath = null
+    // if (isSuccess) {
+    //   createdUid = selectn(['response', 'uid'], computeCreate)
+    //   createdTitle = selectn(['response', 'title'], computeCreate)
+    //   createdPath = selectn(['response', 'path'], computeCreate)
+    // }
+    const _handleItemSelectedOrCreated = (selected) => {
+      this.props.handleItemSelected(selected, () => {
+        handleClickRemoveItem(id)
+      })
+    }
+
+    if (isSuccess) {
+      // Note: deletes the in-progress/newly added item and inserts the just created item
+      _handleItemSelectedOrCreated(selectn('response', computeCreate))
+    }
 
     switch (this.state.componentState) {
       case this.STATE_CREATE: {
-        const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
         let formStatus = null
-        if (computeCreate && computeCreate.isFetching) {
+        if (isFetching) {
           formStatus = (
             <div className="alert alert-info">
               {intl.trans('views.components.editor.uploading_message', 'Uploading... Please be patient...', 'first')}
-            </div>
-          )
-        }
-
-        if (computeCreate && computeCreate.success) {
-          formStatus = (
-            <div className="alert alert-success">
-              Upload successful!
-              <button
-                onClick={() => {
-                  this._handleSelectElement(computeCreate.response)
-                }}
-              >
-                {intl.trans('insert_into_entry', 'Insert into Entry', 'first')}
-              </button>
             </div>
           )
         }
@@ -222,6 +227,7 @@ export class FormRelatedAudioItem extends React.Component {
               name="fv:source"
               textInfo="Contributors who helped create the audio item."
               handleItemsUpdate={(data) => {
+                debugger
                 this.setState({ createItemContributors: data })
               }}
             />
@@ -232,12 +238,14 @@ export class FormRelatedAudioItem extends React.Component {
               name="fvm:recorder"
               textInfo="Recorders who helped create the audio item."
               handleItemsUpdate={(data) => {
+                debugger
                 this.setState({ createItemRecorders: data })
               }}
             />
 
             {/* BTN: Create contributor ------------- */}
             <button
+              disabled={isFetching || isSuccess}
               type="button"
               onClick={(event) => {
                 event.preventDefault()
@@ -249,6 +257,7 @@ export class FormRelatedAudioItem extends React.Component {
 
             {/* BTN: Cancel, go back ------------- */}
             <button
+              disabled={isFetching || isSuccess}
               type="button"
               onClick={() => {
                 this.setState({
@@ -265,7 +274,15 @@ export class FormRelatedAudioItem extends React.Component {
       }
       case this.STATE_CREATED: {
         // AUDIO CREATED/SELECTED ------------------------------------
-        const { audioUid } = this.state
+        let previewInput = 'Something went wrong!'
+        if (id !== -1) {
+          previewInput = (
+            <div>
+              <input type="hidden" name={`${name}[${index}]`} value={id} />
+              <Preview id={id} type="FVAudio" />
+            </div>
+          )
+        }
         componentContent = (
           <div>
             <div className="FormItemButtons">
@@ -283,9 +300,7 @@ export class FormRelatedAudioItem extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-
-            <input type="hidden" name={`${name}[${index}]`} value={audioUid} />
-            <div>[AUDIO ({audioUid}) HERE]</div>
+            {previewInput}
           </div>
         )
         break
@@ -416,9 +431,6 @@ export class FormRelatedAudioItem extends React.Component {
         // INITIAL STATE ------------------------------------
         const { computeDialectFromParent, selectMediaComponent } = this.props
         const SelectMediaComponent = selectMediaComponent
-        const _handleAudioItemSelected = (selected) => {
-          this.props.handleAudioItemSelected(selected)
-        }
         componentContent = (
           <div>
             <div className="FormItemButtons">
@@ -460,7 +472,7 @@ export class FormRelatedAudioItem extends React.Component {
             <SelectMediaComponent
               type={'FVAudio'}
               label={textBtnSelectExistingItems}
-              onComplete={_handleAudioItemSelected}
+              onComplete={_handleItemSelectedOrCreated}
               dialect={selectn('response', computeDialectFromParent)}
             />
           </div>
@@ -632,7 +644,7 @@ export class FormRelatedAudioItem extends React.Component {
       createItemContributors,
       createItemRecorders,
     } = this.state
-
+    debugger
     const docParams = {
       type: 'FVAudio',
       name: createItemName,

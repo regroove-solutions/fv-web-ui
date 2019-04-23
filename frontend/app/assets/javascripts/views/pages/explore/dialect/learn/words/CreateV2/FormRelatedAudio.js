@@ -7,8 +7,9 @@ import FormRelatedAudioItem from './FormRelatedAudioItem'
 import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
-const { string, array, object, func, number } = PropTypes
 import selectn from 'selectn'
+
+const { string, array, object, func, number } = PropTypes
 let SelectMediaComponent = null
 
 export class FormRelatedAudio extends React.Component {
@@ -194,7 +195,7 @@ export class FormRelatedAudio extends React.Component {
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
-      handleAudioItemSelected: this.handleAudioItemSelected,
+      handleItemSelected: this.handleItemSelected,
       computeDialectFromParent: this.props.computeDialect,
       DIALECT_PATH: this.DIALECT_PATH,
     }
@@ -222,7 +223,7 @@ export class FormRelatedAudio extends React.Component {
   handleClickCreateItem = () => {
     // console.log('! handleClickCreateItem', this.index)
   }
-  handleAudioItemSelected = (selected) => {
+  handleItemSelected = (selected, callback) => {
     const uid = selectn('uid', selected)
     // const path = selectn(['properties', 'file:content', 'data'], selected)
     // const title = selectn(['title'], selected)
@@ -266,22 +267,30 @@ export class FormRelatedAudio extends React.Component {
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
-      handleAudioItemSelected: this.handleAudioItemSelected,
+      handleItemSelected: this.handleItemSelected,
       computeDialectFromParent: this.props.computeDialect,
       DIALECT_PATH: this.DIALECT_PATH,
     }
-    this.setState({
-      items: [
-        ...items,
-        <FormRelatedAudioItem
-          componentState={3}
-          key={uid}
-          id={uid}
-          {..._props}
-          selectMediaComponent={SelectMediaComponent}
-        />,
-      ],
-    })
+
+    this.setState(
+      {
+        items: [
+          ...items,
+          <FormRelatedAudioItem
+            componentState={3}
+            key={uid}
+            id={uid}
+            {..._props}
+            selectMediaComponent={SelectMediaComponent}
+          />,
+        ],
+      },
+      () => {
+        if (callback) {
+          callback()
+        }
+      }
+    )
   }
   handleClickEditItem = () => {
     // console.log('! handleClickEditItem')
