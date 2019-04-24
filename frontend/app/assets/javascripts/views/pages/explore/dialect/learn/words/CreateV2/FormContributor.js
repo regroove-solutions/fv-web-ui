@@ -5,7 +5,7 @@ import Textarea from './Textarea'
 import Select from './Select'
 import FormMoveButtons from './FormMoveButtons'
 import FormRemoveButton from './FormRemoveButton'
-
+import Preview from 'views/components/Editor/Preview'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
 // import DocumentListView from 'views/components/Document/DocumentListView'
@@ -218,7 +218,7 @@ export class FormContributor extends React.Component {
               />
             </div>
             <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
-            <div>[CONTRIBUTOR ({contributorUid}) HERE]</div>
+            <Preview id={contributorUid} type="FVContributor" />
 
             {/* Edit contributor */}
             {/* <button

@@ -7,6 +7,7 @@ import FormMoveButtons from './FormMoveButtons'
 import FormRemoveButton from './FormRemoveButton'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
+import Preview from 'views/components/Editor/Preview'
 // import DocumentListView from 'views/components/Document/DocumentListView'
 const { array, func, object, number, string } = PropTypes
 
@@ -200,22 +201,7 @@ export class FormRecorder extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { itemUid } = this.state
         componentContent = (
-          <fieldset className={this.props.groupName}>
-            <legend>{textLegendItem}</legend>
-
-            <input type="hidden" name={`${name}[${index}]`} value={itemUid} />
-            <div>[CONTRIBUTOR ({itemUid}) HERE]</div>
-
-            {/* Edit recorder */}
-            {/* <button
-              onClick={() => {
-                this._handleClickEditItem(id)
-              }}
-              type="button"
-            >
-              {textBtnEditItem}
-            </button> */}
-
+          <div>
             <div className="FormItemButtons">
               <FormMoveButtons
                 id={id}
@@ -231,7 +217,19 @@ export class FormRecorder extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-          </fieldset>
+            <input type="hidden" name={`${name}[${index}]`} value={itemUid} />
+            <Preview id={itemUid} type="FVContributor" />
+
+            {/* Edit recorder */}
+            {/* <button
+              onClick={() => {
+                this._handleClickEditItem(id)
+              }}
+              type="button"
+            >
+              {textBtnEditItem}
+            </button> */}
+          </div>
         )
         break
       }
