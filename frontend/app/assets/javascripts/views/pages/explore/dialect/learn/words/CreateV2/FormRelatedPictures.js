@@ -25,7 +25,7 @@ export class FormRelatedPictures extends React.Component {
     textLegendItems: string,
     textBtnAddItem: string,
     textLegendItem: string,
-    textBtnEditItem: string,
+    // textBtnEditItem: string,
     textBtnRemoveItem: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
@@ -60,7 +60,7 @@ export class FormRelatedPictures extends React.Component {
     textLegendItems: 'Related Pictures',
     textBtnAddItem: 'Add Related Picture',
     textLegendItem: 'Related Picture',
-    textBtnEditItem: 'Edit Related Picture',
+    // textBtnEditItem: 'Edit Related Picture',
     textBtnRemoveItem: 'Remove Related Picture',
     textBtnMoveItemUp: 'Move Related Picture left',
     textBtnMoveItemDown: 'Move Related Picture right',
@@ -166,7 +166,7 @@ export class FormRelatedPictures extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      textBtnEditItem: this.props.textBtnEditItem,
+      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
@@ -238,7 +238,7 @@ export class FormRelatedPictures extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      textBtnEditItem: this.props.textBtnEditItem,
+      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
@@ -275,9 +275,9 @@ export class FormRelatedPictures extends React.Component {
       }
     )
   }
-  handleClickEditItem = () => {
-    // console.log('! handleClickEditItem')
-  }
+  // handleClickEditItem = () => {
+  //   console.log('! handleClickEditItem')
+  // }
   handleClickRemoveItem = (id) => {
     this.setState({
       items: removeItem({ id, items: this.state.items }),

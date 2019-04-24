@@ -30,12 +30,12 @@ export class FormContributor extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    textBtnEditItem: string,
+    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    handleClickEditItem: func,
+    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -67,7 +67,7 @@ export class FormContributor extends React.Component {
     componentState: 1,
     handleItemChange: () => {},
     handleClickCreateItem: () => {},
-    handleClickEditItem: () => {},
+    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -128,7 +128,7 @@ export class FormContributor extends React.Component {
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      textBtnEditItem,
+      // textBtnEditItem,
       textBtnSelectExistingItems,
       // textLabelItemSearch,
       textLegendItem,
@@ -221,67 +221,67 @@ export class FormContributor extends React.Component {
             <div>[CONTRIBUTOR ({contributorUid}) HERE]</div>
 
             {/* Edit contributor */}
-            <button
+            {/* <button
               onClick={() => {
                 this._handleClickEditItem(id)
               }}
               type="button"
             >
               {textBtnEditItem}
-            </button>
+            </button> */}
           </div>
         )
         break
       }
-      case this.STATE_EDIT_CONTRIBUTOR:
-        // EDITING A CONTRIBUTOR ------------------------------------
-        componentContent = (
-          <div>
-            <h2>TODO: Editing contributor</h2>
+      // case this.STATE_EDIT_CONTRIBUTOR:
+      //   // EDITING A CONTRIBUTOR ------------------------------------
+      //   componentContent = (
+      //     <div>
+      //       <h2>TODO: Editing contributor</h2>
 
-            {/* Name ------------- */}
-            <Text
-              className={this.props.groupName}
-              id={`${className}__Contributor${index}__EditName`}
-              labelText="Contributor name"
-              name={`${name}[${index}]__EditName`}
-              value="[some prefilled value"
-            />
+      //       {/* Name ------------- */}
+      //       <Text
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditName`}
+      //         labelText="Contributor name"
+      //         name={`${name}[${index}]__EditName`}
+      //         value="[some prefilled value"
+      //       />
 
-            {/* Description ------------- */}
-            <Textarea
-              className={this.props.groupName}
-              id={`${className}__Contributor${index}__EditDescription`}
-              labelText="Contributor description"
-              name={`${name}[${index}]__EditDescription`}
-              value=""
-            />
+      //       {/* Description ------------- */}
+      //       <Textarea
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditDescription`}
+      //         labelText="Contributor description"
+      //         name={`${name}[${index}]__EditDescription`}
+      //         value=""
+      //       />
 
-            {/* BTN: Create contributor ------------- */}
-            <button
-              type="button"
-              onClick={(event) => {
-                event.preventDefault()
-                this._handleCreateItemSubmit()
-              }}
-            >
-              Update contributor
-            </button>
+      //       {/* BTN: Create contributor ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={(event) => {
+      //           event.preventDefault()
+      //           this._handleCreateItemSubmit()
+      //         }}
+      //       >
+      //         Update contributor
+      //       </button>
 
-            {/* BTN: Cancel, go back ------------- */}
-            <button
-              type="button"
-              onClick={() => {
-                this.setState({
-                  componentState: this.STATE_CREATED_CONTRIBUTOR,
-                })
-              }}
-            >
-              {"Cancel, don't edit a contributor"}
-            </button>
-          </div>
-        )
-        break
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED_CONTRIBUTOR,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't edit a contributor"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
       case this.STATE_BROWSE_CONTRIBUTORS: {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
@@ -409,17 +409,17 @@ export class FormContributor extends React.Component {
       }
     )
   }
-  _handleClickEditItem = (id) => {
-    const { handleClickEditItem } = this.props
-    this.setState(
-      {
-        componentState: this.STATE_EDIT_CONTRIBUTOR,
-      },
-      () => {
-        handleClickEditItem(id)
-      }
-    )
-  }
+  // _handleClickEditItem = (id) => {
+  //   const { handleClickEditItem } = this.props
+  //   this.setState(
+  //     {
+  //       componentState: this.STATE_EDIT_CONTRIBUTOR,
+  //     },
+  //     () => {
+  //       handleClickEditItem(id)
+  //     }
+  //   )
+  // }
   _handleClickSelectItem = () => {
     const { handleClickSelectItem } = this.props
     this.setState(

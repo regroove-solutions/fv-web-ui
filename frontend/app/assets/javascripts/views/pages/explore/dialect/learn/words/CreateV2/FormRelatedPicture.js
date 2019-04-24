@@ -24,7 +24,7 @@ export class FormRelatedPicture extends React.Component {
   STATE_DEFAULT = 1
   STATE_CREATE = 2
   STATE_CREATED = 3
-  STATE_EDIT = 4
+  // STATE_EDIT = 4
   STATE_BROWSE = 5
 
   static propTypes = {
@@ -39,12 +39,12 @@ export class FormRelatedPicture extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    textBtnEditItem: string,
+    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    handleClickEditItem: func,
+    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -73,7 +73,7 @@ export class FormRelatedPicture extends React.Component {
     index: 0,
     componentState: 0,
     handleClickCreateItem: () => {},
-    handleClickEditItem: () => {},
+    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -303,128 +303,128 @@ export class FormRelatedPicture extends React.Component {
         )
         break
       }
-      case this.STATE_EDIT:
-        // EDITING A CONTRIBUTOR ------------------------------------
-        componentContent = (
-          <div>
-            <h2>Editing contributor</h2>
+      // case this.STATE_EDIT:
+      //   // EDITING A CONTRIBUTOR ------------------------------------
+      //   componentContent = (
+      //     <div>
+      //       <h2>Editing contributor</h2>
 
-            {/* Name ------------- */}
-            <Text
-              className={this.props.groupName}
-              id={`${className}__Contributor${index}__EditName`}
-              labelText="Related Picture name"
-              name={`${name}[${index}]__EditName`}
-              value="[some prefilled value]"
-            />
+      //       {/* Name ------------- */}
+      //       <Text
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditName`}
+      //         labelText="Related Picture name"
+      //         name={`${name}[${index}]__EditName`}
+      //         value="[some prefilled value]"
+      //       />
 
-            {/* Description ------------- */}
-            <Textarea
-              className={this.props.groupName}
-              id={`${className}__Contributor${index}__EditDescription`}
-              labelText="Related Picture description"
-              name={`${name}[${index}]__EditDescription`}
-              value=""
-            />
+      //       {/* Description ------------- */}
+      //       <Textarea
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditDescription`}
+      //         labelText="Related Picture description"
+      //         name={`${name}[${index}]__EditDescription`}
+      //         value=""
+      //       />
 
-            {/* BTN: Create contributor ------------- */}
-            <button
-              type="button"
-              onClick={(event) => {
-                event.preventDefault()
-                this._handleCreateItemSubmit()
-              }}
-            >
-              Update contributor
-            </button>
+      //       {/* BTN: Create contributor ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={(event) => {
+      //           event.preventDefault()
+      //           this._handleCreateItemSubmit()
+      //         }}
+      //       >
+      //         Update contributor
+      //       </button>
 
-            {/* BTN: Cancel, go back ------------- */}
-            <button
-              type="button"
-              onClick={() => {
-                this.setState({
-                  componentState: this.STATE_CREATED,
-                })
-              }}
-            >
-              {"Cancel, don't update contributor"}
-            </button>
-          </div>
-        )
-        break
-      case this.STATE_BROWSE: {
-        // TODO: REMOVE? USING OLD MODAL CODE INSTEAD
-        // Select from existing audio  ------------------------------------
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't update contributor"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
+      // case this.STATE_BROWSE: {
+      //   // TODO: REMOVE? USING OLD MODAL CODE INSTEAD
+      //   // Select from existing audio  ------------------------------------
 
-        // const { computeResourcesFromParent } = this.props
-        // const _computeResources = ProviderHelpers.getEntry(computeResourcesFromParent, '/FV/Workspaces/')
-        // const items =
-        //   selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
-        // let audioExisting = []
+      //   const { computeResourcesFromParent } = this.props
+      //   const _computeResources = ProviderHelpers.getEntry(computeResourcesFromParent, '/FV/Workspaces/')
+      //   const items =
+      //     selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
+      //   let audioExisting = []
 
-        // audioExisting = items.map((_element, i) => {
-        //   const uid = _element.uid
-        //   const audioId = `related_audio_${uid}`
-        //   return (
-        //     <div className={`${className}__browseItem`} key={i}>
-        //       <div className={`${className}__browseItemGroup1`}>
-        //         <input
-        //           className={`${className}__browseItemRadio`}
-        //           type="radio"
-        //           id={audioId}
-        //           name="related_audio"
-        //           value={uid}
-        //         />
-        //       </div>
-        //       <div className={`${className}__browseItemGroup2`}>
-        //         <label htmlFor={audioId}>{`Select '${_element.title}'`}</label>
-        //         <audio src={selectn('properties.file:content.data', _element)} preload="none" controls />
-        //       </div>
-        //     </div>
-        //   )
-        // })
+      //   audioExisting = items.map((_element, i) => {
+      //     const uid = _element.uid
+      //     const audioId = `related_audio_${uid}`
+      //     return (
+      //       <div className={`${className}__browseItem`} key={i}>
+      //         <div className={`${className}__browseItemGroup1`}>
+      //           <input
+      //             className={`${className}__browseItemRadio`}
+      //             type="radio"
+      //             id={audioId}
+      //             name="related_audio"
+      //             value={uid}
+      //           />
+      //         </div>
+      //         <div className={`${className}__browseItemGroup2`}>
+      //           <label htmlFor={audioId}>{`Select '${_element.title}'`}</label>
+      //           <audio src={selectn('properties.file:content.data', _element)} preload="none" controls />
+      //         </div>
+      //       </div>
+      //     )
+      //   })
 
-        // componentContent = (
-        //   <div>
-        //     <div
-        //       onChange={(event) => {
-        //         this.setState({
-        //           relatedAudioUid: event.target.value,
-        //         })
-        //       }}
-        //     >
-        //       {audioExisting}
-        //     </div>
+      //   componentContent = (
+      //     <div>
+      //       <div
+      //         onChange={(event) => {
+      //           this.setState({
+      //             relatedAudioUid: event.target.value,
+      //           })
+      //         }}
+      //       >
+      //         {audioExisting}
+      //       </div>
 
-        //     {/* Save/select contributor ------------- */}
-        //     <button
-        //       type="button"
-        //       disabled={this.state.relatedAudioUid === undefined}
-        //       onClick={() => {
-        //         this.setState({
-        //           componentState: this.STATE_CREATED,
-        //           audioUid: this.state.relatedAudioUid,
-        //         })
-        //       }}
-        //     >
-        //       Add selected Related Picture
-        //     </button>
+      //       {/* Save/select contributor ------------- */}
+      //       <button
+      //         type="button"
+      //         disabled={this.state.relatedAudioUid === undefined}
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED,
+      //             audioUid: this.state.relatedAudioUid,
+      //           })
+      //         }}
+      //       >
+      //         Add selected Related Picture
+      //       </button>
 
-        //     {/* BTN: Cancel, go back ------------- */}
-        //     <button
-        //       type="button"
-        //       onClick={() => {
-        //         this.setState({
-        //           componentState: this.STATE_DEFAULT,
-        //         })
-        //       }}
-        //     >
-        //       {"Cancel, don't add Related Picture"}
-        //     </button>
-        //   </div>
-        // )
-        break
-      }
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_DEFAULT,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't add Related Picture"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
+      // }
       default: {
         // INITIAL STATE ------------------------------------
         const { computeDialectFromParent, selectMediaComponent } = this.props
@@ -596,17 +596,17 @@ export class FormRelatedPicture extends React.Component {
       }
     )
   }
-  _handleClickEditItem = (id) => {
-    const { handleClickEditItem } = this.props
-    this.setState(
-      {
-        componentState: this.STATE_EDIT,
-      },
-      () => {
-        handleClickEditItem(id)
-      }
-    )
-  }
+  // _handleClickEditItem = (id) => {
+  //   const { handleClickEditItem } = this.props
+  //   this.setState(
+  //     {
+  //       componentState: this.STATE_EDIT,
+  //     },
+  //     () => {
+  //       handleClickEditItem(id)
+  //     }
+  //   )
+  // }
   _handleSubmitExistingItem = (createItemUid) => {
     this.setState(
       {

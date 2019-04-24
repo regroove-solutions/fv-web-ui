@@ -29,12 +29,12 @@ export class FormRecorder extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    textBtnEditItem: string,
+    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    handleClickEditItem: func,
+    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -65,7 +65,7 @@ export class FormRecorder extends React.Component {
     index: 0,
     componentState: 1,
     handleClickCreateItem: () => {},
-    handleClickEditItem: () => {},
+    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -127,7 +127,7 @@ export class FormRecorder extends React.Component {
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      textBtnEditItem,
+      // textBtnEditItem,
       textBtnSelectExistingItems,
       // textLabelItemSearch,
       textLegendItem,
@@ -207,14 +207,14 @@ export class FormRecorder extends React.Component {
             <div>[CONTRIBUTOR ({itemUid}) HERE]</div>
 
             {/* Edit recorder */}
-            <button
+            {/* <button
               onClick={() => {
                 this._handleClickEditItem(id)
               }}
               type="button"
             >
               {textBtnEditItem}
-            </button>
+            </button> */}
 
             <div className="FormItemButtons">
               <FormMoveButtons
@@ -235,55 +235,55 @@ export class FormRecorder extends React.Component {
         )
         break
       }
-      case this.STATE_EDIT_CONTRIBUTOR:
-        // EDITING A CONTRIBUTOR ------------------------------------
-        componentContent = (
-          <div className={this.props.groupName}>
-            <h2>Editing recorder</h2>
+      // case this.STATE_EDIT_CONTRIBUTOR:
+      //   // EDITING A CONTRIBUTOR ------------------------------------
+      //   componentContent = (
+      //     <div className={this.props.groupName}>
+      //       <h2>Editing recorder</h2>
 
-            {/* Name ------------- */}
-            <Text
-              className={this.props.groupName}
-              id={`${className}__Recorder${index}__EditName`}
-              labelText="Recorder name"
-              name={`${name}[${index}]__EditName`}
-              value="[some prefilled value"
-            />
+      //       {/* Name ------------- */}
+      //       <Text
+      //         className={this.props.groupName}
+      //         id={`${className}__Recorder${index}__EditName`}
+      //         labelText="Recorder name"
+      //         name={`${name}[${index}]__EditName`}
+      //         value="[some prefilled value"
+      //       />
 
-            {/* Description ------------- */}
-            <Textarea
-              className={this.props.groupName}
-              id={`${className}__Recorder${index}__EditDescription`}
-              labelText="Recorder description"
-              name={`${name}[${index}]__EditDescription`}
-              value=""
-            />
+      //       {/* Description ------------- */}
+      //       <Textarea
+      //         className={this.props.groupName}
+      //         id={`${className}__Recorder${index}__EditDescription`}
+      //         labelText="Recorder description"
+      //         name={`${name}[${index}]__EditDescription`}
+      //         value=""
+      //       />
 
-            {/* BTN: Create recorder ------------- */}
-            <button
-              type="button"
-              onClick={(event) => {
-                event.preventDefault()
-                this._handleCreateItemSubmit()
-              }}
-            >
-              Update recorder
-            </button>
+      //       {/* BTN: Create recorder ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={(event) => {
+      //           event.preventDefault()
+      //           this._handleCreateItemSubmit()
+      //         }}
+      //       >
+      //         Update recorder
+      //       </button>
 
-            {/* BTN: Cancel, go back ------------- */}
-            <button
-              type="button"
-              onClick={() => {
-                this.setState({
-                  componentState: this.STATE_CREATED_CONTRIBUTOR,
-                })
-              }}
-            >
-              {"Cancel, don't update a recorder"}
-            </button>
-          </div>
-        )
-        break
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED_CONTRIBUTOR,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't update a recorder"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
       case this.STATE_BROWSE_CONTRIBUTORS: {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
@@ -420,17 +420,17 @@ export class FormRecorder extends React.Component {
       }
     )
   }
-  _handleClickEditItem = (id) => {
-    const { handleClickEditItem } = this.props
-    this.setState(
-      {
-        componentState: this.STATE_EDIT_CONTRIBUTOR,
-      },
-      () => {
-        handleClickEditItem(id)
-      }
-    )
-  }
+  // _handleClickEditItem = (id) => {
+  //   const { handleClickEditItem } = this.props
+  //   this.setState(
+  //     {
+  //       componentState: this.STATE_EDIT_CONTRIBUTOR,
+  //     },
+  //     () => {
+  //       handleClickEditItem(id)
+  //     }
+  //   )
+  // }
   _handleClickSelectItem = () => {
     const { handleClickSelectItem } = this.props
     this.setState(
