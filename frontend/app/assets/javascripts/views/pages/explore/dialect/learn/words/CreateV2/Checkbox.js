@@ -45,7 +45,7 @@ export default class Checkbox extends React.Component {
   _handleChange = () => {
     const newValue = !this.state.selected
     this.setState({ selected: newValue }, () => {
-      this.handleChange(newValue)
+      this.props.handleChange(newValue)
     })
   }
 }
