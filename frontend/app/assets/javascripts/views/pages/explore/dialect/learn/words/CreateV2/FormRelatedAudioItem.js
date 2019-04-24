@@ -227,7 +227,6 @@ export class FormRelatedAudioItem extends React.Component {
               name="fv:source"
               textInfo="Contributors who helped create the audio item."
               handleItemsUpdate={(data) => {
-                debugger
                 this.setState({ createItemContributors: data })
               }}
             />
@@ -238,7 +237,6 @@ export class FormRelatedAudioItem extends React.Component {
               name="fvm:recorder"
               textInfo="Recorders who helped create the audio item."
               handleItemsUpdate={(data) => {
-                debugger
                 this.setState({ createItemRecorders: data })
               }}
             />
@@ -644,7 +642,7 @@ export class FormRelatedAudioItem extends React.Component {
       createItemContributors,
       createItemRecorders,
     } = this.state
-    debugger
+
     const docParams = {
       type: 'FVAudio',
       name: createItemName,
@@ -653,8 +651,8 @@ export class FormRelatedAudioItem extends React.Component {
         'dc:description': createItemDescription,
         'fvm:shared': createItemIsShared,
         'fvm:child_focused': createItemIsChildFocused,
-        'fvm:recorder': createItemRecorders,
-        'fvm:source': createItemContributors,
+        'fvm:recorder': createItemRecorders['fvm:recorder'],
+        'fvm:source': createItemContributors['fvm:source'],
       },
     }
 
