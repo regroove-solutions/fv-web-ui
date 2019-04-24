@@ -30,9 +30,6 @@ import IntlService from 'views/services/intl'
 import Select from './Select'
 import Text from './Text'
 import Checkbox from './Checkbox'
-// import CreateAudio from './CreateAudio'
-// import CreatePicture from './CreatePicture'
-// import CreateVideo from './CreateVideo'
 import FormContributors from './FormContributors'
 import FormCulturalNotes from './FormCulturalNotes'
 import FormDefinitions from './FormDefinitions'
@@ -203,20 +200,6 @@ export class CreateV2 extends Component {
           )}
         </h1>
 
-        {/* <form onSubmit={this._onRequestSaveForm}>
-              <t.form.Form
-                ref="form_word_create"
-                type={t.struct(selectn('FVWord', fields))}
-                context={selectn('response', computeDialect2)}
-                value={this.state.formValue}
-                options={FVWordOptions}
-              />
-              <div className="form-group">
-                <button type="submit" className="btn btn-primary">
-                  {intl.trans('save', 'Save', 'first')}
-                </button>
-              </div>
-            </form> */}
         <div style={{ display: 'flex' }}>
           <form className="CreateV2">
             {/* WORD --------------- */}
@@ -487,15 +470,6 @@ the 'Move Category up' and 'Move Category down' buttons`}
               name="fv-word:available_in_games"
             />
           </form>
-          {/* FLEX: Col 2 */}
-          <div>
-            {/* CreateAudio --------------- */}
-            {/* <CreateAudio /> */}
-            {/* CreatePicture --------------- */}
-            {/* <CreatePicture /> */}
-            {/* CreateVideo --------------- */}
-            {/* <CreateVideo /> */}
-          </div>
         </div>
       </PromiseWrapper>
     )
