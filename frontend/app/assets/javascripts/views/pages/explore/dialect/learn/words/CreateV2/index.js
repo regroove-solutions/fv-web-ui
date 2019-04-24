@@ -36,6 +36,7 @@ import FormDefinitions from './FormDefinitions'
 import FormLiteralTranslations from './FormLiteralTranslations'
 import FormRelatedAudio from './FormRelatedAudio'
 import FormRelatedPictures from './FormRelatedPictures'
+import FormRelatedVideos from './FormRelatedVideos'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
 /**
@@ -279,51 +280,17 @@ export class CreateV2 extends Component {
             {/* RELATED PICTURES --------------- */}
             <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
 
-            {/* Related Videos --------------- */}
-            <fieldset className="CreateV2__group">
-              <legend>Related Videos</legend>
-              {/* <button type="button">Add Related Video</button> */}
+            {/* RELATED VIDEOS --------------- */}
+            <FormRelatedVideos className="CreateV2__group" name="fv:related_pictures" />
 
-              {/* Related Videos > RELATED VIDEO --------------- */}
-              {/* <fieldset className="CreateV2__group">
-                <legend>Related Video</legend>
-                <input type="hidden" name="fv:related_videos[0]" value="e597182c-ea7b-4f2a-8666-192ac5d59d3c" />
-                <div>[VIDEO COMPONENT HERE]</div>
-                <button type="button">Remove Related Video</button>
-                <button type="button" aria-describedby="describedByRelatedVideoMove">
-                  Move Related Video left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedVideoMove">
-                  Move Related Video right
-                </button>
-              </fieldset> */}
-
-              {/* Related Videos > RELATED VIDEO --------------- */}
-              {/* <fieldset className="CreateV2__group">
-                <legend>Related Video</legend>
-                <input type="hidden" name="fv:related_videos[1]" value="" />
-                <button type="button">Upload new video</button>
-                <button type="button" aria-describedby="describedbyRelatedVideoBrowse">
-                  Select from existing videos
-                </button>
-                <button type="button">Remove Related Video</button>
-                <button type="button" aria-describedby="describedByRelatedVideoMove">
-                  Move Related Video left
-                </button>
-                <button type="button" aria-describedby="describedByRelatedVideoMove">
-                  Move Related Video right
-                </button>
-              </fieldset> */}
-
-              {/* SCREEN READER DESCRIPTIONS --------------- */}
-              <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
-                {'Select a video from previously uploaded items'}
-              </span>
-              <span id="describedByRelatedVideoMove" className="visually-hidden">
-                {`If you are adding multiple Related Videos, you can change the position of the Related Video with
+            {/* SCREEN READER DESCRIPTIONS --------------- */}
+            <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
+              {'Select a video from previously uploaded items'}
+            </span>
+            <span id="describedByRelatedVideoMove" className="visually-hidden">
+              {`If you are adding multiple Related Videos, you can change the position of the Related Video with
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
-              </span>
-            </fieldset>
+            </span>
 
             {/* Related Phrases --------------- */}
             <fieldset className="CreateV2__group">
