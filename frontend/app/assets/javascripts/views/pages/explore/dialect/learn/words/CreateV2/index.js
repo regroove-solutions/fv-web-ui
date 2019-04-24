@@ -38,6 +38,7 @@ import FormCulturalNotes from './FormCulturalNotes'
 import FormDefinitions from './FormDefinitions'
 import FormLiteralTranslations from './FormLiteralTranslations'
 import FormRelatedAudio from './FormRelatedAudio'
+import FormRelatedPictures from './FormRelatedPictures'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
 /**
@@ -291,6 +292,9 @@ export class CreateV2 extends Component {
 
             {/* RELATED AUDIO --------------- */}
             <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
+
+            {/* RELATED PICTURES --------------- */}
+            <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
 
             {/* Related Videos --------------- */}
             <fieldset className="CreateV2__group">
