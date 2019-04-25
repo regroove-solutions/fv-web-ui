@@ -37,6 +37,7 @@ import FormLiteralTranslations from './FormLiteralTranslations'
 import FormRelatedAudio from './FormRelatedAudio'
 import FormRelatedPictures from './FormRelatedPictures'
 import FormRelatedVideos from './FormRelatedVideos'
+import FormCategories from './FormCategories'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
 /**
@@ -205,7 +206,6 @@ export class CreateV2 extends Component {
           <form className="CreateV2">
             {/* WORD --------------- */}
             <Text className="CreateV2__group" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
-
             {/* PARTOFSPEECH --------------- */}
             <Select
               className="CreateV2__group"
@@ -258,7 +258,6 @@ export class CreateV2 extends Component {
                 <option value="question_word">Question word</option>
               </optgroup>
             </Select>
-
             {/* PRONOUNCIATION --------------- */}
             <Text
               className="CreateV2__group"
@@ -267,22 +266,16 @@ export class CreateV2 extends Component {
               name="fv-word:pronunciation"
               value=""
             />
-
             {/* Definitions --------------- */}
             <FormDefinitions className="CreateV2__group" name="fv:definitions" />
-
             {/* Literal Translations --------------- */}
             <FormLiteralTranslations className="CreateV2__group" name="fv:literal_translation" />
-
             {/* RELATED AUDIO --------------- */}
             <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
-
             {/* RELATED PICTURES --------------- */}
             <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
-
             {/* RELATED VIDEOS --------------- */}
             <FormRelatedVideos className="CreateV2__group" name="fv:related_pictures" />
-
             {/* SCREEN READER DESCRIPTIONS --------------- */}
             <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
               {'Select a video from previously uploaded items'}
@@ -291,7 +284,6 @@ export class CreateV2 extends Component {
               {`If you are adding multiple Related Videos, you can change the position of the Related Video with
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
             </span>
-
             {/* Related Phrases --------------- */}
             <fieldset className="CreateV2__group">
               <legend>Related Phrases</legend>
@@ -347,60 +339,16 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
 the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
               </span>
             </fieldset>
-
             {/* CATEGORIES --------------- */}
-            <fieldset className="CreateV2__group">
-              <legend>Categories</legend>
-              {/* <button type="button">Add Category</button> */}
+            <FormCategories className="CreateV2__group" name="fv-word:categories" />
 
-              {/* CATEGORIES > CATEGORY --------------- */}
-              {/* <fieldset className="CreateV2__group">
-                <legend>Category</legend>
-                <input type="hidden" name="fv-word:categories[0]" value="6cf2f049-8e33-438f-b9f0-720ddb8338b8" />
-                <div>[CATEGORY HERE]</div>
-
-                <button type="button">Remove Category</button>
-
-                <button type="button" aria-describedby="describedByCategoryMove">
-                  Move Category up
-                </button>
-                <button type="button" aria-describedby="describedByCategoryMove">
-                  Move Category down
-                </button>
-              </fieldset> */}
-
-              {/* CATEGORIES > CATEGORY --------------- */}
-              {/* <fieldset className="CreateV2__group">
-                <legend>Category</legend>
-                <Text
-                  className="Create__Category"
-                  id="CreateWord__Category0"
-                  labelText="Search existing Categories"
-                  name="fv-word:categories[0]"
-                  value=""
-                />
-                <button type="button">Select from existing Categories</button>
-
-                <button type="button">Remove Category</button>
-
-                <button type="button" aria-describedby="describedByCategoryMove">
-                  Move Category up
-                </button>
-                <button type="button" aria-describedby="describedByCategoryMove">
-                  Move Category down
-                </button>
-              </fieldset> */}
-
-              {/* SCREEN READER DESCRIPTIONS --------------- */}
-              <span id="describedByCategoryMove" className="visually-hidden">
-                {`If you are adding multiple Categories, you can change the position of the Category with
+            {/* SCREEN READER DESCRIPTIONS --------------- */}
+            <span id="describedByCategoryMove" className="visually-hidden">
+              {`If you are adding multiple Categories, you can change the position of the Category with
 the 'Move Category up' and 'Move Category down' buttons`}
-              </span>
-            </fieldset>
-
+            </span>
             {/* Cultural Notes --------------- */}
             <FormCulturalNotes className="CreateV2__group" name="fv:cultural_note" />
-
             {/* REFERENCE --------------- */}
             <div className="CreateV2__group">
               <Text
@@ -413,14 +361,12 @@ the 'Move Category up' and 'Move Category down' buttons`}
               />
               <span id="describedByReference">Origin of record (person, book, etc).</span>
             </div>
-
             {/* Contributors --------------- */}
             <FormContributors
               className="CreateV2__group"
               textInfo="Contributors who helped create this record."
               name="fv:source"
             />
-
             {/* IN CHILDREN'S ARCHIVE --------------- */}
             <Checkbox
               className="CreateV2__group"
@@ -428,7 +374,6 @@ the 'Move Category up' and 'Move Category down' buttons`}
               labelText="Available in children's archive"
               name="fv:available_in_childrens_archive"
             />
-
             {/* IN GAMES --------------- */}
             <Checkbox
               className="CreateV2__group"
