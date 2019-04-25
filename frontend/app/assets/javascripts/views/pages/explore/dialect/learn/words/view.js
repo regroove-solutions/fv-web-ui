@@ -211,6 +211,7 @@ export default class DialectViewWord extends Component {
               {this._getCulturalNotes(computeWord)}
               {this._getLiteralTranslations(computeWord)}
               {this._getPronounciation(computeWord, computeDialect2)}
+              {this._getAcknowledgement(computeWord)}
             </div>
 
             <aside className="DialectViewWordContentSecondary">
@@ -242,7 +243,7 @@ export default class DialectViewWord extends Component {
         <Preview
           key={selectn('uid', audio)}
           expandedValue={audio}
-          minimal
+          optimal
           type="FVAudio"
           styles={{ padding: 0, display: 'inline' }}
         />
@@ -419,6 +420,21 @@ export default class DialectViewWord extends Component {
           <h3 className="DialectViewWordContentItemTitle">{intl.trans('pronunciation', 'Pronunciation', 'first')}</h3>
           <div className="DialectViewWordContentItemGroup">
             <div className={dialectClassName}>{pronunciation}</div>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  _getAcknowledgement(computeWord) {
+    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
+    if (acknowledgement && acknowledgement !== '') {
+      return (
+        <div className="DialectViewWordContentItem">
+          <h3 className="DialectViewWordContentItemTitle">Acknowledgement</h3>
+          <div className="DialectViewWordContentItemGroup">
+            <div dangerouslySetInnerHTML={{ __html: acknowledgement }}></div>
           </div>
         </div>
       )

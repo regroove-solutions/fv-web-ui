@@ -23,6 +23,7 @@ import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
 
 import MetadataList from 'views/components/Browsing/metadata-list'
+import AudioOptimal from 'views/components/Browsing/audio-optimal'
 
 import Avatar from 'material-ui/lib/avatar'
 import Card from 'material-ui/lib/card/card'
@@ -186,6 +187,7 @@ export default class Preview extends Component {
     tagProps: PropTypes.object,
     metadataListStyles: PropTypes.object,
     minimal: PropTypes.bool,
+    optimal: PropTypes.bool,
     crop: PropTypes.bool,
     initiallyExpanded: PropTypes.bool,
   }
@@ -194,12 +196,17 @@ export default class Preview extends Component {
     styles: {},
     tagStyles: {},
     crop: false,
+    optimal: false,
     minimal: false,
     initiallyExpanded: false,
   }
 
   constructor(props) {
     super(props)
+
+    this.state = {
+      showAudioMetadata: false
+    }
 
     // Bind methods to 'this'
     ;['_handleExpandChange'].forEach((method) => (this[method] = this[method].bind(this)))
@@ -552,11 +559,24 @@ export default class Preview extends Component {
             />
           )
 
+          let description =
+          selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)
+          let title = selectn('title', audioResponse) || selectn('dc:title', audioResponse);
+          let speakers = selectn('contextParameters.media.sources', audioResponse);
+          let recorders = selectn('contextParameters.media.recorders', audioResponse);
+
           if (this.props.minimal) {
             body = audioTag
-          } else {
-            let description =
-              selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)
+          }
+          else if (this.props.optimal) {
+            body = (<AudioOptimal audioTag={audioTag} onInfoRequest={handleExpandChange} metadata={{
+              "title": title,
+              "description": description,
+              "speakers": speakers,
+              "recorders": recorders
+            }} />);
+          }
+          else {
 
             body = (
               <Card
@@ -565,7 +585,7 @@ export default class Preview extends Component {
                 onExpandChange={handleExpandChange}
               >
                 <CardHeader
-                  title={selectn('title', audioResponse) || selectn('dc:title', audioResponse)}
+                  title={title}
                   titleStyle={{ lineHeight: 'initial', fontSize: '18px' }}
                   titleColor={themePalette.textColor}
                   subtitleColor={themePalette.textColorFaded}

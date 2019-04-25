@@ -45,7 +45,7 @@ export default class MetadataList extends Component {
           if ((value && !Array.isArray(value)) || (Array.isArray(value) && value.length > 0)) {
             return (
               <li key={key} style={{ paddingBottom: '5px' }}>
-                <strong>{IntlService.instance.searchAndReplace(selectn('label', item))}:</strong>
+                <strong>{selectn('label', item)}:</strong>
                 <br />
                 {value}
                 <hr style={{ margin: '5px 0' }} />

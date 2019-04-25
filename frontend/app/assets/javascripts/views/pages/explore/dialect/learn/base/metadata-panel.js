@@ -132,10 +132,10 @@ export default class MetadataPanel extends Component {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette
 
     return (
-      <Card initiallyExpanded={false}>
+      <Card initiallyExpanded={true}>
         <CardHeader
           className="card-header-custom"
-          title={intl.trans('metadata', 'METADATA', 'upper')}
+          title={intl.trans('about_this_record', 'About this Record', 'upper')}
           titleStyle={{ lineHeight: 'initial' }}
           titleColor={themePalette.alternateTextColor}
           actAsExpander={true}
