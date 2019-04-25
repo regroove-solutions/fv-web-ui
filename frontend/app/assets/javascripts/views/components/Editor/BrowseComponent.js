@@ -14,25 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+// import { Immutable, Map } from 'immutable'
 
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
-import t from 'tcomb-form'
-import classNames from 'classnames'
+// import t from 'tcomb-form'
+// import classNames from 'classnames'
 
-import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
+// import ProviderHelpers from 'common/ProviderHelpers'
+// import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
+import { Dialog /*, FlatButton, RaisedButton*/ } from 'material-ui'
+// import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
-import MediaList from 'views/components/Browsing/media-list'
-import LinearProgress from 'material-ui/lib/linear-progress'
+// import MediaList from 'views/components/Browsing/media-list'
+// import LinearProgress from 'material-ui/lib/linear-progress'
 
-import IconButton from 'material-ui/lib/icon-button'
-import ActionInfo from 'material-ui/lib/svg-icons/action/info'
-import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+// import IconButton from 'material-ui/lib/icon-button'
+// import ActionInfo from 'material-ui/lib/svg-icons/action/info'
+// import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
 
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
@@ -41,7 +41,7 @@ import ContributorsListView from 'views/pages/explore/dialect/learn/base/contrib
 import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-view'
 import IntlService from 'views/services/intl'
 
-const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
+// const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
 const intl = IntlService.instance
 const DefaultFetcherParams = {
   currentPageIndex: 1,
@@ -49,59 +49,7 @@ const DefaultFetcherParams = {
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
 
-class SharedResourceGridTile extends Component {
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      showInfo: false,
-    }
-  }
-
-  render() {
-    const tile = this.props.tile
-    const resourceParentDialect = selectn('contextParameters.ancestry.dialect', tile)
-    let actionIcon = null
-
-    const isFVShared = selectn('path', tile) && selectn('path', tile).indexOf('SharedResources') != -1
-    const isDialectShared = selectn('uid', resourceParentDialect) != selectn('uid', this.props.dialect)
-
-    // If resource is from different dialect, show notification so user is aware
-    if (isDialectShared || isFVShared) {
-      const tooltip = isDialectShared
-        ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-            selectn('dc:title', resourceParentDialect),
-          ])
-        : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
-      actionIcon = (
-        <IconButton tooltip={tooltip} tooltipPosition="top-left">
-          {isDialectShared ? <ActionInfoOutline color="white" /> : <ActionInfo color="white" />}
-        </IconButton>
-      )
-    }
-
-    return (
-      <GridTile
-        onTouchTap={this.props.action ? this.props.action.bind(this, this.props.tile) : null}
-        key={selectn('uid', tile)}
-        title={selectn('properties.dc:title', tile)}
-        actionPosition="right"
-        titlePosition={this.props.fileTypeTilePosition}
-        actionIcon={actionIcon}
-        subtitle={
-          <span>
-            <strong>{Math.round(selectn('properties.common:size', tile) * 0.001)} KB</strong>
-          </span>
-        }
-      >
-        {this.props.preview}
-      </GridTile>
-    )
-  }
-}
-
-@provide
-class BrowseComponent extends React.Component {
+export class BrowseComponent extends Component {
   static propTypes = {
     onComplete: PropTypes.func.isRequired,
     fetchSharedPictures: PropTypes.func.isRequired,
@@ -117,31 +65,14 @@ class BrowseComponent extends React.Component {
     label: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
     containerType: PropTypes.string,
+    disabled: PropTypes.boolean,
   }
-
-  getDefaultValues() {
-    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
-  }
-
-  _handleOpen() {
-    this.setState({ open: true })
-  }
-
-  _handleClose() {
-    this.setState({ open: false })
-  }
-
-  _handleSelectElement(value) {
-    this.props.onComplete(value)
+  static defaultProps = {
+    disabled: false,
   }
 
   constructor(props) {
     super(props)
-
-    // Bind methods to 'this'
-    ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
 
     // If initial filter value provided
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
@@ -157,46 +88,15 @@ class BrowseComponent extends React.Component {
     }
   }
 
-  fetchData(fetcherParams) {
-    // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-    const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-    const group2 = new Map(fetcherParams.filters).filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-
-    this.props.fetchResources(
-      '/FV/Workspaces/',
-      " AND ecm:primaryType LIKE '" +
-        this.props.type +
-        "'" +
-        " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
-        " AND (ecm:path STARTSWITH '" +
-        StringHelpers.clean(selectn('path', this.props.dialect)) +
-        "/Resources/'" +
-        ProviderHelpers.filtersToNXQL(group1) +
-        ')' +
-        ProviderHelpers.filtersToNXQL(group2) +
-        '&currentPageIndex=' +
-        (fetcherParams.currentPageIndex - 1) +
-        '&pageSize=' +
-        fetcherParams.pageSize +
-        '&sortBy=dc:created' +
-        '&sortOrder=DESC'
-    )
-
-    this.setState({
-      fetcherParams: fetcherParams,
-    })
-  }
-
-  componentDidMount() {
-    //this.fetchData(this.state.fetcherParams);
-  }
-
   render() {
     const dialect = this.props.dialect
     const dialectPath = selectn('path', dialect)
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onTouchTap={this._handleClose} />,
+      // <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onTouchTap={this._handleClose} />,
+      <button key="action1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let title = ''
@@ -309,7 +209,9 @@ class BrowseComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onTouchTap={this._handleOpen} />
+        <button type="button" disabled={this.props.disabled} onClick={this._handleOpen}>
+          {this.props.label}
+        </button>
         <Dialog
           title={title}
           actions={actions}
@@ -327,5 +229,19 @@ class BrowseComponent extends React.Component {
       </div>
     )
   }
+
+  _handleOpen = () => {
+    this.setState({ open: true })
+  }
+
+  _handleClose = () => {
+    this.setState({ open: false })
+  }
+
+  _handleSelectElement = (value) => {
+    this.props.onComplete(value, () => {
+      this._handleClose()
+    })
+  }
 }
-export default BrowseComponent
+export default provide(BrowseComponent)
