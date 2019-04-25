@@ -88,7 +88,11 @@ import { default as PageDialectCategoryCreate } from './explore/dialect/category
 import { default as PageDialectPhraseBooksCreate } from './explore/dialect/phrasebooks/create'
 import { default as PageDialectContributorsCreate } from './explore/dialect/contributors/create'
 
+//tester
+import PageCreateArchive from './createArchive.js'
+
 export {
+  PageCreateArchive,
   PageTest,
   PageDebugAPI,
   PageError,

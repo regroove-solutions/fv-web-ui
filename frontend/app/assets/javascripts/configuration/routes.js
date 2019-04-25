@@ -120,9 +120,7 @@ const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KID
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
-    return (
-      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props))
-    )
+    return selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)
   },
   target: (params) => {
     return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections')
@@ -255,6 +253,10 @@ const addBrowsePhraseBookByAlphabet = (route) => {
 }
 
 const routes = [
+    {
+    path: ['create-archive'], //, new paramMatch('my_param', ANYTHING_BUT_SLASH)],
+    page: <Pages.PageCreateArchive />,
+  },
   {
     id: 'home',
     path: [],
