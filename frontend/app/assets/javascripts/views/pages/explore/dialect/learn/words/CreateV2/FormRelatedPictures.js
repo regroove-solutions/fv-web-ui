@@ -145,6 +145,7 @@ export class FormRelatedPictures extends React.Component {
         </button>
 
         {items}
+        {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
@@ -156,7 +157,13 @@ export class FormRelatedPictures extends React.Component {
       </fieldset>
     )
   }
-
+  _generateHiddenInput = () => {
+    const { items } = this.state
+    const selectedItems = items.map((element) => {
+      return element.props.id
+    })
+    return <input type="hidden" name="fv:related_pictures" value={JSON.stringify(selectedItems)} />
+  }
   handleClickAddItem = () => {
     const _props = {
       name: this.props.name,
