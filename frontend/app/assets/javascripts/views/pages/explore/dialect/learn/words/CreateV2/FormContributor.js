@@ -287,8 +287,12 @@ export class FormContributor extends React.Component {
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
         // const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.DIALECT_PATH)
         let contributors = []
+        let initialValue = null
         if (_computeContributors.response && _computeContributors.response.entries) {
           contributors = _computeContributors.response.entries.map((element, i) => {
+            if (i === 0) {
+              initialValue = element.uid
+            }
             return (
               <option key={i} value={element.uid}>
                 {element.title}, {element.type}, {element.state}
@@ -306,6 +310,7 @@ export class FormContributor extends React.Component {
               refSelect={(input) => {
                 this.newItemSelect = input
               }}
+              value={initialValue}
             >
               {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
               <optgroup>{contributors}</optgroup>
