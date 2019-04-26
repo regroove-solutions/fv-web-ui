@@ -16,7 +16,6 @@ export default class FormContributors extends React.Component {
     textLegendItems: 'Contributors',
     textBtnAddItem: 'Add Contributor',
     textLegendItem: 'Contributor',
-    // textBtnEditItem: 'Edit Contributor',
     textBtnRemoveItem: 'Remove Contributor',
     textBtnMoveItemUp: 'Move Contributor up',
     textBtnMoveItemDown: 'Move Contributor down',
@@ -38,7 +37,6 @@ export default class FormContributors extends React.Component {
     textLegendItems: string,
     textBtnAddItem: string,
     textLegendItem: string,
-    // textBtnEditItem: string,
     textBtnRemoveItem: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
@@ -65,7 +63,6 @@ export default class FormContributors extends React.Component {
       textBtnAddItem,
     } = this.props
 
-    // const items = this.getItems()
     const items = this.state.items
     return (
       <fieldset className={className}>
@@ -81,7 +78,7 @@ export default class FormContributors extends React.Component {
         </button>
 
         {items}
-
+        {this._generateHiddenInput()}
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
           {textDescribedbyItemBrowse}
@@ -100,7 +97,6 @@ export default class FormContributors extends React.Component {
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
       textLegendItem,
-      // textBtnEditItem,
       textBtnRemoveItem,
       textBtnMoveItemUp,
       textBtnMoveItemDown,
@@ -114,15 +110,12 @@ export default class FormContributors extends React.Component {
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
       textLegendItem,
-      // textBtnEditItem,
       textBtnRemoveItem,
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
       textBtnSelectExistingItems,
       textLabelItemSearch,
-      handleClickCreateItem: this.handleClickCreateItem,
-      handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
       handleClickMoveItemDown: this.handleClickMoveItemDown,
@@ -153,15 +146,6 @@ export default class FormContributors extends React.Component {
       }
     )
   }
-  handleClickCreateItem = () => {
-    // console.log('! handleClickCreateItem', this.index)
-  }
-  handleClickSelectItem = () => {
-    // console.log('! handleClickSelectItem')
-  }
-  handleClickEditItem = () => {
-    // console.log('! handleClickEditItem')
-  }
   handleClickRemoveItem = (id) => {
     this.setState(
       {
@@ -191,6 +175,13 @@ export default class FormContributors extends React.Component {
         this.props.handleItemsUpdate(this._getFvmSource())
       }
     )
+  }
+  _generateHiddenInput = () => {
+    const { items, itemsIdUid } = this.state
+    const selectedItems = items.map((element) => {
+      return itemsIdUid[element.props.id]
+    })
+    return <input type="hidden" name="fvm:source" value={JSON.stringify(selectedItems)} />
   }
   _getFvmSource = () => {
     const { items, itemsIdUid } = this.state

@@ -30,12 +30,10 @@ export class FormContributor extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -67,7 +65,6 @@ export class FormContributor extends React.Component {
     componentState: 1,
     handleItemChange: () => {},
     handleClickCreateItem: () => {},
-    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -128,15 +125,11 @@ export class FormContributor extends React.Component {
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      // textBtnEditItem,
       textBtnSelectExistingItems,
-      // textLabelItemSearch,
       textLegendItem,
-      // handleClickSelectItem,
       handleClickRemoveItem,
       handleClickMoveItemUp,
       handleClickMoveItemDown,
-      // value,
     } = this.props
 
     let componentContent = null
@@ -217,71 +210,11 @@ export class FormContributor extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-            <input type="hidden" name={name} value={contributorUid} />
             <Preview id={contributorUid} type="FVContributor" />
-
-            {/* Edit contributor */}
-            {/* <button
-              onClick={() => {
-                this._handleClickEditItem(id)
-              }}
-              type="button"
-            >
-              {textBtnEditItem}
-            </button> */}
           </div>
         )
         break
       }
-      // case this.STATE_EDIT_CONTRIBUTOR:
-      //   // EDITING A CONTRIBUTOR ------------------------------------
-      //   componentContent = (
-      //     <div>
-      //       <h2>TODO: Editing contributor</h2>
-
-      //       {/* Name ------------- */}
-      //       <Text
-      //         className={this.props.groupName}
-      //         id={`${className}__Contributor${index}__EditName`}
-      //         labelText="Contributor name"
-      //         name={`${name}[${index}]__EditName`}
-      //         value="[some prefilled value"
-      //       />
-
-      //       {/* Description ------------- */}
-      //       <Textarea
-      //         className={this.props.groupName}
-      //         id={`${className}__Contributor${index}__EditDescription`}
-      //         labelText="Contributor description"
-      //         name={`${name}[${index}]__EditDescription`}
-      //         value=""
-      //       />
-
-      //       {/* BTN: Create contributor ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={(event) => {
-      //           event.preventDefault()
-      //           this._handleCreateItemSubmit()
-      //         }}
-      //       >
-      //         Update contributor
-      //       </button>
-
-      //       {/* BTN: Cancel, go back ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={() => {
-      //           this.setState({
-      //             componentState: this.STATE_CREATED_CONTRIBUTOR,
-      //           })
-      //         }}
-      //       >
-      //         {"Cancel, don't edit a contributor"}
-      //       </button>
-      //     </div>
-      //   )
-      //   break
       case this.STATE_BROWSE_CONTRIBUTORS: {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
@@ -306,7 +239,7 @@ export class FormContributor extends React.Component {
               className="FormContributor__NewContributorSelect"
               id="FormContributor__NewContributorSelect"
               labelText="Select from existing Contributors"
-              name="FormContributor__NewContributorSelect"
+              name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
               refSelect={(input) => {
                 this.newItemSelect = input
               }}
@@ -414,17 +347,6 @@ export class FormContributor extends React.Component {
       }
     )
   }
-  // _handleClickEditItem = (id) => {
-  //   const { handleClickEditItem } = this.props
-  //   this.setState(
-  //     {
-  //       componentState: this.STATE_EDIT_CONTRIBUTOR,
-  //     },
-  //     () => {
-  //       handleClickEditItem(id)
-  //     }
-  //   )
-  // }
   _handleClickSelectItem = () => {
     const { handleClickSelectItem } = this.props
     this.setState(
