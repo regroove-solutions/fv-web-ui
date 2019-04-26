@@ -46,7 +46,6 @@ export default class FormDefinitions extends React.Component {
 
         {items}
 
-        {/* <input type="hidden" name="fv:definitions" value={JSON.stringify(this.state.itemData[id])} /> */}
         {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
