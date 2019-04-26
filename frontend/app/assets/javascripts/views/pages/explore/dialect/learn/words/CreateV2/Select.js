@@ -13,9 +13,9 @@ export default class Text extends React.Component {
     id: string.isRequired,
     labelText: string.isRequired,
     name: string.isRequired,
+    value: string.isRequired,
     className: string,
     ariaDescribedby: string,
-    value: string,
     children: element,
     handleChange: func,
     refSelect: func,
@@ -43,7 +43,7 @@ export default class Text extends React.Component {
           className="Select__select"
           id={id}
           name={name}
-          defaultValue={this.state.value}
+          value={this.state.value}
           onChange={this._handleChange}
           ref={refSelect}
         >
