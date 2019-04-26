@@ -276,7 +276,6 @@ export class FormRelatedVideo extends React.Component {
         if (id !== -1) {
           previewInput = (
             <div>
-              <input type="hidden" name={name} value={id} />
               <Preview id={id} type="FVVideo" />
             </div>
           )
