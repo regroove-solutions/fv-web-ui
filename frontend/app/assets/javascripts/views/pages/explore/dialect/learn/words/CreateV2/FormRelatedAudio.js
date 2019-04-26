@@ -148,6 +148,8 @@ export class FormRelatedAudio extends React.Component {
 
         {items}
 
+        {this._generateHiddenInput()}
+
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
           {textDescribedbyItemBrowse}
@@ -158,23 +160,13 @@ export class FormRelatedAudio extends React.Component {
       </fieldset>
     )
   }
-  /*
-// RELATED AUDIO > CREATED ---------------
-<fieldset>
-  <legend>Related Audio Item</legend>
-  <input type="hidden" name="fv:related_audio" value="49d81e97-8220-4e8f-bed2-b58bfc040868" />
-  <div>[AUDIO COMPONENT HERE]</div>
-  <button type="button">Remove Related Audio Item</button>
-  <button type="button" aria-describedby="describedByRelatedAudioMove">
-    Move Related Audio Item left
-  </button>
-  <button type="button" aria-describedby="describedByRelatedAudioMove">
-    Move Related Audio Item right
-  </button>
-</fieldset>
-
-
-*/
+  _generateHiddenInput = () => {
+    const { items } = this.state
+    const selectedItems = items.map((element) => {
+      return element.props.id
+    })
+    return <input type="hidden" name="fv:related_audio" value={JSON.stringify(selectedItems)} />
+  }
 
   handleClickAddItem = () => {
     const _props = {
@@ -225,23 +217,7 @@ export class FormRelatedAudio extends React.Component {
   }
   handleItemSelected = (selected, callback) => {
     const uid = selectn('uid', selected)
-    // const path = selectn(['properties', 'file:content', 'data'], selected)
-    // const title = selectn(['title'], selected)
 
-    // filter out any pre-added elements
-    // let { audioItems } = this.state
-    // const existingIndex = audioItems.findIndex((element) => {
-    //   return element.uid === uid
-    // })
-    // if (existingIndex !== -1) {
-    //   audioItems = audioItems.filter((element) => {
-    //     return element.uid !== uid
-    //   })
-    // }
-    // // add selected to end
-    // this.setState({
-    //   audioItems: [...audioItems, { uid, path, title }],
-    // })
     let { items } = this.state
     const arg = { id: uid, items }
 

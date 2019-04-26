@@ -12,7 +12,7 @@ import FormRemoveButton from './FormRemoveButton'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
-// import DocumentListView from 'views/components/Document/DocumentListView'
+
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
@@ -39,12 +39,10 @@ export class FormRelatedAudioItem extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -73,7 +71,6 @@ export class FormRelatedAudioItem extends React.Component {
     index: 0,
     componentState: 0,
     handleClickCreateItem: () => {},
-    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -101,44 +98,29 @@ export class FormRelatedAudioItem extends React.Component {
 
   CONTRIBUTOR_PATH = undefined
 
-  //   AFTER SUBMITTING NEW CONTRIBUTOR
-  // ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response
-
   render() {
     const {
       className,
       name,
       id,
-      // idDescribedbyItemBrowse,
       idDescribedByItemMove,
       index,
       textBtnRemoveItem,
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      // textBtnEditItem,
       textBtnSelectExistingItems,
-      // textLabelItemSearch,
       textLegendItem,
-      // handleClickSelectItem,
       handleClickRemoveItem,
       handleClickMoveItemUp,
       handleClickMoveItemDown,
-      // value,
     } = this.props
 
     let componentContent = null
     const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
     const isFetching = selectn('isFetching', computeCreate)
     const isSuccess = selectn('success', computeCreate)
-    // let createdUid = null
-    // let createdTitle = null
-    // let createdPath = null
-    // if (isSuccess) {
-    //   createdUid = selectn(['response', 'uid'], computeCreate)
-    //   createdTitle = selectn(['response', 'title'], computeCreate)
-    //   createdPath = selectn(['response', 'path'], computeCreate)
-    // }
+
     const _handleItemSelectedOrCreated = (selected) => {
       this.props.handleItemSelected(selected, () => {
         handleClickRemoveItem(id)
@@ -276,7 +258,6 @@ export class FormRelatedAudioItem extends React.Component {
         if (id !== -1) {
           previewInput = (
             <div>
-              <input type="hidden" name={name} value={id} />
               <Preview id={id} type="FVAudio" />
             </div>
           )
@@ -303,128 +284,6 @@ export class FormRelatedAudioItem extends React.Component {
         )
         break
       }
-      // case this.STATE_EDIT:
-      //   // EDITING A CONTRIBUTOR ------------------------------------
-      //   componentContent = (
-      //     <div>
-      //       <h2>Editing contributor</h2>
-
-      //       {/* Name ------------- */}
-      //       <Text
-      //         className={this.props.groupName}
-      //         id={`${className}__Contributor${index}__EditName`}
-      //         labelText="Related Audio Item name"
-      //         name={`${name}[${index}]__EditName`}
-      //         value="[some prefilled value]"
-      //       />
-
-      //       {/* Description ------------- */}
-      //       <Textarea
-      //         className={this.props.groupName}
-      //         id={`${className}__Contributor${index}__EditDescription`}
-      //         labelText="Related Audio Item description"
-      //         name={`${name}[${index}]__EditDescription`}
-      //         value=""
-      //       />
-
-      //       {/* BTN: Create contributor ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={(event) => {
-      //           event.preventDefault()
-      //           this._handleCreateItemSubmit()
-      //         }}
-      //       >
-      //         Update contributor
-      //       </button>
-
-      //       {/* BTN: Cancel, go back ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={() => {
-      //           this.setState({
-      //             componentState: this.STATE_CREATED,
-      //           })
-      //         }}
-      //       >
-      //         {"Cancel, don't update contributor"}
-      //       </button>
-      //     </div>
-      //   )
-      //   break
-      // case this.STATE_BROWSE: {
-      //   // TODO: REMOVE? USING OLD MODAL CODE INSTEAD
-      //   // Select from existing audio  ------------------------------------
-
-      //   const { computeResourcesFromParent } = this.props
-      //   const _computeResources = ProviderHelpers.getEntry(computeResourcesFromParent, '/FV/Workspaces/')
-      //   const items =
-      //     selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
-      //   let audioExisting = []
-
-      //   audioExisting = items.map((_element, i) => {
-      //     const uid = _element.uid
-      //     const audioId = `related_audio_${uid}`
-      //     return (
-      //       <div className={`${className}__browseItem`} key={i}>
-      //         <div className={`${className}__browseItemGroup1`}>
-      //           <input
-      //             className={`${className}__browseItemRadio`}
-      //             type="radio"
-      //             id={audioId}
-      //             name="related_audio"
-      //             value={uid}
-      //           />
-      //         </div>
-      //         <div className={`${className}__browseItemGroup2`}>
-      //           <label htmlFor={audioId}>{`Select '${_element.title}'`}</label>
-      //           <audio src={selectn('properties.file:content.data', _element)} preload="none" controls />
-      //         </div>
-      //       </div>
-      //     )
-      //   })
-
-      //   componentContent = (
-      //     <div>
-      //       <div
-      //         onChange={(event) => {
-      //           this.setState({
-      //             relatedAudioUid: event.target.value,
-      //           })
-      //         }}
-      //       >
-      //         {audioExisting}
-      //       </div>
-
-      //       {/* Save/select contributor ------------- */}
-      //       <button
-      //         type="button"
-      //         disabled={this.state.relatedAudioUid === undefined}
-      //         onClick={() => {
-      //           this.setState({
-      //             componentState: this.STATE_CREATED,
-      //             audioUid: this.state.relatedAudioUid,
-      //           })
-      //         }}
-      //       >
-      //         Add selected Related Audio Item
-      //       </button>
-
-      //       {/* BTN: Cancel, go back ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={() => {
-      //           this.setState({
-      //             componentState: this.STATE_DEFAULT,
-      //           })
-      //         }}
-      //       >
-      //         {"Cancel, don't add Related Audio Item"}
-      //       </button>
-      //     </div>
-      //   )
-      //   break
-      // }
       default: {
         // INITIAL STATE ------------------------------------
         const { computeDialectFromParent, selectMediaComponent } = this.props
@@ -432,14 +291,6 @@ export class FormRelatedAudioItem extends React.Component {
         componentContent = (
           <div>
             <div className="FormItemButtons">
-              {/* <FormMoveButtons
-                id={id}
-                idDescribedByItemMove={idDescribedByItemMove}
-                textBtnMoveItemUp={textBtnMoveItemUp}
-                textBtnMoveItemDown={textBtnMoveItemDown}
-                handleClickMoveItemUp={handleClickMoveItemUp}
-                handleClickMoveItemDown={handleClickMoveItemDown}
-              /> */}
               <FormRemoveButton
                 id={id}
                 textBtnRemoveItem={textBtnRemoveItem}
@@ -455,17 +306,6 @@ export class FormRelatedAudioItem extends React.Component {
             >
               {textBtnCreateItem}
             </button>
-
-            {/* Browse/select contributor */}
-            {/* <button
-              aria-describedby={idDescribedbyItemBrowse}
-              onClick={() => {
-                this._handleClickSelectItem()
-              }}
-              type="button"
-            >
-              {textBtnSelectExistingItems}
-            </button> */}
 
             <SelectMediaComponent
               type={'FVAudio'}
@@ -491,26 +331,10 @@ export class FormRelatedAudioItem extends React.Component {
         componentState: this.STATE_CREATE,
       },
       () => {
-        // console.log('!', this.refs.ItemNewName)
-        // if (this.refs.ItemNewName) {
-        //   console.log('!!!!!! focusing!!!!!!!')
-        //   this.refs.ItemNewName.focus()
-        // }
         handleClickCreateItem()
       }
     )
   }
-  // _handleClickEditItem = (id) => {
-  //   const { handleClickEditItem } = this.props
-  //   this.setState(
-  //     {
-  //       componentState: this.STATE_EDIT,
-  //     },
-  //     () => {
-  //       handleClickEditItem(id)
-  //     }
-  //   )
-  // }
   _handleSubmitExistingItem = (createItemUid) => {
     this.setState(
       {
