@@ -95,7 +95,8 @@
     "selectn": "~1.0.9",
     "tcomb-form": "~0.9",
     "tether-shepherd": "^1.8.1",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@babel/core": "7.3.3",
