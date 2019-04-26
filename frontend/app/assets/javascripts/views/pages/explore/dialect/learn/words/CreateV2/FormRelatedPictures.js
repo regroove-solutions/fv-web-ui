@@ -25,7 +25,6 @@ export class FormRelatedPictures extends React.Component {
     textLegendItems: string,
     textBtnAddItem: string,
     textLegendItem: string,
-    // textBtnEditItem: string,
     textBtnRemoveItem: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
@@ -60,7 +59,6 @@ export class FormRelatedPictures extends React.Component {
     textLegendItems: 'Related Pictures',
     textBtnAddItem: 'Add Related Picture',
     textLegendItem: 'Related Picture',
-    // textBtnEditItem: 'Edit Related Picture',
     textBtnRemoveItem: 'Remove Related Picture',
     textBtnMoveItemUp: 'Move Related Picture left',
     textBtnMoveItemDown: 'Move Related Picture right',
@@ -166,14 +164,12 @@ export class FormRelatedPictures extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
       textBtnCreateItem: this.props.textBtnCreateItem,
       textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
       textLabelItemSearch: this.props.textLabelItemSearch,
-      handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
@@ -184,47 +180,13 @@ export class FormRelatedPictures extends React.Component {
     }
     const items = this.state.items
     const id = `${_props.className}_${items.length}_${Date.now()}`
-    items.push(
-      <FormRelatedPicture
-        // componentState={2}
-        // SET STATE:
-        // audioItemUid=""
-        // EDIT STATE:
-        // audioItemUid=""
-        // audioItemName=""
-        // audioItemDescription=""
-        key={id}
-        id={id}
-        {..._props}
-        selectMediaComponent={SelectMediaComponent}
-      />
-    )
+    items.push(<FormRelatedPicture key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
     this.setState({
       items,
     })
   }
-  handleClickCreateItem = () => {
-    // console.log('! handleClickCreateItem', this.index)
-  }
   handleItemSelected = (selected, callback) => {
     const uid = selectn('uid', selected)
-    // const path = selectn(['properties', 'file:content', 'data'], selected)
-    // const title = selectn(['title'], selected)
-
-    // filter out any pre-added elements
-    // let { pictures } = this.state
-    // const existingIndex = pictures.findIndex((element) => {
-    //   return element.uid === uid
-    // })
-    // if (existingIndex !== -1) {
-    //   pictures = pictures.filter((element) => {
-    //     return element.uid !== uid
-    //   })
-    // }
-    // // add selected to end
-    // this.setState({
-    //   pictures: [...pictures, { uid, path, title }],
-    // })
     let { items } = this.state
     const arg = { id: uid, items }
 
@@ -238,14 +200,12 @@ export class FormRelatedPictures extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
       textBtnCreateItem: this.props.textBtnCreateItem,
       textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
       textLabelItemSearch: this.props.textLabelItemSearch,
-      handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
@@ -275,9 +235,6 @@ export class FormRelatedPictures extends React.Component {
       }
     )
   }
-  // handleClickEditItem = () => {
-  //   console.log('! handleClickEditItem')
-  // }
   handleClickRemoveItem = (id) => {
     this.setState({
       items: removeItem({ id, items: this.state.items }),
