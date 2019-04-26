@@ -65,17 +65,17 @@ export class CreateV2 extends Component {
       wordPath: null,
     }
 
-    // Bind methods to 'this'
-    ;['_onRequestSaveForm'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path)
+    // NOTE: Using callback refs since on old React
+    // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
+    this.form = null
+    this.setFormRef = (element) => {
+      this.form = element
+    }
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.props)
+    this._fetchData(this.props)
   }
 
   // Refetch data on URL change
@@ -89,7 +89,7 @@ export class CreateV2 extends Component {
     }
 
     if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+      this._fetchData(nextProps)
     }
 
     // 'Redirect' on success
@@ -116,51 +116,6 @@ export class CreateV2 extends Component {
     }
 
     return false
-  }
-
-  _onRequestSaveForm(e) {
-    // Prevent default behaviour
-    e.preventDefault()
-
-    const formValue = this.refs.form_word_create.getValue()
-
-    //let properties = '';
-    const properties = {}
-
-    for (const key in formValue) {
-      if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
-          //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
-          properties[key] = formValue[key]
-        }
-      }
-    }
-
-    this.setState({
-      formValue: properties,
-    })
-
-    // Passed validation
-    if (formValue) {
-      const now = Date.now()
-      this.props.createWord(
-        this.props.routeParams.dialect_path + '/Dictionary',
-        {
-          type: 'FVWord',
-          name: now.toString(),
-          properties: properties,
-        },
-        null,
-        now
-      )
-
-      this.setState({
-        wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
-      })
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0)
-    }
   }
 
   render() {
@@ -203,7 +158,7 @@ export class CreateV2 extends Component {
         </h1>
 
         <div style={{ display: 'flex' }}>
-          <form className="CreateV2">
+          <form className="CreateV2" ref={this.setFormRef} onSubmit={this._onRequestSaveForm}>
             {/* WORD --------------- */}
             <Text className="CreateV2__group" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
             {/* PARTOFSPEECH --------------- */}
@@ -212,6 +167,7 @@ export class CreateV2 extends Component {
               id="CreateWord__PartOfSpeech"
               labelText="Part of speech"
               name="fv-word:part_of_speech"
+              value="basic"
             >
               {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
               <optgroup>
@@ -381,10 +337,63 @@ the 'Move Category up' and 'Move Category down' buttons`}
               labelText="Available in games"
               name="fv-word:available_in_games"
             />
+
+            <button type="submit">Create new word</button>
           </form>
         </div>
       </PromiseWrapper>
     )
+  }
+
+  _fetchData = (newProps) => {
+    newProps.fetchDialect2(newProps.routeParams.dialect_path)
+  }
+
+  _onRequestSaveForm = (e) => {
+    // Prevent default behaviour
+    e.preventDefault()
+    const formDataFormatted = {}
+    const formData = new FormData(this.form)
+
+    for (const value of formData.entries()) {
+      // convert stringify-ed array/objects
+      const isLiteralTranslation = /^fv:literal_translation/.test(value[0])
+      const isDefinition = /^fv:definitions/.test(value[0])
+      if (isLiteralTranslation || isDefinition) {
+        formDataFormatted[value[0]] = JSON.parse(value[1])
+        continue
+      }
+
+      // TODO: check for file blobs!
+      // formData.append(name, value, filename);
+
+      formDataFormatted[value[0]] = value[1]
+    }
+
+    // this.setState({
+    //   formValue: formDataFormatted,
+    // })
+    // Passed validation
+    // if (formValue) {
+    const now = Date.now()
+    this.props.createWord(
+      this.props.routeParams.dialect_path + '/Dictionary',
+      {
+        type: 'FVWord',
+        name: now.toString(),
+        properties: formDataFormatted,
+      },
+      null,
+      now
+    )
+    // Passed validation
+    // if (formValue) {
+    // this.setState({
+    //   wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
+    // })
+    // } else {
+    // window.scrollTo(0, 0)
+    // }
   }
 }
 
