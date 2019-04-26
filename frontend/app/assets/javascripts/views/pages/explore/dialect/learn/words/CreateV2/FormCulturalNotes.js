@@ -80,7 +80,7 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
           className="Create__CulturalNote"
           id="CreateWord__CulturalNote0"
           labelText="Cultural Note"
-          name="fv:cultural_note[0]"
+          name="fv:cultural_note"
           value=""
         />
       </fieldset>

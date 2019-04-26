@@ -87,9 +87,10 @@ Definition up' and 'Move Definition down' buttons`}
         <Select
           ariaDescribedby="describedbyLanguage"
           className="DefinitionLanguage"
-          id="CreateWord__DefinitionLanguage0"
+          id={`definitions.${items.length}.language`}
           labelText="Language"
-          name="fv:definitions[0][language]"
+          // name="fv:definitions.language"
+          name={`fv:definitions.${items.length}.language`}
         >
           {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
           <optgroup>
@@ -101,9 +102,9 @@ Definition up' and 'Move Definition down' buttons`}
         <Text
           className="Create__DefinitionTranslation"
           ariaDescribedby="describedByTranslation"
-          id="CreateWord__DefinitionTranslation0"
+          id={`definitions.${items.length}.translation`}
           labelText="Translation"
-          name="fv:definitions[0][translation]"
+          name={`fv:definitions.${items.length}.translation`}
         />
       </fieldset>
     )

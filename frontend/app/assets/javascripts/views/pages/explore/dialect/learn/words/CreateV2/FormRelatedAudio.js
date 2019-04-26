@@ -162,7 +162,7 @@ export class FormRelatedAudio extends React.Component {
 // RELATED AUDIO > CREATED ---------------
 <fieldset>
   <legend>Related Audio Item</legend>
-  <input type="hidden" name="fv:related_audio[0]" value="49d81e97-8220-4e8f-bed2-b58bfc040868" />
+  <input type="hidden" name="fv:related_audio" value="49d81e97-8220-4e8f-bed2-b58bfc040868" />
   <div>[AUDIO COMPONENT HERE]</div>
   <button type="button">Remove Related Audio Item</button>
   <button type="button" aria-describedby="describedByRelatedAudioMove">

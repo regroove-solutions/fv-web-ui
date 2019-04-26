@@ -217,7 +217,7 @@ export class FormContributor extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-            <input type="hidden" name={`${name}[${index}]`} value={contributorUid} />
+            <input type="hidden" name={name} value={contributorUid} />
             <Preview id={contributorUid} type="FVContributor" />
 
             {/* Edit contributor */}

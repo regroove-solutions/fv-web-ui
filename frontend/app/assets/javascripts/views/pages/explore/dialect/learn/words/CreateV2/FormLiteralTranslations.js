@@ -87,9 +87,9 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
         <Select
           ariaDescribedby="describedbyLanguageLiteralTranslation"
           className="LiteralTranslationLanguage"
-          id="CreateWord__LiteralTranslationLanguage0"
+          id={`literal_translation.${items.length}.language`}
           labelText="Language"
-          name="fv:literal_translation[0][language]"
+          name={`fv:literal_translation.${items.length}.language`}
         >
           {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
           <optgroup>
@@ -101,9 +101,9 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
         <Text
           className="Create__LiteralTranslationTranslation"
           ariaDescribedby="describedByTranslationLiteralTranslation"
-          id="CreateWord__LiteralTranslationTranslation0"
+          id={`literal_translation.${items.length}.translation`}
           labelText="Translation"
-          name="fv:literal_translation[0][translation]"
+          name={`fv:literal_translation.${items.length}.translation`}
         />
       </fieldset>
     )
