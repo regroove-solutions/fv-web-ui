@@ -22,6 +22,7 @@ export default class FormLiteralTranslations extends React.Component {
 
   state = {
     items: [],
+    itemData: {},
   }
 
   render() {
@@ -43,6 +44,7 @@ export default class FormLiteralTranslations extends React.Component {
         </button>
 
         {items}
+        {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id="describedbyLanguageLiteralTranslation" className="visually-hidden">
@@ -89,7 +91,15 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
           className="LiteralTranslationLanguage"
           id={`literal_translation.${items.length}.language`}
           labelText="Language"
-          name={`fv:literal_translation.${items.length}.language`}
+          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+          handleChange={(value) => {
+            this._handleChange({
+              id,
+              value,
+              property: 'language',
+            })
+          }}
+          value="english"
         >
           {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
           <optgroup>
@@ -103,14 +113,42 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
           ariaDescribedby="describedByTranslationLiteralTranslation"
           id={`literal_translation.${items.length}.translation`}
           labelText="Translation"
-          name={`fv:literal_translation.${items.length}.translation`}
+          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+          handleChange={(value) => {
+            this._handleChange({
+              id,
+              value,
+              property: 'translation',
+            })
+          }}
         />
       </fieldset>
     )
+    const { itemData } = this.state
+    itemData[id] = { language: 'english', translation: '' }
     this.setState({
       items,
+      itemData,
     })
   }
+  _generateHiddenInput = () => {
+    const { items, itemData } = this.state
+    const arrayOfObjects = items.map((element) => {
+      const id = element.props.id
+      return itemData[id]
+    })
+    return <input type="hidden" name="fv:literal_translation" value={JSON.stringify(arrayOfObjects)} />
+  }
+
+  _handleChange = (arg) => {
+    const { id, value, property } = arg
+    const { itemData: _itemData } = this.state
+    _itemData[id][property] = value
+    this.setState({
+      itemData: _itemData,
+    })
+  }
+
   handleClickRemoveItem = (id) => {
     this.setState({
       items: removeItem({ id, items: this.state.items }),

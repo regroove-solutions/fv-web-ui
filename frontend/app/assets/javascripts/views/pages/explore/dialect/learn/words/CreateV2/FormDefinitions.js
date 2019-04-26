@@ -22,12 +22,14 @@ export default class FormDefinitions extends React.Component {
 
   state = {
     items: [],
+    itemData: {},
   }
 
   render() {
     const { className } = this.props
 
-    const items = this.state.items
+    const { items } = this.state
+
     return (
       <fieldset className={`${className} ${this.props.groupName}`}>
         <legend>Definitions</legend>
@@ -43,6 +45,9 @@ export default class FormDefinitions extends React.Component {
         </button>
 
         {items}
+
+        {/* <input type="hidden" name="fv:definitions" value={JSON.stringify(this.state.itemData[id])} /> */}
+        {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id="describedbyLanguage" className="visually-hidden">
@@ -84,13 +89,21 @@ Definition up' and 'Move Definition down' buttons`}
             handleClickRemoveItem={this.handleClickRemoveItem}
           />
         </div>
+
         <Select
           ariaDescribedby="describedbyLanguage"
           className="DefinitionLanguage"
           id={`definitions.${items.length}.language`}
           labelText="Language"
-          // name="fv:definitions.language"
-          name={`fv:definitions.${items.length}.language`}
+          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+          handleChange={(value) => {
+            this._handleChange({
+              id,
+              value,
+              property: 'language',
+            })
+          }}
+          value="english"
         >
           {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
           <optgroup>
@@ -104,24 +117,56 @@ Definition up' and 'Move Definition down' buttons`}
           ariaDescribedby="describedByTranslation"
           id={`definitions.${items.length}.translation`}
           labelText="Translation"
-          name={`fv:definitions.${items.length}.translation`}
+          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+          handleChange={(value) => {
+            this._handleChange({
+              id,
+              value,
+              property: 'translation',
+            })
+          }}
         />
       </fieldset>
     )
+    const { itemData } = this.state
+    itemData[id] = { language: 'english', translation: '' }
     this.setState({
       items,
+      itemData,
     })
   }
+
+  _generateHiddenInput = () => {
+    const { items, itemData } = this.state
+    const arrayOfObjects = items.map((element) => {
+      const id = element.props.id
+      return itemData[id]
+    })
+    return <input type="hidden" name="fv:definitions" value={JSON.stringify(arrayOfObjects)} />
+  }
+
+  _handleChange = (arg) => {
+    const { id, value, property } = arg
+    const { itemData: _itemData } = this.state
+    _itemData[id][property] = value
+    this.setState({
+      itemData: _itemData,
+    })
+  }
+
   handleClickRemoveItem = (id) => {
     this.setState({
       items: removeItem({ id, items: this.state.items }),
     })
   }
+
   handleClickMoveItemDown = (id) => {
+    const items = moveItemDown({ id, items: this.state.items })
     this.setState({
-      items: moveItemDown({ id, items: this.state.items }),
+      items,
     })
   }
+
   handleClickMoveItemUp = (id) => {
     this.setState({
       items: moveItemUp({ id, items: this.state.items }),
