@@ -21,6 +21,7 @@ export default class FormCulturalNotes extends React.Component {
 
   state = {
     items: [],
+    itemData: {},
   }
 
   render() {
@@ -41,6 +42,7 @@ export default class FormCulturalNotes extends React.Component {
         </button>
 
         {items}
+        {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id="describedByCulturalNoteMove" className="visually-hidden">
@@ -50,7 +52,14 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
       </fieldset>
     )
   }
-
+  _generateHiddenInput = () => {
+    const { items, itemData } = this.state
+    const selectedItems = items.map((element) => {
+      const id = element.props.id
+      return itemData[id]
+    })
+    return <input type="hidden" name="fv:cultural_note" value={JSON.stringify(selectedItems)} />
+  }
   handleClickAddItem = () => {
     const items = this.state.items
     const { className } = this.props
@@ -80,13 +89,23 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
           className="Create__CulturalNote"
           id="CreateWord__CulturalNote0"
           labelText="Cultural Note"
-          name="fv:cultural_note"
+          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
           value=""
+          handleChange={(value) => {
+            const { itemData } = this.state
+            itemData[id] = value
+            this.setState({
+              itemData,
+            })
+          }}
         />
       </fieldset>
     )
+    const { itemData } = this.state
+    itemData[id] = ''
     this.setState({
       items,
+      itemData,
     })
   }
   handleClickRemoveItem = (id) => {
