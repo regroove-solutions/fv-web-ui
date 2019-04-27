@@ -436,8 +436,8 @@ export default class DialectViewWord extends Component {
     const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
     if (acknowledgement && acknowledgement !== '') {
       return (
-        <div className="DialectViewWordContentItem">
-          <h3 className="DialectViewWordContentItemTitle">Acknowledgement</h3>
+        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
+          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
           <div className="DialectViewWordContentItemGroup">
             <div dangerouslySetInnerHTML={{ __html: acknowledgement }}></div>
           </div>
