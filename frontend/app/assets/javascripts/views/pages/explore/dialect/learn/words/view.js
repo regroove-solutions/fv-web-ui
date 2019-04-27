@@ -211,7 +211,6 @@ export default class DialectViewWord extends Component {
               {this._getCulturalNotes(computeWord)}
               {this._getLiteralTranslations(computeWord)}
               {this._getPronounciation(computeWord, computeDialect2)}
-              {this._getAcknowledgement(computeWord)}
             </div>
 
             <aside className="DialectViewWordContentSecondary">
@@ -229,6 +228,9 @@ export default class DialectViewWord extends Component {
               {selectn('response', computeWord) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computeWord} />
               ) : null}
+
+              {this._getAcknowledgement(computeWord)}
+
             </aside>
           </div>
         </main>
