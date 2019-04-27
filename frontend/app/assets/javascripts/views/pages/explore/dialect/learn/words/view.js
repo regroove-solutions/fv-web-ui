@@ -339,12 +339,17 @@ export default class DialectViewWord extends Component {
   }
 
   _getPartsOfSpeech(computeWord) {
-    return (
-      <div className="DialectViewWordContentItem DialectViewWordPartOfSpeech">
-        <h4 className="DialectViewWordContentItemTitle">{intl.trans('part_of_speech', 'Part of Speech', 'first')}</h4>
-        <p>{selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
-      </div>
-    )
+
+    let part_of_speech = selectn('response.contextParameters.word.part_of_speech', computeWord);
+
+    if (part_of_speech) {
+      return (
+        <div className="DialectViewWordContentItem DialectViewWordPartOfSpeech">
+          <h4 className="DialectViewWordContentItemTitle">{intl.trans('part_of_speech', 'Part of Speech', 'first')}</h4>
+          <p>{selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
+        </div>
+      )
+    }
   }
 
   _getPhotos(computeWord) {
