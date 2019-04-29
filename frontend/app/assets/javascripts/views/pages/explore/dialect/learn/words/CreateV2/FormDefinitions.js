@@ -10,7 +10,7 @@ const { string } = PropTypes
 export default class FormDefinitions extends React.Component {
   static defaultProps = {
     className: 'FormDefinitions',
-    groupName: 'FormDefinitions__group',
+    groupName: 'Form__group',
     name: 'FormDefinitions',
   }
 

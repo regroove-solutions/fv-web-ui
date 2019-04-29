@@ -9,7 +9,7 @@ const { string } = PropTypes
 export default class FormCulturalNotes extends React.Component {
   static defaultProps = {
     className: 'FormCulturalNotes',
-    groupName: 'FormCulturalNote__group',
+    groupName: 'Form__group',
     name: 'FormCulturalNotes',
   }
 

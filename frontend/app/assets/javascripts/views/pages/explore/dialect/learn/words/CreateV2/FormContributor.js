@@ -59,7 +59,7 @@ export class FormContributor extends React.Component {
     fetchContributors: func.isRequired,
   }
   static defaultProps = {
-    groupName: 'FormContributor__group',
+    groupName: 'Form__group',
     id: 0,
     index: 0,
     componentState: 1,

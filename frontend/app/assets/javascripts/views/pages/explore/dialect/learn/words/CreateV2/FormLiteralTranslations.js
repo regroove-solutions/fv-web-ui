@@ -11,7 +11,7 @@ export default class FormLiteralTranslations extends React.Component {
   static defaultProps = {
     className: 'FormLiteralTranslations',
     name: 'FormLiteralTranslations',
-    groupName: 'FormLiteralTranslations__group',
+    groupName: 'Form__group',
   }
 
   static propTypes = {

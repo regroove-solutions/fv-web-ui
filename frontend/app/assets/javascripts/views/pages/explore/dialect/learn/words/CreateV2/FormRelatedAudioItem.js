@@ -66,7 +66,7 @@ export class FormRelatedAudioItem extends React.Component {
   }
   static defaultProps = {
     className: 'FormRelatedAudioItem',
-    groupName: 'FormRelatedAudioItem__group',
+    groupName: 'Form__group',
     id: -1,
     index: 0,
     componentState: 0,

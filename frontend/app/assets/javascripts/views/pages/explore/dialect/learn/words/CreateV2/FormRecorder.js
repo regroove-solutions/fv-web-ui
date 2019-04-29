@@ -58,7 +58,7 @@ export class FormRecorder extends React.Component {
     fetchContributors: func.isRequired,
   }
   static defaultProps = {
-    groupName: 'FormRecorder__group',
+    groupName: 'Form__group',
     id: 0,
     index: 0,
     componentState: 1,
