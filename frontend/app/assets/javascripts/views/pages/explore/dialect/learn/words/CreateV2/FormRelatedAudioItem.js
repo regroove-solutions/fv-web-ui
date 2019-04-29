@@ -101,7 +101,7 @@ export class FormRelatedAudioItem extends React.Component {
   render() {
     const {
       className,
-      name,
+      // name,
       id,
       idDescribedByItemMove,
       index,
@@ -152,7 +152,8 @@ export class FormRelatedAudioItem extends React.Component {
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
               labelText="Name of audio item"
-              name={`${name}[${index}]__NewName`}
+              // name={`${name}[${index}]__NewName`}
+              name="FormRelatedAudioItem.name"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemName: data })
@@ -163,7 +164,8 @@ export class FormRelatedAudioItem extends React.Component {
               className={this.props.groupName}
               id="CreateAudio__Description"
               labelText="Description of audio item"
-              name="dc:description"
+              // name="dc:description"
+              name="FormRelatedAudioItem.description"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemDescription: data })
@@ -175,7 +177,8 @@ export class FormRelatedAudioItem extends React.Component {
               className={this.props.groupName}
               id="CreateAudio__File"
               labelText="Upload audio item"
-              name="file"
+              // name="file"
+              name=""
               value=""
               handleChange={(data) => {
                 this.setState({ createItemFile: data })
@@ -187,7 +190,8 @@ export class FormRelatedAudioItem extends React.Component {
               className={this.props.groupName}
               id="CreateAudio__Shared"
               labelText="Share this audio across dialects"
-              name="fvm:shared"
+              // name="fvm:shared"
+              name=""
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
               }}
@@ -197,7 +201,8 @@ export class FormRelatedAudioItem extends React.Component {
               className={this.props.groupName}
               id="CreateAudio__ChildFocused"
               labelText="Audio is child focused"
-              name="fvm:child_focused"
+              // name="fvm:child_focused"
+              name=""
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
               }}
@@ -206,7 +211,8 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
               className={this.props.groupName}
-              name="fv:source"
+              // name="fv:source"
+              name=""
               textInfo="Contributors who helped create the audio item."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
@@ -216,7 +222,8 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Recorders: fvm:recorder --------------- */}
             <FormRecorders
               className={this.props.groupName}
-              name="fvm:recorder"
+              // name="fvm:recorder"
+              name=""
               textInfo="Recorders who helped create the audio item."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemRecorders: data })

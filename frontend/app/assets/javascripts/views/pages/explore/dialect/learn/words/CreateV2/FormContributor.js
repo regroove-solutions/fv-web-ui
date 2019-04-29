@@ -116,7 +116,7 @@ export class FormContributor extends React.Component {
   render() {
     const {
       className,
-      name,
+      // name,
       id,
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
@@ -146,7 +146,7 @@ export class FormContributor extends React.Component {
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
               labelText="Contributor name"
-              name={`${name}[${index}]__NewName`}
+              name="FormContributor.name"
               value=""
               handleChange={(_name) => {
                 this.setState({ createItemName: _name })
@@ -158,7 +158,7 @@ export class FormContributor extends React.Component {
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewDescription`}
               labelText="Contributor description"
-              name={`${name}[${index}]__NewDescription`}
+              name="FormContributor.description"
               value=""
               handleChange={(description) => {
                 this.setState({ createItemDescription: description })

@@ -107,7 +107,7 @@ export class FormRelatedVideo extends React.Component {
   render() {
     const {
       className,
-      name,
+      // name,
       id,
       // idDescribedbyItemBrowse,
       idDescribedByItemMove,
@@ -170,7 +170,7 @@ export class FormRelatedVideo extends React.Component {
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
               labelText="Name of video"
-              name={`${name}[${index}]__NewName`}
+              name="FormRelatedVideo.name"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemName: data })
@@ -181,7 +181,7 @@ export class FormRelatedVideo extends React.Component {
               className={this.props.groupName}
               id="CreateVideo__Description"
               labelText="Description of video"
-              name="dc:description"
+              name="FormRelatedVideo.dc:description"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemDescription: data })
@@ -193,7 +193,7 @@ export class FormRelatedVideo extends React.Component {
               className={this.props.groupName}
               id="CreateVideo__File"
               labelText="Upload video"
-              name="file"
+              name="FormRelatedVideo.file"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemFile: data })
@@ -205,7 +205,7 @@ export class FormRelatedVideo extends React.Component {
               className={this.props.groupName}
               id="CreateVideo__Shared"
               labelText="Share this video across dialects"
-              name="fvm:shared"
+              name="FormRelatedVideo.fvm:shared"
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
               }}
@@ -215,7 +215,7 @@ export class FormRelatedVideo extends React.Component {
               className={this.props.groupName}
               id="CreateVideo__ChildFocused"
               labelText="Video is child focused"
-              name="fvm:child_focused"
+              name="FormRelatedVideo.fvm:child_focused"
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
               }}
@@ -224,7 +224,7 @@ export class FormRelatedVideo extends React.Component {
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
               className={this.props.groupName}
-              name="fv:source"
+              name="FormRelatedVideo.fv:source"
               textInfo="Contributors who helped create the video."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
@@ -234,7 +234,7 @@ export class FormRelatedVideo extends React.Component {
             {/* Recorders: fvm:recorder --------------- */}
             <FormRecorders
               className={this.props.groupName}
-              name="fvm:recorder"
+              name="FormRelatedVideo.fvm:recorder"
               textInfo="Recorders who helped create the video."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemRecorders: data })

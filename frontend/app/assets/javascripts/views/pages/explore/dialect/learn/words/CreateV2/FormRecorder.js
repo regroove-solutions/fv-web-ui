@@ -8,7 +8,6 @@ import FormRemoveButton from './FormRemoveButton'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'
-// import DocumentListView from 'views/components/Document/DocumentListView'
 const { array, func, object, number, string } = PropTypes
 
 export class FormRecorder extends React.Component {
@@ -30,12 +29,10 @@ export class FormRecorder extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
-    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
-    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -66,7 +63,6 @@ export class FormRecorder extends React.Component {
     index: 0,
     componentState: 1,
     handleClickCreateItem: () => {},
-    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -113,13 +109,10 @@ export class FormRecorder extends React.Component {
     )
   }
 
-  //   AFTER SUBMITTING NEW CONTRIBUTOR
-  // ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response
-
   render() {
     const {
       className,
-      name,
+      // name,
       id,
       idDescribedbyItemBrowse,
       idDescribedByItemMove,
@@ -128,15 +121,11 @@ export class FormRecorder extends React.Component {
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
-      // textBtnEditItem,
       textBtnSelectExistingItems,
-      // textLabelItemSearch,
       textLegendItem,
-      // handleClickSelectItem,
       handleClickRemoveItem,
       handleClickMoveItemUp,
       handleClickMoveItemDown,
-      // value,
     } = this.props
 
     let componentContent = null
@@ -153,7 +142,7 @@ export class FormRecorder extends React.Component {
               className={this.props.groupName}
               id={`${className}__Recorder${index}__NewName`}
               labelText="Recorder name"
-              name={`${name}[${index}]__NewName`}
+              name="FormRecorder.name"
               value=""
               handleChange={(_name) => {
                 this.setState({ createItemName: _name })
@@ -165,7 +154,7 @@ export class FormRecorder extends React.Component {
               className={this.props.groupName}
               id={`${className}__Recorder${index}__NewDescription`}
               labelText="Recorder description"
-              name={`${name}[${index}]__NewDescription`}
+              name="FormRecorder.description"
               value=""
               handleChange={(description) => {
                 this.setState({ createItemDescription: description })
@@ -217,75 +206,14 @@ export class FormRecorder extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-            <input type="hidden" name={`${name}[${index}]`} value={itemUid} />
             <Preview id={itemUid} type="FVContributor" />
-
-            {/* Edit recorder */}
-            {/* <button
-              onClick={() => {
-                this._handleClickEditItem(id)
-              }}
-              type="button"
-            >
-              {textBtnEditItem}
-            </button> */}
           </div>
         )
         break
       }
-      // case this.STATE_EDIT_CONTRIBUTOR:
-      //   // EDITING A CONTRIBUTOR ------------------------------------
-      //   componentContent = (
-      //     <div className={this.props.groupName}>
-      //       <h2>Editing recorder</h2>
-
-      //       {/* Name ------------- */}
-      //       <Text
-      //         className={this.props.groupName}
-      //         id={`${className}__Recorder${index}__EditName`}
-      //         labelText="Recorder name"
-      //         name={`${name}[${index}]__EditName`}
-      //         value="[some prefilled value"
-      //       />
-
-      //       {/* Description ------------- */}
-      //       <Textarea
-      //         className={this.props.groupName}
-      //         id={`${className}__Recorder${index}__EditDescription`}
-      //         labelText="Recorder description"
-      //         name={`${name}[${index}]__EditDescription`}
-      //         value=""
-      //       />
-
-      //       {/* BTN: Create recorder ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={(event) => {
-      //           event.preventDefault()
-      //           this._handleCreateItemSubmit()
-      //         }}
-      //       >
-      //         Update recorder
-      //       </button>
-
-      //       {/* BTN: Cancel, go back ------------- */}
-      //       <button
-      //         type="button"
-      //         onClick={() => {
-      //           this.setState({
-      //             componentState: this.STATE_CREATED_CONTRIBUTOR,
-      //           })
-      //         }}
-      //       >
-      //         {"Cancel, don't update a recorder"}
-      //       </button>
-      //     </div>
-      //   )
-      //   break
       case this.STATE_BROWSE_CONTRIBUTORS: {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
-        // const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.DIALECT_PATH)
         let items = []
         let initialValue = null
         if (_computeContributors.response && _computeContributors.response.entries) {
@@ -378,15 +306,6 @@ export class FormRecorder extends React.Component {
               {textBtnSelectExistingItems}
             </button>
 
-            {/* Search recorders */}
-            {/* <Text
-              className={`${className}__Recorder`}
-              id={`${className}__Recorder${index}`}
-              labelText={textLabelItemSearch}
-              name={`${name}[${index}]`}
-              value=""
-            /> */}
-
             <div className="FormItemButtons">
               <FormMoveButtons
                 id={id}
@@ -423,17 +342,6 @@ export class FormRecorder extends React.Component {
       }
     )
   }
-  // _handleClickEditItem = (id) => {
-  //   const { handleClickEditItem } = this.props
-  //   this.setState(
-  //     {
-  //       componentState: this.STATE_EDIT_CONTRIBUTOR,
-  //     },
-  //     () => {
-  //       handleClickEditItem(id)
-  //     }
-  //   )
-  // }
   _handleClickSelectItem = () => {
     const { handleClickSelectItem } = this.props
     this.setState(
@@ -445,21 +353,6 @@ export class FormRecorder extends React.Component {
       }
     )
   }
-  // _handleSubmitExistingItem = (createItemUid) => {
-  //   this.setState(
-  //     {
-  //       componentState: this.STATE_CREATED_CONTRIBUTOR,
-  //       itemUid: createItemUid,
-  //     },
-  //     () => {
-  //       console.log('! 2', createItemUid)
-  //       this.props.handleItemChange({
-  //         uid: createItemUid,
-  //         id: this.props.id,
-  //       })
-  //     }
-  //   )
-  // }
 
   async _handleCreateItemSubmit() {
     const { createItemName, createItemDescription } = this.state

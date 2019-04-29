@@ -98,7 +98,7 @@ export class FormRelatedPicture extends React.Component {
   render() {
     const {
       className,
-      name,
+      // name,
       id,
       idDescribedByItemMove,
       index,
@@ -149,7 +149,7 @@ export class FormRelatedPicture extends React.Component {
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
               labelText="Name of picture"
-              name={`${name}[${index}]__NewName`}
+              name="FormRelatedPicture.name"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemName: data })
@@ -160,7 +160,7 @@ export class FormRelatedPicture extends React.Component {
               className={this.props.groupName}
               id="CreatePicture__Description"
               labelText="Description of picture"
-              name="dc:description"
+              name="FormRelatedPicture.dc:description"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemDescription: data })
@@ -172,7 +172,7 @@ export class FormRelatedPicture extends React.Component {
               className={this.props.groupName}
               id="CreatePicture__File"
               labelText="Upload picture"
-              name="file"
+              name="FormRelatedPicture.file"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemFile: data })
@@ -184,7 +184,8 @@ export class FormRelatedPicture extends React.Component {
               className={this.props.groupName}
               id="CreatePicture__Shared"
               labelText="Share this picture across dialects"
-              name="fvm:shared"
+              // name="fvm:shared"
+              name="FormRelatedPicture.fvm:shared"
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
               }}
@@ -194,7 +195,7 @@ export class FormRelatedPicture extends React.Component {
               className={this.props.groupName}
               id="CreatePicture__ChildFocused"
               labelText="Picture is child focused"
-              name="fvm:child_focused"
+              name="FormRelatedPicture.fvm:child_focused"
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
               }}
@@ -203,7 +204,7 @@ export class FormRelatedPicture extends React.Component {
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
               className={this.props.groupName}
-              name="fv:source"
+              name="FormRelatedPicture.fv:source"
               textInfo="Contributors who helped create the picture."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
