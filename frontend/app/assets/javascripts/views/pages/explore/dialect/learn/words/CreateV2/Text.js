@@ -27,12 +27,9 @@ export default class Text extends React.Component {
 
   render() {
     const { className, ariaDescribedby, id, labelText, name } = this.props
-
-    const { message, valid } = this.props.error
-    const errorFeedback = valid ? null : <div>{message}</div>
-
+    const { message } = this.props.error
     return (
-      <div className={`${className} Text ${valid ? 'valid' : 'error'}`}>
+      <div className={`${className} Text ${message && 'Form__error'}`}>
         <label className="Text__label" htmlFor={id}>
           {labelText}
         </label>
@@ -45,7 +42,11 @@ export default class Text extends React.Component {
           onChange={this._handleChange}
           type="text"
         />
-        {errorFeedback}
+        {message && (
+          <label className="Form__errorMessage" htmlFor={id}>
+            {message}
+          </label>
+        )}
       </div>
     )
   }

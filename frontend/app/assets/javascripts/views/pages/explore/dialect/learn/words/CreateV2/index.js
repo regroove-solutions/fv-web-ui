@@ -39,6 +39,7 @@ import FormRelatedAudio from './FormRelatedAudio'
 import FormRelatedPictures from './FormRelatedPictures'
 import FormRelatedVideos from './FormRelatedVideos'
 import FormCategories from './FormCategories'
+import StringHelpers from 'common/StringHelpers'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
 /**
@@ -172,9 +173,26 @@ export class CreateV2 extends Component {
     // }
 
     const { errors } = this.state
-    let titleError = undefined
+
+    let errorFeedback = null
     if (errors.length !== 0) {
-      titleError = this._getError({ errors, fieldName: 'dc:title' })
+      if (errors.length > 0) {
+        const li = errors.map((error, i) => {
+          return (
+            <li key={i}>
+              <label htmlFor={StringHelpers.clean(error.path, 'CLEAN_ID')}>{error.message}</label>
+            </li>
+          )
+        })
+
+        const intro = `Please correct the following ${errors.length > 1 ? 'items' : 'item'}:`
+        errorFeedback = (
+          <div className="alert alert-info">
+            {intro}
+            <ul>{li}</ul>
+          </div>
+        )
+      }
     }
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -190,17 +208,17 @@ export class CreateV2 extends Component {
         <form className="CreateV2" ref={this.setFormRef} onSubmit={this._onRequestSaveForm}>
           {/* WORD --------------- */}
           <Text
-            className="CreateV2__group"
-            id="CreateWord__Word"
+            className="Form__group"
+            id={StringHelpers.clean('dc:title', 'CLEAN_ID')}
             labelText="Word"
             name="dc:title"
             value=""
-            error={titleError}
+            error={this._getError({ errors, fieldName: 'dc:title' })}
           />
           {/* PARTOFSPEECH --------------- */}
           <Select
-            className="CreateV2__group"
-            id="CreateWord__PartOfSpeech"
+            className="Form__group"
+            id={StringHelpers.clean('fv-word:part_of_speech', 'CLEAN_ID')}
             labelText="Part of speech"
             name="fv-word:part_of_speech"
             value="basic"
@@ -252,22 +270,23 @@ export class CreateV2 extends Component {
           </Select>
           {/* PRONOUNCIATION --------------- */}
           <Text
-            className="CreateV2__group"
-            id="CreateWord__Pronounciation"
+            className="Form__group"
+            id={StringHelpers.clean('fv-word:pronunciation', 'CLEAN_ID')}
             labelText="Pronounciation"
             name="fv-word:pronunciation"
             value=""
+            error={this._getError({ errors, fieldName: 'fv-word:pronunciation' })}
           />
           {/* Definitions --------------- */}
-          <FormDefinitions className="CreateV2__group" name="fv:definitions" />
+          <FormDefinitions className="Form__group" name="fv:definitions" />
           {/* Literal Translations --------------- */}
-          <FormLiteralTranslations className="CreateV2__group" name="fv:literal_translation" />
+          <FormLiteralTranslations className="Form__group" name="fv:literal_translation" />
           {/* RELATED AUDIO --------------- */}
-          <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
+          <FormRelatedAudio className="Form__group" name="fv:related_audio" />
           {/* RELATED PICTURES --------------- */}
-          <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
+          <FormRelatedPictures className="Form__group" name="fv:related_pictures" />
           {/* RELATED VIDEOS --------------- */}
-          <FormRelatedVideos className="CreateV2__group" name="fv:related_pictures" />
+          <FormRelatedVideos className="Form__group" name="fv:related_pictures" />
           {/* SCREEN READER DESCRIPTIONS --------------- */}
           <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
             {'Select a video from previously uploaded items'}
@@ -277,12 +296,12 @@ export class CreateV2 extends Component {
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
           </span>
           {/* Related Phrases --------------- */}
-          <fieldset className="CreateV2__group">
+          <fieldset className="Form__group">
             <legend>Related Phrases</legend>
             {/* <button type="button">Add Related Phrase</button> */}
 
             {/* Related Phrases > RELATED PHRASE --------------- */}
-            {/* <fieldset className="CreateV2__group">
+            {/* <fieldset className="Form__group">
                 <legend>Related Phrase</legend>
                 <input type="hidden" name="fv:related_phrases[0]" value="14869a80-b371-4e51-a458-1e1adf86e263" />
                 <div>[PHRASE HERE]</div>
@@ -298,7 +317,7 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
               </fieldset> */}
 
             {/* Related Phrases > RELATED PHRASE --------------- */}
-            {/* <fieldset className="CreateV2__group">
+            {/* <fieldset className="Form__group">
                 <legend>Related Phrase</legend>
                 <Text
                   className="Create__RelatedPhrase"
@@ -332,7 +351,7 @@ the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
             </span>
           </fieldset>
           {/* CATEGORIES --------------- */}
-          <FormCategories className="CreateV2__group" name="fv-word:categories" />
+          <FormCategories className="Form__group" name="fv-word:categories" />
 
           {/* SCREEN READER DESCRIPTIONS --------------- */}
           <span id="describedByCategoryMove" className="visually-hidden">
@@ -340,9 +359,9 @@ the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
 the 'Move Category up' and 'Move Category down' buttons`}
           </span>
           {/* Cultural Notes --------------- */}
-          <FormCulturalNotes className="CreateV2__group" name="fv:cultural_note" />
+          <FormCulturalNotes className="Form__group" name="fv:cultural_note" />
           {/* REFERENCE --------------- */}
-          <div className="CreateV2__group">
+          <div className="Form__group">
             <Text
               className=""
               id="CreateWord__Reference1"
@@ -355,26 +374,28 @@ the 'Move Category up' and 'Move Category down' buttons`}
           </div>
           {/* Contributors --------------- */}
           <FormContributors
-            className="CreateV2__group"
+            className="Form__group"
             textInfo="Contributors who helped create this record."
             name="fv:source"
           />
           {/* IN CHILDREN'S ARCHIVE --------------- */}
           <Checkbox
-            className="CreateV2__group"
+            className="Form__group"
             id="CreateWord__InKidsArchive0"
             labelText="Available in children's archive"
             name="fv:available_in_childrens_archive"
           />
           {/* IN GAMES --------------- */}
           <Checkbox
-            className="CreateV2__group"
+            className="Form__group"
             id="CreateWord__InGames0"
             labelText="Available in games"
             name="fv-word:available_in_games"
           />
 
           <button type="submit">Create new word</button>
+
+          {errorFeedback}
         </form>
       </PromiseWrapper>
     )
