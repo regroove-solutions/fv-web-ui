@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react'
 import provide from 'react-redux-provide'
 //import classNames from 'classnames'
 import Autosuggest from 'react-autosuggest'
-import pages from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/pages.js'
+import {pages, setHandler} from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/pages.js'
 //import pageMain from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/pages.js'
-import {SubmitButton, Buttons, Title, Intro, CancelAlert, Steps, Checklist, DropDown, EnterText} from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/components.js'
+import {SubmitButton, Buttons, Title, Intro} from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/components.js'
 
 @provide
 export default class ArchiveCreator extends Component { 
@@ -24,7 +24,6 @@ export default class ArchiveCreator extends Component {
     }
 }
 
-
 class Page extends Component {
 
   constructor(props, context) {
@@ -33,17 +32,20 @@ class Page extends Component {
     this.toPrevPage = this.toPrevPage.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.state = {page: pages[0]}
+    this.state = {page: pages[0], dialect:'', community:'',archiveName:'', languageGuessAnswer:'', 
+    language:'',familyGuessAnswer:'', family:'', logo:'', countr:'', 
+    region:'', alphabetGuessAnswer:'',alphabet:'', keyboard:'', keyboardGuide:'',
+    langAdminAskAnswer:'', langAdmin:'', created:''}
+    setHandler(this.handleChange)
   }
 
   toPrevPage() {
     let prevPage = this.state.page
     for (let i = pages.indexOf(prevPage) - 1;i >= 0;i--) {
-      //if (pages[i].enabled) {
+      if (pages[i].enabled) {
       prevPage = pages[i]
       break
-      //}
+      }
     }
     this.setState({
       page: prevPage,
@@ -59,39 +61,34 @@ class Page extends Component {
       }
     }
     this.setState({
-      page: nextPage,
+      page: nextPage
     })
   }
 
-  handleChange(event){
-    console.log(event)
-    const target = event.target;
-    const value = target.value
-    const name = target.name;
+  handleChange(e){
+    const target = e.target;
+    var name= target.getAttribute('name')
+    this.setState({ [name]:target.value})
 
-    if (value){
-      console.log(value)
-      var page = this.state.page
-      if(page.required){
-        page = page.required=false
-        this.setState({
-          page: page
-        });
-      }
-    }  
-  }
-
-  handleSelect(event){
     
+    if(name.endsWith('Answer')){
+      if(name == 'langAdminAskAnswer'){
+        pages[pages.indexOf(this.state.page)+1].enabled = target.value=='yes'? true:false
+        pages[pages.indexOf(this.state.page)+2].enabled = !pages[pages.indexOf(this.state.page)+1].enabled
+      }
+      else{
+        pages[pages.indexOf(this.state.page)+1].enabled = target.value == 'incorrect' ? true:false
+      } 
+    }
   }
 
-  handleSubmit(event){
-    event.preventDefault()
+  handleSubmit(e){
+    e.preventDefault()
   }
 
   render() {
     const page = this.state.page
-    var main = getMainPg(page.title, page.main)
+    var required = page.required? checkRequired(page.required, this.state):false
     return (
       <div style={{minHeight: '68vh', position:'relative'}}>
         <div className="row" style={{ marginTop: '25px' }} />
@@ -99,10 +96,10 @@ class Page extends Component {
         <Title name={page.title}/>
         <Intro text={page.intro}/>
         <div>
-          {main}
+          {page.main}
         </div>
         <Buttons
-          required={page.required}
+          required={required}
           start={page === pages[0]}
           end={page === pages[pages.length - 1]}
           onBackClick={this.toPrevPage}
@@ -112,6 +109,13 @@ class Page extends Component {
 
     )
   }
+}
+
+function checkRequired(req, currentVals){
+  if (!currentVals[req].trim()){
+    return true
+  }
+  return false
 }
 
 /*
@@ -124,7 +128,7 @@ class Page extends Component {
 <EnterText title="Enter dialect:" subtitle='this is very important' form="create-archive" />
 */
 
-function getMainPg(title, props){
+/* function getMainPg(title, props){
   const nameToPage = {steps:StepsPg(props), checklist: ChecklistPg(props), 
                     names:NamesPg(props), languageGuess: GuessPg(props), 
                     languagePick:PickPg(props), familyGuess:GuessPg(props), 
@@ -140,94 +144,4 @@ function getMainPg(title, props){
   }
 
   return nameToPage[title]
-}
-
-function StepsPg(props) {
-  return <Steps steps={props.steps} form={props.form}/>;
-}
-
-function ChecklistPg(props){ 
-  return <Checklist steps={["step one", 'step 2', 'step 3']}/>;
-}
-
-function NamesPg(props) {
-  return (
-    <div>
-      <EnterText title='comm' subtitle= 'fseparate multiple w comma' form='archive-creator' handleChange={props.handleChange}/>
-      <div style={{marginTop:'20px'}}/>
-      <EnterText title='dial' subtitle= 'optional if know' form='archive-creator' handleChange={props.handleChange}/>
-      <div style={{marginTop:'20px'}}/>
-      <EnterText title='arch' subtitle= 'required, will be archive name' form='archive-creator' handleChange={props.handleChange}/>
-    </div>
-  );
-}
-
-function GuessPg(props){
-  return <DropDown title='Is guess correct?' options={['correct', 'incorrect']} form='archive-creator' handleChange={props.handleChange}/>;
-}
-
-function PickPg(props){
-  return <DropDown title='Please choose own' options={['generated', 'options', 'from', 'db', 'other']} form='archive-creator' handleChange={props.handleChange}/>;
-}
-//EnterText other popup
-
-function LogoPg(props){
-  return <EnterText title='please enter img' type='file' form='archive-creator' handleChange={props.handleChange}/>;
-}
-
-function DialectInfoPg(props) {
-  return (
-    <div>
-      <DropDown title='country' options={['generated', 'options', 'from', 'db', 'other']} form='archive-creator' handleChange={props.handleChange}/>
-      <div style={{marginTop:'20px'}}/>
-      <DropDown title='region' options={['generated', 'options', 'from', 'db', 'other']} form='archive-creator' handleChange={props.handleChange}/>
-    </div>
-  );
-}
-//EnterText other popup
-
-function KeyboardsPg(props) { 
-  return(
-    <div>
-      <DropDown title='keyboards' options={['generated', 'options', 'from', 'db']} form='archive-creator' handleChange={props.handleChange}/>
-      <div style={{marginTop:'20px'}}/>
-      <DropDown title='keyboard guides' options={['generated', 'options', 'from', 'db']} form='archive-creator' handleChange={props.handleChange}/>
-    </div>
-  );
-}
-//multi select
-
-function LangAdminAskPg(props) {
-  return <DropDown title='Already have account?' options={['yes', 'no']} form='archive-creator' handleChange={props.handleChange}/>;
-}
-
-function LangAdminInputPg(props) {
-  return <EnterText title='please enter email of account' form='archive-creator' handleChange={props.handleChange}/>;
-}
-
-function LangAdminRegisterPg(props) {
-  return <div>embed registration page here</div>;
-}
-
-function CreationPg(props){
-  return <SubmitButton />;
-}
-
-function NextStepsPg(props) {
-  return(
-    <Checklist steps={["step one", 'step 2', 'step 3']}/>
-  );
-}
-//<ArchiveButton />
-//<CancelButton />
-
-function FirstStepsPg(props){
-  return <Steps steps={["how", "to", "get", "started"]} form='archive-creator'/>;
-}
-
-function DonePg(props){
-  return(
-    <div>archive button</div>
-  );
-}
-//ArchiveButton
+} */

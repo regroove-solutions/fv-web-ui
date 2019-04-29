@@ -68,12 +68,13 @@ export class DropDown extends Component {
           {sublabel}
         </label>
         <div/>
-        <input className='form-control' type='text' list='options' multiple='multiple' onChange={this.handleChange}/>
-        <datalist id='options' form={this.props.form}>{choices}</datalist>
+        <select value={this.props.value} name={this.props.name} className='form-control' onChange={(e)=> {this.props.handleChange(e)}}>{choices}</select>
       </div>
     )
   }
 }
+        //<input value={this.props.value} name={this.props.name} className='form-control' type='text' list='options' multiple='multiple' onChange={(e)=> {this.props.handleChange(e)}}/>
+        //<datalist id='options' form={this.props.form}>{choices}</datalist>
 
 export class EnterText extends Component{
   constructor(props, context) {
@@ -82,7 +83,7 @@ export class EnterText extends Component{
 
   render(){
     var sublabel = this.props.subtitle ? <h6 style={{marginTop:'2', marginBottom:'2'}} >{this.props.subtitle}</h6>:''
-    var enter = this.props.type=='file'? <input className='form-control' type='file' accept='image/*' form={this.props.form} onChange={this.handleChange}/>:<input className='form-control' type='text' form={this.props.form} onChange={this.handleChange}/>
+    var enter = this.props.type=='file'? <input value={this.props.value} name={this.props.name} className='form-control' type='file' accept='image/*' form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>:<input value={this.props.value} name={this.props.name} className='form-control' type='text' form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>
     return(
       <div>
         <label className="control-label" >
