@@ -25,7 +25,6 @@ export class FormRelatedAudio extends React.Component {
     textLegendItems: string,
     textBtnAddItem: string,
     textLegendItem: string,
-    // textBtnEditItem: string,
     textBtnRemoveItem: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
@@ -60,7 +59,6 @@ export class FormRelatedAudio extends React.Component {
     textLegendItems: 'Related Audio',
     textBtnAddItem: 'Add Related Audio Item',
     textLegendItem: 'Related Audio Item',
-    // textBtnEditItem: 'Edit Related Audio Item',
     textBtnRemoveItem: 'Remove Related Audio Item',
     textBtnMoveItemUp: 'Move Related Audio Item left',
     textBtnMoveItemDown: 'Move Related Audio Item right',
@@ -175,14 +173,12 @@ export class FormRelatedAudio extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
       textBtnCreateItem: this.props.textBtnCreateItem,
       textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
       textLabelItemSearch: this.props.textLabelItemSearch,
-      handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
@@ -193,27 +189,10 @@ export class FormRelatedAudio extends React.Component {
     }
     const items = this.state.items
     const id = `${_props.className}_${items.length}_${Date.now()}`
-    items.push(
-      <FormRelatedAudioItem
-        // componentState={2}
-        // SET STATE:
-        // audioItemUid=""
-        // EDIT STATE:
-        // audioItemUid=""
-        // audioItemName=""
-        // audioItemDescription=""
-        key={id}
-        id={id}
-        {..._props}
-        selectMediaComponent={SelectMediaComponent}
-      />
-    )
+    items.push(<FormRelatedAudioItem key={id} id={id} {..._props} selectMediaComponent={SelectMediaComponent} />)
     this.setState({
       items,
     })
-  }
-  handleClickCreateItem = () => {
-    // console.log('! handleClickCreateItem', this.index)
   }
   handleItemSelected = (selected, callback) => {
     const uid = selectn('uid', selected)
@@ -231,14 +210,12 @@ export class FormRelatedAudio extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
-      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
       textBtnCreateItem: this.props.textBtnCreateItem,
       textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
       textLabelItemSearch: this.props.textLabelItemSearch,
-      handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
@@ -267,9 +244,6 @@ export class FormRelatedAudio extends React.Component {
         }
       }
     )
-  }
-  handleClickEditItem = () => {
-    // console.log('! handleClickEditItem')
   }
   handleClickRemoveItem = (id) => {
     this.setState({
