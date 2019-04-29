@@ -21,11 +21,12 @@ import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from 'common/NavigationHelpers'
+// import NavigationHelpers from 'common/NavigationHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 // import fields from 'models/schemas/fields'
-import options from 'models/schemas/options'
+// import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
+import * as yup from 'yup'
 
 import Select from './Select'
 import Text from './Text'
@@ -63,6 +64,7 @@ export class CreateV2 extends Component {
     this.state = {
       formValue: null,
       wordPath: null,
+      errors: [],
     }
 
     // NOTE: Using callback refs since on old React
@@ -71,6 +73,29 @@ export class CreateV2 extends Component {
     this.setFormRef = (element) => {
       this.form = element
     }
+
+    this.createWordSchema = yup.object().shape({
+      'dc:title': yup
+        .string()
+        .label('Name') // used when errored, message will say 'Name' instead of 'dc:title'
+        .required(),
+      'fv-word:part_of_speech': yup
+        .string()
+        .label('Part of speech')
+        .required(),
+      'fv-word:pronunciation': yup.string(),
+      'fv-word:available_in_games': yup.string(),
+      'fv:available_in_childrens_archive': yup.string(),
+      'fv:cultural_note': yup.array().of(yup.string()),
+      'fv:definitions': yup.array().of(yup.object().shape({ language: yup.string(), translation: yup.string() })),
+      'fv:literal_translation': yup
+        .array()
+        .of(yup.object().shape({ language: yup.string(), translation: yup.string() })),
+      'fv:reference': yup.string(),
+      'fv:related_audio': yup.array().of(yup.string()),
+      'fv:related_pictures': yup.array().of(yup.string()),
+      'fv:source': yup.array().of(yup.string()),
+    })
   }
 
   // Fetch data on initial render
@@ -79,47 +104,47 @@ export class CreateV2 extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    let currentWord
-    let nextWord
+  // componentWillReceiveProps(nextProps) {
+  //   let currentWord
+  //   let nextWord
 
-    if (this.state.wordPath != null) {
-      currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
-      nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath)
-    }
+  //   if (this.state.wordPath != null) {
+  //     currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
+  //     nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath)
+  //   }
 
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this._fetchData(nextProps)
-    }
+  //   if (nextProps.windowPath !== this.props.windowPath) {
+  //     this._fetchData(nextProps)
+  //   }
 
-    // 'Redirect' on success
-    if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
-      NavigationHelpers.navigate(
-        NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextWord), 'words'),
-        nextProps.replaceWindowPath,
-        true
-      )
-    }
-  }
+  //   // 'Redirect' on success
+  //   if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
+  //     NavigationHelpers.navigate(
+  //       NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextWord), 'words'),
+  //       nextProps.replaceWindowPath,
+  //       true
+  //     )
+  //   }
+  // }
 
-  shouldComponentUpdate(newProps) {
-    switch (true) {
-      case newProps.windowPath != this.props.windowPath:
-        return true
+  // shouldComponentUpdate(newProps) {
+  //   switch (true) {
+  //     case newProps.windowPath != this.props.windowPath:
+  //       return true
 
-      case newProps.computeDialect2 != this.props.computeDialect2:
-        return true
+  //     case newProps.computeDialect2 != this.props.computeDialect2:
+  //       return true
 
-      case newProps.computeWord != this.props.computeWord:
-        return true
-      default: // Note: do nothing
-    }
+  //     case newProps.computeWord != this.props.computeWord:
+  //       return true
+  //     default: // Note: do nothing
+  //   }
 
-    return false
-  }
+  //   return false
+  // }
 
   render() {
-    const FVWordOptions = Object.assign({}, selectn('FVWord', options))
+    // const FVWordOptions = Object.assign({}, selectn('FVWord', options))
 
     const computeEntities = Immutable.fromJS([
       {
@@ -136,16 +161,21 @@ export class CreateV2 extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Set default value on form
-    if (
-      selectn('fields.fv:definitions.item.fields.language.attrs', FVWordOptions) &&
-      selectn('response.properties.fvdialect:dominant_language', computeDialect2)
-    ) {
-      FVWordOptions.fields['fv:definitions'].item.fields.language.attrs.defaultValue = selectn(
-        'response.properties.fvdialect:dominant_language',
-        computeDialect2
-      )
-    }
+    // if (
+    //   selectn('fields.fv:definitions.item.fields.language.attrs', FVWordOptions) &&
+    //   selectn('response.properties.fvdialect:dominant_language', computeDialect2)
+    // ) {
+    //   FVWordOptions.fields['fv:definitions'].item.fields.language.attrs.defaultValue = selectn(
+    //     'response.properties.fvdialect:dominant_language',
+    //     computeDialect2
+    //   )
+    // }
 
+    const { errors } = this.state
+    let titleError = undefined
+    if (errors.length !== 0) {
+      titleError = this._getError({ errors, fieldName: 'dc:title' })
+    }
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
@@ -157,96 +187,102 @@ export class CreateV2 extends Component {
           )}
         </h1>
 
-        <div style={{ display: 'flex' }}>
-          <form className="CreateV2" ref={this.setFormRef} onSubmit={this._onRequestSaveForm}>
-            {/* WORD --------------- */}
-            <Text className="CreateV2__group" id="CreateWord__Word" labelText="Word" name="dc:title" value="" />
-            {/* PARTOFSPEECH --------------- */}
-            <Select
-              className="CreateV2__group"
-              id="CreateWord__PartOfSpeech"
-              labelText="Part of speech"
-              name="fv-word:part_of_speech"
-              value="basic"
-            >
-              {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
-              <optgroup>
-                <option value="basic">Basic</option>
-                <option value="verb">Verb</option>
-                <option value="noun">Noun</option>
-                <option value="pronoun">Pronoun</option>
-                <option value="adjective">Adjective</option>
-                <option value="adverb">Adverb</option>
-                <option value="preposition">Preposition</option>
-                <option value="conjunction">Conjunction</option>
-                <option value="interjection">Interjection</option>
-                <option value="particle">Particle</option>
-                <option value="advanced">Advanced</option>
-                <option value="pronoun_personal">Pronoun - Personal</option>
-                <option value="pronoun_reflexive">Pronoun - Reflexive</option>
-                <option value="pronoun_reciprocal">Pronoun - Reciprocal</option>
-                <option value="pronoun_demonstrative">Pronoun - Demonstrative</option>
-                <option value="pronoun_relative">Pronoun - Relative</option>
-                <option value="particle_postposition">Particle - Postposition</option>
-                <option value="particle_quantifier">Particle - Quantifier</option>
-                <option value="particle_article_determiner">Particle - Article/Determiner</option>
-                <option value="particle_tense_aspect">Particle - Tense/Aspect</option>
-                <option value="particle_modal">Particle - Modal</option>
-                <option value="particle_conjunction">Particle - Conjunction</option>
-                <option value="particle_auxiliary_verb">Particle - Auxiliary Verb</option>
-                <option value="particle_adjective">Particle - Adjective</option>
-                <option value="particle_adverb">Particle - Adverb</option>
-                <option value="entity_noun_like_word">Entity (Noun-like word)</option>
-                <option value="event_activity_verb_like_word">Event/Activity (Verb-like word)</option>
-                <option value="event_activity_verb_like_word_transitive">
-                  Event/Activity (Verb-like word) - transitive
-                </option>
-                <option value="event_activity_verb_like_word_intransitive">
-                  Event/Activity (Verb-like word) - intransitive
-                </option>
-                <option value="event_activity_verb_like_word_reflexive">
-                  Event/Activity (Verb-like word) - reflexive
-                </option>
-                <option value="event_activity_verb_like_word_reciprocal">
-                  Event/Activity (Verb-like word) - reciprocal
-                </option>
-                <option value="suffix_prefix">Suffix / Prefix</option>
-                <option value="question_word">Question word</option>
-              </optgroup>
-            </Select>
-            {/* PRONOUNCIATION --------------- */}
-            <Text
-              className="CreateV2__group"
-              id="CreateWord__Pronounciation"
-              labelText="Pronounciation"
-              name="fv-word:pronunciation"
-              value=""
-            />
-            {/* Definitions --------------- */}
-            <FormDefinitions className="CreateV2__group" name="fv:definitions" />
-            {/* Literal Translations --------------- */}
-            <FormLiteralTranslations className="CreateV2__group" name="fv:literal_translation" />
-            {/* RELATED AUDIO --------------- */}
-            <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
-            {/* RELATED PICTURES --------------- */}
-            <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
-            {/* RELATED VIDEOS --------------- */}
-            <FormRelatedVideos className="CreateV2__group" name="fv:related_pictures" />
-            {/* SCREEN READER DESCRIPTIONS --------------- */}
-            <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
-              {'Select a video from previously uploaded items'}
-            </span>
-            <span id="describedByRelatedVideoMove" className="visually-hidden">
-              {`If you are adding multiple Related Videos, you can change the position of the Related Video with
+        <form className="CreateV2" ref={this.setFormRef} onSubmit={this._onRequestSaveForm}>
+          {/* WORD --------------- */}
+          <Text
+            className="CreateV2__group"
+            id="CreateWord__Word"
+            labelText="Word"
+            name="dc:title"
+            value=""
+            error={titleError}
+          />
+          {/* PARTOFSPEECH --------------- */}
+          <Select
+            className="CreateV2__group"
+            id="CreateWord__PartOfSpeech"
+            labelText="Part of speech"
+            name="fv-word:part_of_speech"
+            value="basic"
+          >
+            {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
+            <optgroup>
+              <option value="basic">Basic</option>
+              <option value="verb">Verb</option>
+              <option value="noun">Noun</option>
+              <option value="pronoun">Pronoun</option>
+              <option value="adjective">Adjective</option>
+              <option value="adverb">Adverb</option>
+              <option value="preposition">Preposition</option>
+              <option value="conjunction">Conjunction</option>
+              <option value="interjection">Interjection</option>
+              <option value="particle">Particle</option>
+              <option value="advanced">Advanced</option>
+              <option value="pronoun_personal">Pronoun - Personal</option>
+              <option value="pronoun_reflexive">Pronoun - Reflexive</option>
+              <option value="pronoun_reciprocal">Pronoun - Reciprocal</option>
+              <option value="pronoun_demonstrative">Pronoun - Demonstrative</option>
+              <option value="pronoun_relative">Pronoun - Relative</option>
+              <option value="particle_postposition">Particle - Postposition</option>
+              <option value="particle_quantifier">Particle - Quantifier</option>
+              <option value="particle_article_determiner">Particle - Article/Determiner</option>
+              <option value="particle_tense_aspect">Particle - Tense/Aspect</option>
+              <option value="particle_modal">Particle - Modal</option>
+              <option value="particle_conjunction">Particle - Conjunction</option>
+              <option value="particle_auxiliary_verb">Particle - Auxiliary Verb</option>
+              <option value="particle_adjective">Particle - Adjective</option>
+              <option value="particle_adverb">Particle - Adverb</option>
+              <option value="entity_noun_like_word">Entity (Noun-like word)</option>
+              <option value="event_activity_verb_like_word">Event/Activity (Verb-like word)</option>
+              <option value="event_activity_verb_like_word_transitive">
+                Event/Activity (Verb-like word) - transitive
+              </option>
+              <option value="event_activity_verb_like_word_intransitive">
+                Event/Activity (Verb-like word) - intransitive
+              </option>
+              <option value="event_activity_verb_like_word_reflexive">
+                Event/Activity (Verb-like word) - reflexive
+              </option>
+              <option value="event_activity_verb_like_word_reciprocal">
+                Event/Activity (Verb-like word) - reciprocal
+              </option>
+              <option value="suffix_prefix">Suffix / Prefix</option>
+              <option value="question_word">Question word</option>
+            </optgroup>
+          </Select>
+          {/* PRONOUNCIATION --------------- */}
+          <Text
+            className="CreateV2__group"
+            id="CreateWord__Pronounciation"
+            labelText="Pronounciation"
+            name="fv-word:pronunciation"
+            value=""
+          />
+          {/* Definitions --------------- */}
+          <FormDefinitions className="CreateV2__group" name="fv:definitions" />
+          {/* Literal Translations --------------- */}
+          <FormLiteralTranslations className="CreateV2__group" name="fv:literal_translation" />
+          {/* RELATED AUDIO --------------- */}
+          <FormRelatedAudio className="CreateV2__group" name="fv:related_audio" />
+          {/* RELATED PICTURES --------------- */}
+          <FormRelatedPictures className="CreateV2__group" name="fv:related_pictures" />
+          {/* RELATED VIDEOS --------------- */}
+          <FormRelatedVideos className="CreateV2__group" name="fv:related_pictures" />
+          {/* SCREEN READER DESCRIPTIONS --------------- */}
+          <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
+            {'Select a video from previously uploaded items'}
+          </span>
+          <span id="describedByRelatedVideoMove" className="visually-hidden">
+            {`If you are adding multiple Related Videos, you can change the position of the Related Video with
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
-            </span>
-            {/* Related Phrases --------------- */}
-            <fieldset className="CreateV2__group">
-              <legend>Related Phrases</legend>
-              {/* <button type="button">Add Related Phrase</button> */}
+          </span>
+          {/* Related Phrases --------------- */}
+          <fieldset className="CreateV2__group">
+            <legend>Related Phrases</legend>
+            {/* <button type="button">Add Related Phrase</button> */}
 
-              {/* Related Phrases > RELATED PHRASE --------------- */}
-              {/* <fieldset className="CreateV2__group">
+            {/* Related Phrases > RELATED PHRASE --------------- */}
+            {/* <fieldset className="CreateV2__group">
                 <legend>Related Phrase</legend>
                 <input type="hidden" name="fv:related_phrases[0]" value="14869a80-b371-4e51-a458-1e1adf86e263" />
                 <div>[PHRASE HERE]</div>
@@ -261,8 +297,8 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
                 </button>
               </fieldset> */}
 
-              {/* Related Phrases > RELATED PHRASE --------------- */}
-              {/* <fieldset className="CreateV2__group">
+            {/* Related Phrases > RELATED PHRASE --------------- */}
+            {/* <fieldset className="CreateV2__group">
                 <legend>Related Phrase</legend>
                 <Text
                   className="Create__RelatedPhrase"
@@ -286,61 +322,60 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
                 </button>
               </fieldset> */}
 
-              {/* SCREEN READER DESCRIPTIONS --------------- */}
-              <span id="describedbyRelatedPhraseBrowse" className="visually-hidden">
-                {'Select a video from previously uploaded items'}
-              </span>
-              <span id="describedByRelatedPhraseMove" className="visually-hidden">
-                {`If you are adding multiple Related Phrases, you can change the position of the Related Phrase with
-the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
-              </span>
-            </fieldset>
-            {/* CATEGORIES --------------- */}
-            <FormCategories className="CreateV2__group" name="fv-word:categories" />
-
             {/* SCREEN READER DESCRIPTIONS --------------- */}
-            <span id="describedByCategoryMove" className="visually-hidden">
-              {`If you are adding multiple Categories, you can change the position of the Category with
-the 'Move Category up' and 'Move Category down' buttons`}
+            <span id="describedbyRelatedPhraseBrowse" className="visually-hidden">
+              {'Select a video from previously uploaded items'}
             </span>
-            {/* Cultural Notes --------------- */}
-            <FormCulturalNotes className="CreateV2__group" name="fv:cultural_note" />
-            {/* REFERENCE --------------- */}
-            <div className="CreateV2__group">
-              <Text
-                className=""
-                id="CreateWord__Reference1"
-                labelText="Reference"
-                name="fv:reference"
-                ariaDescribedby="describedByReference"
-                value=""
-              />
-              <span id="describedByReference">Origin of record (person, book, etc).</span>
-            </div>
-            {/* Contributors --------------- */}
-            <FormContributors
-              className="CreateV2__group"
-              textInfo="Contributors who helped create this record."
-              name="fv:source"
-            />
-            {/* IN CHILDREN'S ARCHIVE --------------- */}
-            <Checkbox
-              className="CreateV2__group"
-              id="CreateWord__InKidsArchive0"
-              labelText="Available in children's archive"
-              name="fv:available_in_childrens_archive"
-            />
-            {/* IN GAMES --------------- */}
-            <Checkbox
-              className="CreateV2__group"
-              id="CreateWord__InGames0"
-              labelText="Available in games"
-              name="fv-word:available_in_games"
-            />
+            <span id="describedByRelatedPhraseMove" className="visually-hidden">
+              {`If you are adding multiple Related Phrases, you can change the position of the Related Phrase with
+the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
+            </span>
+          </fieldset>
+          {/* CATEGORIES --------------- */}
+          <FormCategories className="CreateV2__group" name="fv-word:categories" />
 
-            <button type="submit">Create new word</button>
-          </form>
-        </div>
+          {/* SCREEN READER DESCRIPTIONS --------------- */}
+          <span id="describedByCategoryMove" className="visually-hidden">
+            {`If you are adding multiple Categories, you can change the position of the Category with
+the 'Move Category up' and 'Move Category down' buttons`}
+          </span>
+          {/* Cultural Notes --------------- */}
+          <FormCulturalNotes className="CreateV2__group" name="fv:cultural_note" />
+          {/* REFERENCE --------------- */}
+          <div className="CreateV2__group">
+            <Text
+              className=""
+              id="CreateWord__Reference1"
+              labelText="Reference"
+              name="fv:reference"
+              ariaDescribedby="describedByReference"
+              value=""
+            />
+            <span id="describedByReference">Origin of record (person, book, etc).</span>
+          </div>
+          {/* Contributors --------------- */}
+          <FormContributors
+            className="CreateV2__group"
+            textInfo="Contributors who helped create this record."
+            name="fv:source"
+          />
+          {/* IN CHILDREN'S ARCHIVE --------------- */}
+          <Checkbox
+            className="CreateV2__group"
+            id="CreateWord__InKidsArchive0"
+            labelText="Available in children's archive"
+            name="fv:available_in_childrens_archive"
+          />
+          {/* IN GAMES --------------- */}
+          <Checkbox
+            className="CreateV2__group"
+            id="CreateWord__InGames0"
+            labelText="Available in games"
+            name="fv-word:available_in_games"
+          />
+
+          <button type="submit">Create new word</button>
+        </form>
       </PromiseWrapper>
     )
   }
@@ -349,43 +384,50 @@ the 'Move Category up' and 'Move Category down' buttons`}
     newProps.fetchDialect2(newProps.routeParams.dialect_path)
   }
 
-  _onRequestSaveForm = (e) => {
+  _onRequestSaveForm = async (e) => {
     // Prevent default behaviour
     e.preventDefault()
-    const formDataFormatted = {}
-    const formData = new FormData(this.form)
-
-    for (const value of formData.entries()) {
-      // convert stringify-ed array/objects
-      const isLiteralTranslation = /^fv:literal_translation/.test(value[0])
-      const isDefinition = /^fv:definitions/.test(value[0])
-      if (isLiteralTranslation || isDefinition) {
-        formDataFormatted[value[0]] = JSON.parse(value[1])
-        continue
-      }
-
-      // TODO: check for file blobs!
-      // formData.append(name, value, filename);
-
-      formDataFormatted[value[0]] = value[1]
+    const formData = this._getFormData()
+    const formValidation = await this._validateForm(formData)
+    if (formValidation.valid) {
+      // console.log('IS VALID. WOULD SUBMIT FORM!')
+      // const now = Date.now()
+      // this.props.createWord(
+      //   this.props.routeParams.dialect_path + '/Dictionary',
+      //   {
+      //     type: 'FVWord',
+      //     name: now.toString(),
+      //     properties: this._getFormData(),
+      //   },
+      //   null,
+      //   now
+      // )
+      this.setState({
+        errors: [],
+      })
+    } else {
+      this.setState({
+        errors: formValidation.errors,
+      })
     }
-
     // this.setState({
     //   formValue: formDataFormatted,
     // })
     // Passed validation
     // if (formValue) {
-    const now = Date.now()
-    this.props.createWord(
-      this.props.routeParams.dialect_path + '/Dictionary',
-      {
-        type: 'FVWord',
-        name: now.toString(),
-        properties: formDataFormatted,
-      },
-      null,
-      now
-    )
+
+    // const now = Date.now()
+    // this.props.createWord(
+    //   this.props.routeParams.dialect_path + '/Dictionary',
+    //   {
+    //     type: 'FVWord',
+    //     name: now.toString(),
+    //     properties: formDataFormatted,
+    //   },
+    //   null,
+    //   now
+    // )
+
     // Passed validation
     // if (formValue) {
     // this.setState({
@@ -394,6 +436,88 @@ the 'Move Category up' and 'Move Category down' buttons`}
     // } else {
     // window.scrollTo(0, 0)
     // }
+  }
+  _getFormData = () => {
+    const formDataFormatted = {}
+    const formData = new FormData(this.form)
+
+    for (const value of formData.entries()) {
+      // parse any stringify-ed array/objects
+      const name = value[0]
+      const data = value[1]
+      const isLiteralTranslation = /^fv:literal_translation/.test(name)
+      const isDefinition = /^fv:definitions/.test(name)
+      const isRelatedAudio = /^fv:related_audio/.test(name)
+      const isRelatedPicture = /^fv:related_pictures/.test(name)
+      const isCulturalNote = /^fv:cultural_note/.test(name)
+      const isSource = /^fvm:source/.test(name)
+      if (isLiteralTranslation || isDefinition || isRelatedAudio || isRelatedPicture || isCulturalNote || isSource) {
+        formDataFormatted[name] = JSON.parse(data)
+        continue
+      }
+
+      // TODO: check for file blobs!
+      // formData.append(name, value, filename);
+
+      formDataFormatted[name] = data
+    }
+    return formDataFormatted
+  }
+  _validateForm = async (formData) => {
+    // Note: When `abortEarly === true` then `{ path, type } = invalid` is defined.
+    // When `abortEarly === false` then `{ path, type } = invalid` is not defined! Data is found in `invalid.errors[]`.
+    const validation = await this.createWordSchema.validate(formData, { abortEarly: false }).then(
+      () => {
+        return {
+          valid: true,
+          errors: [],
+        }
+      },
+      (invalid) => {
+        const { inner } = invalid
+        const errors = inner.map((error) => {
+          const { message, path, type } = error
+          return {
+            message,
+            path,
+            type,
+          }
+        })
+        return {
+          valid: false,
+          errors,
+        }
+      }
+    )
+    return validation
+  }
+  _validateField = async ({ name, data }) => {
+    // const formDataFormatted = this._getFormData()
+    const results = await this._validateForm(data)
+    const { valid, errors } = results
+
+    if (valid === false) {
+      const fieldErrored = errors.filter((error) => {
+        return error.path === name
+      })
+      if (fieldErrored.length !== 0) {
+        const fieldData = fieldErrored[0]
+        fieldData.valid = false
+        return fieldData
+      }
+    }
+    return {
+      valid: true,
+    }
+  }
+  _getError = ({ errors, fieldName }) => {
+    const error = errors.filter((errorItem) => {
+      return errorItem.path === fieldName
+    })
+    if (error.length === 1) {
+      return error[0]
+    }
+    return {}
   }
 }
 
