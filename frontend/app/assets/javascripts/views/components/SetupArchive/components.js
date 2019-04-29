@@ -158,32 +158,56 @@ var stepNumberStyle = {
   border: '1px solid #666',
 }
 
-export class SubmitButton extends Component{  //need to center
+export class SubmitButton extends Component{  
   constructor(props, context) {
     super(props, context)
   }
 
   render(){
     return(
+      <div className='row' style={{ textAlign:'center', marginTop:'20px'}}>
       <RaisedButton label='CREATE ARCHIVE' 
                     type='submit' 
                     form={this.props.form} 
-                    style={{ marginRight: '10px', height: '50px' }}
+                    style={{ marginRight: '10px', height: '50px', }}
                     backgroundColor={theme['palette']['primary1Color']}
                     labelColor={Colors.white} 
                     labelStyle={{ fontSize: '1.34em' }}/>
+      </div>
     )
   }
 }
 
-export class CancelAlert extends Component{
+export class CancelButton extends Component{
   constructor(props, context) {
     super(props, context)
   }
 
   render(){
     return(
-      <div/>
+      <div className='row' style={{ textAlign:'center', marginTop:'10px'}}>
+      <FlatButton onClick={this.props.onCancel} >CANCEL</FlatButton>
+      </div>
+    )
+  }
+}
+
+export class ArchiveButton extends Component{  
+  constructor(props, context) {
+    super(props, context)
+  }
+
+  render(){
+    return(
+      <div className='row' style={{ textAlign:'center', marginTop:'20px'}}>
+      <RaisedButton label='GO TO YOUR ARCHIVE' 
+                    type='button'  
+                    style={{ marginRight: '10px', height: '50px', }}
+                    backgroundColor={theme['palette']['primary1Color']}
+                    labelColor={Colors.white} 
+                    labelStyle={{ fontSize: '1.34em' }}
+                    onClick={this.props.goToArchive}/>
+      </div>
     )
   }
 }

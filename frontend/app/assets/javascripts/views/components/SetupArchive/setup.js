@@ -36,16 +36,16 @@ class Page extends Component {
     language:'',familyGuessAnswer:'', family:'', logo:'', countr:'', 
     region:'', alphabetGuessAnswer:'',alphabet:'', keyboard:'', keyboardGuide:'',
     langAdminAskAnswer:'', langAdmin:'', created:''}
-    setHandler(this.handleChange)
+    setHandler(this.handleChange, this.handleSubmit, this.handleCancel, this.handleArchive)
   }
 
   toPrevPage() {
     let prevPage = this.state.page
     for (let i = pages.indexOf(prevPage) - 1;i >= 0;i--) {
-      if (pages[i].enabled) {
+      //if (pages[i].enabled) {
       prevPage = pages[i]
       break
-      }
+      //}
     }
     this.setState({
       page: prevPage,
@@ -55,10 +55,10 @@ class Page extends Component {
   toNextPage() {
     let nextPage = this.state.page
     for (let i = pages.indexOf(nextPage) + 1;i >= 0;i++) {
-      if (pages[i].enabled) {
+      //if (pages[i].enabled) {
       nextPage = pages[i]
       break
-      }
+      //}
     }
     this.setState({
       page: nextPage
@@ -86,6 +86,15 @@ class Page extends Component {
     e.preventDefault()
   }
 
+  handleCancel(e){
+    e.preventDefault()
+    var cancelled = confirm("If you cancel now. All the information you have entered will be lost. Press Ok to leave the archive creator. Press Cancel to return and create your archive")
+  }
+
+  handleArchive(e){
+    e.preventDefault()
+  }
+
   render() {
     const page = this.state.page
     var required = page.required? checkRequired(page.required, this.state):false
@@ -99,7 +108,7 @@ class Page extends Component {
           {page.main}
         </div>
         <Buttons
-          required={required}
+          //required={required}
           start={page === pages[0]}
           end={page === pages[pages.length - 1]}
           onBackClick={this.toPrevPage}
