@@ -1,12 +1,13 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, func } = PropTypes
+const { string, func, object } = PropTypes
 
 export default class Text extends React.Component {
   static defaultProps = {
     className: 'Text',
     value: '',
     handleChange: () => {},
+    error: {},
   }
 
   static propTypes = {
@@ -17,6 +18,7 @@ export default class Text extends React.Component {
     className: string,
     value: string,
     handleChange: func,
+    error: object,
   }
 
   state = {
@@ -25,8 +27,12 @@ export default class Text extends React.Component {
 
   render() {
     const { className, ariaDescribedby, id, labelText, name } = this.props
+
+    const { message, valid } = this.props.error
+    const errorFeedback = valid ? null : <div>{message}</div>
+
     return (
-      <div className={`${className} Text`}>
+      <div className={`${className} Text ${valid ? 'valid' : 'error'}`}>
         <label className="Text__label" htmlFor={id}>
           {labelText}
         </label>
@@ -39,6 +45,7 @@ export default class Text extends React.Component {
           onChange={this._handleChange}
           type="text"
         />
+        {errorFeedback}
       </div>
     )
   }
