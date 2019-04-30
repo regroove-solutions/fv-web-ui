@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react'
-import theme from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/themes/FirstVoicesTheme.js'
+import theme from 'views/themes/FirstVoicesTheme.js'
 import Colors from 'material-ui/lib/styles/colors'
 import FlatButton from 'material-ui/lib/flat-button'
 import RaisedButton from 'material-ui/lib/raised-button'
 
-export function Intro(props) {
+export function Intro(props) { // need to get text to actually create new line
   return (
     <p>{props.text}</p>
   )
@@ -22,11 +22,12 @@ export function Title(props) {
         <span >{props.name}</span>
       </h1>
       <hr
-        style={{backgroundColor: theme['palette']['primary1Color'], width: '100%', height: '2px', margin: '0 0 10px 0'}} />
+        style={{backgroundColor: theme['palette']['primary1Color'], width: '100%', height: '2px', margin: '0 0 10px 0'}} /> 
     </div>
   )
 }
 
+/* Back and next buttons at bottom of page */
 export class Buttons extends Component {
   constructor(props, context) {
     super(props, context)
@@ -52,6 +53,13 @@ export class Buttons extends Component {
   }
 }
 
+/* Drop down with title and optional subtitle list where user picks an option.
+   If user chooses option 'other' a new input field pops up for their answer. 
+   
+   Currently can only choose one, should add ability to choose multiple for things like keyboards.
+   
+   Also would be good to allow searching as user types (like with combined input and datalist) 
+   but shouldn't let people just leave written answer in input field */
 export class DropDown extends Component {
   constructor(props, context) {
     super(props, context)
@@ -62,22 +70,18 @@ export class DropDown extends Component {
     const opts=this.props.options
     for(let i=0;i<opts.length;i++){
       if(opts[i]==this.props.value){
-        choices.push(<option key={i} selected>{opts[i]}</option>)
+        choices.push(<option key={i} selected>{opts[i]}</option>) // Is there a better way to handle this than with selected?
       }
       else{
         choices.push(<option key={i}>{opts[i]}</option>)
       }
     }
 
-    var other = ''
-    if (this.props.other){
-      other = 
-      <div style={{marginTop:'20px'}}>
-        <label className="control-label">Please enter your {this.props.name}:</label>
-        <input value={this.props.valueOther} name={this.props.name+'Other'} className='form-control' type={this.props.type} form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/> 
-      </div>
-    }
-    console.log(other)
+    var other = this.props.other? (<div style={{marginTop:'20px'}}>
+                                     <label className="control-label">Please enter your {this.props.name}:</label>
+                                      <input value={this.props.valueOther} name={this.props.name+'Other'} className='form-control' type={this.props.type} form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/> 
+                                    </div>):''
+
     var sublabel = this.props.subtitle ? <h6 style={{marginTop:'2', marginBottom:'2'}} >{this.props.subtitle}</h6>:''
     return (
       <div>
@@ -95,9 +99,12 @@ export class DropDown extends Component {
     )
   }
 }
-        //<input value={this.props.value} name={this.props.name} className='form-control' type='text' list='options' multiple='multiple' onChange={(e)=> {this.props.handleChange(e)}}/>
-        //<datalist id='options' form={this.props.form}>{choices}</datalist>
+//<input value={this.props.value} name={this.props.name} className='form-control' type='text' list='options' multiple='multiple' onChange={(e)=> {this.props.handleChange(e)}}/>
+//<datalist id='options' form={this.props.form}>{choices}</datalist>
 
+/* input field with title and optional subtitle - currently handles text, email, and files 
+    Need to fin a way for file to hold/show its value when navigating away from the page 
+    Need to add verification of email */
 export class EnterText extends Component{
   constructor(props, context) {
     super(props, context)
@@ -119,7 +126,8 @@ export class EnterText extends Component{
   }
 }
 
-
+/* Basic list of steps provided
+   Should probably expand to allow subtitles for each step, perhaps make it an actual checklist */
 export class Checklist extends Component{
   constructor(props, context) {
     super(props, context)
@@ -134,6 +142,7 @@ export class Checklist extends Component{
   }
 }
 
+/* Numbered steps */
 export class Steps extends Component{
   constructor(props, context) {
     super(props, context)
@@ -145,7 +154,6 @@ export class Steps extends Component{
     for (let i=0;i<steps.length;i++){
       stepsList.push(<div key={i+1} keyclassName='round' style={stepNumberStyle}>{i+1}</div>)  //what are better keys
       stepsList.push(<div key={steps[i]} className='instruct' style={stepTextStyle}>{steps[i]}</div>) 
-      //stepsList.push(<div className='clearfix' />)
     }
     return (
       <div className='r' style={gridStyle}>
@@ -181,6 +189,7 @@ var stepNumberStyle = {
   border: '1px solid #666',
 }
 
+/* Button to submit and actually create archive and language admin if applicable */
 export class SubmitButton extends Component{  
   constructor(props, context) {
     super(props, context)
@@ -195,11 +204,13 @@ export class SubmitButton extends Component{
                     style={{ marginRight: '10px', height: '50px', }}
                     backgroundColor={theme['palette']['primary1Color']}
                     labelColor={Colors.white} 
-                    labelStyle={{ fontSize: '1.34em' }}/>
+                    labelStyle={{ fontSize: '1.34em' }}
+                    onClick={this.props.onSubmit}/>
       </div>
     )
   }
 }
+
 
 export class CancelButton extends Component{
   constructor(props, context) {
@@ -209,7 +220,7 @@ export class CancelButton extends Component{
   render(){
     return(
       <div className='row' style={{ textAlign:'center', marginTop:'10px'}}>
-      <FlatButton onClick={this.props.onCancel} >CANCEL</FlatButton>
+      <FlatButton onClick={this.props.onCancel}>CANCEL</FlatButton>
       </div>
     )
   }

@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react'
 import provide from 'react-redux-provide'
-//import classNames from 'classnames'
-import Autosuggest from 'react-autosuggest'
-import {pages, setHandler} from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/pages.js'
-//import pageMain from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/pages.js'
-import {SubmitButton, Buttons, Title, Intro, ArchiveButton, CancelButton, Steps, Checklist, DropDown, EnterText} from '/Users/laliacann/fv-web-ui/frontend/app/assets/javascripts/views/components/SetupArchive/components.js'
+//import Autosuggest from 'react-autosuggest'
+import {pages} from './pages.js'
+import {SubmitButton, Buttons, Title, Intro, ArchiveButton, CancelButton, Steps, Checklist, DropDown, EnterText} from './components.js'
 
 @provide
 export default class ArchiveCreator extends Component { 
@@ -32,6 +30,8 @@ class Page extends Component {
     this.toPrevPage = this.toPrevPage.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleCancel = this.handleCancel.bind(this)
+    this.handleArchive = this.handleArchive.bind(this)
     this.state = {page: pages[0], dialect:'', community:'',archiveName:'', languageGuessAnswer:'', 
     language:'', languageOther: '',familyGuessAnswer:'', family:'', familyOther:'', logo:'', country:'', countryOther:'', 
     region:'', regionOther:'', alphabetGuessAnswer:'',alphabet:'', keyboard:'', keyboardGuide:'',
@@ -40,7 +40,7 @@ class Page extends Component {
 
   toPrevPage() {
     let prevPage = this.state.page
-    for (let i = pages.indexOf(prevPage) - 1;i >= 0;i--) {
+    for (let i = pages.indexOf(prevPage) - 1;i >= 0;i--){
       if (pages[i].enabled) {
       prevPage = pages[i]
       break
@@ -69,8 +69,8 @@ class Page extends Component {
     var name= target.getAttribute('name')
     this.setState({ [name]:target.value})
 
-    if(!name.endsWith('Other')){
-      if(target.value == 'other'){
+    if(!name.endsWith('Other')){ 
+      if(target.value == 'other'){ // should only happen if choose 'other' from drop down menu
         if('c1name' in this.state.page.components){
           this.state.page.components[name+'Other'] = true
         }
@@ -101,23 +101,26 @@ class Page extends Component {
     }
   }
 
+  /* Need to actually create archive/language admin, link go to archive button to created archive */
   handleSubmit(e){
     e.preventDefault()
+    this.setState({ created: 'true'})
   }
 
-  handleCancel(e){
+  /* Should delete all entered data (and maybe take back to start page?) */
+  handleCancel(e){ 
     e.preventDefault()
-    var cancelled = confirm("If you cancel now. All the information you have entered will be lost. Press Ok to leave the archive creator. Press Cancel to return and create your archive")
+    var message = this.state.created? "Your archive has already been created. Would you like to delete it? All the information you have entered will be lost. Press Ok to delete your archive. Press Cancel to keep your archive.":
+                                      "If you cancel now. All the information you have entered will be lost. Press Ok to leave the archive creator. Press Cancel to return and create your archive"
+    var cancelled = confirm(message)
   }
 
+  /* close archive creator, take to new archive*/
   handleArchive(e){
     e.preventDefault()
   }
 
   getPageMain(pageName, pageProps){
-    console.log(this.state)
-    console.log(pageName)
-    console.log(pageProps)
     var nameToPage = {
       start: '',
       steps:<StepsPg steps={pageProps.steps}/>, 
@@ -136,14 +139,13 @@ class Page extends Component {
       langAdminInput:<EnterPg name={pageProps.name} type={pageProps.type} multiple={pageProps.multiple} value={this.state[pageProps.name]} title={pageProps.title} handleChange={this.handleChange}/>, 
       langAdminRegister:<LangAdminRegisterPg/>, 
       creation: <CreationPg handleSubmit={this.handleSubmit} handleCancel={this.handleCancel}/>, 
-      nextSteps:<NextStepsPg steps={pageProps.steps} handleArchive={this.handleArchive}/>, 
+      nextSteps:<NextStepsPg text={pageProps.text} steps={pageProps.steps} handleArchive={this.handleArchive}/>, 
       editPortal:<StepsPg steps={pageProps.steps}/>, 
       firstWord:<StepsPg steps={pageProps.steps}/>, 
       batchUpload: '',
       done:<DonePg handleArchive={this.handleArchive}/>
     }
 
-    
     return nameToPage[pageName]
   }
 
@@ -173,6 +175,8 @@ class Page extends Component {
   }
 }
 
+/* Checks if all the required fields on the page have been filled 
+    returns true if page is still required, false if all requirements are met*/
 function checkRequired(req, currentVals){
   if (!currentVals[req].trim()){
     return true
@@ -186,6 +190,7 @@ function checkRequired(req, currentVals){
   return false
 }
 
+/* The main part of each page */
 function StepsPg(props) {
   return <Steps steps={props.steps} />;
 }
@@ -211,7 +216,6 @@ function DropDownPg(props){
 }
 
 function EnterPg(props){
-  console.log(props.value)
   return <EnterText value={props.value} name={props.name} type={props.type} multiple={props.multiple} title={props.title} handleChange={props.handleChange}/>
 }
 
@@ -224,17 +228,15 @@ function MultiDropDownPg(props){
     </div>
   );
 }
-//multi select option
+//should be able to select multiple options
 
 function LangAdminRegisterPg(props) {
   return <div>embed registration page here</div>;
 }
 
-function CreationPg(props){
+function CreationPg(props){ //move paragraphs to pages.js ?
   return (
     <div>
-      <p>Create Archive: Your archive will be created privately so that only you can see it. You will be able to now enter and edit your archive. It will remain active for 30 days and then will be removed from FirstVoices. If you would like to keep your archive longer than this or have others be able to access your archive please contact FirstVoices at support@fpcc.ca</p>
-      <p>Cancel: Your archive will not be created and the information you have entered so far will be permanently lost</p>
       <SubmitButton onSubmit={props.handleSubmit}/>
       <CancelButton onCancel={props.handleCancel}/>
     </div>
@@ -245,7 +247,7 @@ function NextStepsPg(props) {
   return(
     <div>
       <Checklist steps={props.steps}/>
-      <p>If you feel confident using FirstVoices already, feel free to begin working on your archive now.</p>
+      <p>{props.text}</p>
       <ArchiveButton goToArchive={props.handleArchive}/>
     </div>
   );
@@ -260,14 +262,3 @@ function DonePg(props){
     </div>
   );
 }
-
-/*
-<DropDown options={['one', 'two', 'three']} title="choose one" form="create-archive" />
-<EnterText title="Enter dialect:" form="create-archive" />
-<EnterFile title="Upload image:" form="create-archive" />
-<Checklist steps={['first', 'second', 'third', 'fourth']}/>
-<SubmitButton form="create-archive"/>
-<Steps steps={['a', 'b', 'c a longger sentence ccccccc vvvvvvvv ddddddddd', 'd']}></Steps>
-<EnterText title="Enter dialect:" subtitle='this is very important' form="create-archive" />
-*/
-
