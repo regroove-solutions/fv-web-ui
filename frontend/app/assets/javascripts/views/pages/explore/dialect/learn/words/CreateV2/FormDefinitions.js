@@ -21,7 +21,7 @@ export default class FormDefinitions extends React.Component {
   }
 
   state = {
-    items: [],
+    items: [], // jsx
     itemData: {},
   }
 
@@ -137,6 +137,13 @@ Definition up' and 'Move Definition down' buttons`}
 
   _generateHiddenInput = () => {
     const { items, itemData } = this.state
+    // TODO: NEED TO BE ABLE TO SET ITEMS
+    // loop through jsx items displayed and pull related entry in itemData
+    // consider a visible flag?
+    // Perhaps these need to handle arrays instead of jsx collections:
+    // removeItem
+    // moveItemDown
+    // moveItemUp
     const arrayOfObjects = items.map((element) => {
       const id = element.props.id
       return itemData[id]
