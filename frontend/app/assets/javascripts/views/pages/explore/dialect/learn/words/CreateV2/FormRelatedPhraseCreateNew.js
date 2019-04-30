@@ -20,7 +20,7 @@ import Preview from 'views/components/Editor/Preview'
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
 const intl = IntlService.instance
-const { array, func, object, number, string, element } = PropTypes
+const { func, object, number, string } = PropTypes
 export class FormRelatedPhraseCreateNew extends React.Component {
   STATE_LOADING = 0
   STATE_DEFAULT = 1
@@ -31,57 +31,26 @@ export class FormRelatedPhraseCreateNew extends React.Component {
     className: string,
     groupName: string,
     id: number,
-    idDescribedbyItemBrowse: string,
-    idDescribedByItemMove: string,
-    index: number,
-    textBtnRemoveItem: string,
-    textBtnMoveItemUp: string,
-    textBtnMoveItemDown: string,
-    textBtnCreateItem: string,
-    textBtnSelectExistingItems: string,
-    textLabelItemSearch: string,
     textLegendItem: string,
-    handleClickCreateItem: func,
-    handleClickSelectItem: func,
+    handleCancel: func,
     handleClickRemoveItem: func,
-    handleClickMoveItemUp: func,
-    handleClickMoveItemDown: func,
     handleItemSelected: func,
     componentState: number,
-    value: string,
-    DISABLED_SORT_COLS: array,
-    DEFAULT_PAGE: number,
-    DEFAULT_PAGE_SIZE: number,
-    DEFAULT_LANGUAGE: string,
-    DEFAULT_SORT_COL: string,
-    DEFAULT_SORT_TYPE: string,
-    DIALECT_PATH: string.isRequired,
-    selectMediaComponent: element.isRequired,
+
+    DIALECT_PATH: string,
+
     // NOTE: COMING FROM REDUX/PROVIDER
     computeAudio: object.isRequired,
     createAudio: func.isRequired,
-    // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
-    computeDialectFromParent: object.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedPhraseCreateNew',
     groupName: 'Form__group',
-    id: -1,
-    index: 0,
+    id: undefined,
     componentState: 0,
-    handleClickCreateItem: () => {},
-    handleClickSelectItem: () => {},
+    handleCancel: () => {},
     handleClickRemoveItem: () => {},
-    handleClickMoveItemUp: () => {},
-    handleClickMoveItemDown: () => {},
     handleItemSelected: () => {},
-    DISABLED_SORT_COLS: ['state'],
-    DEFAULT_PAGE: 1,
-    DEFAULT_PAGE_SIZE: 100,
-    DEFAULT_LANGUAGE: 'english',
-    DEFAULT_SORT_COL: 'dc:title',
-    DEFAULT_SORT_TYPE: 'asc',
-    selectMediaComponent: null,
   }
   state = {
     componentState: this.props.componentState,
@@ -98,22 +67,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
   CONTRIBUTOR_PATH = undefined
 
   render() {
-    const {
-      className,
-      // name,
-      id,
-      //   idDescribedByItemMove,
-      index,
-      //   textBtnRemoveItem,
-      //   textBtnMoveItemUp,
-      //   textBtnMoveItemDown,
-      //   textBtnCreateItem,
-      //   textBtnSelectExistingItems,
-      textLegendItem,
-      handleClickRemoveItem,
-      //   handleClickMoveItemUp,
-      //   handleClickMoveItemDown,
-    } = this.props
+    const { className, id, textLegendItem, handleClickRemoveItem } = this.props
 
     let componentContent = null
     const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
@@ -160,7 +114,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
             {/* Name ------------- */}
             <Text
               className={this.props.groupName}
-              id={`${className}__Contributor${index}__NewName`}
+              id=".phrase"
               labelText="Phrase"
               name="FormRelatedPhraseCreateNew.name"
               value=""
@@ -173,6 +127,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
             <FormDefinitions className="Form__group" name="fv:definitions" />
 
             <div>-- Phrase Books: x --</div>
+
             {/* RELATED AUDIO --------------- */}
             <FormRelatedAudio className="Form__group" name="fv:related_audio" />
 
@@ -181,16 +136,10 @@ export class FormRelatedPhraseCreateNew extends React.Component {
 
             {/* RELATED VIDEOS --------------- */}
             <FormRelatedVideos className="Form__group" name="fv:related_pictures" />
-            {/* SCREEN READER DESCRIPTIONS --------------- */}
-            <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
-              {'Select a video from previously uploaded items'}
-            </span>
-            <span id="describedByRelatedVideoMove" className="visually-hidden">
-              {`If you are adding multiple Related Videos, you can change the position of the Related Video with
-the 'Move Related Video left' and 'Move Related Video right' buttons`}
-            </span>
+
             {/* Cultural Notes --------------- */}
             <FormCulturalNotes className="Form__group" name="fv:cultural_note" />
+
             {/* REFERENCE --------------- */}
             <div className="Form__group">
               <Text
@@ -205,14 +154,12 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
             </div>
 
             <div>-- Source: x --</div>
-
             {/* Contributors --------------- */}
             <FormContributors
               className="Form__group"
               textInfo="Contributors who helped create this record."
               name="fv:source"
             />
-            <div>-- Source: x --</div>
 
             {/* IN CHILDREN'S ARCHIVE --------------- */}
             <Checkbox
@@ -227,7 +174,7 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
               disabled={isFetching || isSuccess}
               type="button"
               onClick={() => {
-                this.props._handleCreateItemSubmit()
+                this._handleCreateItemSubmit()
               }}
             >
               Create new audio item
@@ -257,34 +204,33 @@ the 'Move Related Video left' and 'Move Related Video right' buttons`}
   }
 
   async _handleCreateItemSubmit() {
-    const {
-      createItemName,
-      createItemDescription,
-      createItemFile,
-      createItemIsShared,
-      createItemIsChildFocused,
-      createItemContributors,
-      createItemRecorders,
-    } = this.state
-
-    const docParams = {
-      type: 'FVAudio',
-      name: createItemName,
-      properties: {
-        'dc:title': createItemName,
-        'dc:description': createItemDescription,
-        'fvm:shared': createItemIsShared,
-        'fvm:child_focused': createItemIsChildFocused,
-        'fvm:recorder': createItemRecorders['fvm:recorder'],
-        'fvm:source': createItemContributors['fvm:source'],
-      },
-    }
-
-    const timestamp = Date.now()
-    const { DIALECT_PATH } = this.props
-    this.props.createAudio(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
-    const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
-    this.setState({ pathOrId })
+    console.log('Validate using yup') // eslint-disable-line
+    // const {
+    //   createItemName,
+    //   createItemDescription,
+    //   createItemFile,
+    //   createItemIsShared,
+    //   createItemIsChildFocused,
+    //   createItemContributors,
+    //   createItemRecorders,
+    // } = this.state
+    // const docParams = {
+    //   type: 'FVAudio',
+    //   name: createItemName,
+    //   properties: {
+    //     'dc:title': createItemName,
+    //     'dc:description': createItemDescription,
+    //     'fvm:shared': createItemIsShared,
+    //     'fvm:child_focused': createItemIsChildFocused,
+    //     'fvm:recorder': createItemRecorders['fvm:recorder'],
+    //     'fvm:source': createItemContributors['fvm:source'],
+    //   },
+    // }
+    // const timestamp = Date.now()
+    // const { DIALECT_PATH } = this.props
+    // this.props.createAudio(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
+    // const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
+    // this.setState({ pathOrId })
   }
 }
 
