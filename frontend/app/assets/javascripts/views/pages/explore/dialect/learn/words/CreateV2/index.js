@@ -39,6 +39,7 @@ import FormRelatedAudio from './FormRelatedAudio'
 import FormRelatedPictures from './FormRelatedPictures'
 import FormRelatedVideos from './FormRelatedVideos'
 import FormCategories from './FormCategories'
+import FormRelatedPhrase from './FormRelatedPhrase'
 import StringHelpers from 'common/StringHelpers'
 const intl = IntlService.instance
 const { string, array, func, object } = PropTypes
@@ -296,6 +297,8 @@ export class CreateV2 extends Component {
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
           </span>
           {/* Related Phrases --------------- */}
+          <FormRelatedPhrase className="Form__group" name="fv-word:related_phrases" />
+
           <fieldset className="Form__group">
             <legend>Related Phrases</legend>
             {/* <button type="button">Add Related Phrase</button> */}
