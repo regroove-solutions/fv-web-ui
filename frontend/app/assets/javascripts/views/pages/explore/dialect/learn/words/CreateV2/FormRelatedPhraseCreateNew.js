@@ -1,13 +1,17 @@
 import React from 'react'
 import { PropTypes } from 'react'
 import Text from './Text'
-import Textarea from './Textarea'
+// import Textarea from './Textarea'
 // import Select from './Select`'
-import File from './File'
+// import File from './File'
 import Checkbox from './Checkbox'
 import FormContributors from './FormContributors'
-import FormRecorders from './FormRecorders'
-
+// import FormRecorders from './FormRecorders'
+import FormDefinitions from './FormDefinitions'
+import FormCulturalNotes from './FormCulturalNotes'
+import FormRelatedAudio from './FormRelatedAudio'
+import FormRelatedPictures from './FormRelatedPictures'
+import FormRelatedVideos from './FormRelatedVideos'
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
 
@@ -157,83 +161,65 @@ export class FormRelatedPhraseCreateNew extends React.Component {
             <Text
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
-              labelText="Name of audio item"
-              // name={`${name}[${index}]__NewName`}
+              labelText="Phrase"
               name="FormRelatedPhraseCreateNew.name"
               value=""
-              handleChange={(data) => {
-                this.setState({ createItemName: data })
-              }}
-            />
-            {/* Description --------------- */}
-            <Textarea
-              className={this.props.groupName}
-              id="CreateAudio__Description"
-              labelText="Description of audio item"
-              // name="dc:description"
-              name="FormRelatedPhraseCreateNew.description"
-              value=""
-              handleChange={(data) => {
-                this.setState({ createItemDescription: data })
-              }}
+              //   handleChange={(data) => {
+              //     this.setState({ createItemName: data })
+              //   }}
             />
 
-            {/* File --------------- */}
-            <File
-              className={this.props.groupName}
-              id="CreateAudio__File"
-              labelText="Upload audio item"
-              // name="file"
-              name=""
-              value=""
-              handleChange={(data) => {
-                this.setState({ createItemFile: data })
-              }}
-            />
+            {/* Definitions --------------- */}
+            <FormDefinitions className="Form__group" name="fv:definitions" />
 
-            {/* Shared --------------- */}
-            <Checkbox
-              className={this.props.groupName}
-              id="CreateAudio__Shared"
-              labelText="Share this audio across dialects"
-              // name="fvm:shared"
-              name=""
-              handleChange={(data) => {
-                this.setState({ createItemIsShared: data })
-              }}
-            />
-            {/* Child focused --------------- */}
-            <Checkbox
-              className={this.props.groupName}
-              id="CreateAudio__ChildFocused"
-              labelText="Audio is child focused"
-              // name="fvm:child_focused"
-              name=""
-              handleChange={(data) => {
-                this.setState({ createItemIsChildFocused: data })
-              }}
-            />
+            <div>-- Phrase Books: x --</div>
+            {/* RELATED AUDIO --------------- */}
+            <FormRelatedAudio className="Form__group" name="fv:related_audio" />
 
-            {/* Contributors: fvm:source --------------- */}
+            {/* RELATED PICTURES --------------- */}
+            <FormRelatedPictures className="Form__group" name="fv:related_pictures" />
+
+            {/* RELATED VIDEOS --------------- */}
+            <FormRelatedVideos className="Form__group" name="fv:related_pictures" />
+            {/* SCREEN READER DESCRIPTIONS --------------- */}
+            <span id="describedbyRelatedVideoBrowse" className="visually-hidden">
+              {'Select a video from previously uploaded items'}
+            </span>
+            <span id="describedByRelatedVideoMove" className="visually-hidden">
+              {`If you are adding multiple Related Videos, you can change the position of the Related Video with
+the 'Move Related Video left' and 'Move Related Video right' buttons`}
+            </span>
+            {/* Cultural Notes --------------- */}
+            <FormCulturalNotes className="Form__group" name="fv:cultural_note" />
+            {/* REFERENCE --------------- */}
+            <div className="Form__group">
+              <Text
+                className=""
+                id="CreateWord__Reference1"
+                labelText="Reference"
+                name="fv:reference"
+                ariaDescribedby="describedByReference"
+                value=""
+              />
+              <span id="describedByReference">Origin of record (person, book, etc).</span>
+            </div>
+
+            <div>-- Source: x --</div>
+
+            {/* Contributors --------------- */}
             <FormContributors
-              className={this.props.groupName}
-              // name="fv:source"
-              name=""
-              textInfo="Contributors who helped create the audio item."
-              handleItemsUpdate={(data) => {
-                this.setState({ createItemContributors: data })
-              }}
+              className="Form__group"
+              textInfo="Contributors who helped create this record."
+              name="fv:source"
             />
+            <div>-- Source: x --</div>
 
-            {/* Recorders: fvm:recorder --------------- */}
-            <FormRecorders
-              className={this.props.groupName}
-              // name="fvm:recorder"
-              name=""
-              textInfo="Recorders who helped create the audio item."
-              handleItemsUpdate={(data) => {
-                this.setState({ createItemRecorders: data })
-              }}
+            {/* IN CHILDREN'S ARCHIVE --------------- */}
+            <Checkbox
+              className="Form__group"
+              id="CreateWord__InKidsArchive0"
+              labelText="Available in children's archive"
+              name="fv:available_in_childrens_archive"
             />
 
             {/* BTN: Create contributor ------------- */}
@@ -255,7 +241,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
                 this.props.handleCancel()
               }}
             >
-              {"Cancel, don't create new audio item"}
+              {"Cancel, don't create Related Phrase"}
             </button>
             {formStatus}
           </div>
