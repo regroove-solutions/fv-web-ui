@@ -75,7 +75,6 @@ export class FormRelatedAudio extends React.Component {
   state = {
     items: [],
     loading: true,
-    audioItems: [],
   }
 
   // Fetch data on initial render
