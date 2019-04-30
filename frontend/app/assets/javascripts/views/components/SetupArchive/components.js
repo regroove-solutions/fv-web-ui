@@ -58,18 +58,40 @@ export class DropDown extends Component {
   }
 
   render() {
-    var choices = this.props.options.map((opt, index)=>
-    <option key={index}>{opt}</option>)
+    var choices = []
+    const opts=this.props.options
+    for(let i=0;i<opts.length;i++){
+      if(opts[i]==this.props.value){
+        choices.push(<option key={i} selected>{opts[i]}</option>)
+      }
+      else{
+        choices.push(<option key={i}>{opts[i]}</option>)
+      }
+    }
+
+    var other = ''
+    if (this.props.other){
+      other = 
+      <div style={{marginTop:'20px'}}>
+        <label className="control-label">Please enter your {this.props.name}:</label>
+        <input value={this.props.valueOther} name={this.props.name+'Other'} className='form-control' type={this.props.type} form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/> 
+      </div>
+    }
+    console.log(other)
     var sublabel = this.props.subtitle ? <h6 style={{marginTop:'2', marginBottom:'2'}} >{this.props.subtitle}</h6>:''
     return (
       <div>
-        <label className="control-label" >
-          {this.props.title}
-          {sublabel}
-        </label>
-        <div/>
-        <select value={this.props.value} name={this.props.name} className='form-control' onChange={(e)=> {this.props.handleChange(e)}}>{choices}</select>
+        <div>
+          <label className="control-label" >
+            {this.props.title}
+            {sublabel}
+          </label>
+          <div/>
+          <select name={this.props.name} className='form-control' onChange={(e)=> {this.props.handleChange(e)}}>{choices}</select>
+        </div>
+        {other}
       </div>
+      
     )
   }
 }
@@ -83,7 +105,7 @@ export class EnterText extends Component{
 
   render(){
     var sublabel = this.props.subtitle ? <h6 style={{marginTop:'2', marginBottom:'2'}} >{this.props.subtitle}</h6>:''
-    var enter = this.props.type=='file'? <input value={this.props.value} name={this.props.name} className='form-control' type='file' accept='image/*' form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>:<input value={this.props.value} name={this.props.name} className='form-control' type='text' form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>
+    var enter = this.props.type=='file'? <input name={this.props.name} className='form-control' type='file' accept='image/*' form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>:<input value={this.props.value} name={this.props.name} className='form-control' type={this.props.type} multiple={this.props.multiple} form={this.props.form} onChange={(e)=> {this.props.handleChange(e)}}/>
     return(
       <div>
         <label className="control-label" >
@@ -92,6 +114,7 @@ export class EnterText extends Component{
         </label>
         {enter} 
       </div>
+
     )
   }
 }
@@ -120,8 +143,8 @@ export class Steps extends Component{
     var steps = this.props.steps
     var stepsList = []
     for (let i=0;i<steps.length;i++){
-      stepsList.push(<div keyclassName='round' style={stepNumberStyle}>{i+1}</div>)
-      stepsList.push(<div className='instruct' style={stepTextStyle}>{steps[i]}</div>) 
+      stepsList.push(<div key={i+1} keyclassName='round' style={stepNumberStyle}>{i+1}</div>)  //what are better keys
+      stepsList.push(<div key={steps[i]} className='instruct' style={stepTextStyle}>{steps[i]}</div>) 
       //stepsList.push(<div className='clearfix' />)
     }
     return (
@@ -138,7 +161,7 @@ var gridStyle = {
   rowGap: '10px',
   gridTemplateColumns: '30px auto',
   gridTemplateRows: 'none',
-  paddingLeft: '5%',
+  paddingLeft: '12%',
 }
 
 var stepTextStyle = {
