@@ -242,14 +242,11 @@ export class FormRelatedPicture extends React.Component {
       }
       case this.STATE_CREATED: {
         // AUDIO CREATED/SELECTED ------------------------------------
-        let previewInput = 'Something went wrong!'
-        if (id !== -1) {
-          previewInput = (
-            <div>
-              <Preview id={id} type="FVPicture" />
-            </div>
-          )
-        }
+        const previewInput = (
+          <div>
+            <Preview id={id} type="FVPicture" />
+          </div>
+        )
         componentContent = (
           <div>
             <div className="FormItemButtons">

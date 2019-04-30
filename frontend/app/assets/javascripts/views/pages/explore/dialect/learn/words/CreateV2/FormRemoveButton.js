@@ -6,12 +6,12 @@ const { array, func, object, number, string, element } = PropTypes
 
 class FormRemoveButton extends React.Component {
   static propTypes = {
-    id: number,
+    id: string,
     textBtnRemoveItem: string,
     handleClickRemoveItem: func,
   }
   static defaultProps = {
-    id: 0,
+    id: '_0',
   }
   state = {}
 

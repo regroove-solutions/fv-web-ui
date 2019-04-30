@@ -6,7 +6,7 @@ const { array, func, object, number, string, element } = PropTypes
 
 class FormMoveButtons extends React.Component {
   static propTypes = {
-    id: number,
+    id: string,
     idDescribedByItemMove: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
