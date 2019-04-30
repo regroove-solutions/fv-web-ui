@@ -105,14 +105,16 @@ export class FormCategories extends React.Component {
       <fieldset className={className}>
         <legend>{textLegendItems}</legend>
 
-        <BrowseComponent
-          type="FVCategory"
-          label="Select from existing categories"
-          onComplete={this.handleItemSelected}
-          disabled={this.state.dialect === undefined}
-          dialect={this.state.dialect}
-          containerType="FVWord"
-        />
+        {this.state.dialect && BrowseComponent && (
+          <BrowseComponent
+            type="FVCategory"
+            label="Select from existing categories"
+            onComplete={this.handleItemSelected}
+            disabled={this.state.dialect === undefined}
+            dialect={this.state.dialect}
+            containerType="FVWord"
+          />
+        )}
 
         {items}
 
