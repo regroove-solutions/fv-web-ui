@@ -26,7 +26,7 @@ class FormRemoveButton extends React.Component {
         }}
         type="button"
       >
-        🗑️<span className="visually-hidden">{textBtnRemoveItem}</span>
+        ✖ <span className="visually-hidden">{textBtnRemoveItem}</span>
       </button>
     )
   }

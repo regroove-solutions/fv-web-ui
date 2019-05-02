@@ -38,7 +38,7 @@ class FormMoveButtons extends React.Component {
           }}
           type="button"
         >
-          🔼<span className="visually-hidden">{textBtnMoveItemUp}</span>
+          ▲ <span className="visually-hidden">{textBtnMoveItemUp}</span>
         </button>
 
         {/* Move item */}
@@ -50,7 +50,7 @@ class FormMoveButtons extends React.Component {
           }}
           type="button"
         >
-          🔽<span className="visually-hidden">{textBtnMoveItemDown}</span>
+          ▼ <span className="visually-hidden">{textBtnMoveItemDown}</span>
         </button>
       </div>
     )
