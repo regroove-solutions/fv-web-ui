@@ -36,6 +36,7 @@ export class FormRelatedAudio extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
+    handleChange: func,
     // REDUX/PROVIDE
     computeContributor: object.isRequired,
     computeContributors: object.isRequired,
@@ -70,6 +71,7 @@ export class FormRelatedAudio extends React.Component {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
+    handleChange: () => {},
   }
 
   state = {
@@ -157,12 +159,15 @@ export class FormRelatedAudio extends React.Component {
       </fieldset>
     )
   }
-  _generateHiddenInput = () => {
+  _getSelectedItems = () => {
     const { items } = this.state
     const selectedItems = items.map((element) => {
       return element.props.id
     })
-    return <input type="hidden" name="fv:related_audio" value={JSON.stringify(selectedItems)} />
+    return selectedItems
+  }
+  _generateHiddenInput = () => {
+    return <input type="hidden" name={this.props.name} value={JSON.stringify(this._getSelectedItems())} />
   }
 
   handleClickAddItem = () => {
@@ -239,25 +244,44 @@ export class FormRelatedAudio extends React.Component {
       },
       () => {
         if (callback) {
+          this._handleItemUpdate()
           callback()
         }
       }
     )
   }
+  _handleItemUpdate = () => {
+    this.props.handleChange(this._getSelectedItems())
+  }
   handleClickRemoveItem = (id) => {
-    this.setState({
-      items: removeItem({ id, items: this.state.items }),
-    })
+    this.setState(
+      {
+        items: removeItem({ id, items: this.state.items }),
+      },
+      () => {
+        this._handleItemUpdate()
+      }
+    )
   }
   handleClickMoveItemDown = (id) => {
-    this.setState({
-      items: moveItemDown({ id, items: this.state.items }),
-    })
+    this.setState(
+      {
+        items: moveItemDown({ id, items: this.state.items }),
+      },
+      () => {
+        this._handleItemUpdate()
+      }
+    )
   }
   handleClickMoveItemUp = (id) => {
-    this.setState({
-      items: moveItemUp({ id, items: this.state.items }),
-    })
+    this.setState(
+      {
+        items: moveItemUp({ id, items: this.state.items }),
+      },
+      () => {
+        this._handleItemUpdate()
+      }
+    )
   }
 }
 
