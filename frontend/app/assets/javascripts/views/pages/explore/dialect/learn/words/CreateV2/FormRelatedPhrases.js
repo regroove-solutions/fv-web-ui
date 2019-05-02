@@ -13,6 +13,10 @@ const { string, array, object, func, number } = PropTypes
 let BrowseComponent = null
 
 export class FormRelatedPhrases extends React.Component {
+  STATE_LOADING = 0
+  STATE_DEFAULT = 1
+  STATE_CREATE = 2
+
   static propTypes = {
     name: string.isRequired,
     className: string,
@@ -57,14 +61,14 @@ export class FormRelatedPhrases extends React.Component {
     textDescribedByItemMove: `If you are adding multiple Related Phrases, you can change the position of the Phrase with
     the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`,
     textLegendItems: 'Related Phrase',
-    textBtnAddItem: 'Add Related Phrase',
+    textBtnAddItem: 'Create new Related Phrase',
     textLegendItem: 'Related Phrase',
     textBtnRemoveItem: 'Remove Related Phrase',
     textBtnMoveItemUp: 'Move Related Phrase left',
     textBtnMoveItemDown: 'Move Related Phrase right',
     textBtnCreateItem: 'Create new Phrase',
-    textBtnSelectExistingItems: 'Select from existing Phrases',
-    textLabelItemSearch: 'Search existing Phrases',
+    textBtnSelectExistingItems: 'Select from existing phrases',
+    textLabelItemSearch: 'Search existing phrases',
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
@@ -74,7 +78,7 @@ export class FormRelatedPhrases extends React.Component {
 
   state = {
     items: [],
-    loading: true,
+    componentState: this.STATE_LOADING,
     FormRelatedPhraseCreateNew: null,
   }
 
@@ -115,7 +119,7 @@ export class FormRelatedPhrases extends React.Component {
     const _BrowseComponent = await import('views/components/Editor/BrowseComponent')
     BrowseComponent = _BrowseComponent.default
 
-    this.setState({ loading: false })
+    this.setState({ componentState: this.STATE_DEFAULT })
   }
 
   render() {
@@ -128,23 +132,21 @@ export class FormRelatedPhrases extends React.Component {
       textLegendItems,
       textBtnAddItem,
     } = this.props
-    const { items, FormRelatedPhraseCreateNew, loading } = this.state
+    const { items, FormRelatedPhraseCreateNew, loading, componentState } = this.state
     const { computeDialect, textBtnSelectExistingItems } = this.props
     return (
       <fieldset className={className}>
         <legend>{textLegendItems}</legend>
-
         <button
           type="button"
           disabled={loading}
           onClick={() => {
             this.handleClickCreateItem()
           }}
+          ref={(element) => (this.buttonCreate = element)}
         >
           {textBtnAddItem}
         </button>
-
-        {FormRelatedPhraseCreateNew && <FormRelatedPhraseCreateNew />}
 
         {computeDialect && BrowseComponent && (
           <BrowseComponent
@@ -161,14 +163,28 @@ export class FormRelatedPhrases extends React.Component {
           />
         )}
 
+        {componentState === this.STATE_CREATE && FormRelatedPhraseCreateNew && (
+          <FormRelatedPhraseCreateNew
+            handleCancel={() => {
+              this.setState(
+                {
+                  componentState: this.STATE_DEFAULT,
+                },
+                () => {
+                  this.buttonCreate.focus()
+                }
+              )
+            }}
+            refPhrase={(element) => (this.phrase = element)}
+          />
+        )}
+
         {/* COLLECTION OF PHRASES --------------- */}
         {items}
-
         {/* CREATES THE HIDDEN INPUT REPRESENTING THE ITEMS ---------------
         <input type="hidden" name="fv-word:related_phrases" value="['phrase-id-1','phrase-id-2']" />
          */}
         {this._generateHiddenInput()}
-
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
           {textDescribedbyItemBrowse}
@@ -189,9 +205,15 @@ export class FormRelatedPhrases extends React.Component {
 
   handleClickCreateItem = async () => {
     const _FormRelatedPhraseCreateNew = await import('./FormRelatedPhraseCreateNew')
-    this.setState({
-      FormRelatedPhraseCreateNew: _FormRelatedPhraseCreateNew.default || <div>.</div>,
-    })
+    this.setState(
+      {
+        FormRelatedPhraseCreateNew: _FormRelatedPhraseCreateNew.default,
+        componentState: this.STATE_CREATE,
+      },
+      () => {
+        this.phrase.focus()
+      }
+    )
   }
   handleItemSelected = (selected) => {
     const uid = selectn('uid', selected)
