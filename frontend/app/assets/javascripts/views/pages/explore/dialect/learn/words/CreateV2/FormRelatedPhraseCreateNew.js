@@ -12,10 +12,11 @@ import FormCulturalNotes from './FormCulturalNotes'
 import FormRelatedAudio from './FormRelatedAudio'
 import FormRelatedPictures from './FormRelatedPictures'
 import FormRelatedVideos from './FormRelatedVideos'
+import FormPhraseBooks from './FormPhraseBooks'
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
-
-import Preview from 'views/components/Editor/Preview'
+import * as yup from 'yup'
+// import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
@@ -38,7 +39,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
     componentState: number,
 
     DIALECT_PATH: string,
-
+    refPhrase: func,
     // NOTE: COMING FROM REDUX/PROVIDER
     computeAudio: object.isRequired,
     createAudio: func.isRequired,
@@ -51,6 +52,7 @@ export class FormRelatedPhraseCreateNew extends React.Component {
     handleCancel: () => {},
     handleClickRemoveItem: () => {},
     handleItemSelected: () => {},
+    refPhrase: () => {},
   }
   state = {
     componentState: this.props.componentState,
@@ -62,14 +64,24 @@ export class FormRelatedPhraseCreateNew extends React.Component {
     createItemContributors: [],
     createItemRecorders: [],
     pathOrId: undefined,
+
+    'FormRelatedPhraseCreateNew.dc:title': '',
+    'FormRelatedPhraseCreateNew.fv:definitions': [],
+    'FormRelatedPhraseCreateNew.fv:related_audio': [],
+    'FormRelatedPhraseCreateNew.fv:related_pictures': [],
+    'FormRelatedPhraseCreateNew.fv:related_videos': [],
+    'FormRelatedPhraseCreateNew.fv:cultural_note': [],
+    'FormRelatedPhraseCreateNew.fv:reference': '',
+    'FormRelatedPhraseCreateNew.fv:source': [],
+    'FormRelatedPhraseCreateNew.fv:available_in_childrens_archive': false,
   }
 
-  CONTRIBUTOR_PATH = undefined
+  // componentDidMount() {
+  //   this.phrase.focus()
+  // }
 
   render() {
     const { className, id, textLegendItem, handleClickRemoveItem } = this.props
-
-    let componentContent = null
     const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
     const isFetching = selectn('isFetching', computeCreate)
     const isSuccess = selectn('success', computeCreate)
@@ -85,126 +97,204 @@ export class FormRelatedPhraseCreateNew extends React.Component {
       _handleItemSelectedOrCreated(selectn('response', computeCreate))
     }
 
-    switch (this.state.componentState) {
-      case this.STATE_CREATED: {
-        // AUDIO CREATED/SELECTED ------------------------------------
-        const previewInput = (
-          <div>
-            <Preview id={id} type="FVAudio" />
-          </div>
-        )
-
-        componentContent = <div>{previewInput}</div>
-        break
-      }
-      default: {
-        let formStatus = null
-        if (isFetching) {
-          formStatus = (
-            <div className="alert alert-info">
-              {intl.trans('views.components.editor.uploading_message', 'Uploading... Please be patient...', 'first')}
-            </div>
-          )
-        }
-
-        // CREATE AUDIO ------------------------------------
-        componentContent = (
-          <div>
-            <h2>Create new Related Phrase</h2>
-            {/* Name ------------- */}
-            <Text
-              className={this.props.groupName}
-              id=".phrase"
-              labelText="Phrase"
-              name="FormRelatedPhraseCreateNew.name"
-              value=""
-              //   handleChange={(data) => {
-              //     this.setState({ createItemName: data })
-              //   }}
-            />
-
-            {/* Definitions --------------- */}
-            <FormDefinitions className="Form__group" name="fv:definitions" />
-
-            <div>-- Phrase Books: x --</div>
-
-            {/* RELATED AUDIO --------------- */}
-            <FormRelatedAudio className="Form__group" name="fv:related_audio" />
-
-            {/* RELATED PICTURES --------------- */}
-            <FormRelatedPictures className="Form__group" name="fv:related_pictures" />
-
-            {/* RELATED VIDEOS --------------- */}
-            <FormRelatedVideos className="Form__group" name="fv:related_pictures" />
-
-            {/* Cultural Notes --------------- */}
-            <FormCulturalNotes className="Form__group" name="fv:cultural_note" />
-
-            {/* REFERENCE --------------- */}
-            <div className="Form__group">
-              <Text
-                className=""
-                id="CreateWord__Reference1"
-                labelText="Reference"
-                name="fv:reference"
-                ariaDescribedby="describedByReference"
-                value=""
-              />
-              <span id="describedByReference">Origin of record (person, book, etc).</span>
-            </div>
-
-            <div>-- Source: x --</div>
-            {/* Contributors --------------- */}
-            <FormContributors
-              className="Form__group"
-              textInfo="Contributors who helped create this record."
-              name="fv:source"
-            />
-
-            {/* IN CHILDREN'S ARCHIVE --------------- */}
-            <Checkbox
-              className="Form__group"
-              id="CreateWord__InKidsArchive0"
-              labelText="Available in children's archive"
-              name="fv:available_in_childrens_archive"
-            />
-
-            {/* BTN: Create contributor ------------- */}
-            <button
-              disabled={isFetching || isSuccess}
-              type="button"
-              onClick={() => {
-                this._handleCreateItemSubmit()
-              }}
-            >
-              Create new audio item
-            </button>
-
-            {/* BTN: Cancel, go back ------------- */}
-            <button
-              disabled={isFetching || isSuccess}
-              type="button"
-              onClick={() => {
-                this.props.handleCancel()
-              }}
-            >
-              {"Cancel, don't create Related Phrase"}
-            </button>
-            {formStatus}
-          </div>
-        )
-      }
+    let formStatus = null
+    if (isFetching) {
+      formStatus = (
+        <div className="alert alert-info">
+          {intl.trans('views.components.editor.uploading_message', 'Uploading... Please be patient...', 'first')}
+        </div>
+      )
     }
     return (
       <fieldset className={`${className} ${this.props.groupName}`}>
         <legend>{textLegendItem}</legend>
-        {componentContent}
+
+        <h2>Create new Related Phrase</h2>
+        {/* Name ------------- */}
+        <Text
+          id="FormRelatedPhraseCreateNew.dc:title"
+          className={this.props.groupName}
+          name="FormRelatedPhraseCreateNew.dc:title"
+          labelText="Phrase"
+          value={this.state['FormRelatedPhraseCreateNew.dc:title']}
+          handleChange={(phrase) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.dc:title': phrase })
+          }}
+          setRef={this.props.refPhrase}
+        />
+
+        {/* Definitions --------------- */}
+        <FormDefinitions
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv:definitions"
+          value={this.state['FormRelatedPhraseCreateNew.fv:definitions']}
+          handleChange={(definitions) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:definitions': definitions })
+          }}
+        />
+
+        {/* Phrase Books --------------- */}
+        <FormPhraseBooks
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv-phrase:phrase_books"
+          value={this.state['FormRelatedPhraseCreateNew.fv-phrase:phrase_books']}
+          handleChange={(phraseBook) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv-phrase:phrase_books': phraseBook })
+          }}
+        />
+
+        {/* RELATED AUDIO --------------- */}
+        <FormRelatedAudio
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv:related_audio"
+          value={this.state['FormRelatedPhraseCreateNew.fv:related_audio']}
+          handleChange={(audio) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:related_audio': audio })
+          }}
+        />
+
+        {/* RELATED PICTURES --------------- */}
+        <FormRelatedPictures
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv:related_pictures"
+          value={this.state['FormRelatedPhraseCreateNew.fv:related_pictures']}
+          handleChange={(pictures) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:related_pictures': pictures })
+          }}
+        />
+
+        {/* RELATED VIDEOS --------------- */}
+        <FormRelatedVideos
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv:related_videos"
+          value={this.state['FormRelatedPhraseCreateNew.fv:related_videos']}
+          handleChange={(videos) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:related_videos': videos })
+          }}
+        />
+
+        {/* Cultural Notes --------------- */}
+        <FormCulturalNotes
+          className="Form__group"
+          name="FormRelatedPhraseCreateNew.fv:cultural_note"
+          value={this.state['FormRelatedPhraseCreateNew.fv:cultural_note']}
+          handleChange={(notes) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:cultural_note': notes })
+          }}
+        />
+
+        {/* REFERENCE --------------- */}
+        <div className="Form__group">
+          <Text
+            className=""
+            id="CreateWord__Reference1"
+            labelText="Reference"
+            name="FormRelatedPhraseCreateNew.fv:reference"
+            ariaDescribedby="describedByReference"
+            value={this.state['FormRelatedPhraseCreateNew.fv:reference']}
+            handleChange={(reference) => {
+              this.setState({ 'FormRelatedPhraseCreateNew.fv:reference': reference })
+            }}
+          />
+          <span id="describedByReference">Origin of record (person, book, etc).</span>
+        </div>
+
+        {/* Contributors --------------- */}
+        <FormContributors
+          className="Form__group"
+          textInfo="Contributors who helped create this Phrase."
+          name="FormRelatedPhraseCreateNew.fv:source"
+          value={this.state['FormRelatedPhraseCreateNew.fv:source']}
+          handleChange={(source) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:source': source })
+          }}
+        />
+
+        {/* IN CHILDREN'S ARCHIVE --------------- */}
+        <Checkbox
+          className="Form__group"
+          id="CreateWord__InKidsArchive0"
+          labelText="Available in children's archive"
+          name="FormRelatedPhraseCreateNew.fv:available_in_childrens_archive"
+          selected={this.state['FormRelatedPhraseCreateNew.fv:available_in_childrens_archive']}
+          handleChange={(childrens) => {
+            this.setState({ 'FormRelatedPhraseCreateNew.fv:available_in_childrens_archive': childrens })
+          }}
+        />
+
+        {/* BTN: Create contributor ------------- */}
+        <button
+          disabled={isFetching || isSuccess}
+          type="button"
+          onClick={() => {
+            this._handleCreateItemSubmit()
+          }}
+        >
+          Create new phrase
+        </button>
+
+        {/* BTN: Cancel, go back ------------- */}
+        <button
+          disabled={isFetching || isSuccess}
+          type="button"
+          onClick={() => {
+            this.props.handleCancel()
+          }}
+        >
+          {"Cancel, don't create Related Phrase"}
+        </button>
+        {formStatus}
       </fieldset>
     )
   }
 
-  async _handleCreateItemSubmit() {
-    console.log('Validate using yup') // eslint-disable-line
+  schemaCreateForm = yup.object().shape({
+    'FormRelatedPhraseCreateNew.dc:title': yup
+      .string()
+      .label('Phrase') // used when errored, message will say 'Name' instead of 'dc:title'
+      .required(),
+    'FormRelatedPhraseCreateNew.fv:definitions': yup
+      .array()
+      .of(yup.object().shape({ language: yup.string(), translation: yup.string() })),
+    // TODO: Phrase books
+    'FormRelatedPhraseCreateNew.fv:related_audio': yup.array().of(yup.string()),
+    'FormRelatedPhraseCreateNew.fv:related_pictures': yup.array().of(yup.string()),
+    'FormRelatedPhraseCreateNew.fv:related_videos': yup.array().of(yup.string()),
+    'FormRelatedPhraseCreateNew.fv:cultural_note': yup.array().of(yup.string()),
+    'FormRelatedPhraseCreateNew.fv:reference': yup.string(),
+    'FormRelatedPhraseCreateNew.fv:source': yup.array().of(yup.string()),
+    'FormRelatedPhraseCreateNew.fv:available_in_childrens_archive': yup.string(),
+  })
+
+  _handleCreateItemSubmit = async () => {
+    const formData = this._getFormData()
+    // console.log(':::formData::::', formData)
+    const formValidation = await this._validateForm(formData)
+    if (formValidation.valid) {
+      // console.log('IS VALID. WOULD SUBMIT FORM!')
+      // const now = Date.now()
+      // this.props.createWord(
+      //   this.props.routeParams.dialect_path + '/Dictionary',
+      //   {
+      //     type: 'FVWord',
+      //     name: now.toString(),
+      //     properties: this._getFormData(),
+      //   },
+      //   null,
+      //   now
+      // )
+      this.setState({
+        errors: [],
+        // toggleForm: false,
+      })
+    } else {
+      // console.log('IS NOT VALID', formValidation.errors)
+      this.setState({
+        errors: formValidation.errors,
+        // toggleForm: false,
+      })
+    }
+
     // const {
     //   createItemName,
     //   createItemDescription,
@@ -231,6 +321,79 @@ export class FormRelatedPhraseCreateNew extends React.Component {
     // this.props.createAudio(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
     // const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
     // this.setState({ pathOrId })
+  }
+
+  // could centralize the following
+  _getFormData = () => {
+    return {
+      'FormRelatedPhraseCreateNew.dc:title': this.state['FormRelatedPhraseCreateNew.dc:title'],
+      'FormRelatedPhraseCreateNew.fv:definitions': this.state['FormRelatedPhraseCreateNew.fv:definitions'],
+      'FormRelatedPhraseCreateNew.fv:related_audio': this.state['FormRelatedPhraseCreateNew.fv:related_audio'],
+      'FormRelatedPhraseCreateNew.fv:related_pictures': this.state['FormRelatedPhraseCreateNew.fv:related_pictures'],
+      'FormRelatedPhraseCreateNew.fv:related_videos': this.state['FormRelatedPhraseCreateNew.fv:related_videos'],
+      'FormRelatedPhraseCreateNew.fv:cultural_note': this.state['FormRelatedPhraseCreateNew.fv:cultural_note'],
+      'FormRelatedPhraseCreateNew.fv:reference': this.state['FormRelatedPhraseCreateNew.fv:reference'],
+      'FormRelatedPhraseCreateNew.fv:source': this.state['FormRelatedPhraseCreateNew.fv:source'],
+      'FormRelatedPhraseCreateNew.fv:available_in_childrens_archive': this.state[
+        'FormRelatedPhraseCreateNew.fv:available_in_childrens_archive'
+      ],
+    }
+  }
+  _validateForm = async (formData) => {
+    // Note: When `abortEarly === true` then `{ path, type } = invalid` is defined.
+    // When `abortEarly === false` then `{ path, type } = invalid` is not defined! Data is found in `invalid.errors[]`.
+    const validation = await this.schemaCreateForm.validate(formData, { abortEarly: false }).then(
+      () => {
+        return {
+          valid: true,
+          errors: [],
+        }
+      },
+      (invalid) => {
+        const { inner } = invalid
+        const errors = inner.map((error) => {
+          const { message, path, type } = error
+          return {
+            message,
+            path,
+            type,
+          }
+        })
+        return {
+          valid: false,
+          errors,
+        }
+      }
+    )
+    return validation
+  }
+  _validateField = async ({ name, data }) => {
+    // const formDataFormatted = this._getFormData()
+    const results = await this._validateForm(data)
+    const { valid, errors } = results
+
+    if (valid === false) {
+      const fieldErrored = errors.filter((error) => {
+        return error.path === name
+      })
+      if (fieldErrored.length !== 0) {
+        const fieldData = fieldErrored[0]
+        fieldData.valid = false
+        return fieldData
+      }
+    }
+    return {
+      valid: true,
+    }
+  }
+  _getError = ({ errors, fieldName }) => {
+    const error = errors.filter((errorItem) => {
+      return errorItem.path === fieldName
+    })
+    if (error.length === 1) {
+      return error[0]
+    }
+    return {}
   }
 }
 
