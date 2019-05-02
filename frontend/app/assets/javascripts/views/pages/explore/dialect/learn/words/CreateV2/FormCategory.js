@@ -101,8 +101,16 @@ export class FormCategory extends React.Component {
       <fieldset className={`${className} ${this.props.groupName}`}>
         <legend>{textLegendItem}</legend>
 
-        <div>
-          <div className="FormItemButtons">
+        <div className="Form__sidebar">
+          <div className="Form__main">
+            <Preview id={this.props.id} type="FVContributor" />
+          </div>
+          <div className="FormItemButtons Form__aside">
+            <FormRemoveButton
+              id={id}
+              textBtnRemoveItem={textBtnRemoveItem}
+              handleClickRemoveItem={handleClickRemoveItem}
+            />
             <FormMoveButtons
               id={id}
               idDescribedByItemMove={idDescribedByItemMove}
@@ -111,13 +119,7 @@ export class FormCategory extends React.Component {
               handleClickMoveItemUp={handleClickMoveItemUp}
               handleClickMoveItemDown={handleClickMoveItemDown}
             />
-            <FormRemoveButton
-              id={id}
-              textBtnRemoveItem={textBtnRemoveItem}
-              handleClickRemoveItem={handleClickRemoveItem}
-            />
           </div>
-          <Preview id={this.props.id} type="FVContributor" />
         </div>
       </fieldset>
     )

@@ -32,6 +32,9 @@ export default class FormCulturalNotes extends React.Component {
       <fieldset className={`${className} ${groupName}`}>
         <legend>Cultural Notes</legend>
 
+        {items}
+        {this._generateHiddenInput()}
+
         <button
           type="button"
           onClick={() => {
@@ -40,9 +43,6 @@ export default class FormCulturalNotes extends React.Component {
         >
           Add Cultural Note
         </button>
-
-        {items}
-        {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id="describedByCulturalNoteMove" className="visually-hidden">
@@ -68,45 +68,55 @@ the 'Move Cultural Note up' and 'Move Cultural Note down' buttons`}
     items.push(
       <fieldset key={id} id={id} className={this.props.groupName}>
         <legend className="visually-hidden">Cultural Note</legend>
-
-        <div className="FormItemButtons">
-          <FormMoveButtons
-            id={id}
-            idDescribedByItemMove={'describedByDefinitionMove'}
-            textBtnMoveItemUp={'Move Definition up'}
-            textBtnMoveItemDown={'Move Definition down'}
-            handleClickMoveItemUp={this.handleClickMoveItemUp}
-            handleClickMoveItemDown={this.handleClickMoveItemDown}
-          />
-          <FormRemoveButton
-            id={id}
-            textBtnRemoveItem={'Remove Definition'}
-            handleClickRemoveItem={this.handleClickRemoveItem}
-          />
+        <div className="Form__sidebar">
+          <div className="Form__main">
+            <Text
+              className="Create__CulturalNote"
+              id="CreateWord__CulturalNote0"
+              labelText="Cultural Note"
+              name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+              value=""
+              handleChange={(value) => {
+                const { itemData } = this.state
+                itemData[id] = value
+                this.setState({
+                  itemData,
+                })
+              }}
+              setRef={(element) => {
+                this[`${id}.text`] = element
+              }}
+            />
+          </div>
+          <div className="FormItemButtons Form__aside">
+            <FormRemoveButton
+              id={id}
+              textBtnRemoveItem={'Remove Definition'}
+              handleClickRemoveItem={this.handleClickRemoveItem}
+            />
+            <FormMoveButtons
+              id={id}
+              idDescribedByItemMove={'describedByDefinitionMove'}
+              textBtnMoveItemUp={'Move Definition up'}
+              textBtnMoveItemDown={'Move Definition down'}
+              handleClickMoveItemUp={this.handleClickMoveItemUp}
+              handleClickMoveItemDown={this.handleClickMoveItemDown}
+            />
+          </div>
         </div>
-
-        <Text
-          className="Create__CulturalNote"
-          id="CreateWord__CulturalNote0"
-          labelText="Cultural Note"
-          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
-          value=""
-          handleChange={(value) => {
-            const { itemData } = this.state
-            itemData[id] = value
-            this.setState({
-              itemData,
-            })
-          }}
-        />
       </fieldset>
     )
     const { itemData } = this.state
     itemData[id] = ''
-    this.setState({
-      items,
-      itemData,
-    })
+    this.setState(
+      {
+        items,
+        itemData,
+      },
+      () => {
+        this[`${id}.text`].focus()
+      }
+    )
   }
   handleClickRemoveItem = (id) => {
     this.setState({

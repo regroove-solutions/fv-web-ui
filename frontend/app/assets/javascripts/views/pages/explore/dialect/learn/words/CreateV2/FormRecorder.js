@@ -190,8 +190,16 @@ export class FormRecorder extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { itemUid } = this.state
         componentContent = (
-          <div>
-            <div className="FormItemButtons">
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              <Preview id={itemUid} type="FVContributor" />
+            </div>
+            <div className="FormItemButtons Form__aside">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
               <FormMoveButtons
                 id={id}
                 idDescribedByItemMove={idDescribedByItemMove}
@@ -200,13 +208,7 @@ export class FormRecorder extends React.Component {
                 handleClickMoveItemUp={handleClickMoveItemUp}
                 handleClickMoveItemDown={handleClickMoveItemDown}
               />
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
             </div>
-            <Preview id={itemUid} type="FVContributor" />
           </div>
         )
         break
@@ -235,7 +237,7 @@ export class FormRecorder extends React.Component {
               id="FormRecorder__NewRecorderSelect"
               labelText="Select from existing Recorders"
               name="FormRecorder__NewRecorderSelect"
-              refSelect={(input) => {
+              setRef={(input) => {
                 this.newItemSelect = input
               }}
               value={initialValue}
@@ -284,29 +286,35 @@ export class FormRecorder extends React.Component {
       default:
         // INITIAL STATE ------------------------------------
         componentContent = (
-          <div>
-            {/* Create recorder */}
-            <button
-              type="button"
-              onClick={() => {
-                this._handleClickCreateItem()
-              }}
-            >
-              {textBtnCreateItem}
-            </button>
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              {/* Create recorder */}
+              <button
+                type="button"
+                onClick={() => {
+                  this._handleClickCreateItem()
+                }}
+              >
+                {textBtnCreateItem}
+              </button>
 
-            {/* Browse/select recorder */}
-            <button
-              aria-describedby={idDescribedbyItemBrowse}
-              onClick={() => {
-                this._handleClickSelectItem()
-              }}
-              type="button"
-            >
-              {textBtnSelectExistingItems}
-            </button>
-
-            <div className="FormItemButtons">
+              {/* Browse/select recorder */}
+              <button
+                aria-describedby={idDescribedbyItemBrowse}
+                onClick={() => {
+                  this._handleClickSelectItem()
+                }}
+                type="button"
+              >
+                {textBtnSelectExistingItems}
+              </button>
+            </div>
+            <div className="FormItemButtons Form__aside">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
               <FormMoveButtons
                 id={id}
                 idDescribedByItemMove={idDescribedByItemMove}
@@ -315,15 +323,11 @@ export class FormRecorder extends React.Component {
                 handleClickMoveItemUp={handleClickMoveItemUp}
                 handleClickMoveItemDown={handleClickMoveItemDown}
               />
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
             </div>
           </div>
         )
     }
+
     return (
       <fieldset className={this.props.groupName}>
         <legend>{textLegendItem}</legend>

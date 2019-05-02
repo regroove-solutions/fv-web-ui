@@ -242,14 +242,17 @@ export class FormRelatedPicture extends React.Component {
       }
       case this.STATE_CREATED: {
         // AUDIO CREATED/SELECTED ------------------------------------
-        const previewInput = (
-          <div>
-            <Preview id={id} type="FVPicture" />
-          </div>
-        )
         componentContent = (
-          <div>
-            <div className="FormItemButtons">
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              <Preview id={id} type="FVPicture" />
+            </div>
+            <div className="FormItemButtons Form__aside">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
               <FormMoveButtons
                 id={id}
                 idDescribedByItemMove={idDescribedByItemMove}
@@ -258,13 +261,7 @@ export class FormRelatedPicture extends React.Component {
                 handleClickMoveItemUp={handleClickMoveItemUp}
                 handleClickMoveItemDown={handleClickMoveItemDown}
               />
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
             </div>
-            {previewInput}
           </div>
         )
         break
@@ -274,7 +271,25 @@ export class FormRelatedPicture extends React.Component {
         const { computeDialectFromParent, selectMediaComponent } = this.props
         const SelectMediaComponent = selectMediaComponent
         componentContent = (
-          <div>
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              {/* Create contributor */}
+              <button
+                type="button"
+                onClick={() => {
+                  this._handleClickCreateItem()
+                }}
+              >
+                {textBtnCreateItem}
+              </button>
+
+              <SelectMediaComponent
+                type={'FVPicture'}
+                label={textBtnSelectExistingItems}
+                onComplete={_handleItemSelectedOrCreated}
+                dialect={selectn('response', computeDialectFromParent)}
+              />
+            </div>
             <div className="FormItemButtons">
               <FormRemoveButton
                 id={id}
@@ -282,22 +297,6 @@ export class FormRelatedPicture extends React.Component {
                 handleClickRemoveItem={handleClickRemoveItem}
               />
             </div>
-            {/* Create contributor */}
-            <button
-              type="button"
-              onClick={() => {
-                this._handleClickCreateItem()
-              }}
-            >
-              {textBtnCreateItem}
-            </button>
-
-            <SelectMediaComponent
-              type={'FVPicture'}
-              label={textBtnSelectExistingItems}
-              onComplete={_handleItemSelectedOrCreated}
-              dialect={selectn('response', computeDialectFromParent)}
-            />
           </div>
         )
       }

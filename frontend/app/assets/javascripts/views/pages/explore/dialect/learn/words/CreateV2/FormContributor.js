@@ -194,8 +194,16 @@ export class FormContributor extends React.Component {
         // CONTRIBUTOR CREATED ------------------------------------
         const { contributorUid } = this.state
         componentContent = (
-          <div>
-            <div className="FormItemButtons">
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              <Preview id={contributorUid} type="FVContributor" />
+            </div>
+            <div className="FormItemButtons Form__aside">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
               <FormMoveButtons
                 id={id}
                 idDescribedByItemMove={idDescribedByItemMove}
@@ -204,13 +212,7 @@ export class FormContributor extends React.Component {
                 handleClickMoveItemUp={handleClickMoveItemUp}
                 handleClickMoveItemDown={handleClickMoveItemDown}
               />
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
             </div>
-            <Preview id={contributorUid} type="FVContributor" />
           </div>
         )
         break
@@ -240,7 +242,7 @@ export class FormContributor extends React.Component {
               id="FormContributor__NewContributorSelect"
               labelText="Select from existing Contributors"
               name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
-              refSelect={(input) => {
+              setRef={(input) => {
                 this.newItemSelect = input
               }}
               value={initialValue}
@@ -289,43 +291,45 @@ export class FormContributor extends React.Component {
       default:
         // INITIAL STATE ------------------------------------
         componentContent = (
-          <div>
-            <div className="FormItemButtons">
-              <FormRemoveButton
-                id={id}
-                textBtnRemoveItem={textBtnRemoveItem}
-                handleClickRemoveItem={handleClickRemoveItem}
-              />
-            </div>
-            {/* Create contributor */}
-            <button
-              type="button"
-              onClick={() => {
-                this._handleClickCreateItem()
-              }}
-            >
-              {textBtnCreateItem}
-            </button>
+          <div className="Form__sidebar">
+            <div className="Form__main">
+              {/* Create contributor */}
+              <button
+                type="button"
+                onClick={() => {
+                  this._handleClickCreateItem()
+                }}
+              >
+                {textBtnCreateItem}
+              </button>
 
-            {/* Browse/select contributor */}
-            <button
-              aria-describedby={idDescribedbyItemBrowse}
-              onClick={() => {
-                this._handleClickSelectItem()
-              }}
-              type="button"
-            >
-              {textBtnSelectExistingItems}
-            </button>
+              {/* Browse/select contributor */}
+              <button
+                aria-describedby={idDescribedbyItemBrowse}
+                onClick={() => {
+                  this._handleClickSelectItem()
+                }}
+                type="button"
+              >
+                {textBtnSelectExistingItems}
+              </button>
 
-            {/* Search contributors */}
-            {/* <Text
+              {/* Search contributors */}
+              {/* <Text
               className={this.props.groupName}
               id={`${className}__Contributor${index}`}
               labelText={textLabelItemSearch}
               name={`${name}[${index}]`}
               value=""
             /> */}
+            </div>
+            <div className="FormItemButtons Form__aside">
+              <FormRemoveButton
+                id={id}
+                textBtnRemoveItem={textBtnRemoveItem}
+                handleClickRemoveItem={handleClickRemoveItem}
+              />
+            </div>
           </div>
         )
     }

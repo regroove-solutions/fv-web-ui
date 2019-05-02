@@ -34,6 +34,8 @@ export default class FormLiteralTranslations extends React.Component {
         <legend>Literal Translations</legend>
         <p className="alert alert-info">Describe what the word translates to regardless of context</p>
 
+        {items}
+
         <button
           type="button"
           onClick={() => {
@@ -43,7 +45,6 @@ export default class FormLiteralTranslations extends React.Component {
           Add a Literal Translation
         </button>
 
-        {items}
         {this._generateHiddenInput()}
 
         {/* SCREEN READER DESCRIPTIONS --------------- */}
@@ -70,66 +71,76 @@ the 'Move Literal Translation up' and 'Move Literal Translation down' buttons`}
     items.push(
       <fieldset key={id} id={id} className={this.props.groupName}>
         <legend>Literal Translation</legend>
-
-        <div className="FormItemButtons">
-          <FormMoveButtons
-            id={id}
-            idDescribedByItemMove={'describedByDefinitionMove'}
-            textBtnMoveItemUp={'Move Definition up'}
-            textBtnMoveItemDown={'Move Definition down'}
-            handleClickMoveItemUp={this.handleClickMoveItemUp}
-            handleClickMoveItemDown={this.handleClickMoveItemDown}
-          />
-          <FormRemoveButton
-            id={id}
-            textBtnRemoveItem={'Remove Definition'}
-            handleClickRemoveItem={this.handleClickRemoveItem}
-          />
+        <div className="Form__sidebar">
+          <div className="Form__main">
+            <Select
+              ariaDescribedby="describedbyLanguageLiteralTranslation"
+              className="LiteralTranslationLanguage"
+              id={`literal_translation.${items.length}.language`}
+              labelText="Language"
+              name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+              handleChange={(value) => {
+                this._handleChange({
+                  id,
+                  value,
+                  property: 'language',
+                })
+              }}
+              value="english"
+              setRef={(element) => (this[`${id}.select`] = element)}
+            >
+              {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
+              <optgroup>
+                <option value="english">English</option>
+                <option value="french">French</option>
+                <option value="mandarin">Mandarin</option>
+              </optgroup>
+            </Select>
+            <Text
+              className="Create__LiteralTranslationTranslation"
+              ariaDescribedby="describedByTranslationLiteralTranslation"
+              id={`literal_translation.${items.length}.translation`}
+              labelText="Translation"
+              name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
+              handleChange={(value) => {
+                this._handleChange({
+                  id,
+                  value,
+                  property: 'translation',
+                })
+              }}
+            />
+          </div>
+          <div className="FormItemButtons Form__aside">
+            <FormRemoveButton
+              id={id}
+              textBtnRemoveItem={'Remove Definition'}
+              handleClickRemoveItem={this.handleClickRemoveItem}
+            />
+            <FormMoveButtons
+              id={id}
+              idDescribedByItemMove={'describedByDefinitionMove'}
+              textBtnMoveItemUp={'Move Definition up'}
+              textBtnMoveItemDown={'Move Definition down'}
+              handleClickMoveItemUp={this.handleClickMoveItemUp}
+              handleClickMoveItemDown={this.handleClickMoveItemDown}
+            />
+          </div>
         </div>
-        <Select
-          ariaDescribedby="describedbyLanguageLiteralTranslation"
-          className="LiteralTranslationLanguage"
-          id={`literal_translation.${items.length}.language`}
-          labelText="Language"
-          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
-          handleChange={(value) => {
-            this._handleChange({
-              id,
-              value,
-              property: 'language',
-            })
-          }}
-          value="english"
-        >
-          {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
-          <optgroup>
-            <option value="english">English</option>
-            <option value="french">French</option>
-            <option value="mandarin">Mandarin</option>
-          </optgroup>
-        </Select>
-        <Text
-          className="Create__LiteralTranslationTranslation"
-          ariaDescribedby="describedByTranslationLiteralTranslation"
-          id={`literal_translation.${items.length}.translation`}
-          labelText="Translation"
-          name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
-          handleChange={(value) => {
-            this._handleChange({
-              id,
-              value,
-              property: 'translation',
-            })
-          }}
-        />
       </fieldset>
     )
     const { itemData } = this.state
     itemData[id] = { language: 'english', translation: '' }
-    this.setState({
-      items,
-      itemData,
-    })
+    this.setState(
+      {
+        items,
+        itemData,
+      },
+      () => {
+        // focus on the newly created select
+        this[`${id}.select`].focus()
+      }
+    )
   }
   _generateHiddenInput = () => {
     const { items, itemData } = this.state
