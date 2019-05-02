@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormRecorder from './FormRecorder'
-import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormRecorder from 'views/components/Form/FormRecorder'
+import { removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 const { string, array, func } = PropTypes
 
 export default class FormRecorders extends React.Component {

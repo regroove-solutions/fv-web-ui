@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormContributor from './FormContributor'
-import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormContributor from 'views/components/Form/FormContributor'
+import { removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 const { string, array, func } = PropTypes
 
 export default class FormContributors extends React.Component {

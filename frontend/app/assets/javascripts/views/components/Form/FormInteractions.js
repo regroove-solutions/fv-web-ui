@@ -1,8 +1,7 @@
 /*
-INPUT:
-{ id, items: [jsx] }
-
-Output: index pos or -1
+WHAT: Will return the index of a matching `element.props.id` within a collection of JSX elements
+INPUT: { id, items: [jsx] }
+OUTPUT: index pos or -1
 */
 export const getIndexOfElementById = (arg) => {
   const { id, items } = arg
@@ -11,10 +10,9 @@ export const getIndexOfElementById = (arg) => {
   })
 }
 /*
-INPUT:
-{ id, items: [jsx] }
-
-Output: items with item removed or unchanged if item not found
+WHAT: Will remove matching `element.props.id` within a collection of JSX elements
+INPUT: { id, items: [jsx] }
+OUTPUT: items with item removed or unchanged if item not found
 */
 export const removeItem = (arg) => {
   const { id, items } = arg
@@ -29,16 +27,18 @@ export const removeItem = (arg) => {
   return items
 }
 /*
-Input: { id, items: [jsx] }
-Output: items but with the element matching the ID moved down in the array (towards index === items.length)
+WHAT: Will move a matching `element.props.id` within a collection of JSX elements one position to the back
+INPUT:  { id, items: [jsx] }
+OUTPUT:  items but with the element matching the ID moved down in the array (towards index === items.length)
 */
 export const moveItemDown = (arg) => {
   const { id, items } = arg
   return moveItem({ direction: 1, id, items })
 }
 /*
-Input: { id, items: [jsx] }
-Output: items but with the element matching the ID moved up in the array (towards index === 0)
+WHAT: Will move a matching `element.props.id` within a collection of JSX elements one position to the front
+INPUT: { id, items: [jsx] }
+OUTPUT: items but with the element matching the ID moved up in the array (towards index === 0)
 */
 export const moveItemUp = (arg) => {
   const { id, items } = arg
@@ -46,8 +46,9 @@ export const moveItemUp = (arg) => {
 }
 
 /*
-Input: { direction, id, items: [jsx] }
-Output: items but with the element matching the ID moved up/down in the array (based on direction int)
+WHAT: Will move a matching `element.props.id` within a collection of JSX elements specified by the `direction` property
+INPUT: { direction, id, items: [jsx] }
+OUTPUT: items but with the element matching the ID moved up/down in the array (based on direction int)
 */
 const moveItem = (arg) => {
   const { direction, id, items } = arg

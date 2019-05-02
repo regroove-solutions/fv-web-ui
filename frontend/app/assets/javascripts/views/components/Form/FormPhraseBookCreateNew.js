@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from './Text'
-import Textarea from './Textarea'
+import Text from 'views/components/Form/Common/Text'
+import Textarea from 'views/components/Form/Common/Textarea'
 import ProviderHelpers from 'common/ProviderHelpers'
 import * as yup from 'yup'
 

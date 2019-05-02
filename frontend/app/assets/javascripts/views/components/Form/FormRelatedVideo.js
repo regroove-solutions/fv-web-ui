@@ -1,26 +1,30 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from './Text'
-import Textarea from './Textarea'
-import File from './File'
-import Checkbox from './Checkbox'
-import FormContributors from './FormContributors'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
+import Text from 'views/components/Form/Common/Text'
+import Textarea from 'views/components/Form/Common/Textarea'
+// import Select from 'views/components/Form/Common/Select`'
+import File from 'views/components/Form/Common/File'
+import Checkbox from 'views/components/Form/Common/Checkbox'
+import FormContributors from 'views/components/Form/FormContributors'
+import FormRecorders from 'views/components/Form/FormRecorders'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
+// import DocumentListView from 'views/components/Document/DocumentListView'
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
 const intl = IntlService.instance
 const { array, func, object, number, string, element } = PropTypes
-export class FormRelatedPicture extends React.Component {
+export class FormRelatedVideo extends React.Component {
   STATE_LOADING = 0
   STATE_DEFAULT = 1
   STATE_CREATE = 2
   STATE_CREATED = 3
+  // STATE_EDIT = 4
   STATE_BROWSE = 5
 
   static propTypes = {
@@ -35,10 +39,12 @@ export class FormRelatedPicture extends React.Component {
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
     textBtnCreateItem: string,
+    // textBtnEditItem: string,
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     textLegendItem: string,
     handleClickCreateItem: func,
+    // handleClickEditItem: func,
     handleClickSelectItem: func,
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
@@ -55,14 +61,14 @@ export class FormRelatedPicture extends React.Component {
     DIALECT_PATH: string.isRequired,
     selectMediaComponent: element.isRequired,
     // NOTE: COMING FROM REDUX/PROVIDER
-    computePicture: object.isRequired,
-    createPicture: func.isRequired,
+    computeVideo: object.isRequired,
+    createVideo: func.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
     computeDialectFromParent: object.isRequired,
   }
   static defaultProps = {
-    className: 'FormRelatedPicture',
-    groupName: 'FormRelatedPicture__group',
+    className: 'FormRelatedVideo',
+    groupName: 'FormRelatedVideo__group',
     id: -1,
     index: 0,
     componentState: 0,
@@ -95,29 +101,44 @@ export class FormRelatedPicture extends React.Component {
 
   CONTRIBUTOR_PATH = undefined
 
+  //   AFTER SUBMITTING NEW CONTRIBUTOR
+  // ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response
+
   render() {
     const {
       className,
       // name,
       id,
+      // idDescribedbyItemBrowse,
       idDescribedByItemMove,
       index,
       textBtnRemoveItem,
       textBtnMoveItemUp,
       textBtnMoveItemDown,
       textBtnCreateItem,
+      // textBtnEditItem,
       textBtnSelectExistingItems,
+      // textLabelItemSearch,
       textLegendItem,
+      // handleClickSelectItem,
       handleClickRemoveItem,
       handleClickMoveItemUp,
       handleClickMoveItemDown,
+      // value,
     } = this.props
 
     let componentContent = null
-    const computeCreate = ProviderHelpers.getEntry(this.props.computePicture, this.state.pathOrId)
+    const computeCreate = ProviderHelpers.getEntry(this.props.computeVideo, this.state.pathOrId)
     const isFetching = selectn('isFetching', computeCreate)
     const isSuccess = selectn('success', computeCreate)
-
+    // let createdUid = null
+    // let createdTitle = null
+    // let createdPath = null
+    // if (isSuccess) {
+    //   createdUid = selectn(['response', 'uid'], computeCreate)
+    //   createdTitle = selectn(['response', 'title'], computeCreate)
+    //   createdPath = selectn(['response', 'path'], computeCreate)
+    // }
     const _handleItemSelectedOrCreated = (selected) => {
       this.props.handleItemSelected(selected, () => {
         handleClickRemoveItem(id)
@@ -143,13 +164,13 @@ export class FormRelatedPicture extends React.Component {
         // CREATE AUDIO ------------------------------------
         componentContent = (
           <div>
-            <h2>Create new picture</h2>
+            <h2>Create new video</h2>
             {/* Name ------------- */}
             <Text
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
-              labelText="Name of picture"
-              name="FormRelatedPicture.name"
+              labelText="Name of video"
+              name="FormRelatedVideo.name"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemName: data })
@@ -158,9 +179,9 @@ export class FormRelatedPicture extends React.Component {
             {/* Description --------------- */}
             <Textarea
               className={this.props.groupName}
-              id="CreatePicture__Description"
-              labelText="Description of picture"
-              name="FormRelatedPicture.dc:description"
+              id="CreateVideo__Description"
+              labelText="Description of video"
+              name="FormRelatedVideo.dc:description"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemDescription: data })
@@ -170,9 +191,9 @@ export class FormRelatedPicture extends React.Component {
             {/* File --------------- */}
             <File
               className={this.props.groupName}
-              id="CreatePicture__File"
-              labelText="Upload picture"
-              name="FormRelatedPicture.file"
+              id="CreateVideo__File"
+              labelText="Upload video"
+              name="FormRelatedVideo.file"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemFile: data })
@@ -182,10 +203,9 @@ export class FormRelatedPicture extends React.Component {
             {/* Shared --------------- */}
             <Checkbox
               className={this.props.groupName}
-              id="CreatePicture__Shared"
-              labelText="Share this picture across dialects"
-              // name="fvm:shared"
-              name="FormRelatedPicture.fvm:shared"
+              id="CreateVideo__Shared"
+              labelText="Share this video across dialects"
+              name="FormRelatedVideo.fvm:shared"
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
               }}
@@ -193,9 +213,9 @@ export class FormRelatedPicture extends React.Component {
             {/* Child focused --------------- */}
             <Checkbox
               className={this.props.groupName}
-              id="CreatePicture__ChildFocused"
-              labelText="Picture is child focused"
-              name="FormRelatedPicture.fvm:child_focused"
+              id="CreateVideo__ChildFocused"
+              labelText="Video is child focused"
+              name="FormRelatedVideo.fvm:child_focused"
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
               }}
@@ -204,10 +224,20 @@ export class FormRelatedPicture extends React.Component {
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
               className={this.props.groupName}
-              name="FormRelatedPicture.fv:source"
-              textInfo="Contributors who helped create the picture."
+              name="FormRelatedVideo.fv:source"
+              textInfo="Contributors who helped create the video."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
+              }}
+            />
+
+            {/* Recorders: fvm:recorder --------------- */}
+            <FormRecorders
+              className={this.props.groupName}
+              name="FormRelatedVideo.fvm:recorder"
+              textInfo="Recorders who helped create the video."
+              handleItemsUpdate={(data) => {
+                this.setState({ createItemRecorders: data })
               }}
             />
 
@@ -220,7 +250,7 @@ export class FormRelatedPicture extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new picture
+              Create new video
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -233,7 +263,7 @@ export class FormRelatedPicture extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't create new picture"}
+              {"Cancel, don't create new video"}
             </button>
             {formStatus}
           </div>
@@ -241,11 +271,10 @@ export class FormRelatedPicture extends React.Component {
         break
       }
       case this.STATE_CREATED: {
-        // AUDIO CREATED/SELECTED ------------------------------------
         componentContent = (
           <div className="Form__sidebar">
             <div className="Form__main">
-              <Preview id={id} type="FVPicture" />
+              <Preview id={id} type="FVVideo" />
             </div>
             <div className="FormItemButtons Form__aside">
               <FormRemoveButton
@@ -266,6 +295,128 @@ export class FormRelatedPicture extends React.Component {
         )
         break
       }
+      // case this.STATE_EDIT:
+      //   // EDITING A CONTRIBUTOR ------------------------------------
+      //   componentContent = (
+      //     <div>
+      //       <h2>Editing contributor</h2>
+
+      //       {/* Name ------------- */}
+      //       <Text
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditName`}
+      //         labelText="Related Video name"
+      //         name={`${name}[${index}]__EditName`}
+      //         value="[some prefilled value]"
+      //       />
+
+      //       {/* Description ------------- */}
+      //       <Textarea
+      //         className={this.props.groupName}
+      //         id={`${className}__Contributor${index}__EditDescription`}
+      //         labelText="Related Video description"
+      //         name={`${name}[${index}]__EditDescription`}
+      //         value=""
+      //       />
+
+      //       {/* BTN: Create contributor ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={(event) => {
+      //           event.preventDefault()
+      //           this._handleCreateItemSubmit()
+      //         }}
+      //       >
+      //         Update contributor
+      //       </button>
+
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't update contributor"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
+      // case this.STATE_BROWSE: {
+      //   // TODO: REMOVE? USING OLD MODAL CODE INSTEAD
+      //   // Select from existing audio  ------------------------------------
+
+      //   const { computeResourcesFromParent } = this.props
+      //   const _computeResources = ProviderHelpers.getEntry(computeResourcesFromParent, '/FV/Workspaces/')
+      //   const items =
+      //     selectn('response.entries', _computeResources) || selectn('response_prev.entries', _computeResources) || []
+      //   let audioExisting = []
+
+      //   audioExisting = items.map((_element, i) => {
+      //     const uid = _element.uid
+      //     const audioId = `related_audio_${uid}`
+      //     return (
+      //       <div className={`${className}__browseItem`} key={i}>
+      //         <div className={`${className}__browseItemGroup1`}>
+      //           <input
+      //             className={`${className}__browseItemRadio`}
+      //             type="radio"
+      //             id={audioId}
+      //             name="related_audio"
+      //             value={uid}
+      //           />
+      //         </div>
+      //         <div className={`${className}__browseItemGroup2`}>
+      //           <label htmlFor={audioId}>{`Select '${_element.title}'`}</label>
+      //           <audio src={selectn('properties.file:content.data', _element)} preload="none" controls />
+      //         </div>
+      //       </div>
+      //     )
+      //   })
+
+      //   componentContent = (
+      //     <div>
+      //       <div
+      //         onChange={(event) => {
+      //           this.setState({
+      //             relatedAudioUid: event.target.value,
+      //           })
+      //         }}
+      //       >
+      //         {audioExisting}
+      //       </div>
+
+      //       {/* Save/select contributor ------------- */}
+      //       <button
+      //         type="button"
+      //         disabled={this.state.relatedAudioUid === undefined}
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_CREATED,
+      //             audioUid: this.state.relatedAudioUid,
+      //           })
+      //         }}
+      //       >
+      //         Add selected Related Video
+      //       </button>
+
+      //       {/* BTN: Cancel, go back ------------- */}
+      //       <button
+      //         type="button"
+      //         onClick={() => {
+      //           this.setState({
+      //             componentState: this.STATE_DEFAULT,
+      //           })
+      //         }}
+      //       >
+      //         {"Cancel, don't add Related Video"}
+      //       </button>
+      //     </div>
+      //   )
+      //   break
+      // }
       default: {
         // INITIAL STATE ------------------------------------
         const { computeDialectFromParent, selectMediaComponent } = this.props
@@ -283,8 +434,19 @@ export class FormRelatedPicture extends React.Component {
                 {textBtnCreateItem}
               </button>
 
+              {/* Browse/select contributor */}
+              {/* <button
+              aria-describedby={idDescribedbyItemBrowse}
+              onClick={() => {
+                this._handleClickSelectItem()
+              }}
+              type="button"
+            >
+              {textBtnSelectExistingItems}
+            </button> */}
+
               <SelectMediaComponent
-                type={'FVPicture'}
+                type={'FVVideo'}
                 label={textBtnSelectExistingItems}
                 onComplete={_handleItemSelectedOrCreated}
                 dialect={selectn('response', computeDialectFromParent)}
@@ -319,6 +481,17 @@ export class FormRelatedPicture extends React.Component {
       }
     )
   }
+  // _handleClickEditItem = (id) => {
+  //   const { handleClickEditItem } = this.props
+  //   this.setState(
+  //     {
+  //       componentState: this.STATE_EDIT,
+  //     },
+  //     () => {
+  //       handleClickEditItem(id)
+  //     }
+  //   )
+  // }
   _handleSubmitExistingItem = (createItemUid) => {
     this.setState(
       {
@@ -337,28 +510,28 @@ export class FormRelatedPicture extends React.Component {
       createItemIsShared,
       createItemIsChildFocused,
       createItemContributors,
-      //   createItemRecorders,
+      createItemRecorders,
     } = this.state
 
     const docParams = {
-      type: 'FVPicture',
+      type: 'FVVideo',
       name: createItemName,
       properties: {
         'dc:title': createItemName,
         'dc:description': createItemDescription,
         'fvm:shared': createItemIsShared,
         'fvm:child_focused': createItemIsChildFocused,
-        'fvm:recorder': [], // createItemRecorders['fvm:recorder'],
-        'fvm:source': createItemContributors['fvm:source'],
+        'fvm:recorder': createItemRecorders['fvm:recorder'] || [],
+        'fvm:source': createItemContributors['fvm:source'] || [],
       },
     }
 
     const timestamp = Date.now()
     const { DIALECT_PATH } = this.props
-    this.props.createPicture(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
+    this.props.createVideo(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
     const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
     this.setState({ pathOrId })
   }
 }
 
-export default provide(FormRelatedPicture)
+export default provide(FormRelatedVideo)

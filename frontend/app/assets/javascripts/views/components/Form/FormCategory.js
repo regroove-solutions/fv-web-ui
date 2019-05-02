@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 
 // import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'

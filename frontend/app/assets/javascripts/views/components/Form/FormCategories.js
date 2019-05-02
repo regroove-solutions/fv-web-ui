@@ -3,8 +3,8 @@ import { PropTypes } from 'react'
 // import Text from './Text'
 
 // NOTE: importing the non-wrapped provide() version
-import FormCategory from './FormCategory'
-import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormCategory from 'views/components/Form/FormCategory'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'

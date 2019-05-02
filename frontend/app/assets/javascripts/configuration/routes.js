@@ -1191,6 +1191,22 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'audio',
+    ],
+    title: 'CREATE AUDIO, {$dialect_name}',
+    page: <Pages.CreateAudio />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
       new paramMatch('area', WORKSPACE_OR_SECTION),
       'Data',
       ANYTHING_BUT_SLASH,

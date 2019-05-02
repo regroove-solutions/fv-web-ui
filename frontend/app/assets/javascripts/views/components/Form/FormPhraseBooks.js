@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormPhraseBook from './FormPhraseBook'
-import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormPhraseBook from 'views/components/Form/FormPhraseBook'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import BrowseComponent from 'views/components/Editor/BrowseComponent'
 import ProviderHelpers from 'common/ProviderHelpers'
 import selectn from 'selectn'
@@ -186,7 +186,7 @@ export class FormPhraseBooks extends React.Component {
     )
   }
   _handleClickCreateItem = async () => {
-    const _FormPhraseBookCreateNew = await import('./FormPhraseBookCreateNew')
+    const _FormPhraseBookCreateNew = await import('views/components/Form/FormPhraseBookCreateNew')
     this.setState({
       FormPhraseBookCreateNew: _FormPhraseBookCreateNew.default,
       componentState: this.STATE_CREATE,

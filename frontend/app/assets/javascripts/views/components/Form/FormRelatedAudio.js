@@ -1,10 +1,10 @@
 import React from 'react'
 import { PropTypes } from 'react'
-// import Text from './Text'
+// import Text from 'views/components/Form/Common/Text'
 
 // NOTE: importing the non-wrapped provide() version
-import FormRelatedAudioItem from './FormRelatedAudioItem'
-import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormRelatedAudioItem from 'views/components/Form/FormRelatedAudioItem'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'

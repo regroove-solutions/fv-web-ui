@@ -1,16 +1,17 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from './Text'
-import Textarea from './Textarea'
-import Select from './Select'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
+import Text from 'views/components/Form/Common/Text'
+import Textarea from 'views/components/Form/Common/Textarea'
+import Select from 'views/components/Form/Common/Select'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
+import Preview from 'views/components/Editor/Preview'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
-import Preview from 'views/components/Editor/Preview'
+// import DocumentListView from 'views/components/Document/DocumentListView'
 const { array, func, object, number, string } = PropTypes
 
-export class FormRecorder extends React.Component {
+export class FormContributor extends React.Component {
   STATE_DEFAULT = 1
   STATE_CREATE_CONTRIBUTOR = 2
   STATE_CREATED_CONTRIBUTOR = 3
@@ -37,7 +38,6 @@ export class FormRecorder extends React.Component {
     handleClickRemoveItem: func,
     handleClickMoveItemUp: func,
     handleClickMoveItemDown: func,
-    handleItemChange: func,
     componentState: number,
     value: string,
     DISABLED_SORT_COLS: array,
@@ -46,6 +46,7 @@ export class FormRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
+    handleItemChange: func,
     // REDUX/PROVIDE
     computeContributors: object.isRequired,
     createContributor: func.isRequired,
@@ -62,12 +63,12 @@ export class FormRecorder extends React.Component {
     id: 0,
     index: 0,
     componentState: 1,
+    handleItemChange: () => {},
     handleClickCreateItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
     handleClickMoveItemDown: () => {},
-    handleItemChange: () => {},
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
@@ -109,6 +110,9 @@ export class FormRecorder extends React.Component {
     )
   }
 
+  //   AFTER SUBMITTING NEW CONTRIBUTOR
+  // ProviderHelpers.getEntry(nextProps.computeContributor, this.state.contributorPath).response
+
   render() {
     const {
       className,
@@ -134,15 +138,15 @@ export class FormRecorder extends React.Component {
       case this.STATE_CREATE_CONTRIBUTOR:
         // CREATE A NEW CONTRIBUTOR ------------------------------------
         componentContent = (
-          <div className={this.props.groupName}>
-            <h2>Creating a new recorder</h2>
+          <div>
+            <h2>Creating a new contributor</h2>
 
             {/* Name ------------- */}
             <Text
               className={this.props.groupName}
-              id={`${className}__Recorder${index}__NewName`}
-              labelText="Recorder name"
-              name="FormRecorder.name"
+              id={`${className}__Contributor${index}__NewName`}
+              labelText="Contributor name"
+              name="FormContributor.name"
               value=""
               handleChange={(_name) => {
                 this.setState({ createItemName: _name })
@@ -152,16 +156,16 @@ export class FormRecorder extends React.Component {
             {/* Description ------------- */}
             <Textarea
               className={this.props.groupName}
-              id={`${className}__Recorder${index}__NewDescription`}
-              labelText="Recorder description"
-              name="FormRecorder.description"
+              id={`${className}__Contributor${index}__NewDescription`}
+              labelText="Contributor description"
+              name="FormContributor.description"
               value=""
               handleChange={(description) => {
                 this.setState({ createItemDescription: description })
               }}
             />
 
-            {/* BTN: Create recorder ------------- */}
+            {/* BTN: Create contributor ------------- */}
             <button
               type="button"
               onClick={(event) => {
@@ -169,7 +173,7 @@ export class FormRecorder extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new recorder
+              Create new contributor
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -181,18 +185,18 @@ export class FormRecorder extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't create a new recorder"}
+              {"Cancel, don't create a new contributor"}
             </button>
           </div>
         )
         break
       case this.STATE_CREATED_CONTRIBUTOR: {
         // CONTRIBUTOR CREATED ------------------------------------
-        const { itemUid } = this.state
+        const { contributorUid } = this.state
         componentContent = (
           <div className="Form__sidebar">
             <div className="Form__main">
-              <Preview id={itemUid} type="FVContributor" />
+              <Preview id={contributorUid} type="FVContributor" />
             </div>
             <div className="FormItemButtons Form__aside">
               <FormRemoveButton
@@ -216,10 +220,11 @@ export class FormRecorder extends React.Component {
       case this.STATE_BROWSE_CONTRIBUTORS: {
         // BROWSING CONTRIBUTORS ------------------------------------
         const _computeContributors = ProviderHelpers.getEntry(this.props.computeContributors, this.CONTRIBUTOR_PATH)
-        let items = []
+        // const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.DIALECT_PATH)
+        let contributors = []
         let initialValue = null
         if (_computeContributors.response && _computeContributors.response.entries) {
-          items = _computeContributors.response.entries.map((element, i) => {
+          contributors = _computeContributors.response.entries.map((element, i) => {
             if (i === 0) {
               initialValue = element.uid
             }
@@ -233,39 +238,39 @@ export class FormRecorder extends React.Component {
         componentContent = (
           <div className={this.props.groupName}>
             <Select
-              className="FormRecorder__NewRecorderSelect"
-              id="FormRecorder__NewRecorderSelect"
-              labelText="Select from existing Recorders"
-              name="FormRecorder__NewRecorderSelect"
+              className="FormContributor__NewContributorSelect"
+              id="FormContributor__NewContributorSelect"
+              labelText="Select from existing Contributors"
+              name="" // Note: intentionally generating invalid name so won't be picked up by `new FormData(this.form)`
               setRef={(input) => {
                 this.newItemSelect = input
               }}
               value={initialValue}
             >
               {/* Note: Using optgroup until React 16 when can use Fragments, eg: <React.Fragment> or <> */}
-              <optgroup>{items}</optgroup>
+              <optgroup>{contributors}</optgroup>
             </Select>
 
-            {/* Save/select recorder ------------- */}
+            {/* Save/select contributor ------------- */}
             <button
               type="button"
               onClick={() => {
-                const recorderId = this.newItemSelect.value
+                const contributorUid = this.newItemSelect.value
                 this.setState(
                   {
                     componentState: this.STATE_CREATED_CONTRIBUTOR,
-                    itemUid: recorderId,
+                    contributorUid,
                   },
                   () => {
                     this.props.handleItemChange({
-                      uid: recorderId,
+                      uid: contributorUid,
                       id: this.props.id,
                     })
                   }
                 )
               }}
             >
-              Add selected Recorder
+              Add selected Contributor
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -277,7 +282,7 @@ export class FormRecorder extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't add a recorder"}
+              {"Cancel, don't select from existing Contributors"}
             </button>
           </div>
         )
@@ -288,7 +293,7 @@ export class FormRecorder extends React.Component {
         componentContent = (
           <div className="Form__sidebar">
             <div className="Form__main">
-              {/* Create recorder */}
+              {/* Create contributor */}
               <button
                 type="button"
                 onClick={() => {
@@ -298,7 +303,7 @@ export class FormRecorder extends React.Component {
                 {textBtnCreateItem}
               </button>
 
-              {/* Browse/select recorder */}
+              {/* Browse/select contributor */}
               <button
                 aria-describedby={idDescribedbyItemBrowse}
                 onClick={() => {
@@ -308,6 +313,15 @@ export class FormRecorder extends React.Component {
               >
                 {textBtnSelectExistingItems}
               </button>
+
+              {/* Search contributors */}
+              {/* <Text
+              className={this.props.groupName}
+              id={`${className}__Contributor${index}`}
+              labelText={textLabelItemSearch}
+              name={`${name}[${index}]`}
+              value=""
+            /> */}
             </div>
             <div className="FormItemButtons Form__aside">
               <FormRemoveButton
@@ -315,19 +329,10 @@ export class FormRecorder extends React.Component {
                 textBtnRemoveItem={textBtnRemoveItem}
                 handleClickRemoveItem={handleClickRemoveItem}
               />
-              <FormMoveButtons
-                id={id}
-                idDescribedByItemMove={idDescribedByItemMove}
-                textBtnMoveItemUp={textBtnMoveItemUp}
-                textBtnMoveItemDown={textBtnMoveItemDown}
-                handleClickMoveItemUp={handleClickMoveItemUp}
-                handleClickMoveItemDown={handleClickMoveItemDown}
-              />
             </div>
           </div>
         )
     }
-
     return (
       <fieldset className={this.props.groupName}>
         <legend>{textLegendItem}</legend>
@@ -357,6 +362,20 @@ export class FormRecorder extends React.Component {
       }
     )
   }
+  _handleSubmitExistingItem = (createItemUid) => {
+    this.setState(
+      {
+        componentState: this.STATE_CREATED_CONTRIBUTOR,
+        contributorUid: createItemUid,
+      },
+      () => {
+        this.props.handleItemChange({
+          uid: createItemUid,
+          id: this.props.id,
+        })
+      }
+    )
+  }
 
   async _handleCreateItemSubmit() {
     const { createItemName, createItemDescription } = this.state
@@ -374,21 +393,20 @@ export class FormRecorder extends React.Component {
         now
       )
 
-      const item = ProviderHelpers.getEntry(
+      const contributor = ProviderHelpers.getEntry(
         this.props.computeContributor,
         `${this.DIALECT_PATH}/Contributors/${createItemName}.${now}`
       )
-      const response = item.response
+      const response = contributor.response
       if (response && response.uid) {
-        const createItemUid = response.uid
         this.setState(
           {
             componentState: this.STATE_CREATED_CONTRIBUTOR,
-            itemUid: createItemUid,
+            contributorUid: response.uid,
           },
           () => {
             this.props.handleItemChange({
-              uid: createItemUid,
+              uid: response.uid,
               id: this.props.id,
             })
           }
@@ -398,4 +416,4 @@ export class FormRecorder extends React.Component {
   }
 }
 
-export default provide(FormRecorder)
+export default provide(FormContributor)

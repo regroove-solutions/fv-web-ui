@@ -1,22 +1,18 @@
 import React from 'react'
 import { PropTypes } from 'react'
-// import Text from './Text'
+// import Text from 'views/components/Form/Common/Text'
 
 // NOTE: importing the non-wrapped provide() version
-import FormRelatedPhrase from './FormRelatedPhrase'
-import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import FormRelatedVideo from 'views/components/Form/FormRelatedVideo'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
 const { string, array, object, func, number } = PropTypes
-let BrowseComponent = null
+let SelectMediaComponent = null
 
-export class FormRelatedPhrases extends React.Component {
-  STATE_LOADING = 0
-  STATE_DEFAULT = 1
-  STATE_CREATE = 2
-
+export class FormRelatedVideos extends React.Component {
   static propTypes = {
     name: string.isRequired,
     className: string,
@@ -29,6 +25,7 @@ export class FormRelatedPhrases extends React.Component {
     textLegendItems: string,
     textBtnAddItem: string,
     textLegendItem: string,
+    // textBtnEditItem: string,
     textBtnRemoveItem: string,
     textBtnMoveItemUp: string,
     textBtnMoveItemDown: string,
@@ -53,22 +50,23 @@ export class FormRelatedPhrases extends React.Component {
     splitWindowPath: array.isRequired,
   }
   static defaultProps = {
-    className: 'FormRelatedPhrases',
-    idDescribedbyItemBrowse: 'describedbyRelatedAudioBrowse',
-    idDescribedByItemMove: 'describedByRelatedAudioMove',
-    name: 'FormRelatedPhrases',
-    textDescribedbyItemBrowse: 'Select a Related Phrase from previously created Phrases',
-    textDescribedByItemMove: `If you are adding multiple Related Phrases, you can change the position of the Phrase with
-    the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`,
-    textLegendItems: 'Related Phrase',
-    textBtnAddItem: 'Create new Related Phrase',
-    textLegendItem: 'Related Phrase',
-    textBtnRemoveItem: 'Remove Related Phrase',
-    textBtnMoveItemUp: 'Move Related Phrase left',
-    textBtnMoveItemDown: 'Move Related Phrase right',
-    textBtnCreateItem: 'Create new Phrase',
-    textBtnSelectExistingItems: 'Select from existing phrases',
-    textLabelItemSearch: 'Search existing phrases',
+    className: 'FormRelatedVideos',
+    idDescribedbyItemBrowse: 'describedbyRelatedVideoBrowse',
+    idDescribedByItemMove: 'describedByRelatedVideoMove',
+    name: 'FormRelatedVideos',
+    textDescribedbyItemBrowse: 'Select a video from previously created videos',
+    textDescribedByItemMove: `If you are adding multiple Related Videos, you can change the position of the video with
+    the 'Move Related Video left' and 'Move Related Video right' buttons`,
+    textLegendItems: 'Related Videos',
+    textBtnAddItem: 'Add Related Video',
+    textLegendItem: 'Related Video',
+    // textBtnEditItem: 'Edit Related Video',
+    textBtnRemoveItem: 'Remove Related Video',
+    textBtnMoveItemUp: 'Move Related Video left',
+    textBtnMoveItemDown: 'Move Related Video right',
+    textBtnCreateItem: 'Create new video',
+    textBtnSelectExistingItems: 'Select from existing videos',
+    textLabelItemSearch: 'Search existing videos',
     DEFAULT_PAGE: 1,
     DEFAULT_PAGE_SIZE: 100,
     DEFAULT_LANGUAGE: 'english',
@@ -78,8 +76,8 @@ export class FormRelatedPhrases extends React.Component {
 
   state = {
     items: [],
-    componentState: this.STATE_LOADING,
-    FormRelatedPhraseCreateNew: null,
+    loading: true,
+    videos: [],
   }
 
   // Fetch data on initial render
@@ -107,19 +105,19 @@ export class FormRelatedPhrases extends React.Component {
         1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
     )
 
-    // Get existing phrases
+    // Get existing videos
     // TODO: hardcoded current page and page size!
     await fetchResources(
       '/FV/Workspaces/',
-      `AND ecm:primaryType LIKE 'FVPhrase' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
+      `AND ecm:primaryType LIKE 'FVVideo' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
         this.DIALECT_PATH
       }/Resources/')&currentPageIndex=${0}&pageSize=${1000}`
     )
 
-    const _BrowseComponent = await import('views/components/Editor/BrowseComponent')
-    BrowseComponent = _BrowseComponent.default
+    const _SelectMediaComponent = await import('views/components/Editor/SelectMediaComponent')
+    SelectMediaComponent = _SelectMediaComponent.default
 
-    this.setState({ componentState: this.STATE_DEFAULT })
+    this.setState({ loading: false })
   }
 
   render() {
@@ -132,59 +130,24 @@ export class FormRelatedPhrases extends React.Component {
       textLegendItems,
       textBtnAddItem,
     } = this.props
-    const { items, FormRelatedPhraseCreateNew, loading, componentState } = this.state
-    const { computeDialect, textBtnSelectExistingItems } = this.props
+
+    const items = this.state.items
     return (
       <fieldset className={className}>
         <legend>{textLegendItems}</legend>
+
         <button
           type="button"
-          disabled={loading}
+          disabled={this.state.loading}
           onClick={() => {
-            this.handleClickCreateItem()
+            this.handleClickAddItem()
           }}
-          ref={(element) => (this.buttonCreate = element)}
         >
           {textBtnAddItem}
         </button>
 
-        {computeDialect && BrowseComponent && (
-          <BrowseComponent
-            disabled={false}
-            type={'FVPhrase'}
-            label={textBtnSelectExistingItems}
-            onComplete={(selected, callback) => {
-              this.handleItemSelected(selected)
-              if (typeof callback === 'function') {
-                callback()
-              }
-            }}
-            dialect={selectn('response', computeDialect)}
-          />
-        )}
-
-        {componentState === this.STATE_CREATE && FormRelatedPhraseCreateNew && (
-          <FormRelatedPhraseCreateNew
-            handleCancel={() => {
-              this.setState(
-                {
-                  componentState: this.STATE_DEFAULT,
-                },
-                () => {
-                  this.buttonCreate.focus()
-                }
-              )
-            }}
-            refPhrase={(element) => (this.phrase = element)}
-          />
-        )}
-
-        {/* COLLECTION OF PHRASES --------------- */}
         {items}
-        {/* CREATES THE HIDDEN INPUT REPRESENTING THE ITEMS ---------------
-        <input type="hidden" name="fv-word:related_phrases" value="['phrase-id-1','phrase-id-2']" />
-         */}
-        {this._generateHiddenInput()}
+
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
           {textDescribedbyItemBrowse}
@@ -195,29 +158,73 @@ export class FormRelatedPhrases extends React.Component {
       </fieldset>
     )
   }
-  _generateHiddenInput = () => {
-    const { items } = this.state
-    const selectedItems = items.map((element) => {
-      return element.props.id
-    })
-    return <input type="hidden" name="fv-word:related_phrases" value={JSON.stringify(selectedItems)} />
-  }
 
-  handleClickCreateItem = async () => {
-    const _FormRelatedPhraseCreateNew = await import('./FormRelatedPhraseCreateNew')
-    this.setState(
-      {
-        FormRelatedPhraseCreateNew: _FormRelatedPhraseCreateNew.default,
-        componentState: this.STATE_CREATE,
-      },
-      () => {
-        this.phrase.focus()
-      }
+  handleClickAddItem = () => {
+    const _props = {
+      name: this.props.name,
+      className: this.props.className,
+      idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
+      idDescribedByItemMove: this.props.idDescribedByItemMove,
+      textLegendItem: this.props.textLegendItem,
+      // textBtnEditItem: this.props.textBtnEditItem,
+      textBtnRemoveItem: this.props.textBtnRemoveItem,
+      textBtnMoveItemUp: this.props.textBtnMoveItemUp,
+      textBtnMoveItemDown: this.props.textBtnMoveItemDown,
+      textBtnCreateItem: this.props.textBtnCreateItem,
+      textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
+      textLabelItemSearch: this.props.textLabelItemSearch,
+      handleClickCreateItem: this.handleClickCreateItem,
+      handleClickSelectItem: this.handleClickSelectItem,
+      handleClickRemoveItem: this.handleClickRemoveItem,
+      handleClickMoveItemUp: this.handleClickMoveItemUp,
+      handleClickMoveItemDown: this.handleClickMoveItemDown,
+      handleItemSelected: this.handleItemSelected,
+      computeDialectFromParent: this.props.computeDialect,
+      DIALECT_PATH: this.DIALECT_PATH,
+    }
+    const items = this.state.items
+    const id = `${_props.className}_${items.length}_${Date.now()}`
+    items.push(
+      <FormRelatedVideo
+        // componentState={2}
+        // SET STATE:
+        // audioItemUid=""
+        // EDIT STATE:
+        // audioItemUid=""
+        // audioItemName=""
+        // audioItemDescription=""
+        key={id}
+        id={id}
+        {..._props}
+        selectMediaComponent={SelectMediaComponent}
+      />
     )
+    this.setState({
+      items,
+    })
   }
-  handleItemSelected = (selected) => {
+  handleClickCreateItem = () => {
+    // console.log('! handleClickCreateItem', this.index)
+  }
+  handleItemSelected = (selected, callback) => {
     const uid = selectn('uid', selected)
+    // const path = selectn(['properties', 'file:content', 'data'], selected)
+    // const title = selectn(['title'], selected)
 
+    // filter out any pre-added elements
+    // let { videos } = this.state
+    // const existingIndex = videos.findIndex((element) => {
+    //   return element.uid === uid
+    // })
+    // if (existingIndex !== -1) {
+    //   videos = videos.filter((element) => {
+    //     return element.uid !== uid
+    //   })
+    // }
+    // // add selected to end
+    // this.setState({
+    //   videos: [...videos, { uid, path, title }],
+    // })
     let { items } = this.state
     const arg = { id: uid, items }
 
@@ -231,12 +238,14 @@ export class FormRelatedPhrases extends React.Component {
       idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
       idDescribedByItemMove: this.props.idDescribedByItemMove,
       textLegendItem: this.props.textLegendItem,
+      // textBtnEditItem: this.props.textBtnEditItem,
       textBtnRemoveItem: this.props.textBtnRemoveItem,
       textBtnMoveItemUp: this.props.textBtnMoveItemUp,
       textBtnMoveItemDown: this.props.textBtnMoveItemDown,
       textBtnCreateItem: this.props.textBtnCreateItem,
       textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
       textLabelItemSearch: this.props.textLabelItemSearch,
+      handleClickCreateItem: this.handleClickCreateItem,
       handleClickSelectItem: this.handleClickSelectItem,
       handleClickRemoveItem: this.handleClickRemoveItem,
       handleClickMoveItemUp: this.handleClickMoveItemUp,
@@ -246,10 +255,29 @@ export class FormRelatedPhrases extends React.Component {
       DIALECT_PATH: this.DIALECT_PATH,
     }
 
-    this.setState({
-      items: [...items, <FormRelatedPhrase componentState={3} key={uid} id={uid} {..._props} />],
-    })
+    this.setState(
+      {
+        items: [
+          ...items,
+          <FormRelatedVideo
+            componentState={3}
+            key={uid}
+            id={uid}
+            {..._props}
+            selectMediaComponent={SelectMediaComponent}
+          />,
+        ],
+      },
+      () => {
+        if (callback) {
+          callback()
+        }
+      }
+    )
   }
+  // handleClickEditItem = () => {
+  //   console.log('! handleClickEditItem')
+  // }
   handleClickRemoveItem = (id) => {
     this.setState({
       items: removeItem({ id, items: this.state.items }),
@@ -267,4 +295,4 @@ export class FormRelatedPhrases extends React.Component {
   }
 }
 
-export default provide(FormRelatedPhrases)
+export default provide(FormRelatedVideos)

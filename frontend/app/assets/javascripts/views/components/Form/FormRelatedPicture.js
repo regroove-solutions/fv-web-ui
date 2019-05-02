@@ -1,30 +1,26 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from './Text'
-import Textarea from './Textarea'
-// import Select from './Select`'
-import File from './File'
-import Checkbox from './Checkbox'
-import FormContributors from './FormContributors'
-import FormRecorders from './FormRecorders'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
+import Text from 'views/components/Form/Common/Text'
+import Textarea from 'views/components/Form/Common/Textarea'
+import File from 'views/components/Form/Common/File'
+import Checkbox from 'views/components/Form/Common/Checkbox'
+import FormContributors from 'views/components/Form/FormContributors'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
-
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
 import provide from 'react-redux-provide'
 const intl = IntlService.instance
 const { array, func, object, number, string, element } = PropTypes
-export class FormRelatedAudioItem extends React.Component {
+export class FormRelatedPicture extends React.Component {
   STATE_LOADING = 0
   STATE_DEFAULT = 1
   STATE_CREATE = 2
   STATE_CREATED = 3
-  STATE_EDIT = 4
   STATE_BROWSE = 5
 
   static propTypes = {
@@ -59,18 +55,19 @@ export class FormRelatedAudioItem extends React.Component {
     DIALECT_PATH: string.isRequired,
     selectMediaComponent: element.isRequired,
     // NOTE: COMING FROM REDUX/PROVIDER
-    computeAudio: object.isRequired,
-    createAudio: func.isRequired,
+    computePicture: object.isRequired,
+    createPicture: func.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
     computeDialectFromParent: object.isRequired,
   }
   static defaultProps = {
-    className: 'FormRelatedAudioItem',
-    groupName: 'Form__group',
+    className: 'FormRelatedPicture',
+    groupName: 'FormRelatedPicture__group',
     id: -1,
     index: 0,
     componentState: 0,
     handleClickCreateItem: () => {},
+    // handleClickEditItem: () => {},
     handleClickSelectItem: () => {},
     handleClickRemoveItem: () => {},
     handleClickMoveItemUp: () => {},
@@ -117,7 +114,7 @@ export class FormRelatedAudioItem extends React.Component {
     } = this.props
 
     let componentContent = null
-    const computeCreate = ProviderHelpers.getEntry(this.props.computeAudio, this.state.pathOrId)
+    const computeCreate = ProviderHelpers.getEntry(this.props.computePicture, this.state.pathOrId)
     const isFetching = selectn('isFetching', computeCreate)
     const isSuccess = selectn('success', computeCreate)
 
@@ -146,14 +143,13 @@ export class FormRelatedAudioItem extends React.Component {
         // CREATE AUDIO ------------------------------------
         componentContent = (
           <div>
-            <h2>Create new audio item</h2>
+            <h2>Create new picture</h2>
             {/* Name ------------- */}
             <Text
               className={this.props.groupName}
               id={`${className}__Contributor${index}__NewName`}
-              labelText="Name of audio item"
-              // name={`${name}[${index}]__NewName`}
-              name="FormRelatedAudioItem.name"
+              labelText="Name of picture"
+              name="FormRelatedPicture.name"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemName: data })
@@ -162,10 +158,9 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Description --------------- */}
             <Textarea
               className={this.props.groupName}
-              id="CreateAudio__Description"
-              labelText="Description of audio item"
-              // name="dc:description"
-              name="FormRelatedAudioItem.description"
+              id="CreatePicture__Description"
+              labelText="Description of picture"
+              name="FormRelatedPicture.dc:description"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemDescription: data })
@@ -175,10 +170,9 @@ export class FormRelatedAudioItem extends React.Component {
             {/* File --------------- */}
             <File
               className={this.props.groupName}
-              id="CreateAudio__File"
-              labelText="Upload audio item"
-              // name="file"
-              name=""
+              id="CreatePicture__File"
+              labelText="Upload picture"
+              name="FormRelatedPicture.file"
               value=""
               handleChange={(data) => {
                 this.setState({ createItemFile: data })
@@ -188,10 +182,10 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Shared --------------- */}
             <Checkbox
               className={this.props.groupName}
-              id="CreateAudio__Shared"
-              labelText="Share this audio across dialects"
+              id="CreatePicture__Shared"
+              labelText="Share this picture across dialects"
               // name="fvm:shared"
-              name=""
+              name="FormRelatedPicture.fvm:shared"
               handleChange={(data) => {
                 this.setState({ createItemIsShared: data })
               }}
@@ -199,10 +193,9 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Child focused --------------- */}
             <Checkbox
               className={this.props.groupName}
-              id="CreateAudio__ChildFocused"
-              labelText="Audio is child focused"
-              // name="fvm:child_focused"
-              name=""
+              id="CreatePicture__ChildFocused"
+              labelText="Picture is child focused"
+              name="FormRelatedPicture.fvm:child_focused"
               handleChange={(data) => {
                 this.setState({ createItemIsChildFocused: data })
               }}
@@ -211,22 +204,10 @@ export class FormRelatedAudioItem extends React.Component {
             {/* Contributors: fvm:source --------------- */}
             <FormContributors
               className={this.props.groupName}
-              // name="fv:source"
-              name=""
-              textInfo="Contributors who helped create the audio item."
+              name="FormRelatedPicture.fv:source"
+              textInfo="Contributors who helped create the picture."
               handleItemsUpdate={(data) => {
                 this.setState({ createItemContributors: data })
-              }}
-            />
-
-            {/* Recorders: fvm:recorder --------------- */}
-            <FormRecorders
-              className={this.props.groupName}
-              // name="fvm:recorder"
-              name=""
-              textInfo="Recorders who helped create the audio item."
-              handleItemsUpdate={(data) => {
-                this.setState({ createItemRecorders: data })
               }}
             />
 
@@ -239,7 +220,7 @@ export class FormRelatedAudioItem extends React.Component {
                 this._handleCreateItemSubmit()
               }}
             >
-              Create new audio item
+              Create new picture
             </button>
 
             {/* BTN: Cancel, go back ------------- */}
@@ -252,7 +233,7 @@ export class FormRelatedAudioItem extends React.Component {
                 })
               }}
             >
-              {"Cancel, don't create new audio item"}
+              {"Cancel, don't create new picture"}
             </button>
             {formStatus}
           </div>
@@ -264,7 +245,7 @@ export class FormRelatedAudioItem extends React.Component {
         componentContent = (
           <div className="Form__sidebar">
             <div className="Form__main">
-              <Preview id={id} type="FVAudio" />
+              <Preview id={id} type="FVPicture" />
             </div>
             <div className="FormItemButtons Form__aside">
               <FormRemoveButton
@@ -303,13 +284,13 @@ export class FormRelatedAudioItem extends React.Component {
               </button>
 
               <SelectMediaComponent
-                type={'FVAudio'}
+                type={'FVPicture'}
                 label={textBtnSelectExistingItems}
                 onComplete={_handleItemSelectedOrCreated}
                 dialect={selectn('response', computeDialectFromParent)}
               />
             </div>
-            <div className="FormItemButtons Form__aside">
+            <div className="FormItemButtons">
               <FormRemoveButton
                 id={id}
                 textBtnRemoveItem={textBtnRemoveItem}
@@ -356,28 +337,28 @@ export class FormRelatedAudioItem extends React.Component {
       createItemIsShared,
       createItemIsChildFocused,
       createItemContributors,
-      createItemRecorders,
+      //   createItemRecorders,
     } = this.state
 
     const docParams = {
-      type: 'FVAudio',
+      type: 'FVPicture',
       name: createItemName,
       properties: {
         'dc:title': createItemName,
         'dc:description': createItemDescription,
         'fvm:shared': createItemIsShared,
         'fvm:child_focused': createItemIsChildFocused,
-        'fvm:recorder': createItemRecorders['fvm:recorder'],
+        'fvm:recorder': [], // createItemRecorders['fvm:recorder'],
         'fvm:source': createItemContributors['fvm:source'],
       },
     }
 
     const timestamp = Date.now()
     const { DIALECT_PATH } = this.props
-    this.props.createAudio(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
+    this.props.createPicture(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
     const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
     this.setState({ pathOrId })
   }
 }
 
-export default provide(FormRelatedAudioItem)
+export default provide(FormRelatedPicture)

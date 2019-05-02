@@ -1,10 +1,10 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from './Text'
-import Select from './Select'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
-import { removeItem, moveItemDown, moveItemUp } from './FormInteractions'
+import Text from 'views/components/Form/Common/Text'
+import Select from 'views/components/Form/Common/Select'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
+import { removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 const { string, array, func } = PropTypes
 
 export default class FormDefinitions extends React.Component {

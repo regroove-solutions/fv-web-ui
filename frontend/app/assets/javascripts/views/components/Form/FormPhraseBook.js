@@ -1,7 +1,7 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import FormMoveButtons from './FormMoveButtons'
-import FormRemoveButton from './FormRemoveButton'
+import FormMoveButtons from 'views/components/Form/FormMoveButtons'
+import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 
 // import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'
@@ -10,9 +10,9 @@ import Preview from 'views/components/Editor/Preview'
 import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
 
-const { array, func, number, string } = PropTypes
+const { array, func, object, number, string, element } = PropTypes
 
-export class FormRelatedPhrase extends React.Component {
+export class FormPhraseBook extends React.Component {
   STATE_LOADING = 0
   STATE_DEFAULT = 1
   STATE_CREATE = 2
@@ -23,7 +23,7 @@ export class FormRelatedPhrase extends React.Component {
     name: string,
     className: string,
     groupName: string,
-    id: string,
+    id: number,
     idDescribedbyItemBrowse: string,
     idDescribedByItemMove: string,
     index: number,
@@ -40,18 +40,18 @@ export class FormRelatedPhrase extends React.Component {
     handleItemSelected: func,
     componentState: number,
     value: string,
-    // browseComponent: element.isRequired,
+    browseComponent: element.isRequired,
     // NOTE: COMING FROM REDUX/PROVIDER
-    // computeCategory: object.isRequired,
-    // createCategory: func.isRequired,
+    computeCategory: object.isRequired,
+    createCategory: func.isRequired,
     splitWindowPath: array.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
-    // computeDialectFromParent: object.isRequired,
+    computeDialectFromParent: object.isRequired,
   }
   static defaultProps = {
-    className: 'FormRelatedPhrase',
-    groupName: 'FormRelatedPhrase__group',
-    id: '_0',
+    className: 'FormPhraseBook',
+    groupName: 'FormPhraseBook__group',
+    id: -1,
     index: 0,
     componentState: 0,
     handleClickCreateItem: () => {},
@@ -60,7 +60,7 @@ export class FormRelatedPhrase extends React.Component {
     handleClickMoveItemUp: () => {},
     handleClickMoveItemDown: () => {},
     handleItemSelected: () => {},
-    // browseComponent: null,
+    browseComponent: null,
   }
 
   state = {
@@ -124,6 +124,26 @@ export class FormRelatedPhrase extends React.Component {
       </fieldset>
     )
   }
+  _handleClickCreateItem = () => {
+    const { handleClickCreateItem } = this.props
+    this.setState(
+      {
+        componentState: this.STATE_CREATE,
+      },
+      () => {
+        handleClickCreateItem()
+      }
+    )
+  }
+  _handleSubmitExistingItem = (createItemUid) => {
+    this.setState(
+      {
+        componentState: this.STATE_CREATED,
+        contributorUid: createItemUid,
+      },
+      () => {}
+    )
+  }
 }
 
-export default provide(FormRelatedPhrase)
+export default provide(FormPhraseBook)
