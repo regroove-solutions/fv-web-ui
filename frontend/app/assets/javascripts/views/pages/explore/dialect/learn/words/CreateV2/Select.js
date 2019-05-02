@@ -2,11 +2,16 @@ import React from 'react'
 import { PropTypes } from 'react'
 const { string, element, func } = PropTypes
 
-export default class Text extends React.Component {
+export default class Select extends React.Component {
   static defaultProps = {
-    className: 'Text',
+    className: 'Select',
     value: undefined,
     handleChange: () => {},
+    // setRef: (_element) => {
+    //   this.element = _element
+    //   this.element.focus()
+    // },
+    setRef: () => {},
   }
 
   static propTypes = {
@@ -18,13 +23,11 @@ export default class Text extends React.Component {
     ariaDescribedby: string,
     children: element,
     handleChange: func,
-    refSelect: func,
+    setRef: func,
   }
 
   state = {
     value: this.props.value,
-    handleChange: () => {},
-    refSelect: () => {},
   }
 
   componentDidMount() {
@@ -32,7 +35,7 @@ export default class Text extends React.Component {
   }
 
   render() {
-    const { className, ariaDescribedby, id, labelText, name, refSelect } = this.props
+    const { className, ariaDescribedby, id, labelText, name, setRef } = this.props
     return (
       <div className={`${className} Select`}>
         <label className="Select__label" htmlFor={id}>
@@ -45,7 +48,7 @@ export default class Text extends React.Component {
           name={name}
           value={this.state.value}
           onChange={this._handleChange}
-          ref={refSelect}
+          ref={setRef}
         >
           {this.props.children}
         </select>
