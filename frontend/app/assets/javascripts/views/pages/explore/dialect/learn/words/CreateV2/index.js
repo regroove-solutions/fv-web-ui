@@ -181,16 +181,18 @@ export class CreateV2 extends Component {
         const li = errors.map((error, i) => {
           return (
             <li key={i}>
-              <label htmlFor={StringHelpers.clean(error.path, 'CLEAN_ID')}>{error.message}</label>
+              <label className="Form__errorFeedbackItemLabel" htmlFor={StringHelpers.clean(error.path, 'CLEAN_ID')}>
+                {error.message}
+              </label>
             </li>
           )
         })
 
         const intro = `Please correct the following ${errors.length > 1 ? 'items' : 'item'}:`
         errorFeedback = (
-          <div className="alert alert-info">
+          <div className="Form__errorFeedback">
             {intro}
-            <ul>{li}</ul>
+            <ul className="Form__errorFeedbackItems">{li}</ul>
           </div>
         )
       }
@@ -206,7 +208,14 @@ export class CreateV2 extends Component {
           )}
         </h1>
 
-        <form className="CreateV2" ref={this.setFormRef} onSubmit={this._onRequestSaveForm}>
+        <form
+          className="CreateV2"
+          ref={this.setFormRef}
+          onSubmit={(e) => {
+            e.preventDefault()
+            this._onRequestSaveForm()
+          }}
+        >
           {/* WORD --------------- */}
           <Text
             className="Form__group"
@@ -278,14 +287,19 @@ export class CreateV2 extends Component {
             value=""
             error={this._getError({ errors, fieldName: 'fv-word:pronunciation' })}
           />
+
           {/* Definitions --------------- */}
           <FormDefinitions className="Form__group" name="fv:definitions" />
+
           {/* Literal Translations --------------- */}
           <FormLiteralTranslations className="Form__group" name="fv:literal_translation" />
+
           {/* RELATED AUDIO --------------- */}
           <FormRelatedAudio className="Form__group" name="fv:related_audio" />
+
           {/* RELATED PICTURES --------------- */}
           <FormRelatedPictures className="Form__group" name="fv:related_pictures" />
+
           {/* RELATED VIDEOS --------------- */}
           <FormRelatedVideos className="Form__group" name="fv:related_pictures" />
           {/* SCREEN READER DESCRIPTIONS --------------- */}
@@ -296,63 +310,18 @@ export class CreateV2 extends Component {
             {`If you are adding multiple Related Videos, you can change the position of the Related Video with
 the 'Move Related Video left' and 'Move Related Video right' buttons`}
           </span>
+
           {/* Related Phrases --------------- */}
           <FormRelatedPhrases className="Form__group" name="fv-word:related_phrases" />
-
-          <fieldset className="Form__group">
-            <legend>Related Phrases</legend>
-            {/* <button type="button">Add Related Phrase</button> */}
-
-            {/* Related Phrases > RELATED PHRASE --------------- */}
-            {/* <fieldset className="Form__group">
-                <legend>Related Phrase</legend>
-                <input type="hidden" name="fv:related_phrases[0]" value="14869a80-b371-4e51-a458-1e1adf86e263" />
-                <div>[PHRASE HERE]</div>
-
-                <button type="button">Remove Related Phrase</button>
-
-                <button type="button" aria-describedby="describedByRelatedPhraseMove">
-                  Move Related Phrase up
-                </button>
-                <button type="button" aria-describedby="describedByRelatedPhraseMove">
-                  Move Related Phrase down
-                </button>
-              </fieldset> */}
-
-            {/* Related Phrases > RELATED PHRASE --------------- */}
-            {/* <fieldset className="Form__group">
-                <legend>Related Phrase</legend>
-                <Text
-                  className="Create__RelatedPhrase"
-                  id="CreateWord__RelatedPhrase0"
-                  labelText="Search existing phrases"
-                  name="fv:related_phrases[1]"
-                  value=""
-                />
-                <button type="button">Create new phrase</button>
-                <button type="button" aria-describedby="describedbyRelatedPhraseBrowse">
-                  Select from existing phrases
-                </button>
-
-                <button type="button">Remove Related Phrase</button>
-
-                <button type="button" aria-describedby="describedByRelatedPhraseMove">
-                  Move Related Phrase up
-                </button>
-                <button type="button" aria-describedby="describedByRelatedPhraseMove">
-                  Move Related Phrase down
-                </button>
-              </fieldset> */}
-
-            {/* SCREEN READER DESCRIPTIONS --------------- */}
-            <span id="describedbyRelatedPhraseBrowse" className="visually-hidden">
-              {'Select a video from previously uploaded items'}
-            </span>
-            <span id="describedByRelatedPhraseMove" className="visually-hidden">
-              {`If you are adding multiple Related Phrases, you can change the position of the Related Phrase with
+          {/* SCREEN READER DESCRIPTIONS --------------- */}
+          <span id="describedbyRelatedPhraseBrowse" className="visually-hidden">
+            {'Select a video from previously uploaded items'}
+          </span>
+          <span id="describedByRelatedPhraseMove" className="visually-hidden">
+            {`If you are adding multiple Related Phrases, you can change the position of the Related Phrase with
 the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`}
-            </span>
-          </fieldset>
+          </span>
+
           {/* CATEGORIES --------------- */}
           <FormCategories className="Form__group" name="fv-word:categories" />
 
@@ -396,9 +365,8 @@ the 'Move Category up' and 'Move Category down' buttons`}
             name="fv-word:available_in_games"
           />
 
-          <button type="submit">Create new word</button>
-
           {errorFeedback}
+          <button type="submit">Create new word</button>
         </form>
       </PromiseWrapper>
     )
@@ -408,24 +376,22 @@ the 'Move Category up' and 'Move Category down' buttons`}
     newProps.fetchDialect2(newProps.routeParams.dialect_path)
   }
 
-  _onRequestSaveForm = async (e) => {
-    // Prevent default behaviour
-    e.preventDefault()
+  _onRequestSaveForm = async () => {
     const formData = this._getFormData()
     const formValidation = await this._validateForm(formData)
     if (formValidation.valid) {
       // console.log('IS VALID. WOULD SUBMIT FORM!')
-      // const now = Date.now()
-      // this.props.createWord(
-      //   this.props.routeParams.dialect_path + '/Dictionary',
-      //   {
-      //     type: 'FVWord',
-      //     name: now.toString(),
-      //     properties: this._getFormData(),
-      //   },
-      //   null,
-      //   now
-      // )
+      const now = Date.now()
+      this.props.createWord(
+        this.props.routeParams.dialect_path + '/Dictionary',
+        {
+          type: 'FVWord',
+          name: now.toString(),
+          properties: this._getFormData(),
+        },
+        null,
+        now
+      )
       this.setState({
         errors: [],
       })
@@ -469,13 +435,21 @@ the 'Move Category up' and 'Move Category down' buttons`}
       // parse any stringify-ed array/objects
       const name = value[0]
       const data = value[1]
-      const isLiteralTranslation = /^fv:literal_translation/.test(name)
-      const isDefinition = /^fv:definitions/.test(name)
-      const isRelatedAudio = /^fv:related_audio/.test(name)
-      const isRelatedPicture = /^fv:related_pictures/.test(name)
-      const isCulturalNote = /^fv:cultural_note/.test(name)
-      const isSource = /^fvm:source/.test(name)
-      if (isLiteralTranslation || isDefinition || isRelatedAudio || isRelatedPicture || isCulturalNote || isSource) {
+
+      const needToParse = [
+        /^fv:literal_translation/,
+        /^fv:definitions/,
+        /^fv:related_audio/,
+        /^fv:related_pictures/,
+        /^fv:cultural_note/,
+        /^fvm:source/,
+        /^fv-word:related_phrases/,
+      ]
+      const shouldParse = needToParse.some((regex) => {
+        return regex.test(name)
+      })
+
+      if (shouldParse) {
         formDataFormatted[name] = JSON.parse(data)
         continue
       }
