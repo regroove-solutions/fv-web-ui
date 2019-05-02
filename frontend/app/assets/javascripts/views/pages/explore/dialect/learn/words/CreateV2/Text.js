@@ -8,6 +8,7 @@ export default class Text extends React.Component {
     value: '',
     handleChange: () => {},
     error: {},
+    setRef: () => {},
   }
 
   static propTypes = {
@@ -19,6 +20,7 @@ export default class Text extends React.Component {
     value: string,
     handleChange: func,
     error: object,
+    setRef: func,
   }
 
   state = {
@@ -26,7 +28,7 @@ export default class Text extends React.Component {
   }
 
   render() {
-    const { className, ariaDescribedby, id, labelText, name } = this.props
+    const { className, ariaDescribedby, id, labelText, name, setRef } = this.props
     const { message } = this.props.error
     return (
       <div className={`${className} Text ${message && 'Form__error'}`}>
@@ -41,6 +43,7 @@ export default class Text extends React.Component {
           defaultValue={this.state.value}
           onChange={this._handleChange}
           type="text"
+          ref={setRef}
         />
         {message && (
           <label className="Form__errorMessage" htmlFor={id}>
