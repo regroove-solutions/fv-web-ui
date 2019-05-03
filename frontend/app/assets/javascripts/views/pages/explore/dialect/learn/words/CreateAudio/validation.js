@@ -21,12 +21,20 @@ const validForm = yup.object().shape({
     .string()
     .label(copy.name)
     .required(copy.validation.name),
-  'dc:description': yup.string(),
-  file: yup.string(),
-  'fvm:shared': yup.boolean(),
-  'fvm:child_focused': yup.boolean(),
-  'fvm:recorder': yup.array().of(yup.string()),
-  'fvm:source': yup.array().of(yup.string()),
+  'dc:description': yup.string().required(),
+  // file: yup.array().min(1, 'gotta provide a file!'),
+  file: yup.array().min(1),
+  'fvm:shared': yup.boolean().required(),
+  'fvm:child_focused': yup.boolean().required(),
+  'fvm:source': yup
+    .array()
+    .of(yup.string())
+    .required(),
+  'fvm:recorder': yup
+    .array()
+    .of(yup.string())
+    .required(),
 })
 
+export const toParse = [/^fvm:source/, /^fvm:recorder/]
 export default validForm

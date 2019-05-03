@@ -119,79 +119,77 @@ export class CreateAudio extends React.Component {
         {/* Name ------------- */}
         <Text
           className={this.props.groupName}
-          // id={`${className}__Contributor${index}__NewName`}
-          id={StringHelpers.clean('dc:title', 'CLEAN_ID')}
+          id={this._clean('dc:title')}
           labelText={copy.name}
           name="dc:title"
           value=""
-          // handleChange={(data) => {
-          //   this.setState({ createItemName: data })
-          // }}
           error={getError({ errors, fieldName: 'dc:title' })}
         />
         {/* Description --------------- */}
         <Textarea
           className={this.props.groupName}
-          id="CreateAudio__Description"
+          id={this._clean('dc:description')}
           labelText={copy.description}
           name="dc:description"
           value=""
-          handleChange={(data) => {
-            this.setState({ createItemDescription: data })
-          }}
+          error={getError({ errors, fieldName: 'dc:description' })}
         />
 
         {/* File --------------- */}
         <File
           className={this.props.groupName}
-          id="CreateAudio__File"
+          id="file"
           labelText={copy.upload}
           name="file"
           value=""
-          handleChange={(data) => {
-            this.setState({ createItemFile: data })
-          }}
+          error={getError({ errors, fieldName: 'file' })}
         />
 
         {/* Shared --------------- */}
         <Checkbox
           className={this.props.groupName}
-          id="CreateAudio__Shared"
+          id={this._clean('fvm:shared')}
           labelText={copy.share}
           name="fvm:shared"
           handleChange={(data) => {
             this.setState({ createItemIsShared: data })
           }}
+          error={getError({ errors, fieldName: 'fvm:shared' })}
         />
         {/* Child focused --------------- */}
         <Checkbox
           className={this.props.groupName}
-          id="CreateAudio__ChildFocused"
+          id={this._clean('fvm:child_focused')}
           labelText={copy.childFocused}
           name="fvm:child_focused"
           handleChange={(data) => {
             this.setState({ createItemIsChildFocused: data })
           }}
+          error={getError({ errors, fieldName: 'fvm:child_focused' })}
         />
 
         {/* Contributors: fvm:source --------------- */}
         <FormContributors
           className={this.props.groupName}
+          id={this._clean('fv:source')}
           name="fv:source"
           textInfo={copy.contributorsText}
           handleItemsUpdate={(data) => {
             this.setState({ createItemContributors: data })
           }}
+          error={getError({ errors, fieldName: 'fv:source' })}
         />
 
         {/* Recorders: fvm:recorder --------------- */}
         <FormRecorders
           className={this.props.groupName}
+          id={this._clean('fvm:recorder')}
           name="fvm:recorder"
           textInfo={copy.recordersText}
           handleItemsUpdate={(data) => {
             this.setState({ createItemRecorders: data })
           }}
+          error={getError({ errors, fieldName: 'fvm:recorder' })}
         />
 
         {formStatus}
@@ -226,7 +224,9 @@ export class CreateAudio extends React.Component {
     const { className } = this.props
     return <div className={className}>_stateGetSuccess</div>
   }
-
+  _clean = (name) => {
+    return StringHelpers.clean(name, 'CLEAN_ID')
+  }
   _handleClickCreateItem = () => {
     // console.log('!', '_handleClickCreateItem')
     // const { handleClickCreateItem } = this.props
@@ -286,7 +286,7 @@ export class CreateAudio extends React.Component {
       formReference: this.form,
       toParse,
     })
-
+    // console.log('!? formData', formData)
     const success = () => {
       // const now = Date.now()
       // this.props.createWord(
@@ -299,13 +299,14 @@ export class CreateAudio extends React.Component {
       //   null,
       //   now
       // )
-      // console.log('Would have submitted!')
+      // console.log('Would have submitted!', formData)
       this.setState({
         errors: [],
       })
     }
 
     const failure = (response) => {
+      // console.log('Errored with!', formData)
       this.setState({
         errors: response.errors,
       })
