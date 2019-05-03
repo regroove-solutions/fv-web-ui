@@ -25,7 +25,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 // import fields from 'models/schemas/fields'
 // import options from 'models/schemas/options'
-import IntlService from 'views/services/intl'
+// import IntlService from 'views/services/intl'
 
 import Select from 'views/components/Form/Common/Select'
 import Text from 'views/components/Form/Common/Text'
@@ -43,8 +43,9 @@ import StringHelpers from 'common/StringHelpers'
 import { getError, getFormData, handleSubmit } from 'common/FormHelpers'
 
 import validator, { toParse } from './validation'
+import copy from './internationalization'
 
-const intl = IntlService.instance
+// const intl = IntlService.instance
 
 const { string, array, func, object } = PropTypes
 export class CreateV2 extends Component {
@@ -165,7 +166,7 @@ export class CreateV2 extends Component {
           )
         })
 
-        const intro = `Please correct the following ${errors.length > 1 ? 'items' : 'item'}:`
+        const intro = `Could you review the following ${errors.length > 1 ? 'items' : 'item'}?`
         errorFeedback = (
           <div className="Form__errorFeedback">
             {intro}
@@ -177,12 +178,13 @@ export class CreateV2 extends Component {
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
-          {intl.trans(
+          {/* {intl.trans(
             'views.pages.explore.dialect.learn.words.add_new_word_to_x',
             'Add New Word to ' + selectn('response.title', computeDialect2),
             null,
             [selectn('response.title', computeDialect2)]
-          )}
+          )} */}
+          {copy.title(selectn('response.title', computeDialect2))}
         </h1>
 
         <form
@@ -343,7 +345,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
           />
 
           {errorFeedback}
-          <button type="submit">Create new word</button>
+          <button type="submit">{copy.submit}</button>
         </form>
       </PromiseWrapper>
     )

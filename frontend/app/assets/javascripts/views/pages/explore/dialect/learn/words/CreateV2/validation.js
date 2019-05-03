@@ -1,13 +1,10 @@
 // TODO: IMPORT ONLY WHAT IS USED
 import * as yup from 'yup'
 
-// import copy from './internationalization'
+import copy from './internationalization'
 
 const validForm = yup.object().shape({
-  'dc:title': yup
-    .string()
-    .label('Name') // used when errored, message will say 'Name' instead of 'dc:title'
-    .required(),
+  'dc:title': yup.string().required(copy.validation.title),
   'fv-word:part_of_speech': yup
     .string()
     .label('Part of speech')
