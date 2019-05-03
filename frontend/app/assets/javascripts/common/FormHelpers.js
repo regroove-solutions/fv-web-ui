@@ -112,8 +112,22 @@ export const getFormData = ({ formReference, toParse = [] }) => {
       continue
     }
 
-    // TODO: check for file blobs!
-    // formData.append(name, value, filename);
+    // Handle file
+    const isFile = data instanceof File
+    if (isFile) {
+      // Create empty array if needed:
+      if (formDataFormatted[name] === undefined) {
+        formDataFormatted[name] = []
+      }
+      // Get file array data:
+      const fileData = formDataFormatted[name]
+      // Update file array data only if a file exists:
+      // console.log('data', data)
+      if (data.name) {
+        formDataFormatted[name] = [...fileData, data]
+      }
+      continue
+    }
 
     formDataFormatted[name] = data
   }
