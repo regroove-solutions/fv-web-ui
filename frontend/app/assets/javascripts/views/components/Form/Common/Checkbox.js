@@ -1,12 +1,14 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, bool, func, oneOfType } = PropTypes
+const { string, bool, func, oneOfType, object } = PropTypes
 
 export default class Checkbox extends React.Component {
   static defaultProps = {
     className: 'Checkbox',
     value: true,
     handleChange: () => {},
+    error: {},
+    setRef: () => {},
   }
 
   static propTypes = {
@@ -18,6 +20,8 @@ export default class Checkbox extends React.Component {
     selected: bool,
     handleChange: func,
     value: oneOfType(string, bool),
+    error: object,
+    setRef: func,
   }
 
   state = {
@@ -25,9 +29,10 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const { className, ariaDescribedby, id, labelText, name, value } = this.props
+    const { className, ariaDescribedby, id, labelText, name, value, setRef } = this.props
+    const { message } = this.props.error
     return (
-      <div className={`${className} Checkbox`}>
+      <div className={`${className} Checkbox ${message && 'Form__error'}`}>
         <input
           aria-describedby={ariaDescribedby}
           className={`${className}__text Checkbox__text`}
@@ -37,10 +42,18 @@ export default class Checkbox extends React.Component {
           onChange={this._handleChange}
           value={value}
           type="checkbox"
+          ref={setRef}
         />
         <label className={`${className}__label Checkbox__label`} htmlFor={id}>
           {labelText}
         </label>
+        {message && (
+          <div>
+            <label className="Form__errorMessage" htmlFor={id}>
+              {message}
+            </label>
+          </div>
+        )}
       </div>
     )
   }
