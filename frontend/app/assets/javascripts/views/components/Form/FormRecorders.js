@@ -82,6 +82,8 @@ export default class FormRecorders extends React.Component {
 
         {items}
 
+        {this._generateHiddenInput()}
+
         {/* SCREEN READER DESCRIPTIONS --------------- */}
         <span id={idDescribedbyItemBrowse} className="visually-hidden">
           {textDescribedbyItemBrowse}
@@ -204,5 +206,13 @@ export default class FormRecorders extends React.Component {
     return {
       'fvm:recorder': fvmRecorder,
     }
+  }
+
+  _generateHiddenInput = () => {
+    const { items, itemsIdUid } = this.state
+    const selectedItems = items.map((element) => {
+      return itemsIdUid[element.props.id]
+    })
+    return <input type="hidden" name="fvm:recorder" value={JSON.stringify(selectedItems)} />
   }
 }
