@@ -1,12 +1,14 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, func } = PropTypes
+const { string, func, object } = PropTypes
 
 export default class Textarea extends React.Component {
   static defaultProps = {
     className: 'Textarea',
     value: '',
     handleChange: () => {},
+    error: {},
+    setRef: () => {},
   }
 
   static propTypes = {
@@ -17,6 +19,8 @@ export default class Textarea extends React.Component {
     className: string,
     value: string,
     handleChange: func,
+    error: object,
+    setRef: func,
   }
 
   state = {
@@ -24,9 +28,10 @@ export default class Textarea extends React.Component {
   }
 
   render() {
-    const { ariaDescribedby, className, id, labelText, name } = this.props
+    const { message } = this.props.error
+    const { ariaDescribedby, className, id, labelText, name, setRef } = this.props
     return (
-      <div className={`${className} Textarea`}>
+      <div className={`${className} Textarea ${message && 'Form__error'}`}>
         <label className={`${className}__label Textarea__label`} htmlFor={id}>
           {labelText}
         </label>
@@ -37,7 +42,13 @@ export default class Textarea extends React.Component {
           name={name}
           defaultValue={this.state.value}
           onChange={this._handleChange}
+          ref={setRef}
         />
+        {message && (
+          <label className="Form__errorMessage" htmlFor={id}>
+            {message}
+          </label>
+        )}
       </div>
     )
   }
