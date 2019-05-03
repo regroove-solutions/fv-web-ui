@@ -26,7 +26,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 // import fields from 'models/schemas/fields'
 // import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
-import * as yup from 'yup'
 
 import Select from 'views/components/Form/Common/Select'
 import Text from 'views/components/Form/Common/Text'
@@ -41,12 +40,13 @@ import FormRelatedVideos from 'views/components/Form/FormRelatedVideos'
 import FormCategories from 'views/components/Form/FormCategories'
 import FormRelatedPhrases from 'views/components/Form/FormRelatedPhrases'
 import StringHelpers from 'common/StringHelpers'
-const intl = IntlService.instance
-const { string, array, func, object } = PropTypes
-/**
- * Create word entry
- */
+import { getError, getFormData, handleSubmit } from 'common/FormHelpers'
 
+import validator, { toParse } from './validation'
+
+const intl = IntlService.instance
+
+const { string, array, func, object } = PropTypes
 export class CreateV2 extends Component {
   static propTypes = {
     windowPath: string.isRequired,
@@ -75,29 +75,6 @@ export class CreateV2 extends Component {
     this.setFormRef = (element) => {
       this.form = element
     }
-
-    this.createWordSchema = yup.object().shape({
-      'dc:title': yup
-        .string()
-        .label('Name') // used when errored, message will say 'Name' instead of 'dc:title'
-        .required(),
-      'fv-word:part_of_speech': yup
-        .string()
-        .label('Part of speech')
-        .required(),
-      'fv-word:pronunciation': yup.string(),
-      'fv-word:available_in_games': yup.string(),
-      'fv:available_in_childrens_archive': yup.string(),
-      'fv:cultural_note': yup.array().of(yup.string()),
-      'fv:definitions': yup.array().of(yup.object().shape({ language: yup.string(), translation: yup.string() })),
-      'fv:literal_translation': yup
-        .array()
-        .of(yup.object().shape({ language: yup.string(), translation: yup.string() })),
-      'fv:reference': yup.string(),
-      'fv:related_audio': yup.array().of(yup.string()),
-      'fv:related_pictures': yup.array().of(yup.string()),
-      'fv:source': yup.array().of(yup.string()),
-    })
   }
 
   // Fetch data on initial render
@@ -223,7 +200,7 @@ export class CreateV2 extends Component {
             labelText="Word"
             name="dc:title"
             value=""
-            error={this._getError({ errors, fieldName: 'dc:title' })}
+            error={getError({ errors, fieldName: 'dc:title' })}
           />
           {/* PARTOFSPEECH --------------- */}
           <Select
@@ -285,7 +262,7 @@ export class CreateV2 extends Component {
             labelText="Pronounciation"
             name="fv-word:pronunciation"
             value=""
-            error={this._getError({ errors, fieldName: 'fv-word:pronunciation' })}
+            error={getError({ errors, fieldName: 'fv-word:pronunciation' })}
           />
 
           {/* Definitions --------------- */}
@@ -377,17 +354,19 @@ the 'Move Category up' and 'Move Category down' buttons`}
   }
 
   _onRequestSaveForm = async () => {
-    const formData = this._getFormData()
-    const formValidation = await this._validateForm(formData)
-    if (formValidation.valid) {
-      // console.log('IS VALID. WOULD SUBMIT FORM!')
+    const formData = getFormData({
+      formReference: this.form,
+      toParse,
+    })
+
+    const success = () => {
       const now = Date.now()
       this.props.createWord(
         this.props.routeParams.dialect_path + '/Dictionary',
         {
           type: 'FVWord',
           name: now.toString(),
-          properties: this._getFormData(),
+          properties: formData,
         },
         null,
         now
@@ -395,127 +374,20 @@ the 'Move Category up' and 'Move Category down' buttons`}
       this.setState({
         errors: [],
       })
-    } else {
+    }
+
+    const failure = (response) => {
       this.setState({
-        errors: formValidation.errors,
+        errors: response.errors,
       })
     }
-    // this.setState({
-    //   formValue: formDataFormatted,
-    // })
-    // Passed validation
-    // if (formValue) {
 
-    // const now = Date.now()
-    // this.props.createWord(
-    //   this.props.routeParams.dialect_path + '/Dictionary',
-    //   {
-    //     type: 'FVWord',
-    //     name: now.toString(),
-    //     properties: formDataFormatted,
-    //   },
-    //   null,
-    //   now
-    // )
-
-    // Passed validation
-    // if (formValue) {
-    // this.setState({
-    //   wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
-    // })
-    // } else {
-    // window.scrollTo(0, 0)
-    // }
-  }
-  _getFormData = () => {
-    const formDataFormatted = {}
-    const formData = new FormData(this.form)
-
-    for (const value of formData.entries()) {
-      // parse any stringify-ed array/objects
-      const name = value[0]
-      const data = value[1]
-
-      const needToParse = [
-        /^fv:literal_translation/,
-        /^fv:definitions/,
-        /^fv:related_audio/,
-        /^fv:related_pictures/,
-        /^fv:cultural_note/,
-        /^fvm:source/,
-        /^fv-word:related_phrases/,
-      ]
-      const shouldParse = needToParse.some((regex) => {
-        return regex.test(name)
-      })
-
-      if (shouldParse) {
-        formDataFormatted[name] = JSON.parse(data)
-        continue
-      }
-
-      // TODO: check for file blobs!
-      // formData.append(name, value, filename);
-
-      formDataFormatted[name] = data
-    }
-    return formDataFormatted
-  }
-  _validateForm = async (formData) => {
-    // Note: When `abortEarly === true` then `{ path, type } = invalid` is defined.
-    // When `abortEarly === false` then `{ path, type } = invalid` is not defined! Data is found in `invalid.errors[]`.
-    const validation = await this.createWordSchema.validate(formData, { abortEarly: false }).then(
-      () => {
-        return {
-          valid: true,
-          errors: [],
-        }
-      },
-      (invalid) => {
-        const { inner } = invalid
-        const errors = inner.map((error) => {
-          const { message, path, type } = error
-          return {
-            message,
-            path,
-            type,
-          }
-        })
-        return {
-          valid: false,
-          errors,
-        }
-      }
-    )
-    return validation
-  }
-  _validateField = async ({ name, data }) => {
-    // const formDataFormatted = this._getFormData()
-    const results = await this._validateForm(data)
-    const { valid, errors } = results
-
-    if (valid === false) {
-      const fieldErrored = errors.filter((error) => {
-        return error.path === name
-      })
-      if (fieldErrored.length !== 0) {
-        const fieldData = fieldErrored[0]
-        fieldData.valid = false
-        return fieldData
-      }
-    }
-    return {
-      valid: true,
-    }
-  }
-  _getError = ({ errors, fieldName }) => {
-    const error = errors.filter((errorItem) => {
-      return errorItem.path === fieldName
+    handleSubmit({
+      validator,
+      formData,
+      success,
+      failure,
     })
-    if (error.length === 1) {
-      return error[0]
-    }
-    return {}
   }
 }
 
