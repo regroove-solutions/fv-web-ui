@@ -1,12 +1,13 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, func } = PropTypes
+const { string, func, object } = PropTypes
 
 export default class File extends React.Component {
   static defaultProps = {
     className: 'Text',
     value: '',
     handleChange: () => {},
+    error: {},
   }
 
   static propTypes = {
@@ -17,32 +18,23 @@ export default class File extends React.Component {
     className: string,
     value: string,
     handleChange: func,
+    error: object,
   }
-  //   fileInput = React.createRef()
 
   state = {
     files: [],
   }
 
-  constructor(props) {
-    super(props)
-
-    // NOTE: Using callback refs since on old React
-    // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
-    this.fileInput = null
-
-    this.setFileInputRef = (element) => {
-      this.fileInput = element
-    }
+  fileInput = null
+  setFileInputRef = (element) => {
+    this.fileInput = element
   }
 
   render() {
-    // if (this.refs.inputFile) {
-    //   console.log('!!!', this.refs.inputFile.files)
-    // }
+    const { message } = this.props.error
     const { className, ariaDescribedby, id, labelText, name } = this.props
     return (
-      <div className={`${className} File`}>
+      <div className={`${className} File ${message && 'Form__error'}`}>
         <label className={`${className}__label File__label`} htmlFor={id}>
           {labelText}
         </label>
@@ -56,12 +48,18 @@ export default class File extends React.Component {
           }}
           ref={this.setFileInputRef}
           type="file"
+          multiple
         />
+        {message && (
+          <label className="Form__errorMessage" htmlFor={id}>
+            {message}
+          </label>
+        )}
       </div>
     )
   }
   _handleChange = () => {
-    this.setState({ files: this.fileInput ? this.fileInput.files[0] : this.state.files }, () => {
+    this.setState({ files: this.fileInput.files }, () => {
       this.props.handleChange(this.state.files)
     })
   }
