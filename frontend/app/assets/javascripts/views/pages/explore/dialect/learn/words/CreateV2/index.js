@@ -40,8 +40,8 @@ import FormRelatedVideos from 'views/components/Form/FormRelatedVideos'
 import FormCategories from 'views/components/Form/FormCategories'
 import FormRelatedPhrases from 'views/components/Form/FormRelatedPhrases'
 import StringHelpers from 'common/StringHelpers'
-import { getError, getFormData, handleSubmit } from 'common/FormHelpers'
 
+import { getError, getErrorFeedback, getFormData, handleSubmit } from 'common/FormHelpers'
 import validator, { toParse } from './validation'
 import copy from './internationalization'
 
@@ -152,29 +152,6 @@ export class CreateV2 extends Component {
     // }
 
     const { errors } = this.state
-
-    let errorFeedback = null
-    if (errors.length !== 0) {
-      if (errors.length > 0) {
-        const li = errors.map((error, i) => {
-          return (
-            <li key={i}>
-              <label className="Form__errorFeedbackItemLabel" htmlFor={StringHelpers.clean(error.path, 'CLEAN_ID')}>
-                {error.message}
-              </label>
-            </li>
-          )
-        })
-
-        const intro = `Could you review the following ${errors.length > 1 ? 'items' : 'item'}?`
-        errorFeedback = (
-          <div className="Form__errorFeedback">
-            {intro}
-            <ul className="Form__errorFeedbackItems">{li}</ul>
-          </div>
-        )
-      }
-    }
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
@@ -344,7 +321,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
             name="fv-word:available_in_games"
           />
 
-          {errorFeedback}
+          {getErrorFeedback({ errors })}
           <button type="submit">{copy.submit}</button>
         </form>
       </PromiseWrapper>
