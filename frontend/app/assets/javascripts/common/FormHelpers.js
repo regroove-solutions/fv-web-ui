@@ -18,10 +18,10 @@ import selectn from 'selectn'
 export default {
   // Get properties from form value
   getProperties: function(form) {
-    let properties = {}
-    let formValue = form.getValue()
+    const properties = {}
+    const formValue = form.getValue()
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       // Treat valued checkboxes differently. Always have value, so skip if unchecked.
       // getComponent does not work with input names that have '.' in them. Access directly.
       // valuedCheckbox = selectn('form.refs.input.refs[\'' + key + '\'].refs.valued_checkbox', form);
@@ -49,11 +49,11 @@ export default {
     return properties
   },
   prepareFilters: function(filters, options, optionsKey) {
-    let preparedFilters = {}
+    const preparedFilters = {}
 
     // Test each of the filters against item
-    for (let filterKey in filters) {
-      let filterOptions = selectn([optionsKey, 'fields', filterKey], options)
+    for (const filterKey in filters) {
+      const filterOptions = selectn([optionsKey, 'fields', filterKey], options)
 
       // Add options to returned filter object
 
@@ -70,4 +70,180 @@ export default {
 
     return preparedFilters
   },
+}
+
+/*
+Get FormData from `form`
+
+1) Pass in a reference to a `form`
+2) Optionally provide regex of field names that should be converted to js objects (via `JSON.parse()`)
+
+Example
+
+getFormData({
+  formReference: this.form,
+  toParse: [
+    /^fv:literal_translation/,
+    /^fv:definitions/,
+    /^fv:related_audio/,
+    /^fv:related_pictures/,
+    /^fv:cultural_note/,
+    /^fvm:source/,
+    /^fv-word:related_phrases/,
+  ],
+})
+*/
+export const getFormData = ({ formReference, toParse = [] }) => {
+  const formDataFormatted = {}
+  const formData = new FormData(formReference)
+
+  for (const value of formData.entries()) {
+    // parse any stringify-ed array/objects
+    const name = value[0]
+    const data = value[1]
+
+    const shouldParse = toParse.some((regex) => {
+      return regex.test(name)
+    })
+
+    if (shouldParse) {
+      formDataFormatted[name] = JSON.parse(data)
+      continue
+    }
+
+    // TODO: check for file blobs!
+    // formData.append(name, value, filename);
+
+    formDataFormatted[name] = data
+  }
+  return formDataFormatted
+}
+
+/*
+
+Validates a form
+
+1) Provide FormData object of form and yup schema, optional: abortEarly boolean
+
+Example
+
+const validator = yup.object().shape({
+      'dc:title': yup
+        .string()
+        .label('Name')
+        .required()
+    })
+const formData = getFormData({
+  formReference: this.refToForm,
+})
+const formValidation = await validateForm({formData, validator})
+
+*/
+export const validateForm = async ({ formData, abortEarly = false, validator }) => {
+  // Note: When `abortEarly === true` then `{ path, type } = invalid` is defined.
+  // When `abortEarly === false` then `{ path, type } = invalid` is not defined! Data is found in `invalid.errors[]`.
+  const validation = await validator.validate(formData, { abortEarly }).then(
+    () => {
+      return {
+        valid: true,
+        errors: [],
+      }
+    },
+    (invalid) => {
+      const { inner } = invalid
+      const errors = inner.map((error) => {
+        const { message, path, type } = error
+        return {
+          message,
+          path,
+          type,
+        }
+      })
+      return {
+        valid: false,
+        errors,
+      }
+    }
+  )
+  return validation
+}
+/*
+Determines if a field is valid. Returns object.
+
+Example
+
+const validator = yup.object().shape({
+      'dc:title': yup
+        .string()
+        .label('Name')
+        .required()
+    })
+const formData = getFormData({
+  formReference: this.refToForm,
+})
+const formValidation = await validateForm({name: 'dc:title', formData, validator}})
+
+Return
+
+{
+  valid: boolean,
+  [yup error?]: [?]
+}
+*/
+export const validateField = async ({ name, formData, validator }) => {
+  const results = await this._validateForm({ formData, validator })
+  const { valid, errors } = results
+
+  if (valid === false) {
+    const fieldErrored = errors.filter((error) => {
+      return error.path === name
+    })
+    if (fieldErrored.length !== 0) {
+      const fieldData = fieldErrored[0]
+      fieldData.valid = false
+      return fieldData
+    }
+  }
+  return {
+    valid: true,
+  }
+}
+/*
+Returns a field's error message from yup validation
+
+const validator = yup.object().shape({
+  'dc:title': yup
+    .string()
+    .label('Name')
+    .required(),
+})
+const formData = getFormData({
+  formReference: this.refToForm,
+})
+const formValidation = await validateForm({ formData, validator })
+
+if (formValidation.valid === false) {
+  const errorForTitleField = getError({ errors: formValidation.errors, fieldName: 'dc:title' })
+}
+ */
+export const getError = ({ errors = [], fieldName }) => {
+  const error = errors.filter((errorItem) => {
+    return errorItem.path === fieldName
+  })
+  if (error.length === 1) {
+    return error[0]
+  }
+  return {}
+}
+
+export const handleSubmit = async ({ validator, formData, success, failure }) => {
+  const formValidation = await validateForm({ formData, validator })
+
+  if (formValidation.valid) {
+    success()
+  } else {
+    failure({
+      errors: formValidation.errors,
+    })
+  }
 }
