@@ -1,11 +1,11 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, bool, func } = PropTypes
+const { string, bool, func, oneOfType } = PropTypes
 
 export default class Checkbox extends React.Component {
   static defaultProps = {
     className: 'Checkbox',
-    value: '',
+    value: true,
     handleChange: () => {},
   }
 
@@ -17,6 +17,7 @@ export default class Checkbox extends React.Component {
     className: string,
     selected: bool,
     handleChange: func,
+    value: oneOfType(string, bool),
   }
 
   state = {
@@ -24,7 +25,7 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const { className, ariaDescribedby, id, labelText, name } = this.props
+    const { className, ariaDescribedby, id, labelText, name, value } = this.props
     return (
       <div className={`${className} Checkbox`}>
         <input
@@ -34,6 +35,7 @@ export default class Checkbox extends React.Component {
           name={name}
           defaultChecked={this.state.selected}
           onChange={this._handleChange}
+          value={value}
           type="checkbox"
         />
         <label className={`${className}__label Checkbox__label`} htmlFor={id}>
