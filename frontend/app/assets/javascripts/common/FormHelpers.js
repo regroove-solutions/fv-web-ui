@@ -14,7 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import selectn from 'selectn'
-
+import React from 'react'
+import StringHelpers from 'common/StringHelpers'
 export default {
   // Get properties from form value
   getProperties: function(form) {
@@ -246,4 +247,30 @@ export const handleSubmit = async ({ validator, formData, success, failure }) =>
       errors: formValidation.errors,
     })
   }
+}
+
+export const getErrorFeedback = ({ errors = [] }) => {
+  let errorFeedback = null
+  if (errors.length !== 0) {
+    if (errors.length > 0) {
+      const li = errors.map((error, i) => {
+        return (
+          <li key={i}>
+            <label className="Form__errorFeedbackItemLabel" htmlFor={StringHelpers.clean(error.path, 'CLEAN_ID')}>
+              {error.message}
+            </label>
+          </li>
+        )
+      })
+
+      const intro = `Could you review the following ${errors.length > 1 ? 'items' : 'item'}?`
+      errorFeedback = (
+        <div className="Form__errorFeedback">
+          {intro}
+          <ul className="Form__errorFeedbackItems">{li}</ul>
+        </div>
+      )
+    }
+  }
+  return errorFeedback
 }
