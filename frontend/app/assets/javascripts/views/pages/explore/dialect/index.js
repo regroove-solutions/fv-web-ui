@@ -150,8 +150,9 @@ export default class ExploreDialect extends Component {
     // }
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest(path, e) {
     this.props.pushWindowPath(path)
+    e.preventDefault();
   }
 
   _onSwitchAreaRequest(e, index, value) {
@@ -361,25 +362,25 @@ export default class ExploreDialect extends Component {
                 <div firstChild={true} float="left">
                   <a
                     href={this.props.windowPath + '/learn'}
-                    onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')}
+                    onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/learn')}
                   >
                     {intl.trans('learn_our_lang', 'Learn our Language')}
                   </a>
                   <a
                     href={this.props.windowPath + '/play'}
-                    onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')}
+                    onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/play')}
                   >
                     {intl.trans('views.pages.explore.dialect.play_game', 'Play a Game')}
                   </a>
                   <a
                     href={this.props.windowPath + '/gallery'}
-                    onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')}
+                    onClick={this._onNavigateRequest.bind(this, this.props.windowPath + '/gallery')}
                   >
                     {intl.trans('views.pages.explore.dialect.photo_gallery', 'Photo Gallery')}
                   </a>
                   <a
                     href={this.props.windowPath + '/kids'}
-                    onTouchTap={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))}
+                    onClick={this._onNavigateRequest.bind(this, this.props.windowPath.replace('explore', 'kids'))}
                   >
                     {intl.trans('views.pages.explore.dialect.kids_portal', 'Kids Portal')}
                   </a>

@@ -30,7 +30,7 @@
       }
     ],
     "camelcase": [
-      2,
+      1,
       {
         // http://eslint.org/docs/rules/camelcase
         "properties": "never"

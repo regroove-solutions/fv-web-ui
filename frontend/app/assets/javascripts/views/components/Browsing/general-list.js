@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 import classNames from 'classnames'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import CardView from './card-view'
 

@@ -6,11 +6,14 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 import java.io.IOException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.security.SecurityConstants;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
 import org.nuxeo.ecm.core.io.registry.reflect.Setup;
 
@@ -20,6 +23,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(AncestryEnricher.class);
 
     public static final String NAME = "ancestry";
 
@@ -38,7 +43,6 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
 
     protected ObjectNode constructAncestryJSON(DocumentModel doc) {
 
-        final String docId = doc.getId();
         ObjectMapper mapper = new ObjectMapper();
 
         return CoreInstance.doPrivileged(doc.getCoreSession(), session -> {
@@ -49,16 +53,18 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
              */
 
             // Process Language Family
+            log.debug("Constructing ancestry for doc: " + doc.getId());
 
             DocumentModel resolvedDoc = doc;
             String languageFamilyId = (String) doc.getProperty("fvancestry", "family");
 
             if (StringUtils.isNotEmpty(languageFamilyId)) {
                 resolvedDoc = resolveTargetDoc(languageFamilyId, doc.isProxy(), session);
-
                 ObjectNode languageFamilyObj = mapper.createObjectNode();
-                languageFamilyObj.put("uid", languageFamilyId);
-                languageFamilyObj.put("dc:title", resolvedDoc.getTitle());
+                if (resolvedDoc != null) {
+                    languageFamilyObj.put("uid", languageFamilyId);
+                    languageFamilyObj.put("dc:title", resolvedDoc.getTitle());
+                }
                 jsonObj.set("family", languageFamilyObj);
             }
 
@@ -69,8 +75,10 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
             if (StringUtils.isNotEmpty(languageId)) {
                 resolvedDoc = resolveTargetDoc(languageId, doc.isProxy(), session);
                 ObjectNode languageObj = mapper.createObjectNode();
-                languageObj.put("uid", languageId);
-                languageObj.put("dc:title", resolvedDoc.getTitle());
+                if (resolvedDoc != null) {
+                    languageObj.put("uid", languageId);
+                    languageObj.put("dc:title", resolvedDoc.getTitle());
+                }
                 jsonObj.set("language", languageObj);
             }
 
@@ -81,13 +89,14 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
             if (StringUtils.isNotEmpty(dialectId)) {
                 resolvedDoc = resolveTargetDoc(dialectId, doc.isProxy(), session);
                 ObjectNode dialectDoc = mapper.createObjectNode();
-                dialectDoc.put("uid", dialectId);
-                dialectDoc.put("dc:title", resolvedDoc.getTitle());
-                dialectDoc.put("path", resolvedDoc.getPathAsString());
+                if (resolvedDoc != null) {
+                    dialectDoc.put("uid", dialectId);
+                    dialectDoc.put("dc:title", resolvedDoc.getTitle());
+                    dialectDoc.put("path", resolvedDoc.getPathAsString());
+                    dialectDoc.put("fvdialect:country", (String) resolvedDoc.getPropertyValue("fvdialect:country"));
+                    dialectDoc.put("fvdialect:region", (String) resolvedDoc.getPropertyValue("fvdialect:region"));
 
-                dialectDoc.put("fvdialect:country", (String) resolvedDoc.getPropertyValue("fvdialect:country"));
-                dialectDoc.put("fvdialect:region", (String) resolvedDoc.getPropertyValue("fvdialect:region"));
-
+                }
                 jsonObj.set("dialect", dialectDoc);
 
             }
@@ -96,6 +105,9 @@ public class AncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
     }
 
     protected DocumentModel resolveTargetDoc(String docIdRef, boolean isProxy, CoreSession session) {
+        if (!session.hasPermission(new IdRef(docIdRef), SecurityConstants.READ)) {
+            return null;
+        }
         DocumentModel resolvedDoc = session.getDocument(new IdRef(docIdRef));
         if (isProxy) {
             DocumentModelList proxies = session.getProxies(new IdRef(docIdRef), null);

@@ -20,7 +20,7 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import t from 'tcomb-form'
 
@@ -251,7 +251,7 @@ export default class UserTasks extends React.Component {
               <RaisedButton
                 label={intl.trans('add_to_group', 'Add to Group', 'first')}
                 secondary={true}
-                onTouchTap={this._handlePreApprovalOpen.bind(this, task, 'approve')}
+                onClick={this._handlePreApprovalOpen.bind(this, task, 'approve')}
               />
             </td>
           </tr>

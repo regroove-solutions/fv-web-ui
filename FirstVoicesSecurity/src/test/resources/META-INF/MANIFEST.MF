@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: FirstVoicesSecurity.tests
+Bundle-Name: FirstVoicesSecurity.tests
+

@@ -254,7 +254,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                   <RaisedButton
                     primary
                     label={'View Words and Phrases that start with ' + this.state.current_char.title}
-                    onTouchTap={this._onNavigateRequest.bind(
+                    onClick={this._onNavigateRequest.bind(
                       this,
                       this.state.current_char.path.split('/')[this.state.current_char.path.split('/').length - 1]
                     )}
@@ -288,8 +288,8 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
                         >
                           <FlatButton
                             icon={audioFile ? <FontIcon className="material-icons">play_arrow</FontIcon> : ''}
-                            onTouchTap={_this._onCharAudioTouchTap.bind(this, char)}
-                            //onTouchTap={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
+                            onClick={_this._onCharAudioTouchTap.bind(this, char)}
+                            //onClick={this._onNavigateRequest.bind(this, char.path.split('/')[char.path.split('/').length - 1])}
                             label={text}
                             style={{ minWidth: 'inherit', textTransform: 'initial' }}
                           />

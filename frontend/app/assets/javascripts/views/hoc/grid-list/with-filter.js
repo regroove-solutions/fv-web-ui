@@ -129,7 +129,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                     value={this.state.formValue}
                     options={options.toJS()}
                   />
-                  <RaisedButton onTouchTap={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
+                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
                   &nbsp;
                   <RaisedButton type="submit" label={intl.trans('filter', 'Filter', 'first')} primary />
                 </FiltersWithToggle>

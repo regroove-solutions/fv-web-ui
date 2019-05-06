@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import selectn from 'selectn'
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { paramMatch } from 'conf/routes'
 
 const arrayPopImmutable = function(array, sizeToPop = 1) {
@@ -22,12 +22,16 @@ const arrayPopImmutable = function(array, sizeToPop = 1) {
 }
 
 /**
- * Returns the context path (as an array) from local.json, or empty array.
+ * Returns the context path (as an array) from local.js, or empty array.
  */
 const ContextPath = function() {
-  if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
+  if (ENV_CONTEXT_PATH != null && typeof ENV_CONTEXT_PATH !== 'undefined') {
+    return ENV_CONTEXT_PATH;
+  }
+  else if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
     return ''
   }
+
   return ConfGlobal.contextPath
 }
 
@@ -173,21 +177,29 @@ export default {
     return props.windowPath && props.windowPath.indexOf('/Workspaces/') != -1
   },
   getBaseWebUIURL: function() {
-    return (
-      window.location.protocol +
-      '//' +
-      window.location.hostname +
-      (window.location.port ? ':' + window.location.port : '') +
-      ContextPath()
-    )
+    if (ENV_WEB_URL != null && typeof ENV_WEB_URL !== 'undefined') {
+      return ENV_WEB_URL;
+    } else {
+      return (
+        window.location.protocol +
+        '//' +
+        window.location.hostname +
+        (window.location.port ? ':' + window.location.port : '') +
+        ContextPath()
+      )
+    }
   },
   getBaseURL: function() {
-    return (
-      window.location.protocol +
-      '//' +
-      window.location.hostname +
-      (window.location.port ? ':' + window.location.port : '') +
-      '/nuxeo/'
-    )
+    if (ENV_NUXEO_URL != null && typeof ENV_NUXEO_URL !== 'undefined') {
+      return ENV_NUXEO_URL;
+    } else {
+      return (
+        window.location.protocol +
+        '//' +
+        window.location.hostname +
+        (window.location.port ? ':' + window.location.port : '') +
+        '/nuxeo/'
+      )
+    }
   },
 }

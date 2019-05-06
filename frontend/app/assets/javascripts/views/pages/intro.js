@@ -99,7 +99,7 @@ export default class PageHome extends Component {
             </a>
             <RaisedButton
               label={this.intl.translate({ key: 'enter_firstvoices', default: 'Enter FirstVoices' })}
-              onTouchTap={(e, v) => this._onNavigateRequest('/')}
+              onClick={(e, v) => this._onNavigateRequest('/')}
               style={{ textAlign: 'center' }}
             />
             <p>

@@ -313,10 +313,14 @@ class ListView extends DataListView {
     if (props.filter.has('currentAppliedFilter')) {
       currentAppliedFilter = Object.values(props.filter.get('currentAppliedFilter').toJS()).join('')
     }
+
+    // WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
+    let starts_with_query = ProviderHelpers.isStartsWithQuery(currentAppliedFilter);
+
     props.fetchPhrases(
       this._getPathOrParentID(props),
       `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}`
+        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}${starts_with_query}`
     )
   }
 

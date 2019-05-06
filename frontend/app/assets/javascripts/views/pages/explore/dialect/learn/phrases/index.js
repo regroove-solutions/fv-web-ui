@@ -30,7 +30,7 @@ import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import RaisedButton from 'material-ui/lib/raised-button'
 
 import DialectFilterList from 'views/components/DialectFilterList'
-import { AlphabetListView } from '../../../../../components/AlphabetListView'
+import AlphabetListView from 'views/components/AlphabetListView'
 
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { isMobile } from 'react-device-detect'
@@ -242,7 +242,7 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                   'Create New Phrase',
                   'words'
                 )}
-                onTouchTap={this._onNavigateRequest.bind(this, 'create')}
+                onClick={this._onNavigateRequest.bind(this, 'create')}
                 primary
               />
             </AuthorizationFilter>

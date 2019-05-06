@@ -56,7 +56,7 @@ export default class DialogCreateForm extends React.Component {
       case 'FVPhrase':
         createForm = (
           <PageDialectPhrasesCreate
-            embedded={true}
+            embedded
             routeParams={{ dialect_path: this.props.context.path }}
             onDocumentCreated={this._onDocumentCreated}
           />
@@ -70,7 +70,7 @@ export default class DialogCreateForm extends React.Component {
 
       case 'FVCategory':
         if (this.props.fieldAttributes.page_provider.folder == 'Phrase Books') {
-          createForm = <PageDialectPhraseBooksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />
+          createForm = <PageDialectPhraseBooksCreate embedded onDocumentCreated={this._onDocumentCreated} />
           createNewButtonLabel = intl.trans(
             'views.pages.explore.dialect.phrases.create_new_phrase_book',
             'Create New Phrase Book',
@@ -91,14 +91,14 @@ export default class DialogCreateForm extends React.Component {
                   theme: 'explore',
                 }}
                 value={this.props.value}
-                embedded={true}
+                embedded
                 onDocumentCreated={this._onDocumentCreated}
                 cancelMethod={this.handleClose}
               />
             )
           }
         } else if (this.props.fieldAttributes.page_provider.folder == 'Categories') {
-          createForm = <PageDialectCategoryCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />
+          createForm = <PageDialectCategoryCreate embedded onDocumentCreated={this._onDocumentCreated} />
           createNewButtonLabel = intl.trans(
             'views.pages.explore.dialect.phrases.create_new_category',
             'Create New Category',
@@ -108,7 +108,7 @@ export default class DialogCreateForm extends React.Component {
         break
 
       case 'FVContributor':
-        createForm = <PageDialectContributorsCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />
+        createForm = <PageDialectContributorsCreate embedded onDocumentCreated={this._onDocumentCreated} />
         createNewButtonLabel = intl.trans(
           'views.pages.explore.dialect.phrases.create_new_contributor',
           'Create New Contributor',
@@ -129,7 +129,7 @@ export default class DialogCreateForm extends React.Component {
                 theme: 'explore',
               }}
               value={this.props.value}
-              embedded={true}
+              embedded
               onDocumentCreated={this._onDocumentCreated}
               cancelMethod={this.handleClose}
             />
@@ -138,7 +138,7 @@ export default class DialogCreateForm extends React.Component {
         break
 
       case 'FVLink':
-        createForm = <PageDialectLinksCreate embedded={true} onDocumentCreated={this._onDocumentCreated} />
+        createForm = <PageDialectLinksCreate embedded onDocumentCreated={this._onDocumentCreated} />
         createNewButtonLabel =
           this.props.value || this.props.expandedValue
             ? intl.trans('views.pages.explore.dialect.phrases.edit_link', 'Edit Link', 'words')
@@ -154,7 +154,7 @@ export default class DialogCreateForm extends React.Component {
                 theme: 'explore',
               }}
               value={this.props.value}
-              embedded={true}
+              embedded
               onDocumentCreated={this._onDocumentCreated}
               cancelMethod={this.handleClose}
             />
@@ -169,18 +169,18 @@ export default class DialogCreateForm extends React.Component {
       !this.props.fieldAttributes.disableCreateNewButton ||
       this.props.fieldAttributes.disableCreateNewButton === false
     ) {
-      createNewButton = <RaisedButton label={createNewButtonLabel} onTouchTap={this.handleOpen} />
+      createNewButton = <RaisedButton label={createNewButtonLabel} onClick={this.handleOpen} />
     }
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary={true} onTouchTap={this.handleClose} />,
+      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onClick={this.handleClose} />,
     ]
 
     return (
       <div>
         {createNewButton}
 
-        <Dialog open={this.state.open} onRequestClose={this.handleClose} autoScrollBodyContent={true} actions={actions}>
+        <Dialog open={this.state.open} onRequestClose={this.handleClose} autoScrollBodyContent actions={actions}>
           {createForm}
         </Dialog>
       </div>

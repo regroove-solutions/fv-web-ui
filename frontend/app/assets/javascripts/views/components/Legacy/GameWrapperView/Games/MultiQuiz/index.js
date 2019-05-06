@@ -252,7 +252,7 @@ class MultiQuiz extends React.Component {
         <div className={classNames('row', 'row-navigation')}>
           <div className={classNames('col-xs-2', 'text-left')}>
             <IconButton
-              onTouchTap={this.handleNavigate.bind(this, 'previous')}
+              onClick={this.handleNavigate.bind(this, 'previous')}
               iconClassName={classNames('glyphicon', 'glyphicon-chevron-left')}
               tooltip="Previous Question"
             />
@@ -262,7 +262,7 @@ class MultiQuiz extends React.Component {
               <RaisedButton
                 secondary={true}
                 disabled={this.state.currentAnswerIndex in this.state.selectedAnswers ? false : true}
-                onTouchTap={this.checkAnswer.bind(this)}
+                onClick={this.checkAnswer.bind(this)}
                 label="Check Answer"
               />
             </div>
@@ -280,7 +280,7 @@ class MultiQuiz extends React.Component {
           </div>
           <div className={classNames('col-xs-2', 'text-right')}>
             <IconButton
-              onTouchTap={this.handleNavigate.bind(this, 'next')}
+              onClick={this.handleNavigate.bind(this, 'next')}
               iconClassName={classNames('glyphicon', 'glyphicon-chevron-right')}
               tooltip="Next Question"
             />

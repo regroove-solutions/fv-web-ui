@@ -203,7 +203,7 @@ export default class AppLeftNav extends Component {
       >
         <AppBar
           iconElementLeft={
-            <IconButton onTouchTap={this._onRequestChange}>
+            <IconButton onClick={this._onRequestChange}>
               <NavigationClose />
             </IconButton>
           }

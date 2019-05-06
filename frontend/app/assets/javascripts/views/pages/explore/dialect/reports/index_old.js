@@ -251,7 +251,7 @@ export default class PageDialectReports extends React.Component {
         <div className="row">
           <div className="col-xs-12">
             <h1>Reports - {this.state.queryName}</h1>
-            <a onTouchTap={this._resetQueryData}>Reset query data</a>
+            <a onClick={this._resetQueryData}>Reset query data</a>
 
             <div className="col-xs-12">
               <div className="col-xs-2 col-xs-offset-4">
@@ -309,7 +309,7 @@ export default class PageDialectReports extends React.Component {
               <List>
                 <ListItem
                   primaryText="List of words in new status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words in new status',
                     " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='New'"
@@ -317,7 +317,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words in enabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words in enabled status',
                     " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Enabled'"
@@ -325,7 +325,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words in published status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words in published status',
                     " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Published'"
@@ -333,7 +333,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words in disabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words in disabled status',
                     " AND ecm:primaryType='FVWord' AND ecm:currentLifeCycleState='Disabled'"
@@ -342,7 +342,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of words without audio"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without audio',
                     " AND ecm:primaryType='FVWord' AND fv:related_audio/* IS NULL"
@@ -350,7 +350,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without images"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without images',
                     " AND ecm:primaryType='FVWord' AND fv:related_pictures/* IS NULL"
@@ -358,7 +358,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without video"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without video',
                     " AND ecm:primaryType='FVWord' AND fv:related_videos/* IS NULL"
@@ -366,7 +366,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without source"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without source',
                     " AND ecm:primaryType='FVWord' AND fv:source/* IS NULL"
@@ -375,7 +375,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of words without categories"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without categories',
                     " AND ecm:primaryType='FVWord' AND fv-word:categories/* IS NULL"
@@ -383,7 +383,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without part of speech"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without part of speech',
                     " AND ecm:primaryType='FVWord' AND fv-word:part_of_speech=''"
@@ -391,7 +391,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without pronunciation"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without pronunciation',
                     " AND ecm:primaryType='FVWord' AND fv-word:pronunciation=''"
@@ -399,7 +399,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of words without related phrases"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Words without related phrases',
                     " AND ecm:primaryType='FVWord' AND fv-word:related_phrases/* IS NULL"
@@ -408,7 +408,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of words in children's archive"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     "Words in children's archive",
                     " AND ecm:primaryType='FVWord' AND fv:available_in_childrens_archive=1"
@@ -421,7 +421,7 @@ export default class PageDialectReports extends React.Component {
               <List>
                 <ListItem
                   primaryText="List of phrases in new status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases in new status',
                     " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='New'"
@@ -429,7 +429,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases in enabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases in enabled status',
                     " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Enabled'"
@@ -437,7 +437,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases in published status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases in published status',
                     " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Published'"
@@ -445,7 +445,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases in disabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases in disabled status',
                     " AND ecm:primaryType='FVPhrase' AND ecm:currentLifeCycleState='Disabled'"
@@ -454,7 +454,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of phrases without audio"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases without audio',
                     " AND ecm:primaryType='FVPhrase' AND fv:related_audio/* IS NULL"
@@ -462,7 +462,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases without images"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases without images',
                     " AND ecm:primaryType='FVPhrase' AND fv:related_pictures/* IS NULL"
@@ -470,7 +470,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases without video"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases without video',
                     " AND ecm:primaryType='FVPhrase' AND fv:related_videos/* IS NULL"
@@ -478,7 +478,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of phrases without source"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases without source',
                     " AND ecm:primaryType='FVPhrase' AND fv:source/* IS NULL"
@@ -487,7 +487,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of phrases without phrase books"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Phrases without phrase books',
                     " AND ecm:primaryType='FVPhrase' AND fv-phrase:phrase_books/* IS NULL"
@@ -496,7 +496,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of phrases in children's archive"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     "Phrases in children's archive",
                     " AND ecm:primaryType='FVPhrase' AND fv:available_in_childrens_archive=1"
@@ -509,7 +509,7 @@ export default class PageDialectReports extends React.Component {
               <List>
                 <ListItem
                   primaryText="List of songs in new status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs in new status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='New'"
@@ -517,7 +517,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs in enabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs in enabled status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Enabled'"
@@ -525,7 +525,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs in published status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs in pubilshed status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Published'"
@@ -533,7 +533,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs in disabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs in disabled status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND ecm:currentLifeCycleState='Disabled'"
@@ -542,7 +542,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of songs without audio"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs without audio',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_audio/* IS NULL"
@@ -550,7 +550,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs without images"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs without images',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_pictures/* IS NULL"
@@ -558,7 +558,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs without video"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs without video',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:related_videos/* IS NULL"
@@ -566,7 +566,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of songs without source"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Songs without source',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:source/* IS NULL"
@@ -575,7 +575,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of songs in children's archive"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     "Songs in children's archive",
                     " AND ecm:primaryType='FVBook' AND fvbook:type='song' AND fv:available_in_childrens_archive=1"
@@ -588,7 +588,7 @@ export default class PageDialectReports extends React.Component {
               <List>
                 <ListItem
                   primaryText="List of stories in new status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories in new status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='New'"
@@ -596,7 +596,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories in enabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories in enabled status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Enabled'"
@@ -604,7 +604,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories in published status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories in published status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Published'"
@@ -612,7 +612,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories in disabled status"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories in disabled status',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND ecm:currentLifeCycleState='Disabled'"
@@ -621,7 +621,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of stories without audio"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories without audio',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_audio/* IS NULL"
@@ -629,7 +629,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories without images"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories without images',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_pictures/* IS NULL"
@@ -637,7 +637,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories without video"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories without video',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:related_videos/* IS NULL"
@@ -645,7 +645,7 @@ export default class PageDialectReports extends React.Component {
                 />
                 <ListItem
                   primaryText="List of stories without source"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     'Stories without source',
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:source/* IS NULL"
@@ -654,7 +654,7 @@ export default class PageDialectReports extends React.Component {
 
                 <ListItem
                   primaryText="List of stories in children's archive"
-                  onTouchTap={this._handleQueryDataRequest.bind(
+                  onClick={this._handleQueryDataRequest.bind(
                     this,
                     "Stories in children's archive",
                     " AND ecm:primaryType='FVBook' AND fvbook:type='story' AND fv:available_in_childrens_archive=1"

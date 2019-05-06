@@ -196,7 +196,7 @@ class SearchDialect extends Component {
     }
     return (
       <div className="SearchDialectForm SearchDialectForm--filtering">
-        <RaisedButton label={resetButtonText} onTouchTap={this._resetSearch} primary />
+        <RaisedButton label={resetButtonText} onClick={this._resetSearch} primary />
         {this._getFlashcardMode()}
       </div>
     )
@@ -210,7 +210,7 @@ class SearchDialect extends Component {
           style={{ marginLeft: 'auto' }}
           label="Stop viewing Flashcards"
           primary
-          onTouchTap={() => {
+          onClick={() => {
             this.props.updateAncestorState({ flashcardMode: false })
           }}
         />
@@ -218,7 +218,7 @@ class SearchDialect extends Component {
         <RaisedButton
           style={{ marginLeft: 'auto' }}
           label="Flashcards"
-          onTouchTap={() => {
+          onClick={() => {
             this.props.updateAncestorState({ flashcardMode: true })
           }}
         />
@@ -258,11 +258,11 @@ class SearchDialect extends Component {
             value={searchTerm}
           />
 
-          <RaisedButton label={searchButtonText} onTouchTap={this._handleSearch} primary />
+          <RaisedButton label={searchButtonText} onClick={this._handleSearch} primary />
 
           <RaisedButton
             label={resetButtonText}
-            onTouchTap={this._resetSearch}
+            onClick={this._resetSearch}
             primary={false}
             style={{ marginLeft: '20px' }}
           />
@@ -557,7 +557,7 @@ class SearchDialect extends Component {
     const _searchByAlphabet = StringHelpers.clean(searchByAlphabet, CLEAN_NXQL) || ''
     const nxqlTmpl = {
       // allFields: `ecm:fulltext = '*${StringHelpers.clean(search, CLEAN_FULLTEXT)}*'`,
-      searchByTitle: `dc:title ILIKE '%${search}%'`,
+      searchByTitle: `/*+ES: INDEX(dc:title.fulltext) OPERATOR(match_phrase_prefix) */ ecm:fulltext.dc:title ILIKE '%${search}%'`,
       searchByAlphabet: `dc:title ILIKE '${_searchByAlphabet}%'`,
       searchByCategory: `dc:title ILIKE '%${search}%'`,
       searchByPhraseBook: `dc:title ILIKE '%${search}%'`,

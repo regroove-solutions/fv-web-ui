@@ -29,7 +29,7 @@ const SearchDocumentTypesTemplate = (locals) => {
       <fieldset>
         <legend>
           {locals.label}{' '}
-          {locals.items.length < 4 ? <FlatButton label={locals.add.label} onTouchTap={locals.add.click} /> : ''}
+          {locals.items.length < 4 ? <FlatButton label={locals.add.label} onClick={locals.add.click} /> : ''}
         </legend>
         {(locals.items || []).map((item, i) => {
           return (

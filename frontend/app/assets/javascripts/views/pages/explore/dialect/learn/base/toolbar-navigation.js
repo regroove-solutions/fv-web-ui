@@ -74,12 +74,14 @@ export default class ToolbarNavigation extends Component {
     // this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:isTrashed = 0'});
   }
 
-  _onNavigateRequest(pathArray) {
+  _onNavigateRequest(pathArray, e) {
     if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
       NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     } else {
       NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     }
+
+    e.preventDefault();
   }
 
   _getNavigationURL(path) {
@@ -124,19 +126,19 @@ export default class ToolbarNavigation extends Component {
         <div className="row">
           <div className="col-xs-12 col-md-10">
             <div firstChild={true} float="left">
-              <a href={this._getNavigationURL('words')} onTouchTap={this._onNavigateRequest.bind(this, 'words')}>
+              <a href={this._getNavigationURL('words')} onClick={this._onNavigateRequest.bind(this, 'words')}>
                 {intl.trans('words', 'Words', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL('phrases')} onTouchTap={this._onNavigateRequest.bind(this, 'phrases')}>
+              <a href={this._getNavigationURL('phrases')} onClick={this._onNavigateRequest.bind(this, 'phrases')}>
                 {intl.trans('phrases', 'Phrases', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL('songs')} onTouchTap={this._onNavigateRequest.bind(this, 'songs')}>
+              <a href={this._getNavigationURL('songs')} onClick={this._onNavigateRequest.bind(this, 'songs')}>
                 {intl.trans('songs', 'Songs', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL('stories')} onTouchTap={this._onNavigateRequest.bind(this, 'stories')}>
+              <a href={this._getNavigationURL('stories')} onClick={this._onNavigateRequest.bind(this, 'stories')}>
                 {intl.trans('stories', 'Stories', 'first') + ''}
               </a>
-              <a href={this._getNavigationURL('alphabet')} onTouchTap={this._onNavigateRequest.bind(this, 'alphabet')}>
+              <a href={this._getNavigationURL('alphabet')} onClick={this._onNavigateRequest.bind(this, 'alphabet')}>
                 {intl.trans('alphabet', 'Alphabet', 'first')}
               </a>
             </div>
@@ -155,7 +157,7 @@ export default class ToolbarNavigation extends Component {
                 <FlatButton
                   icon={<EditorInsertChart />}
                   style={{ color: '#fff' }}
-                  onTouchTap={this.props.showStats}
+                  onClick={this.props.showStats}
                   label={intl.trans('language_statistics', 'Language Statistics')}
                 />
               </div>

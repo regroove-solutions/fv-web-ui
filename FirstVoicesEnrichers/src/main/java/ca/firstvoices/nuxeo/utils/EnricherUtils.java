@@ -59,6 +59,9 @@ public class EnricherUtils {
         try {
             if (!session.exists(ref)) {
                 log.warn("Document with id: " + binaryId + " does not exist");
+                return null;
+            }
+            if (!session.hasPermission(ref, SecurityConstants.READ)) {
                 return binaryJsonObj;
             }
             binaryDoc = session.getDocument(ref);
@@ -129,6 +132,9 @@ public class EnricherUtils {
         ObjectNode linkJsonObj = mapper.createObjectNode();
 
         try {
+            if (!session.hasPermission(ref, SecurityConstants.READ)) {
+                return null;
+            }
             linkDoc = session.getDocument(ref);
 
             // Build JSON node
@@ -169,6 +175,9 @@ public class EnricherUtils {
         ObjectNode jsonObj = mapper.createObjectNode();
 
         try {
+            if (!session.hasPermission(ref, SecurityConstants.READ)) {
+                return null;
+            }
             doc = session.getDocument(ref);
             // Build JSON node
             jsonObj.put("uid", doc.getId());

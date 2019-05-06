@@ -6,21 +6,20 @@ import selectn from 'selectn'
 
 import classNames from 'classnames'
 
-import ConfGlobal from 'conf/local.json'
-import ConfRoutes, { paramMatch } from 'conf/routes'
+import ConfGlobal from 'conf/local.js'
+import ConfRoutes, { matchPath } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import UIHelpers from 'common/UIHelpers'
+// import UIHelpers from 'common/UIHelpers'
 import StringHelpers from 'common/StringHelpers'
-import AnalyticsHelpers from 'common/AnalyticsHelpers'
-
-import { Link } from 'provide-page'
+// import AnalyticsHelpers from 'common/AnalyticsHelpers'
 
 import FlatButton from 'material-ui/lib/flat-button'
 import Navigation from 'views/components/Navigation'
 import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher'
 import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
+import Breadcrumb from 'views/components/Breadcrumb'
 
 import IntlService from 'views/services/intl'
 
@@ -64,6 +63,12 @@ const PAGE_NOT_FOUND_BODY = (
 )
 
 class Redirecter extends Component {
+  static propTypes = {
+    redirect: PropTypes.func,
+  }
+  static defaultProps = {
+    redirect: () => {},
+  }
   constructor(props, context) {
     super(props, context)
   }
@@ -85,23 +90,7 @@ class Redirecter extends Component {
     )
   }
 }
-
-const allowedToAccessWorkspaces = function(windowPath, computeLogin, computeDialect2) {
-  // Don't perform any redirect if these aren't available.
-  if (
-    !selectn('success', computeLogin) ||
-    !computeDialect2 ||
-    !computeDialect2.get(0) ||
-    !computeDialect2.get(0).get('response')
-  ) {
-    return false
-  }
-
-  return !ProviderHelpers.isDialectMember(computeLogin, computeDialect2) && !ProviderHelpers.isAdmin(computeLogin)
-}
-
-@provide
-export default class AppFrontController extends Component {
+export class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
     preferences: PropTypes.object,
@@ -123,12 +112,12 @@ export default class AppFrontController extends Component {
     this.state = this._getInitialState()
 
     // Bind methods to 'this'
-    ;['_matchPath', '_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
+    ;['_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   _getInitialState() {
     const routes = Immutable.fromJS(ConfRoutes)
-    let contextPath = ConfGlobal.contextPath.split('/').filter((v) => v != '')
+    const contextPath = ConfGlobal.contextPath.split('/').filter((v) => v !== '')
 
     return {
       routes:
@@ -195,8 +184,8 @@ export default class AppFrontController extends Component {
     const routes = routesOverride || this.state.routes
 
     routes.forEach((value) => {
-      const matchTest = this._matchPath(value.get('path'), pathArray)
-      const matchAlias = this._matchPath(value.get('alias'), pathArray)
+      const matchTest = matchPath(value.get('path'), pathArray)
+      const matchAlias = matchPath(value.get('alias'), pathArray)
 
       // If only the alias matched, redirect to the original path
       if (matchAlias.matched && !matchTest.matched) {
@@ -208,15 +197,15 @@ export default class AppFrontController extends Component {
 
         // Extract common paths from URL
         if (value.has('extractPaths') && value.get('extractPaths')) {
-          let domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
-          let dialectPathLocation = 5
-          let languagePathLocation = 4
-          let languageFamilyPathLocation = 3
+          const domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
+          const dialectPathLocation = 5
+          const languagePathLocation = 4
+          const languageFamilyPathLocation = 3
 
           // If domain is specified in the URL, these are Nuxeo paths that can be extracted
-          if (domainPathLocation != -1) {
+          if (domainPathLocation !== -1) {
             // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
-            let nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
+            const nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
 
             if (nuxeoPath.length >= dialectPathLocation) {
               routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
@@ -355,91 +344,51 @@ export default class AppFrontController extends Component {
       // Re-route on login
       this._route(nextProps)
     } else if (
-      // Re-route if preferences change
       next_primary_dialect_path !== undefined &&
       next_primary_dialect_path != primary_dialect_path &&
       next_primary_dialect_path.length > 0
     ) {
+      // Re-route if preferences change
       this._route(nextProps)
     }
-    // Re-route if trying to view Workspaces from different group
-    // TODO: Handle on back-end; hide all areas where you can access workspaces
-    else if (
-      ProviderHelpers.isDialectPath(nextProps.windowPath) &&
-      allowedToAccessWorkspaces(nextProps.windowPath, nextProps.computeLogin, nextProps.computeDialect2)
-    ) {
-      window.location.href = nextProps.windowPath.replace('Workspaces', 'sections')
-    }
   }
-
   _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {
     const themePalette = props.properties.theme.palette.rawTheme.palette
-
+    const { routeParams } = reactElement.props
+    const { splitWindowPath, computeLogin } = props
+    const { routes } = this.state
+    let _workspaceSwitcher = null
+    const area = selectn('routeParams.area', reactElement.props)
+    if (
+      area &&
+      selectn('isConnected', computeLogin) &&
+      matchedPage.get('disableWorkspaceSectionNav') !== true &&
+      !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
+    ) {
+      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
+    }
+    const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
+    const findReplace = overrideBreadcrumbs
+      ? { find: overrideBreadcrumbs.find, replace: selectn(overrideBreadcrumbs.replace, this.props.properties) }
+      : undefined
     return (
       <div>
         <div className="breadcrumbContainer row">
           <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
-            {(() => {
-              const area = selectn('routeParams.area', reactElement.props)
-
-              if (
-                area &&
-                selectn('isConnected', props.computeLogin) &&
-                matchedPage.get('disableWorkspaceSectionNav') !== true &&
-                !ProviderHelpers.isSiteMember(selectn('response.properties.groups', props.computeLogin))
-              ) {
-                return <WorkspaceSwitcher area={area} />
-              }
-            })()}
+            {_workspaceSwitcher}
+            <Breadcrumb
+              className="pull-left"
+              matchedPage={matchedPage}
+              routes={routes}
+              routeParams={routeParams}
+              splitWindowPath={splitWindowPath}
+              findReplace={findReplace}
+            />
           </div>
         </div>
-
         <div className={'page-' + theme + '-theme'}>{reactElement}</div>
       </div>
     )
-  }
-
-  /**
-   * Tests to see if current URL matches route.
-   * Return object with matched boolean and route params returned
-   */
-  _matchPath(pathMatchArray, urlPath) {
-    // Remove empties from path array, return Immutable list
-    const currentPathArray = Immutable.fromJS(
-      urlPath.filter((e) => {
-        return e
-      })
-    )
-
-    if (!pathMatchArray) {
-      return false
-    }
-
-    if (pathMatchArray.size != currentPathArray.size) {
-      return { matched: false, routeParams: {} }
-    }
-
-    const matchedRouteParams = {}
-
-    const matched = pathMatchArray.every((value, key) => {
-      if (value instanceof RegExp) {
-        return value.test(currentPathArray.get(key))
-      } else if (value instanceof paramMatch) {
-        if (value.hasOwnProperty('matcher')) {
-          const testMatch = value.matcher.test(currentPathArray.get(key))
-
-          if (testMatch) {
-            matchedRouteParams[value.id] = decodeURI(currentPathArray.get(key))
-            return true
-          }
-        }
-
-        return false
-      }
-      return value === currentPathArray.get(key)
-    })
-
-    return { matched: matched, routeParams: matchedRouteParams }
   }
 
   render() {
@@ -504,7 +453,7 @@ export default class AppFrontController extends Component {
                     default: 'Dismiss',
                     case: 'words',
                   })}
-                  onTouchTap={() => this.setState({ warningsDismissed: true })}
+                  onClick={() => this.setState({ warningsDismissed: true })}
                 />
               </div>
             )
@@ -522,3 +471,5 @@ export default class AppFrontController extends Component {
     )
   }
 }
+
+export default provide(AppFrontController)

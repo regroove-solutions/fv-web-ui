@@ -1,4 +1,4 @@
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import RESTActions from './rest-actions'
 import RESTReducers from './rest-reducers'

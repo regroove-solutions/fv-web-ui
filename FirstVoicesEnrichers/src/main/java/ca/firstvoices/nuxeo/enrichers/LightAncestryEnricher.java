@@ -55,6 +55,7 @@ public class LightAncestryEnricher extends AbstractJsonEnricher<DocumentModel> {
             if (StringUtils.isNotEmpty(dialectId)) {
                 resolvedDoc = resolveTargetDoc(dialectId, doc.isProxy(), session);
                 ObjectNode dialectDoc = mapper.createObjectNode();
+
                 dialectDoc.put("uid", dialectId);
                 dialectDoc.put("dc:title", resolvedDoc.getTitle());
                 dialectDoc.put("path", resolvedDoc.getPathAsString());

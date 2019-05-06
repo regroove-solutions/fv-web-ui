@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentNotFoundException;
@@ -27,6 +29,8 @@ import ca.firstvoices.nuxeo.utils.EnricherUtils;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(WordEnricher.class);
 
     public static final String NAME = "word";
 
@@ -54,6 +58,8 @@ public class WordEnricher extends AbstractJsonEnricher<DocumentModel> {
         CoreSession session = doc.getCoreSession();
 
         String documentType = doc.getType();
+
+        log.debug("Constructing word enricher for doc:" + doc.getId());
 
         /*
          * Properties for FVWord

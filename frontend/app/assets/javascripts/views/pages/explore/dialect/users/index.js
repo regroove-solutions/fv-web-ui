@@ -18,7 +18,7 @@ import Immutable, { List, Map } from 'immutable'
 
 import classNames from 'classnames'
 import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -125,7 +125,7 @@ export default class Index extends Component {
             >
               <RaisedButton
                 label={intl.trans('views.pages.explore.dialect.users.create_new_user', 'Create New User', 'words')}
-                onTouchTap={this._onNavigateRequest.bind(this, ['register'])}
+                onClick={this._onNavigateRequest.bind(this, ['register'])}
                 primary={true}
               />
             </AuthorizationFilter>

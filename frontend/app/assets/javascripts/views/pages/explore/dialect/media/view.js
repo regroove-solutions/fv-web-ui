@@ -19,7 +19,7 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
@@ -414,7 +414,7 @@ export default class View extends Component {
                                       function(thumbnail, key) {
                                         return (
                                           <ListItem
-                                            onTouchTap={() => this.setState({ showThumbnailDialog: thumbnail })}
+                                            onClick={() => this.setState({ showThumbnailDialog: thumbnail })}
                                             key={key}
                                             primaryText={thumbnail.title}
                                             secondaryText={
@@ -441,7 +441,7 @@ export default class View extends Component {
                                       <FlatButton
                                         label={intl.trans('close', 'Close', 'first')}
                                         secondary={true}
-                                        onTouchTap={() => this.setState({ showThumbnailDialog: null })}
+                                        onClick={() => this.setState({ showThumbnailDialog: null })}
                                       />,
                                     ]}
                                     modal={false}

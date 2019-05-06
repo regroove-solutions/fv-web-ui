@@ -69,7 +69,7 @@ class Answer extends React.Component {
           labelColor={labelColor}
           disabled={disabled}
           backgroundColor={backgroundColor}
-          onTouchTap={this.props.onSelect.bind(this, data, correct)}
+          onClick={this.props.onSelect.bind(this, data, correct)}
           label={data ? selectn('word', data) : 'Loading...'}
         />
       </div>
@@ -391,7 +391,7 @@ export default class Quiz extends Component {
                     )}{' '}
                     {skillLevel}
                     <RaisedButton
-                      onTouchTap={this._restart}
+                      onClick={this._restart}
                       label={intl.trans('views.pages.explore.dialect.play.quiz.new_quiz', 'New Quiz', 'words')}
                       style={{ marginLeft: '10px' }}
                     />
@@ -432,7 +432,7 @@ export default class Quiz extends Component {
             <div className={classNames('col-xs-2', 'text-left')}>
               <IconButton
                 style={{ backgroundColor: '#ffffff' }}
-                onTouchTap={this._handleNavigate.bind(this, 'previous')}
+                onClick={this._handleNavigate.bind(this, 'previous')}
                 iconClassName="material-icons"
                 tooltip={intl.trans(
                   'views.pages.explore.dialect.play.quiz.previous_question',
@@ -472,7 +472,7 @@ export default class Quiz extends Component {
             <div className={classNames('col-xs-2', 'text-right')}>
               <IconButton
                 style={{ backgroundColor: '#ffffff' }}
-                onTouchTap={this._handleNavigate.bind(this, 'next')}
+                onClick={this._handleNavigate.bind(this, 'next')}
                 disabled={!isCorrect || isComplete}
                 iconClassName="material-icons"
                 tooltip={intl.trans('views.pages.explore.dialect.play.quiz.next_question', 'Next Question', 'words')}

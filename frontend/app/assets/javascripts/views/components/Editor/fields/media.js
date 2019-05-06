@@ -54,7 +54,7 @@ function renderInput(locals) {
           borderTop: 0,
           borderRight: 0,
         }}
-        onTouchTap={_onRequestEdit}
+        onClick={_onRequestEdit}
         label={intl.trans('replace', 'Replace', 'first')}
         labelPosition="after"
       >
@@ -83,7 +83,7 @@ function renderInput(locals) {
           dialect={locals.context}
         />
         {selectn('context.initialValues.' + locals.attrs.name, locals) ? (
-          <FlatButton onTouchTap={onCancel} label={intl.trans('cancel', 'Cancel', 'first')} />
+          <FlatButton onClick={onCancel} label={intl.trans('cancel', 'Cancel', 'first')} />
         ) : (
           ''
         )}

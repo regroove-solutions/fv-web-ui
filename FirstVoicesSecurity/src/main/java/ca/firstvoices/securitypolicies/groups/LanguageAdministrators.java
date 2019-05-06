@@ -3,6 +3,8 @@ package ca.firstvoices.securitypolicies.groups;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -18,11 +20,16 @@ import ca.firstvoices.utils.CustomSecurityConstants;
  */
 public class LanguageAdministrators extends AbstractSecurityPolicy {
 
+    private static final Log log = LogFactory.getLog(LanguageAdministrators.class);
+
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) throws SecurityException {
 
         List<String> additionalPrincipalsList = Arrays.asList(additionalPrincipals);
+
+        log.debug("Checking permission: " + permission + " on doc: " + doc.getUUID() + " for user: "
+                + principal.getName());
 
         // Skip administrators, system user and groups that aren't language administrators
         if (additionalPrincipalsList.contains("administrators") || principal.equals(SecurityConstants.SYSTEM_USERNAME)
@@ -70,6 +77,7 @@ public class LanguageAdministrators extends AbstractSecurityPolicy {
         // Restrict deletion of FVDialect children (but not unpublishing)
         if (doc.getParent() != null && "FVDialect".equals(doc.getParent().getType().getName())
                 && "Remove".equals(permission)) {
+            log.debug("Acces denied because of Dialect parent and remove permission");
             return Access.DENY;
         }
 

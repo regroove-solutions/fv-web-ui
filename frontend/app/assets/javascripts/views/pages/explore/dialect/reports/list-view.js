@@ -20,7 +20,7 @@ import selectn from 'selectn'
 
 import DOMPurify from 'dompurify'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'

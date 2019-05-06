@@ -17,7 +17,7 @@ import React, { Component, PropTypes } from 'react'
 import Immutable, { List, Map } from 'immutable'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import Colors from 'material-ui/lib/styles/colors'
 
@@ -53,7 +53,7 @@ export default class CategoryList extends Component {
   }
 
   render() {
-    let items = this.props.filteredItems || this.props.items
+    const items = this.props.filteredItems || this.props.items
 
     if (!items || selectn('length', items) == 0) {
       return (
@@ -87,7 +87,7 @@ export default class CategoryList extends Component {
             function(tile, i) {
               return (
                 <GridTile
-                  onTouchTap={action.bind(this, tile)}
+                  onClick={action.bind(this, tile)}
                   key={tile.uid}
                   title={this.intl.searchAndReplace(tile.title)}
                   className="category-grid-tile"

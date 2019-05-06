@@ -1,9 +1,9 @@
 import React from 'react'
-import selectn from "selectn"
-
+import selectn from 'selectn'
+import Immutable from 'immutable'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
-
+import UIHelpers from 'common/UIHelpers'
 import IntlService from 'views/services/intl'
 
 import * as Pages from 'views/pages'
@@ -11,6 +11,60 @@ import { ServiceShortURL } from 'views/services'
 
 const intl = IntlService.instance
 
+/**
+ * Tests to see if current URL matches route.
+ * Return object with matched boolean and route params returned
+ *
+ * Input:
+ *  pathMatchArray:
+ *    ['nuxeo', 'app'],
+ *    ['nuxeo', 'app', 'content', { id: 'friendly_url', matcher: {} }],
+ *
+ *  urlPath:
+ *    ['nuxeo', 'app', 'explore', 'FV', 'sections', 'Data', 'Athabascan', 'Dene', 'Dene', 'learn','words']
+ *
+ * Output:
+ *  { matched: false, routeParams: {} }
+ *  { matched: matched, routeParams: matchedRouteParams }
+ */
+export const matchPath = (pathMatchArray, urlPath) => {
+  // Remove empties from path array, return Immutable list
+  const currentPathArray = Immutable.fromJS(
+    urlPath.filter((e) => {
+      return e
+    })
+  )
+  // NOTE: should this `return { matched: false, routeParams: {} }` for consistency?
+  if (!pathMatchArray) {
+    return false
+  }
+
+  if (pathMatchArray.size !== currentPathArray.size) {
+    return { matched: false, routeParams: {} }
+  }
+
+  const matchedRouteParams = {}
+
+  const matched = pathMatchArray.every((value, key) => {
+    if (value instanceof RegExp) {
+      return value.test(currentPathArray.get(key))
+    } else if (value instanceof paramMatch) {
+      if (value.hasOwnProperty('matcher')) {
+        const testMatch = value.matcher.test(currentPathArray.get(key))
+
+        if (testMatch) {
+          matchedRouteParams[value.id] = decodeURI(currentPathArray.get(key))
+          return true
+        }
+      }
+
+      return false
+    }
+    return value === currentPathArray.get(key)
+  })
+
+  return { matched: matched, routeParams: matchedRouteParams }
+}
 /**
  * Parameter matching class
  */
@@ -63,16 +117,11 @@ const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTI
 const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE)
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT))
 
-const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search']
-
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
-    // Condition 2: User is a site member (not specific dialect) and trying to access Workspaces
     return (
-      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)) ||
-      (ProviderHelpers.isSiteMember(selectn('response.properties.groups', params.props.computeLogin)) &&
-        NavigationHelpers.isWorkspace(params.props))
+      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props))
     )
   },
   target: (params) => {
@@ -235,7 +284,7 @@ const routes = [
         },
         target: (params) => {
           const start_page = selectn('preferences.start_page', params.props)
-          const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
+          // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
           return (
             '/' +
             (start_page === 'my_kids_dialect' ? 'kids' : 'explore') +
@@ -261,10 +310,12 @@ const routes = [
   {
     path: ['test'],
     page: <Pages.PageTest />,
+    breadcrumbs: false,
   },
   {
     path: ['debug', 'end-points'],
     page: <Pages.PageDebugAPI />,
+    breadcrumbs: false,
   },
   {
     path: [new paramMatch('theme', new RegExp('kids'))],
@@ -299,6 +350,7 @@ const routes = [
     title: intl.translate({ key: 'user_profile', default: 'User Profile', case: 'words' }),
     page: <Pages.PageUsersProfile />,
     redirects: [NOT_CONNECTED_REDIRECT],
+    breadcrumbs: false,
   },
   {
     path: ['forgotpassword'],
@@ -439,6 +491,7 @@ const routes = [
     page: <Pages.PageExploreFamily />,
     extractPaths: true,
     redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+    breadcrumbs: false,
   },
   {
     path: [
@@ -459,6 +512,7 @@ const routes = [
     page: <Pages.PageExploreLanguage />,
     extractPaths: true,
     redirects: [WORKSPACE_TO_SECTION_REDIRECT],
+    breadcrumbs: false,
   },
   {
     id: 'page_explore_dialect',

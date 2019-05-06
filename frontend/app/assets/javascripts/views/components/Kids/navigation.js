@@ -26,28 +26,15 @@ import NavigationHelpers from 'common/NavigationHelpers'
 // Components
 import AppBar from 'material-ui/lib/app-bar'
 
-import TextField from 'material-ui/lib/text-field'
-
 import Avatar from 'material-ui/lib/avatar'
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
 import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-
-import Badge from 'material-ui/lib/badge'
-import FlatButton from 'material-ui/lib/flat-button'
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import IconButton from 'material-ui/lib/icon-button'
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert'
-import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications'
-
-import Login from 'views/components/Navigation/Login'
-import AppLeftNav from 'views/components/Navigation/AppLeftNav'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-@provide
-export default class Navigation extends Component {
+
+export class Navigation extends Component {
   static propTypes = {
     pushWindowPath: PropTypes.func.isRequired,
     replaceWindowPath: PropTypes.func.isRequired,
@@ -100,7 +87,7 @@ export default class Navigation extends Component {
       this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin))
     }
   }
-
+  // eslint-disable-next-line
   _handleMenuToggle(event) {
     //console.log(event);
     //const test = this.props.toggle("helloworld");
@@ -119,7 +106,7 @@ export default class Navigation extends Component {
       leftNavOpen: open,
     })
   }
-
+  // eslint-disable-next-line
   handleRequestChangeList(event, value) {
     //this.context.router.push(value);
     this.setState({
@@ -147,16 +134,16 @@ export default class Navigation extends Component {
   }
 
   render() {
-    const computeUserTasks = ProviderHelpers.getEntry(
-      this.props.computeUserTasks,
-      selectn('response.id', this.props.computeLogin)
-    )
+    // const computeUserTasks = ProviderHelpers.getEntry(
+    //   this.props.computeUserTasks,
+    //   selectn('response.id', this.props.computeLogin)
+    // )
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + '/Portal'
     )
 
-    const userTaskCount = selectn('response.length', computeUserTasks) || 0
+    // const userTaskCount = selectn('response.length', computeUserTasks) || 0
 
     const portalLogo = selectn('response.contextParameters.portal.fv-portal:logo.path', computePortal)
 
@@ -174,10 +161,7 @@ export default class Navigation extends Component {
       <div className="Navigation">
         <AppBar
           title={
-            <a
-              style={{ textDecoration: 'none', color: '#fff' }}
-              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
-            >
+            <a style={{ textDecoration: 'none', color: '#fff' }} onClick={this._onNavigateRequest.bind(this, homeURL)}>
               {avatar}
               <span className="hidden-xs">
                 {(selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
@@ -187,14 +171,18 @@ export default class Navigation extends Component {
               </span>
             </a>
           }
+          showMenuIconButton
+          // TODO: This doesn't seem to work
+          onRightIconButtonTouchTap={() => {
+            this.props.toggleMenuAction('AppLeftNav')
+          }}
+          // TODO: This creates an empty, transparent button that can be clicked
           iconClassNameRight="muidocs-icon-navigation-expand-more"
-          showMenuIconButton={false}
-          onRightIconButtonTouchTap={() => this.props.toggleMenuAction('AppLeftNav')}
         >
           <ToolbarGroup style={{ paddingTop: '5px' }}>
             <IconButton
               className={classNames({ hidden: this.props.frontpage })}
-              onTouchTap={(e) => NavigationHelpers.navigateBack()}
+              onClick={() => NavigationHelpers.navigateBack()}
               style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
@@ -204,7 +192,7 @@ export default class Navigation extends Component {
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(this, homeURL)}
+              onClick={this._onNavigateRequest.bind(this, homeURL)}
               style={{ paddingTop: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
               tooltipPosition="bottom-left"
@@ -214,7 +202,7 @@ export default class Navigation extends Component {
             </IconButton>
 
             <IconButton
-              onTouchTap={this._onNavigateRequest.bind(
+              onClick={this._onNavigateRequest.bind(
                 this,
                 NavigationHelpers.generateStaticURL('/kids/FV/Workspaces/Data')
               )}
@@ -231,7 +219,7 @@ export default class Navigation extends Component {
             <IconButton
               style={{ paddingTop: 0, paddingRight: 0, top: '8px', left: '-10px' }}
               iconClassName="material-icons"
-              onTouchTap={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/'))}
+              onClick={this._onNavigateRequest.bind(this, NavigationHelpers.generateStaticURL('/'))}
               tooltipPosition="bottom-left"
               tooltip={intl.trans('back_to_main_site', 'Back to Main Site', 'words')}
             >
@@ -243,3 +231,4 @@ export default class Navigation extends Component {
     )
   }
 }
+export default provide(Navigation)

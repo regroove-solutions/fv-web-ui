@@ -3,6 +3,8 @@ package ca.firstvoices.securitypolicies.lifecycle;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.core.api.security.ACP;
 import org.nuxeo.ecm.core.api.security.Access;
@@ -19,10 +21,14 @@ import org.nuxeo.ecm.core.security.AbstractSecurityPolicy;
 
 public class NonRecorders extends AbstractSecurityPolicy {
 
+    private static final Log log = LogFactory.getLog(NonRecorders.class);
+
     @Override
     public Access checkPermission(Document doc, ACP mergedAcp, NuxeoPrincipal principal, String permission,
             String[] resolvedPermissions, String[] additionalPrincipals) {
 
+        log.debug("Checking permission: " + permission + " on doc: " + doc.getUUID() + " for user: "
+                + principal.getName());
         // Skip administrators
         if (Arrays.asList(additionalPrincipals).contains("administrators")) {
             return Access.UNKNOWN;
@@ -38,6 +44,7 @@ public class NonRecorders extends AbstractSecurityPolicy {
                 String docLifeCycle = doc.getLifeCycleState();
                 if (docLifeCycle != null) {
                     if (docLifeCycle.equals("New") || docLifeCycle.equals("Disabled")) {
+                        log.debug("Access denied because the getLifeCycleState is " + docLifeCycle);
                         return Access.DENY;
                     }
                 }
@@ -75,6 +82,7 @@ public class NonRecorders extends AbstractSecurityPolicy {
         @Override
         public SQLQuery transform(NuxeoPrincipal nxPrincipal, SQLQuery query) {
 
+            log.debug("Transforming the query: " + query);
             // Skip Admins
             if (nxPrincipal.isAdministrator()) {
                 return query;
@@ -102,8 +110,10 @@ public class NonRecorders extends AbstractSecurityPolicy {
                     predicate = new Predicate(notDisabledAndNotNew, Operator.AND, where.predicate);
                 }
                 // return query with updated WHERE clause
-                return new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy, query.having,
-                        query.orderBy, query.limit, query.offset);
+                SQLQuery newQuery = new SQLQuery(query.select, query.from, new WhereClause(predicate), query.groupBy,
+                        query.having, query.orderBy, query.limit, query.offset);
+                log.debug("New transformed query: " + newQuery.getQueryString());
+                return newQuery;
             }
 
             return query;

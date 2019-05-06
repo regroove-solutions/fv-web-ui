@@ -8,7 +8,7 @@ const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 /**
  * Development Webpack Configuration
  */
-module.exports = merge(common, {
+module.exports = env => merge(common(env), {
     mode: "production",
     devtool: "",
     optimization: {

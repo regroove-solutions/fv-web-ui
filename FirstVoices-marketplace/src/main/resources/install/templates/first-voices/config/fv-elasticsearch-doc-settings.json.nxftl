@@ -1,7 +1,12 @@
 {
-  "index.translog.durability": "request",
+  "index.translog.durability": "${elasticsearch.index.translog.durability}",
+<#if "${elasticsearch.addressList}" != "">
+  "number_of_shards": "${elasticsearch.indexNumberOfShards}",
+  "number_of_replicas": "${elasticsearch.indexNumberOfReplicas}",
+<#else>
   "number_of_shards": "1",
   "number_of_replicas": "0",
+</#if>
   "analysis": {
     "filter": {
       "truncate_filter": {

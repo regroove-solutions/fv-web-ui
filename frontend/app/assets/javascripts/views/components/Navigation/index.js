@@ -17,7 +17,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
 import selectn from 'selectn'
-// import ConfGlobal from 'conf/local.json'
+// import ConfGlobal from 'conf/local.js'
 
 import provide from 'react-redux-provide'
 
@@ -42,17 +42,11 @@ import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
 import RadioButton from 'material-ui/lib/radio-button'
 import RadioButtonGroup from 'material-ui/lib/radio-button-group'
 
-import Badge from 'material-ui/lib/badge'
 import DropDownMenu from 'material-ui/lib/DropDownMenu'
-// import RaisedButton from 'material-ui/lib/raised-button'
 import FlatButton from 'material-ui/lib/flat-button'
-
 import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import IconButton from 'material-ui/lib/icon-button'
-// import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert'
-import NotificationsIcon from 'material-ui/lib/svg-icons/social/notifications'
-// import ActionHelp from 'material-ui/lib/svg-icons/action/help'
 import Popover from 'material-ui/lib/popover/popover'
 import Avatar from 'material-ui/lib/avatar'
 
@@ -68,8 +62,7 @@ import IntlService from 'views/services/intl'
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
-@provide
-export default class Navigation extends Component {
+export class Navigation extends Component {
   intl = IntlService.instance
 
   static defaultProps = {
@@ -271,7 +264,7 @@ export default class Navigation extends Component {
       this.refs.navigationSearchField.setValue('')
 
       if (searchQueryParam && searchQueryParam != '') {
-        let finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
+        const finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
         this.props.replaceWindowPath(finalPath)
       }
     }
@@ -335,7 +328,11 @@ export default class Navigation extends Component {
             </span>
           }
           showMenuIconButton={isDialect ? true : true}
-          onLeftIconButtonTouchTap={this._handleOpenMenuRequest}
+          // TODO: see about removing onLeftIconButtonTouchTap
+          onLeftIconButtonTouchTap={() => {
+            // debugger
+            this._handleOpenMenuRequest()
+          }}
         >
           <ToolbarGroup style={{ position: 'relative', color: '#fff' }}>
             <div
@@ -385,7 +382,7 @@ export default class Navigation extends Component {
                 >
                   <IconButton
                     iconStyle={{ fill: "#fff" }}
-                    onTouchTap={this._onNavigateRequest.bind(this, "/tasks/")}
+                    onClick={this._onNavigateRequest.bind(this, "/tasks/")}
                     disabled={userTaskCount == 0 ? true : false}
                   >
                     <NotificationsIcon />
@@ -402,7 +399,7 @@ export default class Navigation extends Component {
                   badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
                   primary={true}
                 >
-                  <IconButton iconStyle={{fill: '#fff'}} onTouchTap={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
+                  <IconButton iconStyle={{fill: '#fff'}} onClick={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
                     <ActionHelp />
                   </IconButton>
                 </Badge>*/}
@@ -437,7 +434,7 @@ export default class Navigation extends Component {
                                     return <tr key={'guide' + i}>
                                         <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}
                                         </td>
-                                        <td><RaisedButton onTouchTap={this._startTour.bind(this, guide)}
+                                        <td><RaisedButton onClick={this._startTour.bind(this, guide)}
                                                             primary={false} label={this.intl.translate({
                                             key: 'views.components.navigation.launch_guide',
                                             default: 'Launch Guide',
@@ -492,7 +489,7 @@ export default class Navigation extends Component {
                 className={classNames({ hidden: !this.state.searchBarVisibleInMobile })}
                 style={{ color: themePalette.alternateTextColor }}
                 label={this.intl.translate({ key: 'general.cancel', default: 'Cancel', case: 'first' })}
-                onTouchTap={(e) => {
+                onClick={(e) => {
                   this.setState({ searchBarVisibleInMobile: false })
                   e.preventDefault()
                 }}
@@ -500,7 +497,7 @@ export default class Navigation extends Component {
             </div>
 
             <IconButton
-              onTouchTap={this._handleNavigationSearchSubmit}
+              onClick={this._handleNavigationSearchSubmit}
               iconClassName="material-icons"
               style={{ position: 'relative', top: '7px', padding: '0', left: 0 }}
               iconStyle={{ fontSize: '24px', padding: '3px', borderRadius: '20px', color: '#FFFFFF' }}
@@ -638,7 +635,7 @@ export default class Navigation extends Component {
             <ToolbarSeparator className="locale-seperator" style={{ float: 'none', marginRight: 0, marginLeft: 0 }} />
 
             <IconButton
-              onTouchTap={this._handleDisplayLocaleOptions}
+              onClick={this._handleDisplayLocaleOptions}
               iconClassName="material-icons"
               style={{ position: 'relative', top: '7px', padding: '0', left: 0 }}
               iconStyle={{ fontSize: '24px', padding: '3px', borderRadius: '20px', color: '#FFFFFF' }}
@@ -693,3 +690,5 @@ export default class Navigation extends Component {
     )
   }
 }
+
+export default provide(Navigation)

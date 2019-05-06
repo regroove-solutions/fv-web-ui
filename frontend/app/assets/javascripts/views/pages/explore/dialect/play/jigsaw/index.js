@@ -161,7 +161,7 @@ export default class Jigsaw extends Component {
           <div className="col-xs-12" style={{ textAlign: 'center' }}>
             <a
               href="#"
-              onTouchTap={this._changeContent.bind(
+              onClick={this._changeContent.bind(
                 this,
                 selectn('response.currentPageIndex', computeWords),
                 selectn('response.pageCount', computeWords)

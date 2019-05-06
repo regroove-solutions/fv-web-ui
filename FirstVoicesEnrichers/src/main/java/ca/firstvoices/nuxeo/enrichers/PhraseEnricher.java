@@ -5,6 +5,8 @@ import static org.nuxeo.ecm.core.io.registry.reflect.Priorities.REFERENCE;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.io.marshallers.json.enrichers.AbstractJsonEnricher;
@@ -19,6 +21,8 @@ import ca.firstvoices.nuxeo.utils.EnricherUtils;
 
 @Setup(mode = SINGLETON, priority = REFERENCE)
 public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
+
+    private static final Log log = LogFactory.getLog(PhraseEnricher.class);
 
     public static final String NAME = "phrase";
 
@@ -45,6 +49,8 @@ public class PhraseEnricher extends AbstractJsonEnricher<DocumentModel> {
         CoreSession session = doc.getCoreSession();
 
         String documentType = doc.getType();
+
+        log.debug("Constructing the phrase enricher for doc: " + doc.getId());
 
         /*
          * Properties for FVPhrase

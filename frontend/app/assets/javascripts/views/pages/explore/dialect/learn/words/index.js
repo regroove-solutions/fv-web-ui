@@ -40,7 +40,7 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import NavigationHelpers from 'common/NavigationHelpers'
-import { AlphabetListView } from '../../../../../components/AlphabetListView'
+import AlphabetListView from 'views/components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
@@ -239,7 +239,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
                   'Create New Word',
                   'words'
                 )}
-                onTouchTap={this._onNavigateRequest.bind(this, 'create')}
+                onClick={this._onNavigateRequest.bind(this, 'create')}
                 primary
               />
             </AuthorizationFilter>

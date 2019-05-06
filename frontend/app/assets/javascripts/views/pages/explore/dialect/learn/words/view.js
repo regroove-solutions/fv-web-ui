@@ -228,6 +228,9 @@ export default class DialectViewWord extends Component {
               {selectn('response', computeWord) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computeWord} />
               ) : null}
+
+              {this._getAcknowledgement(computeWord)}
+
             </aside>
           </div>
         </main>
@@ -242,7 +245,7 @@ export default class DialectViewWord extends Component {
         <Preview
           key={selectn('uid', audio)}
           expandedValue={audio}
-          minimal
+          optimal
           type="FVAudio"
           styles={{ padding: 0, display: 'inline' }}
         />
@@ -338,12 +341,17 @@ export default class DialectViewWord extends Component {
   }
 
   _getPartsOfSpeech(computeWord) {
-    return (
-      <div className="DialectViewWordContentItem DialectViewWordPartOfSpeech">
-        <h4 className="DialectViewWordContentItemTitle">{intl.trans('part_of_speech', 'Part of Speech', 'first')}</h4>
-        <p>{selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
-      </div>
-    )
+
+    let part_of_speech = selectn('response.contextParameters.word.part_of_speech', computeWord);
+
+    if (part_of_speech) {
+      return (
+        <div className="DialectViewWordContentItem DialectViewWordPartOfSpeech">
+          <h4 className="DialectViewWordContentItemTitle">{intl.trans('part_of_speech', 'Part of Speech', 'first')}</h4>
+          <p>{selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
+        </div>
+      )
+    }
   }
 
   _getPhotos(computeWord) {
@@ -419,6 +427,21 @@ export default class DialectViewWord extends Component {
           <h3 className="DialectViewWordContentItemTitle">{intl.trans('pronunciation', 'Pronunciation', 'first')}</h3>
           <div className="DialectViewWordContentItemGroup">
             <div className={dialectClassName}>{pronunciation}</div>
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
+  _getAcknowledgement(computeWord) {
+    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
+    if (acknowledgement && acknowledgement !== '') {
+      return (
+        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
+          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
+          <div className="DialectViewWordContentItemGroup">
+            <div dangerouslySetInnerHTML={{ __html: acknowledgement }}></div>
           </div>
         </div>
       )

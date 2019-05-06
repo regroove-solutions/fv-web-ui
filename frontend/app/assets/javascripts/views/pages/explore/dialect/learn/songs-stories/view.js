@@ -19,7 +19,7 @@ import classNames from 'classnames'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -212,7 +212,7 @@ export default class View extends Component {
               <RaisedButton
                 label={intl.trans('views.pages.explore.dialect.learn.songs_stories.close_book', 'Close Book', 'first')}
                 key="close"
-                onTouchTap={() => {
+                onClick={() => {
                   this.setState({ bookOpen: false })
                 }}
               />
