@@ -196,7 +196,13 @@ class SearchDialect extends Component {
     }
     return (
       <div className="SearchDialectForm SearchDialectForm--filtering">
-        <RaisedButton label={resetButtonText} onClick={this._resetSearch} primary />
+        <RaisedButton
+          label={resetButtonText}
+          onClick={() => {
+            this._resetSearch()
+          }}
+          primary
+        />
         {this._getFlashcardMode()}
       </div>
     )
@@ -510,9 +516,9 @@ class SearchDialect extends Component {
 
     return searchTerm
       ? {
-          DEFAULT_SORT_COL: searchSortBy,
-          DEFAULT_SORT_TYPE: 'asc',
-        }
+        DEFAULT_SORT_COL: searchSortBy,
+        DEFAULT_SORT_TYPE: 'asc',
+      }
       : {}
   }
 
