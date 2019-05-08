@@ -21,7 +21,7 @@ import provide from 'react-redux-provide'
 import selectn from 'selectn'
 
 // import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import RaisedButton from 'material-ui/lib/raised-button'
+// import RaisedButton from 'material-ui/lib/raised-button'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
@@ -44,8 +44,6 @@ import AlphabetListView from 'views/components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
-
-@provide
 class PageDialectLearnWords extends PageDialectLearnBase {
   static propTypes = {
     computeCategories: PropTypes.object.isRequired,
@@ -233,7 +231,7 @@ class PageDialectLearnWords extends PageDialectLearnBase {
               hideFromSections
               routeParams={this.props.routeParams}
             >
-              <RaisedButton
+              {/* <RaisedButton
                 label={intl.trans(
                   'views.pages.explore.dialect.learn.words.create_new_word',
                   'Create New Word',
@@ -241,7 +239,15 @@ class PageDialectLearnWords extends PageDialectLearnBase {
                 )}
                 onClick={this._onNavigateRequest.bind(this, 'create')}
                 primary
-              />
+              /> */}
+              <button
+                type="button"
+                onClick={() => {
+                  this._onNavigateRequest('create')
+                }}
+              >
+                {intl.trans('views.pages.explore.dialect.learn.words.create_new_word', 'Create New Word', 'words')}
+              </button>
             </AuthorizationFilter>
           </div>
         </div>
@@ -495,4 +501,4 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 }
-export default PageDialectLearnWords
+export default provide(PageDialectLearnWords)
