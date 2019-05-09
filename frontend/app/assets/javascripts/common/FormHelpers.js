@@ -251,13 +251,13 @@ export const getError = ({ errors = [], fieldName }) => {
   return {}
 }
 
-export const handleSubmit = async ({ validator, formData, success, failure }) => {
+export const handleSubmit = async ({ validator, formData, valid, invalid }) => {
   const formValidation = await validateForm({ formData, validator })
 
   if (formValidation.valid) {
-    success()
+    valid()
   } else {
-    failure({
+    invalid({
       errors: formValidation.errors,
     })
   }
