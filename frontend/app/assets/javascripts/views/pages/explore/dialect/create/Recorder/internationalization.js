@@ -1,17 +1,17 @@
 const copy = {
   loading: 'Loading',
-  title: 'Creating a new recorder',
+  title: 'Create a new recorder',
   name: 'Recorder name',
   description: 'Recorder description',
   submit: 'Create new recorder',
   cancel: "Cancel, don't create a new recorder",
   errorBoundary: {
-    title: 'Problem on our end',
-    explanation: "Sorry about this but we can't create any new recorders at the moment.",
-    optimism: 'It should be fixed soon.',
+    title: 'We encountered a problem',
+    explanation: "Sorry about this, but we can't create any new recorders at the moment.",
+    optimism: 'The issue should be fixed shortly.',
   },
   success: {
-    title: 'Created a new recorder',
+    title: 'We created a new recorder',
     review: 'Here is what you submitted:',
     thanks: 'Thanks for creating a recorder. Your contributions help make the site better!',
     createAnother: 'Want to create another recorder?',
