@@ -237,19 +237,17 @@ class ListView extends DataListView {
       this.state.columns = this.state.columns.filter((v) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
     }
 
-    // Note: using arrow fn()s where possible to auto bind to `this`
-
     // Bind methods to 'this'
-    // ;[
-    //   '_onNavigateRequest', // no references in file
-    //   '_onEntryNavigateRequest', // now an arrow fn
-    //   '_handleRefetch', // undefined: not in file!
-    //   '_handleSortChange', // undefined: not in file!
-    //   '_handleColumnOrderChange', // undefined: not in file!
-    //   '_resetColumns', // no references in file
-    //   '_fetchData2', // now an arrow fn but looks like it's not called
-    //   '_getPathOrParentID', // now an arrow fn
-    // ].forEach((method) => (this[method] = this[method].bind(this)))
+    [
+      '_onNavigateRequest', // no references in file
+      // '_onEntryNavigateRequest', // now an arrow fn, no need for binding
+      '_handleRefetch', // Note: comes from DataListView
+      '_handleSortChange', // Note: comes from DataListView
+      '_handleColumnOrderChange', // Note: comes from DataListView
+      '_resetColumns', // Note: comes from DataListView
+      // '_fetchData2', // now an arrow fn, no need for binding, looks like it's not being used though
+      // '_getPathOrParentID', // now an arrow fn, no need for binding
+    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   _getPathOrParentID = (newProps) => {
