@@ -20,11 +20,8 @@ import { getError, getErrorFeedback, getFormData, handleSubmit } from 'common/Fo
 import validator, { toParse } from './validation'
 import copy from './internationalization'
 import StringHelpers from 'common/StringHelpers'
+import { STATE_UNAVAILABLE, STATE_DEFAULT, STATE_ERROR, STATE_SUCCESS } from 'common/Constants'
 const { number, string } = PropTypes
-const STATE_UNAVAILABLE = 0
-const STATE_DEFAULT = 1
-const STATE_ERROR = 2
-const STATE_SUCCESS = 3
 
 export class CreateAudio extends React.Component {
   static propTypes = {

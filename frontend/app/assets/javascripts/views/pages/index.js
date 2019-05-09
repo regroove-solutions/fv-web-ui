@@ -80,8 +80,9 @@ import PageDialectAlphabetCharacterEdit from './explore/dialect/learn/alphabet/e
 
 // CREATE
 import { default as PageDialectWordsCreate } from './explore/dialect/learn/words/create'
-import { default as CreateV2 } from './explore/dialect/learn/words/CreateV2'
-import { default as CreateAudio } from './explore/dialect/learn/words/CreateAudio'
+import { default as CreateV2 } from './explore/dialect/create/Word'
+import { default as CreateAudio } from './explore/dialect/create/Audio'
+import { default as CreateRecorder } from './explore/dialect/create/Recorder'
 import { default as PageDialectPhrasesCreate } from './explore/dialect/learn/phrases/create'
 import { default as PageDialectStoriesAndSongsCreate } from './explore/dialect/learn/songs-stories/create'
 import { default as PageDialectStoriesAndSongsBookEntryCreate } from './explore/dialect/learn/songs-stories/entry/create'
@@ -151,6 +152,7 @@ export {
   PageDialectWordsCreate,
   CreateV2,
   CreateAudio,
+  CreateRecorder,
   PageDialectPhrasesCreate,
   PageDialectStoriesAndSongsCreate,
   PageDialectStoriesAndSongsBookEntryCreate,
