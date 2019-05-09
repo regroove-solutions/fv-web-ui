@@ -28,11 +28,15 @@ export default {
                 pathOrId: pathOrId,
               }
               dispatch(dispatchObj)
+              // modify for components
+              dispatchObj.success = true
               return dispatchObj
             })
             .catch((error) => {
               const dispatchObj = { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId }
               dispatch(dispatchObj)
+              // modify for components
+              dispatchObj.success = false
               return dispatchObj
             })
         }
@@ -50,6 +54,8 @@ export default {
               pathOrId: pathOrId,
             }
             dispatch(dispatchObj)
+            // modify for components
+            dispatchObj.success = true
             return dispatchObj
           })
           .catch((error) => {
@@ -59,6 +65,8 @@ export default {
               pathOrId: pathOrId,
             }
             dispatch(dispatchObj)
+            // modify for components
+            dispatchObj.success = false
             return dispatchObj
           })
       }
