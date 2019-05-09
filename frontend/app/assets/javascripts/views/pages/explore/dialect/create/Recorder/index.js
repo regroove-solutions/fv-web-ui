@@ -3,6 +3,7 @@ import { PropTypes } from 'react'
 import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
 import StringHelpers from 'common/StringHelpers'
+import ProviderHelpers from 'common/ProviderHelpers'
 
 import provide from 'react-redux-provide'
 
@@ -11,26 +12,61 @@ import validator from './validation'
 
 import copy from './internationalization'
 
-import { STATE_UNAVAILABLE, STATE_DEFAULT, STATE_ERROR, STATE_SUCCESS, STATE_ERROR_BOUNDARY } from 'common/Constants'
-const { element, string, func } = PropTypes
+import {
+  STATE_UNAVAILABLE,
+  STATE_DEFAULT,
+  STATE_ERROR,
+  STATE_SUCCESS,
+  STATE_ERROR_BOUNDARY,
+  DEFAULT_PAGE,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_LANGUAGE,
+  DEFAULT_SORT_COL,
+  DEFAULT_SORT_TYPE,
+} from 'common/Constants'
+const { array, element, func, number, object, string } = PropTypes
 
 export class CreateRecorder extends React.Component {
   static propTypes = {
     className: string,
     groupName: string,
     breadcrumb: element,
-    // Provide
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_LANGUAGE: string,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    // Provider
     pushWindowPath: func.isRequired,
+    computeContributors: object.isRequired,
+    createContributor: func.isRequired,
+    splitWindowPath: array.isRequired,
+    fetchDialect: func.isRequired,
+    computeDialect: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeCreateContributor: object,
+    computeContributor: object.isRequired,
+    fetchContributors: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRecorder',
     groupName: 'Form__group',
     breadcrumb: null,
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    DEFAULT_LANGUAGE,
+    DEFAULT_SORT_COL,
+    DEFAULT_SORT_TYPE,
+  }
+
+  _commonInitialState = {
+    errors: [],
+    formData: {},
+    isBusy: false,
   }
   state = {
     componentState: STATE_UNAVAILABLE,
-    errors: [],
-    formData: {},
+    ...this._commonInitialState,
   }
   // NOTE: Using callback refs since on old React
   // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
@@ -39,14 +75,34 @@ export class CreateRecorder extends React.Component {
     this.form = _element
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     // Do any loading here...
+    const { computeDialect, splitWindowPath } = this.props
+
+    // USING this.DIALECT_PATH instead of setting state
+    // this.setState({ dialectPath: dialectPath })
+    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
+    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
+    // Get data for computeDialect
+    if (!computeDialect.success) {
+      await this.props.fetchDialect('/' + this.DIALECT_PATH)
+    }
+
+    let currentAppliedFilter = '' // eslint-disable-line
+    // if (filter.has('currentAppliedFilter')) {
+    //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
+    // }
+    await this.props.fetchContributors(
+      this.CONTRIBUTOR_PATH,
+      `${currentAppliedFilter}&currentPageIndex=${this.props.DEFAULT_PAGE - 1}&pageSize=${
+        this.props.DEFAULT_PAGE_SIZE
+      }&sortOrder=${this.props.DEFAULT_SORT_TYPE}&sortBy=${this.props.DEFAULT_SORT_COL}`
+    )
     // Flip to ready state...
     this.setState({
       componentState: STATE_DEFAULT,
     })
   }
-
   render() {
     let content = null
     switch (this.state.componentState) {
@@ -92,10 +148,10 @@ export class CreateRecorder extends React.Component {
   }
   _stateGetDefault = () => {
     const { className, breadcrumb } = this.props
-    const { errors } = this.state
+    const { errors, isBusy } = this.state
 
     //   isFetching || isSuccess
-    const isInProgress = false
+    // const isInProgress = false
     // // const isFetching = selectn('isFetching', computeCreate)
     // const isFetching = false
     // const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
@@ -135,7 +191,7 @@ export class CreateRecorder extends React.Component {
         {getErrorFeedback({ errors })}
 
         {/* BTN: Create contributor ------------- */}
-        <button disabled={isInProgress} type="submit">
+        <button disabled={isBusy} type="submit">
           {copy.submit}
         </button>
       </form>
@@ -164,9 +220,8 @@ export class CreateRecorder extends React.Component {
           onClick={(e) => {
             e.preventDefault()
             this.setState({
-              errors: [],
-              formData: {},
               componentState: STATE_DEFAULT,
+              ...this._commonInitialState,
             })
           }}
         >
@@ -180,20 +235,59 @@ export class CreateRecorder extends React.Component {
   }
   async _handleCreateItemSubmit(formData) {
     // Submit here
-    this.setState({
-      errors: [],
-      formData,
-      componentState: STATE_SUCCESS,
-    })
+    const now = Date.now()
+    const name = formData['dc:title']
+    const results = await this.props.createContributor(
+      `${this.DIALECT_PATH}/Contributors`,
+      {
+        type: 'FVContributor',
+        name: name,
+        properties: formData,
+      },
+      null,
+      now
+    )
+    if (results.success === false) {
+      this.setState({
+        componentState: STATE_ERROR_BOUNDARY,
+      })
+      return
+    }
+
+    const item = ProviderHelpers.getEntry(
+      this.props.computeContributor,
+      `${this.DIALECT_PATH}/Contributors/${name}.${now}`
+    )
+    const response = item.response || {}
+
+    if (response && response.uid) {
+      this.setState({
+        errors: [],
+        formData,
+        itemUid: response.uid,
+        componentState: STATE_SUCCESS,
+      })
+    } else {
+      this.setState({
+        componentState: STATE_ERROR_BOUNDARY,
+      })
+    }
   }
   _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
     })
-    const success = () => {
-      this._handleCreateItemSubmit(formData)
+    const valid = () => {
+      this.setState(
+        {
+          isBusy: true,
+        },
+        () => {
+          this._handleCreateItemSubmit(formData)
+        }
+      )
     }
-    const failure = (response) => {
+    const invalid = (response) => {
       this.setState({
         errors: response.errors,
         componentState: STATE_ERROR,
@@ -203,8 +297,8 @@ export class CreateRecorder extends React.Component {
     handleSubmit({
       validator,
       formData,
-      success,
-      failure,
+      valid,
+      invalid,
     })
   }
 }
