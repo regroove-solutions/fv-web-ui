@@ -27,15 +27,13 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import DialectFilterList from 'views/components/DialectFilterList'
 import AlphabetListView from 'views/components/AlphabetListView'
 
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
 import { SearchDialect } from 'views/components/SearchDialect'
 import {
   SEARCH_SORT_DEFAULT,
@@ -49,8 +47,7 @@ const intl = IntlService.instance
 /**
  * Learn phrases
  */
-@provide
-export default class PageDialectLearnPhrases extends PageDialectLearnBase {
+export class PageDialectLearnPhrases extends PageDialectLearnBase {
   static propTypes = {
     windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -236,15 +233,24 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
                 login: this.props.computeLogin,
               }}
             >
-              <RaisedButton
-                label={intl.trans(
-                  'views.pages.explore.dialect.phrases.create_new_phrase',
-                  'Create New Phrase',
-                  'words'
-                )}
-                onClick={this._onNavigateRequest.bind(this, 'create')}
-                primary
-              />
+              <button
+                type="button"
+                onClick={() => {
+                  const url = appendPathArrayAfterLandmark({
+                    pathArray: ['create'],
+                    splitWindowPath: this.props.splitWindowPath,
+                  })
+                  if (url) {
+                    NavigationHelpers.navigate(`/${url}`, this.props.pushWindowPath, false)
+                  } else {
+                    // fallback, fn() from PageDialectLearnBase
+                    this._onNavigateRequest('create')
+                  }
+                }}
+                className="buttonRaised"
+              >
+                {intl.trans('views.pages.explore.dialect.phrases.create_new_phrase', 'Create New Phrase', 'words')}
+              </button>
             </AuthorizationFilter>
           </div>
         </div>
@@ -473,3 +479,5 @@ export default class PageDialectLearnPhrases extends PageDialectLearnBase {
     return this.props.routeParams.area + '_' + this.props.routeParams.dialect_name + '_learn_phrases'
   }
 }
+
+export default provide(PageDialectLearnPhrases)

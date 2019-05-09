@@ -17,18 +17,17 @@ import selectn from 'selectn'
 import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { paramMatch } from 'conf/routes'
 
-const arrayPopImmutable = function(array, sizeToPop = 1) {
+const arrayPopImmutable = (array, sizeToPop = 1) => {
   return array.slice(0, array.length - sizeToPop)
 }
 
 /**
  * Returns the context path (as an array) from local.js, or empty array.
  */
-const ContextPath = function() {
-  if (ENV_CONTEXT_PATH != null && typeof ENV_CONTEXT_PATH !== 'undefined') {
-    return ENV_CONTEXT_PATH;
-  }
-  else if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length == 0) {
+const ContextPath = () => {
+  if (ENV_CONTEXT_PATH !== null && typeof ENV_CONTEXT_PATH !== 'undefined') {
+    return ENV_CONTEXT_PATH
+  } else if (!ConfGlobal.contextPath || ConfGlobal.contextPath.length === 0) {
     return ''
   }
 
@@ -39,7 +38,7 @@ const ContextPath = function() {
  * Adds a forward slash to path if it is missing to help generate URLs
  * @param String path
  */
-const AddForwardSlash = function(path) {
+const AddForwardSlash = (path) => {
   let addForwardSlash = '/'
 
   if (path.indexOf('/') === 0) {
@@ -61,7 +60,7 @@ export default {
   // Navigate to an absolute path, possibly URL encoding the last path part
   // If no NavigationFunc is provided, will return the path
   // Will add context path unless already provided
-  navigate: function(path, navigationFunc, encodeLastPart = false) {
+  navigate: (path, navigationFunc, encodeLastPart = false) => {
     const pathArray = path.split('/')
 
     if (encodeLastPart) {
@@ -78,11 +77,11 @@ export default {
     navigationFunc(transformedPath)
   },
   // Navigate up by removing the last page from the URL
-  navigateUp: function(currentPathArray, navigationFunc) {
+  navigateUp: (currentPathArray, navigationFunc) => {
     navigationFunc('/' + arrayPopImmutable(currentPathArray).join('/'))
   },
   // Navigate forward, replacing the current page within the URL
-  navigateForwardReplace: function(currentPathArray, forwardPathArray, navigationFunc) {
+  navigateForwardReplace: (currentPathArray, forwardPathArray, navigationFunc) => {
     navigationFunc(
       '/' +
         arrayPopImmutable(currentPathArray)
@@ -91,7 +90,7 @@ export default {
     )
   },
   // Navigate forward, replacing the current page within the URL
-  navigateForwardReplaceMultiple: function(currentPathArray, forwardPathArray, navigationFunc) {
+  navigateForwardReplaceMultiple: (currentPathArray, forwardPathArray, navigationFunc) => {
     navigationFunc(
       '/' +
         arrayPopImmutable(currentPathArray, forwardPathArray.length)
@@ -100,20 +99,20 @@ export default {
     )
   },
   // Navigate forward by appending the forward path
-  navigateForward: function(currentPathArray, forwardPathArray, navigationFunc) {
+  navigateForward: (currentPathArray, forwardPathArray, navigationFunc) => {
     navigationFunc('/' + currentPathArray.concat(forwardPathArray).join('/'))
   },
   // Navigate back to previous page
-  navigateBack: function() {
+  navigateBack: () => {
     window.history.back()
   },
   // Method will append given path (/path/to/) to context path
-  generateStaticURL: function(path) {
+  generateStaticURL: (path) => {
     return ContextPath() + AddForwardSlash(path)
   },
   // Method will lookup a path, based on id, in routes, and generate the correct path
-  generateDynamicURL: function(routeId, routeParams, moreParams) {
-    const matchedRoute = ConfRoutes.find((route) => route && route.id && route.id == routeId)
+  generateDynamicURL: (routeId, routeParams, moreParams) => {
+    const matchedRoute = ConfRoutes.find((route) => route && route.id && route.id === routeId)
 
     const _params = Object.assign({}, DefaultRouteParams, routeParams, moreParams)
 
@@ -136,9 +135,9 @@ export default {
     // TODO: How do we fall back gracefully when no path is found?
   },
   // Generate a UID link from a Nuxeo document path
-  generateUIDPath: function(theme, item, pluralPathId) {
+  generateUIDPath: (theme, item, pluralPathId) => {
     let path = '/' + theme + selectn('path', item)
-    const type = selectn('type', item)
+    // const type = selectn('type', item)
 
     switch (pluralPathId) {
       case 'words':
@@ -161,45 +160,72 @@ export default {
         path = path.substring(0, path.lastIndexOf('/Resources/') + 11)
         path = path.replace('/Resources/', '/' + pluralPathId + '/')
         break
+      default: // Note: do nothing
     }
 
     return (path = ContextPath() + path.substring(0, path.lastIndexOf('/') + 1) + selectn('uid', item))
   },
   // Disable link
-  disable: function(event) {
+  disable: (event) => {
     event.preventDefault()
   },
-  getContextPath: function() {
+  getContextPath: () => {
     return ContextPath()
   },
   // Checks whether a page being accessed is a Workspace
-  isWorkspace: function(props) {
-    return props.windowPath && props.windowPath.indexOf('/Workspaces/') != -1
+  isWorkspace: (props) => {
+    return props.windowPath && props.windowPath.indexOf('/Workspaces/') !== -1
   },
-  getBaseWebUIURL: function() {
-    if (ENV_WEB_URL != null && typeof ENV_WEB_URL !== 'undefined') {
-      return ENV_WEB_URL;
-    } else {
-      return (
-        window.location.protocol +
-        '//' +
-        window.location.hostname +
-        (window.location.port ? ':' + window.location.port : '') +
-        ContextPath()
-      )
+  getBaseWebUIURL: () => {
+    if (ENV_WEB_URL !== null && typeof ENV_WEB_URL !== 'undefined') {
+      return ENV_WEB_URL
     }
+    return (
+      window.location.protocol +
+      '//' +
+      window.location.hostname +
+      (window.location.port ? ':' + window.location.port : '') +
+      ContextPath()
+    )
   },
-  getBaseURL: function() {
-    if (ENV_NUXEO_URL != null && typeof ENV_NUXEO_URL !== 'undefined') {
-      return ENV_NUXEO_URL;
-    } else {
-      return (
-        window.location.protocol +
-        '//' +
-        window.location.hostname +
-        (window.location.port ? ':' + window.location.port : '') +
-        '/nuxeo/'
-      )
+  getBaseURL: () => {
+    if (ENV_NUXEO_URL !== null && typeof ENV_NUXEO_URL !== 'undefined') {
+      return ENV_NUXEO_URL
     }
+    return (
+      window.location.protocol +
+      '//' +
+      window.location.hostname +
+      (window.location.port ? ':' + window.location.port : '') +
+      '/nuxeo/'
+    )
   },
+}
+
+/*
+Given:
+  pathArray: ['create']
+  splitWindowPath: ["explore", "FV", "Workspaces", "Data", "Athabascan", "Dene", "Dene", "learn", "words", "categories", "641f1def-4df7-41ab-8bae-ff65664ba24c"]
+  landmarkArray: ['words', 'phrases'] // looks in splitWindowPath for the first matching item (going back to front)
+
+  Will return:
+  'explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/create'
+
+If not found, returns `undefined`
+
+*/
+export const appendPathArrayAfterLandmark = ({ pathArray, splitWindowPath, landmarkArray = ['words', 'phrases'] }) => {
+  const _splitWindowPath = [...splitWindowPath].reverse()
+  let toReturn = undefined
+  landmarkArray.some((landmarkValue) => {
+    const indexLandmark = _splitWindowPath.indexOf(landmarkValue)
+    if (indexLandmark !== -1) {
+      const cut = _splitWindowPath.slice(indexLandmark)
+      cut.reverse()
+      toReturn = [...cut, ...pathArray].join('/')
+      return true
+    }
+    return false
+  })
+  return toReturn
 }
