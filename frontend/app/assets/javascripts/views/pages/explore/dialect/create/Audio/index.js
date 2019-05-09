@@ -284,7 +284,7 @@ export class CreateAudio extends React.Component {
       toParse,
     })
     // console.log('!? formData', formData)
-    const success = () => {
+    const valid = () => {
       // const now = Date.now()
       // this.props.createWord(
       //   this.props.routeParams.dialect_path + '/Dictionary',
@@ -302,7 +302,7 @@ export class CreateAudio extends React.Component {
       })
     }
 
-    const failure = (response) => {
+    const invalid = (response) => {
       // console.log('Errored with!', formData)
       this.setState({
         errors: response.errors,
@@ -312,8 +312,8 @@ export class CreateAudio extends React.Component {
     handleSubmit({
       validator,
       formData,
-      success,
-      failure,
+      valid,
+      invalid,
     })
   }
 }
