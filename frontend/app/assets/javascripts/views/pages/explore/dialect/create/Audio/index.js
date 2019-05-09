@@ -117,10 +117,10 @@ export class CreateAudio extends React.Component {
         <Text
           className={this.props.groupName}
           id={this._clean('dc:title')}
-          labelText={copy.name}
           name="dc:title"
           value=""
           error={getError({ errors, fieldName: 'dc:title' })}
+          labelText={copy.name}
         />
         {/* Description --------------- */}
         <Textarea
