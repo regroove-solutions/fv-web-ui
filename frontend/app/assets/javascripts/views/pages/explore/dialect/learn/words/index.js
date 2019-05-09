@@ -39,7 +39,7 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
 import AlphabetListView from 'views/components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
@@ -231,19 +231,19 @@ class PageDialectLearnWords extends PageDialectLearnBase {
               hideFromSections
               routeParams={this.props.routeParams}
             >
-              {/* <RaisedButton
-                label={intl.trans(
-                  'views.pages.explore.dialect.learn.words.create_new_word',
-                  'Create New Word',
-                  'words'
-                )}
-                onClick={this._onNavigateRequest.bind(this, 'create')}
-                primary
-              /> */}
               <button
                 type="button"
                 onClick={() => {
-                  this._onNavigateRequest('create')
+                  const url = appendPathArrayAfterLandmark({
+                    pathArray: ['create'],
+                    splitWindowPath: this.props.splitWindowPath,
+                  })
+                  if (url) {
+                    NavigationHelpers.navigate(`/${url}`, this.props.pushWindowPath, false)
+                  } else {
+                    // fallback, fn() from PageDialectLearnBase
+                    this._onNavigateRequest('create')
+                  }
                 }}
                 className="buttonRaised"
               >
