@@ -37,7 +37,6 @@ const intl = IntlService.instance
 /**
  * List view for words
  */
-@provide
 class ListView extends DataListView {
   static defaultProps = {
     disableClickItem: true,
@@ -124,12 +123,10 @@ class ListView extends DataListView {
           title: intl.trans('word', 'Word', 'first'),
           render: (v, data) => {
             const href = NavigationHelpers.generateUIDPath(this.props.routeParams.theme, data, 'words')
-            const clickHandler = props.disableClickItem
-              ? NavigationHelpers.disable
-              : (e) => {
-                // e.preventDefault()
-                // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
-              }
+            // NOTE: FW-135: Using `onClick={()=>{}}` for unknown reasons causes the following error when on Words and clicking between categories:
+            //`Uncaught Invariant Violation: findComponentRoot(..., .0.0.2.0.1.0.0:1.1.2.0.0.0.0.0.0.1:$0.$0.0): Unable to find element`
+            // That's why `undefined` is used in `clickHandler`
+            const clickHandler = props.disableClickItem ? NavigationHelpers.disable : undefined
             return (
               <a onClick={clickHandler} href={href}>
                 {v}
@@ -242,18 +239,18 @@ class ListView extends DataListView {
 
     // Bind methods to 'this'
     [
-      '_onNavigateRequest',
-      '_onEntryNavigateRequest',
-      '_handleRefetch',
-      '_handleSortChange',
-      '_handleColumnOrderChange',
-      '_resetColumns',
-      '_fetchData2',
-      '_getPathOrParentID',
-    ].forEach((method) => (this[method] = this[method].bind(this))) // eslint-disable-line
+      '_onNavigateRequest', // no references in file
+      // '_onEntryNavigateRequest', // now an arrow fn, no need for binding
+      '_handleRefetch', // Note: comes from DataListView
+      '_handleSortChange', // Note: comes from DataListView
+      '_handleColumnOrderChange', // Note: comes from DataListView
+      '_resetColumns', // Note: comes from DataListView
+      // '_fetchData2', // now an arrow fn, no need for binding, looks like it's not being used though
+      // '_getPathOrParentID', // now an arrow fn, no need for binding
+    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  _getPathOrParentID(newProps) {
+  _getPathOrParentID = (newProps) => {
     return newProps.parentID ? newProps.parentID : `${newProps.routeParams.dialect_path}/Dictionary`
   }
 
@@ -271,7 +268,7 @@ class ListView extends DataListView {
     )
   }
 
-  _onEntryNavigateRequest(item) {
+  _onEntryNavigateRequest = (item) => {
     if (this.props.action) {
       this.props.action(item)
     } else {
@@ -292,7 +289,7 @@ class ListView extends DataListView {
     }
 
     // WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
-    let starts_with_query = ProviderHelpers.isStartsWithQuery(currentAppliedFilter);
+    const starts_with_query = ProviderHelpers.isStartsWithQuery(currentAppliedFilter)
 
     const nql = `${currentAppliedFilter}&currentPageIndex=${pageIndex -
       1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}&enrichment=category_children${starts_with_query}`
@@ -304,7 +301,7 @@ class ListView extends DataListView {
     return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
   }
 
-  _fetchData2(fetcherParams, props = this.props) {
+  _fetchData2 = (fetcherParams /*, props = this.props*/) => {
     this.setState({
       fetcherParams: fetcherParams,
     })
@@ -377,4 +374,4 @@ class ListView extends DataListView {
   }
 }
 
-export default ListView
+export default provide(ListView)
