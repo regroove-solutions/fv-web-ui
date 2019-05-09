@@ -2,40 +2,35 @@ import React from 'react'
 import { PropTypes } from 'react'
 import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
-// import Select from 'views/components/Form/Common/Select`'
-import File from 'views/components/Form/Common/File'
-import Checkbox from 'views/components/Form/Common/Checkbox'
-import FormContributors from 'views/components/Form/FormContributors'
-import FormRecorders from 'views/components/Form/FormRecorders'
-// import FormMoveButtons from 'views/components/Form/FormMoveButtons'
-// import FormRemoveButton from 'views/components/Form/FormRemoveButton'
+import StringHelpers from 'common/StringHelpers'
 
-// import ProviderHelpers from 'common/ProviderHelpers'
-// import Preview from 'views/components/Editor/Preview'
-
-// import selectn from 'selectn'
 import provide from 'react-redux-provide'
 
 import { getError, getErrorFeedback, getFormData, handleSubmit } from 'common/FormHelpers'
-import validator, { toParse } from './validation'
+import validator from './validation'
+
 import copy from './internationalization'
+
 import { STATE_UNAVAILABLE, STATE_DEFAULT, STATE_ERROR, STATE_SUCCESS, STATE_ERROR_BOUNDARY } from 'common/Constants'
-import StringHelpers from 'common/StringHelpers'
-const { number, string } = PropTypes
+const { element, string, func } = PropTypes
 
 export class CreateRecorder extends React.Component {
   static propTypes = {
     className: string,
-    id: number,
     groupName: string,
+    breadcrumb: element,
+    // Provide
+    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRecorder',
-    id: -1,
     groupName: 'Form__group',
+    breadcrumb: null,
   }
   state = {
     componentState: STATE_UNAVAILABLE,
+    errors: [],
+    formData: {},
   }
   // NOTE: Using callback refs since on old React
   // https://reactjs.org/docs/refs-and-the-dom.html#callback-refs
@@ -84,28 +79,26 @@ export class CreateRecorder extends React.Component {
 
   _stateGetUnavailable = () => {
     const { className } = this.props
-    return <div className={className}>Loading</div>
+    return <div className={className}>{copy.loading}</div>
   }
   _stateGetErrorBoundary = () => {
     return (
       <div>
-        <h1>Problem on our end</h1>
-        <p>{"Sorry about this but we can't create any new recorders at the moment."}</p>
-        <p>It should be fixed soon.</p>
+        <h1>{copy.errorBoundary.title}</h1>
+        <p>{copy.errorBoundary.explanation}</p>
+        <p>{copy.errorBoundary.optimism}</p>
       </div>
     )
   }
   _stateGetDefault = () => {
-    const { className } = this.props
-    // const { index } = this.props
-
+    const { className, breadcrumb } = this.props
     const { errors } = this.state
 
     //   isFetching || isSuccess
     const isInProgress = false
-    // const isFetching = selectn('isFetching', computeCreate)
-    const isFetching = false
-    const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
+    // // const isFetching = selectn('isFetching', computeCreate)
+    // const isFetching = false
+    // const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
     return (
       <form
         className={className}
@@ -115,17 +108,20 @@ export class CreateRecorder extends React.Component {
           this._onRequestSaveForm()
         }}
       >
-        <h1>{copy.title}</h1>
+        {breadcrumb}
+        <h2>{copy.title}</h2>
+
         {/* Name ------------- */}
         <Text
           className={this.props.groupName}
           id={this._clean('dc:title')}
-          labelText={copy.name}
           name="dc:title"
           value=""
           error={getError({ errors, fieldName: 'dc:title' })}
+          labelText={copy.name}
         />
-        {/* Description --------------- */}
+
+        {/* Description ------------- */}
         <Textarea
           className={this.props.groupName}
           id={this._clean('dc:description')}
@@ -135,180 +131,72 @@ export class CreateRecorder extends React.Component {
           error={getError({ errors, fieldName: 'dc:description' })}
         />
 
-        {/* File --------------- */}
-        <File
-          className={this.props.groupName}
-          id="file"
-          labelText={copy.upload}
-          name="file"
-          value=""
-          error={getError({ errors, fieldName: 'file' })}
-        />
-
-        {/* Shared --------------- */}
-        <Checkbox
-          className={this.props.groupName}
-          id={this._clean('fvm:shared')}
-          labelText={copy.share}
-          name="fvm:shared"
-          handleChange={(data) => {
-            this.setState({ createItemIsShared: data })
-          }}
-          error={getError({ errors, fieldName: 'fvm:shared' })}
-        />
-        {/* Child focused --------------- */}
-        <Checkbox
-          className={this.props.groupName}
-          id={this._clean('fvm:child_focused')}
-          labelText={copy.childFocused}
-          name="fvm:child_focused"
-          handleChange={(data) => {
-            this.setState({ createItemIsChildFocused: data })
-          }}
-          error={getError({ errors, fieldName: 'fvm:child_focused' })}
-        />
-
-        {/* Contributors: fvm:source --------------- */}
-        <FormContributors
-          className={this.props.groupName}
-          id={this._clean('fv:source')}
-          name="fv:source"
-          textInfo={copy.contributorsText}
-          handleItemsUpdate={(data) => {
-            this.setState({ createItemContributors: data })
-          }}
-          error={getError({ errors, fieldName: 'fv:source' })}
-        />
-
-        {/* Recorders: fvm:recorder --------------- */}
-        <FormRecorders
-          className={this.props.groupName}
-          id={this._clean('fvm:recorder')}
-          name="fvm:recorder"
-          textInfo={copy.recordersText}
-          handleItemsUpdate={(data) => {
-            this.setState({ createItemRecorders: data })
-          }}
-          error={getError({ errors, fieldName: 'fvm:recorder' })}
-        />
-
-        {formStatus}
+        {/* {formStatus} */}
         {getErrorFeedback({ errors })}
 
         {/* BTN: Create contributor ------------- */}
         <button disabled={isInProgress} type="submit">
           {copy.submit}
         </button>
-
-        {/* BTN: Cancel, go back ------------- */}
-        <button
-          disabled={isInProgress}
-          type="button"
-          onClick={() => {
-            // console.log('Cancel pressed')
-            // this.setState({
-            //   componentState: this.STATE_DEFAULT,
-            // })
-          }}
-        >
-          {copy.cancel}
-        </button>
       </form>
     )
   }
   _stateGetError = () => {
-    const { className } = this.props
-    return <div className={className}>_stateGetError</div>
+    return this._stateGetDefault()
   }
   _stateGetSuccess = () => {
     const { className } = this.props
-    return <div className={className}>_stateGetSuccess</div>
+    const { formData } = this.state
+
+    const name = formData['dc:title']
+    const description = formData['dc:description']
+    return (
+      <div className={className}>
+        <h1>{copy.success.title}</h1>
+        <p>{copy.success.review}</p>
+        <dl>
+          <dt>{name || copy.success.noName}</dt>
+          <dd>{description || ''}</dd>
+        </dl>
+        <p>{copy.success.thanks}</p>
+        <a
+          href={window.location.pathname}
+          onClick={(e) => {
+            e.preventDefault()
+            this.setState({
+              errors: [],
+              formData: {},
+              componentState: STATE_DEFAULT,
+            })
+          }}
+        >
+          {copy.success.createAnother}
+        </a>
+      </div>
+    )
   }
   _clean = (name) => {
     return StringHelpers.clean(name, 'CLEAN_ID')
   }
-  _handleClickCreateItem = () => {
-    // console.log('!', '_handleClickCreateItem')
-    // const { handleClickCreateItem } = this.props
-    // this.setState(
-    //   {
-    //     componentState: this.STATE_CREATE,
-    //   },
-    //   () => {
-    //     handleClickCreateItem()
-    //   }
-    // )
-  }
-  // eslint-disable-next-line
-  _handleSubmitExistingItem = (createItemUid) => {
-    // console.log('!', '_handleSubmitExistingItem')
-    // this.setState(
-    //   {
-    //     componentState: this.STATE_CREATED,
-    //     contributorUid: createItemUid,
-    //   },
-    //   () => {}
-    // )
-  }
-
-  async _handleCreateItemSubmit() {
-    // console.log('!', '_handleCreateItemSubmit')
-    // validationForm
-    // const {
-    //   createItemName,
-    //   createItemDescription,
-    //   createItemFile,
-    //   createItemIsShared,
-    //   createItemIsChildFocused,
-    //   createItemContributors,
-    //   createItemRecorders,
-    // } = this.state
-    // const docParams = {
-    //   type: 'FVAudio',
-    //   name: createItemName,
-    //   properties: {
-    //     'dc:title': createItemName,
-    //     'dc:description': createItemDescription,
-    //     'fvm:shared': createItemIsShared,
-    //     'fvm:child_focused': createItemIsChildFocused,
-    //     'fvm:recorder': createItemRecorders['fvm:recorder'],
-    //     'fvm:source': createItemContributors['fvm:source'],
-    //   },
-    // }
-    // const timestamp = Date.now()
-    // const { DIALECT_PATH } = this.props
-    // this.props.createAudio(`${DIALECT_PATH}/Resources`, docParams, createItemFile, timestamp)
-    // const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
-    // this.setState({ pathOrId })
+  async _handleCreateItemSubmit(formData) {
+    // Submit here
+    this.setState({
+      errors: [],
+      formData,
+      componentState: STATE_SUCCESS,
+    })
   }
   _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
-      toParse,
     })
-    // console.log('!? formData', formData)
     const success = () => {
-      // const now = Date.now()
-      // this.props.createWord(
-      //   this.props.routeParams.dialect_path + '/Dictionary',
-      //   {
-      //     type: 'FVWord',
-      //     name: now.toString(),
-      //     properties: formData,
-      //   },
-      //   null,
-      //   now
-      // )
-      // console.log('Would have submitted!', formData)
-      this.setState({
-        errors: [],
-      })
+      this._handleCreateItemSubmit(formData)
     }
-
     const failure = (response) => {
-      // console.log('Errored with!', formData)
       this.setState({
         errors: response.errors,
+        componentState: STATE_ERROR,
       })
     }
 
