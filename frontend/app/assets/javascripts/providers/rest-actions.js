@@ -5,7 +5,7 @@ import IntlService from 'views/services/intl'
 import ConfGlobal from 'conf/local.json'
 
 export default {
-  create: (key, type, properties = {}) => {
+  create: (key /*type, properties = {}*/) => {
     return function create(parentDoc, docParams, file = null, timestamp) {
       return (dispatch) => {
         // timestamp specified as we can't rely on pathOrId to be unique at this point
@@ -16,7 +16,7 @@ export default {
         if (file) {
           return DocumentOperations.createDocumentWithBlob(parentDoc, docParams, file)
             .then((response) => {
-              dispatch({
+              const dispatchObj = {
                 type: key + '_CREATE_SUCCESS',
                 message:
                   IntlService.instance.translate({
@@ -26,15 +26,19 @@ export default {
                   }) + '!',
                 response: response,
                 pathOrId: pathOrId,
-              })
+              }
+              dispatch(dispatchObj)
+              return dispatchObj
             })
             .catch((error) => {
-              dispatch({ type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId })
+              const dispatchObj = { type: key + '_CREATE_ERROR', message: error, pathOrId: pathOrId }
+              dispatch(dispatchObj)
+              return dispatchObj
             })
         }
         return DocumentOperations.createDocument(parentDoc, docParams)
           .then((response) => {
-            dispatch({
+            const dispatchObj = {
               type: key + '_CREATE_SUCCESS',
               message:
                 IntlService.instance.translate({
@@ -44,14 +48,18 @@ export default {
                 }) + '!',
               response: response,
               pathOrId: pathOrId,
-            })
+            }
+            dispatch(dispatchObj)
+            return dispatchObj
           })
           .catch((error) => {
-            dispatch({
+            const dispatchObj = {
               type: key + '_CREATE_ERROR',
               message: IntlService.instance.searchAndReplace(error),
               pathOrId: pathOrId,
-            })
+            }
+            dispatch(dispatchObj)
+            return dispatchObj
           })
       }
     }
@@ -64,15 +72,15 @@ export default {
       messageError = null,
       propertiesOverride = {}
     ) {
-      messageStart = IntlService.instance.searchAndReplace(messageStart)
-      messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
-      messageError = IntlService.instance.searchAndReplace(messageError)
+      const _messageStart = IntlService.instance.searchAndReplace(messageStart)
+      const _messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
+      const _messageError = IntlService.instance.searchAndReplace(messageError)
       return (dispatch) => {
         dispatch({
           type: key + '_FETCH_START',
           pathOrId: pathOrId,
           message:
-            messageStart ||
+            _messageStart ||
             IntlService.instance.translate({
               key: 'providers.fetch_started',
               default: 'Fetch Started',
@@ -85,7 +93,7 @@ export default {
           .then((response) => {
             dispatch({
               type: key + '_FETCH_SUCCESS',
-              message: messageSuccess,
+              message: _messageSuccess,
               response: response,
               pathOrId: pathOrId,
             })
@@ -93,7 +101,7 @@ export default {
           .catch((error) => {
             dispatch({
               type: key + '_FETCH_ERROR',
-              message: messageError || IntlService.instance.searchAndReplace(error),
+              message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: pathOrId,
             })
           })
@@ -102,16 +110,16 @@ export default {
   },
   query: (key, type, properties = {}) => {
     return function query(pathOrId, queryAppend, messageStart = null, messageSuccess = null, messageError = null) {
-      messageStart = IntlService.instance.searchAndReplace(messageStart)
-      messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
-      messageError = IntlService.instance.searchAndReplace(messageError)
+      const _messageStart = IntlService.instance.searchAndReplace(messageStart)
+      const _messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
+      const _messageError = IntlService.instance.searchAndReplace(messageError)
 
       return (dispatch) => {
         dispatch({
           type: key + '_QUERY_START',
           pathOrId: pathOrId,
           message:
-            messageStart ||
+            _messageStart ||
             IntlService.instance.translate({
               key: 'providers.fetch_started',
               default: 'Fetch Started',
@@ -125,7 +133,7 @@ export default {
             .then((response) => {
               dispatch({
                 type: key + '_QUERY_SUCCESS',
-                message: messageSuccess,
+                message: _messageSuccess,
                 response: response,
                 pathOrId: pathOrId,
               })
@@ -133,7 +141,7 @@ export default {
             .catch((error) => {
               dispatch({
                 type: key + '_QUERY_ERROR',
-                message: messageError || IntlService.instance.searchAndReplace(error),
+                message: _messageError || IntlService.instance.searchAndReplace(error),
                 pathOrId: pathOrId,
               })
             })
@@ -144,7 +152,7 @@ export default {
           .then((response) => {
             dispatch({
               type: key + '_QUERY_SUCCESS',
-              message: messageSuccess,
+              message: _messageSuccess,
               response: response,
               pathOrId: pathOrId,
             })
@@ -152,7 +160,7 @@ export default {
           .catch((error) => {
             dispatch({
               type: key + '_QUERY_ERROR',
-              message: messageError || IntlService.instance.searchAndReplace(error),
+              message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: pathOrId,
             })
           })
@@ -167,15 +175,15 @@ export default {
       messageSuccess = null,
       messageError = null
     ) {
-      messageStart = IntlService.instance.searchAndReplace(messageStart)
-      messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
-      messageError = IntlService.instance.searchAndReplace(messageError)
+      const _messageStart = IntlService.instance.searchAndReplace(messageStart)
+      const _messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
+      const _messageError = IntlService.instance.searchAndReplace(messageError)
       return (dispatch) => {
         dispatch({
           type: key + '_EXECUTE_START',
           pathOrId: pathOrId,
           message:
-            messageStart ||
+            _messageStart ||
             IntlService.instance.translate({
               key: 'providers.fetch_started',
               default: 'Fetch Started',
@@ -189,7 +197,7 @@ export default {
           .then((response) => {
             dispatch({
               type: key + '_EXECUTE_SUCCESS',
-              message: IntlService.instance.searchAndReplace(messageSuccess),
+              message: _messageSuccess,
               response: response,
               pathOrId: pathOrId,
             })
@@ -197,7 +205,7 @@ export default {
           .catch((error) => {
             dispatch({
               type: key + '_EXECUTE_ERROR',
-              message: messageError || IntlService.instance.searchAndReplace(error),
+              message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: pathOrId,
             })
           })
@@ -206,21 +214,21 @@ export default {
   },
   update: (key, type, properties = {}, usePathAsId = true) => {
     return function update(newDoc, messageStart = undefined, messageSuccess = undefined, messageError = undefined) {
-      messageStart = IntlService.instance.searchAndReplace(messageStart)
-      messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
-      messageError = IntlService.instance.searchAndReplace(messageError)
+      const _messageStart = IntlService.instance.searchAndReplace(messageStart)
+      const _messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
+      const _messageError = IntlService.instance.searchAndReplace(messageError)
       return (dispatch) => {
         dispatch({
           type: key + '_UPDATE_START',
           pathOrId: usePathAsId ? newDoc.path : newDoc.uid,
           message:
-            messageStart === undefined
+            _messageStart === undefined
               ? IntlService.instance.translate({
                   key: 'operations.update_started',
                   default: 'Update Started',
                   case: 'words',
                 }) + '...'
-              : messageStart,
+              : _messageStart,
         })
 
         return DocumentOperations.updateDocument(newDoc, { headers: properties.headers })
@@ -228,13 +236,13 @@ export default {
             dispatch({
               type: key + '_UPDATE_SUCCESS',
               message:
-                messageSuccess === undefined
+                _messageSuccess === undefined
                   ? IntlService.instance.translate({
                       key: 'providers.document_updated_successfully',
                       default: 'Document updated successfully',
                       case: 'first',
                     }) + '!'
-                  : messageSuccess,
+                  : _messageSuccess,
               response: response,
               pathOrId: usePathAsId ? newDoc.path : newDoc.uid,
             })
@@ -242,24 +250,24 @@ export default {
           .catch((error) => {
             dispatch({
               type: key + '_UPDATE_ERROR',
-              message: messageError || IntlService.instance.searchAndReplace(error),
+              message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: usePathAsId ? newDoc.path : newDoc.uid,
             })
           })
       }
     }
   },
-  delete: (key, type, properties = {}) => {
+  delete: (key /*, type, properties = {}*/) => {
     return function update(pathOrId, messageStart = null, messageSuccess = null, messageError = null) {
-      messageStart = IntlService.instance.searchAndReplace(messageStart)
-      messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
-      messageError = IntlService.instance.searchAndReplace(messageError)
+      const _messageStart = IntlService.instance.searchAndReplace(messageStart)
+      const _messageSuccess = IntlService.instance.searchAndReplace(messageSuccess)
+      const _messageError = IntlService.instance.searchAndReplace(messageError)
       return (dispatch) => {
         dispatch({
           type: key + '_DELETE_START',
           pathOrId: pathOrId,
           message:
-            messageStart ||
+            _messageStart ||
             IntlService.instance.translate({
               key: 'providers.delete_started',
               default: 'Delete started',
@@ -272,7 +280,7 @@ export default {
             dispatch({
               type: key + '_DELETE_SUCCESS',
               message:
-                messageSuccess ||
+                _messageSuccess ||
                 IntlService.instance.translate({
                   key: 'providers.document_deleted_successfully',
                   default: 'Document deleted successfully',
@@ -285,7 +293,7 @@ export default {
           .catch((error) => {
             dispatch({
               type: key + '_DELETE_ERROR',
-              message: messageError || IntlService.instance.searchAndReplace(error),
+              message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: pathOrId,
             })
           })
