@@ -338,7 +338,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
       toParse,
     })
 
-    const success = () => {
+    const valid = () => {
       const now = Date.now()
       this.props.createWord(
         this.props.routeParams.dialect_path + '/Dictionary',
@@ -355,7 +355,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
       })
     }
 
-    const failure = (response) => {
+    const invalid = (response) => {
       this.setState({
         errors: response.errors,
       })
@@ -364,8 +364,8 @@ the 'Move Category up' and 'Move Category down' buttons`}
     handleSubmit({
       validator,
       formData,
-      success,
-      failure,
+      valid,
+      invalid,
     })
   }
 }
