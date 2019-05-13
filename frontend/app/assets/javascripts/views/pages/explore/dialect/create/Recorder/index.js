@@ -1,16 +1,15 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import Text from 'views/components/Form/Common/Text'
-import Textarea from 'views/components/Form/Common/Textarea'
 import StringHelpers from 'common/StringHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
-
+import RecorderStatesUnavailable from './states/unavailable'
+import RecorderStatesCreateSuccess from './states/createSuccess'
+import RecorderStatesDefault from './states/default'
+import RecorderStatesErrorBoundary from './states/errorBoundary'
 import provide from 'react-redux-provide'
 
-import { getError, getErrorFeedback, getFormData, handleSubmit } from 'common/FormHelpers'
+import { getFormData, handleSubmit } from 'common/FormHelpers'
 import validator from './validation'
-
-import copy from './internationalization'
 
 import {
   STATE_UNAVAILABLE,
@@ -135,101 +134,56 @@ export class CreateRecorder extends React.Component {
 
   _stateGetUnavailable = () => {
     const { className } = this.props
-    return <div className={className}>{copy.loading}</div>
+    return <RecorderStatesUnavailable className={className} />
   }
   _stateGetErrorBoundary = () => {
-    return (
-      <div>
-        <h1>{copy.errorBoundary.title}</h1>
-        <p>{copy.errorBoundary.explanation}</p>
-        <p>{copy.errorBoundary.optimism}</p>
-      </div>
-    )
+    return <RecorderStatesErrorBoundary />
   }
   _stateGetDefault = () => {
-    const { className, breadcrumb } = this.props
+    const { className, breadcrumb, groupName } = this.props
     const { errors, isBusy } = this.state
-
     //   isFetching || isSuccess
     // const isInProgress = false
     // // const isFetching = selectn('isFetching', computeCreate)
     // const isFetching = false
     // const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
     return (
-      <form
+      <RecorderStatesDefault
         className={className}
-        ref={this.setFormRef}
-        onSubmit={(e) => {
-          e.preventDefault()
+        groupName={groupName}
+        breadcrumb={breadcrumb}
+        errors={errors}
+        isBusy={isBusy}
+        onRequestSaveForm={() => {
           this._onRequestSaveForm()
         }}
-      >
-        {breadcrumb}
-        <h2>{copy.title}</h2>
-
-        {/* Name ------------- */}
-        <Text
-          className={this.props.groupName}
-          id={this._clean('dc:title')}
-          name="dc:title"
-          value=""
-          error={getError({ errors, fieldName: 'dc:title' })}
-          labelText={copy.name}
-        />
-
-        {/* Description ------------- */}
-        <Textarea
-          className={this.props.groupName}
-          id={this._clean('dc:description')}
-          labelText={copy.description}
-          name="dc:description"
-          value=""
-          error={getError({ errors, fieldName: 'dc:description' })}
-        />
-
-        {/* {formStatus} */}
-        {getErrorFeedback({ errors })}
-
-        {/* BTN: Create contributor ------------- */}
-        <button disabled={isBusy} type="submit">
-          {copy.submit}
-        </button>
-      </form>
+        setFormRef={this.setFormRef}
+      />
     )
   }
   _stateGetError = () => {
+    // default state handles errors, just call it...
     return this._stateGetDefault()
   }
   _stateGetSuccess = () => {
     const { className } = this.props
     const { formData } = this.state
 
-    const name = formData['dc:title']
-    const description = formData['dc:description']
     return (
-      <div className={className}>
-        <h1>{copy.success.title}</h1>
-        <p>{copy.success.review}</p>
-        <dl>
-          <dt>{name || copy.success.noName}</dt>
-          <dd>{description || ''}</dd>
-        </dl>
-        <p>{copy.success.thanks}</p>
-        <a
-          href={window.location.pathname}
-          onClick={(e) => {
-            e.preventDefault()
-            this.setState({
-              componentState: STATE_DEFAULT,
-              ...this._commonInitialState,
-            })
-          }}
-        >
-          {copy.success.createAnother}
-        </a>
-      </div>
+      <RecorderStatesCreateSuccess
+        className={className}
+        formData={formData}
+        handleClick={() => {
+          this.setState({
+            componentState: STATE_DEFAULT,
+            ...this._commonInitialState,
+          })
+        }}
+      />
     )
   }
+  // Format text to use in JSX attributes (ie: ID)
+  // Swaps : to -, and [] to empty string
   _clean = (name) => {
     return StringHelpers.clean(name, 'CLEAN_ID')
   }
@@ -304,3 +258,4 @@ export class CreateRecorder extends React.Component {
 }
 
 export default provide(CreateRecorder)
+// export default CreateRecorder
