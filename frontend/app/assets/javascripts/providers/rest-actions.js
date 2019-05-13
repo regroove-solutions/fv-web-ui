@@ -241,7 +241,7 @@ export default {
 
         return DocumentOperations.updateDocument(newDoc, { headers: properties.headers })
           .then((response) => {
-            dispatch({
+            const dispatchObj = {
               type: key + '_UPDATE_SUCCESS',
               message:
                 _messageSuccess === undefined
@@ -253,14 +253,22 @@ export default {
                   : _messageSuccess,
               response: response,
               pathOrId: usePathAsId ? newDoc.path : newDoc.uid,
-            })
+            }
+            dispatch(dispatchObj)
+            // modify for components
+            dispatchObj.success = true
+            return dispatchObj
           })
           .catch((error) => {
-            dispatch({
+            const dispatchObj = {
               type: key + '_UPDATE_ERROR',
               message: _messageError || IntlService.instance.searchAndReplace(error),
               pathOrId: usePathAsId ? newDoc.path : newDoc.uid,
-            })
+            }
+            dispatch(dispatchObj)
+            // modify for components
+            dispatchObj.success = false
+            return dispatchObj
           })
       }
     }

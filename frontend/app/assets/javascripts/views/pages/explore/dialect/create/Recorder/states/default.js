@@ -9,12 +9,16 @@ const { string, element, array, bool, func } = PropTypes
 export class RecorderStatesDefault extends React.Component {
   static propTypes = {
     className: string,
+    copyTitle: string,
+    copySubmit: string,
     groupName: string,
     breadcrumb: element,
     errors: array,
     isBusy: bool,
     onRequestSaveForm: func,
     setFormRef: func,
+    valueName: string,
+    valueDescription: string,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -24,9 +28,22 @@ export class RecorderStatesDefault extends React.Component {
     isBusy: false,
     onRequestSaveForm: () => {},
     setFormRef: () => {},
+    valueName: '',
+    valueDescription: '',
   }
   render() {
-    const { className, breadcrumb, errors, isBusy, onRequestSaveForm, setFormRef } = this.props
+    const {
+      className,
+      copyTitle,
+      copySubmit,
+      valueName,
+      valueDescription,
+      breadcrumb,
+      errors,
+      isBusy,
+      onRequestSaveForm,
+      setFormRef,
+    } = this.props
     return (
       <form
         className={className}
@@ -37,7 +54,7 @@ export class RecorderStatesDefault extends React.Component {
         }}
       >
         {breadcrumb}
-        <h2>{copy.title}</h2>
+        <h2>{copyTitle || copy.default.title}</h2>
 
         {/* Name ------------- */}
         <Text
@@ -45,19 +62,19 @@ export class RecorderStatesDefault extends React.Component {
           id={this._clean('dc:title')}
           name="dc:title"
           // value={formData['dc:title'] || ''}
-          value=""
+          value={valueName}
           error={getError({ errors, fieldName: 'dc:title' })}
-          labelText={copy.name}
+          labelText={copy.default.name}
         />
 
         {/* Description ------------- */}
         <Textarea
           className={this.props.groupName}
           id={this._clean('dc:description')}
-          labelText={copy.description}
+          labelText={copy.default.description}
           name="dc:description"
           // value={formData['dc:description'] || ''}
-          value=""
+          value={valueDescription}
           error={getError({ errors, fieldName: 'dc:description' })}
         />
 
@@ -66,7 +83,7 @@ export class RecorderStatesDefault extends React.Component {
 
         {/* BTN: Create contributor ------------- */}
         <button disabled={isBusy} type="submit">
-          {copy.submit}
+          {copySubmit || copy.default.submit}
         </button>
       </form>
     )

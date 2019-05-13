@@ -83,6 +83,7 @@ import { default as PageDialectWordsCreate } from './explore/dialect/learn/words
 import { default as CreateV2 } from './explore/dialect/create/Word'
 import { default as CreateAudio } from './explore/dialect/create/Audio'
 import { default as CreateRecorder } from './explore/dialect/create/Recorder'
+import { default as EditRecorder } from './explore/dialect/create/Recorder/edit'
 import { default as PageDialectPhrasesCreate } from './explore/dialect/learn/phrases/create'
 import { default as PageDialectStoriesAndSongsCreate } from './explore/dialect/learn/songs-stories/create'
 import { default as PageDialectStoriesAndSongsBookEntryCreate } from './explore/dialect/learn/songs-stories/entry/create'
@@ -148,6 +149,7 @@ export {
   PageDialectBookEntryEdit,
   PageDialectAlphabetCharacterEdit,
   PageDialectGalleryEdit,
+  EditRecorder,
   //CREATE
   PageDialectWordsCreate,
   CreateV2,

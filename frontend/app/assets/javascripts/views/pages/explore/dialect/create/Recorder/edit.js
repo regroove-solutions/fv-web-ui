@@ -1,15 +1,16 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import StringHelpers from 'common/StringHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import RecorderStatesUnavailable from './states/unavailable'
-import RecorderStatesSuccessDefault from './states/successDefault'
+import RecorderStatesSuccessEdit from './states/successEdit'
 import RecorderStatesDefault from './states/default'
 import RecorderStatesErrorBoundary from './states/errorBoundary'
 import provide from 'react-redux-provide'
-
+import selectn from 'selectn'
 import { getFormData, handleSubmit } from 'common/FormHelpers'
 import validator from './validation'
+// Models
+import { Document } from 'nuxeo'
 
 import {
   STATE_UNAVAILABLE,
@@ -23,9 +24,10 @@ import {
   DEFAULT_SORT_COL,
   DEFAULT_SORT_TYPE,
 } from 'common/Constants'
+import copy from './internationalization'
 const { array, element, func, number, object, string } = PropTypes
 
-export class CreateRecorder extends React.Component {
+export class EditRecorder extends React.Component {
   static propTypes = {
     className: string,
     groupName: string,
@@ -46,6 +48,12 @@ export class CreateRecorder extends React.Component {
     computeCreateContributor: object,
     computeContributor: object.isRequired,
     fetchContributors: func.isRequired,
+    // EDIT
+    routeParams: object.isRequired,
+    fetchContributor: func.isRequired,
+    fetchDialect2: func.isRequired,
+    updateContributor: func.isRequired,
+    onDocumentCreated: func,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -75,32 +83,7 @@ export class CreateRecorder extends React.Component {
   }
 
   async componentDidMount() {
-    // Do any loading here...
-    const { computeDialect, splitWindowPath } = this.props
-
-    // USING this.DIALECT_PATH instead of setting state
-    // this.setState({ dialectPath: dialectPath })
-    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
-    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
-    // Get data for computeDialect
-    if (!computeDialect.success) {
-      await this.props.fetchDialect('/' + this.DIALECT_PATH)
-    }
-
-    let currentAppliedFilter = '' // eslint-disable-line
-    // if (filter.has('currentAppliedFilter')) {
-    //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
-    // }
-    await this.props.fetchContributors(
-      this.CONTRIBUTOR_PATH,
-      `${currentAppliedFilter}&currentPageIndex=${this.props.DEFAULT_PAGE - 1}&pageSize=${
-        this.props.DEFAULT_PAGE_SIZE
-      }&sortOrder=${this.props.DEFAULT_SORT_TYPE}&sortBy=${this.props.DEFAULT_SORT_COL}`
-    )
-    // Flip to ready state...
-    this.setState({
-      componentState: STATE_DEFAULT,
-    })
+    await this._getData()
   }
   render() {
     let content = null
@@ -131,7 +114,21 @@ export class CreateRecorder extends React.Component {
     }
     return content
   }
-
+  _getData = async () => {
+    // Do any loading here...
+    // console.log('! componentDidMount')
+    const { fetchContributor, routeParams } = this.props
+    const { contributorId } = routeParams
+    await fetchContributor(contributorId)
+    const recorder = await this._getRecorder()
+    this.setState({
+      componentState: STATE_DEFAULT,
+      valueName: recorder.valueName,
+      valueDescription: recorder.valueDescription,
+      recorder: recorder.data,
+      ...this._commonInitialState,
+    })
+  }
   _stateGetUnavailable = () => {
     const { className } = this.props
     return <RecorderStatesUnavailable className={className} />
@@ -141,14 +138,11 @@ export class CreateRecorder extends React.Component {
   }
   _stateGetDefault = () => {
     const { className, breadcrumb, groupName } = this.props
-    const { errors, isBusy } = this.state
-    //   isFetching || isSuccess
-    // const isInProgress = false
-    // // const isFetching = selectn('isFetching', computeCreate)
-    // const isFetching = false
-    // const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
+    const { errors, isBusy, valueDescription, valueName } = this.state
     return (
       <RecorderStatesDefault
+        copyTitle={copy.edit.title}
+        copySubmit={copy.edit.submit}
         className={className}
         groupName={groupName}
         breadcrumb={breadcrumb}
@@ -158,6 +152,8 @@ export class CreateRecorder extends React.Component {
           this._onRequestSaveForm()
         }}
         setFormRef={this.setFormRef}
+        valueName={valueName}
+        valueDescription={valueDescription}
       />
     )
   }
@@ -170,55 +166,39 @@ export class CreateRecorder extends React.Component {
     const { formData } = this.state
 
     return (
-      <RecorderStatesSuccessDefault
+      <RecorderStatesSuccessEdit
         className={className}
         formData={formData}
         handleClick={() => {
-          this.setState({
-            componentState: STATE_DEFAULT,
-            ...this._commonInitialState,
-          })
+          // this.setState({
+          //   componentState: STATE_DEFAULT,
+          //   ...this._commonInitialState,
+          // })
+          this._getData()
         }}
       />
     )
   }
-  // Format text to use in JSX attributes (ie: ID)
-  // Swaps : to -, and [] to empty string
-  _clean = (name) => {
-    return StringHelpers.clean(name, 'CLEAN_ID')
-  }
   async _handleCreateItemSubmit(formData) {
-    // Submit here
-    const now = Date.now()
-    const name = formData['dc:title']
-    const results = await this.props.createContributor(
-      `${this.DIALECT_PATH}/Contributors`,
-      {
-        type: 'FVContributor',
-        name: name,
-        properties: formData,
-      },
-      null,
-      now
-    )
-    if (results.success === false) {
-      this.setState({
-        componentState: STATE_ERROR_BOUNDARY,
-      })
-      return
-    }
+    const { recorder } = this.state
 
-    const item = ProviderHelpers.getEntry(
-      this.props.computeContributor,
-      `${this.DIALECT_PATH}/Contributors/${name}.${now}`
-    )
-    const response = item.response || {}
+    const { updateContributor } = this.props
 
-    if (response && response.uid) {
+    const newDocument = new Document(recorder.response, {
+      repository: recorder.response._repository,
+      nuxeo: recorder.response._nuxeo,
+    })
+
+    // Set new value property on document
+    newDocument.set(formData)
+
+    // Save document
+    const _updateContributor = await updateContributor(newDocument, null, null)
+    if (_updateContributor.success) {
       this.setState({
         errors: [],
         formData,
-        itemUid: response.uid,
+        // itemUid: response.uid,
         componentState: STATE_SUCCESS,
       })
     } else {
@@ -226,6 +206,51 @@ export class CreateRecorder extends React.Component {
         componentState: STATE_ERROR_BOUNDARY,
       })
     }
+
+    // if (onDocumentCreated) {
+    //   const _onDocumentCreated = await onDocumentCreated(newDocument)
+    // }
+
+    // this.setState({ formValue: formValue })
+
+    // // Submit here
+    // const now = Date.now()
+    // const name = formData['dc:title']
+    // const results = await this.props.createContributor(
+    //   `${this.DIALECT_PATH}/Contributors`,
+    //   {
+    //     type: 'FVContributor',
+    //     name: name,
+    //     properties: formData,
+    //   },
+    //   null,
+    //   now
+    // )
+    // if (results.success === false) {
+    //   this.setState({
+    //     componentState: STATE_ERROR_BOUNDARY,
+    //   })
+    //   return
+    // }
+
+    // const item = ProviderHelpers.getEntry(
+    //   this.props.computeContributor,
+    //   `${this.DIALECT_PATH}/Contributors/${name}.${now}`
+    // )
+    // const response = item.response || {}
+
+    // if (response && response.uid) {
+    //   this.setState({
+    //     errors: [],
+    //     formData,
+    //     itemUid: response.uid,
+    //     componentState: STATE_SUCCESS,
+    //   })
+    // } else {
+    //   this.setState({
+    //     componentState: STATE_ERROR_BOUNDARY,
+    //   })
+    // }
   }
   _onRequestSaveForm = async () => {
     const formData = getFormData({
@@ -255,7 +280,19 @@ export class CreateRecorder extends React.Component {
       invalid,
     })
   }
+  _getRecorder = async () => {
+    const { computeContributor, routeParams } = this.props
+    const { contributorId } = routeParams
+    // Extract data from immutable:
+    const _computeContributor = await ProviderHelpers.getEntry(computeContributor, contributorId)
+    if (_computeContributor.success) {
+      // Extract data from object:
+      const valueName = selectn(['response', 'properties', 'dc:title'], _computeContributor)
+      const valueDescription = selectn(['response', 'properties', 'dc:description'], _computeContributor)
+      return { valueName, valueDescription, data: _computeContributor }
+    }
+    this._getRecorder()
+  }
 }
 
-export default provide(CreateRecorder)
-// export default CreateRecorder
+export default provide(EditRecorder)

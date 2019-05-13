@@ -1223,6 +1223,23 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'edit',
+      'recorder',
+      new paramMatch('contributorId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Create Recorder, {$dialect_name}',
+    page: <Pages.EditRecorder />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
       new paramMatch('area', WORKSPACE_OR_SECTION),
       'Data',
       ANYTHING_BUT_SLASH,
