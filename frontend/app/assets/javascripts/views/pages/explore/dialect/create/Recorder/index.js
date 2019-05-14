@@ -1,6 +1,5 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import StringHelpers from 'common/StringHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import RecorderStatesUnavailable from './states/unavailable'
 import RecorderStatesSuccessDefault from './states/successDefault'
@@ -36,16 +35,16 @@ export class CreateRecorder extends React.Component {
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
     // Provider
-    pushWindowPath: func.isRequired,
-    computeContributors: object.isRequired,
-    createContributor: func.isRequired,
     splitWindowPath: array.isRequired,
-    fetchDialect: func.isRequired,
+    computeContributor: object.isRequired,
+    computeContributors: object.isRequired,
+    computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    computeCreateContributor: object,
-    computeContributor: object.isRequired,
+    createContributor: func.isRequired,
+    fetchDialect: func.isRequired,
     fetchContributors: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -181,11 +180,6 @@ export class CreateRecorder extends React.Component {
         }}
       />
     )
-  }
-  // Format text to use in JSX attributes (ie: ID)
-  // Swaps : to -, and [] to empty string
-  _clean = (name) => {
-    return StringHelpers.clean(name, 'CLEAN_ID')
   }
   async _handleCreateItemSubmit(formData) {
     // Submit here
