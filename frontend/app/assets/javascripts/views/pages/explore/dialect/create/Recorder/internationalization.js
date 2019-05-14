@@ -30,7 +30,7 @@ const copy = {
   },
   loading: 'Loading',
   validation: {
-    title: 'Please provide a name for the recorder',
+    name: 'Please provide a name for the recorder',
   },
 }
 export default copy
