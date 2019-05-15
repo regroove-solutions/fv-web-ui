@@ -235,11 +235,11 @@ const routes = [
           return selectn('preferences.primary_dialect_path', params.props) !== undefined
         },
         target: (params) => {
-          const start_page = selectn('preferences.start_page', params.props)
+          const startPage = selectn('preferences.start_page', params.props)
           // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
           return (
             '/' +
-            (start_page === 'my_kids_dialect' ? 'kids' : 'explore') +
+            (startPage === 'my_kids_dialect' ? 'kids' : 'explore') +
             selectn('preferences.primary_dialect_path', params.props)
           )
         },

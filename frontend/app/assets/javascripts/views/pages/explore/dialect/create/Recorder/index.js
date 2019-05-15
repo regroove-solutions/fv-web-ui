@@ -5,7 +5,13 @@ import RecorderStatesUnavailable from './states/unavailable'
 import RecorderStatesSuccessDefault from './states/successDefault'
 import RecorderStatesDefault from './states/default'
 import RecorderStatesErrorBoundary from './states/errorBoundary'
-import provide from 'react-redux-provide'
+
+// import provide from 'react-redux-provide'
+// import { Provider } from 'react-redux'
+// import store from './store'
+import { connect } from 'react-redux'
+import { createContributor, fetchContributors } from '../../../../../../providers/redux/reducers/fvContributor'
+import { fetchDialect } from '../../../../../../providers/redux/reducers/fvDialect'
 
 import { getFormData, handleSubmit } from 'common/FormHelpers'
 import validator from './validation'
@@ -34,17 +40,19 @@ export class CreateRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // Provider
-    splitWindowPath: array.isRequired,
+    // Built-in `react-redux-provide`
+    splitWindowPath: array.isRequired, // TODO: need to recreate after dropping `react-redux-provide`
+    pushWindowPath: func.isRequired, // TODO: need to recreate after dropping `react-redux-provide`
+    // FVContributor
     computeContributor: object.isRequired,
     computeContributors: object.isRequired,
     computeCreateContributor: object,
+    createContributor: func.isRequired,
+    fetchContributors: func.isRequired,
+    // FVDialect
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    createContributor: func.isRequired,
     fetchDialect: func.isRequired,
-    fetchContributors: func.isRequired,
-    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -128,6 +136,7 @@ export class CreateRecorder extends React.Component {
       default:
         content = <div>{/* Shouldn't get here */}</div>
     }
+    // return <Provider store={store}>{content}</Provider>
     return content
   }
 
@@ -251,5 +260,18 @@ export class CreateRecorder extends React.Component {
   }
 }
 
-export default provide(CreateRecorder)
-// export default CreateRecorder
+// export default provide(CreateRecorder)
+
+const mapStateToProps = (state /*, ownProps*/) => {
+  console.log('!', state) // eslint-disable-line
+  return {
+    counter: state.counter,
+  }
+}
+
+const mapDispatchToProps = { createContributor, fetchContributors, fetchDialect }
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateRecorder)
