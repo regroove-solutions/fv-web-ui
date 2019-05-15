@@ -16,7 +16,7 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 import ConfGlobal from 'conf/local.json'
 
 // Providers provide reducers and actions
-import providers from '../../providers/index'
+import providers from 'providers/index'
 
 // Views
 import AppWrapper from '../AppWrapper'

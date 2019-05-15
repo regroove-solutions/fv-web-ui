@@ -27,9 +27,9 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 import ConfGlobal from 'conf/local.json'
 
 // Providers provide reducers and actions
-import providers from './providers/index'
+import providers from 'providers/index'
 import { Provider } from 'react-redux'
-import store from './providers/redux/store'
+import store from 'providers/redux/store'
 
 // Views
 import AppWrapper from 'views/AppWrapper'
