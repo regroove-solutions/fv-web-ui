@@ -1,9 +1,9 @@
 // Middleware
 import thunk from 'redux-thunk'
-import Request from 'request'
+// import Request from 'request'
 
 // Configuration
-import ConfGlobal from 'conf/local.json'
+// import ConfGlobal from 'conf/local.json'
 
 // Operations
 import BaseOperations from 'operations/BaseOperations'
@@ -22,14 +22,14 @@ let isNewLoginValue = false
  * Actions: Represent that something happened
  */
 const connect = function connect() {
-  return function(dispatch) {
+  return (dispatch) => {
     BaseOperations.initClient()
     dispatch({ type: CONNECT })
   }
 }
 
 const getCurrentUser = function getCurrentUser() {
-  return function(dispatch) {
+  return (dispatch) => {
     dispatch({ type: GET_CURRENT_USER_START })
 
     return UserOperations.getCurrentUser()
@@ -55,6 +55,7 @@ const reducers = {
           isConnected: true,
           client: action.client,
         })
+      default: // Note: do nothing
     }
     return { state }
   },
@@ -63,7 +64,7 @@ const reducers = {
     state = {
       isFetching: false,
       response: {
-        get: function() {
+        get: () => {
           return ''
         },
       },
@@ -72,8 +73,8 @@ const reducers = {
     action
   ) {
     switch (action.type) {
-      case GET_CURRENT_USER_SUCCESS:
-        let newLoginValue = isNewLoginValue
+      case GET_CURRENT_USER_SUCCESS: {
+        const newLoginValue = isNewLoginValue
         isNewLoginValue = false
         return Object.assign({}, state, {
           response: action.user,
@@ -82,11 +83,10 @@ const reducers = {
           isConnected: !action.isAnonymous,
           isNewLogin: newLoginValue,
         })
-        break
+      }
 
       default:
         return Object.assign({}, state, { isFetching: false })
-        break
     }
   },
 }
