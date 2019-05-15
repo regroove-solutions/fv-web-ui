@@ -15,8 +15,8 @@ limitations under the License.
 */
 import 'babel-polyfill'
 
-import React, { Component, PropTypes } from 'react'
-import { render } from 'react-dom'
+import React from 'react'
+import { render } from 'react-dom' // import ReactDOM from "react-dom"
 
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
@@ -28,6 +28,8 @@ import ConfGlobal from 'conf/local.json'
 
 // Providers provide reducers and actions
 import providers from './providers/index'
+import { Provider } from 'react-redux'
+import store from './providers/redux/store'
 
 // Views
 import AppWrapper from 'views/AppWrapper'
@@ -58,7 +60,13 @@ const context = {
   },
 }
 
-render(<AppWrapper {...context} />, document.getElementById('app-wrapper'))
+// render(<AppWrapper {...context} />, document.getElementById('app-wrapper'))
+render(
+  <Provider store={store}>
+    <AppWrapper {...context} />
+  </Provider>,
+  document.getElementById('app-wrapper')
+)
 
 /*window.addEventListener("unhandledrejection", function(err, promise) {
 // handle error here, for example log
