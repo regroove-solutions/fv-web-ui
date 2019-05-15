@@ -1,5 +1,6 @@
 import RESTActions from 'providers/rest-actions'
 import DocumentOperations from 'operations/DocumentOperations'
+console.log('! document', { RESTActions, DocumentOperations }) // eslint-disable-line
 import {
   DOCUMENT_PUBLISH_START,
   DOCUMENT_PUBLISH_SUCCESS,

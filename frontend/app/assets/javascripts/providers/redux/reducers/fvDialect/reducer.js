@@ -10,7 +10,7 @@ import {
   FV_DIALECT_UNPUBLISH_SUCCESS,
   FV_DIALECT_UNPUBLISH_ERROR,
 } from './actionTypes'
-
+import { combineReducers } from 'redux'
 import RESTReducers from 'providers/rest-reducers'
 
 const initialState = {
@@ -81,7 +81,17 @@ const computeDialectUnpublish = (state = initialState, action) => {
   }
 }
 
-export const fvDialectReducer = {
+// export const fvDialectReducer = {
+//   computeDialect,
+//   computeDialect2ByShortURL,
+//   computeDialects,
+//   computeDialect2,
+//   computeDialectStats,
+//   computeDialectList,
+//   computeDialectUnpublish,
+// }
+
+export const fvDialectReducer = combineReducers({
   computeDialect,
   computeDialect2ByShortURL,
   computeDialects,
@@ -89,4 +99,4 @@ export const fvDialectReducer = {
   computeDialectStats,
   computeDialectList,
   computeDialectUnpublish,
-}
+})

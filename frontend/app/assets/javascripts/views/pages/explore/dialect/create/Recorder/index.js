@@ -10,8 +10,9 @@ import RecorderStatesErrorBoundary from './states/errorBoundary'
 // import { Provider } from 'react-redux'
 // import store from './store'
 import { connect } from 'react-redux'
-import { createContributor, fetchContributors } from '../../../../../../providers/redux/reducers/fvContributor'
-import { fetchDialect } from '../../../../../../providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
 
 import { getFormData, handleSubmit } from 'common/FormHelpers'
 import validator from './validation'
@@ -83,11 +84,11 @@ export class CreateRecorder extends React.Component {
 
   async componentDidMount() {
     // Do any loading here...
-    const { computeDialect, splitWindowPath } = this.props
+    const { computeDialect } = this.props
 
     // USING this.DIALECT_PATH instead of setting state
     // this.setState({ dialectPath: dialectPath })
-    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
+    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(this.props.splitWindowPath)
     this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
     // Get data for computeDialect
     if (!computeDialect.success) {
@@ -263,13 +264,18 @@ export class CreateRecorder extends React.Component {
 // export default provide(CreateRecorder)
 
 const mapStateToProps = (state /*, ownProps*/) => {
-  console.log('!', state) // eslint-disable-line
+  // console.log('! mapStateToProps', state) // eslint-disable-line
+  const { windowPath, fvDialect, fvContributor } = state
   return {
-    counter: state.counter,
+    splitWindowPath: windowPath.splitWindowPath,
+    computeContributor: fvContributor.computeContributor,
+    computeContributors: fvContributor.computeContributors,
+    computeDialect: fvDialect.computeDialect,
+    computeDialect2: fvDialect.computeDialect2,
   }
 }
 
-const mapDispatchToProps = { createContributor, fetchContributors, fetchDialect }
+const mapDispatchToProps = { createContributor, fetchContributors, fetchDialect, pushWindowPath }
 
 export default connect(
   mapStateToProps,

@@ -11,7 +11,7 @@ import {
   DOCUMENT_ENABLE_SUCCESS,
   DOCUMENT_ENABLE_ERROR,
 } from './actionTypes'
-
+import { combineReducers } from 'redux'
 const initialState = {
   isFetching: false,
   response: {
@@ -84,11 +84,19 @@ const computeDocumentEnable = (state = initialState, action) => {
   }
 }
 
-export const documentReducer = {
+// export const documentReducer = {
+//   computeDocument,
+//   computeResultSet,
+//   computeSourceDocument,
+//   computePublish,
+//   computeDocumentDisable,
+//   computeDocumentEnable,
+// }
+export const documentReducer = combineReducers({
   computeDocument,
   computeResultSet,
   computeSourceDocument,
   computePublish,
   computeDocumentDisable,
   computeDocumentEnable,
-}
+})

@@ -13,7 +13,7 @@ import {
   FV_CONTRIBUTOR_CREATE_SUCCESS,
   FV_CONTRIBUTOR_CREATE_ERROR,
 } from './actionTypes'
-
+import { combineReducers } from 'redux'
 import RESTReducers from 'providers/rest-reducers'
 const computeContributorFactory = RESTReducers.computeFetch('contributor')
 const computeContributorsFactory = RESTReducers.computeQuery('contributors')
@@ -177,11 +177,20 @@ const computeContributorsAll = (state = initialState, action) => {
   }
 }
 
-export const fvContributorReducer = {
+// export const fvContributorReducer = {
+//   computeSharedContributors,
+//   computeContributorsInPath,
+//   computeContributor,
+//   computeContributors,
+//   computeCreateContributor,
+//   computeContributorsAll,
+// }
+
+export const fvContributorReducer = combineReducers({
   computeSharedContributors,
   computeContributorsInPath,
   computeContributor,
   computeContributors,
   computeCreateContributor,
   computeContributorsAll,
-}
+})
