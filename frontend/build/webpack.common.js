@@ -113,6 +113,7 @@ module.exports = {
       views: path.resolve(sourceScriptsDirectory, 'views'),
       conf: path.resolve(sourceScriptsDirectory, 'configuration'),
       operations: path.resolve(sourceScriptsDirectory, 'operations'),
+      providers: path.resolve(sourceScriptsDirectory, 'providers'),
       components: path.resolve(sourceScriptsDirectory, 'components'),
       common: path.resolve(sourceScriptsDirectory, 'common'),
       games: path.resolve(sourceAssetsDirectory, 'games'),
