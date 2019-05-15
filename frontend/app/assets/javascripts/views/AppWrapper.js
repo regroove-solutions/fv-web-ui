@@ -107,7 +107,6 @@ const getPreferences = function getPreferences(login, dialect) {
   return flattenedPreferences
 }
 
-@provide
 class AppWrapper extends Component {
   intl = IntlService.instance
   intlBaseKey = 'views'
@@ -277,4 +276,4 @@ class AppWrapper extends Component {
   }
 }
 
-export default AppWrapper
+export default provide(AppWrapper)
