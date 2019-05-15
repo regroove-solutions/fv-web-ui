@@ -1232,7 +1232,7 @@ const routes = [
       'recorder',
       new paramMatch('contributorId', ANYTHING_BUT_SLASH),
     ],
-    title: 'Create Recorder, {$dialect_name}',
+    title: 'Edit Recorder, {$dialect_name}',
     page: <Pages.EditRecorder />,
     extractPaths: true,
   },
