@@ -222,7 +222,7 @@ const computeUserCreatedSongs = (state = initialState, action) => {
   }
 }
 
-export const fvBook = combineReducers({
+export const fvBookReducer = combineReducers({
   computeBookFetchFactory,
   computeBookDeleteFactory,
   computeBookEntryFetchFactory,
