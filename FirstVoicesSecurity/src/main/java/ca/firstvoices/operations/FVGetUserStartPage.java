@@ -18,22 +18,22 @@
 package ca.firstvoices.operations;
 
 import ca.firstvoices.services.FVUserProfileService;
+import ca.firstvoices.utils.FVLoginUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 
 /**
- * Operation gets the dialects a user is a member of
- * TODO: Convert to service
+ * Operation returns the user start page for the current user
  */
-@Operation(id=FVGetDialectsForUser.ID, category=Constants.CAT_USERS_GROUPS, label="FVGetDialectsForUser", description="")
-public class FVGetDialectsForUser {
+@Operation(id=FVGetUserStartPage.ID, category=Constants.CAT_USERS_GROUPS, label="FVGetUserStartPage", description="")
+public class FVGetUserStartPage {
 
-    public static final String ID = "FVGetDialectsForUser";
+    public static final String ID = "FVGetUserStartPage";
 
 	@Context
 	protected CoreSession session;
@@ -41,11 +41,14 @@ public class FVGetDialectsForUser {
     @Context
     private FVUserProfileService fvUserProfileService;
 
+    @Context
+    protected RestHelper restHelper;
+
     @OperationMethod
-    public DocumentModelList run() {
+    public String run() {
 
     	NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
-        return fvUserProfileService.getUserDialects(currentUser, session);
+		return fvUserProfileService.getDefaultDialectRedirectPath(session, currentUser, FVLoginUtils.getBaseURL(restHelper));
     }
 
 }

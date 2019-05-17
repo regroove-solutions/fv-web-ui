@@ -1,43 +1,21 @@
 package ca.firstvoices.utils;
 
-import java.util.Iterator;
-import java.util.List;
-
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.LifeCycleConstants;
-import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.FacetNames;
+import org.apache.commons.lang3.StringUtils;
+import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.runtime.api.Framework;
 
 public class FVLoginUtils {
 
-    public static DocumentModelList getDialectsForUser(NuxeoPrincipal currentUser, CoreSession session) {
-        DocumentModelList dialects = null;
-        List<String> groups = currentUser.getGroups();
+    // this is configured with a property to be set easily in nuxeo.conf in different envs
+    static String fvContextPath = Framework.getProperty("fv.contextPath", "app");
 
-        if (groups != null && groups.size() >= 1) {
-            Iterator it = groups.iterator();
-            String inClause = "(\"" + groups.get(0) + "\"";
-            it.next();
-            while (it.hasNext()) {
-                inClause += ",\"" + it.next() + "\"";
-            }
-            inClause += ")";
-
-            String query = "SELECT * FROM FVDialect WHERE " + NXQL.ECM_MIXINTYPE + " <> '"
-                    + FacetNames.HIDDEN_IN_NAVIGATION + "' AND " + NXQL.ECM_LIFECYCLESTATE + " <> '"
-                    + LifeCycleConstants.DELETED_STATE + "'" + " AND ecm:isCheckedInVersion = 0 "
-                    + " AND ecm:acl/*/principal IN " + inClause + " " + " AND ecm:isProxy = 0 ";
-
-            dialects = session.query(query);
+    public static String getBaseURL(RestHelper restHelper) {
+        String NUXEO_URL = restHelper.getBaseURL();
+        if (StringUtils.isEmpty(fvContextPath)) {
+            // if we don't serve /app we don;t need /nuxeo in the url either
+            NUXEO_URL = restHelper.getBaseURL().replaceAll(restHelper.getContextPath(), "");
         }
 
-        if (dialects == null) {
-            dialects = new DocumentModelListImpl();
-        }
-
-        return dialects;
+        return NUXEO_URL;
     }
 }
