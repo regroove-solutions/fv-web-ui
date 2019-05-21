@@ -1,7 +1,7 @@
 import Immutable, { List, Map } from 'immutable'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 // Middleware
 import thunk from 'redux-thunk'
@@ -78,7 +78,7 @@ const FV_AUDIO_DELETE_ERROR = 'FV_AUDIO_DELETE_ERROR'
 
 const updateAudio = function updateAudio(newDoc, field) {
   return function(dispatch) {
-    let audios = {}
+    const audios = {}
     audios[newDoc.id] = {}
 
     dispatch({ type: FV_AUDIO_UPDATE_START, audios: audios, pathOrId: newDoc.id })
@@ -199,9 +199,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false })
         break
     }
-  } /*,
-  computeAudio(state = { audios: {} }, action) {
-    switch (action.type) {
+  }, /*,  computeAudio(state = { audios: {} }, action) {    switch (action.type) {
       case FV_AUDIO_FETCH_START:
       case FV_AUDIO_UPDATE_START:
 
@@ -214,7 +212,7 @@ const reducers = {
       // Send modified document to UI without access REST end-point
       case FV_AUDIO_FETCH_SUCCESS:
       case FV_AUDIO_UPDATE_SUCCESS:
-        
+
         action.audios[action.pathOrId].isFetching = false;
         action.audios[action.pathOrId].success = true;
 
@@ -233,7 +231,7 @@ const reducers = {
         return Object.assign({}, state, { audios: Object.assign(state.audios, action.audios) });
       break;
 
-      default: 
+      default:
         return Object.assign({}, state);
       break;
     }
@@ -254,11 +252,11 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;
 
-      default: 
+      default:
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }*/,
+  }*/
   computeAudio: computeAudioFactory.computeAudio,
   computeAudioStats(
     state = {

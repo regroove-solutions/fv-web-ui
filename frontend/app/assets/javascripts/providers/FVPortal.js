@@ -4,8 +4,8 @@ import thunk from 'redux-thunk'
 // Operations
 import DirectoryOperations from 'operations/DirectoryOperations'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 const DISMISS_ERROR = 'DISMISS_ERROR'
 

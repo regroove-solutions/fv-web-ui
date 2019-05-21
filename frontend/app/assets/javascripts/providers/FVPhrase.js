@@ -1,7 +1,7 @@
 import Immutable, { List, Map } from 'immutable'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 // Middleware
 import thunk from 'redux-thunk'

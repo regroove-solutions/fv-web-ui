@@ -1,4 +1,4 @@
-import RESTReducers from './rest-reducers'
+import RESTReducers from 'providers/rest-reducers'
 import { combineReducers } from 'redux'
 
 import {

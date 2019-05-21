@@ -1,7 +1,7 @@
 import Immutable, { List, Map } from 'immutable'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 // Middleware
 import thunk from 'redux-thunk'
@@ -78,7 +78,7 @@ const FV_PICTURE_DELETE_ERROR = 'FV_PICTURE_DELETE_ERROR'
 
 const updatePicture = function updatePicture(newDoc, field) {
   return function(dispatch) {
-    let pictures = {}
+    const pictures = {}
     pictures[newDoc.id] = {}
 
     dispatch({ type: FV_PICTURE_UPDATE_START, pictures: pictures, pathOrId: newDoc.id })
@@ -201,9 +201,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false })
         break
     }
-  } /*,
-  computePicture(state = { pictures: {} }, action) {
-    switch (action.type) {
+  }, /*,  computePicture(state = { pictures: {} }, action) {    switch (action.type) {
       case FV_PICTURE_FETCH_START:
       case FV_PICTURE_UPDATE_START:
       case FV_PICTURE_UPDATE_START:
@@ -217,7 +215,7 @@ const reducers = {
       // Send modified document to UI without access REST end-point
       case FV_PICTURE_FETCH_SUCCESS:
       case FV_PICTURE_UPDATE_SUCCESS:
-        
+
         action.pictures[action.pathOrId].isFetching = false;
         action.pictures[action.pathOrId].success = true;
 
@@ -236,11 +234,11 @@ const reducers = {
         return Object.assign({}, state, { pictures: Object.assign(state.pictures, action.pictures) });
       break;
 
-      default: 
+      default:
         return Object.assign({}, state);
       break;
     }
-  },*/,
+  },*/
   computePicture: computePictureFactory.computePicture,
   /*computeCreatePicture(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
       switch (action.type) {

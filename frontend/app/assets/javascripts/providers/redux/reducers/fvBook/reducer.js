@@ -23,7 +23,7 @@ import {
   FV_SONGS_USER_CREATED_QUERY_ERROR,
 } from './actionTypes'
 
-import RESTReducers from './rest-reducers'
+import RESTReducers from 'providers/rest-reducers'
 import { combineReducers } from 'redux'
 
 const initialState = {

@@ -1,7 +1,7 @@
 import ConfGlobal from 'conf/local.js'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 import thunk from 'redux-thunk'
 

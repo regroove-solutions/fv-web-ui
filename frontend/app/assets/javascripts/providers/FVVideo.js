@@ -1,7 +1,7 @@
 import Immutable, { List, Map } from 'immutable'
 
-import RESTActions from './rest-actions'
-import RESTReducers from './rest-reducers'
+import RESTActions from 'providers/rest-actions'
+import RESTReducers from 'providers/rest-reducers'
 
 // Middleware
 import thunk from 'redux-thunk'
@@ -78,7 +78,7 @@ const FV_VIDEO_DELETE_ERROR = 'FV_VIDEO_DELETE_ERROR'
 
 const updateVideo = function updateVideo(newDoc, field) {
   return function(dispatch) {
-    let videos = {}
+    const videos = {}
     videos[newDoc.id] = {}
 
     dispatch({ type: FV_VIDEO_UPDATE_START, videos: videos, pathOrId: newDoc.id })
@@ -199,9 +199,7 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false })
         break
     }
-  } /*,
-  computeVideo(state = { videos: {} }, action) {
-    switch (action.type) {
+  }, /*,  computeVideo(state = { videos: {} }, action) {    switch (action.type) {
       case FV_VIDEO_FETCH_START:
       case FV_VIDEO_UPDATE_START:
 
@@ -214,7 +212,7 @@ const reducers = {
       // Send modified document to UI without access REST end-point
       case FV_VIDEO_FETCH_SUCCESS:
       case FV_VIDEO_UPDATE_SUCCESS:
-        
+
         action.videos[action.pathOrId].isFetching = false;
         action.videos[action.pathOrId].success = true;
 
@@ -233,7 +231,7 @@ const reducers = {
         return Object.assign({}, state, { videos: Object.assign(state.videos, action.videos) });
       break;
 
-      default: 
+      default:
         return Object.assign({}, state);
       break;
     }
@@ -254,11 +252,11 @@ const reducers = {
         return Object.assign({}, state, { isFetching: false, isError: true, error: action.error, errorDismissed: (action.type === DISMISS_ERROR) ? true: false });
       break;
 
-      default: 
+      default:
         return Object.assign({}, state, { isFetching: false });
       break;
     }
-  }*/,
+  }*/
   computeVideo: computeVideoFactory.computeVideo,
   computeVideoStats(
     state = {

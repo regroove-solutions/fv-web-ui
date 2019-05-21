@@ -1,4 +1,4 @@
-import RESTActions from './rest-actions'
+import RESTActions from 'providers/rest-actions'
 
 export const fetchCharacter = RESTActions.fetch('FV_CHARACTER', 'FVCharacter', {
   headers: { 'enrichers.document': 'ancestry,character,permissions' },
