@@ -44,8 +44,9 @@ export const fvVideoReducer = combineReducers({
       default:
         return { ...state, isFetching: false }
     }
-  } /*,  computeVideo(state = { videos: {} }, action) {    switch (action.type) {      case FV_VIDEO_FETCH_START:      case FV_VIDEO_UPDATE_START:
-        action.videos[action.pathOrId].isFetching = true;
+  },
+  /*
+  computeVideo(state = { videos: {} }, action) {    switch (action.type) {      case FV_VIDEO_FETCH_START:      case FV_VIDEO_UPDATE_START:        action.videos[action.pathOrId].isFetching = true;
         action.videos[action.pathOrId].success = false;
 
         return { ...state,  videos: Object.assign(state.videos, action.videos) }
@@ -90,7 +91,8 @@ export const fvVideoReducer = combineReducers({
       default:
         return { ...state,  isFetching: false }
     }
-  }*/,
+  },
+  */
   computeVideo: computeVideoFactory.computeVideo,
   computeVideoStats(state = initialState, action) {
     switch (action.type) {
