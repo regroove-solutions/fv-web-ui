@@ -11,9 +11,9 @@ export const nuxeoReducer = combineReducers({
           isConnected: true,
           client: action.client,
         }
-      default: // NOTE: do nothing
+      default:
+        return state
     }
-    return { state } // NOTE: should this be `return state`?
   },
 
   computeLogin: (
