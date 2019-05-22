@@ -5,8 +5,6 @@ import RESTReducers from './rest-reducers'
 import thunk from 'redux-thunk'
 
 // Operations
-import DirectoryOperations from 'operations/DirectoryOperations'
-import DocumentOperations from 'operations/DocumentOperations'
 import UserOperations from 'operations/UserOperations'
 import IntlService from 'views/services/intl'
 
@@ -95,6 +93,7 @@ const userUpdate = RESTActions.execute('FV_USER_UPDATE', 'FVUpdateUser')
 const userUpgrade = RESTActions.execute('FV_USER_UPGRADE', 'FVChangeUserGroupToDialectGroup', {})
 
 const fetchUserDialects = RESTActions.execute('FV_USER_DIALECTS', 'FVGetDialectsForUser')
+const fetchUserStartpage = RESTActions.execute('FV_USER_STARTPAGE', 'FVGetUserStartPage')
 
 const computeUserFetchFactory = RESTReducers.computeFetch('user')
 const computeUserSuggestion = RESTReducers.computeOperation('user_suggestion')
@@ -103,11 +102,13 @@ const computeUserSelfregisterOperation = RESTReducers.computeOperation('user_sel
 const computeUserUpdate = RESTReducers.computeOperation('user_update')
 const computeUserUpgrade = RESTReducers.computeOperation('user_upgrade')
 const computeUserDialectsOperation = RESTReducers.computeOperation('user_dialects')
+const computeUserStartPageOperation = RESTReducers.computeOperation('user_startpage')
 
 const actions = {
   fetchUser,
   userSuggestion,
   fetchUserDialects,
+  fetchUserStartpage,
   createUser,
   selfregisterUser,
   updateUser,
@@ -122,6 +123,7 @@ const reducers = {
   computeUserSuggestion: computeUserSuggestion.computeUserSuggestion,
   computeUserSelfregister: computeUserSelfregisterOperation.computeUserSelfregister,
   computeUserDialects: computeUserDialectsOperation.computeUserDialects,
+  computeUserStartpage: computeUserStartPageOperation.computeUserStartpage,
 }
 
 const middleware = [thunk]

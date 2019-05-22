@@ -31,8 +31,7 @@ import IntlService from 'views/services/intl'
 
 const SelectableList = SelectableContainerEnhance(List)
 
-@provide
-export default class AppLeftNav extends Component {
+class AppLeftNav extends Component {
   static propTypes = {
     toggleMenuAction: PropTypes.func.isRequired,
     computeToggleMenuAction: PropTypes.object.isRequired,
@@ -61,7 +60,7 @@ export default class AppLeftNav extends Component {
       {
         id: 'home',
         label: this.intl.translate({ key: 'home', default: 'Home', case: 'first' }),
-        path: NavigationHelpers.generateStaticURL('/'),
+        path: NavigationHelpers.generateStaticURL('/home'),
       },
       {
         id: 'get-started',
@@ -269,3 +268,5 @@ export default class AppLeftNav extends Component {
     )
   }
 }
+
+export default provide(AppLeftNav)

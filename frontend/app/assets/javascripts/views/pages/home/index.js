@@ -14,45 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List } from 'immutable'
+import Immutable from 'immutable'
 
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 import classNames from 'classnames'
 
-import Colors from 'material-ui/lib/styles/colors'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import CircularProgress from 'material-ui/lib/circular-progress'
-import Paper from 'material-ui/lib/paper'
 import RaisedButton from 'material-ui/lib/raised-button'
-
-//import Map from 'views/components/Geo/map';
-
-import TextField from 'material-ui/lib/text-field'
-
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
 
 import IntroCardView from 'views/components/Browsing/intro-card-view'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
-import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect'
+import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
-import LocaleChecker from '../../../locale/LocaleChecker'
 import NavigationHelpers from '../../../common/NavigationHelpers'
 
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class PageHome extends Component {
+class PageHome extends Component {
   static propTypes = {
+    fetchUserStartpage: PropTypes.func.isRequired,
+    computeUserStartpage: PropTypes.object.isRequired,
     properties: PropTypes.object.isRequired,
     windowPath: PropTypes.string.isRequired,
     pushWindowPath: PropTypes.func.isRequired,
@@ -74,7 +61,6 @@ export default class PageHome extends Component {
     window.intl = this.intl
 
     this.state = {
-      mapVisible: false,
       pagePath: '/' + this.props.properties.domain + '/sections/Site/Resources/',
       dialectsPath: '/' + this.props.properties.domain + '/sections/',
     }
@@ -84,7 +70,26 @@ export default class PageHome extends Component {
   componentDidMount() {
     this.props.queryPage(this.state.pagePath, " AND fvpage:url LIKE '/home/'" + '&sortOrder=ASC' + '&sortBy=dc:title')
 
-    //this.props.fetchPortals(this.state.dialectsPath, ' AND fv-portal:map_marker_coords IS NOT NULL');
+    // Get user start page
+    ProviderHelpers.fetchIfMissing('currentUser', this.props.fetchUserStartpage, this.props.computeUserStartpage)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Redirect user to their start page if they are members of a single dialect, or have one defined
+
+    // If user is accessing /home directly, do not redirect.
+    if (this.props.windowPath.indexOf('/home') != -1) {
+      return
+    }
+
+    const computeUserStartPagePrev = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
+    const computeUserStartPageNext = ProviderHelpers.getEntry(nextProps.computeUserStartpage, 'currentUser')
+
+    const startPage = selectn('response.value', computeUserStartPageNext)
+
+    if (!selectn('success', computeUserStartPagePrev) && selectn('success', computeUserStartPageNext) && startPage) {
+      window.location = startPage
+    }
   }
 
   _onNavigateRequest(path) {
@@ -118,13 +123,17 @@ export default class PageHome extends Component {
       {
         id: this.state.pagePath,
         entity: this.props.computePage,
-      } /*,
-    {
+      },
+      {
+        id: 'currentUser',
+        entity: this.props.computeUserStartPage,
+      } /*,    {
       'id': this.state.dialectsPath,
       'entity': this.props.computePortals
     }*/,
     ])
 
+    const computeUserStartPage = ProviderHelpers.getEntry(this.props.computeUserStartPage, 'currentUser')
     const computePage = ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath)
     //const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.dialectsPath);
 
@@ -133,23 +142,59 @@ export default class PageHome extends Component {
 
     const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties)
     const primary2Color = selectn('theme.palette.baseTheme.palette.primary2Color', this.props.properties)
-    const accent1Color = selectn('theme.palette.baseTheme.palette.accent1Color', this.props.properties)
     const alternateTextColor = selectn('theme.palette.baseTheme.palette.alternateTextColor', this.props.properties)
     const intl = this.intl
 
+    const accessButtons = []
+
+    // Compute User Registration Tasks
+    ;(selectn('response.entries', computeUserStartPage) || []).map(
+      function(dialect) {
+        const tableRow = (
+          <RaisedButton
+            label={'Access ' + selectn('properties.dc:title', dialect)}
+            primary
+            onClick={this._onNavigateRequest.bind(
+              this,
+              NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/')
+            )}
+            style={{ marginRight: '10px', height: '50px' }}
+            labelColor={alternateTextColor}
+            labelStyle={{ fontSize: '1.34em' }}
+          />
+        )
+
+        accessButtons.push(tableRow)
+      }.bind(this)
+    )
+
+    if (accessButtons.length == 0) {
+      accessButtons[0] = (
+        <RaisedButton
+          label={
+            this.intl.translate({
+              key: 'get_started!',
+              default: 'Get Started!',
+              case: 'words',
+            }) + '!'
+          }
+          primary
+          onClick={this._onNavigateRequest.bind(
+            this,
+            NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/')
+          )}
+          style={{ marginRight: '10px', height: '50px' }}
+          labelColor={alternateTextColor}
+          labelStyle={{ fontSize: '1.34em' }}
+        />
+      )
+    }
+
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row" style={homePageStyle}>
           <div style={{ position: 'relative', height: '650px' }}>
             <div className={classNames('col-xs-12')} style={{ height: '100%' }}>
-              <div
-                className="hidden-xs"
-                style={{ position: 'absolute', left: '25px', top: '25px', width: '40%' }}
-                className={classNames({ invisible: !this.state.mapVisible })}
-              >
-                {/*return <Map dialects={dialects} />*/}
-              </div>
-
               <div className="home-intro-block">
                 <h1
                   className="display"
@@ -167,36 +212,7 @@ export default class PageHome extends Component {
                     }}
                   />
                 </div>
-                <div>
-                  <RaisedButton
-                    label={
-                      this.intl.translate({
-                        key: 'get_started!',
-                        default: 'Get Started!',
-                        case: 'words',
-                      }) + '!'
-                    }
-                    primary={true}
-                    onClick={this._onNavigateRequest.bind(
-                      this,
-                      NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/')
-                    )}
-                    style={{ marginRight: '10px', height: '50px' }}
-                    labelColor={alternateTextColor}
-                    labelStyle={{ fontSize: '1.34em' }}
-                  />
-                  <div className="hidden" style={{ display: 'inline-block' }}>
-                    <RaisedButton
-                      primary={true}
-                      label={this.intl.translate({
-                        key: ['views', 'pages', 'home', 'language_map'],
-                        default: 'Language Map',
-                        case: 'words',
-                      })}
-                      onClick={() => this.setState({ mapVisible: !this.state.mapVisible })}
-                    />
-                  </div>
-                </div>
+                <div>{accessButtons}</div>
               </div>
             </div>
           </div>
@@ -298,3 +314,5 @@ export default class PageHome extends Component {
     )
   }
 }
+
+export default provide(PageHome)

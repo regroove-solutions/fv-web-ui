@@ -93,7 +93,6 @@ class Redirecter extends Component {
 export class AppFrontController extends Component {
   static propTypes = {
     properties: PropTypes.object.isRequired,
-    preferences: PropTypes.object,
     warnings: PropTypes.object.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     windowPath: PropTypes.string.isRequired,
@@ -187,12 +186,7 @@ export class AppFrontController extends Component {
       const matchTest = matchPath(value.get('path'), pathArray)
       const matchAlias = matchPath(value.get('alias'), pathArray)
 
-      // If only the alias matched, redirect to the original path
-      if (matchAlias.matched && !matchTest.matched) {
-        window.location.replace('/' + value.get('path').join())
-      }
-
-      if (matchTest.matched) {
+      if (matchTest.matched || matchAlias.matched) {
         const routeParams = matchTest.routeParams
 
         // Extract common paths from URL
@@ -274,7 +268,7 @@ export class AppFrontController extends Component {
           newTheme = 'workspace'
         }
 
-        if (props.properties.theme.id != newTheme) {
+        if (props.properties.theme.id !== newTheme) {
           props.changeTheme(newTheme)
         }
       } else {
@@ -322,33 +316,14 @@ export class AppFrontController extends Component {
         window.snowplow('trackPageView')
       }
     }
-
-    if (selectn('computeLogin.isConnected', this.props) && selectn('computeLogin.isNewLogin', this.props)) {
-      let primary_dialect_path = selectn('primary_dialect_path', this.props.preferences)
-
-      if (primary_dialect_path && prevProps.preferences.primary_dialect_path === undefined) {
-        primary_dialect_path = '/explore' + primary_dialect_path
-        this.props.pushWindowPath(primary_dialect_path)
-      }
-    }
   }
 
   componentWillReceiveProps(nextProps) {
-    const primary_dialect_path = selectn('primary_dialect_path', this.props.preferences)
-    const next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences)
-
     // Re-route on window path change
     if (nextProps.windowPath !== this.props.windowPath) {
       this._route(nextProps)
-    } else if (nextProps.computeLogin != this.props.computeLogin) {
+    } else if (nextProps.computeLogin !== this.props.computeLogin) {
       // Re-route on login
-      this._route(nextProps)
-    } else if (
-      next_primary_dialect_path !== undefined &&
-      next_primary_dialect_path != primary_dialect_path &&
-      next_primary_dialect_path.length > 0
-    ) {
-      // Re-route if preferences change
       this._route(nextProps)
     }
   }
@@ -419,7 +394,7 @@ export class AppFrontController extends Component {
 
     // Remove breadcrumbs for Kids portal
     // TODO: Make more generic if additional themes are added in the future.
-    if (theme == 'kids') {
+    if (theme === 'kids') {
       page = clonedElement
       navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
     } else {

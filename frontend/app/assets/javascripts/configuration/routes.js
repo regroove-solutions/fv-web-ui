@@ -3,7 +3,6 @@ import selectn from 'selectn'
 import Immutable from 'immutable'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
-import UIHelpers from 'common/UIHelpers'
 import IntlService from 'views/services/intl'
 
 import * as Pages from 'views/pages'
@@ -114,15 +113,13 @@ const PAGE_NOT_FOUND_BODY = (
 const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH)
 const NUMBER = new RegExp('([0-9]+)')
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION)
-const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE)
+//const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE)
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT))
 
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
-    return (
-      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props))
-    )
+    return selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)
   },
   target: (params) => {
     return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections')
@@ -258,41 +255,11 @@ const routes = [
   {
     id: 'home',
     path: [],
-    alias: [ANY_LANGUAGE_CODE, 'home'],
+    alias: ['home'],
     page: <Pages.PageHome />,
     title: intl.translate({ key: 'home', default: 'Home', case: 'first' }),
     breadcrumbs: false,
     frontpage: true,
-    redirects: [
-      {
-        // For any start page value other than a dialect, simple redirect to that start page
-        condition: (params) => {
-          return (
-            selectn('preferences.start_page', params.props) !== undefined &&
-            selectn('preferences.start_page', params.props) !== 'my_dialect' &&
-            selectn('preferences.start_page', params.props) !== 'my_kids_dialect'
-          )
-        },
-        target: (params) => {
-          return UIHelpers.getPreferenceVal('start_page', params.props.preferences)
-        },
-      },
-      {
-        // Redirecting to a dialect (requires dialect_path to be provided)
-        condition: (params) => {
-          return selectn('preferences.primary_dialect_path', params.props) !== undefined
-        },
-        target: (params) => {
-          const start_page = selectn('preferences.start_page', params.props)
-          // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
-          return (
-            '/' +
-            (start_page === 'my_kids_dialect' ? 'kids' : 'explore') +
-            selectn('preferences.primary_dialect_path', params.props)
-          )
-        },
-      },
-    ],
   },
   {
     id: 'dynamic_content_page',
