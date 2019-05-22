@@ -1,7 +1,11 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import { PropTypes } from 'react'
 import Immutable, { List } from 'immutable'
 
-import provide from 'react-redux-provide'
+import { connect } from 'react-redux'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { changeTheme } from 'providers/redux/reducers/navigation'
+
 import selectn from 'selectn'
 
 import classNames from 'classnames'
@@ -24,6 +28,8 @@ import Breadcrumb from 'views/components/Breadcrumb'
 import IntlService from 'views/services/intl'
 
 import { PageError } from 'views/pages'
+
+const { array, func, object, string } = PropTypes
 
 const intl = IntlService.instance
 
@@ -64,7 +70,7 @@ const PAGE_NOT_FOUND_BODY = (
 
 class Redirecter extends Component {
   static propTypes = {
-    redirect: PropTypes.func,
+    redirect: func,
   }
   static defaultProps = {
     redirect: () => {},
@@ -92,18 +98,23 @@ class Redirecter extends Component {
 }
 export class AppFrontController extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    preferences: PropTypes.object,
-    warnings: PropTypes.object.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    changeTheme: PropTypes.func.isRequired,
-    // loadGuide: PropTypes.func.isRequired,
-    // loadNavigation: PropTypes.func.isRequired
+    preferences: object,
+    warnings: object.isRequired,
+
+    // REDUX: actions
+    changeTheme: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+
+    // loadGuide: func.isRequired,
+    // loadNavigation: func.isRequired
+
+    // REDUX: reducers
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
   }
 
   constructor(props, context) {
@@ -278,7 +289,9 @@ export class AppFrontController extends Component {
           props.changeTheme(newTheme)
         }
       } else {
-        props.changeTheme('default')
+        // NOTE: Initial theme state is set in a redux reducer located at:
+        //   app/assets/javascripts/providers/redux/reducers/navigation/reducer.js
+        // props.changeTheme('default')
       }
 
       const matchReturn = {
@@ -401,11 +414,12 @@ export class AppFrontController extends Component {
 
     let navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
     const theme = matchedRouteParams.hasOwnProperty('theme') ? matchedRouteParams.theme : 'default'
+    // prettier-ignore
     const print = matchedPage
       ? matchedPage
-          .get('page')
-          .get('props')
-          .get('print') === true
+        .get('page')
+        .get('props')
+        .get('print') === true
       : false
 
     let footer = <Footer className={'footer-' + theme + '-theme'} />
@@ -472,4 +486,30 @@ export class AppFrontController extends Component {
   }
 }
 
-export default provide(AppFrontController)
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+const mapDispatchToProps = {
+  pushWindowPath,
+  replaceWindowPath,
+  changeTheme,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AppFrontController)
