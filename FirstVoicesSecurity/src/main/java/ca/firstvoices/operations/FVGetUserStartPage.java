@@ -19,13 +19,17 @@ package ca.firstvoices.operations;
 
 import ca.firstvoices.services.FVUserProfileService;
 import ca.firstvoices.utils.FVLoginUtils;
+import org.nuxeo.ecm.automation.OperationContext;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
+import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
+import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+
+import javax.servlet.ServletRequest;
 
 /**
  * Operation returns the user start page for the current user
@@ -42,13 +46,19 @@ public class FVGetUserStartPage {
     private FVUserProfileService fvUserProfileService;
 
     @Context
-    protected RestHelper restHelper;
+    protected OperationContext ctx;
 
     @OperationMethod
     public String run() {
 
+        ServletRequest request = (ServletRequest) ctx.get("request");
+
+        String baseURL = FVLoginUtils.removeNuxeoFromPath(
+                BaseURL.getBaseURL(request),
+                VirtualHostHelper.getContextPath(request));
+
     	NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
-		return fvUserProfileService.getDefaultDialectRedirectPath(session, currentUser, FVLoginUtils.getBaseURL(restHelper));
+		return fvUserProfileService.getDefaultDialectRedirectPath(session, currentUser, baseURL);
     }
 
 }
