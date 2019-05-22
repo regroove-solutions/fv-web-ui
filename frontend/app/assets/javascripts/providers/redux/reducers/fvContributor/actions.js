@@ -1,5 +1,4 @@
-// import RESTActions from 'providers/rest-actions'
-import RESTActions from 'providers/restActions'
+import RESTActions from 'providers/rest-actions'
 import DirectoryOperations from 'operations/DirectoryOperations'
 console.log('! fvContributor', { RESTActions, DirectoryOperations }) // eslint-disable-line
 
