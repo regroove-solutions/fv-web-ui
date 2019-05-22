@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
 // import Immutable, { Set, Map } from 'immutable'
 import { PropTypes } from 'react'
-import provide from 'react-redux-provide'
-// import StringHelpers from 'common/StringHelpers'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchCharacters } from 'providers/redux/reducers/fvCharacter'
+
 import selectn from 'selectn'
-// import classNames from 'classnames'
 import IntlService from 'views/services/intl'
 import ProviderHelpers from 'common/ProviderHelpers'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
@@ -13,15 +17,17 @@ const intl = IntlService.instance
 
 export class AlphabetListView extends Component {
   static propTypes = {
-    handleClick: func,
-    routeParams: object.isRequired,
     dialect: any,
-    splitWindowPath: PropTypes.array.isRequired,
-    computeCharacters: PropTypes.object.isRequired, // via provide
-    computePortal: PropTypes.object.isRequired, // via provide
-    fetchDialect2: PropTypes.func.isRequired,
-    fetchCharacters: PropTypes.func.isRequired,
+    handleClick: func,
     letter: PropTypes.string,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacters: PropTypes.object.isRequired,
+    computePortal: PropTypes.object.isRequired,
+    splitWindowPath: PropTypes.array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacters: PropTypes.func.isRequired,
+    fetchDialect2: PropTypes.func.isRequired,
   }
   static defaultProps = {
     handleClick: () => {},
@@ -175,4 +181,28 @@ export class AlphabetListView extends Component {
   }
 }
 
-export default provide(AlphabetListView)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvPortal, windowPath } = state
+
+  const { computeCharacters } = fvCharacter
+  const { computePortal } = fvPortal
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeCharacters,
+    computePortal,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacters,
+  fetchDialect2,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AlphabetListView)
