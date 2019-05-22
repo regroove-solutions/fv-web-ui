@@ -25,7 +25,7 @@ export const navigationReducer = combineReducers({
     return state
   },
 
-  properties(state = null, action) {
+  properties(state = {}, action) {
     switch (action.type) {
       case CHANGE_THEME:
         return {
