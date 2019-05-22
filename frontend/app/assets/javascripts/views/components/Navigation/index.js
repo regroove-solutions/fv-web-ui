@@ -76,7 +76,7 @@ export class Navigation extends Component {
     frontpage: bool,
     routeParams: object, // TODO: is this redux, provide, ...?
 
-    // REDUX: actions/dispatch
+    // REDUX: actions/dispatch/func
     loadNavigation: func.isRequired,
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
@@ -721,7 +721,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   }
 }
 
-// REDUX: actions/dispatch
+// REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   loadNavigation,
   pushWindowPath,

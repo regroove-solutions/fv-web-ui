@@ -27,7 +27,7 @@ export class DialectFilterList extends Component {
     handleDialectFilterList: func.isRequired,
     // REDUX: reducers/state
     splitWindowPath: array,
-    // REDUX: actions/dispatch/fn()
+    // REDUX: actions/dispatch/func
     pushWindowPath: func.isRequired,
   }
 
@@ -447,7 +447,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   }
 }
 
-// REDUX: actions/dispatch
+// REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   pushWindowPath,
 }

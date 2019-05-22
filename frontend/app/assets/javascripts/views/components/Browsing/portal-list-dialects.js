@@ -37,7 +37,7 @@ export class PortalListDialects extends Component {
     items: oneOfType([array, instanceOf(List)]),
     filteredItems: oneOfType([array, instanceOf(List)]),
     fieldMapping: object,
-    // REDUX: actions/dispatch
+    // REDUX: actions/dispatch/func
     pushWindowPath: func.isRequired,
     // REDUX: reducers/state
     theme: string.isRequired,
@@ -110,7 +110,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   }
 }
 
-// REDUX: actions/dispatch
+// REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   pushWindowPath,
 }
