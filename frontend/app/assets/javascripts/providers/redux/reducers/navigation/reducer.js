@@ -16,7 +16,7 @@ import {
 
 import ThemeManager from 'material-ui/lib/styles/theme-manager'
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
-const initialStateProperties = { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' }
+const initialStateProperties = { theme: { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' } }
 
 export const navigationReducer = combineReducers({
   computeNavigateTo(state = { path: null }, action = {}) {
