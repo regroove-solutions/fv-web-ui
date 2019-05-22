@@ -4,14 +4,13 @@ import rootReducer from './reducers'
 
 // import { createLogger } from 'redux-logger'
 // const loggerMiddleware = createLogger()
-
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 export default createStore(
-  rootReducer /* preloadedState, */,
-  compose(
+  rootReducer,
+  composeEnhancers(
     applyMiddleware(
       thunkMiddleware // lets us dispatch() functions
       // loggerMiddleware // log actions
-    ),
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    )
   )
 )
