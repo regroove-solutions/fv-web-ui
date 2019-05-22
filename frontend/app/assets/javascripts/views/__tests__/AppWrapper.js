@@ -7,6 +7,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+// Providers provide reducers and actions
+import providers from 'providers/index'
+import { Provider } from 'react-redux'
+import store from 'providers/redux/store'
+
 // Component to test
 // import { JestTestSetup } from 'views/components/JestTestSetup'
 
@@ -14,9 +19,6 @@ import ReactDOM from 'react-dom'
 import ThemeManager from 'material-ui/lib/styles/theme-manager'
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 import ConfGlobal from 'conf/local.js'
-
-// Providers provide reducers and actions
-import providers from '../../providers/index'
 
 // Views
 import AppWrapper from '../AppWrapper'
@@ -50,7 +52,11 @@ describe('AppWrapper', () => {
   test('Mounts', () => {
     // Structure: Arrange
     const container = document.createElement('div')
-    ReactDOM.render(<AppWrapper {...context} />, container)
+    ReactDOM.render(
+      <Provider store={store}>
+        <AppWrapper {...context} />
+      </Provider>,
+      container)
 
     expect(container.querySelector('#pageNavigation').textContent).toMatch('SIGN IN')
     expect(container.querySelector('#pageFooter').textContent).toMatch('support@fpcc.ca')
