@@ -60,7 +60,7 @@ export const loadGuide = (currentPage, pageMatch) => {
   }
 }
 
-export const loadNavigation = function loadNavigation() {
+export const loadNavigation = () => {
   return (dispatch) => {
     dispatch({ type: LOAD_NAVIGATION_STARTED })
 
