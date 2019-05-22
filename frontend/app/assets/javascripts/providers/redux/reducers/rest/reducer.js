@@ -41,28 +41,29 @@ const getPreviousResponse = (s, i) => {
 
   return null
 }
-
+const defaultKey = 'contributor'
 export const restReducer = combineReducers({
-  computeFetch: (key) => {
+  computeFetch: (key = defaultKey) => {
+    const uck = UPPER_CASE_KEY(key)
     return {
-      ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+      [`compute${CAMEL_CASE_KEY(key)}`]: (state = new List([]), action) => {
         // Find entry within state based on id
         const indexOfEntry = state.findIndex((item) => {
           return item.get('id') === action.pathOrId
         })
 
         switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_FETCH_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UPDATE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_CREATE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_START': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_START':
+          case `${uck}_FETCH_START`: // NOTE: intentional fallthrough
+          case `${uck}_UPDATE_START`: // NOTE: intentional fallthrough
+          case `${uck}_CREATE_START`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_WORKFLOW_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_WORKFLOW_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_WORKFLOW_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_EXECUTE_START`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_WORKFLOW_EXECUTE_START`:
             // Push or replace
             return state.set(
               getListIndexForPushOrReplace(state, indexOfEntry),
@@ -76,17 +77,17 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_FETCH_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UPDATE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_CREATE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_SUCCESS': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_SUCCESS':
+          case `${uck}_FETCH_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_UPDATE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_CREATE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_WORKFLOW_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_WORKFLOW_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_WORKFLOW_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_EXECUTE_SUCCESS`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_WORKFLOW_EXECUTE_SUCCESS`:
             // Replace entry within state
             return state.set(
               indexOfEntry,
@@ -103,17 +104,17 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_FETCH_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UPDATE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_CREATE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_PUBLISH_WORKFLOW_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_UNPUBLISH_WORKFLOW_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_ENABLE_WORKFLOW_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_EXECUTE_ERROR': // NOTE: intentional fallthrough
-          case UPPER_CASE_KEY(key) + '_DISABLE_WORKFLOW_EXECUTE_ERROR': // NOTE: intentional fallthrough
+          case `${uck}_FETCH_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_UPDATE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_CREATE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_PUBLISH_WORKFLOW_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_UNPUBLISH_WORKFLOW_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_ENABLE_WORKFLOW_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_EXECUTE_ERROR`: // NOTE: intentional fallthrough
+          case `${uck}_DISABLE_WORKFLOW_EXECUTE_ERROR`: // NOTE: intentional fallthrough
             // Add error message
             return state.set(
               indexOfEntry,
@@ -136,16 +137,17 @@ export const restReducer = combineReducers({
       },
     }
   },
-  computeQuery: (key) => {
+  computeQuery: (key = defaultKey) => {
+    const uck = UPPER_CASE_KEY(key)
     return {
-      ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+      [`compute${CAMEL_CASE_KEY(key)}`]: (state = new List([]), action) => {
         // Find entry within state based on id
         const indexOfEntry = state.findIndex((item) => {
           return item.get('id') === action.pathOrId
         })
 
         switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_QUERY_START':
+          case `${uck}_QUERY_START`:
             // push or replace
             return state.set(
               getListIndexForPushOrReplace(state, indexOfEntry),
@@ -159,7 +161,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_QUERY_SUCCESS':
+          case `${uck}_QUERY_SUCCESS`:
             // Replace entry within state
             return state.set(
               indexOfEntry,
@@ -174,7 +176,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_QUERY_ERROR':
+          case `${uck}_QUERY_ERROR`:
             // Add error message
             return state.set(
               indexOfEntry,
@@ -197,16 +199,17 @@ export const restReducer = combineReducers({
       },
     }
   },
-  computeOperation: (key) => {
+  computeOperation: (key = defaultKey) => {
+    const uck = UPPER_CASE_KEY(key)
     return {
-      ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+      [`compute${CAMEL_CASE_KEY(key)}`]: (state = new List([]), action) => {
         // Find entry within state based on id
         const indexOfEntry = state.findIndex((item) => {
           return item.get('id') === action.pathOrId
         })
 
         switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_EXECUTE_START':
+          case `${uck}_EXECUTE_START`:
             // push or replace
             return state.set(
               getListIndexForPushOrReplace(state, indexOfEntry),
@@ -220,7 +223,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_EXECUTE_SUCCESS':
+          case `${uck}_EXECUTE_SUCCESS`:
             // Replace entry within state
             return state.set(
               indexOfEntry,
@@ -235,7 +238,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_EXECUTE_ERROR':
+          case `${uck}_EXECUTE_ERROR`:
             // Add error message
             return state.set(
               indexOfEntry,
@@ -258,16 +261,17 @@ export const restReducer = combineReducers({
       },
     }
   },
-  computeDelete: (key) => {
+  computeDelete: (key = defaultKey) => {
+    const uck = UPPER_CASE_KEY(key)
     return {
-      ['compute' + CAMEL_CASE_KEY(key)]: (state = new List([]), action) => {
+      [`compute${CAMEL_CASE_KEY(key)}`]: (state = new List([]), action) => {
         // Find entry within state based on id
         const indexOfEntry = state.findIndex((item) => {
           return item.get('id') === action.pathOrId
         })
 
         switch (action.type) {
-          case UPPER_CASE_KEY(key) + '_DELETE_START':
+          case `${uck}_DELETE_START`:
             // push or replace
             return state.set(
               getListIndexForPushOrReplace(state, indexOfEntry),
@@ -281,7 +285,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_DELETE_SUCCESS':
+          case `${uck}_DELETE_SUCCESS`:
             // Replace entry within state
             return state.set(
               indexOfEntry,
@@ -296,7 +300,7 @@ export const restReducer = combineReducers({
               })
             )
 
-          case UPPER_CASE_KEY(key) + '_DELETE_ERROR':
+          case `${uck}_DELETE_ERROR`:
             // Add error message
             return state.set(
               indexOfEntry,
