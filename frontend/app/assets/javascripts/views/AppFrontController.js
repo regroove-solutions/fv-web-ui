@@ -368,7 +368,7 @@ export class AppFrontController extends Component {
   _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {
     const themePalette = props.properties.theme.palette.rawTheme.palette
     const { routeParams } = reactElement.props
-    const { splitWindowPath, computeLogin } = props
+    const { /*splitWindowPath, */ computeLogin } = props
     const { routes } = this.state
     let _workspaceSwitcher = null
     const area = selectn('routeParams.area', reactElement.props)
@@ -394,7 +394,7 @@ export class AppFrontController extends Component {
               matchedPage={matchedPage}
               routes={routes}
               routeParams={routeParams}
-              splitWindowPath={splitWindowPath}
+              // splitWindowPath={splitWindowPath}
               findReplace={findReplace}
             />
           </div>

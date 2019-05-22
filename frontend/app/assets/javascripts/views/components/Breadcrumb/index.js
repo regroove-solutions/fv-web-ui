@@ -7,7 +7,10 @@
 */
 import React, { Component } from 'react'
 import { PropTypes } from 'react'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+
 import { Link } from 'provide-page'
 import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
@@ -22,17 +25,19 @@ export class Breadcrumb extends Component {
   static propTypes = {
     className: string,
     findReplace: object, // Note: {find: '', replace: ''}
-    routeParams: object,
     matchedPage: object, // Note: Immutable Obj
-    splitWindowPath: array,
+    routeParams: object,
     routes: object, // Note: Immutable Obj
+    // REDUX: reducers/state
+    // NOTE: CURRENTLY PASSED IN VIA PARENT
+    splitWindowPath: array.isRequired,
   }
   static defaultProps = {
     className: '',
     routeParams: {},
     matchedPage: Immutable.fromJS({}),
-    splitWindowPath: [],
     routes: Immutable.fromJS({}),
+    splitWindowPath: [],
   }
 
   //   constructor(props) {
@@ -148,4 +153,17 @@ export class Breadcrumb extends Component {
   }
 }
 
-export default provide(Breadcrumb)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+  const { splitWindowPath } = windowPath
+
+  return {
+    splitWindowPath,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(Breadcrumb)
