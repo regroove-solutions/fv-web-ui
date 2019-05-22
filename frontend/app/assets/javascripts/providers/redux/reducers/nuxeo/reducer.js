@@ -2,7 +2,7 @@ import { CONNECT, GET_CURRENT_USER_SUCCESS } from './actionTypes'
 import { combineReducers } from 'redux'
 
 let isNewLoginValue = false
-export const connectReducer = combineReducers({
+export const nuxeoReducer = combineReducers({
   connect: (state = { isConnected: false }, action) => {
     switch (action.type) {
       case CONNECT:

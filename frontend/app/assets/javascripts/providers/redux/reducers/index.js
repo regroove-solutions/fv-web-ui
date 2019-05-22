@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux'
-import { connectReducer } from './connect'
 import { directoryReducer } from './directory'
 import { documentReducer } from './document'
 import { errorReducer } from './error'
@@ -23,6 +22,7 @@ import { fvUserReducer } from './fvUser'
 import { fvVideoReducer } from './fvVideo'
 import { fvWordReducer } from './fvWord'
 import { navigationReducer } from './navigation'
+import { nuxeoReducer } from './nuxeo'
 import { reportsReducer } from './reports'
 import { restReducer } from './rest'
 import { searchReducer } from './search'
@@ -30,7 +30,6 @@ import { tasksReducer } from './tasks'
 import { windowPathReducer } from './windowPath'
 
 export default combineReducers({
-  connect: connectReducer,
   directory: directoryReducer,
   document: documentReducer,
   error: errorReducer,
@@ -54,6 +53,7 @@ export default combineReducers({
   fvVideo: fvVideoReducer,
   fvWord: fvWordReducer,
   navigation: navigationReducer,
+  nuxeo: nuxeoReducer,
   reports: reportsReducer,
   rest: restReducer,
   search: searchReducer,
