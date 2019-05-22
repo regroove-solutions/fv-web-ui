@@ -20,21 +20,27 @@ import selectn from 'selectn'
 import Colors from 'material-ui/lib/styles/colors'
 
 import ActionGrade from 'material-ui/lib/svg-icons/action/grade'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
-@provide
-export default class PortalListDialects extends Component {
+const { oneOfType, instanceOf, array, func, object, string } = PropTypes
+
+export class PortalListDialects extends Component {
   static propTypes = {
-    items: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    filteredItems: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    fieldMapping: PropTypes.object,
-    pushWindowPath: PropTypes.func.isRequired,
-    theme: PropTypes.string.isRequired,
+    items: oneOfType([array, instanceOf(List)]),
+    filteredItems: oneOfType([array, instanceOf(List)]),
+    fieldMapping: object,
+    // REDUX: actions/dispatch
+    pushWindowPath: func.isRequired,
+    // REDUX: reducers/state
+    theme: string.isRequired,
   }
 
   static defaultProps = {
@@ -49,11 +55,11 @@ export default class PortalListDialects extends Component {
   }
 
   render() {
-    let items = this.props.filteredItems || this.props.items
+    const items = this.props.filteredItems || this.props.items
 
     return (
       <div className="DialectList">
-        {items.map((tile, i) => {
+        {items.map((tile) => {
           // Switch roles
           const dialectRoles = selectn('contextParameters.lightportal.roles', tile)
           let actionIcon = null
@@ -94,3 +100,22 @@ export default class PortalListDialects extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation } = state
+  const { theme } = navigation
+  return {
+    theme,
+  }
+}
+
+// REDUX: actions/dispatch
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PortalListDialects)
