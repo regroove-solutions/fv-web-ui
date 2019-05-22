@@ -14,8 +14,12 @@ import {
   LOAD_NAVIGATION_ERROR,
 } from './actionTypes'
 
+import ThemeManager from 'material-ui/lib/styles/theme-manager'
+import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
+const initialStateProperties = { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' }
+
 export const navigationReducer = combineReducers({
-  computeNavigateTo(state = { path: null }, action) {
+  computeNavigateTo(state = { path: null }, action = {}) {
     switch (action.type) {
       case NAVIGATE_PAGE:
         return { path: action.path }
@@ -24,8 +28,7 @@ export const navigationReducer = combineReducers({
 
     return state
   },
-
-  properties(state = {}, action) {
+  properties(state = initialStateProperties, action = {}) {
     switch (action.type) {
       case CHANGE_THEME:
         return {
@@ -63,7 +66,7 @@ export const navigationReducer = combineReducers({
       response: null,
       success: false,
     },
-    action
+    action = {}
   ) {
     switch (action.type) {
       case LOAD_GUIDE_STARTED:
@@ -88,7 +91,7 @@ export const navigationReducer = combineReducers({
     }
   },
 
-  computeLoadNavigation(state = { isFetching: false, response: null, success: false }, action) {
+  computeLoadNavigation(state = { isFetching: false, response: null, success: false }, action = {}) {
     switch (action.type) {
       case LOAD_NAVIGATION_STARTED:
         return { ...state, isFetching: true }
@@ -106,7 +109,7 @@ export const navigationReducer = combineReducers({
     }
   },
 
-  computeToggleMenuAction(state = { menuVisible: false }, action) {
+  computeToggleMenuAction(state = { menuVisible: false }, action = {}) {
     switch (action.type) {
       case TOGGLE_MENU:
         return {
