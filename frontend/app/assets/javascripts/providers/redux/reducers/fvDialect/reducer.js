@@ -28,7 +28,7 @@ const computeDialectFetch = RESTReducers.computeFetch('dialect2')
 const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats')
 const computeDialectListOperation = RESTReducers.computeOperation('dialect_list')
 
-const computeDialect = (state = initialState, action) => {
+const computeDialect = (state = initialState, action = {}) => {
   switch (action.type) {
     case FV_DIALECT_FETCH_START: // NOTE: intentional fallthrough
     case FV_DIALECT_UPDATE_START:
@@ -65,7 +65,7 @@ const computeDialectStats = computeDialectStatsOperation.computeDialectStats
 
 const computeDialectList = computeDialectListOperation.computeDialectList
 
-const computeDialectUnpublish = (state = initialState, action) => {
+const computeDialectUnpublish = (state = initialState, action = {}) => {
   switch (action.type) {
     case FV_DIALECT_UNPUBLISH_START:
       return { ...state, isFetching: true, success: false }
