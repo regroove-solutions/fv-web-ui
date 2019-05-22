@@ -1,4 +1,5 @@
 import RESTReducers from '../../../rest-reducers'
+import { combineReducers } from 'redux'
 import {
   DISMISS_ERROR,
   DOCUMENT_PUBLISH_START,
@@ -11,7 +12,6 @@ import {
   DOCUMENT_ENABLE_SUCCESS,
   DOCUMENT_ENABLE_ERROR,
 } from './actionTypes'
-import { combineReducers } from 'redux'
 const initialState = {
   isFetching: false,
   response: {
