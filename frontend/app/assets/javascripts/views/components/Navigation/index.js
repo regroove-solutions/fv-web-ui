@@ -19,7 +19,10 @@ import classNames from 'classnames'
 import selectn from 'selectn'
 // import ConfGlobal from 'conf/local.js'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+import { loadNavigation, toggleMenuAction } from 'providers/redux/reducers/navigation'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -61,7 +64,7 @@ import IntlService from 'views/services/intl'
 // import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-
+const { array, func, object, string, bool } = PropTypes
 export class Navigation extends Component {
   intl = IntlService.instance
 
@@ -70,22 +73,26 @@ export class Navigation extends Component {
   }
 
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    toggleMenuAction: PropTypes.func.isRequired,
-    // countTotalTasks: PropTypes.func.isRequired,
-    // computeCountTotalTasks: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    loadNavigation: PropTypes.func.isRequired,
-    computeLoadNavigation: PropTypes.object.isRequired,
-    //computeLoadGuide: PropTypes.object.isRequired,
-    computePortal: PropTypes.object,
-    computeDialect2: PropTypes.object,
-    routeParams: PropTypes.object,
-    frontpage: PropTypes.bool,
+    frontpage: bool,
+    routeParams: object, // TODO: is this redux, provide, ...?
+
+    // REDUX: actions/dispatch
+    loadNavigation: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    toggleMenuAction: func.isRequired,
+    // countTotalTasks: func.isRequired,
+
+    // REDUX: reducers/state
+    computeDialect2: object,
+    computeLoadNavigation: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // computeCountTotalTasks: object.isRequired,
+    // computeLoadGuide: object.isRequired,
   }
 
   constructor(props, context) {
@@ -691,4 +698,38 @@ export class Navigation extends Component {
   }
 }
 
-export default provide(Navigation)
+// export default provide(Navigation)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
+
+  const { computeDialect2 } = fvDialect
+  const { computeLoadNavigation, properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computePortal } = fvPortal
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLoadNavigation,
+    computeLogin,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch
+const mapDispatchToProps = {
+  loadNavigation,
+  pushWindowPath,
+  replaceWindowPath,
+  toggleMenuAction,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Navigation)
