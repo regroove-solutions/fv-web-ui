@@ -1,6 +1,6 @@
 import RESTActions from 'providers/rest-actions'
 import DocumentOperations from 'operations/DocumentOperations'
-console.log('! fvDialect:', { RESTActions, DocumentOperations }) // eslint-disable-line
+// console.log('! fvDialect:', { RESTActions, DocumentOperations }) // eslint-disable-line
 import { FV_DIALECT_FETCH_START, FV_DIALECT_FETCH_SUCCESS, FV_DIALECT_FETCH_ERROR } from './actionTypes'
 
 export const fetchDialect = (pathOrId) => {
