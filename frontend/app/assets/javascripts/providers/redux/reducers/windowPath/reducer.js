@@ -2,7 +2,7 @@ import { combineReducers } from 'redux'
 import { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from './actionTypes'
 import { splitPath, canUseDOM } from './helpers'
 
-export const windowPath = (state = window.location.pathname, action) => {
+export const _windowPath = (state = window.location.pathname, action) => {
   switch (action.type) {
     case PUSH_WINDOW_PATH:
       if (canUseDOM) {
@@ -34,5 +34,5 @@ export const splitWindowPath = (state = splitPath(window.location.pathname), act
 
 export const windowPathReducer = combineReducers({
   splitWindowPath,
-  windowPath,
+  _windowPath,
 })
