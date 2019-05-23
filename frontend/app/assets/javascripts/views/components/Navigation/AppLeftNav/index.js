@@ -18,7 +18,12 @@ import Immutable, { Map } from 'immutable'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { toggleMenuAction } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import { Divider, List, ListItem, LeftNav, AppBar } from 'material-ui/lib'
@@ -31,15 +36,17 @@ import IntlService from 'views/services/intl'
 
 const SelectableList = SelectableContainerEnhance(List)
 
-@provide
-export default class AppLeftNav extends Component {
+const { func, object } = PropTypes
+export class AppLeftNav extends Component {
   static propTypes = {
-    toggleMenuAction: PropTypes.func.isRequired,
-    computeToggleMenuAction: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    computeLoadNavigation: PropTypes.object.isRequired,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computeLoadNavigation: object.isRequired,
+    computeToggleMenuAction: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    toggleMenuAction: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   intl = IntlService.instance
@@ -269,3 +276,29 @@ export default class AppLeftNav extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation, nuxeo } = state
+
+  const { computeLogin } = nuxeo
+  const { computeLoadNavigation, computeToggleMenuAction, properties } = navigation
+
+  return {
+    computeLogin,
+    computeLoadNavigation,
+    computeToggleMenuAction,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  toggleMenuAction,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AppLeftNav)
