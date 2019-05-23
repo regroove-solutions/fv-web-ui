@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import { Map } from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { fetchSharedAudios } from 'providers/redux/reducers/fvAudio'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchSharedVideos } from 'providers/redux/reducers/fvVideo'
+
 import selectn from 'selectn'
 // import t from 'tcomb-form'
 import classNames from 'classnames'
@@ -47,14 +54,16 @@ const DefaultFetcherParams = {
 
 const intl = IntlService.instance
 
+const { any, func, object, string } = PropTypes
+
 class SharedResourceGridTile extends Component {
   static defaultProps = {}
   static propTypes = {
-    tile: PropTypes.any, // TODO: set appropriate propType
-    dialect: PropTypes.any, // TODO: set appropriate propType
-    action: PropTypes.any, // TODO: set appropriate propType
-    fileTypeTilePosition: PropTypes.any, // TODO: set appropriate propType
-    preview: PropTypes.any, // TODO: set appropriate propType
+    tile: any, // TODO: set appropriate propType
+    dialect: any, // TODO: set appropriate propType
+    action: any, // TODO: set appropriate propType
+    fileTypeTilePosition: any, // TODO: set appropriate propType
+    preview: any, // TODO: set appropriate propType
   }
   constructor(props, context) {
     super(props, context)
@@ -76,8 +85,8 @@ class SharedResourceGridTile extends Component {
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
         ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-          selectn('dc:title', resourceParentDialect),
-        ])
+            selectn('dc:title', resourceParentDialect),
+          ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
         <IconButton tooltip={tooltip} tooltipPosition="top-left">
@@ -106,22 +115,23 @@ class SharedResourceGridTile extends Component {
   }
 }
 
-@provide
 class SelectMediaComponent extends React.Component {
   static propTypes = {
-    onComplete: PropTypes.func.isRequired,
-    fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired,
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    fetchSharedAudios: PropTypes.func.isRequired,
-    computeSharedAudios: PropTypes.object.isRequired,
-    fetchSharedVideos: PropTypes.func.isRequired,
-    computeSharedVideos: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    dialect: PropTypes.object.isRequired,
-    label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    dialect: object.isRequired,
+    label: string.isRequired,
+    onComplete: func.isRequired,
+    type: string.isRequired,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computeResources: object.isRequired,
+    computeSharedAudios: object.isRequired,
+    computeSharedPictures: object.isRequired,
+    computeSharedVideos: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    fetchSharedAudios: func.isRequired,
+    fetchSharedPictures: func.isRequired,
+    fetchSharedVideos: func.isRequired,
   }
 
   constructor(props) {
@@ -131,8 +141,8 @@ class SelectMediaComponent extends React.Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -292,4 +302,34 @@ class SelectMediaComponent extends React.Component {
   }
 }
 
-export default SelectMediaComponent
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { nuxeo, fvResources, fvAudio, fvPicture, fvVideo } = state
+
+  const { computeLogin } = nuxeo
+  const { computeResources } = fvResources
+  const { computeSharedAudios } = fvAudio
+  const { computeSharedPictures } = fvPicture
+  const { computeSharedVideos } = fvVideo
+
+  return {
+    computeLogin,
+    computeResources,
+    computeSharedAudios,
+    computeSharedPictures,
+    computeSharedVideos,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResources,
+  fetchSharedAudios,
+  fetchSharedPictures,
+  fetchSharedVideos,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SelectMediaComponent)
