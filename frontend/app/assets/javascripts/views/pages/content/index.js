@@ -14,33 +14,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List } from 'immutable'
+import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams } from 'providers/redux/reducers/navigation'
+import { queryPage } from 'providers/redux/reducers/fvPage'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import classNames from 'classnames'
-
-import Colors from 'material-ui/lib/styles/colors'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import CircularProgress from 'material-ui/lib/circular-progress'
-import Paper from 'material-ui/lib/paper'
-import RaisedButton from 'material-ui/lib/raised-button'
-
-import TextField from 'material-ui/lib/text-field'
-
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-
 import TextHeader from 'views/components/Document/Typography/text-header'
 
-import IntroCardView from 'views/components/Browsing/intro-card-view'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
@@ -48,22 +40,26 @@ const intl = IntlService.instance
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class PageContent extends Component {
+
+const { func, object, string } = PropTypes
+
+export class PageContent extends Component {
   static propTypes = {
-    area: PropTypes.string.isRequired,
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    queryPage: PropTypes.func.isRequired,
-    computePage: PropTypes.object.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    area: string.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computePage: object.isRequired,
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    queryPage: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   constructor(props, context) {
@@ -99,8 +95,8 @@ export default class PageContent extends Component {
     )
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let title = selectn(
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const title = selectn(
       'response.entries[0].properties.dc:title',
       ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath)
     )
@@ -131,7 +127,7 @@ export default class PageContent extends Component {
             var originalContent = selectn('fvpage:blocks[0].text', page);
             var content = intl.trans('views.pages.get_started.page', originalContent)
             page['fvpage:blocks'][0]['text'] = content;
-        } 
+        }
 
         // contribute page translated
         else if (selectn('dc:title', page) === 'Contribute') {
@@ -140,10 +136,10 @@ export default class PageContent extends Component {
             page['fvpage:blocks'][0]['text'] = content;
         }*/
 
-    const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties)
+    // const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties)
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row')} style={{ margin: '25px 0' }}>
           <div className={classNames('col-xs-12')} style={{ marginBottom: '15px' }}>
             <TextHeader
@@ -159,3 +155,32 @@ export default class PageContent extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPage, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computePage } = fvPage
+  const { _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computePage,
+    properties,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  queryPage,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageContent)
