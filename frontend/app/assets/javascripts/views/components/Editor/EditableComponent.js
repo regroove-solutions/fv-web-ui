@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react'
-import provide from 'react-redux-provide'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 import DOMPurify from 'dompurify'
@@ -20,7 +20,7 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-const RenderRegular = function(currentValue, preview, previewType, returnWrapper = 'span') {
+const RenderRegular = (currentValue, preview, previewType, returnWrapper = 'span') => {
   let output = []
   let values = []
 
@@ -30,8 +30,8 @@ const RenderRegular = function(currentValue, preview, previewType, returnWrapper
     values = currentValue
   }
 
-  output = values.map(function(value, i) {
-    let id = value && value.hasOwnProperty('uid') ? value.uid : value
+  output = values.map((value, i) => {
+    const id = value && value.hasOwnProperty('uid') ? value.uid : value
 
     return preview ? (
       <Preview key={i} id={id} type={previewType} />
@@ -46,19 +46,21 @@ const RenderRegular = function(currentValue, preview, previewType, returnWrapper
   return output
 }
 
-@provide
-export default class EditableComponent extends Component {
+const { array, bool, func, object, string } = PropTypes
+
+class EditableComponent extends Component {
   static propTypes = {
-    computeEntity: PropTypes.object.isRequired,
-    updateEntity: PropTypes.func.isRequired,
-    property: PropTypes.string.isRequired,
-    sectionProperty: PropTypes.string,
-    context: PropTypes.object,
-    className: PropTypes.string,
-    options: PropTypes.array,
-    accessDenied: PropTypes.bool,
-    showPreview: PropTypes.bool,
-    previewType: PropTypes.string,
+    accessDenied: bool, // NOTE: not certain being used
+    computeEntity: object.isRequired,
+    context: object,
+    className: string,
+    isSection: bool,
+    options: array, // NOTE: not certain being used
+    previewType: string,
+    property: string.isRequired,
+    showPreview: bool,
+    sectionProperty: string,
+    updateEntity: func.isRequired,
   }
 
   static defaultProps = {
@@ -89,22 +91,22 @@ export default class EditableComponent extends Component {
   _editableElement() {
     const { property } = this.props
 
-    let entity = selectn('response', this.props.computeEntity)
+    const entity = selectn('response', this.props.computeEntity)
 
     // If still computing, return spinner
     if (entity.isFetching) return <CircularProgress mode="indeterminate" size={2} />
 
     // Get current value for field from properties
-    let currentValue = selectn(property, this.state.savedValue) || selectn('properties.' + property, entity)
+    const currentValue = selectn(property, this.state.savedValue) || selectn('properties.' + property, entity)
 
     // Get all options for type from entity field definition
-    let fieldFormOptions = selectn(entity.type, options)
+    const fieldFormOptions = selectn(entity.type, options)
 
     // Handle edit mode
     if (this.state.editModeEnabled && !this.props.accessDenied) {
-      let fieldFormValues = {}
-      let fieldFormStruct,
-        fieldFormFields = null
+      const fieldFormValues = {}
+      let fieldFormStruct
+      let fieldFormFields = null
 
       // Get all fields for type from entity field definition
       fieldFormFields = selectn(entity.type, fields)
@@ -117,7 +119,7 @@ export default class EditableComponent extends Component {
         }
 
         // Create a sub-structure for this field
-        let newFieldFormSchema = {}
+        const newFieldFormSchema = {}
 
         // Set field to be new schema (note: selectn doesn't work with functions defined in maps)
         newFieldFormSchema[property] = fieldFormFields[property]
@@ -185,17 +187,18 @@ export default class EditableComponent extends Component {
 
     // TODO: Find better way to construct object then accessing internal function
     // Create new document rather than modifying the original document
-    let newDocument = new Document(this.props.computeEntity.response, {
+    const newDocument = new Document(this.props.computeEntity.response, {
       repository: this.props.computeEntity.response._repository,
       nuxeo: this.props.computeEntity.response._nuxeo,
     })
-
-    let formValue = this.refs['form_' + property].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs['form_' + property].getValue()
 
     // Set new value property on document
     newDocument.set(formValue)
 
     // Save document
+    // TODO: this.refs DEPRECATED
     this.props.updateEntity(
       newDocument,
       null,
@@ -210,7 +213,7 @@ export default class EditableComponent extends Component {
     })
   }
 
-  _onEditRequest(fieldToEdit) {
+  _onEditRequest(/*fieldToEdit*/) {
     this.setState({
       editModeEnabled: true,
     })
@@ -226,6 +229,14 @@ export default class EditableComponent extends Component {
 }
 
 export class EditableComponentHelper extends Component {
+  static propTypes = {
+    entity: object,
+    isSection: bool,
+    previewType: string,
+    property: string.isRequired,
+    showPreview: bool,
+    sectionProperty: string,
+  }
   render() {
     if (this.props.isSection) {
       return (
@@ -243,3 +254,5 @@ export class EditableComponentHelper extends Component {
     return <EditableComponent {...this.props} />
   }
 }
+
+export default EditableComponent
