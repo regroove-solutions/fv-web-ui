@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Immutable, { Set, Map } from 'immutable'
+import { Map } from 'immutable'
 import { PropTypes } from 'react'
 import {
   SEARCH_SORT_DEFAULT,
@@ -9,7 +9,12 @@ import {
   SEARCH_BY_CUSTOM,
   SEARCH_BY_PHRASE_BOOK,
 } from './constants'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDirectory } from 'providers/redux/reducers/directory'
+
 import StringHelpers, { CLEAN_NXQL } from 'common/StringHelpers'
 import selectn from 'selectn'
 import classNames from 'classnames'
@@ -19,18 +24,12 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 const intl = IntlService.instance
 const { any, func, string, bool, object, number } = PropTypes
-
-@provide
 class SearchDialect extends Component {
   static propTypes = {
-    computeDirectory: object.isRequired,
-    fetchDirectory: func.isRequired,
     filterInfo: any, // TODO: set appropriate propType
     handleSearch: func,
     isSearchingPhrases: bool,
-    resetButtonText: string,
     resetSearch: func,
-    searchButtonText: string,
     searchByMode: number,
     searchByAlphabet: string,
     searchingDialectFilter: string,
@@ -42,6 +41,10 @@ class SearchDialect extends Component {
     searchTerm: string,
     updateAncestorState: func,
     flashcardMode: bool,
+    // REDUX: reducers/state
+    computeDirectory: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDirectory: func.isRequired,
   }
   static defaultProps = {
     isSearchingPhrases: false,
@@ -516,9 +519,9 @@ class SearchDialect extends Component {
 
     return searchTerm
       ? {
-        DEFAULT_SORT_COL: searchSortBy,
-        DEFAULT_SORT_TYPE: 'asc',
-      }
+          DEFAULT_SORT_COL: searchSortBy,
+          DEFAULT_SORT_TYPE: 'asc',
+        }
       : {}
   }
 
@@ -701,3 +704,24 @@ class SearchDialect extends Component {
 }
 
 export { SearchDialect }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { directory } = state
+
+  const { computeDirectory } = directory
+
+  return {
+    computeDirectory,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDirectory,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchDialect)
