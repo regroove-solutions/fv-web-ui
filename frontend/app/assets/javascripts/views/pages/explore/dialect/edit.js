@@ -14,14 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
-import classNames from 'classnames'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fv'
+import { fetchPortal } from 'providers/redux/reducers/fv'
+import { replaceWindowPath } from 'providers/redux/reducers/fv'
+import { updatePortal } from 'providers/redux/reducers/fv'
 
-import provide from 'react-redux-provide'
 import selectn from 'selectn'
-
-import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -39,17 +42,19 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class ExploreDialectEdit extends Component {
+const { array, func, object } = PropTypes
+export class ExploreDialectEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computePortal: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchPortal: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updatePortal: func.isRequired,
   }
 
   constructor(props, context) {
@@ -82,25 +87,23 @@ export default class ExploreDialectEdit extends Component {
     switch (true) {
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computePortal, portalPath) !=
         ProviderHelpers.getEntry(this.props.computePortal, portalPath):
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) !=
         ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path):
         return true
-        break
-    }
 
-    return false
+      default:
+        return false
+    }
   }
 
   _handleSave(portal, formValue) {
     // TODO: Find better way to construct object then accessing internal function
-    let portalDoc = new Document(portal.response, {
+    const portalDoc = new Document(portal.response, {
       repository: portal.response._repository,
       nuxeo: portal.response._nuxeo,
     })
@@ -170,3 +173,31 @@ export default class ExploreDialectEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPortal, windowPath } = state
+
+  const { computeDialect2 } = fvDialect
+  const { computePortal } = fvPortal
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computePortal,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchPortal,
+  replaceWindowPath,
+  updatePortal,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ExploreDialectEdit)
