@@ -18,7 +18,12 @@ import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
 import selectn from 'selectn'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/fv'
+import { replaceWindowPath } from 'providers/redux/reducers/fv'
+import { toggleMenuAction } from 'providers/redux/reducers/fv'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -34,30 +39,33 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
+const { array, func, object, bool } = PropTypes
 export class Navigation extends Component {
   static propTypes = {
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    toggleMenuAction: PropTypes.func.isRequired,
-    fetchUserTasks: PropTypes.func.isRequired,
-    properties: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    computeUserTasks: PropTypes.object.isRequired,
-    computePortal: PropTypes.object,
-    routeParams: PropTypes.object,
-    frontpage: PropTypes.bool,
+    frontpage: bool,
+    routeParams: object,
+    // REDUX: reducers/state
+    splitWindowPath: array.isRequired,
+    fetchUserTasks: func.isRequired,
+    properties: object.isRequired,
+    computeLogin: object.isRequired,
+    computeUserTasks: object.isRequired,
+    computePortal: object,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    toggleMenuAction: func.isRequired,
   }
 
   /*static childContextTypes = {
-      client: React.PropTypes.object,
-      muiTheme: React.PropTypes.object,
-      siteProps: React.PropTypes.object
+      client: React.object,
+      muiTheme: React.object,
+      siteProps: React.object
     };
 
     static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired,
-        siteProps: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired,
+        siteProps: React.object.isRequired
     };
 
     getChildContext() {
@@ -115,6 +123,7 @@ export class Navigation extends Component {
   }
 
   _handleNavigationSearchSubmit() {
+    // TODO: this.refs DEPRECATED
     const searchQueryParam = this.refs.navigationSearchField.getValue()
     const path = '/' + this.props.splitWindowPath.join('/')
     let queryPath = ''
@@ -129,6 +138,7 @@ export class Navigation extends Component {
     }
 
     // Clear out the input field
+    // TODO: this.refs DEPRECATED
     this.refs.navigationSearchField.setValue('')
     this.props.replaceWindowPath(queryPath + '/search/' + searchQueryParam)
   }
@@ -231,4 +241,35 @@ export class Navigation extends Component {
     )
   }
 }
-export default provide(Navigation)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPortal, tasks, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { fetchUserTasks, computeUserTasks } = tasks
+  const { splitWindowPath } = windowPath
+  const { computePortal } = fvPortal
+
+  return {
+    splitWindowPath,
+    fetchUserTasks,
+    properties,
+    computeLogin,
+    computeUserTasks,
+    computePortal,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+  replaceWindowPath,
+  toggleMenuAction,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Navigation)
