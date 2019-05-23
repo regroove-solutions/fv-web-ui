@@ -14,12 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-import t from 'tcomb-form'
+import Immutable from 'immutable'
 
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchContributor } from 'providers/redux/reducers/fv'
+import { fetchDialect2 } from 'providers/redux/reducers/fv'
+import { pushWindowPath } from 'providers/redux/reducers/fv'
+import { replaceWindowPath } from 'providers/redux/reducers/fv'
+import { updateContributor } from 'providers/redux/reducers/fv'
+
+import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -28,10 +34,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -41,23 +43,24 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class Edit extends Component {
+const { array, func, object, string } = PropTypes
+export class EditContributors extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchContributor: PropTypes.func.isRequired,
-    computeContributor: PropTypes.object.isRequired,
-    updateContributor: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    routeParams: PropTypes.object.isRequired,
-    contributor: PropTypes.object,
-    value: PropTypes.string,
-    onDocumentCreated: PropTypes.func,
-    cancelMethod: PropTypes.func,
+    cancelMethod: func,
+    dialect: object,
+    onDocumentCreated: func,
+    routeParams: object.isRequired,
+    value: string,
+    // REDUX: reducers/state
+    splitWindowPath: array.isRequired,
+    computeContributor: object.isRequired,
+    computeDialect2: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchContributor: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateContributor: func.isRequired,
   }
 
   constructor(props, context) {
@@ -90,7 +93,8 @@ export default class Edit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentContributor, nextContributor
+    let currentContributor
+    let nextContributor
 
     if (this.state.contributorPath != null) {
       currentContributor = ProviderHelpers.getEntry(this.props.computeContributor, this.state.contributorPath)
@@ -108,36 +112,32 @@ export default class Edit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
-    let previousContributor = this.props.computeContributor
-    let nextContributor = newProps.computeContributor
+  shouldComponentUpdate(newProps /*, newState*/) {
+    const previousContributor = this.props.computeContributor
+    const nextContributor = newProps.computeContributor
 
-    let previousDialect = this.props.computeDialect2
-    let nextDialect = newProps.computeDialect2
+    const previousDialect = this.props.computeDialect2
+    const nextDialect = newProps.computeDialect2
 
     switch (true) {
       case newProps.routeParams.contributor != this.props.routeParams.contributor:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case typeof nextContributor.equals === 'function' && nextContributor.equals(previousContributor) === false:
         return true
-        break
 
       case typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _handleSave(contributor, formValue) {
-    let newDocument = new Document(contributor.response, {
+    const newDocument = new Document(contributor.response, {
       repository: contributor.response._repository,
       nuxeo: contributor.response._nuxeo,
     })
@@ -182,7 +182,7 @@ export default class Edit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computeContributor)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-contributor:definitions[0].translation', computeContributor) ||
         selectn('response.properties.fv:literal_translation[0].translation', computeContributor)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -221,3 +221,32 @@ export default class Edit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor } = fvContributor
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeContributor,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchContributor,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+  updateContributor,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditContributors)
