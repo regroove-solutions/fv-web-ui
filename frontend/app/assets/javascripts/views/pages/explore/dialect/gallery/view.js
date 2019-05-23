@@ -13,56 +13,68 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import React, { PropTypes } from 'react'
+import Immutable from 'immutable'
 import classNames from 'classnames'
 import ImageGallery from 'react-image-gallery'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { askToDisableGallery } from 'providers/redux/reducers/fv'
+import { askToEnableGallery } from 'providers/redux/reducers/fv'
+import { askToPublishGallery } from 'providers/redux/reducers/fv'
+import { askToUnpublishGallery } from 'providers/redux/reducers/fv'
+import { changeTitleParams } from 'providers/redux/reducers/fv'
+import { disableGallery } from 'providers/redux/reducers/fv'
+import { deleteGallery } from 'providers/redux/reducers/fv'
+import { fetchDialect2 } from 'providers/redux/reducers/fv'
+import { fetchGallery } from 'providers/redux/reducers/fv'
+import { overrideBreadcrumbs } from 'providers/redux/reducers/fv'
+import { publishGallery } from 'providers/redux/reducers/fv'
+import { pushWindowPath } from 'providers/redux/reducers/fv'
+import { unpublishGallery } from 'providers/redux/reducers/fv'
+import { enableGallery } from 'providers/redux/reducers/fv'
+
 import selectn from 'selectn'
-
-import ConfGlobal from 'conf/local.js'
-
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
 import withActions from 'views/hoc/view/with-actions'
 
 const DetailsViewWithActions = withActions(PromiseWrapper, true)
 
 //Stylesheet
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
-import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
-@provide
-export default class Gallery extends React.Component {
+const { array, func, object, string } = PropTypes
+
+export class Gallery extends React.Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    deleteGallery: PropTypes.func.isRequired,
-    publishGallery: PropTypes.func.isRequired,
-    askToPublishGallery: PropTypes.func.isRequired,
-    unpublishGallery: PropTypes.func.isRequired,
-    askToUnpublishGallery: PropTypes.func.isRequired,
-    enableGallery: PropTypes.func.isRequired,
-    askToEnableGallery: PropTypes.func.isRequired,
-    disableGallery: PropTypes.func.isRequired,
-    askToDisableGallery: PropTypes.func.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeGallery: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    askToDisableGallery: func.isRequired,
+    askToEnableGallery: func.isRequired,
+    askToPublishGallery: func.isRequired,
+    askToUnpublishGallery: func.isRequired,
+    changeTitleParams: func.isRequired,
+    disableGallery: func.isRequired,
+    deleteGallery: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchGallery: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    publishGallery: func.isRequired,
+    pushWindowPath: func.isRequired,
+    unpublishGallery: func.isRequired,
+    enableGallery: func.isRequired,
   }
 
   constructor(props, context) {
@@ -71,15 +83,12 @@ export default class Gallery extends React.Component {
   }
 
   _getGalleryPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props == null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.galleryName)) {
-      return props.routeParams.galleryName
-    } else {
-      return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.galleryName)
+    if (StringHelpers.isUUID(_props.routeParams.galleryName)) {
+      return _props.routeParams.galleryName
     }
+    return _props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(_props.routeParams.galleryName)
   }
 
   fetchData(newProps) {
@@ -96,10 +105,10 @@ export default class Gallery extends React.Component {
     this.fetchData(this.props)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()))
-    let title = selectn('properties.dc:title', gallery)
-    let uid = selectn('uid', gallery)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()))
+    const title = selectn('properties.dc:title', gallery)
+    const uid = selectn('uid', gallery)
 
     if (title && selectn('pageTitleParams.galleryName', this.props.properties) != title) {
       this.props.changeTitleParams({ galleryName: title })
@@ -112,8 +121,9 @@ export default class Gallery extends React.Component {
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
     const computeGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())
-    ;(selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []).map(function(picture) {
-      let image = { original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description'] }
+    const toMap = selectn('response.contextParameters.gallery.related_pictures', computeGallery) || []
+    toMap.map((picture) => {
+      const image = { original: UIHelpers.getThumbnail(picture, 'Medium'), description: picture['dc:description'] }
       images.push(image)
     })
 
@@ -141,7 +151,7 @@ export default class Gallery extends React.Component {
         onNavigateRequest={this._onNavigateRequest}
         computeItem={computeGallery}
         permissionEntry={computeDialect2}
-        renderOnError={true}
+        renderOnError
         computeEntities={computeEntities}
         {...this.props}
       >
@@ -155,9 +165,9 @@ export default class Gallery extends React.Component {
                   ref={(i) => (this._imageGallery = i)}
                   items={images}
                   slideInterval={2000}
-                  showFullscreenButton={true}
+                  showFullscreenButton
                   showThumbnails={false}
-                  showBullets={true}
+                  showBullets
                 />
               </div>
             </div>
@@ -167,3 +177,46 @@ export default class Gallery extends React.Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvGallery, navigation, nuxeo, windowPath } = state
+
+  const { computeGallery } = fvGallery
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeGallery,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  askToDisableGallery,
+  askToEnableGallery,
+  askToPublishGallery,
+  askToUnpublishGallery,
+  changeTitleParams,
+  disableGallery,
+  deleteGallery,
+  enableGallery,
+  fetchDialect2,
+  fetchGallery,
+  overrideBreadcrumbs,
+  publishGallery,
+  pushWindowPath,
+  unpublishGallery,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Gallery)
