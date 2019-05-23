@@ -15,12 +15,18 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createContributor } from 'providers/redux/reducers/fvContributor'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
 import Paper from 'material-ui/lib/paper'
 import CircularProgress from 'material-ui/lib/circular-progress'
 
@@ -36,18 +42,21 @@ const intl = IntlService.instance
 /**
  * Create contributor
  */
-@provide
-export default class PageDialectContributorsCreate extends Component {
+
+const { array, bool, func, object, string } = PropTypes
+export class PageDialectContributorsCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
-    createContributor: PropTypes.func.isRequired,
-    computeContributor: PropTypes.object.isRequired,
-    embedded: PropTypes.bool,
-    onDocumentCreated: PropTypes.func,
+    embedded: bool,
+    onDocumentCreated: func,
+    // REDUX: reducers/state
+    computeContributor: object.isRequired,
+    computeDialect: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createContributor: func.isRequired,
+    fetchDialect: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -68,7 +77,7 @@ export default class PageDialectContributorsCreate extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
+    const dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
     this.setState({ dialectPath: dialectPath })
 
     if (!this.props.computeDialect.success) {
@@ -93,37 +102,34 @@ export default class PageDialectContributorsCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.windowPath != this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect.response != this.props.computeDialect.response:
         return true
-        break
 
       case newProps.computeContributor != this.props.computeContributor:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest(/*path*/) {
     //this.props.pushWindowPath('/' + path);
   }
 
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_contributor_create.getValue()
 
-    let formValue = this.refs['form_contributor_create'].getValue()
+    const properties = {}
 
-    let properties = {}
-
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
         if (formValue[key] && formValue[key] != '') {
           properties[key] = formValue[key]
@@ -137,7 +143,7 @@ export default class PageDialectContributorsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createContributor(
         '/' + this.state.dialectPath + '/Contributors',
         {
@@ -161,8 +167,8 @@ export default class PageDialectContributorsCreate extends Component {
   render() {
     const { computeDialect, computeContributor } = this.props
 
-    let dialect = computeDialect.response
-    let contributor = ProviderHelpers.getEntry(computeContributor, this.state.contributorPath)
+    const dialect = computeDialect.response
+    const contributor = ProviderHelpers.getEntry(computeContributor, this.state.contributorPath)
 
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />
@@ -189,7 +195,7 @@ export default class PageDialectContributorsCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_contributor_create"
+                ref="form_contributor_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVContributor', fields))}
                 context={dialect}
                 value={this.state.formValue}
@@ -213,3 +219,31 @@ export default class PageDialectContributorsCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor } = fvContributor
+  const { computeDialect } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeContributor,
+    computeDialect,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchDialect,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectContributorsCreate)
