@@ -34,7 +34,7 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 
 const { bool, func, object, string } = PropTypes
-export class DirectoryList extends Component {
+export class DialectList extends Component {
   static propTypes = {
     fancy: bool,
     label: string.isRequired,
@@ -145,4 +145,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DirectoryList)
+)(DialectList)
