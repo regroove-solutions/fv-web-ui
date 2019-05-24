@@ -14,10 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable from 'immutable'
+
 import NavigationHelpers from 'common/NavigationHelpers'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 
@@ -25,21 +29,21 @@ import GridList from 'material-ui/lib/grid-list/grid-list'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 import UIHelpers from 'common/UIHelpers'
-import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
-
+const { func, object, string } = PropTypes
 export class Kids extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    portal: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    portal: object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
+    muiTheme: object.isRequired,
   }
 
   constructor(props, context) {
@@ -150,4 +154,26 @@ export class Kids extends Component {
     )
   }
 }
-export default provide(Kids)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation, windowPath } = state
+
+  const { properties } = navigation
+  const { _windowPath } = windowPath
+
+  return {
+    properties,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Kids)
