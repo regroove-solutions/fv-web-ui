@@ -19,10 +19,8 @@ import Immutable from 'immutable'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchCharacter } from 'providers/redux/reducers/fv'
-import { pushWindowPath } from 'providers/redux/reducers/fv'
-import { replaceWindowPath } from 'providers/redux/reducers/fv'
-import { updateCharacter } from 'providers/redux/reducers/fv'
+import { fetchCharacter, updateCharacter } from 'providers/redux/reducers/fvCharacter'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 
