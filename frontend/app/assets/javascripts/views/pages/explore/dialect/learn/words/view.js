@@ -14,9 +14,27 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  askToDisableWord,
+  askToEnableWord,
+  askToPublishWord,
+  askToUnpublishWord,
+  enableWord,
+  disableWord,
+  deleteWord,
+  fetchWord,
+  publishWord,
+  unpublishWord,
+} from 'providers/redux/reducers/fvWord'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -27,24 +45,8 @@ import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
-// import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
-import TextHeader from 'views/components/Document/Typography/text-header'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { Link } from 'provide-page'
-
-//import Header from 'views/pages/explore/dialect/header';
-//import PageHeader from 'views/pages/explore/dialect/page-header';
-
-// import FlatButton from 'material-ui/lib/flat-button'
-// import Divider from 'material-ui/lib/divider'
-
-// import ListUI from 'material-ui/lib/lists/list'
-// import ListItem from 'material-ui/lib/lists/list-item'
-
-// import FontIcon from 'material-ui/lib/font-icon'
-// import RaisedButton from 'material-ui/lib/raised-button'
-
 import Tab from 'material-ui/lib/tabs/tab'
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
@@ -58,31 +60,34 @@ const DetailsViewWithActions = withActions(PromiseWrapper, true)
 /**
  * View word entry
  */
-@provide
-export default class DialectViewWord extends Component {
+
+const { array, func, object, string } = PropTypes
+export class DialectViewWord extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    deleteWord: PropTypes.func.isRequired,
-    computeDeleteWord: PropTypes.object.isRequired,
-    publishWord: PropTypes.func.isRequired,
-    askToPublishWord: PropTypes.func.isRequired,
-    unpublishWord: PropTypes.func.isRequired,
-    askToUnpublishWord: PropTypes.func.isRequired,
-    enableWord: PropTypes.func.isRequired,
-    askToEnableWord: PropTypes.func.isRequired,
-    disableWord: PropTypes.func.isRequired,
-    askToDisableWord: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeDeleteWord: object.isRequired,
+    computeLogin: object.isRequired,
+    computeWord: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    askToDisableWord: func.isRequired,
+    askToEnableWord: func.isRequired,
+    askToPublishWord: func.isRequired,
+    askToUnpublishWord: func.isRequired,
+    changeTitleParams: func.isRequired,
+    enableWord: func.isRequired,
+    disableWord: func.isRequired,
+    deleteWord: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchWord: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    publishWord: func.isRequired,
+    pushWindowPath: func.isRequired,
+    unpublishWord: func.isRequired,
   }
 
   constructor(props, context) {
@@ -133,7 +138,7 @@ export default class DialectViewWord extends Component {
     this.fetchData(this.props)
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps /*, prevState*/) {
     const word = selectn('response', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()))
     const title = selectn('properties.dc:title', word)
     const uid = selectn('uid', word)
@@ -230,7 +235,6 @@ export default class DialectViewWord extends Component {
               ) : null}
 
               {this._getAcknowledgement(computeWord)}
-
             </aside>
           </div>
         </main>
@@ -341,14 +345,13 @@ export default class DialectViewWord extends Component {
   }
 
   _getPartsOfSpeech(computeWord) {
+    const partOfSpeech = selectn('response.contextParameters.word.part_of_speech', computeWord)
 
-    let part_of_speech = selectn('response.contextParameters.word.part_of_speech', computeWord);
-
-    if (part_of_speech) {
+    if (partOfSpeech) {
       return (
         <div className="DialectViewWordContentItem DialectViewWordPartOfSpeech">
           <h4 className="DialectViewWordContentItemTitle">{intl.trans('part_of_speech', 'Part of Speech', 'first')}</h4>
-          <p>{selectn('response.contextParameters.word.part_of_speech', computeWord)}</p>
+          <p>{partOfSpeech}</p>
         </div>
       )
     }
@@ -441,7 +444,7 @@ export default class DialectViewWord extends Component {
         <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
           <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
           <div className="DialectViewWordContentItemGroup">
-            <div dangerouslySetInnerHTML={{ __html: acknowledgement }}></div>
+            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
           </div>
         </div>
       )
@@ -454,7 +457,7 @@ export default class DialectViewWord extends Component {
 
     // Photos
     const photosThumbnails = []
-    ;(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map((picture, key) => {
+    ;(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map((picture) => {
       photosThumbnails.push(
         <img
           key={picture.uid}
@@ -474,7 +477,7 @@ export default class DialectViewWord extends Component {
 
     // Videos
     const videoThumbnails = []
-    ;(selectn('response.contextParameters.word.related_videos', computeWord) || []).map((video, key) => {
+    ;(selectn('response.contextParameters.word.related_videos', computeWord) || []).map((video) => {
       videoThumbnails.push(
         <video
           key={video.uid}
@@ -576,6 +579,7 @@ export default class DialectViewWord extends Component {
   // Thanks: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_groupby
   _groupBy(arrOfObj, property = 'language') {
     const _arrOfObj = [...arrOfObj]
+    // eslint-disable-next-line
     return _arrOfObj.reduce((r, v, i, a, k = v[property]) => ((r[k] || (r[k] = [])).push(v), r), {})
   }
 
@@ -583,3 +587,47 @@ export default class DialectViewWord extends Component {
     this.props.pushWindowPath(path)
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvWord, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDeleteWord, computeWord } = fvWord
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeDeleteWord,
+    computeLogin,
+    computeWord,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  askToDisableWord,
+  askToEnableWord,
+  askToPublishWord,
+  askToUnpublishWord,
+  changeTitleParams,
+  enableWord,
+  disableWord,
+  deleteWord,
+  fetchDialect2,
+  fetchWord,
+  overrideBreadcrumbs,
+  publishWord,
+  pushWindowPath,
+  unpublishWord,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DialectViewWord)
