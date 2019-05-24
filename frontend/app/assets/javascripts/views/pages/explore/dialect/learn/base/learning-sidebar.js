@@ -15,6 +15,9 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 
+// REDUX
+import { connect } from 'react-redux'
+
 import classNames from 'classnames'
 import selectn from 'selectn'
 import TextHeader from 'views/components/Document/Typography/text-header'
@@ -27,11 +30,12 @@ const intl = IntlService.instance
  * Sidebar for learning page
  */
 const { bool, object } = PropTypes
-export default class ToolbarNavigation extends Component {
+export class ToolbarNavigation extends Component {
   static propTypes = {
     dialect: object.isRequired,
-    properties: object.isRequired,
     isSection: bool.isRequired,
+    // REDUX: reducers/state
+    properties: object.isRequired,
   }
 
   constructor(props, context) {
@@ -140,3 +144,19 @@ export default class ToolbarNavigation extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation } = state
+
+  const { properties } = navigation
+
+  return {
+    properties,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(ToolbarNavigation)
