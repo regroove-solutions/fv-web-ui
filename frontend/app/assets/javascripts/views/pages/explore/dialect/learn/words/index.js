@@ -17,7 +17,16 @@ import Immutable, { Set, Map } from 'immutable'
 
 import classNames from 'classnames'
 import { isMobile } from 'react-device-detect'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchDocument } from 'providers/redux/reducers/fvDocument'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { overrideBreadcrumbs, updatePageProperties } from 'providers/redux/reducers/navigation'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 // import GridTile from 'material-ui/lib/grid-list/grid-tile'
@@ -44,24 +53,28 @@ import AlphabetListView from 'views/components/AlphabetListView'
 // import ExportDialect from 'views/components/ExportDialect'
 
 const intl = IntlService.instance
+
+const { array, bool, func, object, string } = PropTypes
 class PageDialectLearnWords extends PageDialectLearnBase {
   static propTypes = {
-    computeCategories: PropTypes.object.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    hasPagination: PropTypes.bool,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    updatePageProperties: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
+    hasPagination: bool,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCategories: object.isRequired,
+    computeDocument: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCategories: func.isRequired,
+    fetchDocument: func.isRequired,
+    fetchPortal: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updatePageProperties: func.isRequired,
   }
 
   componentDidMountViaPageDialectLearnBase() {
@@ -502,4 +515,41 @@ class PageDialectLearnWords extends PageDialectLearnBase {
     return `${this.props.routeParams.area}_${this.props.routeParams.dialect_name}_learn_words`
   }
 }
-export default provide(PageDialectLearnWords)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document, fvCategory, fvPortal, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeCategories } = fvCategory
+  const { computeDocument } = document
+  const { computePortal } = fvPortal
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCategories,
+    computeDocument,
+    computeLogin,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategories,
+  fetchDocument,
+  fetchPortal,
+  overrideBreadcrumbs,
+  pushWindowPath,
+  replaceWindowPath,
+  updatePageProperties,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectLearnWords)
