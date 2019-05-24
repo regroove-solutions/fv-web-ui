@@ -13,9 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import provide from 'react-redux-provide'
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacters } from 'providers/redux/reducers/fvCharacter'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
@@ -33,8 +40,36 @@ const intl = IntlService.instance
 /**
  * List view for alphabet
  */
-@provide
-export default class ListView extends DataListView {
+
+const { array, bool, func, number, object, string } = PropTypes
+export class ListView extends DataListView {
+  static propTypes = {
+    data: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DISABLED_SORT_COLS: array,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    filter: object,
+    gridListTile: func,
+    gridListView: bool,
+    gridViewProps: object,
+    pagination: bool,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacters: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacters: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+  }
+
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'related_audio'],
     DEFAULT_PAGE: 1,
@@ -47,32 +82,6 @@ export default class ListView extends DataListView {
     gridListView: false,
   }
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    fetchCharacters: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    computeCharacters: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    gridListTile: PropTypes.func,
-    gridViewProps: PropTypes.object,
-    pagination: PropTypes.bool,
-
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
-  }
-
   constructor(props, context) {
     super(props, context)
 
@@ -81,7 +90,7 @@ export default class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('character', 'Character', 'first'),
-          render: (v, data, cellProps) => v,
+          render: (v /*, data, cellProps*/) => v,
           sortName: 'fvcharacter:alphabet_order',
         },
         {
@@ -98,10 +107,9 @@ export default class ListView extends DataListView {
           name: 'related_words',
           title: intl.trans('related_words', 'Related Words', 'words'),
           render: (v, data, cellProps) =>
-            UIHelpers.renderComplexArrayRow(
-              selectn('contextParameters.character.' + cellProps.name, data),
-              (entry, i) => <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>
-            ),
+            UIHelpers.renderComplexArrayRow(selectn('contextParameters.character.' + cellProps.name, data), (entry) => (
+              <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>
+            )),
           sortName: 'fv:literal_translation/0/translation',
         },
         {
@@ -135,7 +143,7 @@ export default class ListView extends DataListView {
 
     // Reduce the number of columns displayed for mobile
     if (UIHelpers.isViewSize('xs')) {
-      this.state.columns = this.state.columns.filter((v, k) => ['title', 'related_words'].indexOf(v.name) != -1)
+      this.state.columns = this.state.columns.filter((v) => ['title', 'related_words'].indexOf(v.name) != -1)
       this.state.hideStateColumn = true
     }
 
@@ -236,3 +244,35 @@ export default class ListView extends DataListView {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeCharacters } = fvCharacter
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCharacters,
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacters,
+  fetchDialect2,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListView)
