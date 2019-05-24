@@ -14,46 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-
-import classNames from 'classnames'
-import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {} from 'providers/redux/reducers/fv'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import Paper from 'material-ui/lib/paper'
 
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import RaisedButton from 'material-ui/lib/raised-button'
-import Toggle from 'material-ui/lib/toggle'
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-import IconButton from 'material-ui/lib/icon-button'
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import Tabs from 'material-ui/lib/tabs/tabs'
 import Tab from 'material-ui/lib/tabs/tab'
 import Statistics from 'views/components/Dashboard/Statistics'
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class PageStats extends Component {
+const { func, object, string } = PropTypes
+export class PageStats extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    handleNavigateRequest: PropTypes.func,
-    computeDialectStats: PropTypes.object.isRequired,
-    dialectPath: PropTypes.string.isRequired,
+    handleNavigateRequest: func,
+    dialectPath: string.isRequired,
+    // REDUX: reducers/state
+    computeDialectStats: object.isRequired,
+    windowPath: string.isRequired,
   }
 
   constructor(props, context) {
@@ -218,9 +205,26 @@ export default class PageStats extends Component {
                         })()}
 
 
-
                       </ToolbarGroup>
 
                     </Toolbar>;*/
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, windowPath } = state
+
+  const { computeDialectStats } = fvDialect
+  const { _windowPath } = windowPath
+
+  return {
+    computeDialectStats,
+    windowPath: _windowPath,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(PageStats)
