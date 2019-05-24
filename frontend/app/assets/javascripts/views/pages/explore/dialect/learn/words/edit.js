@@ -14,11 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchWord, updateWord } from 'providers/redux/reducers/fvWord'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -31,10 +37,6 @@ const intl = IntlService.instance
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -42,21 +44,24 @@ import withForm from 'views/hoc/view/with-form'
 
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class PageDialectWordEdit extends Component {
+const { array, func, object } = PropTypes
+export class PageDialectWordEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    updateWord: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    word: PropTypes.object,
+    routeParams: object.isRequired,
+    word: object,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeWord: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchWord: func.isRequired,
+    pushWindowPath: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateWord: func.isRequired,
   }
 
   constructor(props, context) {
@@ -82,9 +87,10 @@ export default class PageDialectWordEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentWord, nextWord
+    let currentWord
+    let nextWord
 
-    if (this._getWordPath() != null) {
+    if (this._getWordPath() !== null) {
       currentWord = ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath())
       nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this._getWordPath())
     }
@@ -102,48 +108,41 @@ export default class PageDialectWordEdit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
-    let previousWord = this.props.computeWord
-    let nextWord = newProps.computeWord
+  shouldComponentUpdate(newProps /*, newState*/) {
+    const previousWord = this.props.computeWord
+    const nextWord = newProps.computeWord
 
-    let previousDialect = this.props.computeDialect2
-    let nextDialect = newProps.computeDialect2
+    const previousDialect = this.props.computeDialect2
+    const nextDialect = newProps.computeDialect2
 
     switch (true) {
       case newProps.routeParams.word != this.props.routeParams.word:
         return true
-        break
 
-      case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
+      case newProps.routeParams.dialect_path !== this.props.routeParams.dialect_path:
         return true
-        break
 
       case typeof nextWord.equals === 'function' && nextWord.equals(previousWord) === false:
         return true
-        break
 
       case typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _getWordPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.word)) {
-      return props.routeParams.word
-    } else {
-      return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.word)
+    if (StringHelpers.isUUID(_props.routeParams.word)) {
+      return _props.routeParams.word
     }
+    return _props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(_props.routeParams.word)
   }
 
   _handleSave(word, formValue) {
-    let newDocument = new Document(word.response, {
+    const newDocument = new Document(word.response, {
       repository: word.response._repository,
       nuxeo: word.response._nuxeo,
     })
@@ -161,12 +160,12 @@ export default class PageDialectWordEdit extends Component {
     NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let word = selectn('response', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()))
-    let title = selectn('properties.dc:title', word)
-    let uid = selectn('uid', word)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const word = selectn('response', ProviderHelpers.getEntry(this.props.computeWord, this._getWordPath()))
+    const title = selectn('properties.dc:title', word)
+    const uid = selectn('uid', word)
 
-    if (title && selectn('pageTitleParams.word', this.props.properties) != title) {
+    if (title && selectn('pageTitleParams.word', this.props.properties) !== title) {
       this.props.changeTitleParams({ word: title })
       this.props.overrideBreadcrumbs({ find: uid, replace: 'pageTitleParams.word' })
     }
@@ -191,7 +190,7 @@ export default class PageDialectWordEdit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computeWord)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-word:definitions[0].translation', computeWord) ||
         selectn('response.properties.fv:literal_translation[0].translation', computeWord)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -230,3 +229,36 @@ export default class PageDialectWordEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvWord, navigation, windowPath } = state
+
+  const { computeWord } = fvWord
+  const { computeDialect2 } = fvDialect
+  const { properties } = navigation
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeWord,
+    properties,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  fetchDialect2,
+  fetchWord,
+  pushWindowPath,
+  overrideBreadcrumbs,
+  replaceWindowPath,
+  updateWord,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectWordEdit)
