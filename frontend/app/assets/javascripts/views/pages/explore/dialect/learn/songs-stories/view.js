@@ -14,25 +14,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  askToDisableBook,
+  askToEnableBook,
+  askToPublishBook,
+  askToUnpublishBook,
+  deleteBook,
+  deleteBookEntry,
+  disableBook,
+  fetchBook,
+  fetchBookEntries,
+  enableBook,
+  publishBook,
+  unpublishBook,
+} from 'providers/redux/reducers/fvBook'
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
-import ConfGlobal from 'conf/local.js'
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-import Paper from 'material-ui/lib/paper'
-
 import RaisedButton from 'material-ui/lib/raised-button'
-
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import Preview from 'views/components/Editor/Preview'
-import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
 
 import BookEntry from 'views/pages/explore/dialect/learn/songs-stories/entry/view'
 import BookEntryList from 'views/pages/explore/dialect/learn/songs-stories/entry/list-view'
@@ -53,35 +64,38 @@ const DEFAULT_LANGUAGE = 'english'
 /**
  * View Book
  */
-@provide
-export default class View extends Component {
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchBook: PropTypes.func.isRequired,
-    computeBook: PropTypes.object.isRequired,
-    fetchBookEntries: PropTypes.func.isRequired,
-    computeBookEntries: PropTypes.object.isRequired,
-    deleteBookEntry: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    //typePlural: PropTypes.string,
 
-    deleteBook: PropTypes.func.isRequired,
-    publishBook: PropTypes.func.isRequired,
-    askToPublishBook: PropTypes.func.isRequired,
-    unpublishBook: PropTypes.func.isRequired,
-    askToUnpublishBook: PropTypes.func.isRequired,
-    enableBook: PropTypes.func.isRequired,
-    askToEnableBook: PropTypes.func.isRequired,
-    disableBook: PropTypes.func.isRequired,
-    askToDisableBook: PropTypes.func.isRequired,
+const { array, func, object, string } = PropTypes
+export class View extends Component {
+  static propTypes = {
+    routeParams: object.isRequired,
+    //typePlural: string,
+
+    // REDUX: reducers/state
+    computeBook: object.isRequired,
+    computeBookEntries: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    askToDisableBook: func.isRequired,
+    askToEnableBook: func.isRequired,
+    askToPublishBook: func.isRequired,
+    askToUnpublishBook: func.isRequired,
+    changeTitleParams: func.isRequired,
+    deleteBook: func.isRequired,
+    deleteBookEntry: func.isRequired,
+    disableBook: func.isRequired,
+    fetchBook: func.isRequired,
+    fetchBookEntries: func.isRequired,
+    fetchDialect2: func.isRequired,
+    enableBook: func.isRequired,
+    publishBook: func.isRequired,
+    pushWindowPath: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    unpublishBook: func.isRequired,
   }
 
   constructor(props, context) {
@@ -133,10 +147,10 @@ export default class View extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()))
-    let title = selectn('properties.dc:title', book)
-    let uid = selectn('uid', book)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()))
+    const title = selectn('properties.dc:title', book)
+    const uid = selectn('uid', book)
 
     if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
       this.props.changeTitleParams({ bookName: title })
@@ -145,15 +159,12 @@ export default class View extends Component {
   }
 
   _getBookPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.bookName)) {
-      return props.routeParams.bookName
-    } else {
-      return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName)
+    if (StringHelpers.isUUID(_props.routeParams.bookName)) {
+      return _props.routeParams.bookName
     }
+    return _props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(_props.routeParams.bookName)
   }
 
   _onNavigateRequest(path) {
@@ -186,7 +197,7 @@ export default class View extends Component {
     if (!this.state.bookOpen) {
       page = (
         <BookEntry
-          cover={true}
+          cover
           defaultLanguage={DEFAULT_LANGUAGE}
           pageCount={selectn('response.resultsCount', computeBookEntries)}
           entry={selectn('response', computeBook)}
@@ -201,7 +212,7 @@ export default class View extends Component {
           style={{ overflowY: 'auto', maxHeight: '50vh' }}
           cols={5}
           cellHeight={150}
-          disablePageSize={true}
+          disablePageSize
           defaultLanguage={DEFAULT_LANGUAGE}
           fetcher={this._fetchListViewData}
           fetcherParams={this.state.fetcherParams}
@@ -253,3 +264,49 @@ export default class View extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeBook, computeBookEntries } = fvBook
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeBook,
+    computeBookEntries,
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  askToDisableBook,
+  askToEnableBook,
+  askToPublishBook,
+  askToUnpublishBook,
+  changeTitleParams,
+  deleteBook,
+  deleteBookEntry,
+  disableBook,
+  fetchBook,
+  fetchBookEntries,
+  fetchDialect2,
+  enableBook,
+  publishBook,
+  pushWindowPath,
+  overrideBreadcrumbs,
+  unpublishBook,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(View)
