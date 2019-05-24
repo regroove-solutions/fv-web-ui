@@ -15,13 +15,18 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createLink } from 'providers/redux/reducers/fv'
+import { fetchDialect } from 'providers/redux/reducers/fv'
+import { pushWindowPath } from 'providers/redux/reducers/fv'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
 import CircularProgress from 'material-ui/lib/circular-progress'
 
 import StatusBar from 'views/components/StatusBar'
@@ -36,18 +41,21 @@ const intl = IntlService.instance
 /**
  * Create links
  */
-@provide
-export default class PageDialectLinksCreate extends Component {
+const { array, bool, func, object, string } = PropTypes
+
+export class PageDialectLinksCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
-    createLink: PropTypes.func.isRequired,
-    computeLink: PropTypes.object.isRequired,
-    embedded: PropTypes.bool,
-    onDocumentCreated: PropTypes.func,
+    embedded: bool,
+    onDocumentCreated: func,
+    // REDUX: reducers/state
+    computeDialect: object.isRequired,
+    computeLink: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createLink: func.isRequired,
+    fetchDialect: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -68,7 +76,7 @@ export default class PageDialectLinksCreate extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
+    const dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
     this.setState({ dialectPath: dialectPath })
 
     if (!this.props.computeDialect.success) {
@@ -91,39 +99,36 @@ export default class PageDialectLinksCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
-      case newProps.windowPath != this.props.windowPath:
+      case newProps.windowPath !== this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect.response != this.props.computeDialect.response:
         return true
-        break
 
       case newProps.computeLink != this.props.computeLink:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest(/*path*/) {
     //this.props.pushWindowPath('/' + path);
   }
 
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_link_create.getValue()
 
-    let formValue = this.refs['form_link_create'].getValue()
+    const properties = {}
 
-    let properties = {}
-
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           properties[key] = formValue[key]
         }
       }
@@ -134,11 +139,11 @@ export default class PageDialectLinksCreate extends Component {
     })
 
     // Check if a parent link was specified in the form
-    let parentPathOrId = '/' + this.state.dialectPath + '/Links'
+    const parentPathOrId = '/' + this.state.dialectPath + '/Links'
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createLink(
         parentPathOrId,
         {
@@ -162,8 +167,8 @@ export default class PageDialectLinksCreate extends Component {
   render() {
     const { computeDialect, computeLink } = this.props
 
-    let dialect = computeDialect.response
-    let link = ProviderHelpers.getEntry(computeLink, this.state.linkPath)
+    const dialect = computeDialect.response
+    const link = ProviderHelpers.getEntry(computeLink, this.state.linkPath)
 
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />
@@ -186,7 +191,7 @@ export default class PageDialectLinksCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_link_create"
+                ref="form_link_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVLink', fields))}
                 context={dialect}
                 value={this.state.formValue}
@@ -204,3 +209,31 @@ export default class PageDialectLinksCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvLink, windowPath } = state
+
+  const { computeLink } = fvLink
+  const { computeDialect } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect,
+    computeLink,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createLink,
+  fetchDialect,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectLinksCreate)
