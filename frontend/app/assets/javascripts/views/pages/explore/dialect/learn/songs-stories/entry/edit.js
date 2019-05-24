@@ -14,44 +14,49 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchBookEntry, updateBookEntry } from 'providers/redux/reducers/fvBook'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Models
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
 
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-@provide
-export default class PageDialectBookEdit extends Component {
+
+const { array, func, object } = PropTypes
+export class PageDialectBookEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchBookEntry: PropTypes.func.isRequired,
-    computeBookEntry: PropTypes.object.isRequired,
-    updateBookEntry: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    entry: PropTypes.object,
-    bookEntry: PropTypes.object,
-    dialectEntry: PropTypes.object,
-    handlePageSaved: PropTypes.func,
-    book: PropTypes.object,
+    routeParams: object.isRequired,
+    entry: object,
+    bookEntry: object,
+    dialectEntry: object,
+    handlePageSaved: func,
+    book: object,
+    // REDUX: reducers/state
+    computeBookEntry: object.isRequired,
+    computeDialect2: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchBookEntry: func.isRequired,
+    fetchDialect2: func.isRequired,
+    updateBookEntry: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -90,15 +95,16 @@ export default class PageDialectBookEdit extends Component {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_book_entry'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_book_entry.getValue()
 
     // Passed validation
     if (formValue) {
-      let bookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath)
+      const bookEntry = ProviderHelpers.getEntry(this.props.computeBookEntry, this.state.bookEntryPath)
 
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
-      let newDocument = new Document(bookEntry.response, {
+      const newDocument = new Document(bookEntry.response, {
         repository: bookEntry.response._repository,
         nuxeo: bookEntry.response._nuxeo,
       })
@@ -110,7 +116,7 @@ export default class PageDialectBookEdit extends Component {
       this.props.updateBookEntry(newDocument)
 
       // Call other methods (e.g. close dialog)
-      if (typeof this.props.handlePageSaved == 'function') {
+      if (typeof this.props.handlePageSaved === 'function') {
         this.props.handlePageSaved()
       }
 
@@ -140,7 +146,7 @@ export default class PageDialectBookEdit extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_book_entry"
+                ref="form_book_entry" // TODO: DEPRECATED
                 type={t.struct(selectn('FVBookEntry', fields))}
                 context={selectn('response', computeDialect2)}
                 value={this.state.formValue || selectn('response.properties', computeBookEntry)}
@@ -158,3 +164,31 @@ export default class PageDialectBookEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, windowPath } = state
+  const { computeBookEntry } = fvBook
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeBookEntry,
+    computeDialect2,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchBookEntry,
+  fetchDialect2,
+  updateBookEntry,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectBookEdit)
