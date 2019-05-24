@@ -14,18 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-import t from 'tcomb-form'
+import Immutable, { List } from 'immutable'
 
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchBook, fetchBookEntries, updateBook, updateBookEntry } from 'providers/redux/reducers/fvBook'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
+import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-
 import Tabs from 'material-ui/lib/tabs/tabs'
 import Tab from 'material-ui/lib/tabs/tab'
 
@@ -33,12 +36,6 @@ import Tab from 'material-ui/lib/tabs/tab'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import FlatButton from 'material-ui/lib/flat-button'
-
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import BookEntryEdit from 'views/pages/explore/dialect/learn/songs-stories/entry/edit'
 import BookEntryList from 'views/pages/explore/dialect/learn/songs-stories/entry/list-view'
 
@@ -56,23 +53,28 @@ const DEFAULT_LANGUAGE = 'english'
 const DEFAULT_SORT_ORDER = '&sortOrder=asc,asc&sortBy=fvbookentry:sort_map,dc:created'
 
 const EditViewWithForm = withForm(PromiseWrapper, true)
-@provide
-export default class PageDialectBookEdit extends Component {
+
+const { array, func, object } = PropTypes
+export class PageDialectBookEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    fetchBook: PropTypes.func.isRequired,
-    computeBook: PropTypes.object.isRequired,
-    fetchBookEntries: PropTypes.func.isRequired,
-    computeBookEntries: PropTypes.object.isRequired,
-    updateBook: PropTypes.func.isRequired,
-    updateBookEntry: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    book: PropTypes.object,
+    routeParams: object.isRequired,
+    book: object,
+    // REDUX: reducers/state
+    computeBook: object.isRequired,
+    computeBookEntries: object.isRequired,
+    computeDialect2: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    fetchBook: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchBookEntries: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateBook: func.isRequired,
+    updateBookEntry: func.isRequired,
   }
 
   constructor(props, context) {
@@ -99,9 +101,10 @@ export default class PageDialectBookEdit extends Component {
 
   // Redirect on success
   componentWillReceiveProps(nextProps) {
-    let currentBook, nextBook
+    let currentBook
+    let nextBook
 
-    if (this._getBookPath() != null) {
+    if (this._getBookPath() !== null) {
       currentBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath())
       nextBook = ProviderHelpers.getEntry(nextProps.computeBook, this._getBookPath())
     }
@@ -125,7 +128,7 @@ export default class PageDialectBookEdit extends Component {
   }
 
   _handleSave(book, formValue) {
-    let newDocument = new Document(book.response, {
+    const newDocument = new Document(book.response, {
       repository: book.response._repository,
       nuxeo: book.response._nuxeo,
     })
@@ -154,21 +157,18 @@ export default class PageDialectBookEdit extends Component {
   }
 
   _getBookPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.bookName)) {
-      return props.routeParams.bookName
-    } else {
-      return props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(props.routeParams.bookName)
+    if (StringHelpers.isUUID(_props.routeParams.bookName)) {
+      return _props.routeParams.bookName
     }
+    return _props.routeParams.dialect_path + '/Stories & Songs/' + StringHelpers.clean(_props.routeParams.bookName)
   }
 
   _pageSaved() {
     // Ensure update is complete before re-fetch.
     setTimeout(
-      function() {
+      function pageSavedSetTimeout() {
         this.props.fetchBookEntries(this._getBookPath(), DEFAULT_SORT_ORDER)
       }.bind(this),
       500
@@ -176,10 +176,10 @@ export default class PageDialectBookEdit extends Component {
     this.setState({ editPageDialogOpen: false, editPageItem: null })
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()))
-    let title = selectn('properties.dc:title', book)
-    let uid = selectn('uid', book)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const book = selectn('response', ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath()))
+    const title = selectn('properties.dc:title', book)
+    const uid = selectn('uid', book)
 
     if (title && selectn('pageTitleParams.bookName', this.props.properties) != title) {
       this.props.changeTitleParams({ bookName: title })
@@ -211,7 +211,7 @@ export default class PageDialectBookEdit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computeBook)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-phrase:definitions[0].translation', computeBook) ||
         selectn('response.properties.fv:literal_translation[0].translation', computeBook)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -255,7 +255,7 @@ export default class PageDialectBookEdit extends Component {
               ])}
             </h1>
             <BookEntryList
-              reorder={true}
+              reorder
               sortOrderChanged={this._storeSortOrder}
               defaultLanguage={DEFAULT_LANGUAGE}
               editAction={this._editPage}
@@ -267,7 +267,7 @@ export default class PageDialectBookEdit extends Component {
         </Tabs>
 
         <Dialog
-          autoScrollBodyContent={true}
+          autoScrollBodyContent
           style={{ zIndex: 0 }}
           overlayStyle={{ background: 'none' }}
           open={this.state.editPageDialogOpen}
@@ -284,3 +284,39 @@ export default class PageDialectBookEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, navigation, windowPath } = state
+
+  const { computeBook, computeBookEntries } = fvBook
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+  const { properties } = navigation
+
+  return {
+    computeBook,
+    computeBookEntries,
+    computeDialect2,
+    properties,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  fetchBook,
+  fetchDialect2,
+  fetchBookEntries,
+  overrideBreadcrumbs,
+  pushWindowPath,
+  replaceWindowPath,
+  updateBook,
+  updateBookEntry,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectBookEdit)
