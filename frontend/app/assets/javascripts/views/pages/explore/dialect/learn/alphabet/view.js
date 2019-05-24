@@ -14,9 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable, { Map } from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacter, publishCharacter } from 'providers/redux/reducers/fvCharacter'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { deleteWord } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -25,66 +33,43 @@ import UIHelpers from 'common/UIHelpers'
 
 import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
 
 import { Link } from 'provide-page'
 
-//import Header from 'views/pages/explore/dialect/header';
-//import PageHeader from 'views/pages/explore/dialect/page-header';
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
-import Dialog from 'material-ui/lib/dialog'
-
-import Avatar from 'material-ui/lib/avatar'
 import Card from 'material-ui/lib/card/card'
-import CardActions from 'material-ui/lib/card/card-actions'
-import CardHeader from 'material-ui/lib/card/card-header'
-import CardMedia from 'material-ui/lib/card/card-media'
-import CardTitle from 'material-ui/lib/card/card-title'
-import FlatButton from 'material-ui/lib/flat-button'
 import CardText from 'material-ui/lib/card/card-text'
-import Divider from 'material-ui/lib/divider'
-
-import ListUI from 'material-ui/lib/lists/list'
-import ListItem from 'material-ui/lib/lists/list-item'
-
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import FontIcon from 'material-ui/lib/font-icon'
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import Tabs from 'material-ui/lib/tabs/tabs'
 import Tab from 'material-ui/lib/tabs/tab'
-
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 import IntlService from 'views/services/intl'
-
 const intl = IntlService.instance
 /**
  * View character entry
  */
-@provide
-export default class View extends Component {
+
+const { array, func, object, string } = PropTypes
+export class View extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    publishCharacter: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchCharacter: PropTypes.func.isRequired,
-    computeCharacter: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacter: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    deleteWord: func.isRequired,
+    fetchCharacter: func.isRequired,
+    fetchDialect2: func.isRequired,
+    publishCharacter: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -123,18 +108,16 @@ export default class View extends Component {
   }
 
   _getCharacterPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    return props.routeParams.dialect_path + '/Alphabet/' + props.routeParams.character
+    return _props.routeParams.dialect_path + '/Alphabet/' + _props.routeParams.character
   }
 
   _onNavigateRequest(path) {
     this.props.pushWindowPath(path)
   }
 
-  _handleConfirmDelete(item, event) {
+  _handleConfirmDelete(item /*, event*/) {
     this.props.deleteWord(item.uid)
     this.setState({ deleteDialogOpen: false })
   }
@@ -176,7 +159,7 @@ export default class View extends Component {
 
     // Generate photos
     const photos = []
-    ;(selectn('response.contextParameters.word.related_pictures', computeCharacter) || []).map(function(picture, key) {
+    ;(selectn('response.contextParameters.word.related_pictures', computeCharacter) || []).map((picture, key) => {
       const image = {
         original: selectn('views[2].url', picture),
         thumbnail: selectn('views[0].url', picture) || 'assets/images/cover.png',
@@ -190,7 +173,7 @@ export default class View extends Component {
 
     // Generate videos
     const videos = []
-    ;(selectn('response.contextParameters.word.related_videos', computeCharacter) || []).map(function(video, key) {
+    ;(selectn('response.contextParameters.word.related_videos', computeCharacter) || []).map((video, key) => {
       const vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
         thumbnail: selectn('views[0].url', video) || 'assets/images/cover.png',
@@ -214,7 +197,7 @@ export default class View extends Component {
     return (
       <PromiseWrapper computeEntities={computeEntities}>
         {(() => {
-          if (this.props.routeParams.area == 'Workspaces') {
+          if (this.props.routeParams.area === 'Workspaces') {
             if (selectn('response', computeCharacter))
               return (
                 <PageToolbar
@@ -265,7 +248,7 @@ export default class View extends Component {
 
                                 {(
                                   selectn('response.contextParameters.character.related_audio', computeCharacter) || []
-                                ).map(function(audio, key) {
+                                ).map((audio /*, key*/) => {
                                   return (
                                     <Preview
                                       styles={{ maxWidth: '350px' }}
@@ -295,7 +278,7 @@ export default class View extends Component {
                                           'response.contextParameters.character.related_words',
                                           computeCharacter
                                         ) || []
-                                      ).map(function(word, key) {
+                                      ).map((word, key) => {
                                         const wordItem =
                                           selectn('fv:definitions.length', word) > 0
                                             ? selectn('fv:definitions', word)
@@ -422,3 +405,37 @@ export default class View extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeCharacter } = fvCharacter
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCharacter,
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  deleteWord,
+  fetchCharacter,
+  fetchDialect2,
+  publishCharacter,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(View)
