@@ -15,7 +15,14 @@ limitations under the License.
 */
 import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchBooks } from 'providers/redux/reducers/fvBook'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -33,8 +40,35 @@ const intl = IntlService.instance
 /**
  * List view for words
  */
-@provide
-export default class ListViewAlt extends DataListView {
+
+const { array, bool, func, number, object, string } = PropTypes
+export class ListViewAlt extends DataListView {
+  static propTypes = {
+    action: func,
+    data: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    disableClickItem: bool,
+    DISABLED_SORT_COLS: array,
+    filter: object,
+    gridListView: bool,
+    routeParams: object.isRequired,
+
+    // REDUX: reducers/state
+    computeBooks: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchBooks: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+  }
   static defaultProps = {
     disableClickItem: true,
     DISABLED_SORT_COLS: ['state', 'related_audio', 'related_pictures'],
@@ -48,31 +82,6 @@ export default class ListViewAlt extends DataListView {
     gridListView: false,
   }
 
-  static propTypes = {
-    disableClickItem: PropTypes.bool,
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    fetchBooks: PropTypes.func.isRequired,
-    computeBooks: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    action: PropTypes.func,
-
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
-  }
-
   constructor(props, context) {
     super(props, context)
 
@@ -83,7 +92,7 @@ export default class ListViewAlt extends DataListView {
         {
           name: 'title',
           title: intl.trans('title', 'Title', 'first'),
-          render: (v, data, cellProps) => {
+          render: (v, data /*, cellProps*/) => {
             const href = NavigationHelpers.generateUIDPath(
               currentTheme || 'explore',
               data,
@@ -91,7 +100,7 @@ export default class ListViewAlt extends DataListView {
             )
             const clickHandler = props.disableClickItem
               ? NavigationHelpers.disable
-              : (e) => {
+              : (/*e*/) => {
                   // e.preventDefault()
                   // NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
                 }
@@ -106,7 +115,7 @@ export default class ListViewAlt extends DataListView {
           name: 'dc:modified',
           width: 250,
           title: intl.trans('date_modified', 'Date Modified'),
-          render: function(v, data, cellProps) {
+          render: (v, data /*, cellProps*/) => {
             return StringHelpers.formatUTCDateString(selectn('lastModified', data))
           },
         },
@@ -114,7 +123,7 @@ export default class ListViewAlt extends DataListView {
           name: 'dc:created',
           width: 210,
           title: intl.trans('date_created', 'Date Created'),
-          render: function(v, data, cellProps) {
+          render: (v, data /*, cellProps*/) => {
             return StringHelpers.formatUTCDateString(selectn('properties.dc:created', data))
           },
         },
@@ -244,3 +253,35 @@ export default class ListViewAlt extends DataListView {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeBooks } = fvBook
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeBooks,
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchBooks,
+  fetchDialect2,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListViewAlt)
