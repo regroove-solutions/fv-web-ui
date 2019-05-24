@@ -21,20 +21,21 @@ import ImageGallery from 'react-image-gallery'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { askToDisableGallery } from 'providers/redux/reducers/fv'
-import { askToEnableGallery } from 'providers/redux/reducers/fv'
-import { askToPublishGallery } from 'providers/redux/reducers/fv'
-import { askToUnpublishGallery } from 'providers/redux/reducers/fv'
-import { changeTitleParams } from 'providers/redux/reducers/fv'
-import { disableGallery } from 'providers/redux/reducers/fv'
-import { deleteGallery } from 'providers/redux/reducers/fv'
-import { fetchDialect2 } from 'providers/redux/reducers/fv'
-import { fetchGallery } from 'providers/redux/reducers/fv'
-import { overrideBreadcrumbs } from 'providers/redux/reducers/fv'
-import { publishGallery } from 'providers/redux/reducers/fv'
-import { pushWindowPath } from 'providers/redux/reducers/fv'
-import { unpublishGallery } from 'providers/redux/reducers/fv'
-import { enableGallery } from 'providers/redux/reducers/fv'
+import {
+  askToDisableGallery,
+  askToEnableGallery,
+  askToPublishGallery,
+  askToUnpublishGallery,
+  disableGallery,
+  deleteGallery,
+  enableGallery,
+  fetchGallery,
+  publishGallery,
+  unpublishGallery,
+} from 'providers/redux/reducers/fvGallery'
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
