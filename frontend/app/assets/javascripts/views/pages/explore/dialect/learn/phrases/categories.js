@@ -14,11 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import classNames from 'classnames'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -26,43 +31,30 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import CategoryList from 'views/components/Browsing/category-list'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations'
-
-import Checkbox from 'material-ui/lib/checkbox'
-import TextField from 'material-ui/lib/text-field'
-import RaisedButton from 'material-ui/lib/raised-button'
-import SelectField from 'material-ui/lib/select-field'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-
-import withPagination from 'views/hoc/grid-list/with-pagination'
-import withFilter from 'views/hoc/grid-list/with-filter'
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
-const FilteredCategoryList = withFilter(CategoryList)
-
 /**
  * Categories page for words
  */
-@provide
-export default class Categories extends Component {
+
+const { array, func, object, string } = PropTypes
+export class Categories extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    computeCategories: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    action: PropTypes.func,
+    action: func,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCategories: object.isRequired,
+    computePortal: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCategories: func.isRequired,
+    fetchPortal: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   constructor(props, context) {
@@ -80,7 +72,7 @@ export default class Categories extends Component {
   }
 
   fetchData(newProps) {
-    const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area
+    // const pathOrId = '/' + newProps.properties.domain + '/' + newProps.routeParams.area
     const categoriesPath = '/api/v1/path/' + newProps.routeParams.dialect_path + '/Phrase Books/@children'
 
     newProps.fetchPortal(newProps.routeParams.dialect_path + '/Portal')
@@ -95,11 +87,11 @@ export default class Categories extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let computeCategoriesResultCount = selectn(
-      'response.totalSize',
-      ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
-    )
-    let nextComputeCategoriesResultCount = selectn(
+    // const computeCategoriesResultCount = selectn(
+    //   'response.totalSize',
+    //   ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
+    // )
+    const nextComputeCategoriesResultCount = selectn(
       'response.totalSize',
       ProviderHelpers.getEntry(nextProps.computeCategories, this.state.categoriesPath)
     )
@@ -141,7 +133,7 @@ export default class Categories extends Component {
     const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12">
             <CategoryList
@@ -155,3 +147,34 @@ export default class Categories extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvPortal, navigation, windowPath } = state
+
+  const { properties } = navigation
+  const { computeCategories } = fvCategory
+  const { computePortal } = fvPortal
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCategories,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategories,
+  fetchPortal,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Categories)
