@@ -16,25 +16,22 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
-// import provide from 'react-redux-provide'
 import selectn from 'selectn'
-
 import TextHeader from 'views/components/Document/Typography/text-header'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
-// import EditableComponent, { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
 import { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
-import IntlService from 'views/services/intl'
 
+import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 /**
  * Sidebar for learning page
  */
+const { bool, object } = PropTypes
 export default class ToolbarNavigation extends Component {
   static propTypes = {
-    dialect: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    isSection: PropTypes.bool.isRequired,
+    dialect: object.isRequired,
+    properties: object.isRequired,
+    isSection: bool.isRequired,
   }
 
   constructor(props, context) {
