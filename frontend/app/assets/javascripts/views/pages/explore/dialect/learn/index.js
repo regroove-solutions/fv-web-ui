@@ -79,7 +79,6 @@ const intl = IntlService.instance
 const { func, object, string } = PropTypes
 export class DialectLearn extends Component {
   static propTypes = {
-    properties: object.isRequired,
     routeParams: object.isRequired,
     // REDUX: reducers/state
     computeCreatedPhrases: object.isRequired,
@@ -101,6 +100,7 @@ export class DialectLearn extends Component {
     computeUserModifiedStories: object.isRequired,
     computeUserModifiedPhrases: object.isRequired,
     computeUserModifiedWords: object.isRequired,
+    properties: object.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
     fetchDialect2: func.isRequired,
@@ -700,7 +700,7 @@ export class DialectLearn extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvBook, fvDialect, fvPhrase, fvPortal, fvWord, nuxeo, windowPath } = state
+  const { fvBook, fvDialect, fvPhrase, fvPortal, fvWord, nuxeo, navigation, windowPath } = state
 
   const { computeLogin } = nuxeo
   const { computeDialect2 } = fvDialect
@@ -725,7 +725,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { computeCreatedWords, computeModifiedWords, computeUserCreatedWords, computeUserModifiedWords } = fvWord
 
   const { computePortal } = fvPortal
-
+  const { properties } = navigation
   return {
     computeCreatedPhrases,
     computeCreatedSongs,
@@ -746,6 +746,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeUserModifiedStories,
     computeUserModifiedPhrases,
     computeUserModifiedWords,
+    properties,
     windowPath: _windowPath,
   }
 }
