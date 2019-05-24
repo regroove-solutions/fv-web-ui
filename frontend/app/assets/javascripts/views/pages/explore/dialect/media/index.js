@@ -16,40 +16,20 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.js'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { navigateTo } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import Header from 'views/pages/explore/dialect/header'
-import PageHeader from 'views/pages/explore/dialect/page-header'
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import SearchBar from 'views/pages/explore/dialect/search-bar'
-
-import Paper from 'material-ui/lib/paper'
-import RaisedButton from 'material-ui/lib/raised-button'
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import FlatButton from 'material-ui/lib/flat-button'
-import CircularProgress from 'material-ui/lib/circular-progress'
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import IconButton from 'material-ui/lib/icon-button'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
-
-import EditableComponent, { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
-
-import Statistics from 'views/components/Dashboard/Statistics'
-import RecentActivityList from 'views/components/Dashboard/RecentActivityList'
-import Link from 'views/components/Document/Link'
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 import MediaList from 'views/components/Browsing/media-list'
 import withPagination from 'views/hoc/grid-list/with-pagination'
@@ -57,26 +37,28 @@ import withFilter from 'views/hoc/grid-list/with-filter'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
 
 const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 20, filters: { 'properties.dc:title': '', dialect: '' } }
 
 /**
  * Browse media related to this dialect
  */
-@provide
-export default class DialectMedia extends Component {
+
+const { array, func, object, string } = PropTypes
+export class DialectMedia extends Component {
   static propTypes = {
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    computeResources: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    navigateTo: func.isRequired,
+    pushWindowPath: func.isRequired,
+    fetchPortal: func.isRequired,
   }
 
   constructor(props, context) {
@@ -181,3 +163,34 @@ export default class DialectMedia extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPortal, fvResources, nuxeo, windowPath } = state
+
+  const { computeLogin } = nuxeo
+  const { computePortal } = fvPortal
+  const { computeResources } = fvResources
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computePortal,
+    computeResources,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResources,
+  navigateTo,
+  pushWindowPath,
+  fetchPortal,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DialectMedia)
