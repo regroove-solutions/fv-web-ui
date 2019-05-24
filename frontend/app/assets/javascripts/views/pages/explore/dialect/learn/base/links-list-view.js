@@ -13,9 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import provide from 'react-redux-provide'
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchLinks } from 'providers/redux/reducers/fvLink'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -33,8 +40,35 @@ const intl = IntlService.instance
 /**
  * List view for links
  */
-@provide
+
+const { array, bool, func, number, object, string } = PropTypes
 class ListView extends DataListView {
+  static propTypes = {
+    action: func,
+    data: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    DISABLED_SORT_COLS: array,
+    filter: object,
+    gridListView: bool,
+    gridCols: number,
+    routeParams: object.isRequired,
+    useDatatable: bool,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLinks: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchLinks: func.isRequired,
+    pushWindowPath: func.isRequired,
+  }
   static defaultProps = {
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
@@ -49,32 +83,6 @@ class ListView extends DataListView {
     useDatatable: false,
   }
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    fetchLinks: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    computeLinks: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    gridCols: PropTypes.number,
-    action: PropTypes.func,
-
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
-    useDatatable: PropTypes.bool,
-  }
-
   constructor(props, context) {
     super(props, context)
 
@@ -83,24 +91,24 @@ class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('link', 'Link', 'first'),
-          render: (v, data, cellProps) => v,
+          render: (v /*, data, cellProps*/) => v,
         },
         {
           name: 'dc:description',
           title: intl.trans('description', 'Description', 'first'),
-          render: (v, data, cellProps) => selectn('properties.dc:description', data),
+          render: (v, data /*, cellProps*/) => selectn('properties.dc:description', data),
         },
         {
           name: 'fvlink:url',
           title: intl.trans('url', 'URL', 'upper'),
-          render: (v, data, cellProps) => selectn('properties.fvlink:url', data),
+          render: (v, data /*, cellProps*/) => selectn('properties.fvlink:url', data),
         },
         {
           name: 'thumb:thumbnail',
           width: 72,
           textAlign: 'center',
           title: intl.trans('file', 'File', 'first'),
-          render: (v, data, cellProps) => {
+          render: (v, data /*, cellProps*/) => {
             const filePreview = selectn('properties.thumb:thumbnail.data', data)
             if (filePreview)
               return (
@@ -231,4 +239,35 @@ class ListView extends DataListView {
     )
   }
 }
-export default ListView
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvLink, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeLinks } = fvLink
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLinks,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchLinks,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListView)
