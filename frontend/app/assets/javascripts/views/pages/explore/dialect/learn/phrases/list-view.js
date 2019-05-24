@@ -16,7 +16,13 @@ limitations under the License.
 import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchPhrases } from 'providers/redux/reducers/fvPhrase'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -36,8 +42,45 @@ const intl = IntlService.instance
 /**
  * List view for phrases
  */
-@provide
-class ListView extends DataListView {
+
+const { array, bool, func, number, object, string } = PropTypes
+export class ListView extends DataListView {
+  static propTypes = {
+    action: func,
+    data: string,
+    controlViaURL: bool,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    disableClickItem: bool,
+    DISABLED_SORT_COLS: array,
+    ENABLED_COLS: array,
+    filter: object,
+    flashcard: bool,
+    flashcardTitle: string,
+    gridCols: number,
+    gridListView: bool,
+    parentID: string,
+    onPagePropertiesChange: func,
+    onPaginationReset: func,
+    pageProperties: object,
+    routeParams: object.isRequired,
+    useDatatable: bool,
+
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computePhrases: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchPhrases: func.isRequired,
+    pushWindowPath: func.isRequired,
+  }
   static defaultProps = {
     disableClickItem: true,
     DISABLED_SORT_COLS: ['state', 'fv-phrase:phrase_books', 'related_audio', 'related_pictures', 'dc:modified'],
@@ -55,41 +98,6 @@ class ListView extends DataListView {
     flashcard: false,
     flashcardTitle: '',
     useDatatable: false,
-  }
-
-  static propTypes = {
-    disableClickItem: PropTypes.bool,
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    fetchPhrases: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    computePhrases: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    pageProperties: PropTypes.object,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    gridCols: PropTypes.number,
-    controlViaURL: PropTypes.bool,
-    parentID: PropTypes.string,
-    onPaginationReset: PropTypes.func,
-    onPagePropertiesChange: PropTypes.func,
-    action: PropTypes.func,
-    useDatatable: PropTypes.bool,
-
-    ENABLED_COLS: PropTypes.array,
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
-    flashcard: PropTypes.bool,
-    flashcardTitle: PropTypes.string,
   }
 
   constructor(props, context) {
@@ -207,7 +215,7 @@ class ListView extends DataListView {
 
     // Only show enabled cols if specified
     if (this.props.ENABLED_COLS.length > 0) {
-      this.state.columns = this.state.columns.filter((v) => this.props.ENABLED_COLS.indexOf(v.name) != -1)
+      this.state.columns = this.state.columns.filter((v) => this.props.ENABLED_COLS.indexOf(v.name) !== -1)
     }
 
     // Bind methods to 'this'
@@ -315,12 +323,12 @@ class ListView extends DataListView {
     }
 
     // WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
-    let starts_with_query = ProviderHelpers.isStartsWithQuery(currentAppliedFilter);
+    const startsWithQuery = ProviderHelpers.isStartsWithQuery(currentAppliedFilter)
 
     props.fetchPhrases(
       this._getPathOrParentID(props),
       `${currentAppliedFilter}&currentPageIndex=${pageIndex -
-        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}${starts_with_query}`
+        1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}${startsWithQuery}`
     )
   }
 
@@ -341,4 +349,34 @@ class ListView extends DataListView {
   }
 }
 
-export default ListView
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPhrase, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computePhrases } = fvPhrase
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computePhrases,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchPhrases,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListView)
