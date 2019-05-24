@@ -21,9 +21,8 @@ import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { pushWindowPath } from 'providers/redux/reducers/fv'
-import { replaceWindowPath } from 'providers/redux/reducers/fv'
-import { toggleMenuAction } from 'providers/redux/reducers/fv'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { toggleMenuAction } from 'providers/redux/reducers/navigation'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
