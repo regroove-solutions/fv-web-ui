@@ -177,7 +177,6 @@ export class Preview extends Component {
     metadataListStyles: object,
     minimal: bool,
     optimal: bool,
-    properties: object.isRequired,
     styles: object,
     tagProps: object,
     tagStyles: object,
@@ -191,6 +190,7 @@ export class Preview extends Component {
     computePicture: object.isRequired,
     computeVideo: object.isRequired,
     computeWord: object.isRequired,
+    properties: object.isRequired,
     // REDUX: actions/dispatch/func
     fetchAudio: func.isRequired,
     fetchCategory: func.isRequired,
@@ -846,7 +846,7 @@ export class Preview extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvWord, fvPhrase, fvCategory, fvPicture, fvAudio, fvVideo, fvContributor, fvLink } = state
+  const { fvWord, fvPhrase, fvCategory, fvPicture, fvAudio, fvVideo, fvContributor, fvLink, navigation } = state
 
   const { computeAudio } = fvAudio
   const { computeCategory } = fvCategory
@@ -856,6 +856,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { computePicture } = fvPicture
   const { computeVideo } = fvVideo
   const { computeWord } = fvWord
+  const { properties } = navigation
 
   return {
     computeAudio,
@@ -866,6 +867,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computePicture,
     computeVideo,
     computeWord,
+    properties,
   }
 }
 
