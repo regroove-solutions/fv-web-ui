@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createBook } from 'providers/redux/reducers/fvBook'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
@@ -24,9 +31,6 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-
-// Views
-import RaisedButton from 'material-ui/lib/raised-button'
 
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
@@ -36,19 +40,22 @@ const intl = IntlService.instance
 /**
  * Create song/story book
  */
-@provide
-export default class PageDialectStoriesAndSongsCreate extends Component {
+
+const { array, func, object, string } = PropTypes
+export class PageDialectStoriesAndSongsCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    createBook: PropTypes.func.isRequired,
-    computeBook: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    typeFilter: PropTypes.string,
+    typeFilter: string,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeBook: object.isRequired,
+    computeDialect2: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createBook: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -74,9 +81,10 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let currentBook, nextBook
+    let currentBook
+    let nextBook
 
-    if (this.state.bookPath != null) {
+    if (this.state.bookPath !== null) {
       currentBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath)
       nextBook = ProviderHelpers.getEntry(nextProps.computeBook, this.state.bookPath)
     }
@@ -99,36 +107,34 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
-      case newProps.windowPath != this.props.windowPath:
+      case newProps.windowPath !== this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect2 != this.props.computeDialect2:
         return true
-        break
 
       case newProps.computeBook != this.props.computeBook:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_book_create'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_book_create.getValue()
 
     //let properties = '';
-    let properties = {}
+    const properties = {}
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
           properties[key] = formValue[key]
         }
@@ -141,7 +147,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createBook(
         this.props.routeParams.dialect_path + '/Stories & Songs',
         {
@@ -162,7 +168,7 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
   }
 
   render() {
-    let FVBookOptions = Object.assign({}, selectn('FVBook', options))
+    const FVBookOptions = Object.assign({}, selectn('FVBook', options))
 
     const computeEntities = Immutable.fromJS([
       {
@@ -175,32 +181,36 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
       },
     ])
 
-    const computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath)
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
+    // const _computeBook = ProviderHelpers.getEntry(this.props.computeBook, this.state.bookPath)
+    const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Set default value on form
-    if (selectn('response.properties.fvdialect:dominant_language', computeDialect2)) {
+    if (selectn('response.properties.fvdialect:dominant_language', _computeDialect2)) {
       if (selectn('fields.fvbook:title_literal_translation.item.fields.language.attrs', FVBookOptions)) {
-        FVBookOptions['fields']['fvbook:title_literal_translation']['item']['fields']['language']['attrs'][
-          'defaultValue'
-        ] = selectn('response.properties.fvdialect:dominant_language', computeDialect2)
+        FVBookOptions.fields['fvbook:title_literal_translation'].item.fields.language.attrs.defaultValue = selectn(
+          'response.properties.fvdialect:dominant_language',
+          _computeDialect2
+        )
       }
 
       if (selectn('fields.fvbook:introduction_literal_translation.item.fields.language.attrs', FVBookOptions)) {
-        FVBookOptions['fields']['fvbook:introduction_literal_translation']['item']['fields']['language']['attrs'][
-          'defaultValue'
-        ] = selectn('response.properties.fvdialect:dominant_language', computeDialect2)
+        FVBookOptions.fields[
+          'fvbook:introduction_literal_translation'
+        ].item.fields.language.attrs.defaultValue = selectn(
+          'response.properties.fvdialect:dominant_language',
+          _computeDialect2
+        )
       }
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {intl.trans(
             'views.pages.explore.dialect.learn.songs_stories.add_new_x_book_to_x',
-            'Add New ' + this.props.typeFilter + ' Book to ' + selectn('response.title', computeDialect2),
+            'Add New ' + this.props.typeFilter + ' Book to ' + selectn('response.title', _computeDialect2),
             'first',
-            [this.props.typeFilter, selectn('response.title', computeDialect2)]
+            [this.props.typeFilter, selectn('response.title', _computeDialect2)]
           )}
         </h1>
 
@@ -208,9 +218,9 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_book_create"
+                ref="form_book_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVBook', fields))}
-                context={selectn('response', computeDialect2)}
+                context={selectn('response', _computeDialect2)}
                 value={this.state.formValue || { 'fvbook:type': this.props.typeFilter }}
                 options={FVBookOptions}
               />
@@ -226,3 +236,32 @@ export default class PageDialectStoriesAndSongsCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, windowPath } = state
+
+  const { computeBook } = fvBook
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeBook,
+    computeDialect2,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createBook,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectStoriesAndSongsCreate)
