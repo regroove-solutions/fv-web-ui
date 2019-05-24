@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createWord } from 'providers/redux/reducers/fvWord'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
@@ -26,8 +33,6 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
@@ -36,18 +41,21 @@ const intl = IntlService.instance
 /**
  * Create word entry
  */
-@provide
-export default class PageDialectWordsCreate extends Component {
+
+const { array, func, object, string } = PropTypes
+export class PageDialectWordsCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    createWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeWord: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createWord: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -73,9 +81,10 @@ export default class PageDialectWordsCreate extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentWord, nextWord
+    let currentWord
+    let nextWord
 
-    if (this.state.wordPath != null) {
+    if (this.state.wordPath === null) {
       currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
       nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath)
     }
@@ -94,36 +103,34 @@ export default class PageDialectWordsCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.windowPath != this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect2 != this.props.computeDialect2:
         return true
-        break
 
       case newProps.computeWord != this.props.computeWord:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_word_create'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_word_create.getValue()
 
     //let properties = '';
-    let properties = {}
+    const properties = {}
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
           properties[key] = formValue[key]
         }
@@ -136,7 +143,7 @@ export default class PageDialectWordsCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createWord(
         this.props.routeParams.dialect_path + '/Dictionary',
         {
@@ -158,7 +165,7 @@ export default class PageDialectWordsCreate extends Component {
   }
 
   render() {
-    let FVWordOptions = Object.assign({}, selectn('FVWord', options))
+    const FVWordOptions = Object.assign({}, selectn('FVWord', options))
 
     const computeEntities = Immutable.fromJS([
       {
@@ -171,28 +178,28 @@ export default class PageDialectWordsCreate extends Component {
       },
     ])
 
-    const computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
+    // const _computeWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
+    const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Set default value on form
     if (
       selectn('fields.fv:definitions.item.fields.language.attrs', FVWordOptions) &&
-      selectn('response.properties.fvdialect:dominant_language', computeDialect2)
+      selectn('response.properties.fvdialect:dominant_language', _computeDialect2)
     ) {
-      FVWordOptions['fields']['fv:definitions']['item']['fields']['language']['attrs']['defaultValue'] = selectn(
+      FVWordOptions.fields['fv:definitions'].item.fields.language.attrs.defaultValue = selectn(
         'response.properties.fvdialect:dominant_language',
-        computeDialect2
+        _computeDialect2
       )
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {intl.trans(
             'views.pages.explore.dialect.learn.words.add_new_word_to_x',
-            'Add New Word to ' + selectn('response.title', computeDialect2),
+            'Add New Word to ' + selectn('response.title', _computeDialect2),
             null,
-            [selectn('response.title', computeDialect2)]
+            [selectn('response.title', _computeDialect2)]
           )}
         </h1>
 
@@ -200,9 +207,9 @@ export default class PageDialectWordsCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_word_create"
+                ref="form_word_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVWord', fields))}
-                context={selectn('response', computeDialect2)}
+                context={selectn('response', _computeDialect2)}
                 value={this.state.formValue}
                 options={FVWordOptions}
               />
@@ -218,3 +225,32 @@ export default class PageDialectWordsCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvWord, windowPath } = state
+
+  const { computeWord } = fvWord
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeWord,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createWord,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectWordsCreate)
