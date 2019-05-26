@@ -15,12 +15,18 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createCategory } from 'providers/redux/reducers/fvCategory'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
 import Paper from 'material-ui/lib/paper'
 import CircularProgress from 'material-ui/lib/circular-progress'
 
@@ -36,18 +42,21 @@ const intl = IntlService.instance
 /**
  * Create phrasebook
  */
-@provide
-export default class PageDialectPhraseBooksCreate extends Component {
+
+const { array, bool, func, object, string } = PropTypes
+export class PageDialectPhraseBooksCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect: PropTypes.func.isRequired,
-    computeDialect: PropTypes.object.isRequired,
-    createCategory: PropTypes.func.isRequired,
-    computeCategory: PropTypes.object.isRequired,
-    embedded: PropTypes.bool,
-    onDocumentCreated: PropTypes.func,
+    embedded: bool,
+    onDocumentCreated: func,
+    // REDUX: reducers/state
+    computeCategory: object.isRequired,
+    computeDialect: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createCategory: func.isRequired,
+    fetchDialect: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -68,7 +77,7 @@ export default class PageDialectPhraseBooksCreate extends Component {
   }
 
   fetchData(newProps) {
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
+    const dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
     this.setState({ dialectPath: dialectPath })
 
     if (!this.props.computeDialect.success) {
@@ -93,25 +102,22 @@ export default class PageDialectPhraseBooksCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
-      case newProps.windowPath != this.props.windowPath:
+      case newProps.windowPath !== this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect.response != this.props.computeDialect.response:
         return true
-        break
 
       case newProps.computeCategory != this.props.computeCategory:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest(/*path*/) {
     //this.props.pushWindowPath('/' + path);
   }
 
@@ -119,13 +125,14 @@ export default class PageDialectPhraseBooksCreate extends Component {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_phrasebook_create'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_phrasebook_create.getValue()
 
-    let properties = {}
+    const properties = {}
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           properties[key] = formValue[key]
         }
       }
@@ -137,7 +144,7 @@ export default class PageDialectPhraseBooksCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createCategory(
         '/' + this.state.dialectPath + '/Phrase Books',
         {
@@ -161,8 +168,8 @@ export default class PageDialectPhraseBooksCreate extends Component {
   render() {
     const { computeDialect, computeCategory } = this.props
 
-    let dialect = computeDialect.response
-    let phrasebook = ProviderHelpers.getEntry(computeCategory, this.state.phrasebookPath)
+    const dialect = computeDialect.response
+    const phrasebook = ProviderHelpers.getEntry(computeCategory, this.state.phrasebookPath)
 
     if (computeDialect.isFetching || !computeDialect.success) {
       return <CircularProgress mode="indeterminate" size={2} />
@@ -189,7 +196,7 @@ export default class PageDialectPhraseBooksCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_phrasebook_create"
+                ref="form_phrasebook_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVCategory', fields))}
                 context={dialect}
                 value={this.state.formValue}
@@ -213,3 +220,31 @@ export default class PageDialectPhraseBooksCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvDialect, windowPath } = state
+
+  const { computeCategory } = fvCategory
+  const { computeDialect } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCategory,
+    computeDialect,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createCategory,
+  fetchDialect,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectPhraseBooksCreate)
