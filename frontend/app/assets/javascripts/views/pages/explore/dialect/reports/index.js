@@ -14,10 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable from 'immutable'
+// import Immutable from 'immutable'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchBooks } from 'providers/redux/reducers/fvBook'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import ReportBrowser from './browse-view'
@@ -25,21 +33,24 @@ import ReportBrowser from './browse-view'
 /**
  * Learn songs
  */
-@provide
-export default class PageDialectReports extends Component {
+
+const { array, func, object, string } = PropTypes
+export class PageDialectReports extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchBooks: PropTypes.func.isRequired,
-    computeBooks: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeBooks: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchBooks: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchPortal: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -70,12 +81,12 @@ export default class PageDialectReports extends Component {
   }
 
   render() {
-    const computeEntities = Immutable.fromJS([
-      {
-        id: this.props.routeParams.dialect_path,
-        entity: this.props.computeDialect2,
-      },
-    ])
+    // const computeEntities = Immutable.fromJS([
+    //   {
+    //     id: this.props.routeParams.dialect_path,
+    //     entity: this.props.computeDialect2,
+    //   },
+    // ])
 
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
@@ -91,3 +102,38 @@ export default class PageDialectReports extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computeBooks } = fvBook
+  const { computePortal } = fvPortal
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeBooks,
+    computeDialect2,
+    computeLogin,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchBooks,
+  fetchDialect2,
+  fetchPortal,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectReports)
