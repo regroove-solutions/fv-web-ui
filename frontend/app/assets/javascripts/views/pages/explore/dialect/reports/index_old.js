@@ -14,39 +14,49 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { Component, PropTypes } from 'react'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import React, { PropTypes } from 'react'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  fetchReportDocuments,
+  fetchReportSongsAll,
+  fetchReportStoriesAll,
+  fetchReportPhrasesAll,
+  fetchReportWordsAll,
+} from 'providers/redux/reducers/reports'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import List from 'material-ui/lib/lists/list'
 import ListItem from 'material-ui/lib/lists/list-item'
 
-import DocumentOperations from 'operations/DocumentOperations'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
 import CircularProgress from 'material-ui/lib/circular-progress'
 import Doughnut from 'react-chartjs/lib/doughnut'
-import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
 const DEFAULT_PAGE = 0
 const DEFAULT_PAGE_SIZE = 10
 
-@provide
-export default class PageDialectReports extends React.Component {
+const { array, func, object, string } = PropTypes
+export class PageDialectReports extends React.Component {
   static propTypes = {
-    pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    fetchReportDocuments: PropTypes.func.isRequired,
-    computeReportDocuments: PropTypes.object.isRequired,
-    fetchReportWordsAll: PropTypes.func.isRequired,
-    computeReportWordsAll: PropTypes.object.isRequired,
-    fetchReportPhrasesAll: PropTypes.func.isRequired,
-    computeReportPhrasesAll: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    fetchReportSongsAll: PropTypes.func.isRequired,
-    computeReportSongsAll: PropTypes.object.isRequired,
-    fetchReportStoriesAll: PropTypes.func.isRequired,
-    computeReportStoriesAll: PropTypes.object.isRequired,
+    // REDUX: reducers/state
+    computeReportDocuments: object.isRequired,
+    computeReportPhrasesAll: object.isRequired,
+    computeReportSongsAll: object.isRequired,
+    computeReportStoriesAll: object.isRequired,
+    computeReportWordsAll: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchReportDocuments: func.isRequired,
+    fetchReportSongsAll: func.isRequired,
+    fetchReportStoriesAll: func.isRequired,
+    fetchReportPhrasesAll: func.isRequired,
+    fetchReportWordsAll: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -81,15 +91,17 @@ export default class PageDialectReports extends React.Component {
   }
 
   _handleQueryDataRequest(queryName, queryAppend, dataGridProps) {
+    // TODO: do not mutate `state` directly
+    /* eslint-disable */
     this.state.queryName = queryName
     this.state.queryAppend = queryAppend
-
+    /* eslint-enable */
     let page = DEFAULT_PAGE
     let pageSize = DEFAULT_PAGE_SIZE
-    if (dataGridProps.page != undefined) {
+    if (dataGridProps.page !== undefined) {
       page = dataGridProps.page
     }
-    if (dataGridProps.pageSize != undefined) {
+    if (dataGridProps.pageSize !== undefined) {
       pageSize = dataGridProps.pageSize
     }
 
@@ -104,6 +116,8 @@ export default class PageDialectReports extends React.Component {
 
   // Render different columns based on the doctype in the query
   _buildColumns() {
+    // TODO: do not mutate `state` directly
+    /* eslint-disable */
     if (this.state.queryAppend.indexOf("ecm:primaryType='FVWord'") != -1) {
       this.state.queryDocType = 'words'
       this.state.columns = [
@@ -149,6 +163,7 @@ export default class PageDialectReports extends React.Component {
         },
       ]
     }
+    /* eslint-enable */
   }
 
   _resetQueryData() {
@@ -157,7 +172,7 @@ export default class PageDialectReports extends React.Component {
 
   _onEntryNavigateRequest(item) {
     let addPath = ''
-    let splitPath = item.path.split('/')
+    const splitPath = item.path.split('/')
 
     switch (item.type) {
       case 'FVWord':
@@ -171,24 +186,25 @@ export default class PageDialectReports extends React.Component {
       case 'FVBook':
         addPath = '/learn/songs-stories/'
         break
+      default: // NOTE: do nothing
     }
 
     this.props.pushWindowPath('/explore/' + this.state.path + addPath + splitPath[splitPath.length - 1])
   }
 
   _generateDocTypeDoughnutData(wordsCount, phrasesCount, songsCount, storiesCount) {
-    let doughnutData = []
+    const doughnutData = []
     doughnutData.push({ value: wordsCount, color: '#949FB1', highlight: '#A8B3C5', label: 'Words' })
     doughnutData.push({ value: phrasesCount, color: '#FDB45C', highlight: '#FFC870', label: 'Phrases' })
-    doughnutData.push({ value: songsCount, color: '#46BFBD', highlight: '#5AD3D1', label: 'Songs' }),
-      doughnutData.push({ value: storiesCount, color: '#F7464A', highlight: '#FF5A5E', label: 'Stories' })
+    doughnutData.push({ value: songsCount, color: '#46BFBD', highlight: '#5AD3D1', label: 'Songs' })
+    doughnutData.push({ value: storiesCount, color: '#F7464A', highlight: '#FF5A5E', label: 'Stories' })
     return doughnutData
   }
 
   _generateTwoSliceDoughnutData(total, subset, labels) {
-    let doughnutData = []
+    const doughnutData = []
     //let total = this.state.totalCounts[this.state.queryDocType];
-    let totalMinusSubset = total - subset
+    const totalMinusSubset = total - subset
     doughnutData.push({ value: subset, color: '#46BFBD', highlight: '#5AD3D1', label: labels[1] })
     doughnutData.push({ value: totalMinusSubset, color: '#F7464A', highlight: '#FF5A5E', label: labels[0] })
     return doughnutData
@@ -221,27 +237,27 @@ export default class PageDialectReports extends React.Component {
       return <CircularProgress mode="indeterminate" size={3} />
     }
 
-    let wordsCount = computeReportWordsAll.response.resultsCount
-    let phrasesCount = computeReportPhrasesAll.response.resultsCount
-    let songsCount = computeReportSongsAll.response.resultsCount
-    let storiesCount = computeReportStoriesAll.response.resultsCount
+    const wordsCount = computeReportWordsAll.response.resultsCount
+    const phrasesCount = computeReportPhrasesAll.response.resultsCount
+    const songsCount = computeReportSongsAll.response.resultsCount
+    const storiesCount = computeReportStoriesAll.response.resultsCount
 
     // If a report has been selected, display the query results
-    if (this.state.queryName != '') {
+    if (this.state.queryName !== '') {
       if (computeReportDocuments.isFetching || !computeReportDocuments.success) {
         return <CircularProgress mode="indeterminate" size={3} />
       }
       let docTypeCount
-      if (this.state.queryDocType == 'words') {
+      if (this.state.queryDocType === 'words') {
         docTypeCount = wordsCount
-      } else if (this.state.queryDocType == 'phrases') {
+      } else if (this.state.queryDocType === 'phrases') {
         docTypeCount = phrasesCount
-      } else if (this.state.queryDocType == 'songs') {
+      } else if (this.state.queryDocType === 'songs') {
         docTypeCount = songsCount
-      } else if (this.state.queryDocType == 'stories') {
+      } else if (this.state.queryDocType === 'stories') {
         docTypeCount = storiesCount
       }
-      let doughnutData = this._generateTwoSliceDoughnutData(
+      const doughnutData = this._generateTwoSliceDoughnutData(
         docTypeCount,
         computeReportDocuments.response.resultsCount,
         ['Other ' + this.state.queryDocType, this.state.queryName]
@@ -258,7 +274,7 @@ export default class PageDialectReports extends React.Component {
                 <Doughnut data={doughnutData} />
               </div>
               <div className="col-xs-2">
-                {doughnutData.map((slice, i) => (
+                {doughnutData.map((slice) => (
                   <div key={slice.label}>
                     <span className={'glyphicon glyphicon-stop'} style={{ color: slice.color }} /> {slice.label}:{' '}
                     {slice.value}
@@ -282,7 +298,7 @@ export default class PageDialectReports extends React.Component {
     }
 
     // If no report selected, display the reports index view
-    let docTypeDoughnutData = this._generateDocTypeDoughnutData(wordsCount, phrasesCount, songsCount, storiesCount)
+    const docTypeDoughnutData = this._generateDocTypeDoughnutData(wordsCount, phrasesCount, songsCount, storiesCount)
 
     return (
       <div>
@@ -295,7 +311,7 @@ export default class PageDialectReports extends React.Component {
                 <Doughnut data={docTypeDoughnutData} />
               </div>
               <div className="col-xs-2">
-                {docTypeDoughnutData.map((slice, i) => (
+                {docTypeDoughnutData.map((slice) => (
                   <div key={slice.label}>
                     <span className={'glyphicon glyphicon-stop'} style={{ color: slice.color }} /> {slice.label}:{' '}
                     {slice.value}
@@ -668,3 +684,42 @@ export default class PageDialectReports extends React.Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { reports, windowPath } = state
+
+  const {
+    computeReportDocuments,
+    computeReportPhrasesAll,
+    computeReportSongsAll,
+    computeReportStoriesAll,
+    computeReportWordsAll,
+  } = reports
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeReportDocuments,
+    computeReportPhrasesAll,
+    computeReportSongsAll,
+    computeReportStoriesAll,
+    computeReportWordsAll,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchReportDocuments,
+  fetchReportSongsAll,
+  fetchReportStoriesAll,
+  fetchReportPhrasesAll,
+  fetchReportWordsAll,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectReports)
