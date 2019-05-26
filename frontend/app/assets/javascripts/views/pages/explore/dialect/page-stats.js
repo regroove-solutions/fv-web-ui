@@ -18,8 +18,6 @@ import selectn from 'selectn'
 
 // REDUX
 import { connect } from 'react-redux'
-// REDUX: actions/dispatch/func
-import {} from 'providers/redux/reducers/fv'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
