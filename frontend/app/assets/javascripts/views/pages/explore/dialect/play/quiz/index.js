@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import { List, Map } from 'immutable'
 
 import classNames from 'classnames'
 
@@ -23,9 +23,12 @@ import { IconButton, RaisedButton, LinearProgress } from 'material-ui'
 import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import UIHelpers from 'common/UIHelpers'
-import StringHelpers from 'common/StringHelpers'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 import IntlService from 'views/services/intl'
 
@@ -41,10 +44,17 @@ const containerStyle = {
   maxWidth: '800px',
   margin: 'auto',
 }
-
+const { any, bool, func, object } = PropTypes
 class Answer extends React.Component {
   constructor(props) {
     super(props)
+  }
+  static propTypes = {
+    data: any, // TODO: SET CORRECT PROPTYPE
+    selected: any, // TODO: SET CORRECT PROPTYPE
+    correct: any, // TODO: SET CORRECT PROPTYPE
+    disabled: bool,
+    onSelect: func,
   }
 
   render() {
@@ -77,12 +87,13 @@ class Answer extends React.Component {
   }
 }
 
-@provide
-export default class Quiz extends Component {
+export class Quiz extends Component {
   static propTypes = {
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchWords: func.isRequired,
   }
 
   constructor(props, context) {
@@ -95,7 +106,7 @@ export default class Quiz extends Component {
   }
 
   getDefaultState() {
-    let totalQuestions = 10
+    const totalQuestions = 10
 
     // Create a random list of numbers to serve as the word order for all answers (correct or wrong)
     const randomizeNumbers = new List([...Array(totalQuestions * 5).keys()]).sortBy(() => Math.random())
@@ -122,14 +133,14 @@ export default class Quiz extends Component {
   _changeContent(pageIndex, pageCount) {
     let nextPage = pageIndex + 1
 
-    if (pageIndex == pageCount - 1) {
+    if (pageIndex === pageCount - 1) {
       nextPage = 0
     }
 
     this.fetchData(this.props, nextPage)
   }
 
-  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  fetchData(props, pageIndex /*, pageSize, sortOrder, sortBy*/) {
     props.fetchWords(
       props.routeParams.dialect_path + '/Dictionary',
       ' AND fv:available_in_childrens_archive = 1' +
@@ -157,13 +168,13 @@ export default class Quiz extends Component {
     )
 
     if (nextComputeWords && selectn('response', nextComputeWords) != selectn('response', prevComputeWords)) {
-      let resultCount = selectn('response.resultsCount', nextComputeWords)
+      const resultCount = selectn('response.resultsCount', nextComputeWords)
 
       // Account for results being less than 10
       if (resultCount > 0 && resultCount < 50) {
         const randomizeNumbers = new List([...Array(resultCount).keys()]).sortBy(() => Math.random())
 
-        let totalQuestions = Math.ceil(resultCount / 5)
+        const totalQuestions = Math.ceil(resultCount / 5)
 
         this.setState({
           totalQuestions: totalQuestions,
@@ -177,7 +188,7 @@ export default class Quiz extends Component {
   _restart(e) {
     UIHelpers.stopAudio(
       this.state,
-      function(state) {
+      function stopAudioState(state) {
         this.setState(state)
       }.bind(this),
       e
@@ -191,7 +202,7 @@ export default class Quiz extends Component {
     if (correct) {
       UIHelpers.playAudio(
         this.state,
-        function(state) {
+        function playAudioState(state) {
           this.setState(state)
         }.bind(this),
         selectn('audio', word),
@@ -214,7 +225,7 @@ export default class Quiz extends Component {
   _handleNavigate(direction, e) {
     UIHelpers.stopAudio(
       this.state,
-      function(state) {
+      function stopAudioState(state) {
         this.setState(state)
       }.bind(this),
       e
@@ -222,7 +233,7 @@ export default class Quiz extends Component {
 
     let newIndex
 
-    if (direction == 'next') newIndex = this.state.currentAnswerIndex + 1
+    if (direction === 'next') newIndex = this.state.currentAnswerIndex + 1
     else newIndex = this.state.currentAnswerIndex - 1
 
     if (newIndex <= this.state.totalQuestions - 1 && newIndex >= 0) {
@@ -251,25 +262,18 @@ export default class Quiz extends Component {
     let selectedAnswer = null
     let questions = new List()
     let fillerAnswers = new List()
-    let answers = []
+    const answers = []
 
     let isCorrect = false
 
     // All correct answers
-    let correctAnswers = this.state.selectedAnswers.filter((v, k) => v.get('correct'))
+    const correctAnswers = this.state.selectedAnswers.filter((v) => v.get('correct'))
 
     // Answer has been selected
-    let isSelected = this.state.selectedAnswers.has(this.state.currentAnswerIndex)
+    const isSelected = this.state.selectedAnswers.has(this.state.currentAnswerIndex)
 
     // Quiz complete
-    let isComplete = correctAnswers.count() === this.state.totalQuestions
-
-    const computeEntities = Immutable.fromJS([
-      {
-        id: this.props.routeParams.dialect_path + '/Dictionary',
-        entity: this.props.computeWords,
-      },
-    ])
+    const isComplete = correctAnswers.count() === this.state.totalQuestions
 
     const computeWords = ProviderHelpers.getEntry(
       this.props.computeWords,
@@ -287,13 +291,12 @@ export default class Quiz extends Component {
 
     // Seperate all correct answers from all wrong answers
     ;(selectn('response.entries', computeWords) || []).forEach(
-      function(v, i) {
+      function computeWordForEach(v, i) {
         // If word is a correct answer
         if (this.state.questionsOrder.includes(i)) {
           questions = questions.push(this._normalizeWord(v))
-        }
-        // If word is a wrong answer
-        else {
+        } else {
+          // If word is a wrong answer
           fillerAnswers = fillerAnswers.push(this._normalizeWord(v))
         }
       }.bind(this)
@@ -302,7 +305,9 @@ export default class Quiz extends Component {
     // Generate 4 answers
     if (questions.size > 0) {
       for (let i = 0; i < 4; ++i) {
-        let answer, isAnswerCorrect, isSelectedAnswer
+        let answer
+        let isAnswerCorrect
+        let isSelectedAnswer
 
         // Seperate correct answer from wrong answer
         if (i === this.state.answersOrder[this.state.currentAnswerIndex]) {
@@ -320,6 +325,7 @@ export default class Quiz extends Component {
         }
 
         // Get current answer if it is selected
+        // eslint-disable-next-line
         isSelectedAnswer =
           isSelected &&
           selectn('uid', this.state.selectedAnswers.get(this.state.currentAnswerIndex).get('word')) ===
@@ -360,7 +366,18 @@ export default class Quiz extends Component {
         'On your way to becoming an expert!'
       )
     }
-
+    let feedback = ''
+    if (isSelected) {
+      feedback = isCorrect ? (
+        <div>
+          {intl.trans('good_job', 'Good Job', 'words')}! <strong>{selectn('word', selectedAnswer)}</strong>{' '}
+          {intl.trans('translates_to', 'translates to')}
+          &nbsp; <strong>{selectn('translation', selectedAnswer)}</strong>
+        </div>
+      ) : (
+        intl.trans('try_again', 'Try again', 'first') + '...'
+      )
+    }
     return (
       <div className="quiz-container" style={{ margin: '15px 0' }}>
         <div style={containerStyle}>
@@ -453,19 +470,7 @@ export default class Quiz extends Component {
                   hidden: !isSelected,
                 })}
               >
-                {isSelected ? (
-                  isCorrect ? (
-                    <div>
-                      {intl.trans('good_job', 'Good Job', 'words')}! <strong>{selectn('word', selectedAnswer)}</strong>{' '}
-                      {intl.trans('translates_to', 'translates to')}
-                      &nbsp; <strong>{selectn('translation', selectedAnswer)}</strong>
-                    </div>
-                  ) : (
-                    intl.trans('try_again', 'Try again', 'first') + '...'
-                  )
-                ) : (
-                  ''
-                )}
+                {feedback}
               </div>
             </div>
 
@@ -500,3 +505,24 @@ export default class Quiz extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvWord } = state
+
+  const { computeWords } = fvWord
+
+  return {
+    computeWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Quiz)
