@@ -14,42 +14,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import ConfGlobal from 'conf/local.js'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { navigateTo } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import Header from 'views/pages/explore/dialect/header'
-import PageHeader from 'views/pages/explore/dialect/page-header'
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import SearchBar from 'views/pages/explore/dialect/search-bar'
-
-import Paper from 'material-ui/lib/paper'
 import RaisedButton from 'material-ui/lib/raised-button'
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import FlatButton from 'material-ui/lib/flat-button'
-import CircularProgress from 'material-ui/lib/circular-progress'
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import IconButton from 'material-ui/lib/icon-button'
-import MenuItem from 'material-ui/lib/menus/menu-item'
-import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
-import EditableComponent, { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
-
-import Statistics from 'views/components/Dashboard/Statistics'
-import Link from 'views/components/Document/Link'
-
 import UserListView from 'views/pages/explore/dialect/users/list-view'
 import IntlService from 'views/services/intl'
 
@@ -57,24 +41,26 @@ const intl = IntlService.instance
 /**
  * Browse users
  */
-@provide
-export default class Index extends Component {
+const { array, func, object, string } = PropTypes
+export class Index extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    splitWindowPath: array.isRequired,
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchPortal: func.isRequired,
+    navigateTo: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
+    muiTheme: object.isRequired,
   }
 
   constructor(props, context) {
@@ -98,7 +84,11 @@ export default class Index extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.windowPath !== this.props.windowPath) {
       nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal')
+      // TODO: DefaultFetcherParams is undefined
+      /* eslint-disable */
+      console.log('! calling fetchData with undefined variable `DefaultFetcherParams`:', DefaultFetcherParams)
       this.fetchData(DefaultFetcherParams, nextProps)
+      /* eslint-enable */
     }
   }
 
@@ -113,7 +103,7 @@ export default class Index extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     return (
-      <PromiseWrapper hideFetch={true} computeEntities={computeEntities}>
+      <PromiseWrapper hideFetch computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper')}>
           <div className={classNames('col-xs-12', 'col-md-4', 'col-md-offset-8', 'text-right')}>
             <AuthorizationFilter
@@ -126,7 +116,7 @@ export default class Index extends Component {
               <RaisedButton
                 label={intl.trans('views.pages.explore.dialect.users.create_new_user', 'Create New User', 'words')}
                 onClick={this._onNavigateRequest.bind(this, ['register'])}
-                primary={true}
+                primary
               />
             </AuthorizationFilter>
           </div>
@@ -143,3 +133,36 @@ export default class Index extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computePortal } = fvPortal
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchPortal,
+  navigateTo,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Index)
