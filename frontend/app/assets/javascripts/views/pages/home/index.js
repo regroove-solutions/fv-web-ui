@@ -14,57 +14,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List } from 'immutable'
+import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { queryPage } from 'providers/redux/reducers/fvPage'
+
 import selectn from 'selectn'
 import classNames from 'classnames'
-
-import Colors from 'material-ui/lib/styles/colors'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import CircularProgress from 'material-ui/lib/circular-progress'
-import Paper from 'material-ui/lib/paper'
 import RaisedButton from 'material-ui/lib/raised-button'
-
-//import Map from 'views/components/Geo/map';
-
-import TextField from 'material-ui/lib/text-field'
-
-import IconMenu from 'material-ui/lib/menus/icon-menu'
-import MenuItem from 'material-ui/lib/menus/menu-item'
 
 import IntroCardView from 'views/components/Browsing/intro-card-view'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
-import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect'
+import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
-import LocaleChecker from '../../../locale/LocaleChecker'
 import NavigationHelpers from '../../../common/NavigationHelpers'
 
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class PageHome extends Component {
+
+const { func, object, string } = PropTypes
+export class PageHome extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    queryPage: PropTypes.func.isRequired,
-    computePage: PropTypes.object.isRequired,
-    //fetchPortals: PropTypes.func.isRequired,
-    //computePortals: PropTypes.object.isRequired
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computePage: object.isRequired,
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    queryPage: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   intl = IntlService.instance
@@ -92,7 +83,7 @@ export default class PageHome extends Component {
   }
 
   _getBlockByArea(page, area) {
-    return (selectn('fvpage:blocks', page) || []).filter(function(block) {
+    return (selectn('fvpage:blocks', page) || []).filter((block) => {
       return block.area == area
     })
   }
@@ -118,11 +109,7 @@ export default class PageHome extends Component {
       {
         id: this.state.pagePath,
         entity: this.props.computePage,
-      } /*,
-    {
-      'id': this.state.dialectsPath,
-      'entity': this.props.computePortals
-    }*/,
+      } /*,    {      'id': this.state.dialectsPath,      'entity': this.props.computePortals    }*/,
     ])
 
     const computePage = ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath)
@@ -133,19 +120,18 @@ export default class PageHome extends Component {
 
     const primary1Color = selectn('theme.palette.baseTheme.palette.primary1Color', this.props.properties)
     const primary2Color = selectn('theme.palette.baseTheme.palette.primary2Color', this.props.properties)
-    const accent1Color = selectn('theme.palette.baseTheme.palette.accent1Color', this.props.properties)
+    // const accent1Color = selectn('theme.palette.baseTheme.palette.accent1Color', this.props.properties)
     const alternateTextColor = selectn('theme.palette.baseTheme.palette.alternateTextColor', this.props.properties)
     const intl = this.intl
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row" style={homePageStyle}>
           <div style={{ position: 'relative', height: '650px' }}>
             <div className={classNames('col-xs-12')} style={{ height: '100%' }}>
               <div
-                className="hidden-xs"
                 style={{ position: 'absolute', left: '25px', top: '25px', width: '40%' }}
-                className={classNames({ invisible: !this.state.mapVisible })}
+                className={classNames({ invisible: !this.state.mapVisible, 'hidden-xs': true })}
               >
                 {/*return <Map dialects={dialects} />*/}
               </div>
@@ -176,7 +162,7 @@ export default class PageHome extends Component {
                         case: 'words',
                       }) + '!'
                     }
-                    primary={true}
+                    primary
                     onClick={this._onNavigateRequest.bind(
                       this,
                       NavigationHelpers.generateStaticURL('/explore/FV/sections/Data/')
@@ -187,7 +173,7 @@ export default class PageHome extends Component {
                   />
                   <div className="hidden" style={{ display: 'inline-block' }}>
                     <RaisedButton
-                      primary={true}
+                      primary
                       label={this.intl.translate({
                         key: ['views', 'pages', 'home', 'language_map'],
                         default: 'Language Map',
@@ -204,7 +190,7 @@ export default class PageHome extends Component {
 
         <div className={classNames('row')} style={{ margin: '25px 0' }}>
           <div>
-            {this._getBlockByArea(page, 1).map(function(block, i) {
+            {this._getBlockByArea(page, 1).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12')}>
                   <div className="body">
@@ -232,7 +218,7 @@ export default class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 2).map(function(block, i) {
+            {this._getBlockByArea(page, 2).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
                   <IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color} />
@@ -257,7 +243,7 @@ export default class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 3).map(function(block, i) {
+            {this._getBlockByArea(page, 3).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
                   <IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color} />
@@ -282,7 +268,7 @@ export default class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 4).map(function(block, i) {
+            {this._getBlockByArea(page, 4).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12')}>
                   <div className="body">
@@ -298,3 +284,31 @@ export default class PageHome extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPage, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computePage } = fvPage
+  const { _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computePage,
+    properties,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+  queryPage,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageHome)
