@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchLanguages } from 'providers/redux/reducers/fvLanguage'
+import { fetchLanguageFamily } from 'providers/redux/reducers/fvLanguageFamily'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import classNames from 'classnames'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -34,22 +38,25 @@ const FilteredPortalList = withFilter(PortalList)
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class ExploreFamily extends Component {
+
+const { array, func, object, string } = PropTypes
+export class ExploreFamily extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchLanguages: PropTypes.func.isRequired,
-    computeLanguages: PropTypes.object.isRequired,
-    fetchLanguageFamily: PropTypes.func.isRequired,
-    computeLanguageFamily: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeLanguages: object.isRequired,
+    computeLanguageFamily: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchLanguages: func.isRequired,
+    fetchLanguageFamily: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   constructor(props, context) {
@@ -105,7 +112,7 @@ export default class ExploreFamily extends Component {
     const computeLanguages = ProviderHelpers.getEntry(this.props.computeLanguages, pathOrId)
     const computeLanguageFamily = ProviderHelpers.getEntry(this.props.computeLanguageFamily, pathOrId)
 
-    let portalListProps = {
+    const portalListProps = {
       action: this._onNavigateRequest,
       filterOptionsKey: 'Default',
       fixedList: true,
@@ -131,3 +138,33 @@ export default class ExploreFamily extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvLanguage, fvLanguageFamily, navigation, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLanguages } = fvLanguage
+  const { computeLanguageFamily } = fvLanguageFamily
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeLanguages,
+    computeLanguageFamily,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchLanguages,
+  fetchLanguageFamily,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ExploreFamily)
