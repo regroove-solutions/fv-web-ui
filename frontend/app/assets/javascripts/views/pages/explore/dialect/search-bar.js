@@ -15,10 +15,10 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 
-import ConfGlobal from 'conf/local.js'
-import selectn from 'selectn'
-
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import TextField from 'material-ui/lib/text-field'
 import IconButton from 'material-ui/lib/icon-button'
@@ -26,21 +26,24 @@ import IconButton from 'material-ui/lib/icon-button'
 import ProviderHelpers from 'common/ProviderHelpers'
 import IntlService from 'views/services/intl'
 
-const int = IntlService.instance
+const intl = IntlService.instance
 
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class SearchBar extends Component {
+
+const { array, func, string } = PropTypes
+export class SearchBar extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
+    // REDUX: reducers/state
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   constructor(props, context) {
@@ -51,8 +54,9 @@ export default class SearchBar extends Component {
   }
 
   _handleDialectSearchSubmit() {
-    let queryParam = this.refs.dialectSearchField.getValue()
-    let dialectPath = ProviderHelpers.getDialectPathFromURLArray(this.props.splitWindowPath)
+    // TODO: this.refs DEPRECATED
+    const queryParam = this.refs.dialectSearchField.getValue()
+    const dialectPath = ProviderHelpers.getDialectPathFromURLArray(this.props.splitWindowPath)
     this.props.pushWindowPath('/explore/' + dialectPath + '/search/' + queryParam)
   }
 
@@ -64,7 +68,7 @@ export default class SearchBar extends Component {
     return (
       <div style={searchBarStyles}>
         <TextField
-          ref="dialectSearchField"
+          ref="dialectSearchField" // TODO: DEPRECATED
           hintText={intl.trans('views.pages.explore.dialect.search_dialect', 'Search Dialect...', 'words')}
           onEnterKeyDown={this._handleDialectSearchSubmit}
         />
@@ -80,3 +84,25 @@ export default class SearchBar extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchBar)
