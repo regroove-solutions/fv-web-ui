@@ -14,15 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
 
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import classNames from 'classnames'
-
 import RaisedButton from 'material-ui/lib/raised-button'
-
-import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
@@ -30,11 +29,14 @@ const intl = IntlService.instance
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class PageKidsHome extends Component {
+
+const { func, object } = PropTypes
+export class PageKidsHome extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
+    // REDUX: reducers/state
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
@@ -74,7 +76,7 @@ export default class PageKidsHome extends Component {
             <div className={classNames('col-xs-8', 'col-xs-offset-2', 'text-center')}>
               <span style={{ width: '45%' }}>
                 <RaisedButton
-                  fullWidth={true}
+                  fullWidth
                   label={intl.trans('views.pages.kids.enter', 'Enter Kids Area', 'words')}
                   onClick={(e) => {
                     e.preventDefault()
@@ -90,3 +92,24 @@ export default class PageKidsHome extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation } = state
+
+  const { properties } = navigation
+
+  return {
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageKidsHome)
