@@ -23,6 +23,7 @@ import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 import { toggleMenuAction } from 'providers/redux/reducers/navigation'
+// import { fetchUserTasks } from 'providers/redux/reducers/tasks'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -45,12 +46,12 @@ export class Navigation extends Component {
     routeParams: object,
     // REDUX: reducers/state
     splitWindowPath: array.isRequired,
-    fetchUserTasks: func.isRequired,
     properties: object.isRequired,
     computeLogin: object.isRequired,
-    computeUserTasks: object.isRequired,
+    // computeUserTasks: object.isRequired,
     computePortal: object,
     // REDUX: actions/dispatch/func
+    // fetchUserTasks: func.isRequired,
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
     toggleMenuAction: func.isRequired,
@@ -89,11 +90,12 @@ export class Navigation extends Component {
     //this._test = this._test.bind(this);
   }
 
-  componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin) {
-      this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin))
-    }
-  }
+  // componentWillReceiveProps(newProps) {
+  //   if (newProps.computeLogin != this.props.computeLogin) {
+  //     this.props.fetchUserTasks(selectn('response.id', newProps.computeLogin))
+  //   }
+  // }
+
   // eslint-disable-next-line
   _handleMenuToggle(event) {
     //console.log(event);
@@ -243,26 +245,26 @@ export class Navigation extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvPortal, tasks, navigation, nuxeo, windowPath } = state
+  const { fvPortal, /* tasks,*/ navigation, nuxeo, windowPath } = state
 
   const { properties } = navigation
   const { computeLogin } = nuxeo
-  const { fetchUserTasks, computeUserTasks } = tasks
+  // const { computeUserTasks } = tasks
   const { splitWindowPath } = windowPath
   const { computePortal } = fvPortal
 
   return {
     splitWindowPath,
-    fetchUserTasks,
     properties,
     computeLogin,
-    computeUserTasks,
+    // computeUserTasks,
     computePortal,
   }
 }
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
+  // fetchUserTasks,
   pushWindowPath,
   replaceWindowPath,
   toggleMenuAction,
