@@ -21,7 +21,7 @@ import classNames from 'classnames'
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { fetchCategories } from 'providers/redux/reducers/fvCategory'
-import { fetchDocument } from 'providers/redux/reducers/fvDocument'
+import { fetchDocument } from 'providers/redux/reducers/document'
 import { fetchPortal } from 'providers/redux/reducers/fvPortal'
 import { overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
 import { pushWindowPath, updatePageProperties } from 'providers/redux/reducers/windowPath'
