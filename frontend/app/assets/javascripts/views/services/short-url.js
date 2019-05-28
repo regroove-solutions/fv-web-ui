@@ -13,9 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import { Component, PropTypes } from 'react'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/fv'
+import { replaceWindowPath } from 'providers/redux/reducers/fv'
+import { queryDialect2ByShortURL } from 'providers/redux/reducers/fv'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -24,21 +30,25 @@ import NavigationHelpers from 'common/NavigationHelpers'
 /**
  * Dialect portal page showing all the various components of this dialect.
  */
-@provide
-export default class ServiceShortURL extends Component {
+
+const { array, func, object, string } = PropTypes
+
+export class ServiceShortURL extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    queryDialect2ByShortURL: PropTypes.func.isRequired,
-    computeDialect2ByShortURL: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2ByShortURL: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    queryDialect2ByShortURL: func.isRequired,
   }
 
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
+    muiTheme: object.isRequired,
   }
 
   constructor(props, context) {
@@ -63,7 +73,7 @@ export default class ServiceShortURL extends Component {
       nextProps.computeDialect2ByShortURL,
       '/FV/' + nextProps.routeParams.area
     )
-    const isSection = nextProps.routeParams.area === 'sections'
+    // const isSection = nextProps.routeParams.area === 'sections'
 
     let appendPath = ''
 
@@ -71,7 +81,7 @@ export default class ServiceShortURL extends Component {
       appendPath = '/' + nextProps.routeParams.appendPath.replace(/_/g, '/')
     }
 
-    let dialectFullPath = selectn('response.entries[0].path', dialectQuery)
+    const dialectFullPath = selectn('response.entries[0].path', dialectQuery)
 
     if (dialectQuery.success) {
       if (dialectFullPath) {
@@ -86,3 +96,31 @@ export default class ServiceShortURL extends Component {
     return null
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, navigation, windowPath } = state
+
+  const { properties } = navigation
+  const { computeDialect2ByShortURL } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2ByShortURL,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+  replaceWindowPath,
+  queryDialect2ByShortURL,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ServiceShortURL)
