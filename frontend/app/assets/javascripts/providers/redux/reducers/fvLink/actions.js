@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { create, fetch, query, update } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
 import { FV_LINKS_SHARED_FETCH_START, FV_LINKS_SHARED_FETCH_SUCCESS, FV_LINKS_SHARED_FETCH_ERROR } from './actionTypes'
@@ -17,15 +17,15 @@ export const fetchSharedLinks = function fetchSharedLinks(pageProvider, headers 
   }
 }
 
-export const fetchLink = RESTActions.fetch('FV_LINK', 'FVLink', {
+export const fetchLink = fetch('FV_LINK', 'FVLink', {
   headers: { 'enrichers.document': 'ancestry, breadcrumb' },
 })
 
-export const fetchLinks = RESTActions.query('FV_LINKS', 'FVLink', { headers: { 'enrichers.document': 'ancestry' } })
+export const fetchLinks = query('FV_LINKS', 'FVLink', { headers: { 'enrichers.document': 'ancestry' } })
 
-export const createLink = RESTActions.create('FV_LINK', 'FVLink')
+export const createLink = create('FV_LINK', 'FVLink')
 
-export const updateLink = RESTActions.update(
+export const updateLink = update(
   'FV_LINK',
   'FVLink',
   { headers: { 'enrichers.document': 'ancestry,permissions' } },

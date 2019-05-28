@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { fetch, create } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 import DocumentOperations from 'operations/DocumentOperations'
 
@@ -110,7 +110,7 @@ export const fetchAudioStats = (dialectId) => {
   }
 }
 
-export const fetchAudio = RESTActions.fetch('FV_AUDIO', 'FVAudio', {
+export const fetchAudio = fetch('FV_AUDIO', 'FVAudio', {
   headers: { 'enrichers.document': 'ancestry, media' },
 })
-export const createAudio = RESTActions.create('FV_AUDIO', 'FVAudio')
+export const createAudio = create('FV_AUDIO', 'FVAudio')

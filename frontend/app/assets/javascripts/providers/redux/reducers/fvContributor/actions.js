@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { create, fetch, query, update } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 // console.log('! fvContributor', { RESTActions, DirectoryOperations }) // eslint-disable-line
 
@@ -82,14 +82,14 @@ export const fetchContributor = function fetchContributor(pathOrId) {
 };
 */
 
-export const fetchContributor = RESTActions.fetch('FV_CONTRIBUTOR', 'FVContributor', {
+export const fetchContributor = fetch('FV_CONTRIBUTOR', 'FVContributor', {
   headers: { 'enrichers.document': 'ancestry' },
 })
-export const fetchContributors = RESTActions.query('FV_CONTRIBUTORS', 'FVContributor', {
+export const fetchContributors = query('FV_CONTRIBUTORS', 'FVContributor', {
   headers: { 'enrichers.document': 'ancestry' },
 })
-export const createContributor = RESTActions.create('FV_CONTRIBUTOR', 'FVContributor')
-export const updateContributor = RESTActions.update(
+export const createContributor = create('FV_CONTRIBUTOR', 'FVContributor')
+export const updateContributor = update(
   'FV_CONTRIBUTOR',
   'FVContributor',
   { headers: { 'enrichers.document': 'ancestry' } },

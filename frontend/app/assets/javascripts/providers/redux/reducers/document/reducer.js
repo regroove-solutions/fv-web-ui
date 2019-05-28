@@ -1,4 +1,4 @@
-import RESTReducers from '../../../rest-reducers'
+import { computeFetch, computeOperation } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 import {
   DISMISS_ERROR,
@@ -19,9 +19,9 @@ const initialState = {
   },
   success: false,
 }
-const _computeDocumentFetchFactory = RESTReducers.computeFetch('document')
-const _computeResultSetOperation = RESTReducers.computeOperation('result_set')
-const _computeSourceDocument = RESTReducers.computeOperation('source_document')
+const _computeDocumentFetchFactory = computeFetch('document')
+const _computeResultSetOperation = computeOperation('result_set')
+const _computeSourceDocument = computeOperation('source_document')
 
 const computeDocument = _computeDocumentFetchFactory.computeDocument
 

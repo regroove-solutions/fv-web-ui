@@ -1,12 +1,12 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeOperation } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
-const computeUserFetchFactory = RESTReducers.computeFetch('user')
-const computeUserSuggestion = RESTReducers.computeOperation('user_suggestion')
-const computeUserSelfregisterOperation = RESTReducers.computeOperation('user_selfregister')
-const computeUserUpdate = RESTReducers.computeOperation('user_update')
-const computeUserUpgrade = RESTReducers.computeOperation('user_upgrade')
-const computeUserDialectsOperation = RESTReducers.computeOperation('user_dialects')
+const computeUserFetchFactory = computeFetch('user')
+const computeUserSuggestion = computeOperation('user_suggestion')
+const computeUserSelfregisterOperation = computeOperation('user_selfregister')
+const computeUserUpdate = computeOperation('user_update')
+const computeUserUpgrade = computeOperation('user_upgrade')
+const computeUserDialectsOperation = computeOperation('user_dialects')
 
 export const fvUserReducer = combineReducers({
   computeUser: computeUserFetchFactory.computeUser,

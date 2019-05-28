@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { fetch, execute, query, create, update, _delete } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
 import {
@@ -52,128 +52,124 @@ export const fetchBooksAll = (path /*, type*/) => {
   }
 }
 
-export const fetchBook = RESTActions.fetch('FV_BOOK', 'FVBook', {
+export const fetchBook = fetch('FV_BOOK', 'FVBook', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const fetchBooks = RESTActions.query('FV_BOOKS', 'FVBook', {
+export const fetchBooks = query('FV_BOOKS', 'FVBook', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const createBook = RESTActions.create('FV_BOOK', 'FVBook', {
+export const createBook = create('FV_BOOK', 'FVBook', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const updateBook = RESTActions.update(
+export const updateBook = update(
   'FV_BOOK',
   'FVBook',
   { headers: { 'enrichers.document': 'ancestry,permissions,book' } },
   false
 )
-export const deleteBook = RESTActions.delete('FV_BOOK', 'FVBook', {})
+export const deleteBook = _delete('FV_BOOK', 'FVBook', {})
 
-export const publishBook = RESTActions.execute('FV_BOOK_PUBLISH', 'FVPublish', {
+export const publishBook = execute('FV_BOOK_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToPublishBook = RESTActions.execute('FV_BOOK_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishBook = execute('FV_BOOK_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const unpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishBook = execute('FV_BOOK_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToUnpublishBook = RESTActions.execute('FV_BOOK_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToUnpublishBook = execute('FV_BOOK_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const enableBook = RESTActions.execute('FV_BOOK_ENABLE', 'FVEnableDocument', {
+export const enableBook = execute('FV_BOOK_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToEnableBook = RESTActions.execute('FV_BOOK_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToEnableBook = execute('FV_BOOK_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const disableBook = RESTActions.execute('FV_BOOK_DISABLE', 'FVDisableDocument', {
+export const disableBook = execute('FV_BOOK_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToDisableBook = RESTActions.execute('FV_BOOK_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToDisableBook = execute('FV_BOOK_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const fetchBookEntry = RESTActions.fetch('FV_BOOK_ENTRY', 'FVBookEntry', {
+export const fetchBookEntry = fetch('FV_BOOK_ENTRY', 'FVBookEntry', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const createBookEntry = RESTActions.create('FV_BOOK_ENTRY', 'FVBookEntry', {
+export const createBookEntry = create('FV_BOOK_ENTRY', 'FVBookEntry', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const updateBookEntry = RESTActions.update('FV_BOOK_ENTRY', 'FVBookEntry', {
+export const updateBookEntry = update('FV_BOOK_ENTRY', 'FVBookEntry', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const deleteBookEntry = RESTActions.delete('FV_BOOK_ENTRY', 'FVBookEntry', {})
+export const deleteBookEntry = _delete('FV_BOOK_ENTRY', 'FVBookEntry', {})
 
-export const publishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH', 'FVPublish', {
+export const publishBookEntry = execute('FV_BOOK_ENTRY_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToPublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishBookEntry = execute('FV_BOOK_ENTRY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const unpublishBookEntry = RESTActions.execute('FV_BOOK_ENTRY_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishBookEntry = execute('FV_BOOK_ENTRY_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToUnpublishBookEntry = RESTActions.execute(
-  'FV_BOOK_ENTRY_UNPUBLISH_WORKFLOW',
-  'Context.StartWorkflow',
-  {
-    headers: { 'enrichers.document': 'ancestry,permissions,book' },
-  }
-)
-
-export const enableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE', 'FVEnableDocument', {
+export const askToUnpublishBookEntry = execute('FV_BOOK_ENTRY_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToEnableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const enableBookEntry = execute('FV_BOOK_ENTRY_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const disableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE', 'FVDisableDocument', {
+export const askToEnableBookEntry = execute('FV_BOOK_ENTRY_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const askToDisableBookEntry = RESTActions.execute('FV_BOOK_ENTRY_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const disableBookEntry = execute('FV_BOOK_ENTRY_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,book' },
 })
 
-export const fetchBookEntries = RESTActions.query('FV_BOOK_ENTRIES', 'FVBookEntry', {
+export const askToDisableBookEntry = execute('FV_BOOK_ENTRY_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+  headers: { 'enrichers.document': 'ancestry,permissions,book' },
+})
+
+export const fetchBookEntries = query('FV_BOOK_ENTRIES', 'FVBookEntry', {
   headers: { 'enrichers.document': 'ancestry,book,permissions' },
 })
 
-export const queryModifiedStories = RESTActions.query('FV_MODIFIED_STORIES', 'FVBook', {
+export const queryModifiedStories = query('FV_MODIFIED_STORIES', 'FVBook', {
   queryAppend: " AND fvbook:type='story'&sortBy=dc:modified&sortOrder=DESC&pageSize=4",
   headers: { properties: 'dublincore' },
 })
 
-export const queryCreatedStories = RESTActions.query('FV_CREATED_STORIES', 'FVBook', {
+export const queryCreatedStories = query('FV_CREATED_STORIES', 'FVBook', {
   queryAppend: " AND fvbook:type='story'&sortBy=dc:created&sortOrder=DESC&pageSize=4",
   headers: { properties: 'dublincore' },
 })
 
-export const queryModifiedSongs = RESTActions.query('FV_MODIFIED_SONGS', 'FVBook', {
+export const queryModifiedSongs = query('FV_MODIFIED_SONGS', 'FVBook', {
   queryAppend: " AND fvbook:type='song'&sortBy=dc:modified&sortOrder=DESC&pageSize=4",
   headers: { properties: 'dublincore' },
 })
 
-export const queryCreatedSongs = RESTActions.query('FV_CREATED_SONGS', 'FVBook', {
+export const queryCreatedSongs = query('FV_CREATED_SONGS', 'FVBook', {
   queryAppend: " AND fvbook:type='song'&sortBy=dc:created&sortOrder=DESC&pageSize=4",
   headers: { properties: 'dublincore' },
 })

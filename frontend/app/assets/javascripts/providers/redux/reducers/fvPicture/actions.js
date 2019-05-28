@@ -1,6 +1,6 @@
 import DocumentOperations from 'operations/DocumentOperations'
 import DirectoryOperations from 'operations/DirectoryOperations'
-import RESTActions from 'providers/rest-actions'
+import { create, fetch } from 'providers/redux/reducers/rest'
 
 import {
   FV_PICTURES_SHARED_FETCH_START,
@@ -109,8 +109,8 @@ export const fetchPictureStats = function fetchPictureStats(dialectId) {
   }
 }
 
-export const fetchPicture = RESTActions.fetch('FV_PICTURE', 'FVPicture', {
+export const fetchPicture = fetch('FV_PICTURE', 'FVPicture', {
   headers: { 'enrichers.document': 'ancestry, media' },
 })
 
-export const createPicture = RESTActions.create('FV_PICTURE', 'FVPicture')
+export const createPicture = create('FV_PICTURE', 'FVPicture')

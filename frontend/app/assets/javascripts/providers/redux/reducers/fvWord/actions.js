@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { create, _delete, execute, fetch, query, update } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
 import {
@@ -16,61 +16,61 @@ import {
   FV_WORDS_USER_CREATED_QUERY_ERROR,
 } from './actionTypes'
 
-export const fetchWord = RESTActions.fetch('FV_WORD', 'FVWord', {
+export const fetchWord = fetch('FV_WORD', 'FVWord', {
   headers: {
     'enrichers.document': 'ancestry,word,permissions',
   },
 })
 
-export const fetchWords = RESTActions.query('FV_WORDS', 'FVWord', {
+export const fetchWords = query('FV_WORDS', 'FVWord', {
   headers: {
     'enrichers.document': 'word',
     properties: 'dublincore, fv-word, fvcore, fvproxy',
   },
 })
 
-export const createWord = RESTActions.create('FV_WORD', 'FVWord', {
+export const createWord = create('FV_WORD', 'FVWord', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const updateWord = RESTActions.update(
+export const updateWord = update(
   'FV_WORD',
   'FVWord',
   { headers: { 'enrichers.document': 'ancestry,word,permissions' } },
   false
 )
 
-export const deleteWord = RESTActions.delete('FV_WORD', 'FVWord', {})
+export const deleteWord = _delete('FV_WORD', 'FVWord', {})
 
-export const publishWord = RESTActions.execute('FV_WORD_PUBLISH', 'FVPublish', {
+export const publishWord = execute('FV_WORD_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const askToPublishWord = RESTActions.execute('FV_WORD_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishWord = execute('FV_WORD_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const unpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishWord = execute('FV_WORD_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const askToUnpublishWord = RESTActions.execute('FV_WORD_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToUnpublishWord = execute('FV_WORD_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const enableWord = RESTActions.execute('FV_WORD_ENABLE', 'FVEnableDocument', {
+export const enableWord = execute('FV_WORD_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const askToEnableWord = RESTActions.execute('FV_WORD_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToEnableWord = execute('FV_WORD_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const disableWord = RESTActions.execute('FV_WORD_DISABLE', 'FVDisableDocument', {
+export const disableWord = execute('FV_WORD_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const askToDisableWord = RESTActions.execute('FV_WORD_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToDisableWord = execute('FV_WORD_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
@@ -102,12 +102,12 @@ export const fetchWordsAll = (path /*, type*/) => {
   }
 }
 
-export const queryModifiedWords = RESTActions.query('FV_MODIFIED_WORDS', 'FVWord', {
+export const queryModifiedWords = query('FV_MODIFIED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:modified&sortOrder=DESC&pageSize=4',
   headers: { properties: 'dublincore' },
 })
 
-export const queryCreatedWords = RESTActions.query('FV_CREATED_WORDS', 'FVWord', {
+export const queryCreatedWords = query('FV_CREATED_WORDS', 'FVWord', {
   queryAppend: '&sortBy=dc:created&sortOrder=DESC&pageSize=4',
   headers: { properties: 'dublincore' },
 })

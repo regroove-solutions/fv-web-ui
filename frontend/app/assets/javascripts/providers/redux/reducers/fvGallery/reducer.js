@@ -1,9 +1,9 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeDelete, computeFetch, computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
-const computeGalleryFetchFactory = RESTReducers.computeFetch('gallery')
-const computeGalleryEntriesQueryFactory = RESTReducers.computeQuery('galleries')
-const computeGalleryDeleteFactory = RESTReducers.computeDelete('delete_gallery')
+const computeGalleryFetchFactory = computeFetch('gallery')
+const computeGalleryEntriesQueryFactory = computeQuery('galleries')
+const computeGalleryDeleteFactory = computeDelete('delete_gallery')
 
 export const fvGalleryReducer = combineReducers({
   computeGallery: computeGalleryFetchFactory.computeGallery,

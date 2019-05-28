@@ -1,4 +1,5 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeQuery } from 'providers/redux/reducers/rest'
+
 import { combineReducers } from 'redux'
 
 import {
@@ -76,10 +77,10 @@ const computeCategoriesInPath = (state = initialState, action) => {
   }
 }
 
-const _computeCategoryFactory = RESTReducers.computeFetch('category')
+const _computeCategoryFactory = computeFetch('category')
 const computeCategory = _computeCategoryFactory.computeCategory
 
-const _computeCategoriesFactory = RESTReducers.computeQuery('categories')
+const _computeCategoriesFactory = computeQuery('categories')
 const computeCategories = _computeCategoriesFactory.computeCategories
 
 /*

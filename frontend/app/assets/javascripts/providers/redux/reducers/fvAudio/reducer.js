@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 import {
   DISMISS_ERROR,
@@ -107,7 +107,7 @@ const computeSharedAudios = (state = initialState, action) => {
   }
   */
 
-const _computeAudioFactory = RESTReducers.computeFetch('audio')
+const _computeAudioFactory = computeFetch('audio')
 const computeAudio = _computeAudioFactory.computeAudio
 
 const computeAudioStats = (state = initialState, action) => {

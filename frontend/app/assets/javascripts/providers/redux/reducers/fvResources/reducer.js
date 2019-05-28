@@ -1,10 +1,10 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeOperation, computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
-const computeResourceFetchFactory = RESTReducers.computeFetch('resource')
-const computeResourcesQueryFactory = RESTReducers.computeQuery('resources')
-const computeResourceEnableOperationFactory = RESTReducers.computeOperation('resource_enable_workflow')
-const computeResourceDisableOperationFactory = RESTReducers.computeOperation('resource_disable_workflow')
+const computeResourceFetchFactory = computeFetch('resource')
+const computeResourcesQueryFactory = computeQuery('resources')
+const computeResourceEnableOperationFactory = computeOperation('resource_enable_workflow')
+const computeResourceDisableOperationFactory = computeOperation('resource_disable_workflow')
 
 export const fvResourcesReducer = combineReducers({
   computeResource: computeResourceFetchFactory.computeResource,

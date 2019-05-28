@@ -1,8 +1,8 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 import { QUERY_SEARCH_RESULTS_START, QUERY_SEARCH_RESULTS_SUCCESS, QUERY_SEARCH_RESULTS_ERROR } from './actionTypes'
 
-const computeSearchDocumentsQueryFactory = RESTReducers.computeQuery('search_documents')
+const computeSearchDocumentsQueryFactory = computeQuery('search_documents')
 
 export const searchReducer = combineReducers({
   computeSearchDocuments: computeSearchDocumentsQueryFactory.computeSearchDocuments,

@@ -1,43 +1,43 @@
-import RESTActions from 'providers/rest-actions'
+import { create, _delete, execute, fetch, query, update } from 'providers/redux/reducers/rest'
 
-export const fetchGallery = RESTActions.fetch('FV_GALLERY', 'FVGallery', {
+export const fetchGallery = fetch('FV_GALLERY', 'FVGallery', {
   headers: { 'enrichers.document': 'ancestry,gallery,permissions' },
 })
-export const fetchGalleries = RESTActions.query('FV_GALLERIES', 'FVGallery', {
+export const fetchGalleries = query('FV_GALLERIES', 'FVGallery', {
   headers: { 'enrichers.document': 'ancestry,gallery,permissions' },
 })
-export const createGallery = RESTActions.create('FV_GALLERY', 'FVGallery', {
+export const createGallery = create('FV_GALLERY', 'FVGallery', {
   headers: { 'enrichers.document': 'ancestry,gallery,permissions' },
 })
-export const updateGallery = RESTActions.update(
+export const updateGallery = update(
   'FV_GALLERY',
   'FVGallery',
   { headers: { 'enrichers.document': 'ancestry,gallery,permissions' } },
   false
 )
-export const deleteGallery = RESTActions.delete('FV_GALLERY', 'FVGallery', {})
+export const deleteGallery = _delete('FV_GALLERY', 'FVGallery', {})
 
-export const publishGallery = RESTActions.execute('FV_GALLERY_PUBLISH', 'FVPublish', {
+export const publishGallery = execute('FV_GALLERY_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const askToPublishGallery = RESTActions.execute('FV_GALLERY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishGallery = execute('FV_GALLERY_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const unpublishGallery = RESTActions.execute('FV_GALLERY_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishGallery = execute('FV_GALLERY_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const askToUnpublishGallery = RESTActions.execute('FV_GALLERY_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToUnpublishGallery = execute('FV_GALLERY_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const enableGallery = RESTActions.execute('FV_GALLERY_ENABLE', 'FVEnableDocument', {
+export const enableGallery = execute('FV_GALLERY_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const askToEnableGallery = RESTActions.execute('FV_GALLERY_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToEnableGallery = execute('FV_GALLERY_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const disableGallery = RESTActions.execute('FV_GALLERY_DISABLE', 'FVDisableDocument', {
+export const disableGallery = execute('FV_GALLERY_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })
-export const askToDisableGallery = RESTActions.execute('FV_GALLERY_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToDisableGallery = execute('FV_GALLERY_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,permissions,gallery' },
 })

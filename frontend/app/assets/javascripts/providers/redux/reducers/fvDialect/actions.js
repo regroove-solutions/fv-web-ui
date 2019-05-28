@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { execute, fetch, query, update } from 'providers/redux/reducers/rest'
 import DocumentOperations from 'operations/DocumentOperations'
 // console.log('! fvDialect:', { RESTActions, DocumentOperations }) // eslint-disable-line
 import { FV_DIALECT_FETCH_START, FV_DIALECT_FETCH_SUCCESS, FV_DIALECT_FETCH_ERROR } from './actionTypes'
@@ -19,40 +19,40 @@ export const fetchDialect = (pathOrId) => {
   }
 }
 
-export const updateDialect2 = RESTActions.update('FV_DIALECT2', 'FVDialect', {
+export const updateDialect2 = update('FV_DIALECT2', 'FVDialect', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const fetchDialect2 = RESTActions.fetch('FV_DIALECT2', 'FVDialect', {
+export const fetchDialect2 = fetch('FV_DIALECT2', 'FVDialect', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const queryDialect2ByShortURL = RESTActions.query('FV_DIALECT2_SHORTURL', 'FVDialect', {})
+export const queryDialect2ByShortURL = query('FV_DIALECT2_SHORTURL', 'FVDialect', {})
 
-export const fetchDialectStats = RESTActions.execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {})
+export const fetchDialectStats = execute('FV_DIALECT_STATS', 'FVGenerateJsonStatistics', {})
 
-export const fetchDialects = RESTActions.query('FV_DIALECTS', 'FVDialect', {
+export const fetchDialects = query('FV_DIALECTS', 'FVDialect', {
   headers: { 'enrichers.document': 'ancestry,dialect' },
 })
 
-export const fetchDialectList = RESTActions.execute('FV_DIALECT_LIST', 'Document.ListDialects', {})
+export const fetchDialectList = execute('FV_DIALECT_LIST', 'Document.ListDialects', {})
 
-export const publishDialect = RESTActions.execute('FV_DIALECT2_PUBLISH', 'FVPublish', {
+export const publishDialect = execute('FV_DIALECT2_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const publishDialectOnly = RESTActions.execute('FV_DIALECT2_PUBLISH', 'Document.PublishToSection', {
+export const publishDialectOnly = execute('FV_DIALECT2_PUBLISH', 'Document.PublishToSection', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const unpublishDialect = RESTActions.execute('FV_DIALECT2_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishDialect = execute('FV_DIALECT2_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const enableDialect = RESTActions.execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', {
+export const enableDialect = execute('FV_DIALECT2_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })
 
-export const disableDialect = RESTActions.execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', {
+export const disableDialect = execute('FV_DIALECT2_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,dialect,permissions,acls' },
 })

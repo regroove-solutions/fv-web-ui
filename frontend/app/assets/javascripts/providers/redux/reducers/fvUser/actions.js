@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { execute } from 'providers/redux/reducers/rest'
 import UserOperations from 'operations/UserOperations'
 import IntlService from 'views/services/intl'
 
@@ -8,7 +8,12 @@ const intl = IntlService.instance
 /**
  * Single User Actions
  */
-export const fetchUser = function fetch(username, messageStart = null, messageSuccess = null, messageError = null) {
+export const fetchUser = function _fetchUser(
+  username,
+  messageStart = null,
+  messageSuccess = null,
+  messageError = null
+) {
   return (dispatch) => {
     dispatch({
       type: key + '_FETCH_START',
@@ -31,7 +36,7 @@ export const fetchUser = function fetch(username, messageStart = null, messageSu
   }
 }
 
-export const createUser = function create(user) {
+export const createUser = function _createUser(user) {
   return (dispatch) => {
     dispatch({ type: key + '_CREATE_START', pathOrId: user.id, user: user })
 
@@ -55,7 +60,7 @@ export const createUser = function create(user) {
   }
 }
 
-export const updateUser = function update(user) {
+export const updateUser = function _updateUser(user) {
   return (dispatch) => {
     dispatch({ type: key + '_UPDATE_START', user: user, pathOrId: user.id })
 
@@ -79,14 +84,14 @@ export const updateUser = function update(user) {
   }
 }
 
-export const selfregisterUser = RESTActions.execute('FV_USER_SELFREGISTER', 'User.SelfRegistration', {})
+export const selfregisterUser = execute('FV_USER_SELFREGISTER', 'User.SelfRegistration', {})
 
-export const userSuggestion = RESTActions.execute('FV_USER_SUGGESTION', 'UserGroup.Suggestion', {
+export const userSuggestion = execute('FV_USER_SUGGESTION', 'UserGroup.Suggestion', {
   headers: { 'enrichers.document': '' },
 })
 
-export const userUpdate = RESTActions.execute('FV_USER_UPDATE', 'FVUpdateUser')
+export const userUpdate = execute('FV_USER_UPDATE', 'FVUpdateUser')
 
-export const userUpgrade = RESTActions.execute('FV_USER_UPGRADE', 'FVChangeUserGroupToDialectGroup', {})
+export const userUpgrade = execute('FV_USER_UPGRADE', 'FVChangeUserGroupToDialectGroup', {})
 
-export const fetchUserDialects = RESTActions.execute('FV_USER_DIALECTS', 'FVGetDialectsForUser')
+export const fetchUserDialects = execute('FV_USER_DIALECTS', 'FVGetDialectsForUser')

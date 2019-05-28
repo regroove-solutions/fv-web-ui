@@ -14,9 +14,10 @@ import {
   FV_CONTRIBUTOR_CREATE_ERROR,
 } from './actionTypes'
 import { combineReducers } from 'redux'
-import RESTReducers from 'providers/rest-reducers'
-const computeContributorFactory = RESTReducers.computeFetch('contributor')
-const computeContributorsFactory = RESTReducers.computeQuery('contributors')
+
+import { computeFetch, computeQuery } from 'providers/redux/reducers/rest'
+const computeContributorFactory = computeFetch('contributor')
+const computeContributorsFactory = computeQuery('contributors')
 
 const initialState = {
   isFetching: false,

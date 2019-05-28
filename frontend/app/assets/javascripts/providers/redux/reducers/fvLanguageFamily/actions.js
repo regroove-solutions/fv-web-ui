@@ -1,5 +1,5 @@
-import RESTActions from 'providers/rest-actions'
+import { fetch } from 'providers/redux/reducers/rest'
 
-export const fetchLanguageFamily = RESTActions.fetch('FV_LANGUAGE_FAMILY', 'FVLanguageFamily', {
+export const fetchLanguageFamily = fetch('FV_LANGUAGE_FAMILY', 'FVLanguageFamily', {
   headers: { 'enrichers.document': 'ancestry' },
 })

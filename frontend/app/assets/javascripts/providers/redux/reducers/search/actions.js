@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { query } from 'providers/redux/reducers/rest'
 import DocumentOperations from 'operations/DocumentOperations'
 import { QUERY_SEARCH_RESULTS_START, QUERY_SEARCH_RESULTS_SUCCESS, QUERY_SEARCH_RESULTS_ERROR } from './actionTypes'
 
@@ -22,7 +22,7 @@ export const querySearchResults = (queryParam, queryPath, docTypes, page, pageSi
   }
 }
 
-export const searchDocuments = RESTActions.query('FV_SEARCH_DOCUMENTS', 'Document', {
+export const searchDocuments = query('FV_SEARCH_DOCUMENTS', 'Document', {
   headers: {
     'enrichers.document': 'ancestry, word, phrase',
     properties: 'dublincore, fvbook, fv-word, fvcore, fv-phrase, fv-portal',

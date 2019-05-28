@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeDelete, computeOperation, computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
 import {
@@ -24,14 +24,14 @@ const initialState = {
   },
   success: false,
 }
-const computeWordFetchFactory = RESTReducers.computeFetch('word')
-const computeWordDeleteFactory = RESTReducers.computeDelete('delete_word')
-const computeWordEnableOperationFactory = RESTReducers.computeOperation('word_enable_workflow')
-const computeWordDisableOperationFactory = RESTReducers.computeOperation('word_disable_workflow')
+const computeWordFetchFactory = computeFetch('word')
+const computeWordDeleteFactory = computeDelete('delete_word')
+const computeWordEnableOperationFactory = computeOperation('word_enable_workflow')
+const computeWordDisableOperationFactory = computeOperation('word_disable_workflow')
 
-const computeWordsQueryFactory = RESTReducers.computeQuery('words')
-const computeRecentlyModifiedWordsQuery = RESTReducers.computeQuery('modified_words')
-const computeRecentlyCreatedWordsQuery = RESTReducers.computeQuery('created_words')
+const computeWordsQueryFactory = computeQuery('words')
+const computeRecentlyModifiedWordsQuery = computeQuery('modified_words')
+const computeRecentlyCreatedWordsQuery = computeQuery('created_words')
 
 export const fvWordReducer = combineReducers({
   computeSharedWords(state = initialState, action) {

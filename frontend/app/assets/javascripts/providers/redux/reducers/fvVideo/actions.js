@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { create, fetch } from 'providers/redux/reducers/rest'
 import DocumentOperations from 'operations/DocumentOperations'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
@@ -29,7 +29,7 @@ export const createVideo = function createVideo(parentDoc, docParams, file) {
   }
 };*/
 
-export const updateVideo = function updateVideo(newDoc /*, field*/) {
+export const updateVideo = function _updateVideo(newDoc /*, field*/) {
   return (dispatch) => {
     const videos = {}
     videos[newDoc.id] = {}
@@ -50,7 +50,7 @@ export const updateVideo = function updateVideo(newDoc /*, field*/) {
   }
 }
 
-export const fetchSharedVideos = function fetchSharedVideos(pageProvider, headers = {}, params = {}) {
+export const fetchSharedVideos = function _fetchSharedVideos(pageProvider, headers = {}, params = {}) {
   return (dispatch) => {
     dispatch({ type: FV_VIDEOS_SHARED_FETCH_START })
 
@@ -65,13 +65,13 @@ export const fetchSharedVideos = function fetchSharedVideos(pageProvider, header
 }
 
 /*
-export const fetchVideoAndStats = function fetchVideoWithStats(path) {
+export const fetchVideoAndStats = function _fetchVideoWithStats(path) {
 	  return dispatch => Promise.all([
 	    dispatch(fetchVideo(path)),
         dispatch(fetchVideoStats())
       ]);
 }
-export const fetchVideo = function fetchVideo(pathOrId) {
+export const fetchVideo = function _fetchVideo(pathOrId) {
   return (dispatch) => {
 
     let videos = {};
@@ -95,7 +95,7 @@ export const fetchVideo = function fetchVideo(pathOrId) {
 };
 */
 
-export const fetchVideoStats = function fetchVideoStats(dialectId) {
+export const fetchVideoStats = function _fetchVideoStats(dialectId) {
   return (dispatch) => {
     dispatch({ type: FV_VIDEO_FETCH_STATS_START })
 
@@ -109,8 +109,8 @@ export const fetchVideoStats = function fetchVideoStats(dialectId) {
   }
 }
 
-export const fetchVideo = RESTActions.fetch('FV_VIDEO', 'FVVideo', {
+export const fetchVideo = fetch('FV_VIDEO', 'FVVideo', {
   headers: { 'enrichers.document': 'ancestry, media' },
 })
 
-export const createVideo = RESTActions.create('FV_VIDEO', 'FVVideo')
+export const createVideo = create('FV_VIDEO', 'FVVideo')

@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
 import {
@@ -21,7 +21,7 @@ const initialState = {
   success: false,
 }
 
-const computePictureFactory = RESTReducers.computeFetch('picture')
+const computePictureFactory = computeFetch('picture')
 
 export const fvPictureReducer = combineReducers({
   computeSharedPictures(state = initialState, action) {
@@ -46,7 +46,8 @@ export const fvPictureReducer = combineReducers({
       default:
         return { ...state, isFetching: false }
     }
-  } /*,  computePicture(state = { pictures: {} }, action) {    switch (action.type) {      case FV_PICTURE_FETCH_START:      case FV_PICTURE_UPDATE_START:      case FV_PICTURE_UPDATE_START:
+  },
+  /*  computePicture(state = { pictures: {} }, action) {    switch (action.type) {      case FV_PICTURE_FETCH_START:      case FV_PICTURE_UPDATE_START:      case FV_PICTURE_UPDATE_START:
 
         action.pictures[action.pathOrId].isFetching = true;
         action.pictures[action.pathOrId].success = false;
@@ -80,7 +81,7 @@ export const fvPictureReducer = combineReducers({
         return Object.assign({}, state);
       break;
     }
-  },*/,
+  },*/
   computePicture: computePictureFactory.computePicture,
   /*computeCreatePicture(state = { isFetching: false, response: {get: function() { return ''; }}, success: false }, action) {
       switch (action.type) {

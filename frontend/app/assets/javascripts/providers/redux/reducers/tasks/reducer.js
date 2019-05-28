@@ -1,14 +1,14 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeOperation } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
-const computeUserTasksOperation = RESTReducers.computeOperation('user_tasks')
-const computeTasksOperation = RESTReducers.computeOperation('tasks')
-const computeUserTasksApproveOperation = RESTReducers.computeOperation('user_tasks_approve')
-const computeUserTasksRejectOperation = RESTReducers.computeOperation('user_tasks_reject')
-const computeCountTotalTasksFactory = RESTReducers.computeOperation('count_total_tasks')
-const computeUserRegistrationTasksFactory = RESTReducers.computeOperation('user_registration')
-const computeUserRegistrationApproveOperation = RESTReducers.computeOperation('user_registration_approve')
-const computeUserRegistrationRejectOperation = RESTReducers.computeOperation('user_registration_reject')
+const computeUserTasksOperation = computeOperation('user_tasks')
+const computeTasksOperation = computeOperation('tasks')
+const computeUserTasksApproveOperation = computeOperation('user_tasks_approve')
+const computeUserTasksRejectOperation = computeOperation('user_tasks_reject')
+const computeCountTotalTasksFactory = computeOperation('count_total_tasks')
+const computeUserRegistrationTasksFactory = computeOperation('user_registration')
+const computeUserRegistrationApproveOperation = computeOperation('user_registration_approve')
+const computeUserRegistrationRejectOperation = computeOperation('user_registration_reject')
 
 export const tasksReducer = combineReducers({
   computeTasks: computeTasksOperation.computeTasks,

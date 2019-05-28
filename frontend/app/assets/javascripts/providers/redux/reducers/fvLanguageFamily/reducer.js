@@ -1,7 +1,7 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
-const computeLanguageFamilyFetch = RESTReducers.computeFetch('language_family')
+const computeLanguageFamilyFetch = computeFetch('language_family')
 export const fvLanguageFamilyReducer = combineReducers({
   computeLanguageFamily: computeLanguageFamilyFetch.computeLanguageFamily,
 })

@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { fetch, execute } from 'providers/redux/reducers/rest'
 import DocumentOperations from 'operations/DocumentOperations'
 // console.log('! document', { RESTActions, DocumentOperations }) // eslint-disable-line
 import {
@@ -55,10 +55,10 @@ export const enableDocument = (pathOrId) => {
   }
 }
 
-export const fetchDocument = RESTActions.fetch('FV_DOCUMENT', 'Document', {
+export const fetchDocument = fetch('FV_DOCUMENT', 'Document', {
   headers: { 'enrichers.document': 'ancestry,permissions,acls' },
 })
 
-export const fetchResultSet = RESTActions.execute('FV_RESULT_SET', 'Repository.ResultSetQuery')
+export const fetchResultSet = execute('FV_RESULT_SET', 'Repository.ResultSetQuery')
 
-export const fetchSourceDocument = RESTActions.execute('FV_SOURCE_DOCUMENT', 'Proxy.GetSourceDocument')
+export const fetchSourceDocument = execute('FV_SOURCE_DOCUMENT', 'Proxy.GetSourceDocument')

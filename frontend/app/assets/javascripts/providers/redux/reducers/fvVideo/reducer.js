@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 import {
   DISMISS_ERROR,
@@ -19,7 +19,7 @@ const initialState = {
   },
   success: false,
 }
-const computeVideoFactory = RESTReducers.computeFetch('video')
+const computeVideoFactory = computeFetch('video')
 
 export const fvVideoReducer = combineReducers({
   computeSharedVideos(state = initialState, action) {

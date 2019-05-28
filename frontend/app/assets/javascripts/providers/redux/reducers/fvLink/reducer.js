@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
 import {
@@ -8,8 +8,8 @@ import {
   FV_LINKS_SHARED_FETCH_ERROR,
 } from './actionTypes'
 
-const computeLinkFactory = RESTReducers.computeFetch('link')
-const computeLinksFactory = RESTReducers.computeQuery('links')
+const computeLinkFactory = computeFetch('link')
+const computeLinksFactory = computeQuery('links')
 
 export const fvLinkReducer = combineReducers({
   computeLink: computeLinkFactory.computeLink,

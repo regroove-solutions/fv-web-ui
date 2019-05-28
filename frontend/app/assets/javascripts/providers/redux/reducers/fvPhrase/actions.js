@@ -1,4 +1,4 @@
-import RESTActions from 'providers/rest-actions'
+import { create, _delete, execute, fetch, query, update } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 import {
   FV_PHRASES_SHARED_FETCH_START,
@@ -45,63 +45,63 @@ export const fetchPhrasesAll = function fetchPhrasesAll(path /*, type*/) {
   }
 }
 
-export const fetchPhrase = RESTActions.fetch('FV_PHRASE', 'FVPhrase', {
+export const fetchPhrase = fetch('FV_PHRASE', 'FVPhrase', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const fetchPhrases = RESTActions.query('FV_PHRASES', 'FVPhrase', { headers: { 'enrichers.document': 'phrase' } })
+export const fetchPhrases = query('FV_PHRASES', 'FVPhrase', { headers: { 'enrichers.document': 'phrase' } })
 
-export const createPhrase = RESTActions.create('FV_PHRASE', 'FVPhrase', {
+export const createPhrase = create('FV_PHRASE', 'FVPhrase', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const updatePhrase = RESTActions.update(
+export const updatePhrase = update(
   'FV_PHRASE',
   'FVPhrase',
   { headers: { 'enrichers.document': 'ancestry,phrase,permissions' } },
   false
 )
 
-export const deletePhrase = RESTActions.delete('FV_PHRASE', 'FVPhrase', {})
+export const deletePhrase = _delete('FV_PHRASE', 'FVPhrase', {})
 
-export const publishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH', 'FVPublish', {
+export const publishPhrase = execute('FV_PHRASE_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const askToPublishPhrase = RESTActions.execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishPhrase = execute('FV_PHRASE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const unpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishPhrase = execute('FV_PHRASE_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const askToUnpublishPhrase = RESTActions.execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToUnpublishPhrase = execute('FV_PHRASE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const enablePhrase = RESTActions.execute('FV_PHRASE_ENABLE', 'FVEnableDocument', {
+export const enablePhrase = execute('FV_PHRASE_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const askToEnablePhrase = RESTActions.execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToEnablePhrase = execute('FV_PHRASE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const disablePhrase = RESTActions.execute('FV_PHRASE_DISABLE', 'FVDisableDocument', {
+export const disablePhrase = execute('FV_PHRASE_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,phrase,permissions' },
 })
 
-export const askToDisablePhrase = RESTActions.execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToDisablePhrase = execute('FV_PHRASE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,word,permissions' },
 })
 
-export const queryModifiedPhrases = RESTActions.query('FV_MODIFIED_PHRASES', 'FVPhrase', {
+export const queryModifiedPhrases = query('FV_MODIFIED_PHRASES', 'FVPhrase', {
   queryAppend: '&sortBy=dc:modified&sortOrder=DESC&pageSize=4',
   headers: { properties: 'dublincore' },
 })
 
-export const queryCreatedPhrases = RESTActions.query('FV_CREATED_PHRASES', 'FVPhrase', {
+export const queryCreatedPhrases = query('FV_CREATED_PHRASES', 'FVPhrase', {
   queryAppend: '&sortBy=dc:created&sortOrder=DESC&pageSize=4',
   headers: { properties: 'dublincore' },
 })

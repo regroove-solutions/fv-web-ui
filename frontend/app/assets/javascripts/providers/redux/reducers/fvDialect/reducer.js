@@ -11,7 +11,8 @@ import {
   FV_DIALECT_UNPUBLISH_ERROR,
 } from './actionTypes'
 import { combineReducers } from 'redux'
-import RESTReducers from 'providers/rest-reducers'
+
+import { computeQuery, computeFetch, computeOperation } from 'providers/redux/reducers/rest'
 
 const initialState = {
   isFetching: false,
@@ -21,12 +22,12 @@ const initialState = {
   success: false,
 }
 
-const computeDialectsQuery = RESTReducers.computeQuery('dialects')
-// const computeDialectQuery = RESTReducers.computeQuery('dialect2_query')
-const computeDialectByShortURL = RESTReducers.computeQuery('dialect2_shorturl')
-const computeDialectFetch = RESTReducers.computeFetch('dialect2')
-const computeDialectStatsOperation = RESTReducers.computeOperation('dialect_stats')
-const computeDialectListOperation = RESTReducers.computeOperation('dialect_list')
+const computeDialectsQuery = computeQuery('dialects')
+// const computeDialectQuery = computeQuery('dialect2_query')
+const computeDialectByShortURL = computeQuery('dialect2_shorturl')
+const computeDialectFetch = computeFetch('dialect2')
+const computeDialectStatsOperation = computeOperation('dialect_stats')
+const computeDialectListOperation = computeOperation('dialect_list')
 
 const computeDialect = (state = initialState, action = {}) => {
   switch (action.type) {

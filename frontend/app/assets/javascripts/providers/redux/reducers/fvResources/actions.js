@@ -1,39 +1,39 @@
-import RESTActions from 'providers/rest-actions'
+import { execute, fetch, query, update } from 'providers/redux/reducers/rest'
 
-export const fetchResource = RESTActions.fetch('FV_RESOURCE', 'FVPicture,FVAudio,FVVideo', {
+export const fetchResource = fetch('FV_RESOURCE', 'FVPicture,FVAudio,FVVideo', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const fetchResources = RESTActions.query('FV_RESOURCES', 'FVPicture,FVAudio,FVVideo', {
+export const fetchResources = query('FV_RESOURCES', 'FVPicture,FVAudio,FVVideo', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const updateResource = RESTActions.update(
+export const updateResource = update(
   'FV_RESOURCE',
   'FVPicture,FVAudio,FVVideo',
   { headers: { 'enrichers.document': 'ancestry,media,permissions' } },
   false
 )
 
-export const publishResource = RESTActions.execute('FV_RESOURCE_PUBLISH', 'FVPublish', {
+export const publishResource = execute('FV_RESOURCE_PUBLISH', 'FVPublish', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const askToPublishResource = RESTActions.execute('FV_RESOURCE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToPublishResource = execute('FV_RESOURCE_PUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const unpublishResource = RESTActions.execute('FV_RESOURCE_UNPUBLISH', 'FVUnpublishDialect', {
+export const unpublishResource = execute('FV_RESOURCE_UNPUBLISH', 'FVUnpublishDialect', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const askToUnpublishResource = RESTActions.execute('FV_RESOURCE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
+export const askToUnpublishResource = execute('FV_RESOURCE_UNPUBLISH_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const enableResource = RESTActions.execute('FV_RESOURCE_ENABLE', 'FVEnableDocument', {
+export const enableResource = execute('FV_RESOURCE_ENABLE', 'FVEnableDocument', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const askToEnableResource = RESTActions.execute('FV_RESOURCE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToEnableResource = execute('FV_RESOURCE_ENABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const disableResource = RESTActions.execute('FV_RESOURCE_DISABLE', 'FVDisableDocument', {
+export const disableResource = execute('FV_RESOURCE_DISABLE', 'FVDisableDocument', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })
-export const askToDisableResource = RESTActions.execute('FV_RESOURCE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
+export const askToDisableResource = execute('FV_RESOURCE_DISABLE_WORKFLOW', 'Context.StartWorkflow', {
   headers: { 'enrichers.document': 'ancestry,media,permissions' },
 })

@@ -1,4 +1,4 @@
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
 import {
@@ -9,7 +9,7 @@ import {
 } from './actionTypes'
 
 // const computePortalQuery = RESTReducers.computeQuery('portals')
-const computePortalFactory = RESTReducers.computeFetch('portal')
+const computePortalFactory = computeFetch('portal')
 
 export const fvPortalReducer = combineReducers({
   computePortal: computePortalFactory.computePortal,

@@ -23,7 +23,7 @@ import {
   FV_SONGS_USER_CREATED_QUERY_ERROR,
 } from './actionTypes'
 
-import RESTReducers from 'providers/rest-reducers'
+import { computeFetch, computeDelete, computeQuery } from 'providers/redux/reducers/rest'
 import { combineReducers } from 'redux'
 
 const initialState = {
@@ -36,15 +36,15 @@ const initialState = {
   success: false,
 }
 
-const computeBookFetchFactory = RESTReducers.computeFetch('book')
-const computeBookDeleteFactory = RESTReducers.computeDelete('delete_book')
-const computeBookEntryFetchFactory = RESTReducers.computeFetch('book_entry')
-const computeBookEntriesQueryFactory = RESTReducers.computeQuery('book_entries')
-const computeBooksQueryFactory = RESTReducers.computeQuery('books')
-const computeRecentlyModifiedStoriesQuery = RESTReducers.computeQuery('modified_stories')
-const computeRecentlyCreatedStoriesQuery = RESTReducers.computeQuery('created_stories')
-const computeRecentlyModifiedSongsQuery = RESTReducers.computeQuery('modified_songs')
-const computeRecentlyCreatedSongsQuery = RESTReducers.computeQuery('created_songs')
+const computeBookFetchFactory = computeFetch('book')
+const computeBookDeleteFactory = computeDelete('delete_book')
+const computeBookEntryFetchFactory = computeFetch('book_entry')
+const computeBookEntriesQueryFactory = computeQuery('book_entries')
+const computeBooksQueryFactory = computeQuery('books')
+const computeRecentlyModifiedStoriesQuery = computeQuery('modified_stories')
+const computeRecentlyCreatedStoriesQuery = computeQuery('created_stories')
+const computeRecentlyModifiedSongsQuery = computeQuery('modified_songs')
+const computeRecentlyCreatedSongsQuery = computeQuery('created_songs')
 
 const computeBook = computeBookFetchFactory.computeBook
 const computeDeleteBook = computeBookDeleteFactory.computeDeleteBook
