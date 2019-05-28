@@ -30,15 +30,15 @@ import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
-const { oneOfType, instanceOf, array, func, object } = PropTypes
+const { oneOfType, instanceOf, array, func, object, string } = PropTypes
 
 export class PortalListDialects extends Component {
   static propTypes = {
     items: oneOfType([array, instanceOf(List)]),
     filteredItems: oneOfType([array, instanceOf(List)]),
     fieldMapping: object,
-    // REDUX: reducers/state
-    properties: object.isRequired,
+    theme: string.isRequired, // NOTE: comes from parent, not redux: state.navigation.theme
+    // REDUX: reducers/state - none
     // REDUX: actions/dispatch/func
     pushWindowPath: func.isRequired,
   }
@@ -73,7 +73,7 @@ export class PortalListDialects extends Component {
           const logo = selectn('contextParameters.lightportal.fv-portal:logo', tile)
           const dialectCoverImage = encodeURI(UIHelpers.getThumbnail(logo, 'Medium'))
           const dialectDescription = IntlService.instance.searchAndReplace(tile.description) || null
-          const href = `/${this.props.properties.theme}${tile.path.replace('/Portal', '')}`
+          const href = `/${this.props.theme}${tile.path.replace('/Portal', '')}`
 
           return (
             <a
@@ -102,13 +102,13 @@ export class PortalListDialects extends Component {
 }
 
 // REDUX: reducers/state
-const mapStateToProps = (state /*, ownProps*/) => {
-  const { navigation } = state
-  const { properties } = navigation
-  return {
-    properties,
-  }
-}
+// const mapStateToProps = (state /*, ownProps*/) => {
+//   const { navigation } = state
+//   const { theme } = navigation
+//   return {
+//     theme,
+//   }
+// }
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
@@ -116,6 +116,6 @@ const mapDispatchToProps = {
 }
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(PortalListDialects)
