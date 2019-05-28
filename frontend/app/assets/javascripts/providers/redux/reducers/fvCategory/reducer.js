@@ -171,7 +171,7 @@ const computeCategoriesAll = (state = initialState, action) => {
   }
 }
 
-export const fvCategory = combineReducers({
+export const fvCategoryReducer = combineReducers({
   computeSharedCategories,
   computeCategoriesInPath,
   computeCategory,
