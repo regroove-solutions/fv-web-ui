@@ -1,3 +1,4 @@
+import { combineReducers } from 'redux'
 import { DIRECTORY_FETCH_START, DIRECTORY_FETCH_SUCCESS, DIRECTORY_FETCH_ERROR } from './actionTypes'
 
 const initialState = { isFetching: false, directories: {}, directory: null, success: false }
@@ -28,6 +29,6 @@ const computeDirectory = (state = initialState, action) => {
   }
 }
 
-export const directoryReducer = {
+export const directoryReducer = combineReducers({
   computeDirectory,
-}
+})
