@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux'
+import ConfGlobal from 'conf/local.js'
 import {
   TOGGLE_MENU,
   NAVIGATE_PAGE,
@@ -16,7 +17,12 @@ import {
 
 import ThemeManager from 'material-ui/lib/styles/theme-manager'
 import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
-const initialStateProperties = { theme: { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' } }
+const initialStateProperties = {
+  title: ConfGlobal.title,
+  pageTitleParams: null,
+  domain: ConfGlobal.domain,
+  theme: { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' },
+}
 
 export const navigationReducer = combineReducers({
   computeNavigateTo(state = { path: null }, action = {}) {
