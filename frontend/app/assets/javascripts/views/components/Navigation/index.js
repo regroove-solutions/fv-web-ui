@@ -30,8 +30,6 @@ import UIHelpers from 'common/UIHelpers'
 
 import Shepherd from 'tether-shepherd'
 
-import { Link } from 'provide-page'
-
 // Components
 import AppBar from 'material-ui/lib/app-bar'
 
@@ -153,8 +151,8 @@ export class Navigation extends Component {
 
     const USER_LOG_IN_STATUS_CHANGED =
       newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected &&
-      newProps.computeLogin.isConnected != undefined &&
-      this.props.computeLogin.isConnected != undefined
+      newProps.computeLogin.isConnected !== undefined &&
+      this.props.computeLogin.isConnected !== undefined
 
     if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
       this._setExplorePath(newProps)
@@ -236,6 +234,7 @@ export class Navigation extends Component {
 
   _handleNavigationSearchSubmit(e) {
     // If search bar is not visible, this button should show it
+    // TODO: this.refs DEPRECATED
     if (this.refs.navigationSearchField._getInputNode().offsetParent === null) {
       this.setState({
         searchBarVisibleInMobile: true,
@@ -248,7 +247,7 @@ export class Navigation extends Component {
         searchBarVisibleInMobile: false,
         searchContextPopoverOpen: false,
       })
-
+      // TODO: this.refs DEPRECATED
       const searchQueryParam = this.refs.navigationSearchField.getValue()
       const path = '/' + this.props.splitWindowPath.join('/')
       let queryPath = ''
@@ -268,9 +267,10 @@ export class Navigation extends Component {
       }
 
       // Clear out the input field
+      // TODO: this.refs DEPRECATED
       this.refs.navigationSearchField.setValue('')
 
-      if (searchQueryParam && searchQueryParam != '') {
+      if (searchQueryParam && searchQueryParam !== '') {
         const finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
         this.props.replaceWindowPath(finalPath)
       }
@@ -325,7 +325,7 @@ export class Navigation extends Component {
       selectn('response.properties.dc:title', computeDialect)
 
     const dialectLink = '/explore' + this.props.routeParams.dialect_path
-
+    const hrefPath = NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)
     return (
       <div>
         <AppBar
@@ -337,7 +337,6 @@ export class Navigation extends Component {
           showMenuIconButton={isDialect ? true : true}
           // TODO: see about removing onLeftIconButtonTouchTap
           onLeftIconButtonTouchTap={() => {
-            // debugger
             this._handleOpenMenuRequest()
           }}
         >
@@ -345,12 +344,21 @@ export class Navigation extends Component {
             <div
               style={{ display: 'inline-block', paddingRight: '10px', paddingTop: '15px', textTransform: 'uppercase' }}
             >
-              <Link
+              {/* <Link
                 className="nav_link hidden-xs"
                 href={NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)}
               >
                 {this.intl.trans('choose_lang', 'Choose a Language', 'first')}
-              </Link>
+              </Link> */}
+              <a
+                href={hrefPath}
+                onClick={(e) => {
+                  e.preventDefault()
+                  NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+                }}
+              >
+                {this.intl.trans('choose_lang', 'Choose a Language', 'first')}
+              </a>
             </div>
 
             <Login
@@ -482,7 +490,7 @@ export class Navigation extends Component {
                   fontFamily:
                     '"Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium, Code2001',
                 }}
-                ref="navigationSearchField"
+                ref="navigationSearchField" // TODO: DEPRECATED
                 hintText={this.intl.translate({ key: 'general.search', default: 'Search', case: 'first', append: ':' })}
                 onBlur={() => this.setState({ searchContextPopoverOpen: isDialect ? true : false })}
                 onFocus={(e) =>

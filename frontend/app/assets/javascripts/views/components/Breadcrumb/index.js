@@ -10,13 +10,15 @@ import { PropTypes } from 'react'
 
 // REDUX
 import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
-import { Link } from 'provide-page'
+import NavigationHelpers from 'common/NavigationHelpers'
+
 import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
 
-const { array, string, object } = PropTypes
+const { array, func, string, object } = PropTypes
 
 const intl = IntlService.instance
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search', 'nuxeo', 'app', 'explore']
@@ -28,9 +30,10 @@ export class Breadcrumb extends Component {
     matchedPage: object, // Note: Immutable Obj
     routeParams: object,
     routes: object, // Note: Immutable Obj
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
     // REDUX: reducers/state
-    // NOTE: CURRENTLY PASSED IN VIA PARENT
-    splitWindowPath: array.isRequired,
+    splitWindowPath: array.isRequired, // NOTE: Parent component is passing in `splitWindowPath` as a prop, see if that breaks anything
   }
   static defaultProps = {
     className: '',
@@ -142,9 +145,17 @@ export class Breadcrumb extends Component {
 
         return (
           <li key={splitPathIndex}>
-            <Link key={splitPathIndex} href={hrefPath}>
+            {/* <Link key={splitPathIndex} href={hrefPath}>
               {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}
-            </Link>
+            </Link> */}
+            <a
+              key={splitPathIndex}
+              href={hrefPath}
+              onClick={(e) => {
+                e.preventDefault()
+                NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+              }}
+            >{`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}</a>
           </li>
         )
       }
@@ -163,7 +174,12 @@ const mapStateToProps = (state /*, ownProps*/) => {
   }
 }
 
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(Breadcrumb)

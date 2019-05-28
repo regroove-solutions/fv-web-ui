@@ -46,7 +46,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-import { Link } from 'provide-page'
 import Tab from 'material-ui/lib/tabs/tab'
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
@@ -384,14 +383,25 @@ export class DialectViewWord extends Component {
     const theme = this.props.routeParams.theme
     ;(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map((phrase, key) => {
       const phraseDefinitions = selectn('fv:definitions', phrase)
+      const hrefPath = NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')
       const phraseLink = (
-        <Link
-          className="DialectViewRelatedPhrasesPhrase"
+        // <Link
+        //   className="DialectViewRelatedPhrasesPhrase"
+        //   key={selectn('uid', phrase)}
+        //   href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}
+        // >
+        //   {selectn('dc:title', phrase)}
+        // </Link>
+        <a
           key={selectn('uid', phrase)}
-          href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}
+          href={hrefPath}
+          onClick={(e) => {
+            e.preventDefault()
+            NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+          }}
         >
-          {selectn('dc:title', phrase)}
-        </Link>
+          COPY
+        </a>
       )
 
       if (phraseDefinitions.length === 0) {
@@ -513,10 +523,21 @@ export class DialectViewWord extends Component {
     const theme = this.props.routeParams.theme
     ;(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map((phrase, key) => {
       const phraseDefinitions = selectn('fv:definitions', phrase)
+      const hrefPath = NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')
       const phraseLink = (
-        <Link key={selectn('uid', phrase)} href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}>
-          {selectn('dc:title', phrase)}
-        </Link>
+        // <Link key={selectn('uid', phrase)} href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}>
+        //   {selectn('dc:title', phrase)}
+        // </Link>
+        <a
+          key={selectn('uid', phrase)}
+          href={hrefPath}
+          onClick={(e) => {
+            e.preventDefault()
+            NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+          }}
+        >
+          COPY
+        </a>
       )
       if (phraseDefinitions.length === 0) {
         phrases.push(<p key={key}>{phraseLink}</p>)

@@ -36,9 +36,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
-
-import { Link } from 'provide-page'
-
 import Card from 'material-ui/lib/card/card'
 import CardText from 'material-ui/lib/card/card-text'
 import Tabs from 'material-ui/lib/tabs/tabs'
@@ -283,7 +280,11 @@ export class View extends Component {
                                           selectn('fv:definitions.length', word) > 0
                                             ? selectn('fv:definitions', word)
                                             : selectn('fv:literal_translation', word)
-
+                                        const hrefPath = NavigationHelpers.navigate(
+                                          '/explore' + selectn('path', word).replace('/Dictionary/', '/learn/words/'),
+                                          null,
+                                          true
+                                        )
                                         return (
                                           <SubViewTranslation
                                             key={key}
@@ -292,7 +293,7 @@ export class View extends Component {
                                             groupValue="translation"
                                           >
                                             <p>
-                                              <Link
+                                              {/* <Link
                                                 key={selectn('uid', word)}
                                                 href={NavigationHelpers.navigate(
                                                   '/explore' +
@@ -302,7 +303,17 @@ export class View extends Component {
                                                 )}
                                               >
                                                 {selectn('dc:title', word)}
-                                              </Link>
+                                              </Link> */}
+                                              <a
+                                                key={selectn('uid', word)}
+                                                href={hrefPath}
+                                                onClick={(e) => {
+                                                  e.preventDefault()
+                                                  NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+                                                }}
+                                              >
+                                                {selectn('dc:title', word)}
+                                              </a>
                                             </p>
                                           </SubViewTranslation>
                                         )
