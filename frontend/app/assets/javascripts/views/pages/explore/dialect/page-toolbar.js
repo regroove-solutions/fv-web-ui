@@ -177,13 +177,13 @@ export class PageToolbar extends Component {
     const permissionEntity = selectn('response', computePermissionEntity) ? computePermissionEntity : computeEntity
 
     // Compute related tasks
-    const computeTasks = ProviderHelpers.getEntry(
+    const _computeTasks = ProviderHelpers.getEntry(
       this.props.computeTasks,
       selectn('response.uid', this.props.computeEntity)
     )
 
-    if (selectn('response.entries', computeTasks)) {
-      const taskList = new List(selectn('response.entries', computeTasks))
+    if (selectn('response.entries', _computeTasks)) {
+      const taskList = new List(selectn('response.entries', _computeTasks))
 
       taskList.forEach(function taskListForEach(value) {
         switch (selectn('properties.nt:type', value)) {
@@ -511,10 +511,10 @@ export class PageToolbar extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvDialect, nuxeo, windowPath } = state
+  const { tasks, nuxeo, windowPath } = state
 
   const { computeLogin } = nuxeo
-  const { computeTasks } = fvDialect
+  const { computeTasks } = tasks
   const { _windowPath } = windowPath
 
   return {
