@@ -18,9 +18,8 @@ import { Component, PropTypes } from 'react'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { pushWindowPath } from 'providers/redux/reducers/fv'
-import { replaceWindowPath } from 'providers/redux/reducers/fv'
-import { queryDialect2ByShortURL } from 'providers/redux/reducers/fv'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { queryDialect2ByShortURL } from 'providers/redux/reducers/fvDialect'
 
 import selectn from 'selectn'
 

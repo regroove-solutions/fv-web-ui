@@ -28,7 +28,7 @@ import {
   rejectRegistration,
   rejectTask,
 } from 'providers/redux/reducers/tasks'
-import { fetchDialect2 } from 'providers/redux/reducers/fv'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
 import { userUpgrade } from 'providers/redux/reducers/fvUser'
 
 import selectn from 'selectn'

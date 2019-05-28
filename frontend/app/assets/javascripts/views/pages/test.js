@@ -19,10 +19,10 @@ import Immutable from 'immutable'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchPortal } from 'providers/redux/reducers/fv'
-import { fetchSharedPictures } from 'providers/redux/reducers/fv'
-import { fetchWord } from 'providers/redux/reducers/fv'
-import { pushWindowPath } from 'providers/redux/reducers/fv'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchWord } from 'providers/redux/reducers/fvWord'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
