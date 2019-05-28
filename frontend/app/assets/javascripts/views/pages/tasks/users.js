@@ -14,28 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import React, { PropTypes } from 'react'
+import Immutable, { List } from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  approveRegistration,
+  approveTask,
+  fetchUserRegistrationTasks,
+  rejectRegistration,
+  rejectTask,
+} from 'providers/redux/reducers/tasks'
+import { fetchDialect2 } from 'providers/redux/reducers/fv'
+import { userUpgrade } from 'providers/redux/reducers/fvUser'
+
 import selectn from 'selectn'
-
-import ConfGlobal from 'conf/local.js'
-
-import t from 'tcomb-form'
-
-import Dialog from 'material-ui/lib/dialog'
-
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
 import RaisedButton from 'material-ui/lib/raised-button'
-import FlatButton from 'material-ui/lib/flat-button'
-
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/lib/table'
-
-import SelectFactory from 'views/components/Editor/fields/select'
-import DocumentView from 'views/components/Document/view'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import GroupAssignmentDialog from 'views/pages/users/group-assignment-dialog'
@@ -45,25 +45,27 @@ import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 const intl = IntlService.instance
 
-@provide
-export default class UserTasks extends React.Component {
+const { func, object } = PropTypes
+export class UserTasks extends React.Component {
   static propTypes = {
-    fetchUserRegistrationTasks: PropTypes.func.isRequired,
-    computeUserRegistrationTasks: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    approveTask: PropTypes.func.isRequired,
-    computeUserTasksApprove: PropTypes.object.isRequired,
-    approveRegistration: PropTypes.func.isRequired,
-    computeUserRegistrationApprove: PropTypes.object.isRequired,
-    rejectTask: PropTypes.func.isRequired,
-    computeUserTasksReject: PropTypes.object.isRequired,
-    rejectRegistration: PropTypes.func.isRequired,
-    computeUserRegistrationReject: PropTypes.object.isRequired,
-    userUpgrade: PropTypes.func.isRequired,
-    computeUserUpgrade: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeUserRegistrationApprove: object.isRequired,
+    computeUserRegistrationReject: object.isRequired,
+    computeUserRegistrationTasks: object.isRequired,
+    computeUserTasksApprove: object.isRequired,
+    computeUserTasksReject: object.isRequired,
+    computeUserUpgrade: object.isRequired,
+    // REDUX: actions/dispatch/func
+    approveRegistration: func.isRequired,
+    approveTask: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchUserRegistrationTasks: func.isRequired,
+    rejectRegistration: func.isRequired,
+    rejectTask: func.isRequired,
+    userUpgrade: func.isRequired,
   }
 
   constructor(props, context) {
@@ -114,13 +116,14 @@ export default class UserTasks extends React.Component {
           intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
         )
         break
+      default: // NOTE: do nothing
     }
 
     this.setState({ lastActionedTaskId: id })
   }
 
   _getRoleLabel(role) {
-    let roleLabel = selectn('text', ProviderHelpers.userRegistrationRoles.find((rolesVal) => rolesVal.value == role))
+    const roleLabel = selectn('text', ProviderHelpers.userRegistrationRoles.find((rolesVal) => rolesVal.value == role))
     if (roleLabel && roleLabel != 'undefined') return roleLabel.replace('I am', '')
   }
 
@@ -172,13 +175,13 @@ export default class UserTasks extends React.Component {
   }
 
   _handleClose() {
-    this.setState({ open: false, open: false, selectedPreapprovalTask: null, selectedTask: null })
+    this.setState({ open: false, selectedPreapprovalTask: null, selectedTask: null })
   }
 
   render() {
     let serverErrorMessage = ''
 
-    const userID = selectn('response.id', this.props.computeLogin)
+    // const userID = selectn('response.id', this.props.computeLogin)
 
     const computeEntities = Immutable.fromJS([
       {
@@ -204,8 +207,8 @@ export default class UserTasks extends React.Component {
       selectn('routeParams.dialect', this.props)
     )
 
-    let userTasks = []
-    let userRegistrationTasks = []
+    const userTasks = []
+    const userRegistrationTasks = []
 
     if (selectn('success', computeUserUpgrade)) {
       switch (selectn('response.value.status', computeUserUpgrade)) {
@@ -219,27 +222,28 @@ export default class UserTasks extends React.Component {
         case 200:
           serverErrorMessage = ''
           break
+        default: // NOTE: do nothing
       }
     }
 
     // Compute User Registration Tasks
     ;(selectn('response.entries', computeUserRegistrationTasks) || []).map(
-      function(task, i) {
-        let uid = selectn('uid', task)
+      function registrationTasksMap(task, i) {
+        const uid = selectn('uid', task)
 
         if (this.state.savedItems.includes(uid)) {
           return
         }
 
-        let title = selectn('properties.dc:title', task)
-        let firstName = selectn('properties.userinfo:firstName', task)
-        let lastName = selectn('properties.userinfo:lastName', task)
-        let email = selectn('properties.userinfo:email', task)
-        let role = selectn('properties.fvuserinfo:role', task)
-        let comment = selectn('properties.fvuserinfo:comment', task)
-        let dateCreated = selectn('properties.dc:created', task)
+        // const title = selectn('properties.dc:title', task)
+        const firstName = selectn('properties.userinfo:firstName', task)
+        const lastName = selectn('properties.userinfo:lastName', task)
+        const email = selectn('properties.userinfo:email', task)
+        const role = selectn('properties.fvuserinfo:role', task)
+        const comment = selectn('properties.fvuserinfo:comment', task)
+        const dateCreated = selectn('properties.dc:created', task)
 
-        let tableRow = (
+        const tableRow = (
           <tr style={{ borderBottom: '1px solid #000' }} key={i}>
             <td>{lastName}</td>
             <td>{firstName}</td>
@@ -250,7 +254,7 @@ export default class UserTasks extends React.Component {
             <td>
               <RaisedButton
                 label={intl.trans('add_to_group', 'Add to Group', 'first')}
-                secondary={true}
+                secondary
                 onClick={this._handlePreApprovalOpen.bind(this, task, 'approve')}
               />
             </td>
@@ -262,7 +266,7 @@ export default class UserTasks extends React.Component {
     )
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div>
           <h1>User Registration Requests</h1>
           <p>
@@ -274,7 +278,7 @@ export default class UserTasks extends React.Component {
           {serverErrorMessage}
 
           <AuthorizationFilter
-            showAuthError={true}
+            showAuthError
             filter={{
               role: ['Everything'],
               entity: selectn('response', computeDialect),
@@ -302,7 +306,7 @@ export default class UserTasks extends React.Component {
               </table>
 
               <p>
-                {userTasks.length == 0 && userRegistrationTasks.length == 0
+                {userTasks.length === 0 && userRegistrationTasks.length === 0
                   ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.')
                   : ''}
               </p>
@@ -328,3 +332,45 @@ export default class UserTasks extends React.Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvUser, nuxeo, tasks } = state
+
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const {
+    computeUserRegistrationApprove,
+    computeUserRegistrationReject,
+    computeUserRegistrationTasks,
+    computeUserTasksApprove,
+    computeUserTasksReject,
+  } = tasks
+  const { computeUserUpgrade } = fvUser
+  return {
+    computeDialect2,
+    computeLogin,
+    computeUserRegistrationApprove,
+    computeUserRegistrationReject,
+    computeUserRegistrationTasks,
+    computeUserTasksApprove,
+    computeUserTasksReject,
+    computeUserUpgrade,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  approveRegistration,
+  approveTask,
+  fetchDialect2,
+  fetchUserRegistrationTasks,
+  rejectRegistration,
+  rejectTask,
+  userUpgrade,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(UserTasks)
