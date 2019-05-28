@@ -14,12 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { selfregisterUser } from 'providers/redux/reducers/fvUser'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
-import { User } from 'nuxeo'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -37,20 +42,23 @@ const intl = IntlService.instance
 /**
  * Create user entry
  */
-@provide
-export default class Register extends Component {
+
+const { array, func, object, string } = PropTypes
+export class Register extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    selfregisterUser: PropTypes.func.isRequired,
-    computeUserSelfregister: PropTypes.object.isRequired,
-    computeUser: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeUser: object.isRequired,
+    computeUserSelfregister: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    selfregisterUser: func.isRequired,
   }
 
   constructor(props, context) {
@@ -78,9 +86,10 @@ export default class Register extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentWord, nextWord
+    let currentWord
+    let nextWord
 
-    if (this.state.userRequest != null) {
+    if (this.state.userRequest !== null) {
       currentWord = ProviderHelpers.getEntry(this.props.computeUserSelfregister, this.state.userRequest)
       nextWord = ProviderHelpers.getEntry(nextProps.computeUserSelfregister, this.state.userRequest)
     }
@@ -95,19 +104,17 @@ export default class Register extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.windowPath != this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect2 != this.props.computeDialect2:
         return true
-        break
 
       case newProps.computeUserSelfregister != this.props.computeUserSelfregister:
         return true
-        break
+      default: // NOTE: do nothing
     }
 
     return false
@@ -116,14 +123,14 @@ export default class Register extends Component {
   _onRequestSaveForm(currentUser, e) {
     // Prevent default behaviour
     e.preventDefault()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_user_create.getValue()
 
-    let formValue = this.refs['form_user_create'].getValue()
+    const properties = {}
 
-    let properties = {}
-
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           properties[key] = formValue[key]
         }
       }
@@ -133,13 +140,13 @@ export default class Register extends Component {
       formValue: properties,
     })
 
-    let payload = Object.assign({}, properties, {
+    const payload = Object.assign({}, properties, {
       'userinfo:groups': [properties['userinfo:groups']],
     })
 
     // Passed validation
     if (formValue) {
-      let userRequest = {
+      const userRequest = {
         'entity-type': 'document',
         type: 'FVUserRegistration',
         id: selectn('userinfo:email', properties),
@@ -161,8 +168,8 @@ export default class Register extends Component {
   render() {
     let serverErrorMessage = ''
 
-    let FVUserFields = selectn('FVUser', fields)
-    let FVUserOptions = Object.assign({}, selectn('FVUser', options))
+    const FVUserFields = selectn('FVUser', fields)
+    const FVUserOptions = Object.assign({}, selectn('FVUser', options))
 
     const computeEntities = ProviderHelpers.toJSKeepId([
       {
@@ -180,16 +187,16 @@ export default class Register extends Component {
 
     // Hide requested space field is pre-set.
     if (selectn('fields.fvuserinfo:requestedSpace', FVUserOptions) && selectn('response.uid', computeDialect2)) {
-      FVUserOptions['fields']['fvuserinfo:requestedSpace']['type'] = 'hidden'
+      FVUserOptions.fields['fvuserinfo:requestedSpace'].type = 'hidden'
     }
 
-    let dialectGroups = ProviderHelpers.getDialectGroups(
+    const dialectGroups = ProviderHelpers.getDialectGroups(
       selectn('response.contextParameters.acls[0].aces', computeDialect2)
     )
 
-    if (dialectGroups.all != null) {
+    if (dialectGroups.all !== null) {
       FVUserFields['userinfo:groups'] = t.enums(dialectGroups.all)
-      FVUserOptions['fields']['userinfo:groups'] = {
+      FVUserOptions.fields['userinfo:groups'] = {
         label: intl.trans('group', 'Group', 'first'),
       }
     }
@@ -225,12 +232,12 @@ export default class Register extends Component {
               </div>
             </div>
           )
-          break
+        default: // NOTE: do nothing
       }
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {selectn('response.title', computeDialect2)} {intl.trans('register', 'Register', 'first')}
         </h1>
@@ -239,7 +246,7 @@ export default class Register extends Component {
           <div className={classNames('col-xs-12', 'col-md-8')}>
             <form onSubmit={this._onRequestSaveForm.bind(this, this.props.computeLogin)}>
               <t.form.Form
-                ref="form_user_create"
+                ref="form_user_create" // TODO: DEPRECATED
                 type={t.struct(FVUserFields)}
                 context={selectn('response', computeDialect2)}
                 value={
@@ -256,7 +263,7 @@ export default class Register extends Component {
               <div className="form-group">
                 <RaisedButton
                   onClick={this._onRequestSaveForm.bind(this, this.props.computeLogin)}
-                  primary={true}
+                  primary
                   label={intl.trans('register', 'Register', 'first')}
                 />
               </div>
@@ -269,16 +276,16 @@ export default class Register extends Component {
               is available to the public without registration, at the discretion of communities.
             </p>
             <p>
-              You can get started by clicking "
+              {'You can get started by clicking "'}
               <strong>
                 <a href="/explore/FV/sections/Data">Choose a Language</a>
               </strong>
-              ", and then picking your language/community.
+              {'", and then picking your language/community.'}
             </p>
             <RaisedButton
               label={intl.translate('choose_lang', 'Choose a Language', 'first')}
-              primary={true}
-              onClick={(e) => NavigationHelpers.navigate('/explore/FV/sections/Data', this.props.pushWindowPath)}
+              primary
+              onClick={() => NavigationHelpers.navigate('/explore/FV/sections/Data', this.props.pushWindowPath)}
             />
           </div>
         </div>
@@ -286,3 +293,35 @@ export default class Register extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvUser, nuxeo, windowPath } = state
+
+  const { computeUser, computeUserSelfregister } = fvUser
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computeUser,
+    computeUserSelfregister,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+  selfregisterUser,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Register)
