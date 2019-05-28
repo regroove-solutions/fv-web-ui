@@ -30,17 +30,17 @@ import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
-const { oneOfType, instanceOf, array, func, object, string } = PropTypes
+const { oneOfType, instanceOf, array, func, object } = PropTypes
 
 export class PortalListDialects extends Component {
   static propTypes = {
     items: oneOfType([array, instanceOf(List)]),
     filteredItems: oneOfType([array, instanceOf(List)]),
     fieldMapping: object,
+    // REDUX: reducers/state
+    properties: object.isRequired,
     // REDUX: actions/dispatch/func
     pushWindowPath: func.isRequired,
-    // REDUX: reducers/state
-    theme: string.isRequired,
   }
 
   static defaultProps = {
@@ -73,7 +73,7 @@ export class PortalListDialects extends Component {
           const logo = selectn('contextParameters.lightportal.fv-portal:logo', tile)
           const dialectCoverImage = encodeURI(UIHelpers.getThumbnail(logo, 'Medium'))
           const dialectDescription = IntlService.instance.searchAndReplace(tile.description) || null
-          const href = `/${this.props.theme}${tile.path.replace('/Portal', '')}`
+          const href = `/${this.props.properties.theme}${tile.path.replace('/Portal', '')}`
 
           return (
             <a
@@ -104,9 +104,9 @@ export class PortalListDialects extends Component {
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
   const { navigation } = state
-  const { theme } = navigation
+  const { properties } = navigation
   return {
-    theme,
+    properties,
   }
 }
 
