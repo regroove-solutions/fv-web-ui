@@ -30,15 +30,8 @@ import {
   unpublishDialect,
   updateDialect2,
 } from 'providers/redux/reducers/fvDialect'
-import {
-  fetchPortal,
-  publishPortal,
-  pushWindowPath,
-  replaceWindowPath,
-  unpublishPortal,
-  updatePortal,
-} from 'providers/redux/reducers/fvPortal'
-
+import { fetchPortal, publishPortal, unpublishPortal, updatePortal } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
