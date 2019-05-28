@@ -24,11 +24,10 @@ import { fvWordReducer } from './fvWord'
 import { navigationReducer } from './navigation'
 import { nuxeoReducer } from './nuxeo'
 import { reportsReducer } from './reports'
-import { restReducer } from './rest'
+// import { restReducer } from './rest' // NOTE: restReducer not consumed by components, just other reducers
 import { searchReducer } from './search'
 import { tasksReducer } from './tasks'
 import { windowPathReducer } from './windowPath'
-
 export default combineReducers({
   directory: directoryReducer,
   document: documentReducer,
@@ -55,7 +54,7 @@ export default combineReducers({
   navigation: navigationReducer,
   nuxeo: nuxeoReducer,
   reports: reportsReducer,
-  rest: restReducer,
+  // rest: restReducer,
   search: searchReducer,
   tasks: tasksReducer,
   windowPath: windowPathReducer,
