@@ -112,7 +112,7 @@ export class Categories extends Component {
       },
     ])
 
-    const computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
+    const _computeCategories = ProviderHelpers.getEntry(this.props.computeCategories, this.state.categoriesPath)
 
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
@@ -120,7 +120,7 @@ export class Categories extends Component {
           <div className="col-xs-12">
             <CategoryList
               action={this._onNavigateRequest}
-              items={selectn('response.entries', computeCategories)}
+              items={selectn('response.entries', _computeCategories)}
               cols={6}
             />
           </div>
