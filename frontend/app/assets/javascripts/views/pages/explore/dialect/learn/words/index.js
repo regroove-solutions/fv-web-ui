@@ -34,7 +34,7 @@ import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
-import { SearchDialect } from 'views/components/SearchDialect'
+import SearchDialect from 'views/components/SearchDialect'
 import {
   SEARCH_SORT_DEFAULT,
   SEARCH_BY_DEFAULT,
