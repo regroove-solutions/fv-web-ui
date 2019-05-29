@@ -24,9 +24,10 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
 const intl = IntlService.instance
 const { any, func, string, bool, object, number } = PropTypes
-class SearchDialect extends Component {
+export class SearchDialect extends Component {
   static propTypes = {
     filterInfo: any, // TODO: set appropriate propType
+    flashcardMode: bool,
     handleSearch: func,
     isSearchingPhrases: bool,
     resetSearch: func,
@@ -40,7 +41,6 @@ class SearchDialect extends Component {
     searchPartOfSpeech: string,
     searchTerm: string,
     updateAncestorState: func,
-    flashcardMode: bool,
     // REDUX: reducers/state
     computeDirectory: object.isRequired,
     // REDUX: actions/dispatch/func
@@ -702,8 +702,6 @@ class SearchDialect extends Component {
     })
   }
 }
-
-export { SearchDialect }
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
