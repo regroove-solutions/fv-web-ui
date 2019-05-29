@@ -23,8 +23,8 @@ import { connect } from 'react-redux'
 import { fetchCategories } from 'providers/redux/reducers/fvCategory'
 import { fetchDocument } from 'providers/redux/reducers/document'
 import { fetchPortal } from 'providers/redux/reducers/fvPortal'
-import { overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
-import { pushWindowPath, updatePageProperties } from 'providers/redux/reducers/windowPath'
+import { overrideBreadcrumbs, updatePageProperties } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 
@@ -43,7 +43,7 @@ import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import { isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
 import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
-import { SearchDialect } from 'views/components/SearchDialect'
+import SearchDialect from 'views/components/SearchDialect'
 import {
   SEARCH_SORT_DEFAULT,
   SEARCH_BY_ALPHABET,
@@ -494,12 +494,12 @@ export class PageDialectLearnPhrases extends PageDialectLearnBase {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvCategory, fvDocument, fvPortal, navigation, nuxeo, windowPath } = state
+  const { document, fvCategory, fvPortal, navigation, nuxeo, windowPath } = state
 
   const { properties } = navigation
   const { computeLogin } = nuxeo
   const { computeCategories } = fvCategory
-  const { computeDocument } = fvDocument
+  const { computeDocument } = document
   const { computePortal } = fvPortal
   const { splitWindowPath, _windowPath } = windowPath
 
