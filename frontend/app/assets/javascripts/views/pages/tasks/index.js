@@ -81,132 +81,30 @@ export class Tasks extends React.Component {
       lastActionedTaskId: null,
       userRegistrationTasksPath: '/management/registrationRequests/',
     }
-
-    // Bind methods to 'this'
-    ;[
-      '_handleTaskActions',
-      '_handleRegistrationActions',
-      '_handleOpen',
-      '_handlePreApprovalOpen',
-      '_handleClose',
-      'fetchData',
-      '_saveMethod',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  _handleTaskActions(id, action) {
-    switch (action) {
-      case 'approve':
-        this.props.approveTask(
-          id,
-          {
-            comment: '',
-            status: 'validate',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-        )
-        break
-
-      case 'reject':
-        this.props.rejectTask(
-          id,
-          {
-            comment: '',
-            status: 'reject',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
-        )
-        break
-      default: // NOTE: do nothing
-    }
-
-    this.setState({ lastActionedTaskId: id })
-  }
-
-  _handleRegistrationActions(id, action) {
-    switch (action) {
-      case 'approve':
-        this.props.approveRegistration(
-          id,
-          {
-            value: 'approve',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-        )
-        break
-
-      case 'reject':
-        this.props.rejectRegistration(
-          id,
-          {
-            value: 'reject',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
-        )
-        break
-      default: // NOTE: do nothing
-    }
-
-    this.setState({ lastActionedTaskId: id })
-  }
-
-  fetchData(newProps) {
-    const userId = selectn('response.id', newProps.computeLogin)
-    newProps.fetchUserTasks(userId)
-    ProviderHelpers.fetchIfMissing(userId, newProps.fetchUserDialects, newProps.computeUserDialects)
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserTasksApprove != this.props.computeUserTasksApprove) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserTasksReject != this.props.computeUserTasksReject) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserRegistrationApprove != this.props.computeUserRegistrationApprove) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserRegistrationReject != this.props.computeUserRegistrationReject) {
-      this.fetchData(newProps)
+  componentDidUpdate(prevProps) {
+    // NOTE: computeLogin will always be different after a login (since prev. state was logged out)
+    // const updatedLogin = prevProps.computeLogin != this.props.computeLogin
+    const updatedUserTasksApprove = prevProps.computeUserTasksApprove != this.props.computeUserTasksApprove
+    const updatedUserTasksReject = prevProps.computeUserTasksReject != this.props.computeUserTasksReject
+    const updatedUserRegistrationApprove =
+      prevProps.computeUserRegistrationApprove != this.props.computeUserRegistrationApprove
+    const updatedUserRegistrationReject =
+      prevProps.computeUserRegistrationReject != this.props.computeUserRegistrationReject
+    if (
+      // updatedLogin ||
+      updatedUserTasksApprove ||
+      updatedUserTasksReject ||
+      updatedUserRegistrationApprove ||
+      updatedUserRegistrationReject
+    ) {
+      this._fetchData(this.props)
     }
   }
 
   componentDidMount() {
-    this.fetchData(this.props)
-  }
-
-  _saveMethod(properties) {
-    this.props.approveRegistration(
-      properties.id,
-      {
-        comment: properties.comment,
-        group: properties.group,
-        appurl: NavigationHelpers.getBaseWebUIURL(),
-      },
-      null,
-      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-    )
-
-    this.setState({
-      selectedPreapprovalTask: null,
-      preApprovalDialogOpen: false,
-    })
-  }
-
-  _handleOpen(id) {
-    this.setState({ open: true, selectedTask: id })
-  }
-
-  _handlePreApprovalOpen(task) {
-    this.props.fetchDialect2(selectn('properties.docinfo:documentId', task))
-    this.setState({ preApprovalDialogOpen: true, selectedPreapprovalTask: task })
-  }
-
-  _handleClose() {
-    this.setState({ open: false, preApprovalDialogOpen: false, selectedPreapprovalTask: null, selectedTask: null })
+    this._fetchData(this.props)
   }
 
   render() {
@@ -330,6 +228,103 @@ export class Tasks extends React.Component {
         </div>
       </PromiseWrapper>
     )
+  }
+
+  _fetchData = (newProps) => {
+    const userId = selectn('response.id', newProps.computeLogin)
+    newProps.fetchUserTasks(userId)
+    ProviderHelpers.fetchIfMissing(userId, newProps.fetchUserDialects, newProps.computeUserDialects)
+  }
+
+  _handleClose = () => {
+    this.setState({ open: false, preApprovalDialogOpen: false, selectedPreapprovalTask: null, selectedTask: null })
+  }
+
+  _handleOpen = (id) => {
+    this.setState({ open: true, selectedTask: id })
+  }
+
+  _handlePreApprovalOpen = (task) => {
+    this.props.fetchDialect2(selectn('properties.docinfo:documentId', task))
+    this.setState({ preApprovalDialogOpen: true, selectedPreapprovalTask: task })
+  }
+
+  _handleRegistrationActions = (id, action) => {
+    switch (action) {
+      case 'approve':
+        this.props.approveRegistration(
+          id,
+          {
+            value: 'approve',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+        )
+        break
+
+      case 'reject':
+        this.props.rejectRegistration(
+          id,
+          {
+            value: 'reject',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+        )
+        break
+      default: // NOTE: do nothing
+    }
+
+    this.setState({ lastActionedTaskId: id })
+  }
+
+  _handleTaskActions = (id, action) => {
+    switch (action) {
+      case 'approve':
+        this.props.approveTask(
+          id,
+          {
+            comment: '',
+            status: 'validate',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+        )
+        break
+
+      case 'reject':
+        this.props.rejectTask(
+          id,
+          {
+            comment: '',
+            status: 'reject',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+        )
+        break
+      default: // NOTE: do nothing
+    }
+
+    this.setState({ lastActionedTaskId: id })
+  }
+
+  _saveMethod = (properties) => {
+    this.props.approveRegistration(
+      properties.id,
+      {
+        comment: properties.comment,
+        group: properties.group,
+        appurl: NavigationHelpers.getBaseWebUIURL(),
+      },
+      null,
+      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+    )
+
+    this.setState({
+      selectedPreapprovalTask: null,
+      preApprovalDialogOpen: false,
+    })
   }
 }
 
