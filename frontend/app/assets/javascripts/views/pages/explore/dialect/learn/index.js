@@ -27,7 +27,12 @@ import {
   fetchDialectStats,
   publishDialectOnly,
 } from 'providers/redux/reducers/fvDialect'
-import { queryModifiedWords, queryCreatedWords, queryUserCreatedWords } from 'providers/redux/reducers/fvWord'
+import {
+  queryModifiedWords,
+  queryCreatedWords,
+  queryUserCreatedWords,
+  queryUserModifiedWords,
+} from 'providers/redux/reducers/fvWord'
 import {
   queryCreatedSongs,
   queryCreatedStories,
@@ -37,7 +42,6 @@ import {
   queryUserCreatedStories,
   queryUserModifiedSongs,
   queryUserModifiedStories,
-  queryUserModifiedWords,
 } from 'providers/redux/reducers/fvBook'
 import {
   queryCreatedPhrases,
