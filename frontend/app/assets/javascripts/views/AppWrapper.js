@@ -114,7 +114,6 @@ const getPreferences = function getPreferences(login, dialect) {
 }
 
 const { array, func, object, string } = PropTypes
-
 class AppWrapper extends Component {
   intl = IntlService.instance
   intlBaseKey = 'views'
@@ -169,9 +168,6 @@ class AppWrapper extends Component {
       adminGuideStarted: false,
       dialect: null,
     }
-
-    // Bind methods to 'this'
-    ;['_startAdminGuideAssist'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Force update of theme if out of sync
@@ -182,13 +178,58 @@ class AppWrapper extends Component {
     }
   }
 
+  render() {
+    const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
+
+    const warnings = {}
+
+    const preferences = getPreferences(this.props.computeLogin, selectn('response', _computeDialect2))
+
+    return (
+      <div
+        id="AppWrapper"
+        style={{
+          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
+          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
+        }}
+      >
+        <AppFrontController preferences={preferences} warnings={warnings} />
+
+        {/*<AuthorizationFilter filter={{
+                role: ['Everything'],
+                entity: selectn('response.entries[0]', dialects),
+                login: this.props.computeLogin
+            }}>
+                <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
+
+                    {this.intl.translate({
+                        key: 'super_admin_tools',
+                        default: 'Super Admin Tools',
+                        case: 'words'
+                    })}: <FlatButton onClick={this._startAdminGuideAssist.bind(this.props.windowPath)}
+                                     disabled={this.state.adminGuideStarted} label={this.intl.translate({
+                    key: 'admin_guide_assist',
+                    default: 'Admin Guide Assist', case: 'words'
+                })}/>
+                    {(this.state.adminGuideStarted) ? this.intl.translate({
+                        key: 'only_one_tour_per_page',
+                        default: 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'',
+                        case: 'first'
+                    }) : ''}
+
+                </div>
+            </AuthorizationFilter>*/}
+      </div>
+    )
+  }
+
   // Changing a theme manually...
   /*_changeTheme(event) {
       let index = event.nativeEvent.target.selectedIndex;
       this.props.changeTheme(event.target[index].value);
     }*/
 
-  _startAdminGuideAssist() {
+  _startAdminGuideAssist = () => {
     const doms = document.querySelectorAll('[data-component-id]')
 
     const tour = new Shepherd.Tour({
@@ -243,51 +284,6 @@ class AppWrapper extends Component {
     })
 
     tour.start()
-  }
-
-  render() {
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
-
-    const warnings = {}
-
-    const preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
-
-    return (
-      <div
-        id="AppWrapper"
-        style={{
-          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
-          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
-        }}
-      >
-        <AppFrontController preferences={preferences} warnings={warnings} />
-
-        {/*<AuthorizationFilter filter={{
-                role: ['Everything'],
-                entity: selectn('response.entries[0]', dialects),
-                login: this.props.computeLogin
-            }}>
-                <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
-
-                    {this.intl.translate({
-                        key: 'super_admin_tools',
-                        default: 'Super Admin Tools',
-                        case: 'words'
-                    })}: <FlatButton onClick={this._startAdminGuideAssist.bind(this.props.windowPath)}
-                                     disabled={this.state.adminGuideStarted} label={this.intl.translate({
-                    key: 'admin_guide_assist',
-                    default: 'Admin Guide Assist', case: 'words'
-                })}/>
-                    {(this.state.adminGuideStarted) ? this.intl.translate({
-                        key: 'only_one_tour_per_page',
-                        default: 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'',
-                        case: 'first'
-                    }) : ''}
-
-                </div>
-            </AuthorizationFilter>*/}
-      </div>
-    )
   }
 }
 
