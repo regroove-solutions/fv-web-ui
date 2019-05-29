@@ -19,8 +19,8 @@ import Immutable from 'immutable'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { computeResources } from 'providers/redux/reducers/fvResources'
-import { computeWords } from 'providers/redux/reducers/fvWord'
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { fetchWords } from 'providers/redux/reducers/fvWord'
 
 import selectn from 'selectn'
 
@@ -43,11 +43,11 @@ export class Jigsaw extends Component {
   static propTypes = {
     routeParams: object.isRequired,
     // REDUX: reducers/state
-    fetchResources: func.isRequired,
-    fetchWords: func.isRequired,
-    // REDUX: actions/dispatch/func
     computeResources: object.isRequired,
     computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    fetchWords: func.isRequired,
   }
 
   /**
@@ -197,19 +197,19 @@ export class Jigsaw extends Component {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvResources, fvWord } = state
 
-  const { fetchResources } = fvResources
-  const { fetchWords } = fvWord
+  const { computeResources } = fvResources
+  const { computeWords } = fvWord
 
   return {
-    fetchResources,
-    fetchWords,
+    computeResources,
+    computeWords,
   }
 }
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  computeResources,
-  computeWords,
+  fetchResources,
+  fetchWords,
 }
 
 export default connect(
