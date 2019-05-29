@@ -14,6 +14,7 @@ import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { matchPath } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'
+import { Redirector } from './Redirector'
 // import UIHelpers from 'common/UIHelpers'
 import StringHelpers from 'common/StringHelpers'
 // import AnalyticsHelpers from 'common/AnalyticsHelpers'
@@ -68,34 +69,6 @@ const PAGE_NOT_FOUND_BODY = (
   </div>
 )
 
-class Redirecter extends Component {
-  static propTypes = {
-    redirect: func,
-  }
-  static defaultProps = {
-    redirect: () => {},
-  }
-  constructor(props, context) {
-    super(props, context)
-  }
-
-  componentDidMount() {
-    this.props.redirect()
-  }
-
-  render() {
-    return (
-      <div style={{ backgroundColor: '#fff', height: '100vh' }}>
-        {intl.translate({
-          key: 'redirecting',
-          default: 'Redirecting',
-          case: 'first',
-        })}
-        ...
-      </div>
-    )
-  }
-}
 export class AppFrontController extends Component {
   static propTypes = {
     preferences: object,
@@ -121,208 +94,12 @@ export class AppFrontController extends Component {
     super(props, context)
 
     this.state = this._getInitialState()
-
-    // Bind methods to 'this'
-    ;['_route', '_updateTitle'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  _getInitialState() {
-    const routes = Immutable.fromJS(ConfRoutes)
-    const contextPath = ConfGlobal.contextPath.split('/').filter((v) => v !== '')
-
-    return {
-      routes:
-        contextPath && contextPath.length > 0
-          ? routes.map((route) => (route ? route.set('path', List(contextPath).concat(route.get('path'))) : route))
-          : routes,
-      matchedPage: null,
-      matchedRouteParams: {},
-      warningsDismissed: false,
-    }
-  }
-
-  /**
-   * Dynamically update title
-   */
-  _updateTitle() {
-    // Title provided from within a component
-    const pageTitleParams = this.props.properties.pageTitleParams
-
-    let title = this.props.properties.title
-
-    if (
-      this.state.matchedPage &&
-      this.state.matchedPage.has('title') &&
-      this.state.matchedPage.get('title') &&
-      this.state.matchedPage.get('title') !== document.title
-    ) {
-      const combinedRouteParams = Object.assign({}, this.state.matchedRouteParams, pageTitleParams)
-
-      title = this.state.matchedPage.get('title')
-      Object.keys(combinedRouteParams).forEach((route) => {
-        title = title.replace('{$' + route + '}', StringHelpers.toTitleCase(combinedRouteParams[route]))
-      })
-
-      title = title + ' | ' + this.props.properties.title
-    }
-
-    if (title.search(' | ') >= 0) {
-      const newTitle = []
-
-      const parts = title.split('|')
-
-      let i
-      for (i in parts) {
-        newTitle.push(intl.searchAndReplace(parts[i].trim()))
-      }
-      title = newTitle.join(' | ')
-    }
-
-    document.title = title
-  }
-
-  /**
-   * Conditionally route the parameters.
-   * This could normally go into the render method to keep things simple,
-   * however redirecting (i.e. updating state), cannot be done inside render.
-   */
-  _route(props, routesOverride = null) {
-    let matchedPage = null
-    let matchedRouteParams = {}
-
-    const pathArray = props.splitWindowPath
-
-    const routes = routesOverride || this.state.routes
-
-    routes.forEach((value) => {
-      const matchTest = matchPath(value.get('path'), pathArray)
-      const matchAlias = matchPath(value.get('alias'), pathArray)
-
-      // If only the alias matched, redirect to the original path
-      if (matchAlias.matched && !matchTest.matched) {
-        window.location.replace('/' + value.get('path').join())
-      }
-
-      if (matchTest.matched) {
-        const routeParams = matchTest.routeParams
-
-        // Extract common paths from URL
-        if (value.has('extractPaths') && value.get('extractPaths')) {
-          const domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
-          const dialectPathLocation = 5
-          const languagePathLocation = 4
-          const languageFamilyPathLocation = 3
-
-          // If domain is specified in the URL, these are Nuxeo paths that can be extracted
-          if (domainPathLocation !== -1) {
-            // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
-            const nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
-
-            if (nuxeoPath.length >= dialectPathLocation) {
-              routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
-              routeParams.dialect_path = decodeURI('/' + nuxeoPath.slice(0, dialectPathLocation + 1).join('/'))
-            }
-
-            if (nuxeoPath.length >= languagePathLocation) {
-              routeParams.language_name = decodeURI(nuxeoPath[languagePathLocation])
-              routeParams.language_path = decodeURI('/' + nuxeoPath.slice(0, languagePathLocation + 1).join('/'))
-            }
-
-            if (nuxeoPath.length >= languageFamilyPathLocation) {
-              routeParams.language_family_name = decodeURI(nuxeoPath[languageFamilyPathLocation])
-              routeParams.language_family_path = decodeURI(
-                '/' + nuxeoPath.slice(0, languageFamilyPathLocation + 1).join('/')
-              )
-            }
-          }
-        }
-
-        matchedPage = value
-        matchedRouteParams = routeParams
-
-        // Break out of forEach
-        return false
-      }
-    })
-
-    // Match found
-    if (matchedPage !== null) {
-      // Redirect if required
-      if (matchedPage.has('redirects')) {
-        matchedPage.get('redirects').forEach((value) => {
-          if (value.get('condition')({ props: props })) {
-            // Avoid invariant violations during rendering by setting temporary placeholder component as matched page, and 'redirecting' after mount.
-            matchedPage = matchedPage.set(
-              'page',
-              Immutable.fromJS(
-                React.createElement(
-                  Redirecter,
-                  {
-                    redirect: () => {
-                      return props.replaceWindowPath(value.get('target')({ props: props }))
-                    },
-                  },
-                  matchedPage.get('page')
-                )
-              )
-            )
-
-            return false
-          }
-        })
-      }
-
-      // Switch themes based on route params
-      if (matchedRouteParams.hasOwnProperty('theme')) {
-        let newTheme = matchedRouteParams.theme
-
-        // Switch to workspace theme if available
-        if (
-          ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') ||
-            matchedPage.get('path').indexOf('Workspaces') !== -1) &&
-          matchedRouteParams.theme === 'explore'
-        ) {
-          newTheme = 'workspace'
-        }
-
-        if (props.properties.theme.id != newTheme) {
-          props.changeTheme(newTheme)
-        }
-      } else {
-        // NOTE: Initial theme state is set in a redux reducer located at:
-        //   app/assets/javascripts/providers/redux/reducers/navigation/reducer.js
-        // props.changeTheme('default')
-      }
-
-      const matchReturn = {
-        matchedPage: matchedPage,
-        matchedRouteParams: matchedRouteParams,
-      }
-
-      // Load help
-      //props.loadGuide(props.windowPath, matchReturn);
-
-      // Load Navigation
-      //props.loadNavigation();
-
-      this.setState(matchReturn)
-    } else {
-      // No match found (i.e. 404)
-      const notFoundPage = Immutable.fromJS({
-        title: PAGE_NOT_FOUND_TITLE,
-        page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
-      })
-
-      const matchReturn = {
-        matchedPage: notFoundPage,
-        matchedRouteParams: matchedRouteParams,
-      }
-
-      this.setState(matchReturn)
-    }
-  }
-
-  componentWillMount() {
+  componentDidMount() {
+    // NOTE: added to respond to `window.history.back()` calls
+    window.addEventListener('popstate', this._handleHistoryEvent)
+    // NOTE: this used to be called in `componentWillMount`
     this._route(this.props)
   }
 
@@ -344,68 +121,34 @@ export class AppFrontController extends Component {
         this.props.pushWindowPath(primary_dialect_path)
       }
     }
-  }
 
-  componentWillReceiveProps(nextProps) {
-    const primary_dialect_path = selectn('primary_dialect_path', this.props.preferences)
-    const next_primary_dialect_path = selectn('primary_dialect_path', nextProps.preferences)
+    const previousPrimaryDialectPath = selectn('primary_dialect_path', prevProps.preferences)
+    const currentPrimaryDialectPath = selectn('primary_dialect_path', this.props.preferences)
 
-    // Re-route on window path change
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this._route(nextProps)
-    } else if (nextProps.computeLogin != this.props.computeLogin) {
-      // Re-route on login
-      this._route(nextProps)
-    } else if (
-      next_primary_dialect_path !== undefined &&
-      next_primary_dialect_path != primary_dialect_path &&
-      next_primary_dialect_path.length > 0
-    ) {
-      // Re-route if preferences change
-      this._route(nextProps)
+    // Re-route when:
+    // - window path changes
+    // - logged in
+    // - preferences changes
+    const pathChanged = prevProps.windowPath !== this.props.windowPath
+    const loggedIn = prevProps.computeLogin != this.props.computeLogin
+    const preferencesChanged =
+      currentPrimaryDialectPath !== undefined &&
+      currentPrimaryDialectPath != previousPrimaryDialectPath &&
+      currentPrimaryDialectPath.length > 0
+
+    if (pathChanged || loggedIn || preferencesChanged) {
+      this._route(this.props)
     }
-  }
-  _renderWithBreadcrumb(reactElement, matchedPage, props, theme) {
-    const themePalette = props.properties.theme.palette.rawTheme.palette
-    const { routeParams } = reactElement.props
-    const { /*splitWindowPath, */ computeLogin } = props
-    const { routes } = this.state
-    let _workspaceSwitcher = null
-    const area = selectn('routeParams.area', reactElement.props)
-    if (
-      area &&
-      selectn('isConnected', computeLogin) &&
-      matchedPage.get('disableWorkspaceSectionNav') !== true &&
-      !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
-    ) {
-      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
-    }
-    const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
-    const findReplace = overrideBreadcrumbs
-      ? { find: overrideBreadcrumbs.find, replace: selectn(overrideBreadcrumbs.replace, this.props.properties) }
-      : undefined
-    return (
-      <div>
-        <div className="breadcrumbContainer row">
-          <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
-            {_workspaceSwitcher}
-            <Breadcrumb
-              className="pull-left"
-              matchedPage={matchedPage}
-              routes={routes}
-              routeParams={routeParams}
-              // splitWindowPath={splitWindowPath}
-              findReplace={findReplace}
-            />
-          </div>
-        </div>
-        <div className={'page-' + theme + '-theme'}>{reactElement}</div>
-      </div>
-    )
   }
 
   render() {
     const { matchedPage, matchedRouteParams } = this.state
+
+    // NOTE: Due to the switch from `componentWillMount` to `componentDidMount`
+    // `render` runs before we are ready, hence the empty div being returned
+    if (matchedPage === null) {
+      return <div />
+    }
 
     const isFrontPage = !matchedPage ? false : matchedPage.get('frontpage')
     const hideNavigation = matchedPage && matchedPage.has('navigation') && matchedPage.get('navigation') === false
@@ -483,6 +226,245 @@ export class AppFrontController extends Component {
         </div>
       </div>
     )
+  }
+
+  _getInitialState = () => {
+    const routes = Immutable.fromJS(ConfRoutes)
+    const contextPath = ConfGlobal.contextPath.split('/').filter((v) => v !== '')
+
+    return {
+      routes:
+        contextPath && contextPath.length > 0
+          ? routes.map((route) => (route ? route.set('path', List(contextPath).concat(route.get('path'))) : route))
+          : routes,
+      matchedPage: null,
+      matchedRouteParams: {},
+      warningsDismissed: false,
+    }
+  }
+
+  _handleHistoryEvent = () => {
+    this.props.pushWindowPath(window.location.pathname)
+  }
+
+  _renderWithBreadcrumb = (reactElement, matchedPage, props, theme) => {
+    const themePalette = props.properties.theme.palette.rawTheme.palette
+    const { routeParams } = reactElement.props
+    const { /*splitWindowPath, */ computeLogin } = props
+    const { routes } = this.state
+    let _workspaceSwitcher = null
+    const area = selectn('routeParams.area', reactElement.props)
+    if (
+      area &&
+      selectn('isConnected', computeLogin) &&
+      matchedPage.get('disableWorkspaceSectionNav') !== true &&
+      !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
+    ) {
+      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
+    }
+    const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
+    const findReplace = overrideBreadcrumbs
+      ? { find: overrideBreadcrumbs.find, replace: selectn(overrideBreadcrumbs.replace, this.props.properties) }
+      : undefined
+    return (
+      <div>
+        <div className="breadcrumbContainer row">
+          <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
+            {_workspaceSwitcher}
+            <Breadcrumb
+              className="pull-left"
+              matchedPage={matchedPage}
+              routes={routes}
+              routeParams={routeParams}
+              // splitWindowPath={splitWindowPath}
+              findReplace={findReplace}
+            />
+          </div>
+        </div>
+        <div className={'page-' + theme + '-theme'}>{reactElement}</div>
+      </div>
+    )
+  }
+
+  /**
+   * Conditionally route the parameters.
+   * This could normally go into the render method to keep things simple,
+   * however redirecting (i.e. updating state), cannot be done inside render.
+   */
+  _route = (props, routesOverride = null) => {
+    let matchedPage = null
+    let matchedRouteParams = {}
+    const pathArray = props.splitWindowPath
+
+    const routes = routesOverride || this.state.routes
+
+    routes.forEach((value) => {
+      const matchTest = matchPath(value.get('path'), pathArray)
+      const matchAlias = matchPath(value.get('alias'), pathArray)
+
+      // If only the alias matched, redirect to the original path
+      if (matchAlias.matched && !matchTest.matched) {
+        window.location.replace('/' + value.get('path').join())
+      }
+
+      if (matchTest.matched) {
+        const routeParams = matchTest.routeParams
+
+        // Extract common paths from URL
+        if (value.has('extractPaths') && value.get('extractPaths')) {
+          const domainPathLocation = pathArray.indexOf(ConfGlobal.domain)
+          const dialectPathLocation = 5
+          const languagePathLocation = 4
+          const languageFamilyPathLocation = 3
+
+          // If domain is specified in the URL, these are Nuxeo paths that can be extracted
+          if (domainPathLocation !== -1) {
+            // Path from domain to end of path (e.g. /FV/Workspaces/Data/family/language/dialect)
+            const nuxeoPath = pathArray.slice(domainPathLocation, pathArray.length)
+
+            if (nuxeoPath.length >= dialectPathLocation) {
+              routeParams.dialect_name = decodeURI(nuxeoPath[dialectPathLocation])
+              routeParams.dialect_path = decodeURI('/' + nuxeoPath.slice(0, dialectPathLocation + 1).join('/'))
+            }
+
+            if (nuxeoPath.length >= languagePathLocation) {
+              routeParams.language_name = decodeURI(nuxeoPath[languagePathLocation])
+              routeParams.language_path = decodeURI('/' + nuxeoPath.slice(0, languagePathLocation + 1).join('/'))
+            }
+
+            if (nuxeoPath.length >= languageFamilyPathLocation) {
+              routeParams.language_family_name = decodeURI(nuxeoPath[languageFamilyPathLocation])
+              routeParams.language_family_path = decodeURI(
+                '/' + nuxeoPath.slice(0, languageFamilyPathLocation + 1).join('/')
+              )
+            }
+          }
+        }
+
+        matchedPage = value
+        matchedRouteParams = routeParams
+
+        // Break out of forEach
+        return false
+      }
+    })
+
+    // Match found
+    if (matchedPage !== null) {
+      // Redirect if required
+      if (matchedPage.has('redirects')) {
+        matchedPage.get('redirects').forEach((value) => {
+          if (value.get('condition')({ props: props })) {
+            // Avoid invariant violations during rendering by setting temporary placeholder component as matched page, and 'redirecting' after mount.
+            matchedPage = matchedPage.set(
+              'page',
+              Immutable.fromJS(
+                React.createElement(
+                  Redirector,
+                  {
+                    redirect: () => {
+                      return props.replaceWindowPath(value.get('target')({ props: props }))
+                    },
+                  },
+                  matchedPage.get('page')
+                )
+              )
+            )
+
+            return false
+          }
+        })
+      }
+
+      // Switch themes based on route params
+      if (matchedRouteParams.hasOwnProperty('theme')) {
+        let newTheme = matchedRouteParams.theme
+
+        // Switch to workspace theme if available
+        if (
+          ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') ||
+            matchedPage.get('path').indexOf('Workspaces') !== -1) &&
+          matchedRouteParams.theme === 'explore'
+        ) {
+          newTheme = 'workspace'
+        }
+
+        if (props.properties.theme.id != newTheme) {
+          props.changeTheme(newTheme)
+        }
+      } else {
+        // NOTE: Initial theme state is now set in a redux reducer located at:
+        //   app/assets/javascripts/providers/redux/reducers/navigation/reducer.js
+        // props.changeTheme('default')
+      }
+
+      const matchReturn = {
+        matchedPage: matchedPage,
+        matchedRouteParams: matchedRouteParams,
+      }
+
+      // Load help
+      //props.loadGuide(props.windowPath, matchReturn);
+
+      // Load Navigation
+      //props.loadNavigation();
+
+      this.setState(matchReturn)
+      return
+    }
+
+    // No match found (i.e. 404)
+    const notFoundPage = Immutable.fromJS({
+      title: PAGE_NOT_FOUND_TITLE,
+      page: <PageError title={PAGE_NOT_FOUND_TITLE} body={PAGE_NOT_FOUND_BODY} />,
+    })
+
+    const matchReturn = {
+      matchedPage: notFoundPage,
+      matchedRouteParams: matchedRouteParams,
+    }
+
+    this.setState(matchReturn)
+  }
+
+  /**
+   * Dynamically update title
+   */
+  _updateTitle = () => {
+    // Title provided from within a component
+    const pageTitleParams = this.props.properties.pageTitleParams
+
+    let title = this.props.properties.title
+
+    if (
+      this.state.matchedPage &&
+      this.state.matchedPage.has('title') &&
+      this.state.matchedPage.get('title') &&
+      this.state.matchedPage.get('title') !== document.title
+    ) {
+      const combinedRouteParams = Object.assign({}, this.state.matchedRouteParams, pageTitleParams)
+
+      title = this.state.matchedPage.get('title')
+      Object.keys(combinedRouteParams).forEach((route) => {
+        title = title.replace('{$' + route + '}', StringHelpers.toTitleCase(combinedRouteParams[route]))
+      })
+
+      title = title + ' | ' + this.props.properties.title
+    }
+
+    if (title.search(' | ') >= 0) {
+      const newTitle = []
+
+      const parts = title.split('|')
+
+      let i
+      for (i in parts) {
+        newTitle.push(intl.searchAndReplace(parts[i].trim()))
+      }
+      title = newTitle.join(' | ')
+    }
+
+    document.title = title
   }
 }
 
