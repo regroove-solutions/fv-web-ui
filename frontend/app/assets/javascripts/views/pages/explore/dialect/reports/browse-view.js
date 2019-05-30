@@ -35,11 +35,11 @@ const { array, bool, func, object, string } = PropTypes
 export class ReportBrowser extends Component {
   static propTypes = {
     fullWidth: bool,
-    properties: object.isRequired,
     routeParams: object.isRequired,
     style: object,
     // REDUX: reducers/state
     computeLogin: object.isRequired,
+    properties: object.isRequired,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
@@ -90,13 +90,14 @@ export class ReportBrowser extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { nuxeo, windowPath } = state
-
+  const { navigation, nuxeo, windowPath } = state
+  const { properties } = navigation
   const { computeLogin } = nuxeo
   const { splitWindowPath, _windowPath } = windowPath
 
   return {
     computeLogin,
+    properties,
     splitWindowPath,
     windowPath: _windowPath,
   }
