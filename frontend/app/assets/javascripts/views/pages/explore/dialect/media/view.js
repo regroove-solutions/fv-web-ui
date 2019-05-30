@@ -107,45 +107,22 @@ export class View extends Component {
     this.state = {
       showThumbnailDialog: null,
     }
-
-    // Bind methods to 'this'
-    ;[
-      '_handleConfirmDelete',
-      '_enableToggleAction',
-      '_publishToggleAction',
-      '_onNavigateRequest',
-      '_publishChangesAction',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
-  fetchData(newProps) {
-    if (!this.getDialect(newProps)) {
-      newProps.fetchDialect2(newProps.routeParams.dialect_path)
-    }
-
-    if (!this.getResource(newProps)) {
-      newProps.fetchResource(this._getMediaPath(newProps))
-    }
-  }
-
-  // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
-      this.fetchData(nextProps)
-    } else if (nextProps.routeParams.media !== this.props.routeParams.media) {
-      this.fetchData(nextProps)
-    }
-    // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-    //     this.fetchData(nextProps);
-    // }
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.fetchData(this.props)
+    this._fetchData(this.props)
   }
 
-  componentDidUpdate(/*prevProps, prevState*/) {
+  componentDidUpdate(prevProps /*, prevState*/) {
+    // NOTE: he following was ported from `componentWillReceiveProps`
+    // Refetch data on URL change
+    const updatedDialectPath = prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path
+    const updatedMedia = prevProps.routeParams.media !== this.props.routeParams.media
+    if (updatedDialectPath || updatedMedia) {
+      this._fetchData(this.props)
+    }
+
     const media = selectn('response', ProviderHelpers.getEntry(this.props.computeResource, this._getMediaPath()))
     const title = selectn('properties.dc:title', media)
     const uid = selectn('uid', media)
@@ -156,173 +133,12 @@ export class View extends Component {
     }
   }
 
-  getResource(props = this.props) {
-    return ProviderHelpers.getEntry(props.computeResource, this._getMediaPath())
-  }
-
-  getDialect(props = this.props) {
-    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
-  }
-
-  _getMediaPath(props = null) {
-    const _props = props === null ? this.props : props
-
-    if (StringHelpers.isUUID(_props.routeParams.media)) {
-      return _props.routeParams.media
-    }
-    return _props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(_props.routeParams.media)
-  }
-
-  _getMediaRelatedField(type) {
-    switch (type) {
-      case 'FVAudio':
-        return 'fv:related_audio'
-
-      case 'FVVideo':
-        return 'fv:related_videos'
-
-      case 'FVPicture':
-        return 'fv:related_pictures'
-      default: // NOTE: do nothing
-    }
-  }
-
-  _onNavigateRequest(path) {
-    this.props.pushWindowPath(path)
-  }
-
-  _handleConfirmDelete(item) {
-    this.props.deleteResource(item.uid) // TOOD: NOT CERTAIN WHERE THIS COMES FROM
-    this.setState({ deleteDialogOpen: false })
-  }
-
-  /**
-   * Toggle dialect (enabled/disabled)
-   */
-  _enableToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToEnableResource(
-          this._getMediaPath(),
-          {
-            id: 'FVEnableLanguageAsset',
-            start: 'true',
-          },
-          null,
-          intl.trans(
-            'views.pages.explore.dialect.media.request_to_enable_success',
-            'Request to enable resource successfully submitted!'
-          ),
-          null
-        )
-      } else {
-        this.props.enableResource(
-          this._getMediaPath(),
-          null,
-          null,
-          intl.trans('views.pages.explore.dialect.media.resource_enabled', 'Resource enabled!')
-        )
-      }
-    } else {
-      if (workflow) {
-        this.props.askToDisableResource(
-          this._getMediaPath(),
-          {
-            id: 'FVDisableLanguageAsset',
-            start: 'true',
-          },
-          null,
-          intl.trans(
-            'views.pages.explore.dialect.media.request_to_disable_success',
-            'Request to disable resource successfully submitted!'
-          ),
-          null
-        )
-      } else {
-        this.props.disableResource(
-          this._getMediaPath(),
-          null,
-          null,
-          intl.trans('views.pages.explore.dialect.media.resource_disabled', 'Resource disabled!')
-        )
-      }
-    }
-  }
-
-  /**
-   * Toggle published dialect
-   */
-  _publishToggleAction(toggled, workflow) {
-    if (toggled) {
-      if (workflow) {
-        this.props.askToPublishResource(
-          this._getMediaPath(),
-          {
-            id: 'FVPublishLanguageAsset',
-            start: 'true',
-          },
-          null,
-          intl.trans(
-            'views.pages.explore.dialect.media.request_to_publish_success',
-            'Request to publish resource successfully submitted!'
-          ),
-          null
-        )
-      } else {
-        this.props.publishResource(
-          this._getMediaPath(),
-          null,
-          null,
-          intl.trans('views.pages.explore.dialect.media.resource_published_success', 'Resource published successfully!')
-        )
-      }
-    } else {
-      if (workflow) {
-        this.props.askToUnpublishResource(
-          this._getMediaPath(),
-          {
-            id: 'FVUnpublishLanguageAsset',
-            start: 'true',
-          },
-          null,
-          intl.trans(
-            'views.pages.explore.dialect.media.request_to_unpublic_success',
-            'Request to unpublish resource successfully submitted!'
-          ),
-          null
-        )
-      } else {
-        this.props.unpublishResource(
-          this._getMediaPath(),
-          null,
-          null,
-          intl.trans(
-            'views.pages.explore.dialect.media.resource_unpublished_success',
-            'Resource unpublished successfully!'
-          )
-        )
-      }
-    }
-  }
-
-  /**
-   * Publish changes
-   */
-  _publishChangesAction() {
-    this.props.publishResource(
-      this._getMediaPath(),
-      null,
-      null,
-      intl.trans('views.pages.explore.dialect.media.resource_published_success', 'Resource published successfully!')
-    )
-  }
-
   render() {
     const tabItemStyles = {
       userSelect: 'none',
     }
 
-    const computeEntities = Immutable.fromJS([
+    const _computeEntities = Immutable.fromJS([
       {
         id: this._getMediaPath(),
         entity: this.props.computeResource,
@@ -333,8 +149,8 @@ export class View extends Component {
       },
     ])
 
-    const computeResource = this.getResource()
-    const computeDialect2 = this.getDialect()
+    const computeResource = this._getResource()
+    const computeDialect2 = this._getDialect()
 
     const currentAppliedFilter = new Map({
       currentAppliedFilter: new Map({
@@ -353,28 +169,37 @@ export class View extends Component {
     /**
      * Generate definitions body
      */
+    const computeResourceType = selectn('response.type', computeResource)
+    const preview = computeResourceType ? (
+      <Preview
+        style={{ width: 'auto' }}
+        initiallyExpanded
+        metadataListStyles={{ maxHeight: 'initial' }}
+        expandedValue={selectn('response', computeResource)}
+        type={computeResourceType}
+      />
+    ) : null
     return (
-      <PromiseWrapper computeEntities={computeEntities}>
+      <PromiseWrapper computeEntities={_computeEntities}>
         {(() => {
           if (this.props.routeParams.area === 'Workspaces') {
             if (selectn('response', computeResource))
               return (
                 <PageToolbar
                   label={intl.trans('media', 'Media', 'first')}
-                  handleNavigateRequest={this._onNavigateRequest}
+                  handleNavigateRequest={this.onNavigateRequest}
                   actions={['workflow', 'edit', 'publish-toggle', 'enable-toggle', 'publish']}
                   computeEntity={computeResource}
                   computePermissionEntity={computeDialect2}
                   computeLogin={this.props.computeLogin}
-                  publishToggleAction={this._publishToggleAction}
-                  publishChangesAction={this._publishChangesAction}
-                  enableToggleAction={this._enableToggleAction}
+                  publishToggleAction={this.publishToggleAction}
+                  publishChangesAction={this.publishChangesAction}
+                  enableToggleAction={this.enableToggleAction}
                   {...this.props}
                 />
               )
           }
         })()}
-
         <div className="row">
           <div className="col-xs-12">
             <div>
@@ -383,15 +208,7 @@ export class View extends Component {
                   <Tab label={intl.trans('overview', 'Overview', 'first')}>
                     <div>
                       <CardText>
-                        <div className={classNames('col-md-8', 'col-xs-12')}>
-                          <Preview
-                            style={{ width: 'auto' }}
-                            initiallyExpanded
-                            metadataListStyles={{ maxHeight: 'initial' }}
-                            expandedValue={selectn('response', computeResource)}
-                            type={selectn('response.type', computeResource)}
-                          />
-                        </div>
+                        <div className={classNames('col-md-8', 'col-xs-12')}>{preview}</div>
 
                         <div className={classNames('col-md-4', 'hidden-xs')}>
                           {(() => {
@@ -514,6 +331,182 @@ export class View extends Component {
         </div>
       </PromiseWrapper>
     )
+  }
+
+  /**
+   * Toggle dialect (enabled/disabled)
+   */
+  enableToggleAction = (toggled, workflow) => {
+    if (toggled) {
+      if (workflow) {
+        this.props.askToEnableResource(
+          this._getMediaPath(),
+          {
+            id: 'FVEnableLanguageAsset',
+            start: 'true',
+          },
+          null,
+          intl.trans(
+            'views.pages.explore.dialect.media.request_to_enable_success',
+            'Request to enable resource successfully submitted!'
+          ),
+          null
+        )
+      } else {
+        this.props.enableResource(
+          this._getMediaPath(),
+          null,
+          null,
+          intl.trans('views.pages.explore.dialect.media.resource_enabled', 'Resource enabled!')
+        )
+      }
+    } else {
+      if (workflow) {
+        this.props.askToDisableResource(
+          this._getMediaPath(),
+          {
+            id: 'FVDisableLanguageAsset',
+            start: 'true',
+          },
+          null,
+          intl.trans(
+            'views.pages.explore.dialect.media.request_to_disable_success',
+            'Request to disable resource successfully submitted!'
+          ),
+          null
+        )
+      } else {
+        this.props.disableResource(
+          this._getMediaPath(),
+          null,
+          null,
+          intl.trans('views.pages.explore.dialect.media.resource_disabled', 'Resource disabled!')
+        )
+      }
+    }
+  }
+
+  /**
+   * onNavigateRequest
+   */
+  onNavigateRequest = (path) => {
+    this.props.pushWindowPath(path)
+  }
+
+  /**
+   * Publish changes
+   */
+  publishChangesAction = () => {
+    this.props.publishResource(
+      this._getMediaPath(),
+      null,
+      null,
+      intl.trans('views.pages.explore.dialect.media.resource_published_success', 'Resource published successfully!')
+    )
+  }
+
+  /**
+   * Toggle published dialect
+   */
+  publishToggleAction = (toggled, workflow) => {
+    if (toggled) {
+      if (workflow) {
+        this.props.askToPublishResource(
+          this._getMediaPath(),
+          {
+            id: 'FVPublishLanguageAsset',
+            start: 'true',
+          },
+          null,
+          intl.trans(
+            'views.pages.explore.dialect.media.request_to_publish_success',
+            'Request to publish resource successfully submitted!'
+          ),
+          null
+        )
+      } else {
+        this.props.publishResource(
+          this._getMediaPath(),
+          null,
+          null,
+          intl.trans('views.pages.explore.dialect.media.resource_published_success', 'Resource published successfully!')
+        )
+      }
+    } else {
+      if (workflow) {
+        this.props.askToUnpublishResource(
+          this._getMediaPath(),
+          {
+            id: 'FVUnpublishLanguageAsset',
+            start: 'true',
+          },
+          null,
+          intl.trans(
+            'views.pages.explore.dialect.media.request_to_unpublic_success',
+            'Request to unpublish resource successfully submitted!'
+          ),
+          null
+        )
+      } else {
+        this.props.unpublishResource(
+          this._getMediaPath(),
+          null,
+          null,
+          intl.trans(
+            'views.pages.explore.dialect.media.resource_unpublished_success',
+            'Resource unpublished successfully!'
+          )
+        )
+      }
+    }
+  }
+
+  // _internal methods
+  _fetchData = (newProps) => {
+    if (!this._getDialect(newProps)) {
+      newProps.fetchDialect2(newProps.routeParams.dialect_path)
+    }
+
+    if (!this._getResource(newProps)) {
+      newProps.fetchResource(this._getMediaPath(newProps))
+    }
+  }
+
+  _getDialect = (props = this.props) => {
+    return ProviderHelpers.getEntry(props.computeDialect2, props.routeParams.dialect_path)
+  }
+
+  _getMediaPath = (props = null) => {
+    const _props = props === null ? this.props : props
+
+    if (StringHelpers.isUUID(_props.routeParams.media)) {
+      return _props.routeParams.media
+    }
+    return _props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(_props.routeParams.media)
+  }
+
+  _getMediaRelatedField = (type) => {
+    switch (type) {
+      case 'FVAudio':
+        return 'fv:related_audio'
+
+      case 'FVVideo':
+        return 'fv:related_videos'
+
+      case 'FVPicture':
+        return 'fv:related_pictures'
+      default: // NOTE: do nothing
+    }
+  }
+
+  _getResource = (props = this.props) => {
+    return ProviderHelpers.getEntry(props.computeResource, this._getMediaPath())
+  }
+
+  // TODO: this being used?
+  _handleConfirmDelete = (item) => {
+    this.props.deleteResource(item.uid) // TOOD: NOT CERTAIN WHERE THIS COMES FROM
+    this.setState({ deleteDialogOpen: false })
   }
 }
 
