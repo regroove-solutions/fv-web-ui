@@ -49,7 +49,7 @@ export default class DictionaryList extends Component {
     super(props, context)
     ;['_getColumnClassNames', '_getColumnHeaders'].forEach((method) => (this[method] = this[method].bind(this)))
   }
-  componentWillMount() {
+  componentDidMount() {
     this._columnClassNames = this._getColumnClassNames()
   }
 
