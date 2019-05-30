@@ -55,10 +55,10 @@ export class DialectMedia extends Component {
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
+    fetchPortal: func.isRequired,
     fetchResources: func.isRequired,
     navigateTo: func.isRequired,
     pushWindowPath: func.isRequired,
-    fetchPortal: func.isRequired,
   }
 
   constructor(props, context) {
@@ -67,30 +67,6 @@ export class DialectMedia extends Component {
     this.state = {
       fetcherParams: DefaultFetcherParams,
     }
-
-    // Bind methods to 'this'
-    ;['_onNavigateRequest', 'fetchData'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
-  _onNavigateRequest(media) {
-    this.props.pushWindowPath(
-      NavigationHelpers.generateUIDPath(this.props.routeParams.theme || 'explore', media, 'media')
-    )
-  }
-
-  fetchData(fetcherParams, props = this.props) {
-    this.setState({
-      fetcherParams: fetcherParams,
-    })
-
-    props.fetchResources(
-      props.routeParams.dialect_path + '/Resources',
-      ProviderHelpers.filtersToNXQL(fetcherParams.filters) +
-        '&currentPageIndex=' +
-        (fetcherParams.currentPageIndex - 1) +
-        '&pageSize=' +
-        fetcherParams.pageSize
-    )
   }
 
   // Fetch data on initial render
@@ -143,23 +119,47 @@ export class DialectMedia extends Component {
         <div className="row">
           <div className="col-xs-12">
             <FilteredPaginatedMediaList
-              cols={5}
-              cellHeight={150}
-              initialValues={{ 'dc:contributors': selectn('response.properties.username', this.props.computeLogin) }}
-              filterOptionsKey="Resources"
+              // media-list
               action={this._onNavigateRequest}
-              fetcher={this.fetchData}
-              theme={this.props.routeParams.theme}
-              area={this.props.routeParams.area}
-              fetcherParams={this.state.fetcherParams}
-              metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
+              cellHeight={150}
+              cols={5}
               items={
                 selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources)
               }
+              theme={this.props.routeParams.theme}
+              // with-filter
+              area={this.props.routeParams.area}
+              filterOptionsKey="Resources"
+              initialValues={{ 'dc:contributors': selectn('response.properties.username', this.props.computeLogin) }}
+              // with-filter & with-pagination
+              fetcher={this.fetchData}
+              fetcherParams={this.state.fetcherParams}
+              metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
             />
           </div>
         </div>
       </PromiseWrapper>
+    )
+  }
+
+  _onNavigateRequest = (media) => {
+    this.props.pushWindowPath(
+      NavigationHelpers.generateUIDPath(this.props.routeParams.theme || 'explore', media, 'media')
+    )
+  }
+
+  fetchData = (fetcherParams, props = this.props) => {
+    this.setState({
+      fetcherParams: fetcherParams,
+    })
+
+    props.fetchResources(
+      props.routeParams.dialect_path + '/Resources',
+      ProviderHelpers.filtersToNXQL(fetcherParams.filters) +
+        '&currentPageIndex=' +
+        (fetcherParams.currentPageIndex - 1) +
+        '&pageSize=' +
+        fetcherParams.pageSize
     )
   }
 }
