@@ -13,20 +13,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React from 'react'
-
+import React, { PropTypes } from 'react'
 import classNames from 'classnames'
 
 import NavigationHelpers from 'common/NavigationHelpers'
-
-import Divider from 'material-ui/lib/divider'
-import List from 'material-ui/lib/lists/list'
-import ListItem from 'material-ui/lib/lists/list-item'
-import LeftNav from 'material-ui/lib/left-nav'
-import AppBar from 'material-ui/lib/app-bar'
 import IntlService from 'views/services/intl'
 export default class Footer extends React.Component {
   intl = IntlService.instance
+
+  static propTypes = {
+    className: PropTypes.string,
+  }
 
   constructor(props, context) {
     super(props, context)
@@ -90,7 +87,7 @@ export default class Footer extends React.Component {
                     default: 'Phone',
                     case: 'first',
                   })}{' '}
-                  : +1-250-652-5952 ·{' '}
+                  : +1-250-882-8919 ·{' '}
                   {this.intl.translate({
                     key: 'general.email',
                     default: 'Email',
