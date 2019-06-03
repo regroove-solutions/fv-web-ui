@@ -2,7 +2,7 @@ import DocumentOperations from 'operations/DocumentOperations'
 import DirectoryOperations from 'operations/DirectoryOperations'
 import IntlService from 'views/services/intl'
 
-import ConfGlobal from 'conf/local.json'
+import ConfGlobal from 'conf/local.js'
 
 export default {
   create: (key /*type, properties = {}*/) => {
