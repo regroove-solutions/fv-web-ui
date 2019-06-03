@@ -1,5 +1,7 @@
 ## Install
 
+### Using Tomcat distribution
+
 Download Nuxeo 10.10 and install:
 
 ```
@@ -7,6 +9,17 @@ https://maven.nuxeo.org/nexus/service/local/repositories/public-releases/content
 ```
 
 Do NOT install the nuxeo-web-ui package, install headless.
+
+## Configure
+
+Set the context path in nuxeo.conf
+For your local environment, this can be an empty string.
+
+```
+fv.contextPath=
+```
+
+If you are running your app at /nuxeo/app, for example, configure it to be `app`
 
 ## Deploy
 
