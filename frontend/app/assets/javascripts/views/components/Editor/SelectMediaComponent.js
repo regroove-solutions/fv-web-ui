@@ -31,17 +31,18 @@ import classNames from 'classnames'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import IconButton from 'material-ui/lib/icon-button'
+// import ActionInfo from 'material-ui/lib/svg-icons/action/info'
+// import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+import { Dialog } from 'material-ui'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 import MediaList from 'views/components/Browsing/media-list'
 import withPagination from 'views/hoc/grid-list/with-pagination'
 import withFilter from 'views/hoc/grid-list/with-filter'
-import LinearProgress from 'material-ui/lib/linear-progress'
+// import LinearProgress from 'material-ui/lib/linear-progress'
 
-import IconButton from 'material-ui/lib/icon-button'
-import ActionInfo from 'material-ui/lib/svg-icons/action/info'
-import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
 import IntlService from 'views/services/intl'
 
 // const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
@@ -78,20 +79,20 @@ class SharedResourceGridTile extends Component {
     const resourceParentDialect = selectn('contextParameters.ancestry.dialect', tile)
     let actionIcon = null
 
-    const isFVShared = selectn('path', tile) && selectn('path', tile).indexOf('SharedResources') != -1
+    const isFVShared = selectn('path', tile) && selectn('path', tile).indexOf('SharedResources') !== -1
     const isDialectShared = selectn('uid', resourceParentDialect) != selectn('uid', this.props.dialect)
 
     // If resource is from different dialect, show notification so user is aware
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
         ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-            selectn('dc:title', resourceParentDialect),
-          ])
+          selectn('dc:title', resourceParentDialect),
+        ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
-        <IconButton tooltip={tooltip} tooltipPosition="top-left">
-          {isDialectShared ? <ActionInfoOutline color="white" /> : <ActionInfo color="white" />}
-        </IconButton>
+        <div title={tooltip} className={classNames('action-info', { 'action-info--outline': isDialectShared })}>
+          i
+        </div>
       )
     }
 
@@ -141,8 +142,8 @@ class SelectMediaComponent extends React.Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-        })
+        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+      })
       : DefaultFetcherParams
 
     this.state = {
@@ -163,12 +164,15 @@ class SelectMediaComponent extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton
-        key="flatButton1"
-        label={intl.trans('cancel', 'Cancel', 'first')}
-        secondary
-        onClick={this._handleClose}
-      />,
+      // <FlatButton
+      //   key="flatButton1"
+      //   label={intl.trans('cancel', 'Cancel', 'first')}
+      //   secondary
+      //   onClick={this._handleClose}
+      // />,
+      <button key="flatButton1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let fileTypeLabel = intl.trans('file', 'file', 'lower')
@@ -211,7 +215,10 @@ class SelectMediaComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onClick={this._handleOpen} />
+        {/* <RaisedButton label={this.props.label} onClick={this._handleOpen} /> */}
+        <button onClick={this._handleOpen} type="button">
+          {this.props.label}
+        </button>
         <Dialog
           title={`${intl.searchAndReplace(
             `Select existing ${fileTypeLabel} from ${selectn(
@@ -227,10 +234,9 @@ class SelectMediaComponent extends React.Component {
         >
           <div className={classNames('alert', 'alert-info', { hidden: !selectn('isFetching', computeResources) })}>
             {intl.trans('loading_results_please_wait', 'Loading results, please wait.', 'first')}
-            <br />
-            <LinearProgress mode="indeterminate" />
+            {/* <br /> */}
+            {/* <LinearProgress mode="indeterminate" /> */}
           </div>
-
           <FilteredPaginatedMediaList
             action={this._handleSelectElement}
             cols={5}
@@ -259,9 +265,11 @@ class SelectMediaComponent extends React.Component {
   fetchData(fetcherParams, initialFormValue) {
     if (selectn('path', this.props.dialect)) {
       // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-      const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
+      const group1 = new Map(fetcherParams.filters)
+        .filter((v, k) => k === 'shared_fv' || k === 'shared_dialects')
+        .toJS()
       const group2 = new Map(fetcherParams.filters)
-        .filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects')
+        .filterNot((v, k) => k === 'shared_fv' || k === 'shared_dialects')
         .toJS()
 
       this.props.fetchResources(

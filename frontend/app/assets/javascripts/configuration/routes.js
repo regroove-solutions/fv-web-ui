@@ -120,9 +120,7 @@ const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KID
 const WORKSPACE_TO_SECTION_REDIRECT = {
   condition: (params) => {
     // Condition 1: Guest and trying to access Workspaces
-    return (
-      (selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props))
-    )
+    return selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)
   },
   target: (params) => {
     return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections')
@@ -283,11 +281,11 @@ const routes = [
           return selectn('preferences.primary_dialect_path', params.props) !== undefined
         },
         target: (params) => {
-          const start_page = selectn('preferences.start_page', params.props)
+          const startPage = selectn('preferences.start_page', params.props)
           // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
           return (
             '/' +
-            (start_page === 'my_kids_dialect' ? 'kids' : 'explore') +
+            (startPage === 'my_kids_dialect' ? 'kids' : 'explore') +
             selectn('preferences.primary_dialect_path', params.props)
           )
         },
@@ -1209,6 +1207,84 @@ const routes = [
       }) +
       ' | {$dialect_name}',
     page: <Pages.PageDialectWordsCreate />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'learn',
+      'words',
+      'create2',
+    ],
+    title:
+      intl.translate({
+        key: 'create',
+        default: 'Create',
+        case: 'words',
+      }) +
+      ', ' +
+      intl.translate({
+        key: 'words',
+        default: 'Words',
+        case: 'words',
+      }) +
+      ', {$dialect_name}',
+    page: <Pages.CreateV2 />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'audio',
+    ],
+    title: 'Create Audio, {$dialect_name}',
+    page: <Pages.CreateAudio />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'recorder',
+    ],
+    title: 'Create Recorder, {$dialect_name}',
+    page: <Pages.CreateRecorder />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'edit',
+      'recorder',
+      new paramMatch('contributorId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Edit Recorder, {$dialect_name}',
+    page: <Pages.EditRecorder />,
     extractPaths: true,
   },
   {

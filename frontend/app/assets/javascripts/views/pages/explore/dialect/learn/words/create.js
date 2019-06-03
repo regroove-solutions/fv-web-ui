@@ -202,7 +202,6 @@ export class PageDialectWordsCreate extends Component {
             [selectn('response.title', _computeDialect2)]
           )}
         </h1>
-
         <div className="row" style={{ marginTop: '15px' }}>
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>

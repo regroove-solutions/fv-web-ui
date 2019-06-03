@@ -1,3 +1,6 @@
+// TODO: REMOVE ESLINT-DISABLE
+/* eslint-disable */
+
 /*
 Copyright 2016 First People's Cultural Council
 

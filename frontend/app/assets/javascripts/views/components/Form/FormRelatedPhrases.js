@@ -1,0 +1,270 @@
+import React from 'react'
+import { PropTypes } from 'react'
+// import Text from 'views/components/Form/Common/Text'
+
+// NOTE: importing the non-wrapped provide() version
+import FormRelatedPhrase from 'views/components/Form/FormRelatedPhrase'
+import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
+import ProviderHelpers from 'common/ProviderHelpers'
+import provide from 'react-redux-provide'
+import selectn from 'selectn'
+
+const { string, array, object, func, number } = PropTypes
+let BrowseComponent = null
+
+export class FormRelatedPhrases extends React.Component {
+  STATE_LOADING = 0
+  STATE_DEFAULT = 1
+  STATE_CREATE = 2
+
+  static propTypes = {
+    name: string.isRequired,
+    className: string,
+    textInfo: string,
+    items: array,
+    idDescribedbyItemBrowse: string,
+    idDescribedByItemMove: string,
+    textDescribedbyItemBrowse: string,
+    textDescribedByItemMove: string,
+    textLegendItems: string,
+    textBtnAddItem: string,
+    textLegendItem: string,
+    textBtnRemoveItem: string,
+    textBtnMoveItemUp: string,
+    textBtnMoveItemDown: string,
+    textBtnCreateItem: string,
+    textBtnSelectExistingItems: string,
+    textLabelItemSearch: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_LANGUAGE: string,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    // REDUX/PROVIDE
+    computeContributor: object.isRequired,
+    computeContributors: object.isRequired,
+    computeCreateContributor: object,
+    computeDialect: object.isRequired,
+    computeDialect2: object.isRequired,
+    createContributor: func.isRequired,
+    fetchContributors: func.isRequired,
+    fetchDialect: func.isRequired,
+    fetchResources: func.isRequired,
+    splitWindowPath: array.isRequired,
+  }
+  static defaultProps = {
+    className: 'FormRelatedPhrases',
+    idDescribedbyItemBrowse: 'describedbyRelatedAudioBrowse',
+    idDescribedByItemMove: 'describedByRelatedAudioMove',
+    name: 'FormRelatedPhrases',
+    textDescribedbyItemBrowse: 'Select a Related Phrase from previously created Phrases',
+    textDescribedByItemMove: `If you are adding multiple Related Phrases, you can change the position of the Phrase with
+    the 'Move Related Phrase up' and 'Move Related Phrase down' buttons`,
+    textLegendItems: 'Related Phrase',
+    textBtnAddItem: 'Create new Related Phrase',
+    textLegendItem: 'Related Phrase',
+    textBtnRemoveItem: 'Remove Related Phrase',
+    textBtnMoveItemUp: 'Move Related Phrase left',
+    textBtnMoveItemDown: 'Move Related Phrase right',
+    textBtnCreateItem: 'Create new Phrase',
+    textBtnSelectExistingItems: 'Select from existing phrases',
+    textLabelItemSearch: 'Search existing phrases',
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 100,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'dc:title',
+    DEFAULT_SORT_TYPE: 'asc',
+  }
+
+  state = {
+    items: [],
+    componentState: this.STATE_LOADING,
+    FormRelatedPhraseCreateNew: null,
+  }
+
+  // Fetch data on initial render
+  async componentDidMount() {
+    const { computeDialect, fetchContributors, fetchDialect, fetchResources, splitWindowPath } = this.props
+
+    // USING this.DIALECT_PATH instead of setting state
+    // this.setState({ dialectPath: dialectPath })
+    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(splitWindowPath)
+    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
+    // Get data for computeDialect
+    if (!computeDialect.success) {
+      await fetchDialect('/' + this.DIALECT_PATH)
+    }
+
+    const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_TYPE, DEFAULT_SORT_COL } = this.props
+    let currentAppliedFilter = '' // eslint-disable-line
+    // if (filter.has('currentAppliedFilter')) {
+    //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
+    // }
+    // Get contrinbutors
+    await fetchContributors(
+      this.CONTRIBUTOR_PATH,
+      `${currentAppliedFilter}&currentPageIndex=${DEFAULT_PAGE -
+        1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
+    )
+
+    // Get existing phrases
+    // TODO: hardcoded current page and page size!
+    await fetchResources(
+      '/FV/Workspaces/',
+      `AND ecm:primaryType LIKE 'FVPhrase' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
+        this.DIALECT_PATH
+      }/Resources/')&currentPageIndex=${0}&pageSize=${1000}`
+    )
+
+    const _BrowseComponent = await import('views/components/Editor/BrowseComponent')
+    BrowseComponent = _BrowseComponent.default
+
+    this.setState({ componentState: this.STATE_DEFAULT })
+  }
+
+  render() {
+    const {
+      className,
+      idDescribedbyItemBrowse,
+      idDescribedByItemMove,
+      textDescribedbyItemBrowse,
+      textDescribedByItemMove,
+      textLegendItems,
+      textBtnAddItem,
+    } = this.props
+    const { items, FormRelatedPhraseCreateNew, loading, componentState } = this.state
+    const { computeDialect, textBtnSelectExistingItems } = this.props
+    return (
+      <fieldset className={className}>
+        <legend>{textLegendItems}</legend>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => {
+            this.handleClickCreateItem()
+          }}
+          ref={(element) => (this.buttonCreate = element)}
+        >
+          {textBtnAddItem}
+        </button>
+
+        {computeDialect && BrowseComponent && (
+          <BrowseComponent
+            disabled={false}
+            type={'FVPhrase'}
+            label={textBtnSelectExistingItems}
+            onComplete={(selected, callback) => {
+              this.handleItemSelected(selected)
+              if (typeof callback === 'function') {
+                callback()
+              }
+            }}
+            dialect={selectn('response', computeDialect)}
+          />
+        )}
+
+        {componentState === this.STATE_CREATE && FormRelatedPhraseCreateNew && (
+          <FormRelatedPhraseCreateNew
+            handleCancel={() => {
+              this.setState(
+                {
+                  componentState: this.STATE_DEFAULT,
+                },
+                () => {
+                  this.buttonCreate.focus()
+                }
+              )
+            }}
+            refPhrase={(element) => (this.phrase = element)}
+          />
+        )}
+
+        {/* COLLECTION OF PHRASES --------------- */}
+        {items}
+        {/* CREATES THE HIDDEN INPUT REPRESENTING THE ITEMS ---------------
+        <input type="hidden" name="fv-word:related_phrases" value="['phrase-id-1','phrase-id-2']" />
+         */}
+        {this._generateHiddenInput()}
+        {/* SCREEN READER DESCRIPTIONS --------------- */}
+        <span id={idDescribedbyItemBrowse} className="visually-hidden">
+          {textDescribedbyItemBrowse}
+        </span>
+        <span id={idDescribedByItemMove} className="visually-hidden">
+          {textDescribedByItemMove}
+        </span>
+      </fieldset>
+    )
+  }
+  _generateHiddenInput = () => {
+    const { items } = this.state
+    const selectedItems = items.map((element) => {
+      return element.props.id
+    })
+    return <input type="hidden" name="fv-word:related_phrases" value={JSON.stringify(selectedItems)} />
+  }
+
+  handleClickCreateItem = async () => {
+    const _FormRelatedPhraseCreateNew = await import('views/components/Form/FormRelatedPhraseCreateNew')
+    this.setState(
+      {
+        FormRelatedPhraseCreateNew: _FormRelatedPhraseCreateNew.default,
+        componentState: this.STATE_CREATE,
+      },
+      () => {
+        this.phrase.focus()
+      }
+    )
+  }
+  handleItemSelected = (selected) => {
+    const uid = selectn('uid', selected)
+
+    let { items } = this.state
+    const arg = { id: uid, items }
+
+    if (getIndexOfElementById(arg) !== -1) {
+      items = removeItem(arg)
+    }
+
+    const _props = {
+      name: this.props.name,
+      className: this.props.className,
+      idDescribedbyItemBrowse: this.props.idDescribedbyItemBrowse,
+      idDescribedByItemMove: this.props.idDescribedByItemMove,
+      textLegendItem: this.props.textLegendItem,
+      textBtnRemoveItem: this.props.textBtnRemoveItem,
+      textBtnMoveItemUp: this.props.textBtnMoveItemUp,
+      textBtnMoveItemDown: this.props.textBtnMoveItemDown,
+      textBtnCreateItem: this.props.textBtnCreateItem,
+      textBtnSelectExistingItems: this.props.textBtnSelectExistingItems,
+      textLabelItemSearch: this.props.textLabelItemSearch,
+      handleClickSelectItem: this.handleClickSelectItem,
+      handleClickRemoveItem: this.handleClickRemoveItem,
+      handleClickMoveItemUp: this.handleClickMoveItemUp,
+      handleClickMoveItemDown: this.handleClickMoveItemDown,
+      handleItemSelected: this.handleItemSelected,
+      computeDialectFromParent: this.props.computeDialect,
+      DIALECT_PATH: this.DIALECT_PATH,
+    }
+
+    this.setState({
+      items: [...items, <FormRelatedPhrase componentState={3} key={uid} id={uid} {..._props} />],
+    })
+  }
+  handleClickRemoveItem = (id) => {
+    this.setState({
+      items: removeItem({ id, items: this.state.items }),
+    })
+  }
+  handleClickMoveItemDown = (id) => {
+    this.setState({
+      items: moveItemDown({ id, items: this.state.items }),
+    })
+  }
+  handleClickMoveItemUp = (id) => {
+    this.setState({
+      items: moveItemUp({ id, items: this.state.items }),
+    })
+  }
+}
+
+export default provide(FormRelatedPhrases)

@@ -19,7 +19,7 @@
     "test": "jest",
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
-    "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
+    "test:e2e": "start-server-and-test startPreprod http://0.0.0.0:3001 cy:open",
     "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3001 cy:run",
     "test:watch": "jest --watch"
   },
@@ -96,7 +96,8 @@
     "selectn": "~1.0.9",
     "tcomb-form": "~0.9",
     "tether-shepherd": "^1.8.1",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@babel/core": "7.3.3",
@@ -119,7 +120,7 @@
     "compression": "~1.4.1",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "~0.14.5",
-    "cypress": "^3.1.5",
+    "cypress": "^3.2.0",
     "cypress-testing-library": "^2.3.6",
     "del": "~1.2.1",
     "dom-testing-library": "^3.17.1",
@@ -128,7 +129,7 @@
     "eslint-plugin-react": "^7.12.4",
     "expect": "^23.5.0",
     "expose-loader": "^0.7.1",
-    "express": "~4.12.2",
+    "express": "^4.16.4",
     "file-loader": "^3.0.1",
     "git-revision-webpack-plugin": "^3.0.3",
     "happypack": "^5.0.1",

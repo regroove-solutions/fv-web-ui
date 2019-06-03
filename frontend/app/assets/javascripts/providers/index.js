@@ -1,6 +1,6 @@
-import { provide, unshiftMiddleware, createCombinedStore, unshiftEnhancer } from 'react-redux-provide'
-import page, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH } from 'provide-page'
-import createLoggerMiddleware from 'redux-logger'
+// import { provide, unshiftMiddleware, createCombinedStore, unshiftEnhancer } from 'react-redux-provide'
+import page /*, { PUSH_WINDOW_PATH, REPLACE_WINDOW_PATH }*/ from 'provide-page'
+// import createLoggerMiddleware from 'redux-logger'
 
 import Document from './Document'
 import Directory from './Directory'
@@ -29,8 +29,6 @@ import navigation from './navigation'
 import reports from './reports'
 import search from './search'
 import tasks from './tasks'
-
-const loggerMiddleware = createLoggerMiddleware()
 
 const providers = {
   page,
@@ -62,6 +60,7 @@ const providers = {
   tasks,
 }
 
+// const loggerMiddleware = createLoggerMiddleware()
 // Enable log for specific provider
 //unshiftMiddleware([FVWord], loggerMiddleware);
 

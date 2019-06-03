@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { /* Component, */ PropTypes } from 'react'
-import { /*Immutable, */ Map } from 'immutable'
+// import { Immutable, Map } from 'immutable'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -26,14 +26,15 @@ import { fetchSharedVideos } from 'providers/redux/reducers/fvVideo'
 
 import selectn from 'selectn'
 
-import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
+// import ProviderHelpers from 'common/ProviderHelpers'
+// import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+import { Dialog /*, FlatButton, RaisedButton*/ } from 'material-ui'
 // import GridTile from 'material-ui/lib/grid-list/grid-tile'
 // import IconButton from 'material-ui/lib/icon-button'
 // import ActionInfo from 'material-ui/lib/svg-icons/action/info'
 // import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import CategoriesListView from 'views/pages/explore/dialect/learn/words/categories-list-view'
@@ -121,37 +122,19 @@ export class BrowseComponent extends React.Component {
     fetchSharedPictures: func.isRequired,
     fetchSharedVideos: func.isRequired,
   }
-
-  getDefaultValues() {
-    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
-  }
-
-  _handleOpen() {
-    this.setState({ open: true })
-  }
-
-  _handleClose() {
-    this.setState({ open: false })
-  }
-
-  _handleSelectElement(value) {
-    this.props.onComplete(value)
+  static defaultProps = {
+    disabled: false,
   }
 
   constructor(props) {
     super(props)
 
-    // Bind methods to 'this'
-    ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
-
     // If initial filter value provided
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-        })
+        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+      })
       : DefaultFetcherParams
 
     this.state = {
@@ -160,51 +143,15 @@ export class BrowseComponent extends React.Component {
     }
   }
 
-  fetchData(fetcherParams) {
-    // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-    const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-    const group2 = new Map(fetcherParams.filters).filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-
-    this.props.fetchResources(
-      '/FV/Workspaces/',
-      " AND ecm:primaryType LIKE '" +
-        this.props.type +
-        "'" +
-        " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
-        " AND (ecm:path STARTSWITH '" +
-        StringHelpers.clean(selectn('path', this.props.dialect)) +
-        "/Resources/'" +
-        ProviderHelpers.filtersToNXQL(group1) +
-        ')' +
-        ProviderHelpers.filtersToNXQL(group2) +
-        '&currentPageIndex=' +
-        (fetcherParams.currentPageIndex - 1) +
-        '&pageSize=' +
-        fetcherParams.pageSize +
-        '&sortBy=dc:created' +
-        '&sortOrder=DESC'
-    )
-
-    this.setState({
-      fetcherParams: fetcherParams,
-    })
-  }
-
-  componentDidMount() {
-    //this.fetchData(this.state.fetcherParams);
-  }
-
   render() {
     const dialect = this.props.dialect
     const dialectPath = selectn('path', dialect)
 
     const actions = [
-      <FlatButton
-        key="FlatButton0"
-        label={intl.trans('cancel', 'Cancel', 'first')}
-        secondary
-        onClick={this._handleClose}
-      />,
+      // <FlatButton key="action1" label={intl.trans('cancel', 'Cancel', 'first')} secondary onTouchTap={this._handleClose} />,
+      <button key="action1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let title = ''
@@ -228,7 +175,7 @@ export class BrowseComponent extends React.Component {
 
       case 'FVCategory':
         title = `${intl.trans('select', 'Select', 'first')} ${
-          this.props.containerType == 'FVWord'
+          this.props.containerType === 'FVWord'
             ? intl.trans('categories', 'Categories', 'first')
             : intl.trans('phrase_books', 'Phrase Books', 'words')
         }`
@@ -238,7 +185,7 @@ export class BrowseComponent extends React.Component {
             useDatatable
             dialect={dialect}
             categoriesPath={
-              this.props.containerType == 'FVWord'
+              this.props.containerType === 'FVWord'
                 ? '/FV/Workspaces/SharedData/Shared Categories/'
                 : dialectPath + '/Phrase Books/'
             }
@@ -317,7 +264,10 @@ export class BrowseComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onClick={this._handleOpen} />
+        {/* <RaisedButton label={this.props.label} onClick={this._handleOpen} /> */}
+        <button type="button" disabled={this.props.disabled} onClick={this._handleOpen}>
+          {this.props.label}
+        </button>
         <Dialog
           title={title}
           actions={actions}
@@ -334,6 +284,20 @@ export class BrowseComponent extends React.Component {
         </Dialog>
       </div>
     )
+  }
+
+  _handleOpen = () => {
+    this.setState({ open: true })
+  }
+
+  _handleClose = () => {
+    this.setState({ open: false })
+  }
+
+  _handleSelectElement = (value) => {
+    this.props.onComplete(value, () => {
+      this._handleClose()
+    })
   }
 }
 
