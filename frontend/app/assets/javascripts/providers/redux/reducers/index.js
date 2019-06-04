@@ -1,5 +1,20 @@
 import { combineReducers } from 'redux'
-import { directoryReducer } from './directory'
+
+/*
+NOTE:
+For some unknown reason, when `./index.js` imports:
+`import { directoryReducer } from './directory'`
+
+Components that import `fetchDirectory` get `undefined`:
+`import { fetchDirectory } from 'providers/redux/reducers/directory'`
+  - javascripts/views/components/Editor/DirectoryList.js
+  - javascripts/views/components/SearchDialect/index.js
+
+So to sidestep this issue I duplicated `./directory` > `./_directory`
+and `./index.js` is importing it...
+*/
+import { directoryReducer } from './_directory'
+
 import { documentReducer } from './document'
 import { errorReducer } from './error'
 import { exportDialectReducer } from './exportDialect'
