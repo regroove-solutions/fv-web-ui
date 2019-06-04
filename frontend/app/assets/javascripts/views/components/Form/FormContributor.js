@@ -6,7 +6,13 @@ import Select from 'views/components/Form/Common/Select'
 import FormMoveButtons from 'views/components/Form/FormMoveButtons'
 import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 import Preview from 'views/components/Editor/Preview'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 // import DocumentListView from 'views/components/Document/DocumentListView'
 const { array, func, object, number, string } = PropTypes
@@ -47,15 +53,16 @@ export class FormContributor extends React.Component {
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
     handleItemChange: func,
-    // REDUX/PROVIDE
-    computeContributors: object.isRequired,
-    createContributor: func.isRequired,
-    splitWindowPath: array.isRequired,
-    fetchDialect: func.isRequired,
+    // REDUX: reducers/state
+    computeContributor: object.isRequired,
+    computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    computeCreateContributor: object,
-    computeContributor: object.isRequired,
+    computeContributors: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createContributor: func.isRequired,
+    fetchDialect: func.isRequired,
     fetchContributors: func.isRequired,
   }
   static defaultProps = {
@@ -416,4 +423,33 @@ export class FormContributor extends React.Component {
   }
 }
 
-export default provide(FormContributor)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+
+  const { computeDialect, computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeContributor,
+    computeCreateContributor,
+    computeDialect,
+    computeDialect2,
+    computeContributors,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchDialect,
+  fetchContributors,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormContributor)
