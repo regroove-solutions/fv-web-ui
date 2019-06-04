@@ -16,7 +16,12 @@ import IntlService from 'views/services/intl'
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createAudio } from 'providers/redux/reducers/fvAudio'
+
 const intl = IntlService.instance
 const { array, func, object, number, string, element } = PropTypes
 export class FormRelatedAudioItem extends React.Component {
@@ -58,11 +63,12 @@ export class FormRelatedAudioItem extends React.Component {
     DEFAULT_SORT_TYPE: string,
     DIALECT_PATH: string.isRequired,
     selectMediaComponent: element.isRequired,
-    // NOTE: COMING FROM REDUX/PROVIDER
-    computeAudio: object.isRequired,
-    createAudio: func.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
     computeDialectFromParent: object.isRequired,
+    // REDUX: reducers/state
+    computeAudio: object.isRequired,
+    // REDUX: actions/dispatch/func
+    createAudio: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedAudioItem',
@@ -380,4 +386,23 @@ export class FormRelatedAudioItem extends React.Component {
   }
 }
 
-export default provide(FormRelatedAudioItem)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvAudio } = state
+
+  const { computeAudio } = fvAudio
+
+  return {
+    computeAudio,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createAudio,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRelatedAudioItem)
