@@ -14,7 +14,11 @@ import FormRecorders from 'views/components/Form/FormRecorders'
 // import Preview from 'views/components/Editor/Preview'
 
 // import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+// import {} from "providers/redux/reducers/fv";
 
 import { getError, getErrorFeedback, getFormData, handleSubmit } from 'common/FormHelpers'
 import validator, { toParse } from './validation'
@@ -28,6 +32,8 @@ export class CreateAudio extends React.Component {
     className: string,
     id: number,
     groupName: string,
+    // REDUX: reducers/state
+    // REDUX: actions/dispatch/func
   }
   static defaultProps = {
     className: 'FormRelatedAudioItem',
@@ -318,4 +324,30 @@ export class CreateAudio extends React.Component {
   }
 }
 
-export default provide(CreateAudio)
+// // REDUX: reducers/state
+// const mapStateToProps = (state /*, ownProps*/) => {
+//   const { fvDialect, navigation, nuxeo, windowPath } = state;
+
+//   const { properties } = navigation;
+//   const { computeLogin } = nuxeo;
+//   const { computeDialect2 } = fvDialect;
+//   const { splitWindowPath, _windowPath } = windowPath;
+
+//   return {
+//     computeDialect2,
+//     computeLogin,
+//     properties,
+//     splitWindowPath,
+//     windowPath: _windowPath
+//   };
+// };
+
+// // REDUX: actions/dispatch/func
+// const mapDispatchToProps = {
+//   changeTheme
+// };
+
+export default connect(
+  null, // mapStateToProps,
+  null // mapDispatchToProps
+)(CreateAudio)
