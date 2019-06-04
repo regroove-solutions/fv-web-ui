@@ -6,6 +6,9 @@ import ReactDOMServer from 'react-dom/server'
 // Standard/Unit
 import React from 'react'
 
+jest.mock('providers/redux/reducers/rest')
+jest.mock('common/NavigationHelpers')
+
 // Component to test
 import { CreateRecorder } from '..'
 const props = {

@@ -1,5 +1,9 @@
+
+jest.mock('providers/redux/reducers/rest')
+jest.mock('common/NavigationHelpers')
+
 // To test:
-import Breadcrumb from '..'
+import { Breadcrumb } from '..'
 import routesDefault from 'conf/routes'
 
 // Setup:
