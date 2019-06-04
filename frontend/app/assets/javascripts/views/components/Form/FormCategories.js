@@ -6,42 +6,50 @@ import { PropTypes } from 'react'
 import FormCategory from 'views/components/Form/FormCategory'
 import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+
 import selectn from 'selectn'
 import BrowseComponent from 'views/components/Editor/BrowseComponent'
 const { string, array, object, func, number } = PropTypes
 
 export class FormCategories extends React.Component {
   static propTypes = {
-    name: string.isRequired,
     className: string,
-    textInfo: string,
-    items: array,
-    idDescribedbyItemBrowse: string,
-    idDescribedByItemMove: string,
-    textDescribedbyItemBrowse: string,
-    textDescribedByItemMove: string,
-    textLegendItems: string,
-    textBtnAddItem: string,
-    textLegendItem: string,
-    textBtnRemoveItem: string,
-    textBtnMoveItemUp: string,
-    textBtnMoveItemDown: string,
-    textBtnCreateItem: string,
-    textBtnSelectExistingItems: string,
-    textLabelItemSearch: string,
     DEFAULT_PAGE: number,
     DEFAULT_PAGE_SIZE: number,
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // REDUX/PROVIDE
+    items: array,
+    idDescribedbyItemBrowse: string,
+    idDescribedByItemMove: string,
+    name: string.isRequired,
+    textBtnAddItem: string,
+    textBtnCreateItem: string,
+    textBtnMoveItemUp: string,
+    textBtnMoveItemDown: string,
+    textBtnRemoveItem: string,
+    textBtnSelectExistingItems: string,
+    textDescribedbyItemBrowse: string,
+    textDescribedByItemMove: string,
+    textInfo: string,
+    textLegendItems: string,
+    textLegendItem: string,
+    textLabelItemSearch: string,
+    // REDUX: reducers/state
     computeCategories: object.isRequired,
     computeDialect: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
     fetchCategories: func.isRequired,
     fetchDialect: func.isRequired,
     fetchResources: func.isRequired,
-    splitWindowPath: array.isRequired,
   }
   static defaultProps = {
     className: 'FormCategories',
@@ -75,9 +83,9 @@ export class FormCategories extends React.Component {
 
   // Fetch data on initial render
   async componentDidMount() {
-    const { fetchCategories, splitWindowPath } = this.props
+    const { splitWindowPath } = this.props
     const categoriesPath = '/api/v1/path/FV/Workspaces/SharedData/Shared Categories/@children'
-    await fetchCategories(categoriesPath)
+    await this.props.fetchCategories(categoriesPath)
 
     const dialect = await selectn('response', this.props.computeDialect)
     if (dialect) {
@@ -189,4 +197,29 @@ export class FormCategories extends React.Component {
   }
 }
 
-export default provide(FormCategories)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvDialect, windowPath } = state
+
+  const { computeCategories } = fvCategory
+  const { computeDialect } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeCategories,
+    computeDialect,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategories,
+  fetchDialect,
+  fetchResources,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormCategories)
