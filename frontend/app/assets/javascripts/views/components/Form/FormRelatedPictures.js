@@ -6,7 +6,14 @@ import { PropTypes } from 'react'
 import FormRelatedPicture from 'views/components/Form/FormRelatedPicture'
 import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'views/components/Form/FormInteractions'
 import ProviderHelpers from 'common/ProviderHelpers'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+
 import selectn from 'selectn'
 
 const { string, array, object, func, number } = PropTypes
@@ -36,17 +43,18 @@ export class FormRelatedPictures extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // REDUX/PROVIDE
+    // REDUX: reducers/state
     computeContributor: object.isRequired,
     computeContributors: object.isRequired,
     computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
     createContributor: func.isRequired,
     fetchContributors: func.isRequired,
     fetchDialect: func.isRequired,
     fetchResources: func.isRequired,
-    splitWindowPath: array.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedPictures',
@@ -80,7 +88,7 @@ export class FormRelatedPictures extends React.Component {
 
   // Fetch data on initial render
   async componentDidMount() {
-    const { computeDialect, fetchContributors, fetchDialect, fetchResources, splitWindowPath } = this.props
+    const { computeDialect, splitWindowPath } = this.props
 
     // USING this.DIALECT_PATH instead of setting state
     // this.setState({ dialectPath: dialectPath })
@@ -88,7 +96,7 @@ export class FormRelatedPictures extends React.Component {
     this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
     // Get data for computeDialect
     if (!computeDialect.success) {
-      await fetchDialect('/' + this.DIALECT_PATH)
+      await this.props.fetchDialect('/' + this.DIALECT_PATH)
     }
 
     const { DEFAULT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_SORT_TYPE, DEFAULT_SORT_COL } = this.props
@@ -97,7 +105,7 @@ export class FormRelatedPictures extends React.Component {
     //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
     // }
     // Get contrinbutors
-    await fetchContributors(
+    await this.props.fetchContributors(
       this.CONTRIBUTOR_PATH,
       `${currentAppliedFilter}&currentPageIndex=${DEFAULT_PAGE -
         1}&pageSize=${DEFAULT_PAGE_SIZE}&sortOrder=${DEFAULT_SORT_TYPE}&sortBy=${DEFAULT_SORT_COL}`
@@ -105,7 +113,7 @@ export class FormRelatedPictures extends React.Component {
 
     // Get existing pictures
     // TODO: hardcoded current page and page size!
-    await fetchResources(
+    await this.props.fetchResources(
       '/FV/Workspaces/',
       `AND ecm:primaryType LIKE 'FVPicture' AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled' AND (ecm:path STARTSWITH '${
         this.DIALECT_PATH
@@ -259,4 +267,33 @@ export class FormRelatedPictures extends React.Component {
   }
 }
 
-export default provide(FormRelatedPictures)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+  const { computeDialect, computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeContributor,
+    computeContributors,
+    computeCreateContributor,
+    computeDialect,
+    computeDialect2,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchContributors,
+  fetchDialect,
+  fetchResources,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRelatedPictures)
