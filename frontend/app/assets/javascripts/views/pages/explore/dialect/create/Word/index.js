@@ -17,7 +17,14 @@ import React, { Component } from 'react'
 import { PropTypes } from 'react'
 import Immutable from 'immutable'
 // import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createWord } from 'providers/redux/reducers/fvWord'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -50,15 +57,17 @@ import copy from './internationalization'
 const { string, array, func, object } = PropTypes
 export class CreateV2 extends Component {
   static propTypes = {
-    windowPath: string.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeWord: object.isRequired,
     splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createWord: func.isRequired,
+    fetchDialect2: func.isRequired,
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
-    fetchDialect2: func.isRequired,
-    computeDialect2: object.isRequired,
-    createWord: func.isRequired,
-    computeWord: object.isRequired,
-    routeParams: object.isRequired,
   }
 
   constructor(props, context) {
@@ -370,4 +379,31 @@ the 'Move Category up' and 'Move Category down' buttons`}
   }
 }
 
-export default provide(CreateV2)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvWord, windowPath } = state
+
+  const { computeWord } = fvWord
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeWord,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createWord,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(CreateV2)
