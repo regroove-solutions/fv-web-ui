@@ -136,6 +136,7 @@ class AppWrapper extends Component {
     muiTheme: React.PropTypes.object,
   }
 
+  // TODO: SEE IF THIS IS AN ISSUE AFTER SWITCH TO REDUX
   // react-redux-provide will pass context such as providers (Note: this is only needed for debugging the store atm)
   static contextTypes = {
     providers: PropTypes.object,
