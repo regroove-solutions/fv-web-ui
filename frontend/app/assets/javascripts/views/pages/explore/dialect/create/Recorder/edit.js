@@ -5,7 +5,19 @@ import RecorderStatesUnavailable from './states/unavailable'
 import RecorderStatesSuccessEdit from './states/successEdit'
 import RecorderStatesDefault from './states/default'
 import RecorderStatesErrorBoundary from './states/errorBoundary'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  createContributor,
+  fetchContributor,
+  fetchContributors,
+  updateContributor,
+} from 'providers/redux/reducers/fvContributor'
+import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import { getFormData, handleSubmit } from 'common/FormHelpers'
 import validator from './validation'
@@ -37,23 +49,23 @@ export class EditRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // Provider
-    pushWindowPath: func.isRequired,
+    onDocumentCreated: func,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeContributor: object.isRequired,
     computeContributors: object.isRequired,
-    createContributor: func.isRequired,
-    splitWindowPath: array.isRequired,
-    fetchDialect: func.isRequired,
+    computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    computeCreateContributor: object,
-    computeContributor: object.isRequired,
-    fetchContributors: func.isRequired,
-    // EDIT
-    routeParams: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createContributor: func.isRequired,
     fetchContributor: func.isRequired,
+    fetchContributors: func.isRequired,
+    fetchDialect: func.isRequired,
     fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
     updateContributor: func.isRequired,
-    onDocumentCreated: func,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -117,9 +129,9 @@ export class EditRecorder extends React.Component {
   _getData = async () => {
     // Do any loading here...
     // console.log('! componentDidMount')
-    const { fetchContributor, routeParams } = this.props
+    const { routeParams } = this.props
     const { contributorId } = routeParams
-    await fetchContributor(contributorId)
+    await this.props.fetchContributor(contributorId)
     const recorder = await this._getRecorder()
     this.setState({
       componentState: STATE_DEFAULT,
@@ -182,8 +194,6 @@ export class EditRecorder extends React.Component {
   async _handleCreateItemSubmit(formData) {
     const { recorder } = this.state
 
-    const { updateContributor } = this.props
-
     const newDocument = new Document(recorder.response, {
       repository: recorder.response._repository,
       nuxeo: recorder.response._nuxeo,
@@ -193,7 +203,7 @@ export class EditRecorder extends React.Component {
     newDocument.set(formData)
 
     // Save document
-    const _updateContributor = await updateContributor(newDocument, null, null)
+    const _updateContributor = await this.props.updateContributor(newDocument, null, null)
     if (_updateContributor.success) {
       this.setState({
         errors: [],
@@ -295,4 +305,36 @@ export class EditRecorder extends React.Component {
   }
 }
 
-export default provide(EditRecorder)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+  const { computeDialect, computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeContributor,
+    computeContributors,
+    computeCreateContributor,
+    computeDialect,
+    computeDialect2,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchContributor,
+  fetchContributors,
+  fetchDialect,
+  fetchDialect2,
+  pushWindowPath,
+  updateContributor,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(EditRecorder)
