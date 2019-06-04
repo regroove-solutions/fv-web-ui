@@ -3,11 +3,14 @@ import { PropTypes } from 'react'
 import FormMoveButtons from 'views/components/Form/FormMoveButtons'
 import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createCategory } from 'providers/redux/reducers/fvCategory'
+
 // import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'
 
-// see about dropping:
-import provide from 'react-redux-provide'
 import ProviderHelpers from 'common/ProviderHelpers'
 
 const { array, func, object, number, string, element } = PropTypes
@@ -41,12 +44,13 @@ export class FormCategory extends React.Component {
     componentState: number,
     value: string,
     browseComponent: element.isRequired,
-    // NOTE: COMING FROM REDUX/PROVIDER
-    computeCategory: object.isRequired,
-    createCategory: func.isRequired,
-    splitWindowPath: array.isRequired,
-    // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
+    // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER!
     computeDialectFromParent: object.isRequired,
+    // REDUX: reducers/state
+    computeCategory: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createCategory: func.isRequired,
   }
   static defaultProps = {
     className: 'FormCategory',
@@ -146,4 +150,25 @@ export class FormCategory extends React.Component {
   }
 }
 
-export default provide(FormCategory)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, windowPath } = state
+
+  const { computeCategory } = fvCategory
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeCategory,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createCategory,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormCategory)
