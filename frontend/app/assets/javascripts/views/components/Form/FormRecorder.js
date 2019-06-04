@@ -5,7 +5,13 @@ import Textarea from 'views/components/Form/Common/Textarea'
 import Select from 'views/components/Form/Common/Select'
 import FormMoveButtons from 'views/components/Form/FormMoveButtons'
 import FormRemoveButton from 'views/components/Form/FormRemoveButton'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchDialect } from 'providers/redux/reducers/fvDialect'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'
 const { array, func, object, number, string } = PropTypes
@@ -46,16 +52,17 @@ export class FormRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // REDUX/PROVIDE
+    // REDUX: reducers/state
+    computeContributor: object.isRequired,
     computeContributors: object.isRequired,
-    createContributor: func.isRequired,
-    splitWindowPath: array.isRequired,
-    fetchDialect: func.isRequired,
+    computeCreateContributor: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
-    computeCreateContributor: object,
-    computeContributor: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createContributor: func.isRequired,
     fetchContributors: func.isRequired,
+    fetchDialect: func.isRequired,
   }
   static defaultProps = {
     groupName: 'Form__group',
@@ -398,4 +405,32 @@ export class FormRecorder extends React.Component {
   }
 }
 
-export default provide(FormRecorder)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvContributor, fvDialect, windowPath } = state
+
+  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+  const { computeDialect, computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeContributor,
+    computeContributors,
+    computeCreateContributor,
+    computeDialect,
+    computeDialect2,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchContributors,
+  fetchDialect,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRecorder)
