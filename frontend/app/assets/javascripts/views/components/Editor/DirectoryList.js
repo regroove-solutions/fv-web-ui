@@ -33,7 +33,7 @@ const { bool, func, object, string } = PropTypes
 export class DirectoryList extends Component {
   static propTypes = {
     dataTestId: string,
-    directory: string.isRequired,
+    dir: string.isRequired, // NOTE: from parent, not redux
     fancy: bool,
     label: string.isRequired,
     onChange: func.isRequired,
@@ -71,13 +71,13 @@ export class DirectoryList extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchDirectory(this.props.directory)
+    this.props.fetchDirectory(this.props.dir)
   }
 
   render() {
     const { computeDirectory } = this.props
 
-    const entries = selectn('directories.' + this.props.directory, computeDirectory) || []
+    const entries = selectn('directories.' + this.props.dir, computeDirectory) || []
     const dataTestId = StringHelpers.clean(this.props.dataTestId, CLEAN_ID)
     return (
       <div>
