@@ -13,7 +13,12 @@ import IntlService from 'views/services/intl'
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createPicture } from 'providers/redux/reducers/fvPicture'
+
 const intl = IntlService.instance
 const { array, func, object, number, string, element } = PropTypes
 export class FormRelatedPicture extends React.Component {
@@ -54,11 +59,12 @@ export class FormRelatedPicture extends React.Component {
     DEFAULT_SORT_TYPE: string,
     DIALECT_PATH: string.isRequired,
     selectMediaComponent: element.isRequired,
-    // NOTE: COMING FROM REDUX/PROVIDER
-    computePicture: object.isRequired,
-    createPicture: func.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
     computeDialectFromParent: object.isRequired,
+    // REDUX: reducers/state
+    computePicture: object.isRequired,
+    // REDUX: actions/dispatch/func
+    createPicture: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedPicture',
@@ -361,4 +367,23 @@ export class FormRelatedPicture extends React.Component {
   }
 }
 
-export default provide(FormRelatedPicture)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPicture } = state
+
+  const { computePicture } = fvPicture
+
+  return {
+    computePicture,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createPicture,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRelatedPicture)
