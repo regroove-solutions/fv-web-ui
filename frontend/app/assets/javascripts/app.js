@@ -26,8 +26,7 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 
 import ConfGlobal from 'conf/local.js'
 
-// Providers provide reducers and actions
-import providers from 'providers/index'
+// REDUX
 import { Provider } from 'react-redux'
 import store from 'providers/redux/store'
 
@@ -43,10 +42,6 @@ require('styles/main')
 injectTapEventPlugin()
 
 const context = {
-  providers,
-  /*combinedProviders: [
-      providers // OK for all providers to share the same store for now, make sure actions are unique
-    ],*/
   providedState: {
     properties: {
       title: ConfGlobal.title,
@@ -60,7 +55,6 @@ const context = {
   },
 }
 
-// render(<AppWrapper {...context} />, document.getElementById('app-wrapper'))
 render(
   <Provider store={store}>
     <AppWrapper {...context} />

@@ -23,11 +23,6 @@ import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
 import { fetchWord } from 'providers/redux/reducers/fvWord'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations'
-import DocumentOperations from 'operations/DocumentOperations'
-import providers from '../../providers/index.js'
-
 const DefaultFetcherParams = { filters: { 'properties.dc:title': '', dialect: '78086057-9c34-48f7-995f-9dc3b313231b' } }
 
 // const argsFunction = function argumentNames(fun) {
@@ -200,107 +195,108 @@ export class PageDebugAPI extends Component {
 
     const providersElements = []
 
-    for (const providerKey in providers) {
-      const provider = providers[providerKey]
+    // TODO: use redux devtools or refactor the following to iterate over Redux providers
+    // for (const providerKey in providers) {
+    //   const provider = providers[providerKey]
 
-      if (
-        provider.hasOwnProperty('actions') &&
-        provider.hasOwnProperty('reducers') &&
-        provider.hasOwnProperty('mockRequest')
-      ) {
-        const providerActions = []
-        const providerReducers = []
+    //   if (
+    //     provider.hasOwnProperty('actions') &&
+    //     provider.hasOwnProperty('reducers') &&
+    //     provider.hasOwnProperty('mockRequest')
+    //   ) {
+    //     const providerActions = []
+    //     const providerReducers = []
 
-        for (const actionKey in provider.actions) {
-          if (provider.mockRequest.hasOwnProperty(actionKey)) {
-            const method = provider.actions[actionKey]
-            const mockRequestArgs = provider.mockRequest[actionKey].args
-            const mockRequestEvaluateResults = provider.mockRequest[actionKey].evaluateResults
-            const name = method.name
-            // const args = argsFunction(method)
+    //     for (const actionKey in provider.actions) {
+    //       if (provider.mockRequest.hasOwnProperty(actionKey)) {
+    //         const method = provider.actions[actionKey]
+    //         const mockRequestArgs = provider.mockRequest[actionKey].args
+    //         const mockRequestEvaluateResults = provider.mockRequest[actionKey].evaluateResults
+    //         const name = method.name
+    //         // const args = argsFunction(method)
 
-            //let test = method.call(this, "/FV/Workspaces/", "");
-            //let output = "test";
+    //         //let test = method.call(this, "/FV/Workspaces/", "");
+    //         //let output = "test";
 
-            if (name == 'query') {
-              /* eslint-disable */
-              DirectoryOperations.getDocuments(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocuments(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-              /* eslint-enable */
-            } else if (name == 'create') {
-              /* eslint-disable */
-              DocumentOperations.createDocument(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-              /* eslint-enable */
-            } else if (name == 'fetch') {
-              /* eslint-disable */
-              DocumentOperations.getDocument(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-              /* eslint-enable */
-            }
+    //         if (name == 'query') {
+    //           /* eslint-disable */
+    //           DirectoryOperations.getDocuments(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocuments(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         } else if (name == 'create') {
+    //           /* eslint-disable */
+    //           DocumentOperations.createDocument(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         } else if (name == 'fetch') {
+    //           /* eslint-disable */
+    //           DocumentOperations.getDocument(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         }
 
-            // console.log(args);
-            // console.log(test);
+    //         // console.log(args);
+    //         // console.log(test);
 
-            providerActions.push(
-              <p key={actionKey}>
-                {actionKey} - {name}
-              </p>
-            )
-          } else {
-            // eslint-disable-next-line
-            console.warn('Missing tests for ' + actionKey + ' in provider ' + providerKey)
-          }
-        }
+    //         providerActions.push(
+    //           <p key={actionKey}>
+    //             {actionKey} - {name}
+    //           </p>
+    //         )
+    //       } else {
+    //         // eslint-disable-next-line
+    //         console.warn('Missing tests for ' + actionKey + ' in provider ' + providerKey)
+    //       }
+    //     }
 
-        for (const reducerKey in provider.reducers) {
-          providerReducers.push(<p key={reducerKey}>{reducerKey}</p>)
-        }
+    //     for (const reducerKey in provider.reducers) {
+    //       providerReducers.push(<p key={reducerKey}>{reducerKey}</p>)
+    //     }
 
-        providersElements.push(
-          <div key={providerKey}>
-            <h2>Provider {providerKey}</h2>
-            <h3>Actions</h3>
-            {providerActions}
-            <h3>Reducers</h3>
-            {providerReducers}
-          </div>
-        )
-      } else {
-        // eslint-disable-next-line
-        console.warn('Missing tests for provider ' + providerKey)
-      }
-    }
+    //     providersElements.push(
+    //       <div key={providerKey}>
+    //         <h2>Provider {providerKey}</h2>
+    //         <h3>Actions</h3>
+    //         {providerActions}
+    //         <h3>Reducers</h3>
+    //         {providerReducers}
+    //       </div>
+    //     )
+    //   } else {
+    //     // eslint-disable-next-line
+    //     console.warn('Missing tests for provider ' + providerKey)
+    //   }
+    // }
 
     return (
       <div className="row">
