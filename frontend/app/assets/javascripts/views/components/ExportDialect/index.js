@@ -1,15 +1,20 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import { PropTypes } from 'react'
 const { any, bool, func, string } = PropTypes
-// import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  ExportDialectCheckPrevious,
+  ExportDialectRequest,
+  ExportDialectProgress,
+} from 'providers/redux/reducers/exportDialect'
+
 import selectn from 'selectn'
-@provide
-export default class ExportDialect extends Component {
+
+export class ExportDialect extends Component {
   static propTypes = {
-    ExportDialectReducer: any.isRequired,
-    ExportDialectCheckPrevious: func.isRequired,
-    ExportDialectRequest: func.isRequired,
-    ExportDialectProgress: func.isRequired,
     displayDebug: bool,
     dialectId: string,
     fileName: string,
@@ -17,6 +22,12 @@ export default class ExportDialect extends Component {
     isReady: bool,
     isProcessing: bool,
     isErrored: bool,
+    // REDUX: reducers/state
+    ExportDialectReducer: any.isRequired,
+    // REDUX: actions/dispatch/func
+    ExportDialectCheckPrevious: func.isRequired,
+    ExportDialectRequest: func.isRequired,
+    ExportDialectProgress: func.isRequired,
   }
   static defaultProps = {
     displayDebug: false,
@@ -258,3 +269,26 @@ export default class ExportDialect extends Component {
     return content
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { exportDialect } = state
+
+  const { ExportDialectReducer } = exportDialect
+
+  return {
+    ExportDialectReducer,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  ExportDialectCheckPrevious,
+  ExportDialectRequest,
+  ExportDialectProgress,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ExportDialect)
