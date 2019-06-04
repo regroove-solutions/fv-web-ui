@@ -6,8 +6,9 @@ import FormRemoveButton from 'views/components/Form/FormRemoveButton'
 // import ProviderHelpers from 'common/ProviderHelpers'
 import Preview from 'views/components/Editor/Preview'
 
-// see about dropping:
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+
 import ProviderHelpers from 'common/ProviderHelpers'
 
 const { array, func, number, string } = PropTypes
@@ -40,13 +41,8 @@ export class FormRelatedPhrase extends React.Component {
     handleItemSelected: func,
     componentState: number,
     value: string,
-    // browseComponent: element.isRequired,
-    // NOTE: COMING FROM REDUX/PROVIDER
-    // computeCategory: object.isRequired,
-    // createCategory: func.isRequired,
+    // REDUX: reducers/state
     splitWindowPath: array.isRequired,
-    // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
-    // computeDialectFromParent: object.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedPhrase',
@@ -126,4 +122,18 @@ export class FormRelatedPhrase extends React.Component {
   }
 }
 
-export default provide(FormRelatedPhrase)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+
+  const { splitWindowPath } = windowPath
+
+  return {
+    splitWindowPath,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(FormRelatedPhrase)
