@@ -982,13 +982,21 @@ audio::-webkit-media-controls-enclosure {
 @import "Introduction";
 @import "kids";
 @import "Navigation";
+@import "Select";
 @import "SearchDialect";
+@import "Text";
+@import "Textarea";
 @import "DialectFilterList";
 @import "AlphabetListView";
 @import "DictionaryList";
 @import "DialectViewWord";
 @import "SearchResultTile";
 @import "Flashcard";
+@import "FormRelatedAudioItem";
+@import "CreateV2";
+@import "Form";
+@import "FormMoveButtons";
+@import "FormRemoveButton";
 
 @media print {
   // Note: Flashcard print styles are in Flashcard.less
@@ -1024,4 +1032,13 @@ audio::-webkit-media-controls-enclosure {
   &:hover {
     background-color: #ff91b4;
   }
+}
+
+// https://a11yproject.com/posts/how-to-hide-content/
+.visually-hidden { /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+  position: absolute !important;
+  height: 1px; width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
 }

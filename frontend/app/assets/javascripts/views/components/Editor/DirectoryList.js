@@ -14,7 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDirectory } from 'providers/redux/reducers/directory'
+
 import selectn from 'selectn'
 
 import SelectField from 'material-ui/lib/SelectField'
@@ -23,16 +28,20 @@ import StringHelpers, { CLEAN_ID } from 'common/StringHelpers'
 import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 
+const { bool, func, object, string } = PropTypes
+
 export class DirectoryList extends Component {
   static propTypes = {
-    fetchDirectory: PropTypes.func.isRequired,
-    computeDirectory: PropTypes.object.isRequired,
-    directory: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    fancy: PropTypes.bool,
-    value: PropTypes.string,
-    dataTestId: PropTypes.string,
+    dataTestId: string,
+    dir: string.isRequired, // NOTE: from parent, not redux
+    fancy: bool,
+    label: string.isRequired,
+    onChange: func.isRequired,
+    value: string,
+    // REDUX: reducers/state
+    computeDirectory: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDirectory: func.isRequired,
   }
 
   static defaultProps = {
@@ -62,13 +71,13 @@ export class DirectoryList extends Component {
   }
 
   componentDidMount() {
-    this.props.fetchDirectory(this.props.directory)
+    this.props.fetchDirectory(this.props.dir)
   }
 
   render() {
     const { computeDirectory } = this.props
 
-    const entries = selectn('directories.' + this.props.directory, computeDirectory) || []
+    const entries = selectn('directories.' + this.props.dir, computeDirectory) || []
     const dataTestId = StringHelpers.clean(this.props.dataTestId, CLEAN_ID)
     return (
       <div>
@@ -87,8 +96,8 @@ export class DirectoryList extends Component {
           </SelectField>
         ) : (
           <select onChange={this._handleStandardSelectChange} data-testid={dataTestId}>
-          {/* Note: Had a conflict and `value={this.props.value}` was the incoming change */}
-          {/* <select value={this.props.value} onChange={this._handleStandardSelectChange} data-testid={dataTestId}> */}
+            {/* Note: Had a conflict and `value={this.props.value}` was the incoming change */}
+            {/* <select value={this.props.value} onChange={this._handleStandardSelectChange} data-testid={dataTestId}> */}
             {entries.map((entry) => (
               <option key={entry.value} value={entry.value}>
                 {entry.text}
@@ -100,4 +109,24 @@ export class DirectoryList extends Component {
     )
   }
 }
-export default provide(DirectoryList)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { directory } = state
+
+  const { computeDirectory } = directory
+
+  return {
+    computeDirectory,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDirectory,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DirectoryList)

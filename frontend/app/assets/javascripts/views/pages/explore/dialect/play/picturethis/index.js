@@ -14,12 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
 import Immutable, { List, Map } from 'immutable'
 
 import classNames from 'classnames'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -34,12 +37,15 @@ const intl = IntlService.instance
 /**
  * Play games
  */
-@provide
-export default class Picturethis extends Component {
+
+const { func, object } = PropTypes
+export class Picturethis extends Component {
   static propTypes = {
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchWords: func.isRequired,
   }
 
   /**
@@ -284,10 +290,11 @@ export default class Picturethis extends Component {
 
   fetchData(props, theme) {
     if (theme.words.size > 0) {
-      let lowerCaseKeys = theme.words.map((v, k) => k.toLowerCase())
-      let wordKeys = theme.words.keySeq().concat(lowerCaseKeys)
+      const lowerCaseKeys = theme.words.map((v, k) => k.toLowerCase())
+      const wordKeys = theme.words.keySeq().concat(lowerCaseKeys)
 
-      let translationsJoin = wordKeys.join(',').replace(/\,/g, "','")
+      // eslint-disable-next-line
+      const translationsJoin = wordKeys.join(',').replace(/\,/g, "','")
 
       props.fetchWords(
         props.routeParams.dialect_path + '/Dictionary',
@@ -317,8 +324,8 @@ export default class Picturethis extends Component {
     this.fetchData(this.props, theme)
   }
 
-  resetTheme(theme) {
-    this.setState({ foundWordKeys: new List(), selectedWordInList: false, selectedWordInList: false })
+  resetTheme(/*theme*/) {
+    this.setState({ foundWordKeys: new List(), selectedWordInList: false })
   }
 
   renderThemeList() {
@@ -360,15 +367,15 @@ export default class Picturethis extends Component {
   }
 
   checkMatch() {
-    let wordInList = this.state.selectedWordInList
-    let wordInPicture = this.state.selectedWordInPicture
+    const wordInList = this.state.selectedWordInList
+    const wordInPicture = this.state.selectedWordInPicture
 
     if (wordInList !== false && wordInPicture !== false) {
-      if (selectn('locationInt', wordInPicture) === selectn('locationInt', wordInList) && wordInPicture != undefined) {
+      if (selectn('locationInt', wordInPicture) === selectn('locationInt', wordInList) && wordInPicture !== undefined) {
         if (selectn('audio', wordInList)) {
           UIHelpers.playAudio(
             this.state,
-            function(state) {
+            function playAudioSetState(state) {
               this.setState(state)
             }.bind(this),
             NavigationHelpers.getBaseURL() + selectn('audio', wordInList)
@@ -394,13 +401,13 @@ export default class Picturethis extends Component {
 
     // Merge remote words with state words
     ;(selectn('response.entries', words) || []).map(
-      function(word, wordKey) {
-        let literal_translation = selectn('properties.fv:literal_translation', word)
+      function wordsData(word /*, wordKey*/) {
+        const literal_translation = selectn('properties.fv:literal_translation', word)
 
         literal_translation.map(
-          function(v, k) {
+          function literalTranslation(v) {
             // Convert to title case (e.g. bird -> Bird)
-            let translationTitleCase = StringHelpers.toTitleCase(selectn('translation', v))
+            const translationTitleCase = StringHelpers.toTitleCase(selectn('translation', v))
 
             // Only add to words if exists in theme words
             if (this.state.selectedTheme.words.has(translationTitleCase)) {
@@ -428,7 +435,7 @@ export default class Picturethis extends Component {
     // Combine the two lists
     remoteWords = this.state.selectedTheme.words.concat(remoteWords)
 
-    const defaultAssetsPath = 'assets/games/picturethis/assets'
+    // const defaultAssetsPath = 'assets/games/picturethis/assets'
     const theme = this.state.selectedTheme
 
     const tableCellStyle = {
@@ -499,7 +506,7 @@ export default class Picturethis extends Component {
             style={{ borderRadius: '30px', border: '1px solid #000' }}
             src={`${theme.image}`}
           />
-          {remoteWords.map((word, key) => {
+          {remoteWords.map((word) => {
             let highlight = {}
 
             if (selectn('locationInt', this.state.selectedWordInPicture) === selectn('locationInt', word)) {
@@ -607,7 +614,7 @@ export default class Picturethis extends Component {
     )
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-7', 'col-md-offset-1')}>
             {this.state.selectedTheme === false ? false : this.renderGame(computeWords)}
@@ -626,3 +633,24 @@ export default class Picturethis extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvWord } = state
+
+  const { computeWords } = fvWord
+
+  return {
+    computeWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Picturethis)

@@ -31,27 +31,27 @@ const defaultFilterFunc = function defaultFilterFunc(propertyToSearch, filterVal
   return !(propertyToSearch.search(new RegExp(filterValue, 'i')) === -1)
 }
 
+const { any, bool, func, object, string } = PropTypes
 export default function withFilter(ComposedFilter, DefaultFetcherParams) {
   class FilteredGridList extends Component {
+    static propTypes = {
+      applyDefaultFormValues: bool,
+      area: string,
+      fetcher: func,
+      fetcherParams: object,
+      filterOptionsKey: string.isRequired,
+      fixedList: bool,
+      fixedListFetcher: func,
+      formValues: any, // TODO: set appropriate propType
+      fullWidth: bool,
+      initialFormValue: any, // TODO: set appropriate propType
+      initialValues: object,
+      items: any, // TODO: set appropriate propType
+      metadata: object,
+    }
     static defaultProps = {
       filterOptionsKey: 'Default',
       fullWidth: false,
-    }
-
-    static propTypes = {
-      applyDefaultFormValues: PropTypes.bool,
-      area: PropTypes.string,
-      fetcher: PropTypes.func,
-      fetcherParams: PropTypes.object,
-      filterOptionsKey: PropTypes.string.isRequired,
-      fixedList: PropTypes.bool,
-      fixedListFetcher: PropTypes.func,
-      formValues: PropTypes.any, // TODO: set appropriate propType
-      fullWidth: PropTypes.bool,
-      initialFormValue: PropTypes.any, // TODO: set appropriate propType
-      initialValues: PropTypes.object,
-      items: PropTypes.any, // TODO: set appropriate propType
-      metadata: PropTypes.object,
     }
 
     constructor(props, context) {
@@ -129,8 +129,7 @@ export default function withFilter(ComposedFilter, DefaultFetcherParams) {
                     value={this.state.formValue}
                     options={options.toJS()}
                   />
-                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
-                  &nbsp;
+                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary /> &nbsp;
                   <RaisedButton type="submit" label={intl.trans('filter', 'Filter', 'first')} primary />
                 </FiltersWithToggle>
               </form>

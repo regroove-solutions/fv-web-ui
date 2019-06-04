@@ -1,5 +1,5 @@
 // Webpack
-const webpack = require("webpack");
+const webpack = require('webpack')
 
 // Path
 const path = require('path')
@@ -95,8 +95,8 @@ module.exports = env => ({
     // Ensure locally /nuxeo requests are rewritten to localhost:8080, unless rendering app
     proxy: [{
       context: ['/nuxeo/**', '!/nuxeo/app/**'],
-      target: 'http://localhost:8080'
-    }]
+      target: 'http://localhost:8080',
+    }],
   },
 
   /**
@@ -104,6 +104,7 @@ module.exports = env => ({
    */
   entry: {
     app: path.resolve(sourceScriptsDirectory, 'app.js'),
+    // createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/create.js'),
     game_libs: ['pixi', 'p2', 'phaser'],
   },
 
@@ -115,6 +116,7 @@ module.exports = env => ({
       views: path.resolve(sourceScriptsDirectory, 'views'),
       conf: path.resolve(sourceScriptsDirectory, 'configuration'),
       operations: path.resolve(sourceScriptsDirectory, 'operations'),
+      providers: path.resolve(sourceScriptsDirectory, 'providers'),
       components: path.resolve(sourceScriptsDirectory, 'components'),
       common: path.resolve(sourceScriptsDirectory, 'common'),
       games: path.resolve(sourceAssetsDirectory, 'games'),
@@ -175,8 +177,8 @@ module.exports = env => ({
     new webpack.DefinePlugin({
       ENV_NUXEO_URL: (env && env.NUXEO_URL) ? JSON.stringify(env.NUXEO_URL) : null,
       ENV_WEB_URL: (env && env.WEB_URL) ? JSON.stringify(env.WEB_URL) : null,
-      ENV_CONTEXT_PATH: (env && env.CONTEXT_PATH) ? JSON.stringify(env.CONTEXT_PATH) : null
-    })
+      ENV_CONTEXT_PATH: (env && env.CONTEXT_PATH) ? JSON.stringify(env.CONTEXT_PATH) : null,
+    }),
   ],
 
   /**
@@ -236,17 +238,17 @@ module.exports = env => ({
       {
         test: /\.less$/,
         use: [{
-          loader: MiniCssExtractPlugin.loader
+          loader: MiniCssExtractPlugin.loader,
         }, {
           loader: 'css-loader', options: {
             // #context-path-issue
             // Disable resolving URLs because of context path - /nuxeo/app/
             // Absolute path /assets/image.jpg won't work on dev/uat, relative paths will throw compilation error otherwise.
-            url: false
-          }
+            url: false,
+          },
         }, {
-          loader: 'less-loader'
-        }]
+          loader: 'less-loader',
+        }],
       },
       /**
        * Font loaders

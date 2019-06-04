@@ -14,11 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategory, updateCategory } from 'providers/redux/reducers/fvCategory'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { replaceWindowPath, pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -28,10 +33,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -41,23 +42,25 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class Edit extends Component {
+const { array, func, object, string } = PropTypes
+export class Edit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchCategory: PropTypes.func.isRequired,
-    computeCategory: PropTypes.object.isRequired,
-    updateCategory: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    routeParams: PropTypes.object.isRequired,
-    phraseBook: PropTypes.object,
-    value: PropTypes.string,
-    onDocumentCreated: PropTypes.func,
-    cancelMethod: PropTypes.func,
+    cancelMethod: func,
+    dialect: object,
+    onDocumentCreated: func,
+    phraseBook: object,
+    routeParams: object.isRequired,
+    value: string,
+    // REDUX: reducers/state
+    computeCategory: object.isRequired,
+    computeDialect2: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCategory: func.isRequired,
+    fetchDialect2: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    pushWindowPath: func.isRequired,
+    updateCategory: func.isRequired,
   }
 
   constructor(props, context) {
@@ -90,9 +93,10 @@ export default class Edit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentPhraseBook, nextPhraseBook
+    let currentPhraseBook
+    let nextPhraseBook
 
-    if (this.state.phraseBookPath != null) {
+    if (this.state.phraseBookPath !== null) {
       currentPhraseBook = ProviderHelpers.getEntry(this.props.computeCategory, this.state.phraseBookPath)
       nextPhraseBook = ProviderHelpers.getEntry(nextProps.computeCategory, this.state.phraseBookPath)
     }
@@ -108,36 +112,32 @@ export default class Edit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
-    let previousPhraseBook = this.props.computeCategory
-    let nextPhraseBook = newProps.computeCategory
+  shouldComponentUpdate(newProps /*, newState*/) {
+    const previousPhraseBook = this.props.computeCategory
+    const nextPhraseBook = newProps.computeCategory
 
-    let previousDialect = this.props.computeDialect2
-    let nextDialect = newProps.computeDialect2
+    const previousDialect = this.props.computeDialect2
+    const nextDialect = newProps.computeDialect2
 
     switch (true) {
       case newProps.routeParams.phraseBook != this.props.routeParams.phraseBook:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case typeof nextPhraseBook.equals === 'function' && nextPhraseBook.equals(previousPhraseBook) === false:
         return true
-        break
 
       case typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _handleSave(phraseBook, formValue) {
-    let newDocument = new Document(phraseBook.response, {
+    const newDocument = new Document(phraseBook.response, {
       repository: phraseBook.response._repository,
       nuxeo: phraseBook.response._nuxeo,
     })
@@ -178,7 +178,7 @@ export default class Edit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computeCategory)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-phraseBook:definitions[0].translation', computeCategory) ||
         selectn('response.properties.fv:literal_translation[0].translation', computeCategory)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -213,3 +213,32 @@ export default class Edit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvDialect, windowPath } = state
+
+  const { computeCategory } = fvCategory
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeCategory,
+    computeDialect2,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategory,
+  fetchDialect2,
+  replaceWindowPath,
+  pushWindowPath,
+  updateCategory,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Edit)

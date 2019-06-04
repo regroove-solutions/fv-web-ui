@@ -1,3 +1,6 @@
+// TODO: REMOVE ESLINT-DISABLE
+/* eslint-disable */
+
 /*
 Copyright 2016 First People's Cultural Council
 
@@ -14,60 +17,49 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createAudio } from 'providers/redux/reducers/fvAudio'
+import { createPicture } from 'providers/redux/reducers/fvPicture'
+import { createVideo } from 'providers/redux/reducers/fvVideo'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 import classNames from 'classnames'
-
-import SelectSuggestFactory from 'views/components/Editor/fields/selectSuggest'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
-import {
-  Card,
-  CardHeader,
-  CardMedia,
-  CardTitle,
-  CardActions,
-  CardText,
-  Avatar,
-  FlatButton,
-  Toolbar,
-  ToolbarGroup,
-  ToolbarTitle,
-  ToolbarSeparator,
-  DropDownMenu,
-  DropDownIcon,
-  FontIcon,
-  RaisedButton,
-  Tabs,
-  Tab,
-  Dialog,
-} from 'material-ui'
+import { FlatButton, RaisedButton, Dialog } from 'material-ui'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
+
 // TODO: Cleanup class
-@provide
-export default class AddMediaComponent extends Component {
+
+const { func, object, string } = PropTypes
+export class AddMediaComponent extends Component {
   static propTypes = {
-    createAudio: PropTypes.func.isRequired,
-    computeAudio: PropTypes.object.isRequired,
-    createPicture: PropTypes.func.isRequired,
-    computePicture: PropTypes.object.isRequired,
-    createVideo: PropTypes.func.isRequired,
-    computeVideo: PropTypes.object.isRequired,
-    dialect: PropTypes.object.isRequired,
-    onComplete: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    onComplete: func.isRequired,
+    label: string.isRequired,
+    type: string.isRequired,
+    dialect: object.isRequired,
+    // REDUX: reducers/state
+    computeAudio: object.isRequired,
+    computePicture: object.isRequired,
+    computeVideo: object.isRequired,
+    // REDUX: actions/dispatch/func
+    createAudio: func.isRequired,
+    createPicture: func.isRequired,
+    createVideo: func.isRequired,
   }
 
   getDefaultValues() {
-    label: intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
+    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
   }
 
   handleOpen() {
@@ -108,15 +100,16 @@ export default class AddMediaComponent extends Component {
 
     this.setState({ uploading: true })
 
-    let formValue = this.refs['form_media'].getValue()
+    // TODO: `this.refs` deprecated
+    const formValue = this.refs.form_media.getValue()
 
     // If validation passed
     if (formValue) {
       let file
-      let fd = new FormData()
+      const fd = new FormData()
 
-      for (let k in formValue) {
-        let v = formValue[k]
+      for (const k in formValue) {
+        const v = formValue[k]
         if (t.form.File.is(v)) {
           fd.append(k, v, v.name)
           file = v
@@ -126,9 +119,9 @@ export default class AddMediaComponent extends Component {
       }
 
       if (file) {
-        let properties = {}
+        const properties = {}
 
-        for (let key in formValue) {
+        for (const key in formValue) {
           if (formValue.hasOwnProperty(key) && key && key != 'file') {
             if (formValue[key] && formValue[key] != '') {
               //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
@@ -137,10 +130,10 @@ export default class AddMediaComponent extends Component {
           }
         }
 
-        let timestamp = Date.now()
-        let ResourcesPath = this.props.dialect.path + '/Resources'
+        const timestamp = Date.now()
+        const ResourcesPath = this.props.dialect.path + '/Resources'
 
-        let docParams = {
+        const docParams = {
           type: this.props.type,
           name: formValue['dc:title'],
           properties: Object.assign(
@@ -202,6 +195,7 @@ export default class AddMediaComponent extends Component {
               })
             }
             break
+          default: // NOTE: do nothing
         }
 
         this.setState({
@@ -218,7 +212,7 @@ export default class AddMediaComponent extends Component {
     let fileTypeLabel = intl.trans('file', 'File', 'first')
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary={true} onClick={this.handleClose} />,
+      <FlatButton key="fb0" label={intl.trans('cancel', 'Cancel', 'first')} secondary onClick={this.handleClose} />,
     ]
 
     switch (this.props.type) {
@@ -236,13 +230,15 @@ export default class AddMediaComponent extends Component {
         computeCreate = ProviderHelpers.getEntry(this.props.computeVideo, this.state.pathOrId)
         fileTypeLabel = intl.trans('video', 'Video', 'first')
         break
+
+      default: // NOTE: do nothing
     }
 
     //if (this.state.schema != undefined){
     form = (
       <form onSubmit={this._save} id="myForm" encType="multipart/form-data">
         <t.form.Form
-          ref="form_media"
+          ref="form_media" // TODO: deprecated
           options={selectn('FVResource', options)}
           type={t.struct(selectn(this.props.type, fields))}
           value={this.state.value}
@@ -273,7 +269,7 @@ export default class AddMediaComponent extends Component {
       actions.push(
         <FlatButton
           label={intl.trans('insert_into_entry', 'Insert into Entry', 'first')}
-          primary={true}
+          primary
           onClick={this._handleSelectElement.bind(this, computeCreate.response)}
         />
       )
@@ -295,8 +291,8 @@ export default class AddMediaComponent extends Component {
             [fileTypeLabel, selectn('properties.dc:title', this.props.dialect)]
           )}
           actions={actions}
-          modal={true}
-          autoScrollBodyContent={true}
+          modal
+          autoScrollBodyContent
           open={this.state.open}
         >
           <div className="form-horizontal">
@@ -309,3 +305,30 @@ export default class AddMediaComponent extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvAudio, fvPicture, fvVideo } = state
+
+  const { computeAudio } = fvAudio
+  const { computePicture } = fvPicture
+  const { computeVideo } = fvVideo
+
+  return {
+    computeAudio,
+    computePicture,
+    computeVideo,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createAudio,
+  createPicture,
+  createVideo,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AddMediaComponent)

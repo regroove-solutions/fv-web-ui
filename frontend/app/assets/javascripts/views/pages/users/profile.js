@@ -14,19 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changefetchUser } from 'providers/redux/reducers/fvUser'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
-import { User } from 'nuxeo'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
@@ -34,21 +36,23 @@ import IntlService from 'views/services/intl'
 /**
  * Create user entry
  */
-@provide
+const { array, func, object, string } = PropTypes
 class Profile extends Component {
   intl = IntlService.instance
 
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    fetchUser: PropTypes.func.isRequired,
-    computeUser: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    updateUser: func.isRequired,
+    // REDUX: reducers/state
+    computeUser: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchUser: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -86,7 +90,7 @@ class Profile extends Component {
     let currentUser
     let nextUser
 
-    if (this.state.userRequest != null) {
+    if (this.state.userRequest !== null) {
       currentUser = ProviderHelpers.getEntry(this.props.computeUser, this.state.userRequest)
       nextUser = ProviderHelpers.getEntry(nextProps.computeUser, this.state.userRequest)
     }
@@ -103,15 +107,13 @@ class Profile extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
-      case newProps.windowPath != this.props.windowPath:
+      case newProps.windowPath !== this.props.windowPath:
         return true
-        break
 
       case newProps.computeUser != this.props.computeUser:
         return true
-        break
       default: // Note: do nothing
     }
 
@@ -121,14 +123,14 @@ class Profile extends Component {
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
-
+    // TODO: this.refs DEPRECATED
     const formValue = this.refs.form_user_edit.getValue()
 
     const properties = {}
 
     for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           properties[key] = formValue[key]
         }
       }
@@ -187,7 +189,7 @@ class Profile extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_user_edit"
+                ref="form_user_edit" // TODO: DEPRECATED
                 type={t.struct(FVUserProfileFields)}
                 value={this.state.formValue || normalizedPayload}
                 options={FVUserProfileOptions}
@@ -204,4 +206,33 @@ class Profile extends Component {
     )
   }
 }
-export default Profile
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvUser, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeUser } = fvUser
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeUser,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changefetchUser,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Profile)

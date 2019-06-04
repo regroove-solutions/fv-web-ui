@@ -13,10 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Set, Map } from 'immutable'
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchDocument } from 'providers/redux/reducers/document'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { updatePageProperties } from 'providers/redux/reducers/navigation'
+
 import selectn from 'selectn'
 
 import ReportsJson from './reports.json'
@@ -25,9 +34,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
-import UIHelpers from 'common/UIHelpers'
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import PageDialectLearnBase from 'views/pages/explore/dialect/learn/base'
 
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
@@ -35,38 +41,35 @@ import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import SongsStoriesListViewAlt from 'views/pages/explore/dialect/learn/songs-stories/list-view-alt'
 
 import ReportBrowser from './browse-view'
-
-import CircularProgress from 'material-ui/lib/circular-progress'
-import RaisedButton from 'material-ui/lib/raised-button'
-
-import FacetFilterList from 'views/components/Browsing/facet-filter-list'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class PageDialectReportsView extends PageDialectLearnBase {
+const { func, object, string } = PropTypes
+export class PageDialectReportsView extends PageDialectLearnBase {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    computeCategories: PropTypes.object.isRequired,
-    updatePageProperties: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCategories: object.isRequired,
+    computeDocument: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCategories: func.isRequired,
+    fetchDocument: func.isRequired,
+    fetchPortal: func.isRequired,
+    pushWindowPath: func.isRequired,
+    updatePageProperties: func.isRequired,
   }
 
   constructor(props, context) {
     super(props, context)
 
-    let reports = Immutable.fromJS(ReportsJson)
+    const reports = Immutable.fromJS(ReportsJson)
 
     let report = reports.find(
-      function(entry) {
+      function findFn(entry) {
         return entry.get('name').toLowerCase() === decodeURI(this.props.routeParams.reportName).toLowerCase()
       }.bind(this)
     )
@@ -82,6 +85,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
         case 'phrases':
           defaultCols = ['title', 'fv:definitions', 'related_pictures', 'related_audio', 'fv-phrase:phrase_books']
           break
+        default: // NOTE: do nothing
       }
 
       report = report.set('cols', defaultCols)
@@ -130,10 +134,10 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
       },
     ])
 
-    const computeDocument = ProviderHelpers.getEntry(
-      this.props.computeDocument,
-      this.props.routeParams.dialect_path + '/Dictionary'
-    )
+    // const computeDocument = ProviderHelpers.getEntry(
+    //   this.props.computeDocument,
+    //   this.props.routeParams.dialect_path + '/Dictionary'
+    // )
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + '/Portal'
@@ -148,7 +152,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             onPaginationReset={this._resetURLPagination}
             onPagePropertiesChange={this._handlePagePropertiesChange}
             {...this._getURLPageProps()}
-            controlViaURL={true}
+            controlViaURL
             ENABLED_COLS={this.state.currentReport.has('cols') ? this.state.currentReport.get('cols') : []}
             filter={this.state.filterInfo}
             disableClickItem={false}
@@ -165,7 +169,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             onPaginationReset={this._resetURLPagination}
             onPagePropertiesChange={this._handlePagePropertiesChange}
             {...this._getURLPageProps()}
-            controlViaURL={true}
+            controlViaURL
             ENABLED_COLS={this.state.currentReport.has('cols') ? this.state.currentReport.get('cols') : []}
             filter={this.state.filterInfo}
             disableClickItem={false}
@@ -182,7 +186,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             onPaginationReset={this._resetURLPagination}
             onPagePropertiesChange={this._handlePagePropertiesChange}
             {...this._getURLPageProps()}
-            controlViaURL={true}
+            controlViaURL
             filter={this.state.filterInfo}
             disableClickItem={false}
             routeParams={this.props.routeParams}
@@ -196,17 +200,18 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
             onPaginationReset={this._resetURLPagination}
             onPagePropertiesChange={this._handlePagePropertiesChange}
             {...this._getURLPageProps()}
-            controlViaURL={true}
+            controlViaURL
             filter={this.state.filterInfo}
             disableClickItem={false}
             routeParams={this.props.routeParams}
           />
         )
         break
+      default: // NOTE: do nothing
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className={classNames('col-xs-12')}>
             <h1>
@@ -219,7 +224,7 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
                 <ReportBrowser
                   style={{ maxHeight: '400px', overflowY: 'scroll' }}
                   routeParams={this.props.routeParams}
-                  fullWidth={true}
+                  fullWidth
                 />
               </div>
               <div className={classNames('col-xs-12', 'col-md-9')}>{listView}</div>
@@ -230,3 +235,36 @@ export default class PageDialectReportsView extends PageDialectLearnBase {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvPortal, nuxeo, windowPath } = state
+
+  const { computeCategories } = fvCategory
+  const { computePortal } = fvPortal
+  const { computeLogin } = nuxeo
+  const { computeDocument } = document
+  const { _windowPath } = windowPath
+
+  return {
+    computeCategories,
+    computeDocument,
+    computeLogin,
+    computePortal,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategories,
+  fetchDocument,
+  fetchPortal,
+  pushWindowPath,
+  updatePageProperties,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectReportsView)

@@ -17,33 +17,49 @@ import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
-// import ConfGlobal from 'conf/local.js'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  fetchDialect2,
+  updateDialect2,
+  fetchDialectStats,
+  publishDialectOnly,
+} from 'providers/redux/reducers/fvDialect'
+import {
+  queryModifiedWords,
+  queryCreatedWords,
+  queryUserCreatedWords,
+  queryUserModifiedWords,
+} from 'providers/redux/reducers/fvWord'
+import {
+  queryCreatedSongs,
+  queryCreatedStories,
+  queryModifiedStories,
+  queryModifiedSongs,
+  queryUserCreatedSongs,
+  queryUserCreatedStories,
+  queryUserModifiedSongs,
+  queryUserModifiedStories,
+} from 'providers/redux/reducers/fvBook'
+import {
+  queryCreatedPhrases,
+  queryModifiedPhrases,
+  queryUserModifiedPhrases,
+  queryUserCreatedPhrases,
+} from 'providers/redux/reducers/fvPhrase'
+import { fetchPortal, updatePortal } from 'providers/redux/reducers/fvPortal'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import Header from 'views/pages/explore/dialect/header'
-// import PageHeader from 'views/pages/explore/dialect/page-header'
 import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-// import SearchBar from 'views/pages/explore/dialect/search-bar'
-
-// import RaisedButton from 'material-ui/lib/raised-button'
-// import FlatButton from 'material-ui/lib/flat-button'
-
-// import IconMenu from 'material-ui/lib/menus/icon-menu'
-// import IconButton from 'material-ui/lib/icon-button'
-// import MenuItem from 'material-ui/lib/menus/menu-item'
-// import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
-
-// import Tabs from 'material-ui/lib/tabs/tabs'
-// import Tab from 'material-ui/lib/tabs/tab'
-
-// import EditableComponent, {EditableComponentHelper} from 'views/components/Editor/EditableComponent'
 import { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
 
 import RecentActivityList from 'views/components/Dashboard/RecentActivityList'
-// import Link from 'views/components/Document/Link'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
@@ -63,53 +79,56 @@ const intl = IntlService.instance
  * Learn portion of the dialect portal
  * TODO: Reduce the amount of queries this page runs.
  */
-@provide
-export default class DialectLearn extends Component {
+
+const { func, object, string } = PropTypes
+export class DialectLearn extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    updateDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    publishDialectOnly: PropTypes.func.isRequired,
-    fetchDialectStats: PropTypes.func.isRequired,
-    queryModifiedWords: PropTypes.func.isRequired,
-    computeModifiedWords: PropTypes.object.isRequired,
-    queryCreatedWords: PropTypes.func.isRequired,
-    computeCreatedWords: PropTypes.object.isRequired,
-    queryUserModifiedWords: PropTypes.func.isRequired,
-    computeUserModifiedWords: PropTypes.object.isRequired,
-    queryUserCreatedWords: PropTypes.func.isRequired,
-    computeUserCreatedWords: PropTypes.object.isRequired,
-    queryModifiedPhrases: PropTypes.func.isRequired,
-    computeModifiedPhrases: PropTypes.object.isRequired,
-    queryCreatedPhrases: PropTypes.func.isRequired,
-    computeCreatedPhrases: PropTypes.object.isRequired,
-    queryUserModifiedPhrases: PropTypes.func.isRequired,
-    computeUserModifiedPhrases: PropTypes.object.isRequired,
-    queryUserCreatedPhrases: PropTypes.func.isRequired,
-    computeUserCreatedPhrases: PropTypes.object.isRequired,
-    queryModifiedStories: PropTypes.func.isRequired,
-    computeModifiedStories: PropTypes.object.isRequired,
-    queryCreatedStories: PropTypes.func.isRequired,
-    computeCreatedStories: PropTypes.object.isRequired,
-    queryModifiedSongs: PropTypes.func.isRequired,
-    computeModifiedSongs: PropTypes.object.isRequired,
-    queryCreatedSongs: PropTypes.func.isRequired,
-    computeCreatedSongs: PropTypes.object.isRequired,
-    queryUserModifiedStories: PropTypes.func.isRequired,
-    computeUserModifiedStories: PropTypes.object.isRequired,
-    queryUserCreatedStories: PropTypes.func.isRequired,
-    computeUserCreatedStories: PropTypes.object.isRequired,
-    queryUserModifiedSongs: PropTypes.func.isRequired,
-    computeUserModifiedSongs: PropTypes.object.isRequired,
-    queryUserCreatedSongs: PropTypes.func.isRequired,
-    computeUserCreatedSongs: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCreatedPhrases: object.isRequired,
+    computeCreatedSongs: object.isRequired,
+    computeCreatedStories: object.isRequired,
+    computeCreatedWords: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeModifiedPhrases: object.isRequired,
+    computeModifiedSongs: object.isRequired,
+    computeModifiedStories: object.isRequired,
+    computeModifiedWords: object.isRequired,
+    computePortal: object.isRequired,
+    computeUserCreatedPhrases: object.isRequired,
+    computeUserCreatedSongs: object.isRequired,
+    computeUserCreatedStories: object.isRequired,
+    computeUserCreatedWords: object.isRequired,
+    computeUserModifiedSongs: object.isRequired,
+    computeUserModifiedStories: object.isRequired,
+    computeUserModifiedPhrases: object.isRequired,
+    computeUserModifiedWords: object.isRequired,
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchPortal: func.isRequired,
+    updateDialect2: func.isRequired,
+    fetchDialectStats: func.isRequired,
+    publishDialectOnly: func.isRequired,
+    queryModifiedWords: func.isRequired,
+    queryCreatedWords: func.isRequired,
+    queryCreatedPhrases: func.isRequired,
+    queryCreatedSongs: func.isRequired,
+    queryCreatedStories: func.isRequired,
+    queryModifiedPhrases: func.isRequired,
+    queryModifiedStories: func.isRequired,
+    queryModifiedSongs: func.isRequired,
+    queryUserCreatedPhrases: func.isRequired,
+    queryUserCreatedSongs: func.isRequired,
+    queryUserCreatedStories: func.isRequired,
+    queryUserCreatedWords: func.isRequired,
+    queryUserModifiedPhrases: func.isRequired,
+    queryUserModifiedSongs: func.isRequired,
+    queryUserModifiedStories: func.isRequired,
+    queryUserModifiedWords: func.isRequired,
+    updatePortal: func.isRequired,
   }
 
   constructor(props, context) {
@@ -288,10 +307,7 @@ export default class DialectLearn extends Component {
     const isSection = this.props.routeParams.area === 'sections'
 
     const {
-      updatePortal,
-      updateDialect2,
       computeLogin,
-      computeDocument,
       computeUserModifiedWords,
       computeUserCreatedWords,
       computeUserModifiedPhrases,
@@ -337,8 +353,8 @@ export default class DialectLearn extends Component {
         })()}
 
         <Header
-          portal={{ compute: computePortal, update: updatePortal }}
-          dialect={{ compute: computeDialect2, update: updateDialect2 }}
+          portal={{ compute: computePortal, update: this.props.updatePortal }}
+          dialect={{ compute: computeDialect2, update: this.props.updateDialect2 }}
           login={computeLogin}
           showStats={this.state.showStats}
           routeParams={this.props.routeParams}
@@ -365,7 +381,7 @@ export default class DialectLearn extends Component {
                 <EditableComponentHelper
                   isSection={isSection}
                   computeEntity={computeDialect2}
-                  updateEntity={updateDialect2}
+                  updateEntity={this.props.updateDialect2}
                   property="dc:description"
                   entity={selectn('response', computeDialect2)}
                 />
@@ -677,7 +693,7 @@ export default class DialectLearn extends Component {
             <LearningSidebar
               isSection={isSection}
               properties={this.props.properties}
-              dialect={{ compute: computeDialect2, update: updateDialect2 }}
+              dialect={{ compute: computeDialect2, update: this.props.updateDialect2 }}
             />
           </div>
         </div>
@@ -685,3 +701,87 @@ export default class DialectLearn extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvBook, fvDialect, fvPhrase, fvPortal, fvWord, nuxeo, navigation, windowPath } = state
+
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { _windowPath } = windowPath
+  const {
+    computeCreatedPhrases,
+    computeModifiedPhrases,
+    computeUserCreatedPhrases,
+    computeUserModifiedPhrases,
+  } = fvPhrase
+  const {
+    computeCreatedSongs,
+    computeModifiedSongs,
+    computeUserCreatedSongs,
+    computeUserModifiedSongs,
+    computeCreatedStories,
+    computeModifiedStories,
+    computeUserCreatedStories,
+    computeUserModifiedStories,
+  } = fvBook
+
+  const { computeCreatedWords, computeModifiedWords, computeUserCreatedWords, computeUserModifiedWords } = fvWord
+
+  const { computePortal } = fvPortal
+  const { properties } = navigation
+  return {
+    computeCreatedPhrases,
+    computeCreatedSongs,
+    computeCreatedStories,
+    computeCreatedWords,
+    computeDialect2,
+    computeLogin,
+    computeModifiedPhrases,
+    computeModifiedSongs,
+    computeModifiedStories,
+    computeModifiedWords,
+    computePortal,
+    computeUserCreatedPhrases,
+    computeUserCreatedSongs,
+    computeUserCreatedStories,
+    computeUserCreatedWords,
+    computeUserModifiedSongs,
+    computeUserModifiedStories,
+    computeUserModifiedPhrases,
+    computeUserModifiedWords,
+    properties,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchPortal,
+  updateDialect2,
+  fetchDialectStats,
+  publishDialectOnly,
+  queryModifiedWords,
+  queryCreatedWords,
+  queryCreatedPhrases,
+  queryCreatedSongs,
+  queryCreatedStories,
+  queryModifiedPhrases,
+  queryModifiedStories,
+  queryModifiedSongs,
+  queryUserCreatedPhrases,
+  queryUserCreatedSongs,
+  queryUserCreatedStories,
+  queryUserCreatedWords,
+  queryUserModifiedPhrases,
+  queryUserModifiedSongs,
+  queryUserModifiedStories,
+  queryUserModifiedWords,
+  updatePortal,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DialectLearn)

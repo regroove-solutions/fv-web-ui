@@ -14,9 +14,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacters } from 'providers/redux/reducers/fvCharacter'
+import { fetchDialect2, updateDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchDocument } from 'providers/redux/reducers/document'
+import { fetchPortal, updatePortal } from 'providers/redux/reducers/fvPortal'
+import { navigateTo } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 
@@ -41,8 +50,11 @@ import LearningSidebar from 'views/pages/explore/dialect/learn/base/learning-sid
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-
+const { any, array, bool, func, object, string } = PropTypes
 class AlphabetGridTile extends Component {
+  static propTypes = {
+    tile: any, // TODO: set appropriate propType
+  }
   constructor(props) {
     super(props)
   }
@@ -81,31 +93,33 @@ class AlphabetGridTile extends Component {
 /**
  * Learn alphabet
  */
-@provide
-export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
+
+export class PageDialectLearnAlphabet extends PageDialectLearnBase {
   static defaultProps = {
     print: false,
   }
 
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchCharacters: PropTypes.func.isRequired,
-    computeCharacters: PropTypes.object.isRequired,
-    updateDialect2: PropTypes.func.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    updatePortal: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    print: PropTypes.bool,
+    routeParams: object.isRequired,
+    print: bool,
+    // REDUX: reducers/state
+    computeCharacters: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeDocument: object.isRequired,
+    computeLogin: object.isRequired,
+    computePortal: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacters: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchDocument: func.isRequired,
+    fetchPortal: func.isRequired,
+    navigateTo: func.isRequired,
+    pushWindowPath: func.isRequired,
+    updateDialect2: func.isRequired,
+    updatePortal: func.isRequired,
   }
 
   constructor(props, context) {
@@ -165,19 +179,16 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
       },
     ])
 
-    const { updatePortal, updateDialect2, computeLogin } = this.props
-
-    const computeDocument = ProviderHelpers.getEntry(
-      this.props.computeDocument,
-      this.props.routeParams.dialect_path + '/Dictionary'
-    )
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
-    const computePortal = ProviderHelpers.getEntry(
+    // const _computeDocument = ProviderHelpers.getEntry(
+    //   this.props.computeDocument,
+    //   this.props.routeParams.dialect_path + '/Dictionary'
+    // )
+    const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
+    const _computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + '/Portal'
     )
-
-    const computeCharacters = ProviderHelpers.getEntry(
+    const _computeCharacters = ProviderHelpers.getEntry(
       this.props.computeCharacters,
       this.props.routeParams.dialect_path + '/Alphabet'
     )
@@ -188,7 +199,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
       <AlphabetListView
         pagination={false}
         routeParams={this.props.routeParams}
-        dialect={selectn('response', computeDialect2)}
+        dialect={selectn('response', _computeDialect2)}
       />
     )
 
@@ -200,16 +211,16 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
               <h1>
                 {intl.trans(
                   'views.pages.explore.dialect.learn.alphabet.x_alphabet',
-                  selectn('response.title', computeDialect2) + ' Alphabet',
+                  selectn('response.title', _computeDialect2) + ' Alphabet',
                   'words',
-                  [selectn('response.title', computeDialect2)]
+                  [selectn('response.title', _computeDialect2)]
                 )}
               </h1>
               {React.cloneElement(alphabetListView, {
                 gridListView: true,
                 gridViewProps: { style: { overflowY: 'auto', maxHeight: '100%' } },
                 gridListTile: AlphabetGridTile,
-                dialect: selectn('response', computeDialect2),
+                dialect: selectn('response', _computeDialect2),
               })}
             </div>
           </div>
@@ -220,9 +231,9 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     return (
       <PromiseWrapper computeEntities={computeEntities}>
         <Header
-          portal={{ compute: computePortal, update: updatePortal }}
-          dialect={{ compute: computeDialect2, update: updateDialect2 }}
-          login={computeLogin}
+          portal={{ compute: _computePortal, update: this.props.updatePortal }}
+          dialect={{ compute: _computeDialect2, update: this.props.updateDialect2 }}
+          login={this.props.computeLogin}
           routeParams={this.props.routeParams}
         >
           <ToolbarNavigation showStats={this._showStats} routeParams={this.props.routeParams} />
@@ -234,9 +245,9 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
               <TextHeader
                 title={intl.trans(
                   'views.pages.explore.dialect.learn.alphabet.x_alphabet',
-                  selectn('response.title', computeDialect2) + ' Alphabet',
+                  selectn('response.title', _computeDialect2) + ' Alphabet',
                   null,
-                  [selectn('response.title', computeDialect2)]
+                  [selectn('response.title', _computeDialect2)]
                 )}
                 tag="h1"
                 properties={this.props.properties}
@@ -265,13 +276,13 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
             })()}
 
             {(() => {
-              const characters = selectn('response.entries', computeCharacters)
+              const characters = selectn('response.entries', _computeCharacters)
 
               if (characters && characters.length > 0) {
                 const _this = this
                 return (
                   <div style={{ marginBottom: '20px' }}>
-                    {selectn('response.entries', computeCharacters).map(function(char, i) {
+                    {selectn('response.entries', _computeCharacters).map((char) => {
                       const text = <span className="fontAboriginalSans">{char.title}</span>
                       const audioFile = selectn('contextParameters.character.related_audio[0].path', char)
 
@@ -313,7 +324,7 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
             <LearningSidebar
               isSection={isSection}
               properties={this.props.properties}
-              dialect={{ compute: computeDialect2, update: updateDialect2 }}
+              dialect={{ compute: _computeDialect2, update: this.props.updateDialect2 }}
             />
           </div>
         </div>
@@ -321,3 +332,44 @@ export default class PageDialectLearnAlphabet extends PageDialectLearnBase {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document, fvCharacter, fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
+
+  const { computeCharacters } = fvCharacter
+  const { computeDocument } = document
+  const { computePortal } = fvPortal
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCharacters,
+    computeDialect2,
+    computeDocument,
+    computeLogin,
+    computePortal,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacters,
+  fetchDialect2,
+  fetchDocument,
+  fetchPortal,
+  navigateTo,
+  pushWindowPath,
+  updateDialect2,
+  updatePortal,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectLearnAlphabet)

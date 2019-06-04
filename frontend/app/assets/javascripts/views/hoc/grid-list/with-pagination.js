@@ -14,18 +14,24 @@ const intl = IntlService.instance
 /**
  * HOC: Adds pagination to a grid list
  */
+const { any, bool, func, object } = PropTypes
 export default function withPagination(ComposedFilter, pageSize = 10, pageRange = 10) {
   class PaginatedGridList extends Component {
+    static propTypes = {
+      appendControls: any, // TODO: set appropriate propType
+      disablePageSize: bool,
+      fetcher: func.isRequired,
+      fetcherParams: object.isRequired,
+      metadata: object,
+    }
     static defaultProps = {
       disablePageSize: false,
-    }
-
-    static propTypes = {
-      appendControls: PropTypes.any, // TODO: set appropriate propType
-      disablePageSize: PropTypes.bool,
-      fetcher: PropTypes.func.isRequired,
-      fetcherParams: PropTypes.object.isRequired,
-      metadata: PropTypes.object.isRequired,
+      fetcher: () => {},
+      fetcherParams: {},
+      metadata: {
+        resultsCount: 0,
+        pageCount: 0,
+      },
     }
 
     constructor(props, context) {

@@ -1,27 +1,34 @@
 import React, { Component, PropTypes } from 'react'
+// eslint-disable-next-line
 import Immutable, { Set } from 'immutable'
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
 // import StringHelpers from 'common/StringHelpers'
 // const FiltersWithToggle = withToggle()
 
-@provide
-export default class DialectFilterList extends Component {
+const { instanceOf, any, array, func, object, string } = PropTypes
+
+export class DialectFilterList extends Component {
   static propTypes = {
-    type: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    facets: PropTypes.array.isRequired,
-    handleDialectFilterClick: PropTypes.func,
-    handleDialectFilterList: PropTypes.func.isRequired,
-    facetField: PropTypes.string.isRequired,
-    appliedFilterIds: PropTypes.instanceOf(Set),
-    styles: PropTypes.object,
-    pushWindowPath: PropTypes.func.isRequired,
-    splitWindowPath: PropTypes.array,
-    routeParams: PropTypes.any,
+    appliedFilterIds: instanceOf(Set),
+    facetField: string.isRequired,
+    facets: array.isRequired,
+    type: string.isRequired,
+    title: string.isRequired,
+    routeParams: any,
+    styles: object,
+    handleDialectFilterClick: func,
+    handleDialectFilterList: func.isRequired,
+    // REDUX: reducers/state
+    splitWindowPath: array,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -165,7 +172,7 @@ export default class DialectFilterList extends Component {
       const urlFragment = this.props.type === 'words' ? 'categories' : 'book'
       _splitWindowPath.push(urlFragment)
     }
-    let path = ('/' + _splitWindowPath.join('/')).replace(NavigationHelpers.getContextPath(), '')
+    const path = ('/' + _splitWindowPath.join('/')).replace(NavigationHelpers.getContextPath(), '')
 
     filters.forEach((filter) => {
       this._setUidUrlPath(filter, path)
@@ -428,3 +435,24 @@ export default class DialectFilterList extends Component {
     return _filtersSorted
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+
+  const { splitWindowPath } = windowPath
+
+  return {
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DialectFilterList)

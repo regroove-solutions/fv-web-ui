@@ -18,7 +18,11 @@ import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
 import selectn from 'selectn'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { fetchSourceDocument, fetchResultSet } from 'providers/redux/reducers/document'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
@@ -27,18 +31,21 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class WorkspaceSwitcher extends Component {
+const { array, func, object, string } = PropTypes
+
+export class WorkspaceSwitcher extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchSourceDocument: PropTypes.func.isRequired,
-    fetchResultSet: PropTypes.func.isRequired,
-    computeResultSet: PropTypes.object.isRequired,
-    computeSourceDocument: PropTypes.object.isRequired,
-    area: PropTypes.string.isRequired,
+    area: string.isRequired,
+    // REDUX: reducers/state
+    computeSourceDocument: object.isRequired,
+    computeResultSet: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    fetchSourceDocument: func.isRequired,
+    fetchResultSet: func.isRequired,
   }
 
   constructor(props, context) {
@@ -85,10 +92,10 @@ export default class WorkspaceSwitcher extends Component {
   componentWillReceiveProps(nextProps) {
     // Moving from Workspaces to sections
     if (this._isSection()) {
-      let prev_source_doc = ProviderHelpers.getEntry(this.props.computeSourceDocument, this._getPotentialUUID())
-      let next_source_doc = ProviderHelpers.getEntry(nextProps.computeSourceDocument, this._getPotentialUUID())
+      const prev_source_doc = ProviderHelpers.getEntry(this.props.computeSourceDocument, this._getPotentialUUID())
+      const next_source_doc = ProviderHelpers.getEntry(nextProps.computeSourceDocument, this._getPotentialUUID())
 
-      let next_uuid = selectn('response.uid', next_source_doc)
+      const next_uuid = selectn('response.uid', next_source_doc)
 
       // 'Redirect' on success
       if (selectn('response.uid', prev_source_doc) != next_uuid && StringHelpers.isUUID(next_uuid)) {
@@ -97,19 +104,18 @@ export default class WorkspaceSwitcher extends Component {
           next_uuid
         )
       }
-    }
-    // Moving from sections to Workspaces
-    else {
-      let prev_result_set = ProviderHelpers.getEntry(
+    } else {
+      // Moving from sections to Workspaces
+      const prev_result_set = ProviderHelpers.getEntry(
         this.props.computeResultSet,
         'published_for_' + this._getPotentialUUID()
       )
-      let next_result_set = ProviderHelpers.getEntry(
+      const next_result_set = ProviderHelpers.getEntry(
         nextProps.computeResultSet,
         'published_for_' + this._getPotentialUUID()
       )
 
-      let next_uuid = selectn('response.entries[0].ecm:uuid', next_result_set)
+      const next_uuid = selectn('response.entries[0].ecm:uuid', next_result_set)
 
       // 'Redirect' on success
       if (selectn('response.entries[0].ecm:uuid', prev_result_set) != next_uuid && StringHelpers.isUUID(next_uuid)) {
@@ -145,7 +151,7 @@ export default class WorkspaceSwitcher extends Component {
         }}
       >
         <li role="presentation" className={!this._isSection() ? 'active' : ''}>
-          <a onClick={(e) => (this._isSection() ? this._getSourceDocument() : null)}>
+          <a onClick={() => (this._isSection() ? this._getSourceDocument() : null)}>
             {intl.translate({
               key: 'workspace',
               default: 'Workspace',
@@ -154,7 +160,7 @@ export default class WorkspaceSwitcher extends Component {
           </a>
         </li>
         <li className={this._isSection() ? 'active' : ''} role="presentation">
-          <a onClick={(e) => (!this._isSection() ? this._getPublishedDocument() : null)}>
+          <a onClick={() => (!this._isSection() ? this._getPublishedDocument() : null)}>
             {intl.translate({
               key: 'public_view',
               default: 'Public View',
@@ -167,3 +173,31 @@ export default class WorkspaceSwitcher extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document, windowPath } = state
+
+  const { computeResultSet, computeSourceDocument } = document
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeResultSet,
+    computeSourceDocument,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+  replaceWindowPath,
+  fetchSourceDocument,
+  fetchResultSet,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(WorkspaceSwitcher)

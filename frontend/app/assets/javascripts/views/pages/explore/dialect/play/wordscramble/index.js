@@ -14,11 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import Immutable, { List, Map } from 'immutable'
+import Immutable, { List } from 'immutable'
 
 import RaisedButton from 'material-ui/lib/raised-button'
-import TextField from 'material-ui/lib/text-field'
 import Colors from 'material-ui/lib/styles/colors'
 import FontIcon from 'material-ui/lib/font-icon'
 import IconButton from 'material-ui/lib/icon-button'
@@ -31,10 +29,13 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchPhrases } from 'providers/redux/reducers/fvPhrase'
+
 import selectn from 'selectn'
 import IntlService from 'views/services/intl'
 
@@ -70,12 +71,15 @@ const titleLogoStyle = {
 /**
  * Play games
  */
-@provide
-export default class Wordscramble extends Component {
+
+const { any, func, object } = PropTypes
+export class Wordscramble extends Component {
   static propTypes = {
-    fetchPhrases: PropTypes.func.isRequired,
-    computePhrases: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computePhrases: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchPhrases: func.isRequired,
   }
 
   /**
@@ -104,7 +108,7 @@ export default class Wordscramble extends Component {
     this.fetchData(this.props, nextPage)
   }
 
-  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  fetchData(props, pageIndex /*, pageSize, sortOrder, sortBy*/) {
     props.fetchPhrases(
       props.routeParams.dialect_path + '/Dictionary',
       ' AND fv:available_in_childrens_archive = 1' +
@@ -141,7 +145,7 @@ export default class Wordscramble extends Component {
 
     return (
       <PromiseWrapper
-        renderOnError={true}
+        renderOnError
         computeEntities={computeEntities}
         className="wordscramble-game"
         style={containerStyle}
@@ -161,7 +165,7 @@ export default class Wordscramble extends Component {
         </p>
         {(selectn('response.entries', computePhrases) || [])
           .filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0)
-          .map(function(phrase, i) {
+          .map((phrase, i) => {
             return (
               <Scramble
                 key={i}
@@ -189,6 +193,9 @@ export class Scramble extends Component {
   constructor(props) {
     super(props)
     this.state = this.getDefaultState()
+  }
+  static propTypes = {
+    sentence: any, // TODO: SET PROPTYPE
   }
 
   /**
@@ -242,10 +249,10 @@ export class Scramble extends Component {
   }
 
   render() {
-    let audioIcon,
-      audioCallback = null
+    let audioIcon
+    let audioCallback = null
 
-    let audio = this.props.sentence.audio
+    const audio = this.props.sentence.audio
 
     const containerStyles = {
       padding: '10px',
@@ -259,9 +266,9 @@ export class Scramble extends Component {
     }
 
     if (audio) {
-      const stateFunc = function(state) {
+      const stateFunc = (state) => {
         this.setState(state)
-      }.bind(this)
+      }
 
       audioIcon =
         decodeURIComponent(selectn('src', this.state.nowPlaying)) !== NavigationHelpers.getBaseURL() + audio ? (
@@ -350,11 +357,7 @@ export class Scramble extends Component {
             )
           })}
           {this.state.complete ? (
-            <RaisedButton
-              label={intl.trans('reset', 'Reset', 'first')}
-              primary={true}
-              onMouseUp={this.reset.bind(this)}
-            />
+            <RaisedButton label={intl.trans('reset', 'Reset', 'first')} primary onMouseUp={this.reset.bind(this)} />
           ) : (
             false
           )}
@@ -363,20 +366,37 @@ export class Scramble extends Component {
             className={classNames({ invisible: this.state.complete })}
             style={{ margin: '0 5px' }}
             disabled={this.state.complete ? true : false}
-            secondary={true}
+            secondary
             onMouseUp={this.checkAnswer.bind(this)}
           />
           {this.state.complete ? (
             false
           ) : (
-            <RaisedButton
-              label={intl.trans('reset', 'Reset', 'first')}
-              primary={true}
-              onMouseUp={this.reset.bind(this)}
-            />
+            <RaisedButton label={intl.trans('reset', 'Reset', 'first')} primary onMouseUp={this.reset.bind(this)} />
           )}
         </div>
       </div>
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPhrase } = state
+
+  const { computePhrases } = fvPhrase
+
+  return {
+    computePhrases,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchPhrases,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Wordscramble)

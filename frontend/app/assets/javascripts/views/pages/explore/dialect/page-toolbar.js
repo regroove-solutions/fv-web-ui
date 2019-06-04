@@ -14,18 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import { List } from 'immutable'
 
 import classNames from 'classnames'
-import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchTasks } from 'providers/redux/reducers/tasks'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import UIHelpers from 'common/UIHelpers'
 
-import { RaisedButton, FlatButton, IconButton, FontIcon } from 'material-ui'
+import { RaisedButton, IconButton } from 'material-ui'
 
 import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
@@ -42,8 +44,27 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class PageToolbar extends Component {
+const { array, bool, func, node, object, string } = PropTypes
+
+export class PageToolbar extends Component {
+  static propTypes = {
+    actions: array,
+    children: node,
+    computeEntity: object.isRequired,
+    computePermissionEntity: object,
+    enableToggleAction: func,
+    handleNavigateRequest: func,
+    label: string,
+    publishChangesAction: func,
+    publishToggleAction: func,
+    showPublish: bool,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computeTasks: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchTasks: func.isRequired,
+  }
   static defaultProps = {
     publishChangesAction: null,
     handleNavigateRequest: null,
@@ -51,25 +72,8 @@ export default class PageToolbar extends Component {
     actions: [], // ['workflow', 'edit', 'add-child', 'publish-toggle', 'enable-toggle', 'publish', 'more-options']
   }
 
-  static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    fetchTasks: PropTypes.func.isRequired,
-    computeTasks: PropTypes.object.isRequired,
-    computeEntity: PropTypes.object.isRequired,
-    computePermissionEntity: PropTypes.object,
-    computeLogin: PropTypes.object.isRequired,
-    handleNavigateRequest: PropTypes.func,
-    publishToggleAction: PropTypes.func,
-    publishChangesAction: PropTypes.func,
-    enableToggleAction: PropTypes.func,
-    children: PropTypes.node,
-    label: PropTypes.string,
-    actions: PropTypes.array,
-    showPublish: PropTypes.bool,
-  }
-
   static contextTypes = {
-    muiTheme: PropTypes.object.isRequired,
+    muiTheme: object.isRequired,
   }
 
   constructor(props, context) {
@@ -96,7 +100,7 @@ export default class PageToolbar extends Component {
    * Publish changes directly
    */
   _publishChanges() {
-    if (this.props.publishChangesAction == null) {
+    if (this.props.publishChangesAction === null) {
       this.props.publishToggleAction(true, false, selectn('response.path', this.props.computeEntity))
     } else {
       this.props.publishChangesAction()
@@ -120,7 +124,7 @@ export default class PageToolbar extends Component {
   /**
    * Start a workflow
    */
-  _documentActionsStartWorkflow(workflow, event) {
+  _documentActionsStartWorkflow(workflow) {
     const path = selectn('response.path', this.props.computeEntity)
 
     switch (workflow) {
@@ -167,21 +171,21 @@ export default class PageToolbar extends Component {
       position: 'relative',
     }
 
-    const documentEnabled = selectn('response.state', computeEntity) == 'Enabled'
-    const documentPublished = selectn('response.state', computeEntity) == 'Published'
+    const documentEnabled = selectn('response.state', computeEntity) === 'Enabled'
+    const documentPublished = selectn('response.state', computeEntity) === 'Published'
 
     const permissionEntity = selectn('response', computePermissionEntity) ? computePermissionEntity : computeEntity
 
     // Compute related tasks
-    const computeTasks = ProviderHelpers.getEntry(
+    const _computeTasks = ProviderHelpers.getEntry(
       this.props.computeTasks,
       selectn('response.uid', this.props.computeEntity)
     )
 
-    if (selectn('response.entries', computeTasks)) {
-      const taskList = new List(selectn('response.entries', computeTasks))
+    if (selectn('response.entries', _computeTasks)) {
+      const taskList = new List(selectn('response.entries', _computeTasks))
 
-      taskList.forEach(function taskListForEach(value, key) {
+      taskList.forEach(function taskListForEach(value) {
         switch (selectn('properties.nt:type', value)) {
           case 'Task2300':
             enableTasks.push(value)
@@ -258,7 +262,7 @@ export default class PageToolbar extends Component {
                     <Toggle
                       toggled={documentEnabled || documentPublished}
                       onToggle={this._documentActionsToggleEnabled}
-                      ref="enabled"
+                      ref="enabled" // TODO: DEPRECATED
                       disabled={documentPublished}
                       name="enabled"
                       value="enabled"
@@ -349,8 +353,8 @@ export default class PageToolbar extends Component {
                         ')'
                       }
                       disabled={
-                        selectn('response.state', computeEntity) != 'Disabled' &&
-                        selectn('response.state', computeEntity) != 'New'
+                        selectn('response.state', computeEntity) !== 'Disabled' &&
+                        selectn('response.state', computeEntity) !== 'New'
                       }
                       style={{ marginRight: '5px', marginLeft: '0' }}
                       secondary
@@ -364,8 +368,8 @@ export default class PageToolbar extends Component {
                         ')'
                       }
                       disabled={
-                        selectn('response.state', computeEntity) != 'Enabled' &&
-                        selectn('response.state', computeEntity) != 'New'
+                        selectn('response.state', computeEntity) !== 'Enabled' &&
+                        selectn('response.state', computeEntity) !== 'New'
                       }
                       style={{ marginRight: '5px', marginLeft: '0' }}
                       secondary
@@ -378,7 +382,7 @@ export default class PageToolbar extends Component {
                         (publishTasks.length + this.state.publishActions) +
                         ')'
                       }
-                      disabled={selectn('response.state', computeEntity) != 'Enabled'}
+                      disabled={selectn('response.state', computeEntity) !== 'Enabled'}
                       style={{ marginRight: '5px', marginLeft: '0' }}
                       secondary
                       onClick={this._documentActionsStartWorkflow.bind(this, 'publish')}
@@ -390,7 +394,7 @@ export default class PageToolbar extends Component {
                         (unpublishTasks.length + this.state.unpublishActions) +
                         ')'
                       }
-                      disabled={selectn('response.state', computeEntity) != 'Published'}
+                      disabled={selectn('response.state', computeEntity) !== 'Published'}
                       style={{ marginRight: '5px', marginLeft: '0' }}
                       secondary
                       onClick={this._documentActionsStartWorkflow.bind(this, 'unpublish')}
@@ -504,3 +508,28 @@ export default class PageToolbar extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { tasks, nuxeo, windowPath } = state
+
+  const { computeLogin } = nuxeo
+  const { computeTasks } = tasks
+  const { _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computeTasks,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchTasks,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageToolbar)

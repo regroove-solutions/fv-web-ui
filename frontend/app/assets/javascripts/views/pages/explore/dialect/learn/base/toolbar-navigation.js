@@ -16,18 +16,20 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
 
-import ProviderHelpers from 'common/ProviderHelpers'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResultSet } from 'providers/redux/reducers/document'
+import { navigateTo } from 'providers/redux/reducers/navigation'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
+// import selectn from 'selectn'
+// import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import EditorInsertChart from 'material-ui/lib/svg-icons/editor/insert-chart'
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
 import FlatButton from 'material-ui/lib/flat-button'
-
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter'
 import IntlService from 'views/services/intl'
 
@@ -35,18 +37,21 @@ const intl = IntlService.instance
 /**
  * Navigation for learning page
  */
-@provide
-export default class ToolbarNavigation extends Component {
+
+const { array, func, object, string } = PropTypes
+export class ToolbarNavigation extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchResultSet: PropTypes.func.isRequired,
-    navigateTo: PropTypes.func.isRequired,
-    computeResultSet: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    showStats: PropTypes.func,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    showStats: func,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computeResultSet: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResultSet: func.isRequired,
+    navigateTo: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -75,57 +80,55 @@ export default class ToolbarNavigation extends Component {
   }
 
   _onNavigateRequest(pathArray, e) {
-    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
+    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] === 'learn') {
       NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     } else {
       NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     }
 
-    e.preventDefault();
+    e.preventDefault()
   }
 
   _getNavigationURL(path) {
-    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] == 'learn') {
+    if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] === 'learn') {
       return this.props.windowPath + '/' + path
-    } else {
-      return this.props.windowPath + '/learn/' + path
     }
+    return this.props.windowPath + '/learn/' + path
   }
 
   render() {
+    /*
     // TODO: Find out why the results sometimes in field1 and sometimes in field2?
     const COUNT_FIELD1 = 'response.entries[0].COUNT(ecm:uuid)'
     const COUNT_FIELD2 = 'response.entries[1].COUNT(ecm:uuid)'
-
-    //const { label, items, type } = this.props;
-
     const computeSongsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_songs')
     const computeStoriesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_stories')
     const computeWordsCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_words')
     const computePhrasesCount = ProviderHelpers.getEntry(this.props.computeResultSet, 'count_phrases')
 
-    let wordCount =
+    const wordCount =
       selectn(COUNT_FIELD1, computeWordsCount) == undefined
         ? '...'
         : selectn(COUNT_FIELD1, computeWordsCount) + selectn(COUNT_FIELD2, computeWordsCount)
-    let phraseCount =
+    const phraseCount =
       selectn(COUNT_FIELD1, computePhrasesCount) == undefined
         ? '...'
         : selectn(COUNT_FIELD1, computePhrasesCount) + selectn(COUNT_FIELD2, computePhrasesCount)
-    let songCount =
+    const songCount =
       selectn(COUNT_FIELD1, computeSongsCount) == undefined
         ? '...'
         : selectn(COUNT_FIELD1, computeSongsCount) + selectn(COUNT_FIELD2, computeSongsCount)
-    let storyCount =
+    const storyCount =
       selectn(COUNT_FIELD1, computeStoriesCount) == undefined
         ? '...'
         : selectn(COUNT_FIELD1, computeStoriesCount) + selectn(COUNT_FIELD2, computeStoriesCount)
+    */
 
     return (
       <div className="dialect-navigation">
         <div className="row">
           <div className="col-xs-12 col-md-10">
-            <div firstChild={true} float="left">
+            <div firstChild float="left">
               <a href={this._getNavigationURL('words')} onClick={this._onNavigateRequest.bind(this, 'words')}>
                 {intl.trans('words', 'Words', 'first') + ''}
               </a>
@@ -144,11 +147,7 @@ export default class ToolbarNavigation extends Component {
             </div>
           </div>
           <div className="col-xs-12 col-md-2">
-            <AuthenticationFilter
-              login={this.props.computeLogin}
-              hideFromSections={true}
-              routeParams={this.props.routeParams}
-            >
+            <AuthenticationFilter login={this.props.computeLogin} hideFromSections routeParams={this.props.routeParams}>
               <div
                 className={classNames('hidden-xs', { hidden: !this.props.showStats })}
                 firstChild={false}
@@ -168,3 +167,31 @@ export default class ToolbarNavigation extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document, nuxeo, windowPath } = state
+
+  const { computeResultSet } = document
+  const { computeLogin } = nuxeo
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computeResultSet,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResultSet,
+  navigateTo,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ToolbarNavigation)

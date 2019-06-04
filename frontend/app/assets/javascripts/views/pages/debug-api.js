@@ -14,67 +14,47 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
 
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-//import QueryString from 'query-string';
-
-import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations'
-import DocumentOperations from 'operations/DocumentOperations'
-
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
-import ProviderHelpers from 'common/ProviderHelpers'
-
-import { RaisedButton } from 'material-ui'
-
-import MediaList from 'views/components/Browsing/media-list'
-import withPagination from 'views/hoc/grid-list/with-pagination'
-import withFilter from 'views/hoc/grid-list/with-filter'
-
-import providers from '../../providers/index.js'
-
-//import elasticsearch from 'elasticsearch';
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchWord } from 'providers/redux/reducers/fvWord'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 const DefaultFetcherParams = { filters: { 'properties.dc:title': '', dialect: '78086057-9c34-48f7-995f-9dc3b313231b' } }
 
-const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams)
-
-const argsFunction = function argumentNames(fun) {
-  var names = fun
-    .toString()
-    .match(/^[\s\(]*function[^(]*\(([^)]*)\)/)[1]
-    .replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
-    .replace(/\s+/g, '')
-    .split(',')
-  return names.length == 1 && !names[0] ? [] : names
-}
-
+// const argsFunction = function argumentNames(fun) {
+//   const names = fun
+//     .toString()
+//     .match(/^[\s\(]*function[^(]*\(([^)]*)\)/)[1] // eslint-disable-line
+//     .replace(/\/\/.*?[\r\n]|\/\*(?:.|[\r\n])*?\*\//g, '')
+//     .replace(/\s+/g, '')
+//     .split(',')
+//   return names.length == 1 && !names[0] ? [] : names
+// }
+const { func, object } = PropTypes
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class PageDebugAPI extends Component {
+export class PageDebugAPI extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computePortal: object.isRequired,
+    computeSharedPictures: object.isRequired,
+    computeWord: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchPortal: func.isRequired,
+    fetchSharedPictures: func.isRequired,
+    fetchWord: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired
+      muiTheme: React.object.isRequired
   };*/
 
   constructor(props, context) {
@@ -123,7 +103,7 @@ export default class PageDebugAPI extends Component {
             "filtered": {
               "filter": {
                   "bool": {
-                      "must": 
+                      "must":
                           [
                               {
                                 "term": {
@@ -175,13 +155,13 @@ export default class PageDebugAPI extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(/*nextProps*/) {
     //if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
     //  this.fetchData(nextProps);
     //}
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
+  shouldComponentUpdate(/*nextProps, nextState*/) {
     return false
   }
 
@@ -193,7 +173,7 @@ export default class PageDebugAPI extends Component {
 
     /*let portalOperation = ProviderHelpers.getEntry(computePortal, '/FV/sections/Data/TestFamily/TestLanguage/PopoDialect');
     console.log(portalOperation);
-    
+
 
     if (!portalOperation || portalOperation.isFetching) {
       return <div><CircularProgress mode="indeterminate" size={5} /> {selectn('message', portalOperation)}</div>;
@@ -205,109 +185,118 @@ export default class PageDebugAPI extends Component {
 
     let portalResponse = selectn('response', portalOperation);*/
 
-    const dialectPath = '/FV/sections/Data/MyTestLanguage/MyTestLanguage/Test444'
-    const languagePath = '/FV/sections/Data/MyTestLanguage/MyTestLanguage'
-    const languageFamilyPath = '/FV/sections/Data/MyTestLanguage'
+    // const dialectPath = '/FV/sections/Data/MyTestLanguage/MyTestLanguage/Test444'
+    // const languagePath = '/FV/sections/Data/MyTestLanguage/MyTestLanguage'
+    // const languageFamilyPath = '/FV/sections/Data/MyTestLanguage'
 
-    const dialectPathWP = '/FV/Workspaces/Data/MyTestLanguage/MyTestLanguage/Test444'
-    const languagePathWP = '/FV/Workspaces/Data/MyTestLanguage/MyTestLanguage'
-    const languageFamilyPathWP = '/FV/Workspaces/Data/MyTestLanguage'
+    // const dialectPathWP = '/FV/Workspaces/Data/MyTestLanguage/MyTestLanguage/Test444'
+    // const languagePathWP = '/FV/Workspaces/Data/MyTestLanguage/MyTestLanguage'
+    // const languageFamilyPathWP = '/FV/Workspaces/Data/MyTestLanguage'
 
-    let providersElements = []
+    const providersElements = []
 
-    for (var providerKey in providers) {
-      let provider = providers[providerKey]
+    // TODO: use redux devtools or refactor the following to iterate over Redux providers
+    // for (const providerKey in providers) {
+    //   const provider = providers[providerKey]
 
-      if (
-        provider.hasOwnProperty('actions') &&
-        provider.hasOwnProperty('reducers') &&
-        provider.hasOwnProperty('mockRequest')
-      ) {
-        let providerActions = []
-        let providerReducers = []
+    //   if (
+    //     provider.hasOwnProperty('actions') &&
+    //     provider.hasOwnProperty('reducers') &&
+    //     provider.hasOwnProperty('mockRequest')
+    //   ) {
+    //     const providerActions = []
+    //     const providerReducers = []
 
-        for (let actionKey in provider['actions']) {
-          if (provider['mockRequest'].hasOwnProperty(actionKey)) {
-            let method = provider['actions'][actionKey]
-            let mockRequestArgs = provider['mockRequest'][actionKey]['args']
-            let mockRequestEvaluateResults = provider['mockRequest'][actionKey]['evaluateResults']
-            let name = method.name
-            let args = argsFunction(method)
+    //     for (const actionKey in provider.actions) {
+    //       if (provider.mockRequest.hasOwnProperty(actionKey)) {
+    //         const method = provider.actions[actionKey]
+    //         const mockRequestArgs = provider.mockRequest[actionKey].args
+    //         const mockRequestEvaluateResults = provider.mockRequest[actionKey].evaluateResults
+    //         const name = method.name
+    //         // const args = argsFunction(method)
 
-            //let test = method.call(this, "/FV/Workspaces/", "");
-            //let output = "test";
+    //         //let test = method.call(this, "/FV/Workspaces/", "");
+    //         //let output = "test";
 
-            if (name == 'query') {
-              DirectoryOperations.getDocuments(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocuments(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-            } else if (name == 'create') {
-              DocumentOperations.createDocument(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-            } else if (name == 'fetch') {
-              DocumentOperations.getDocument(...mockRequestArgs)
-                .then((response) => {
-                  console.log(actionKey + '-' + name)
-                  console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
-                  console.log('RESPONSE: ')
-                  console.log(response)
-                  console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
-                  console.log('*******************')
-                })
-                .catch((error) => {
-                  console.log(error)
-                })
-            }
+    //         if (name == 'query') {
+    //           /* eslint-disable */
+    //           DirectoryOperations.getDocuments(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocuments(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         } else if (name == 'create') {
+    //           /* eslint-disable */
+    //           DocumentOperations.createDocument(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         } else if (name == 'fetch') {
+    //           /* eslint-disable */
+    //           DocumentOperations.getDocument(...mockRequestArgs)
+    //             .then((response) => {
+    //               console.log(actionKey + '-' + name)
+    //               console.log('CALLED: DocumentOperations.getDocument(' + mockRequestArgs.toString() + ')')
+    //               console.log('RESPONSE: ')
+    //               console.log(response)
+    //               console.log('RESPONSE EVALUATION: ' + mockRequestEvaluateResults(response))
+    //               console.log('*******************')
+    //             })
+    //             .catch((error) => {
+    //               console.log(error)
+    //             })
+    //           /* eslint-enable */
+    //         }
 
-            // console.log(args);
-            // console.log(test);
+    //         // console.log(args);
+    //         // console.log(test);
 
-            providerActions.push(
-              <p key={actionKey}>
-                {actionKey} - {name}
-              </p>
-            )
-          } else {
-            console.warn('Missing tests for ' + actionKey + ' in provider ' + providerKey)
-          }
-        }
+    //         providerActions.push(
+    //           <p key={actionKey}>
+    //             {actionKey} - {name}
+    //           </p>
+    //         )
+    //       } else {
+    //         // eslint-disable-next-line
+    //         console.warn('Missing tests for ' + actionKey + ' in provider ' + providerKey)
+    //       }
+    //     }
 
-        for (var reducerKey in provider['reducers']) {
-          providerReducers.push(<p key={reducerKey}>{reducerKey}</p>)
-        }
+    //     for (const reducerKey in provider.reducers) {
+    //       providerReducers.push(<p key={reducerKey}>{reducerKey}</p>)
+    //     }
 
-        providersElements.push(
-          <div key={providerKey}>
-            <h2>Provider {providerKey}</h2>
-            <h3>Actions</h3>
-            {providerActions}
-            <h3>Reducers</h3>
-            {providerReducers}
-          </div>
-        )
-      } else {
-        console.warn('Missing tests for provider ' + providerKey)
-      }
-    }
+    //     providersElements.push(
+    //       <div key={providerKey}>
+    //         <h2>Provider {providerKey}</h2>
+    //         <h3>Actions</h3>
+    //         {providerActions}
+    //         <h3>Reducers</h3>
+    //         {providerReducers}
+    //       </div>
+    //     )
+    //   } else {
+    //     // eslint-disable-next-line
+    //     console.warn('Missing tests for provider ' + providerKey)
+    //   }
+    // }
 
     return (
       <div className="row">
@@ -316,3 +305,33 @@ export default class PageDebugAPI extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPortal, navigation, fvPicture, fvWord } = state
+
+  const { properties } = navigation
+  const { computePortal } = fvPortal
+  const { computeSharedPictures } = fvPicture
+  const { computeWord } = fvWord
+
+  return {
+    computePortal,
+    computeSharedPictures,
+    computeWord,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchPortal,
+  fetchSharedPictures,
+  fetchWord,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDebugAPI)

@@ -14,9 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  askToDisablePhrase,
+  askToEnablePhrase,
+  askToPublishPhrase,
+  askToUnpublishPhrase,
+  deletePhrase,
+  disablePhrase,
+  enablePhrase,
+  fetchPhrase,
+  publishPhrase,
+  unpublishPhrase,
+} from 'providers/redux/reducers/fvPhrase'
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -27,35 +46,14 @@ import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
 import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import TextHeader from 'views/components/Document/Typography/text-header'
 
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
 //import Header from 'views/pages/explore/dialect/header';
 //import PageHeader from 'views/pages/explore/dialect/page-header';
 
-import Dialog from 'material-ui/lib/dialog'
-
-import Avatar from 'material-ui/lib/avatar'
-import FlatButton from 'material-ui/lib/flat-button'
-import Divider from 'material-ui/lib/divider'
-
-import ListUI from 'material-ui/lib/lists/list'
-import ListItem from 'material-ui/lib/lists/list-item'
-
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import FontIcon from 'material-ui/lib/font-icon'
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import Tab from 'material-ui/lib/tabs/tab'
-
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 
 import withActions from 'views/hoc/view/with-actions'
@@ -67,30 +65,33 @@ const DetailsViewWithActions = withActions(PromiseWrapper, true)
 /**
  * View phrase entry
  */
-@provide
-export default class View extends Component {
+
+const { array, func, object, string } = PropTypes
+export class View extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPhrase: PropTypes.func.isRequired,
-    computePhrase: PropTypes.object.isRequired,
-    deletePhrase: PropTypes.func.isRequired,
-    publishPhrase: PropTypes.func.isRequired,
-    askToPublishPhrase: PropTypes.func.isRequired,
-    unpublishPhrase: PropTypes.func.isRequired,
-    askToUnpublishPhrase: PropTypes.func.isRequired,
-    enablePhrase: PropTypes.func.isRequired,
-    askToEnablePhrase: PropTypes.func.isRequired,
-    disablePhrase: PropTypes.func.isRequired,
-    askToDisablePhrase: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computePhrase: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    askToDisablePhrase: func.isRequired,
+    askToEnablePhrase: func.isRequired,
+    askToPublishPhrase: func.isRequired,
+    askToUnpublishPhrase: func.isRequired,
+    changeTitleParams: func.isRequired,
+    deletePhrase: func.isRequired,
+    disablePhrase: func.isRequired,
+    enablePhrase: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchPhrase: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    publishPhrase: func.isRequired,
+    pushWindowPath: func.isRequired,
+    unpublishPhrase: func.isRequired,
   }
 
   constructor(props, context) {
@@ -126,27 +127,23 @@ export default class View extends Component {
     this.fetchData(this.props)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
-    let title = selectn('properties.dc:title', phrase)
-    let uid = selectn('uid', phrase)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
+    const title = selectn('properties.dc:title', phrase)
+    const uid = selectn('uid', phrase)
 
-    if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
+    if (title && selectn('pageTitleParams.phrase', this.props.properties) !== title) {
       this.props.changeTitleParams({ phrase: title })
       this.props.overrideBreadcrumbs({ find: uid, replace: 'pageTitleParams.phrase' })
     }
   }
 
   _getPhrasePath(props = null) {
-    if (props == null) {
-      props = this.props
+    const _props = props === null ? this.props : props
+    if (StringHelpers.isUUID(_props.routeParams.phrase)) {
+      return _props.routeParams.phrase
     }
-
-    if (StringHelpers.isUUID(props.routeParams.phrase)) {
-      return props.routeParams.phrase
-    } else {
-      return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase)
-    }
+    return _props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(_props.routeParams.phrase)
   }
 
   _onNavigateRequest(path) {
@@ -154,10 +151,6 @@ export default class View extends Component {
   }
 
   render() {
-    const tabItemStyles = {
-      userSelect: 'none',
-    }
-
     const computeEntities = Immutable.fromJS([
       {
         id: this._getPhrasePath(),
@@ -173,10 +166,11 @@ export default class View extends Component {
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Photos
-    let photos = []
-    let photosThumbnails = []
-    ;(selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map(function(picture, key) {
-      let image = {
+    const photos = []
+    const photosThumbnails = []
+    const photoData = selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []
+    photoData.map((picture, key) => {
+      const image = {
         original: selectn('views[2].url', picture),
         thumbnail: selectn('views[0].url', picture) || 'assets/images/cover.png',
         description: picture['dc:description'],
@@ -196,10 +190,11 @@ export default class View extends Component {
     })
 
     // Videos
-    let videos = []
-    let videoThumbnails = []
-    ;(selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map(function(video, key) {
-      let vid = {
+    const videos = []
+    const videoThumbnails = []
+    const videoData = selectn('response.contextParameters.phrase.related_videos', computePhrase) || []
+    videoData.map((video, key) => {
+      const vid = {
         original: NavigationHelpers.getBaseURL() + video.path,
         thumbnail: selectn('views[0].url', video) || 'assets/images/cover.png',
         description: video['dc:description'],
@@ -219,14 +214,15 @@ export default class View extends Component {
     })
 
     // Audio
-    let audios = []
-    ;(selectn('response.contextParameters.phrase.related_audio', computePhrase) || []).map(function(audio, key) {
+    const audios = []
+    const audioData = selectn('response.contextParameters.phrase.related_audio', computePhrase) || []
+    audioData.map((audio) => {
       audios.push(
         <Preview styles={{ maxWidth: '350px' }} key={selectn('uid', audio)} expandedValue={audio} type="FVAudio" />
       )
     })
 
-    let tabs = []
+    const tabs = []
 
     if (photos.length > 0) {
       tabs.push(
@@ -253,21 +249,18 @@ export default class View extends Component {
     }
 
     // Categories
-    let phrase_books = []
-
-    {
-      ;(selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []).map(function(phrase_book, key) {
-        phrase_books.push(<span key={key}>{selectn('dc:title', phrase_book)}</span>)
-      })
-    }
+    const phrase_books = []
+    const phraseBookData = selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []
+    phraseBookData.map((phrase_book, key) => {
+      phrase_books.push(<span key={key}>{selectn('dc:title', phrase_book)}</span>)
+    })
     // Cultural notes
-    let cultural_notes = []
+    const cultural_notes = []
+    const culturalNotesData = selectn('response.properties.fv:cultural_note', computePhrase) || []
+    culturalNotesData.map((cultural_note, key) => {
+      cultural_notes.push(<div key={key}>{intl.searchAndReplace(cultural_note)}</div>)
+    })
 
-    {
-      ;(selectn('response.properties.fv:cultural_note', computePhrase) || []).map(function(cultural_note, key) {
-        cultural_notes.push(<div key={key}>{intl.searchAndReplace(cultural_note)}</div>)
-      })
-    }
     const dialectClassName = getDialectClassname(computeDialect2)
 
     /**
@@ -392,3 +385,46 @@ export default class View extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPhrase, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computePhrase } = fvPhrase
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computePhrase,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  askToDisablePhrase,
+  askToEnablePhrase,
+  askToPublishPhrase,
+  askToUnpublishPhrase,
+  changeTitleParams,
+  deletePhrase,
+  disablePhrase,
+  enablePhrase,
+  fetchDialect2,
+  fetchPhrase,
+  overrideBreadcrumbs,
+  publishPhrase,
+  pushWindowPath,
+  unpublishPhrase,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(View)

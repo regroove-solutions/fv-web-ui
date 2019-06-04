@@ -14,27 +14,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import React, { PropTypes } from 'react'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import {
+  approveRegistration,
+  approveTask,
+  fetchUserTasks,
+  rejectRegistration,
+  rejectTask,
+} from 'providers/redux/reducers/tasks'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchUserDialects } from 'providers/redux/reducers/fvUser'
+
 import selectn from 'selectn'
-
-import ConfGlobal from 'conf/local.js'
-
-import t from 'tcomb-form'
 
 import Dialog from 'material-ui/lib/dialog'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
-
+import NavigationHelpers from 'common/NavigationHelpers'
 import RaisedButton from 'material-ui/lib/raised-button'
-import FlatButton from 'material-ui/lib/flat-button'
 
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/lib/table'
 
-import SelectFactory from 'views/components/Editor/fields/select'
 import DocumentView from 'views/components/Document/view'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
@@ -43,24 +48,26 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class Tasks extends React.Component {
+const { func, object } = PropTypes
+export class Tasks extends React.Component {
   static propTypes = {
-    fetchUserDialects: PropTypes.func.isRequired,
-    computeUserDialects: PropTypes.object.isRequired,
-    fetchUserTasks: PropTypes.func.isRequired,
-    computeUserTasks: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    approveTask: PropTypes.func.isRequired,
-    computeUserTasksApprove: PropTypes.object.isRequired,
-    approveRegistration: PropTypes.func.isRequired,
-    computeUserRegistrationApprove: PropTypes.object.isRequired,
-    rejectTask: PropTypes.func.isRequired,
-    computeUserTasksReject: PropTypes.object.isRequired,
-    rejectRegistration: PropTypes.func.isRequired,
-    computeUserRegistrationReject: PropTypes.object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeUserDialects: object.isRequired,
+    computeUserRegistrationApprove: object.isRequired,
+    computeUserRegistrationReject: object.isRequired,
+    computeUserTasks: object.isRequired,
+    computeUserTasksApprove: object.isRequired,
+    computeUserTasksReject: object.isRequired,
+    // REDUX: actions/dispatch/func
+    approveRegistration: func.isRequired,
+    approveTask: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchUserDialects: func.isRequired,
+    fetchUserTasks: func.isRequired,
+    rejectRegistration: func.isRequired,
+    rejectTask: func.isRequired,
   }
 
   constructor(props, context) {
@@ -74,130 +81,30 @@ export default class Tasks extends React.Component {
       lastActionedTaskId: null,
       userRegistrationTasksPath: '/management/registrationRequests/',
     }
-
-    // Bind methods to 'this'
-    ;[
-      '_handleTaskActions',
-      '_handleRegistrationActions',
-      '_handleOpen',
-      '_handlePreApprovalOpen',
-      '_handleClose',
-      'fetchData',
-      '_saveMethod',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  _handleTaskActions(id, action) {
-    switch (action) {
-      case 'approve':
-        this.props.approveTask(
-          id,
-          {
-            comment: '',
-            status: 'validate',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-        )
-        break
-
-      case 'reject':
-        this.props.rejectTask(
-          id,
-          {
-            comment: '',
-            status: 'reject',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
-        )
-        break
-    }
-
-    this.setState({ lastActionedTaskId: id })
-  }
-
-  _handleRegistrationActions(id, action) {
-    switch (action) {
-      case 'approve':
-        this.props.approveRegistration(
-          id,
-          {
-            value: 'approve',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-        )
-        break
-
-      case 'reject':
-        this.props.rejectRegistration(
-          id,
-          {
-            value: 'reject',
-          },
-          null,
-          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
-        )
-        break
-    }
-
-    this.setState({ lastActionedTaskId: id })
-  }
-
-  fetchData(newProps) {
-    let userId = selectn('response.id', newProps.computeLogin)
-    newProps.fetchUserTasks(userId)
-    ProviderHelpers.fetchIfMissing(userId, newProps.fetchUserDialects, newProps.computeUserDialects)
-  }
-
-  componentWillReceiveProps(newProps) {
-    if (newProps.computeLogin != this.props.computeLogin) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserTasksApprove != this.props.computeUserTasksApprove) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserTasksReject != this.props.computeUserTasksReject) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserRegistrationApprove != this.props.computeUserRegistrationApprove) {
-      this.fetchData(newProps)
-    } else if (newProps.computeUserRegistrationReject != this.props.computeUserRegistrationReject) {
-      this.fetchData(newProps)
+  componentDidUpdate(prevProps) {
+    // NOTE: computeLogin will always be different after a login (since prev. state was logged out)
+    // const updatedLogin = prevProps.computeLogin != this.props.computeLogin
+    const updatedUserTasksApprove = prevProps.computeUserTasksApprove != this.props.computeUserTasksApprove
+    const updatedUserTasksReject = prevProps.computeUserTasksReject != this.props.computeUserTasksReject
+    const updatedUserRegistrationApprove =
+      prevProps.computeUserRegistrationApprove != this.props.computeUserRegistrationApprove
+    const updatedUserRegistrationReject =
+      prevProps.computeUserRegistrationReject != this.props.computeUserRegistrationReject
+    if (
+      // updatedLogin ||
+      updatedUserTasksApprove ||
+      updatedUserTasksReject ||
+      updatedUserRegistrationApprove ||
+      updatedUserRegistrationReject
+    ) {
+      this._fetchData(this.props)
     }
   }
 
   componentDidMount() {
-    this.fetchData(this.props)
-  }
-
-  _saveMethod(properties) {
-    this.props.approveRegistration(
-      properties.id,
-      {
-        comment: properties.comment,
-        group: properties.group,
-        appurl: NavigationHelpers.getBaseWebUIURL(),
-      },
-      null,
-      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
-    )
-
-    this.setState({
-      selectedPreapprovalTask: null,
-      preApprovalDialogOpen: false,
-    })
-  }
-
-  _handleOpen(id) {
-    this.setState({ open: true, selectedTask: id })
-  }
-
-  _handlePreApprovalOpen(task) {
-    this.props.fetchDialect2(selectn('properties.docinfo:documentId', task))
-    this.setState({ preApprovalDialogOpen: true, selectedPreapprovalTask: task })
-  }
-
-  _handleClose() {
-    this.setState({ open: false, preApprovalDialogOpen: false, selectedPreapprovalTask: null, selectedTask: null })
+    this._fetchData(this.props)
   }
 
   render() {
@@ -226,13 +133,13 @@ export default class Tasks extends React.Component {
       selectn('properties.docinfo:documentId', this.state.selectedPreapprovalTask)
     )
 
-    let userTasks = []
-    let userRegistrationTasks = []
+    const userTasks = []
+    const userRegistrationTasks = []
 
     // Compute General Tasks
     ;(selectn('response', computeUserTasks) || []).map(
-      function(task, i) {
-        let tableRow = (
+      function computeUserTasksMap(task, i) {
+        const tableRow = (
           <TableRow key={i}>
             <TableRowColumn>
               <a onClick={this._handleOpen.bind(this, task.docref)}>{task.documentTitle}</a>
@@ -243,13 +150,13 @@ export default class Tasks extends React.Component {
             <TableRowColumn>
               <RaisedButton
                 label={intl.trans('approve', 'Approve', 'first')}
-                secondary={true}
+                secondary
                 onClick={this._handleTaskActions.bind(this, task.id, 'approve')}
               />{' '}
               &nbsp;
               <RaisedButton
                 label={intl.trans('reject', 'Reject', 'first')}
-                secondary={true}
+                secondary
                 onClick={this._handleTaskActions.bind(this, task.id, 'reject')}
               />
             </TableRowColumn>
@@ -262,25 +169,23 @@ export default class Tasks extends React.Component {
     )
 
     // Compute User Registration Tasks
-    ;(selectn('response.entries', computeUserDialects) || []).map(
-      function(dialect, i) {
-        let uid = selectn('uid', dialect)
+    ;(selectn('response.entries', computeUserDialects) || []).map((dialect, i) => {
+      const uid = selectn('uid', dialect)
 
-        let tableRow = (
-          <li key={i}>
-            <a href={'/tasks/users/' + uid}>
-              Click here to view user registration requests to join{' '}
-              <strong>{selectn('properties.dc:title', dialect)}</strong>
-            </a>
-          </li>
-        )
+      const tableRow = (
+        <li key={i}>
+          <a href={'/tasks/users/' + uid}>
+            Click here to view user registration requests to join{' '}
+            <strong>{selectn('properties.dc:title', dialect)}</strong>
+          </a>
+        </li>
+      )
 
-        userRegistrationTasks.push(tableRow)
-      }.bind(this)
-    )
+      userRegistrationTasks.push(tableRow)
+    })
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div>
           <h1>{intl.trans('tasks', 'Tasks', 'first')}</h1>
 
@@ -299,12 +204,12 @@ export default class Tasks extends React.Component {
           </Table>
 
           <p>
-            {userTasks.length == 0 && userRegistrationTasks.length == 0
+            {userTasks.length === 0 && userRegistrationTasks.length === 0
               ? intl.trans('views.pages.tasks.no_tasks', 'There are currently No tasks.')
               : ''}
           </p>
 
-          <Dialog open={this.state.open} onRequestClose={this._handleClose} autoScrollBodyContent={true}>
+          <Dialog open={this.state.open} onRequestClose={this._handleClose} autoScrollBodyContent>
             <DocumentView id={this.state.selectedTask} />
           </Dialog>
 
@@ -324,4 +229,144 @@ export default class Tasks extends React.Component {
       </PromiseWrapper>
     )
   }
+
+  _fetchData = (newProps) => {
+    const userId = selectn('response.id', newProps.computeLogin)
+    newProps.fetchUserTasks(userId)
+    ProviderHelpers.fetchIfMissing(userId, newProps.fetchUserDialects, newProps.computeUserDialects)
+  }
+
+  _handleClose = () => {
+    this.setState({ open: false, preApprovalDialogOpen: false, selectedPreapprovalTask: null, selectedTask: null })
+  }
+
+  _handleOpen = (id) => {
+    this.setState({ open: true, selectedTask: id })
+  }
+
+  _handlePreApprovalOpen = (task) => {
+    this.props.fetchDialect2(selectn('properties.docinfo:documentId', task))
+    this.setState({ preApprovalDialogOpen: true, selectedPreapprovalTask: task })
+  }
+
+  _handleRegistrationActions = (id, action) => {
+    switch (action) {
+      case 'approve':
+        this.props.approveRegistration(
+          id,
+          {
+            value: 'approve',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+        )
+        break
+
+      case 'reject':
+        this.props.rejectRegistration(
+          id,
+          {
+            value: 'reject',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+        )
+        break
+      default: // NOTE: do nothing
+    }
+
+    this.setState({ lastActionedTaskId: id })
+  }
+
+  _handleTaskActions = (id, action) => {
+    switch (action) {
+      case 'approve':
+        this.props.approveTask(
+          id,
+          {
+            comment: '',
+            status: 'validate',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+        )
+        break
+
+      case 'reject':
+        this.props.rejectTask(
+          id,
+          {
+            comment: '',
+            status: 'reject',
+          },
+          null,
+          intl.trans('views.pages.tasks.request_rejected', 'Request Rejected Successfully', 'words')
+        )
+        break
+      default: // NOTE: do nothing
+    }
+
+    this.setState({ lastActionedTaskId: id })
+  }
+
+  _saveMethod = (properties) => {
+    this.props.approveRegistration(
+      properties.id,
+      {
+        comment: properties.comment,
+        group: properties.group,
+        appurl: NavigationHelpers.getBaseWebUIURL(),
+      },
+      null,
+      intl.trans('views.pages.tasks.request_approved', 'Request Approved Successfully', 'words')
+    )
+
+    this.setState({
+      selectedPreapprovalTask: null,
+      preApprovalDialogOpen: false,
+    })
+  }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvUser, tasks, nuxeo } = state
+
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computeUserDialects } = fvUser
+  const {
+    computeUserRegistrationApprove,
+    computeUserRegistrationReject,
+    computeUserTasks,
+    computeUserTasksApprove,
+    computeUserTasksReject,
+  } = tasks
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computeUserDialects,
+    computeUserRegistrationApprove,
+    computeUserRegistrationReject,
+    computeUserTasks,
+    computeUserTasksApprove,
+    computeUserTasksReject,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  approveRegistration,
+  approveTask,
+  fetchDialect2,
+  fetchUserDialects,
+  fetchUserTasks,
+  rejectRegistration,
+  rejectTask,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Tasks)

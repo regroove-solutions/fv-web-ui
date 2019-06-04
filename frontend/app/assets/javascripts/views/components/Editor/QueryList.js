@@ -15,7 +15,12 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResultSet } from 'providers/redux/reducers/document'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -28,17 +33,20 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class DirectoryList extends Component {
+const { bool, func, object, string } = PropTypes
+
+export class QueryList extends Component {
   static propTypes = {
-    fetchResultSet: PropTypes.func.isRequired,
-    computeResultSet: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    query: PropTypes.string.isRequired,
-    queryId: PropTypes.string.isRequired,
-    fancy: PropTypes.bool,
-    value: PropTypes.string,
+    fancy: bool,
+    label: string.isRequired,
+    onChange: func.isRequired,
+    query: string.isRequired,
+    queryId: string.isRequired,
+    value: string,
+    // REDUX: reducers/state
+    computeResultSet: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResultSet: func.isRequired,
   }
 
   static defaultProps = {
@@ -76,12 +84,8 @@ export default class DirectoryList extends Component {
   }
 
   render() {
-    let previewStyles = {
-      padding: '10px',
-    }
-
     const computeResultSet = ProviderHelpers.getEntry(this.props.computeResultSet, this.props.queryId)
-    let entries = selectn('response.entries', computeResultSet) || []
+    const entries = selectn('response.entries', computeResultSet) || []
 
     const computeEntities = Immutable.fromJS([
       {
@@ -91,11 +95,11 @@ export default class DirectoryList extends Component {
     ])
 
     return (
-      <PromiseWrapper hideProgress={true} computeEntities={computeEntities}>
+      <PromiseWrapper hideProgress computeEntities={computeEntities}>
         {this.props.fancy ? (
           <SelectField
             maxHeight={300}
-            autoWidth={true}
+            autoWidth
             value={this.props.value}
             onChange={this._handleChange}
             floatingLabelText={
@@ -124,3 +128,24 @@ export default class DirectoryList extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document } = state
+
+  const { computeResultSet } = document
+
+  return {
+    computeResultSet,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResultSet,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(QueryList)

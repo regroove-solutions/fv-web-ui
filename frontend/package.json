@@ -14,10 +14,12 @@
     "lint-staged:test": "jest --bail --findRelatedTests",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
+    "startPreprod": "npm run start -- --env.NUXEO_URL=\"https://preprod.firstvoices.com/nuxeo/\"",
+    "startDev": "npm run start -- --env.NUXEO_URL=\"https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/\"",
     "test": "jest",
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
-    "test:e2e": "start-server-and-test start http://0.0.0.0:3001 cy:open",
+    "test:e2e": "start-server-and-test startPreprod http://0.0.0.0:3001 cy:open",
     "test:e2e:ci": "start-server-and-test start http://0.0.0.0:3001 cy:run",
     "test:watch": "jest --watch"
   },
@@ -37,7 +39,8 @@
     "ignore": [
       "/build/",
       "/cypress/",
-      "**/__tests__/"
+      "**/__tests__/",
+      "**/__mocks__/*"
     ]
   },
   "husky": {
@@ -72,8 +75,6 @@
     "object-assign": "~2.1.1",
     "phaser-ce": "^2.7.3",
     "pretty-hrtime": "~0.2.1",
-    "provide-page": "~0.2.2",
-    "provide-theme": "~1.0.0",
     "react": "~0.14.7",
     "react-autosuggest": "~8.0.0",
     "react-chartjs": "~0.7.3",
@@ -84,7 +85,6 @@
     "react-leaflet": "^1.1.4",
     "react-paginate": "^4.1.1",
     "react-redux": "~4.4.5",
-    "react-redux-provide": "https://github.com/First-Peoples-Cultural-Council/react-redux-provide.git#v5.2.3",
     "react-tap-event-plugin": "~0.2.0",
     "redux": "~3.5.2",
     "redux-logger": "~2.6.1",
@@ -94,7 +94,8 @@
     "selectn": "~1.0.9",
     "tcomb-form": "~0.9",
     "tether-shepherd": "^1.8.1",
-    "underscore": "~1.8.3"
+    "underscore": "~1.8.3",
+    "yup": "^0.27.0"
   },
   "devDependencies": {
     "@babel/core": "7.3.3",
@@ -117,7 +118,7 @@
     "compression": "~1.4.1",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "~0.14.5",
-    "cypress": "^3.1.5",
+    "cypress": "^3.2.0",
     "cypress-testing-library": "^2.3.6",
     "del": "~1.2.1",
     "dom-testing-library": "^3.17.1",
@@ -126,7 +127,7 @@
     "eslint-plugin-react": "^7.12.4",
     "expect": "^23.5.0",
     "expose-loader": "^0.7.1",
-    "express": "~4.12.2",
+    "express": "^4.16.4",
     "file-loader": "^3.0.1",
     "git-revision-webpack-plugin": "^3.0.3",
     "happypack": "^5.0.1",

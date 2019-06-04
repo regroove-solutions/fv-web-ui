@@ -14,12 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-import t from 'tcomb-form'
+import Immutable from 'immutable'
 
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchPhrase, updatePhrase } from 'providers/redux/reducers/fvPhrase'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
+import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import StringHelpers from 'common/StringHelpers'
@@ -30,10 +35,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -43,21 +44,24 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class PageDialectPhraseEdit extends Component {
+const { array, func, object } = PropTypes
+export class PageDialectPhraseEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    fetchPhrase: PropTypes.func.isRequired,
-    computePhrase: PropTypes.object.isRequired,
-    updatePhrase: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    phrase: PropTypes.object,
+    phrase: object,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computePhrase: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchPhrase: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updatePhrase: func.isRequired,
   }
 
   constructor(props, context) {
@@ -83,9 +87,10 @@ export default class PageDialectPhraseEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentPhrase, nextPhrase
+    let currentPhrase
+    let nextPhrase
 
-    if (this._getPhrasePath() != null) {
+    if (this._getPhrasePath() !== null) {
       currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath())
       nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this._getPhrasePath())
     }
@@ -103,48 +108,42 @@ export default class PageDialectPhraseEdit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
-    let previousPhrase = this.props.computePhrase
-    let nextPhrase = newProps.computePhrase
+  shouldComponentUpdate(newProps /*, newState*/) {
+    const previousPhrase = this.props.computePhrase
+    const nextPhrase = newProps.computePhrase
 
-    let previousDialect = this.props.computeDialect2
-    let nextDialect = newProps.computeDialect2
+    const previousDialect = this.props.computeDialect2
+    const nextDialect = newProps.computeDialect2
 
+    // TODO: `switch (true)`?
     switch (true) {
       case newProps.routeParams.phrase != this.props.routeParams.phrase:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case typeof nextPhrase.equals === 'function' && nextPhrase.equals(previousPhrase) === false:
         return true
-        break
 
       case typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _getPhrasePath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.phrase)) {
-      return props.routeParams.phrase
-    } else {
-      return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase)
+    if (StringHelpers.isUUID(_props.routeParams.phrase)) {
+      return _props.routeParams.phrase
     }
+    return _props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(_props.routeParams.phrase)
   }
 
   _handleSave(phrase, formValue) {
-    let newDocument = new Document(phrase.response, {
+    const newDocument = new Document(phrase.response, {
       repository: phrase.response._repository,
       nuxeo: phrase.response._nuxeo,
     })
@@ -162,10 +161,10 @@ export default class PageDialectPhraseEdit extends Component {
     NavigationHelpers.navigateUp(this.props.splitWindowPath, this.props.replaceWindowPath)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
-    let title = selectn('properties.dc:title', phrase)
-    let uid = selectn('uid', phrase)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const phrase = selectn('response', ProviderHelpers.getEntry(this.props.computePhrase, this._getPhrasePath()))
+    const title = selectn('properties.dc:title', phrase)
+    const uid = selectn('uid', phrase)
 
     if (title && selectn('pageTitleParams.phrase', this.props.properties) != title) {
       this.props.changeTitleParams({ phrase: title })
@@ -192,7 +191,7 @@ export default class PageDialectPhraseEdit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computePhrase)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-phrase:definitions[0].translation', computePhrase) ||
         selectn('response.properties.fv:literal_translation[0].translation', computePhrase)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -231,3 +230,35 @@ export default class PageDialectPhraseEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPhrase, navigation, windowPath } = state
+
+  const { computePhrase } = fvPhrase
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+  const { properties } = navigation
+  return {
+    computeDialect2,
+    computePhrase,
+    properties,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  fetchDialect2,
+  fetchPhrase,
+  overrideBreadcrumbs,
+  pushWindowPath,
+  replaceWindowPath,
+  updatePhrase,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectPhraseEdit)

@@ -14,11 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+// import classNames from 'classnames'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchGallery, updateGallery } from 'providers/redux/reducers/fvGallery'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
+// import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
@@ -29,34 +37,35 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
+// import Paper from 'material-ui/lib/paper'
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
-
 import withForm from 'views/hoc/view/with-form'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
 const EditViewWithForm = withForm(PromiseWrapper, true)
-@provide
-export default class PageDialectGalleryEdit extends Component {
+
+const { array, func, object } = PropTypes
+
+export class PageDialectGalleryEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    fetchGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    updateGallery: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    gallery: PropTypes.object,
+    routeParams: object.isRequired,
+    gallery: object,
+    // REDUX: reducers/state
+    computeGallery: object.isRequired,
+    computeDialect2: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchGallery: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateGallery: func.isRequired,
   }
 
   constructor(props, context) {
@@ -83,9 +92,10 @@ export default class PageDialectGalleryEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentGallery, nextGallery
+    let currentGallery
+    let nextGallery
 
-    if (this._getGalleryPath() != null) {
+    if (this._getGalleryPath() !== null) {
       currentGallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())
       nextGallery = ProviderHelpers.getEntry(nextProps.computeGallery, this._getGalleryPath())
     }
@@ -103,44 +113,38 @@ export default class PageDialectGalleryEdit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.routeParams.gallery != this.props.routeParams.gallery:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computeGallery, this._getGalleryPath()) !=
         ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()):
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) !=
         ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path):
         return true
-        break
-    }
 
-    return false
+      default:
+        return false
+    }
   }
 
   _getGalleryPath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.gallery)) {
-      return props.routeParams.gallery
-    } else {
-      return props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(props.routeParams.gallery)
+    if (StringHelpers.isUUID(_props.routeParams.gallery)) {
+      return _props.routeParams.gallery
     }
+    return _props.routeParams.dialect_path + '/Portal/' + StringHelpers.clean(_props.routeParams.gallery)
   }
 
   _handleSave(phrase, formValue) {
-    let newDocument = new Document(phrase.response, {
+    const newDocument = new Document(phrase.response, {
       repository: phrase.response._repository,
       nuxeo: phrase.response._nuxeo,
     })
@@ -161,16 +165,16 @@ export default class PageDialectGalleryEdit extends Component {
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
-
-    let formValue = this.refs['form_gallery'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_gallery.getValue()
 
     // Passed validation
     if (formValue) {
-      let gallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())
+      const gallery = ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath())
 
       // TODO: Find better way to construct object then accessing internal function
       // Create new document rather than modifying the original document
-      let newDocument = new Document(gallery.response, {
+      const newDocument = new Document(gallery.response, {
         repository: gallery.response._repository,
         nuxeo: gallery.response._nuxeo,
       })
@@ -188,10 +192,10 @@ export default class PageDialectGalleryEdit extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()))
-    let title = selectn('properties.dc:title', gallery)
-    let uid = selectn('uid', gallery)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const gallery = selectn('response', ProviderHelpers.getEntry(this.props.computeGallery, this._getGalleryPath()))
+    const title = selectn('properties.dc:title', gallery)
+    const uid = selectn('uid', gallery)
 
     if (title && selectn('pageTitleParams.galleryName', this.props.properties) != title) {
       this.props.changeTitleParams({ galleryName: title })
@@ -251,9 +255,9 @@ export default class PageDialectGalleryEdit extends Component {
         />
       </div>
     )
-
+    /*
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {intl.trans(
             'views.pages.explore.dialect.gallery.edit_x_gallery',
@@ -289,5 +293,39 @@ export default class PageDialectGalleryEdit extends Component {
         </div>
       </PromiseWrapper>
     )
+    */
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvGallery, navigation, windowPath } = state
+
+  const { computeGallery } = fvGallery
+  const { computeDialect2 } = fvDialect
+  const { properties } = navigation
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeGallery,
+    properties,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  fetchDialect2,
+  fetchGallery,
+  overrideBreadcrumbs,
+  pushWindowPath,
+  replaceWindowPath,
+  updateGallery,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectGalleryEdit)

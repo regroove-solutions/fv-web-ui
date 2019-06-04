@@ -15,7 +15,12 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialectList } from 'providers/redux/reducers/fvDialect'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -28,17 +33,19 @@ import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-@provide
-export default class DirectoryList extends Component {
+const { bool, func, object, string } = PropTypes
+export class DialectList extends Component {
   static propTypes = {
-    fetchDialectList: PropTypes.func.isRequired,
-    computeDialectList: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string.isRequired,
-    query: PropTypes.string.isRequired,
-    queryId: PropTypes.string.isRequired,
-    fancy: PropTypes.bool,
-    value: PropTypes.string,
+    fancy: bool,
+    label: string.isRequired,
+    onChange: func.isRequired,
+    query: string.isRequired, // NOTE: don't think this is being set
+    queryId: string.isRequired, // NOTE: don't think this is being set
+    value: string,
+    // REDUX: reducers/state
+    computeDialectList: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialectList: func.isRequired,
   }
 
   static defaultProps = {
@@ -74,12 +81,8 @@ export default class DirectoryList extends Component {
   }
 
   render() {
-    let previewStyles = {
-      padding: '10px',
-    }
-
     const computeDialectList = ProviderHelpers.getEntry(this.props.computeDialectList, this.props.queryId)
-    let entries = selectn('response', computeDialectList) || []
+    const entries = selectn('response', computeDialectList) || []
 
     const computeEntities = Immutable.fromJS([
       {
@@ -89,11 +92,11 @@ export default class DirectoryList extends Component {
     ])
 
     return (
-      <PromiseWrapper hideProgress={true} computeEntities={computeEntities}>
+      <PromiseWrapper hideProgress computeEntities={computeEntities}>
         {this.props.fancy ? (
           <SelectField
             maxHeight={300}
-            autoWidth={true}
+            autoWidth
             value={this.props.value}
             onChange={this._handleChange}
             floatingLabelText={
@@ -122,3 +125,24 @@ export default class DirectoryList extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect } = state
+
+  const { computeDialectList } = fvDialect
+
+  return {
+    computeDialectList,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialectList,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(DialectList)

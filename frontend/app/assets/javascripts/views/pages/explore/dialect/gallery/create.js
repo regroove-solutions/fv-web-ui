@@ -16,7 +16,14 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createGallery } from 'providers/redux/reducers/fvGallery'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -37,17 +44,20 @@ const intl = IntlService.instance
 /**
  * Create book entry
  */
+const { array, func, object, string } = PropTypes
 export class PageDialectGalleryCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    createGallery: PropTypes.func.isRequired,
-    computeGallery: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeGallery: object.isRequired,
+    windowPath: string.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createGallery: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -120,6 +130,7 @@ export class PageDialectGalleryCreate extends Component {
     // Prevent default behaviour
     e.preventDefault()
 
+    // TODO: this.refs DEPRECATED
     const formValue = this.refs.form_gallery_create.getValue()
 
     //let properties = '';
@@ -193,7 +204,7 @@ export class PageDialectGalleryCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_gallery_create"
+                ref="form_gallery_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVGallery', fields))}
                 context={selectn('response', computeDialect2)}
                 value={this.state.formValue}
@@ -218,4 +229,31 @@ export class PageDialectGalleryCreate extends Component {
   }
 }
 
-export default provide(PageDialectGalleryCreate)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvGallery, windowPath } = state
+
+  const { computeGallery } = fvGallery
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeGallery,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createGallery,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectGalleryCreate)

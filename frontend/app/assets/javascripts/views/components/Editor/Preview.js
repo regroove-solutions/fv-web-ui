@@ -14,7 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchAudio } from 'providers/redux/reducers/fvAudio'
+import { fetchCategory } from 'providers/redux/reducers/fvCategory'
+import { fetchContributor } from 'providers/redux/reducers/fvContributor'
+import { fetchPhrase } from 'providers/redux/reducers/fvPhrase'
+import { fetchPicture } from 'providers/redux/reducers/fvPicture'
+import { fetchLink } from 'providers/redux/reducers/fvLink'
+import { fetchVideo } from 'providers/redux/reducers/fvVideo'
+import { fetchWord } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -27,32 +39,27 @@ import AudioOptimal from 'views/components/Browsing/audio-optimal'
 
 import Avatar from 'material-ui/lib/avatar'
 import Card from 'material-ui/lib/card/card'
-import CardActions from 'material-ui/lib/card/card-actions'
 import CardHeader from 'material-ui/lib/card/card-header'
 import CardMedia from 'material-ui/lib/card/card-media'
-import CardTitle from 'material-ui/lib/card/card-title'
 import CardText from 'material-ui/lib/card/card-text'
-import FlatButton from 'material-ui/lib/flat-button'
-import Divider from 'material-ui/lib/divider'
-
 import CircularProgress from 'material-ui/lib/circular-progress'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
 
-const GetMetaData = function(type, response) {
-  let metadata = []
+const GetMetaData = (type, response) => {
+  const metadata = []
 
   /**
    * Recorders
    */
-  let recorders = []
+  const recorders = []
 
-  {
-    ;(selectn('contextParameters.media.recorders', response) || []).map(function(recorder, key) {
-      recorders.push(<Preview expandedValue={recorder} key={key} type="FVContributor" />)
-    })
-  }
+  const recordersData = selectn('contextParameters.media.recorders', response) || []
+  recordersData.map((recorder, key) => {
+    recorders.push(<Preview expandedValue={recorder} key={key} type="FVContributor" />)
+  })
+
   metadata.push({
     label: 'Recorder(s)',
     value: recorders,
@@ -61,13 +68,13 @@ const GetMetaData = function(type, response) {
   /**
    * Contributors
    */
-  let contributors = []
+  const contributors = []
+  const contributorsData = selectn('contextParameters.media.sources', response) || []
 
-  {
-    ;(selectn('contextParameters.media.sources', response) || []).map(function(contributor, key) {
-      contributors.push(<Preview expandedValue={contributor} key={key} type="FVContributor" />)
-    })
-  }
+  contributorsData.map((contributor, key) => {
+    contributors.push(<Preview expandedValue={contributor} key={key} type="FVContributor" />)
+  })
+
   metadata.push({
     label: intl.trans('contributor_s', 'Contributor(s)', 'first'),
     value: contributors,
@@ -111,7 +118,7 @@ const GetMetaData = function(type, response) {
    * Direct Link
    */
   if (selectn('path', response)) {
-    let directLinkValue = NavigationHelpers.generateUIDPath('explore', response, 'media')
+    const directLinkValue = NavigationHelpers.generateUIDPath('explore', response, 'media')
 
     metadata.push({
       label: intl.trans('direct_link', 'Direct Link', 'words'),
@@ -124,7 +131,7 @@ const GetMetaData = function(type, response) {
             value={directLinkValue}
           />{' '}
           <br />
-          <a href={directLinkValue} target="_blank">
+          <a href={directLinkValue} target="_blank" rel="noopener noreferrer">
             {intl.trans('go_to_record', 'Go to Record', 'words')}
           </a>
         </span>
@@ -159,37 +166,40 @@ const GetMetaData = function(type, response) {
   return metadata
 }
 
-@provide
-export default class Preview extends Component {
+const { bool, func, object, string } = PropTypes
+
+export class Preview extends Component {
   static propTypes = {
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
-    fetchPhrase: PropTypes.func.isRequired,
-    computePhrase: PropTypes.object.isRequired,
-    fetchCategory: PropTypes.func.isRequired,
-    computeCategory: PropTypes.object.isRequired,
-    fetchPicture: PropTypes.func.isRequired,
-    computePicture: PropTypes.object.isRequired,
-    fetchAudio: PropTypes.func.isRequired,
-    computeAudio: PropTypes.object.isRequired,
-    fetchVideo: PropTypes.func.isRequired,
-    computeVideo: PropTypes.object.isRequired,
-    fetchContributor: PropTypes.func.isRequired,
-    computeContributor: PropTypes.object.isRequired,
-    fetchLink: PropTypes.func.isRequired,
-    computeLink: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    id: PropTypes.string,
-    type: PropTypes.string.isRequired,
-    expandedValue: PropTypes.object,
-    styles: PropTypes.object,
-    tagStyles: PropTypes.object,
-    tagProps: PropTypes.object,
-    metadataListStyles: PropTypes.object,
-    minimal: PropTypes.bool,
-    optimal: PropTypes.bool,
-    crop: PropTypes.bool,
-    initiallyExpanded: PropTypes.bool,
+    crop: bool,
+    expandedValue: object,
+    id: string,
+    initiallyExpanded: bool,
+    metadataListStyles: object,
+    minimal: bool,
+    optimal: bool,
+    styles: object,
+    tagProps: object,
+    tagStyles: object,
+    type: string.isRequired,
+    // REDUX: reducers/state
+    computeAudio: object.isRequired,
+    computeCategory: object.isRequired,
+    computeContributor: object.isRequired,
+    computeLink: object.isRequired,
+    computePhrase: object.isRequired,
+    computePicture: object.isRequired,
+    computeVideo: object.isRequired,
+    computeWord: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchAudio: func.isRequired,
+    fetchCategory: func.isRequired,
+    fetchContributor: func.isRequired,
+    fetchPhrase: func.isRequired,
+    fetchPicture: func.isRequired,
+    fetchLink: func.isRequired,
+    fetchVideo: func.isRequired,
+    fetchWord: func.isRequired,
   }
 
   static defaultProps = {
@@ -205,7 +215,7 @@ export default class Preview extends Component {
     super(props)
 
     this.state = {
-      showAudioMetadata: false
+      showAudioMetadata: false,
     }
 
     // Bind methods to 'this'
@@ -247,6 +257,7 @@ export default class Preview extends Component {
         case 'FVLink':
           this.props.fetchLink(this.props.id)
           break
+        default: // NOTE: do nothing
       }
     }
   }
@@ -254,7 +265,7 @@ export default class Preview extends Component {
   /**
    * Request additional media info when expanded.
    */
-  _handleExpandChange(id, fetchFunc, event, expanded) {
+  _handleExpandChange(id, fetchFunc /*, event, expanded*/) {
     fetchFunc(id)
   }
 
@@ -263,7 +274,7 @@ export default class Preview extends Component {
 
     let handleExpandChange = () => {}
 
-    let previewStyles = Object.assign(
+    const previewStyles = Object.assign(
       {
         padding: '10px 0',
       },
@@ -273,7 +284,7 @@ export default class Preview extends Component {
     let body = <CircularProgress mode="indeterminate" size={1} />
 
     switch (this.props.type) {
-      case 'FVWord':
+      case 'FVWord': {
         let word = {}
         let wordResponse
 
@@ -286,11 +297,11 @@ export default class Preview extends Component {
         }
 
         if (wordResponse && word.success) {
-          let image = selectn('contextParameters.word.related_pictures[0].path', wordResponse)
-          let translations =
+          const image = selectn('contextParameters.word.related_pictures[0].path', wordResponse)
+          const translations =
             selectn('properties.fv:literal_translation', wordResponse) ||
             selectn('properties.fv-word:definitions', wordResponse)
-          let audio = selectn('contextParameters.word.related_audio[0].path', wordResponse)
+          const audio = selectn('contextParameters.word.related_audio[0].path', wordResponse)
 
           if (this.props.minimal) {
             body = (
@@ -335,8 +346,9 @@ export default class Preview extends Component {
         }
 
         break
+      }
 
-      case 'FVPhrase':
+      case 'FVPhrase': {
         let phrase = {}
         let phraseResponse
 
@@ -363,8 +375,8 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVCategory':
+      }
+      case 'FVCategory': {
         let category = {}
         let categoryResponse
 
@@ -377,8 +389,8 @@ export default class Preview extends Component {
         }
 
         if (categoryResponse && category.success) {
-          let breadcrumb = []
-          ;(selectn('contextParameters.breadcrumb.entries', categoryResponse) || []).map(function(entry, i) {
+          const breadcrumb = []
+          ;(selectn('contextParameters.breadcrumb.entries', categoryResponse) || []).map((entry, i) => {
             if (entry.type === 'FVCategory') {
               let shared = ''
 
@@ -407,13 +419,13 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVPicture':
+      }
+      case 'FVPicture': {
         let picture = {}
         let pictureResponse
         let pictureTag = ''
 
-        let remotePicture = ProviderHelpers.getEntry(
+        const remotePicture = ProviderHelpers.getEntry(
           this.props.computePicture,
           this.props.id || selectn('expandedValue.uid', this.props)
         )
@@ -458,7 +470,7 @@ export default class Preview extends Component {
           if (this.props.minimal) {
             body = pictureTag
           } else {
-            let description =
+            const description =
               selectn('properties.dc:description', pictureResponse) || selectn('dc:description', pictureResponse)
 
             body = (
@@ -489,8 +501,8 @@ export default class Preview extends Component {
                   title={intl.trans('more_image_info', 'MORE IMAGE INFO', 'upper')}
                   titleStyle={{ lineHeight: 'initial' }}
                   titleColor={themePalette.alternateTextColor}
-                  actAsExpander={true}
-                  showExpandableButton={true}
+                  actAsExpander
+                  showExpandableButton
                   style={{
                     height: 'initial',
                     backgroundColor: themePalette.primary2Color,
@@ -498,7 +510,7 @@ export default class Preview extends Component {
                     borderBottom: '4px solid ' + themePalette.primary1Color,
                   }}
                 />
-                <CardText expandable={true} style={{ backgroundColor: themePalette.accent4Color }}>
+                <CardText expandable style={{ backgroundColor: themePalette.accent4Color }}>
                   <MetadataList
                     style={{
                       lineHeight: 'initial',
@@ -521,13 +533,13 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVAudio':
+      }
+      case 'FVAudio': {
         let audio = {}
         let audioResponse
         let audioTag = ''
 
-        let remoteAudio = ProviderHelpers.getEntry(
+        const remoteAudio = ProviderHelpers.getEntry(
           this.props.computeAudio,
           this.props.id || selectn('expandedValue.uid', this.props)
         )
@@ -559,25 +571,28 @@ export default class Preview extends Component {
             />
           )
 
-          let description =
-          selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)
-          let title = selectn('title', audioResponse) || selectn('dc:title', audioResponse);
-          let speakers = selectn('contextParameters.media.sources', audioResponse);
-          let recorders = selectn('contextParameters.media.recorders', audioResponse);
+          const description =
+            selectn('properties.dc:description', audioResponse) || selectn('dc:description', audioResponse)
+          const title = selectn('title', audioResponse) || selectn('dc:title', audioResponse)
+          const speakers = selectn('contextParameters.media.sources', audioResponse)
+          const recorders = selectn('contextParameters.media.recorders', audioResponse)
 
           if (this.props.minimal) {
             body = audioTag
-          }
-          else if (this.props.optimal) {
-            body = (<AudioOptimal audioTag={audioTag} onInfoRequest={handleExpandChange} metadata={{
-              "title": title,
-              "description": description,
-              "speakers": speakers,
-              "recorders": recorders
-            }} />);
-          }
-          else {
-
+          } else if (this.props.optimal) {
+            body = (
+              <AudioOptimal
+                audioTag={audioTag}
+                onInfoRequest={handleExpandChange}
+                metadata={{
+                  title: title,
+                  description: description,
+                  speakers: speakers,
+                  recorders: recorders,
+                }}
+              />
+            )
+          } else {
             body = (
               <Card
                 style={{ boxShadow: 'none' }}
@@ -604,17 +619,16 @@ export default class Preview extends Component {
                   title={intl.trans('more_audio_info', 'MORE AUDIO INFO', 'upper')}
                   titleStyle={{ lineHeight: 'initial' }}
                   titleColor={themePalette.alternateTextColor}
-                  actAsExpander={true}
-                  showExpandableButton={true}
+                  actAsExpander
+                  showExpandableButton
                   style={{
                     height: 'initial',
-                    padding: 0,
                     backgroundColor: themePalette.primary2Color,
                     padding: '8px',
                     borderBottom: '4px solid ' + themePalette.primary1Color,
                   }}
                 />
-                <CardText expandable={true} style={{ backgroundColor: themePalette.accent4Color }}>
+                <CardText expandable style={{ backgroundColor: themePalette.accent4Color }}>
                   <MetadataList
                     style={{
                       lineHeight: 'initial',
@@ -637,13 +651,13 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVVideo':
+      }
+      case 'FVVideo': {
         let video = {}
         let videoResponse
         let videoTag = ''
 
-        let remoteVideo = ProviderHelpers.getEntry(
+        const remoteVideo = ProviderHelpers.getEntry(
           this.props.computeVideo,
           this.props.id || selectn('expandedValue.uid', this.props)
         )
@@ -678,8 +692,8 @@ export default class Preview extends Component {
           if (this.props.minimal) {
             body = videoTag
           } else {
-            let description =
-              selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)
+            // const description =
+            //   selectn('properties.dc:description', videoResponse) || selectn('dc:description', videoResponse)
 
             body = (
               <Card
@@ -707,8 +721,8 @@ export default class Preview extends Component {
                   title={intl.trans('more_video_info', 'MORE VIDEO INFO', 'upper')}
                   titleStyle={{ lineHeight: 'initial' }}
                   titleColor={themePalette.alternateTextColor}
-                  actAsExpander={true}
-                  showExpandableButton={true}
+                  actAsExpander
+                  showExpandableButton
                   style={{
                     height: 'initial',
                     backgroundColor: themePalette.primary2Color,
@@ -716,7 +730,7 @@ export default class Preview extends Component {
                     borderBottom: '4px solid ' + themePalette.primary1Color,
                   }}
                 />
-                <CardText expandable={true} style={{ backgroundColor: themePalette.accent4Color }}>
+                <CardText expandable style={{ backgroundColor: themePalette.accent4Color }}>
                   <MetadataList
                     style={{
                       lineHeight: 'initial',
@@ -739,8 +753,8 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVContributor':
+      }
+      case 'FVContributor': {
         let contributor = {}
         let contributorResponse
 
@@ -776,8 +790,8 @@ export default class Preview extends Component {
         }
 
         break
-
-      case 'FVLink':
+      }
+      case 'FVLink': {
         let link = {}
         let linkResponse
 
@@ -790,7 +804,7 @@ export default class Preview extends Component {
         }
 
         if (linkResponse && link.success) {
-          let link =
+          link =
             selectn('properties.fvlink:url', linkResponse) ||
             selectn('fvlink:url', linkResponse) ||
             selectn('properties.file:content.data', linkResponse) ||
@@ -799,7 +813,7 @@ export default class Preview extends Component {
           body = (
             <div>
               <div>
-                <a href={link} target="_blank">
+                <a href={link} target="_blank" rel="noopener noreferrer">
                   {selectn('title', linkResponse) || selectn('dc:title', linkResponse)}
                 </a>
               </div>
@@ -815,7 +829,7 @@ export default class Preview extends Component {
         }
 
         break
-
+      }
       default:
         body = intl.trans(
           'preview_option_not_available',
@@ -829,3 +843,47 @@ export default class Preview extends Component {
     return <div style={previewStyles}>{body}</div>
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvWord, fvPhrase, fvCategory, fvPicture, fvAudio, fvVideo, fvContributor, fvLink, navigation } = state
+
+  const { computeAudio } = fvAudio
+  const { computeCategory } = fvCategory
+  const { computeContributor } = fvContributor
+  const { computeLink } = fvLink
+  const { computePhrase } = fvPhrase
+  const { computePicture } = fvPicture
+  const { computeVideo } = fvVideo
+  const { computeWord } = fvWord
+  const { properties } = navigation
+
+  return {
+    computeAudio,
+    computeCategory,
+    computeContributor,
+    computeLink,
+    computePhrase,
+    computePicture,
+    computeVideo,
+    computeWord,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchAudio,
+  fetchCategory,
+  fetchContributor,
+  fetchPhrase,
+  fetchPicture,
+  fetchLink,
+  fetchVideo,
+  fetchWord,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Preview)

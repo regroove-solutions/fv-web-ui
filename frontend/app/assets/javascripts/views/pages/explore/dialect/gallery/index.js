@@ -17,7 +17,15 @@ import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchGalleries } from 'providers/redux/reducers/fvGallery'
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -37,23 +45,26 @@ const FilteredList = withFilter(GeneralList)
 /**
  * Learn songs
  */
-@provide
-export default class PageDialectGalleries extends Component {
+
+const { array, func, object, string } = PropTypes
+export class PageDialectGalleries extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    fetchGalleries: PropTypes.func.isRequired,
-    computeGalleries: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    typeFilter: PropTypes.string,
-    typePlural: PropTypes.string,
+    routeParams: object.isRequired,
+    typeFilter: string,
+    typePlural: string,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computePortal: object.isRequired,
+    computeGalleries: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchGalleries: func.isRequired,
+    fetchPortal: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -192,3 +203,38 @@ export default class PageDialectGalleries extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPortal, fvGallery, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computePortal } = fvPortal
+  const { computeGalleries } = fvGallery
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computePortal,
+    computeGalleries,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchGalleries,
+  fetchPortal,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectGalleries)

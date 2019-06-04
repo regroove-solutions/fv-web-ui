@@ -15,26 +15,27 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 
-import classNames from 'classnames'
-// import provide from 'react-redux-provide'
-import selectn from 'selectn'
+// REDUX
+import { connect } from 'react-redux'
 
+import classNames from 'classnames'
+import selectn from 'selectn'
 import TextHeader from 'views/components/Document/Typography/text-header'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
-// import EditableComponent, { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
 import { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
-import IntlService from 'views/services/intl'
 
+import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 /**
  * Sidebar for learning page
  */
-export default class ToolbarNavigation extends Component {
+const { bool, object } = PropTypes
+export class ToolbarNavigation extends Component {
   static propTypes = {
-    dialect: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    isSection: PropTypes.bool.isRequired,
+    dialect: object.isRequired,
+    isSection: bool.isRequired,
+    // REDUX: reducers/state
+    properties: object.isRequired,
   }
 
   constructor(props, context) {
@@ -143,3 +144,19 @@ export default class ToolbarNavigation extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation } = state
+
+  const { properties } = navigation
+
+  return {
+    properties,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(ToolbarNavigation)

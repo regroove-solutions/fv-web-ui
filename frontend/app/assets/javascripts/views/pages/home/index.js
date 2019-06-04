@@ -16,7 +16,13 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { queryPage } from 'providers/redux/reducers/fvPage'
+import { fetchUserStartpage } from 'providers/redux/reducers/fvUser'
+
 import selectn from 'selectn'
 import classNames from 'classnames'
 
@@ -36,22 +42,24 @@ import NavigationHelpers from '../../../common/NavigationHelpers'
 /**
  * Explore Archive page shows all the families in the archive
  */
-class PageHome extends Component {
+
+const { func, object, string } = PropTypes
+export class PageHome extends Component {
   static propTypes = {
-    fetchUserStartpage: PropTypes.func.isRequired,
-    computeUserStartpage: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    queryPage: PropTypes.func.isRequired,
-    computePage: PropTypes.object.isRequired,
-    //fetchPortals: PropTypes.func.isRequired,
-    //computePortals: PropTypes.object.isRequired
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computePage: object.isRequired,
+    computeUserStartpage: object.isRequired,
+    properties: object.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchUserStartpage: func.isRequired,
+    pushWindowPath: func.isRequired,
+    queryPage: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   intl = IntlService.instance
@@ -78,7 +86,7 @@ class PageHome extends Component {
     // Redirect user to their start page if they are members of a single dialect, or have one defined
 
     // If user is accessing /home directly, do not redirect.
-    if (this.props.windowPath.indexOf('/home') != -1) {
+    if (this.props.windowPath.indexOf('/home') !== -1) {
       return
     }
 
@@ -97,7 +105,7 @@ class PageHome extends Component {
   }
 
   _getBlockByArea(page, area) {
-    return (selectn('fvpage:blocks', page) || []).filter(function(block) {
+    return (selectn('fvpage:blocks', page) || []).filter((block) => {
       return block.area == area
     })
   }
@@ -126,14 +134,17 @@ class PageHome extends Component {
       },
       {
         id: 'currentUser',
-        entity: this.props.computeUserStartPage,
-      } /*,    {
+        entity: this.props.computeUserStartpage,
+      },
+      /*
+      {
       'id': this.state.dialectsPath,
       'entity': this.props.computePortals
-    }*/,
+      }
+      */
     ])
 
-    const computeUserStartPage = ProviderHelpers.getEntry(this.props.computeUserStartPage, 'currentUser')
+    const _computeUserStartpage = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
     const computePage = ProviderHelpers.getEntry(this.props.computePage, this.state.pagePath)
     //const computePortals = ProviderHelpers.getEntry(this.props.computePortals, this.state.dialectsPath);
 
@@ -148,8 +159,8 @@ class PageHome extends Component {
     const accessButtons = []
 
     // Compute User Registration Tasks
-    ;(selectn('response.entries', computeUserStartPage) || []).map(
-      function(dialect) {
+    ;(selectn('response.entries', _computeUserStartpage) || []).map(
+      function computeUserStartPageMap(dialect) {
         const tableRow = (
           <RaisedButton
             label={'Access ' + selectn('properties.dc:title', dialect)}
@@ -168,7 +179,7 @@ class PageHome extends Component {
       }.bind(this)
     )
 
-    if (accessButtons.length == 0) {
+    if (accessButtons.length === 0) {
       accessButtons[0] = (
         <RaisedButton
           label={
@@ -220,7 +231,7 @@ class PageHome extends Component {
 
         <div className={classNames('row')} style={{ margin: '25px 0' }}>
           <div>
-            {this._getBlockByArea(page, 1).map(function(block, i) {
+            {this._getBlockByArea(page, 1).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12')}>
                   <div className="body">
@@ -248,7 +259,7 @@ class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 2).map(function(block, i) {
+            {this._getBlockByArea(page, 2).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
                   <IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color} />
@@ -273,7 +284,7 @@ class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 3).map(function(block, i) {
+            {this._getBlockByArea(page, 3).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12', 'col-md-3')}>
                   <IntroCardView block={block} primary1Color={primary1Color} primary2Color={primary2Color} />
@@ -298,7 +309,7 @@ class PageHome extends Component {
           ) : null}
 
           <div>
-            {this._getBlockByArea(page, 4).map(function(block, i) {
+            {this._getBlockByArea(page, 4).map((block, i) => {
               return (
                 <div key={i} className={classNames('col-xs-12')}>
                   <div className="body">
@@ -315,4 +326,33 @@ class PageHome extends Component {
   }
 }
 
-export default provide(PageHome)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPage, fvUser, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computePage } = fvPage
+  const { computeUserStartpage } = fvUser
+  const { _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    computePage,
+    computeUserStartpage,
+    properties,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchUserStartpage,
+  pushWindowPath,
+  queryPage,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageHome)

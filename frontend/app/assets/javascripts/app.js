@@ -15,8 +15,8 @@ limitations under the License.
 */
 import 'babel-polyfill'
 
-import React, { Component, PropTypes } from 'react'
-import { render } from 'react-dom'
+import React from 'react'
+import { render } from 'react-dom' // import ReactDOM from "react-dom"
 
 import injectTapEventPlugin from 'react-tap-event-plugin'
 
@@ -26,8 +26,9 @@ import FirstVoicesTheme from 'views/themes/FirstVoicesTheme.js'
 
 import ConfGlobal from 'conf/local.js'
 
-// Providers provide reducers and actions
-import providers from './providers/index'
+// REDUX
+import { Provider } from 'react-redux'
+import store from 'providers/redux/store'
 
 // Views
 import AppWrapper from 'views/AppWrapper'
@@ -41,10 +42,6 @@ require('styles/main')
 injectTapEventPlugin()
 
 const context = {
-  providers,
-  /*combinedProviders: [
-      providers // OK for all providers to share the same store for now, make sure actions are unique
-    ],*/
   providedState: {
     properties: {
       title: ConfGlobal.title,
@@ -58,7 +55,12 @@ const context = {
   },
 }
 
-render(<AppWrapper {...context} />, document.getElementById('app-wrapper'))
+render(
+  <Provider store={store}>
+    <AppWrapper {...context} />
+  </Provider>,
+  document.getElementById('app-wrapper')
+)
 
 /*window.addEventListener("unhandledrejection", function(err, promise) {
 // handle error here, for example log

@@ -14,11 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacter, updateCharacter } from 'providers/redux/reducers/fvCharacter'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -28,10 +32,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -41,19 +41,21 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class PageDialectAlphabetCharacterEdit extends Component {
+const { array, func, object } = PropTypes
+export class PageDialectAlphabetCharacterEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchCharacter: PropTypes.func.isRequired,
-    computeCharacter: PropTypes.object.isRequired,
-    updateCharacter: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    character: PropTypes.object,
+    character: object,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacter: object.isRequired,
+    computeDialect2: object.isRequired,
+    fetchDialect2: func.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacter: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateCharacter: func.isRequired,
   }
 
   constructor(props, context) {
@@ -81,9 +83,10 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentCharacter, nextCharacter
+    let currentCharacter
+    let nextCharacter
 
-    if (this.state.characterPath != null) {
+    if (this.state.characterPath !== null) {
       currentCharacter = ProviderHelpers.getEntry(this.props.computeCharacter, this.state.characterPath)
       nextCharacter = ProviderHelpers.getEntry(nextProps.computeCharacter, this.state.characterPath)
     }
@@ -102,7 +105,7 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
   }
 
   _handleSave(character, formValue) {
-    let newDocument = new Document(character.response, {
+    const newDocument = new Document(character.response, {
       repository: character.response._repository,
       nuxeo: character.response._nuxeo,
     })
@@ -172,3 +175,32 @@ export default class PageDialectAlphabetCharacterEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvDialect, windowPath } = state
+
+  const { computeCharacter } = fvCharacter
+  const { computeDialect2, fetchDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeCharacter,
+    computeDialect2,
+    fetchDialect2,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacter,
+  pushWindowPath,
+  replaceWindowPath,
+  updateCharacter,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectAlphabetCharacterEdit)

@@ -7,13 +7,18 @@
 */
 import React, { Component } from 'react'
 import { PropTypes } from 'react'
-import provide from 'react-redux-provide'
-import { Link } from 'provide-page'
+
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
+import NavigationHelpers from 'common/NavigationHelpers'
+
 import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
 
-const { array, string, object } = PropTypes
+const { array, func, string, object } = PropTypes
 
 const intl = IntlService.instance
 const REMOVE_FROM_BREADCRUMBS = ['FV', 'sections', 'Data', 'Workspaces', 'search', 'nuxeo', 'app', 'explore']
@@ -22,17 +27,20 @@ export class Breadcrumb extends Component {
   static propTypes = {
     className: string,
     findReplace: object, // Note: {find: '', replace: ''}
-    routeParams: object,
     matchedPage: object, // Note: Immutable Obj
-    splitWindowPath: array,
+    routeParams: object,
     routes: object, // Note: Immutable Obj
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    // REDUX: reducers/state
+    splitWindowPath: array.isRequired, // NOTE: Parent component is passing in `splitWindowPath` as a prop, see if that breaks anything
   }
   static defaultProps = {
     className: '',
     routeParams: {},
     matchedPage: Immutable.fromJS({}),
-    splitWindowPath: [],
     routes: Immutable.fromJS({}),
+    splitWindowPath: [],
   }
 
   //   constructor(props) {
@@ -137,9 +145,17 @@ export class Breadcrumb extends Component {
 
         return (
           <li key={splitPathIndex}>
-            <Link key={splitPathIndex} href={hrefPath}>
+            {/* <Link key={splitPathIndex} href={hrefPath}>
               {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}
-            </Link>
+            </Link> */}
+            <a
+              key={splitPathIndex}
+              href={hrefPath}
+              onClick={(e) => {
+                e.preventDefault()
+                NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+              }}
+            >{`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}</a>
           </li>
         )
       }
@@ -148,4 +164,22 @@ export class Breadcrumb extends Component {
   }
 }
 
-export default provide(Breadcrumb)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+  const { splitWindowPath } = windowPath
+
+  return {
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Breadcrumb)

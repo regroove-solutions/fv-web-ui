@@ -13,9 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { fetchUser, userSuggestion, updateUser } from 'providers/redux/reducers/fvUser'
+
 import selectn from 'selectn'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -34,8 +41,35 @@ const FilteredPaginatedMediaList = withFilter(DocumentListView, DefaultFetcherPa
 /**
  * List view for users
  */
-@provide
-export default class ListView extends DataListView {
+
+const { array, bool, func, number, object, string } = PropTypes
+export class ListView extends DataListView {
+  static propTypes = {
+    dialect: object,
+    routeParams: object.isRequired,
+    filter: object,
+    data: string,
+    gridListView: bool,
+    DISABLED_SORT_COLS: array,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeUser: object.isRequired,
+    computeUserSuggestion: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchUser: func.isRequired,
+    pushWindowPath: func.isRequired,
+    userSuggestion: func.isRequired,
+    updateUser: func.isRequired,
+  }
   static defaultProps = {
     DISABLED_SORT_COLS: ['state'],
     DEFAULT_PAGE: 1,
@@ -46,31 +80,6 @@ export default class ListView extends DataListView {
     filter: new Map(),
     dialect: null,
     gridListView: false,
-  }
-
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    fetchUser: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    computeUser: PropTypes.object.isRequired,
-    userSuggestion: PropTypes.func.isRequired,
-    computeUserSuggestion: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
   }
 
   constructor(props, context) {
@@ -108,11 +117,11 @@ export default class ListView extends DataListView {
 
     // Reduce the number of columns displayed for mobile
     if (UIHelpers.isViewSize('xs')) {
-      this.state.columns = this.state.columns.filter((v, k) => ['username', 'email'].indexOf(v.name) !== -1)
+      this.state.columns = this.state.columns.filter((v) => ['username', 'email'].indexOf(v.name) !== -1)
     }
 
     // Bind methods to 'this'
-    ;[
+    [
       '_onNavigateRequest',
       '_onUserSelected',
       '_handleRefetch',
@@ -173,7 +182,7 @@ export default class ListView extends DataListView {
     })
   }
 
-  _fetchListViewData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  _fetchListViewData(/*props, pageIndex, pageSize, sortOrder, sortBy*/) {
     this._fetcher()
   }
 
@@ -259,3 +268,38 @@ export default class ListView extends DataListView {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvUser, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computeUser, computeUserSuggestion } = fvUser
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computeUser,
+    computeUserSuggestion,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchUser,
+  pushWindowPath,
+  userSuggestion,
+  updateUser,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListView)

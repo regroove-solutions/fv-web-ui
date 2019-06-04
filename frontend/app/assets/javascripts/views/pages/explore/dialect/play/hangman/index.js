@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
 import HangManGame from './hangman'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacters } from 'providers/redux/reducers/fvCharacter'
+import { fetchWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -27,19 +31,19 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
-import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
 const PUZZLES = 25
 
-@provide
-export default class Hangman extends Component {
+const { func, object } = PropTypes
+export class Hangman extends Component {
   static propTypes = {
-    fetchCharacters: PropTypes.func.isRequired,
-    computeCharacters: PropTypes.object.isRequired,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacters: object.isRequired,
+    computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacters: func.isRequired,
+    fetchWords: func.isRequired,
   }
 
   constructor(props, context) {
@@ -56,7 +60,7 @@ export default class Hangman extends Component {
     this.fetchData(this.props)
   }
 
-  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  fetchData(props /*, pageIndex, pageSize, sortOrder, sortBy*/) {
     props.fetchCharacters(
       props.routeParams.dialect_path + '/Alphabet',
       '&currentPageIndex=0' + '&pageSize=100' + '&sortOrder=asc' + '&sortBy=fvcharacter:alphabet_order'
@@ -114,11 +118,12 @@ export default class Hangman extends Component {
         entity: this.props.computeWords,
       },
     ])
-
+    /*
     const computeCharacters = ProviderHelpers.getEntry(
       this.props.computeCharacters,
       this.props.routeParams.dialect_path + '/Alphabet'
     )
+    */
     const computeWords = ProviderHelpers.getEntry(
       this.props.computeWords,
       this.props.routeParams.dialect_path + '/Dictionary'
@@ -129,7 +134,7 @@ export default class Hangman extends Component {
           return selectn('properties.dc:title', char);
         });*/
 
-    const word_array = (selectn('response.entries', computeWords) || []).map(function(word, k) {
+    const word_array = (selectn('response.entries', computeWords) || []).map((word) => {
       return {
         puzzle: selectn('properties.dc:title', word),
         translation:
@@ -142,21 +147,45 @@ export default class Hangman extends Component {
       }
     })
 
-    const word_obj_array = selectn('response.entries', computeWords)
+    // const word_obj_array = selectn('response.entries', computeWords)
 
     if (word_array.length > 0) {
       //Since the alphabet isn't complete, we need fill in the rest
       const character_string = word_array.map((word) => word.puzzle).join('')
       const unique_characters = Array.from(new Set(character_string.split(/(?!$)/u))).filter((v) => v != ' ')
 
-      word_array[this.state.currentPuzzleIndex]['alphabet'] = unique_characters // (alphabet_array.length > 0) ? alphabet_array :
+      word_array[this.state.currentPuzzleIndex].alphabet = unique_characters // (alphabet_array.length > 0) ? alphabet_array :
       game = <HangManGame newPuzzle={this.newPuzzle} {...word_array[this.state.currentPuzzleIndex]} />
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="hangman-game">{game}</div>
       </PromiseWrapper>
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvWord } = state
+
+  const { computeCharacters } = fvCharacter
+  const { computeWords } = fvWord
+
+  return {
+    computeCharacters,
+    computeWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacters,
+  fetchWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Hangman)

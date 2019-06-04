@@ -13,26 +13,27 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import React, { /* Component, */ PropTypes } from 'react'
+// import { Immutable, Map } from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { fetchSharedAudios } from 'providers/redux/reducers/fvAudio'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchSharedVideos } from 'providers/redux/reducers/fvVideo'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
-import classNames from 'classnames'
 
-import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
+// import ProviderHelpers from 'common/ProviderHelpers'
+// import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-
-import MediaList from 'views/components/Browsing/media-list'
-import LinearProgress from 'material-ui/lib/linear-progress'
-
-import IconButton from 'material-ui/lib/icon-button'
-import ActionInfo from 'material-ui/lib/svg-icons/action/info'
-import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+import { Dialog /*, FlatButton, RaisedButton*/ } from 'material-ui'
+// import GridTile from 'material-ui/lib/grid-list/grid-tile'
+// import IconButton from 'material-ui/lib/icon-button'
+// import ActionInfo from 'material-ui/lib/svg-icons/action/info'
+// import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
 
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
@@ -41,14 +42,13 @@ import ContributorsListView from 'views/pages/explore/dialect/learn/base/contrib
 import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-view'
 import IntlService from 'views/services/intl'
 
-const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
 const intl = IntlService.instance
 const DefaultFetcherParams = {
   currentPageIndex: 1,
   pageSize: 10,
   filters: { 'properties.dc:title': { appliedFilter: '' }, dialect: { appliedFilter: '' } },
 }
-
+/*
 class SharedResourceGridTile extends Component {
   constructor(props, context) {
     super(props, context)
@@ -99,49 +99,35 @@ class SharedResourceGridTile extends Component {
     )
   }
 }
+*/
 
-@provide
-class BrowseComponent extends React.Component {
+const { func, object, string } = PropTypes
+
+export class BrowseComponent extends React.Component {
   static propTypes = {
-    onComplete: PropTypes.func.isRequired,
-    fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired,
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    fetchSharedAudios: PropTypes.func.isRequired,
-    computeSharedAudios: PropTypes.object.isRequired,
-    fetchSharedVideos: PropTypes.func.isRequired,
-    computeSharedVideos: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    dialect: PropTypes.object.isRequired,
-    label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    containerType: PropTypes.string,
+    containerType: string,
+    dialect: object.isRequired,
+    label: string.isRequired,
+    onComplete: func.isRequired,
+    type: string.isRequired,
+    // REDUX: reducers/state
+    computeSharedPictures: object.isRequired,
+    computeResources: object.isRequired,
+    computeSharedAudios: object.isRequired,
+    computeSharedVideos: object.isRequired,
+    computeLogin: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    fetchSharedAudios: func.isRequired,
+    fetchSharedPictures: func.isRequired,
+    fetchSharedVideos: func.isRequired,
   }
-
-  getDefaultValues() {
-    intl.trans('views.components.editor.upload_media', 'Upload Media', 'words')
-  }
-
-  _handleOpen() {
-    this.setState({ open: true })
-  }
-
-  _handleClose() {
-    this.setState({ open: false })
-  }
-
-  _handleSelectElement(value) {
-    this.props.onComplete(value)
+  static defaultProps = {
+    disabled: false,
   }
 
   constructor(props) {
     super(props)
-
-    // Bind methods to 'this'
-    ;['_handleOpen', '_handleClose', '_handleSelectElement', 'fetchData'].forEach(
-      (method) => (this[method] = this[method].bind(this))
-    )
 
     // If initial filter value provided
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
@@ -157,46 +143,15 @@ class BrowseComponent extends React.Component {
     }
   }
 
-  fetchData(fetcherParams) {
-    // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-    const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-    const group2 = new Map(fetcherParams.filters).filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
-
-    this.props.fetchResources(
-      '/FV/Workspaces/',
-      " AND ecm:primaryType LIKE '" +
-        this.props.type +
-        "'" +
-        " AND ecm:isCheckedInVersion = 0 AND ecm:isTrashed = 0 AND ecm:currentLifeCycleState != 'Disabled'" +
-        " AND (ecm:path STARTSWITH '" +
-        StringHelpers.clean(selectn('path', this.props.dialect)) +
-        "/Resources/'" +
-        ProviderHelpers.filtersToNXQL(group1) +
-        ')' +
-        ProviderHelpers.filtersToNXQL(group2) +
-        '&currentPageIndex=' +
-        (fetcherParams.currentPageIndex - 1) +
-        '&pageSize=' +
-        fetcherParams.pageSize +
-        '&sortBy=dc:created' +
-        '&sortOrder=DESC'
-    )
-
-    this.setState({
-      fetcherParams: fetcherParams,
-    })
-  }
-
-  componentDidMount() {
-    //this.fetchData(this.state.fetcherParams);
-  }
-
   render() {
     const dialect = this.props.dialect
     const dialectPath = selectn('path', dialect)
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onClick={this._handleClose} />,
+      // <FlatButton key="action1" label={intl.trans('cancel', 'Cancel', 'first')} secondary onTouchTap={this._handleClose} />,
+      <button key="action1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let title = ''
@@ -220,7 +175,7 @@ class BrowseComponent extends React.Component {
 
       case 'FVCategory':
         title = `${intl.trans('select', 'Select', 'first')} ${
-          this.props.containerType == 'FVWord'
+          this.props.containerType === 'FVWord'
             ? intl.trans('categories', 'Categories', 'first')
             : intl.trans('phrase_books', 'Phrase Books', 'words')
         }`
@@ -230,7 +185,7 @@ class BrowseComponent extends React.Component {
             useDatatable
             dialect={dialect}
             categoriesPath={
-              this.props.containerType == 'FVWord'
+              this.props.containerType === 'FVWord'
                 ? '/FV/Workspaces/SharedData/Shared Categories/'
                 : dialectPath + '/Phrase Books/'
             }
@@ -309,7 +264,10 @@ class BrowseComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onClick={this._handleOpen} />
+        {/* <RaisedButton label={this.props.label} onClick={this._handleOpen} /> */}
+        <button type="button" disabled={this.props.disabled} onClick={this._handleOpen}>
+          {this.props.label}
+        </button>
         <Dialog
           title={title}
           actions={actions}
@@ -327,5 +285,50 @@ class BrowseComponent extends React.Component {
       </div>
     )
   }
+
+  _handleOpen = () => {
+    this.setState({ open: true })
+  }
+
+  _handleClose = () => {
+    this.setState({ open: false })
+  }
+
+  _handleSelectElement = (value) => {
+    this.props.onComplete(value, () => {
+      this._handleClose()
+    })
+  }
 }
-export default BrowseComponent
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPicture, fvResources, fvAudio, fvVideo, nuxeo } = state
+
+  const { computeSharedPictures } = fvPicture
+  const { computeResources } = fvResources
+  const { computeSharedAudios } = fvAudio
+  const { computeSharedVideos } = fvVideo
+  const { computeLogin } = nuxeo
+
+  return {
+    computeSharedPictures,
+    computeResources,
+    computeSharedAudios,
+    computeSharedVideos,
+    computeLogin,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResources,
+  fetchSharedAudios,
+  fetchSharedPictures,
+  fetchSharedVideos,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(BrowseComponent)

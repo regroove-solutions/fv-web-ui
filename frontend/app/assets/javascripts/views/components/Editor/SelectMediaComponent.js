@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import { Map } from 'immutable'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { fetchSharedAudios } from 'providers/redux/reducers/fvAudio'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchSharedVideos } from 'providers/redux/reducers/fvVideo'
+
 import selectn from 'selectn'
 // import t from 'tcomb-form'
 import classNames from 'classnames'
@@ -24,17 +31,18 @@ import classNames from 'classnames'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
-import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import { Dialog, FlatButton, RaisedButton } from 'material-ui'
+// import IconButton from 'material-ui/lib/icon-button'
+// import ActionInfo from 'material-ui/lib/svg-icons/action/info'
+// import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
+import { Dialog } from 'material-ui'
 import GridTile from 'material-ui/lib/grid-list/grid-tile'
 
 import MediaList from 'views/components/Browsing/media-list'
 import withPagination from 'views/hoc/grid-list/with-pagination'
 import withFilter from 'views/hoc/grid-list/with-filter'
-import LinearProgress from 'material-ui/lib/linear-progress'
+// import LinearProgress from 'material-ui/lib/linear-progress'
 
-import IconButton from 'material-ui/lib/icon-button'
-import ActionInfo from 'material-ui/lib/svg-icons/action/info'
-import ActionInfoOutline from 'material-ui/lib/svg-icons/action/info-outline'
 import IntlService from 'views/services/intl'
 
 // const gridListStyle = { width: '100%', height: '100vh', overflowY: 'auto', marginBottom: 10 }
@@ -47,14 +55,16 @@ const DefaultFetcherParams = {
 
 const intl = IntlService.instance
 
+const { any, func, object, string } = PropTypes
+
 class SharedResourceGridTile extends Component {
   static defaultProps = {}
   static propTypes = {
-    tile: PropTypes.any, // TODO: set appropriate propType
-    dialect: PropTypes.any, // TODO: set appropriate propType
-    action: PropTypes.any, // TODO: set appropriate propType
-    fileTypeTilePosition: PropTypes.any, // TODO: set appropriate propType
-    preview: PropTypes.any, // TODO: set appropriate propType
+    tile: any, // TODO: set appropriate propType
+    dialect: any, // TODO: set appropriate propType
+    action: any, // TODO: set appropriate propType
+    fileTypeTilePosition: any, // TODO: set appropriate propType
+    preview: any, // TODO: set appropriate propType
   }
   constructor(props, context) {
     super(props, context)
@@ -69,7 +79,7 @@ class SharedResourceGridTile extends Component {
     const resourceParentDialect = selectn('contextParameters.ancestry.dialect', tile)
     let actionIcon = null
 
-    const isFVShared = selectn('path', tile) && selectn('path', tile).indexOf('SharedResources') != -1
+    const isFVShared = selectn('path', tile) && selectn('path', tile).indexOf('SharedResources') !== -1
     const isDialectShared = selectn('uid', resourceParentDialect) != selectn('uid', this.props.dialect)
 
     // If resource is from different dialect, show notification so user is aware
@@ -80,9 +90,9 @@ class SharedResourceGridTile extends Component {
         ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
-        <IconButton tooltip={tooltip} tooltipPosition="top-left">
-          {isDialectShared ? <ActionInfoOutline color="white" /> : <ActionInfo color="white" />}
-        </IconButton>
+        <div title={tooltip} className={classNames('action-info', { 'action-info--outline': isDialectShared })}>
+          i
+        </div>
       )
     }
 
@@ -106,22 +116,23 @@ class SharedResourceGridTile extends Component {
   }
 }
 
-@provide
 class SelectMediaComponent extends React.Component {
   static propTypes = {
-    onComplete: PropTypes.func.isRequired,
-    fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired,
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    fetchSharedAudios: PropTypes.func.isRequired,
-    computeSharedAudios: PropTypes.object.isRequired,
-    fetchSharedVideos: PropTypes.func.isRequired,
-    computeSharedVideos: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    dialect: PropTypes.object.isRequired,
-    label: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
+    dialect: object.isRequired,
+    label: string.isRequired,
+    onComplete: func.isRequired,
+    type: string.isRequired,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    computeResources: object.isRequired,
+    computeSharedAudios: object.isRequired,
+    computeSharedPictures: object.isRequired,
+    computeSharedVideos: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    fetchSharedAudios: func.isRequired,
+    fetchSharedPictures: func.isRequired,
+    fetchSharedVideos: func.isRequired,
   }
 
   constructor(props) {
@@ -153,12 +164,15 @@ class SelectMediaComponent extends React.Component {
 
   render() {
     const actions = [
-      <FlatButton
-        key="flatButton1"
-        label={intl.trans('cancel', 'Cancel', 'first')}
-        secondary
-        onClick={this._handleClose}
-      />,
+      // <FlatButton
+      //   key="flatButton1"
+      //   label={intl.trans('cancel', 'Cancel', 'first')}
+      //   secondary
+      //   onClick={this._handleClose}
+      // />,
+      <button key="flatButton1" onClick={this._handleClose} type="button">
+        {intl.trans('cancel', 'Cancel', 'first')}
+      </button>,
     ]
 
     let fileTypeLabel = intl.trans('file', 'file', 'lower')
@@ -201,7 +215,10 @@ class SelectMediaComponent extends React.Component {
 
     return (
       <div style={{ display: 'inline' }}>
-        <RaisedButton label={this.props.label} onClick={this._handleOpen} />
+        {/* <RaisedButton label={this.props.label} onClick={this._handleOpen} /> */}
+        <button onClick={this._handleOpen} type="button">
+          {this.props.label}
+        </button>
         <Dialog
           title={`${intl.searchAndReplace(
             `Select existing ${fileTypeLabel} from ${selectn(
@@ -217,10 +234,9 @@ class SelectMediaComponent extends React.Component {
         >
           <div className={classNames('alert', 'alert-info', { hidden: !selectn('isFetching', computeResources) })}>
             {intl.trans('loading_results_please_wait', 'Loading results, please wait.', 'first')}
-            <br />
-            <LinearProgress mode="indeterminate" />
+            {/* <br /> */}
+            {/* <LinearProgress mode="indeterminate" /> */}
           </div>
-
           <FilteredPaginatedMediaList
             action={this._handleSelectElement}
             cols={5}
@@ -249,9 +265,11 @@ class SelectMediaComponent extends React.Component {
   fetchData(fetcherParams, initialFormValue) {
     if (selectn('path', this.props.dialect)) {
       // If searching for shared images, need to split filter into 2 groups so NXQL is formatted correctly.
-      const group1 = new Map(fetcherParams.filters).filter((v, k) => k == 'shared_fv' || k == 'shared_dialects').toJS()
+      const group1 = new Map(fetcherParams.filters)
+        .filter((v, k) => k === 'shared_fv' || k === 'shared_dialects')
+        .toJS()
       const group2 = new Map(fetcherParams.filters)
-        .filterNot((v, k) => k == 'shared_fv' || k == 'shared_dialects')
+        .filterNot((v, k) => k === 'shared_fv' || k === 'shared_dialects')
         .toJS()
 
       this.props.fetchResources(
@@ -292,4 +310,34 @@ class SelectMediaComponent extends React.Component {
   }
 }
 
-export default SelectMediaComponent
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { nuxeo, fvResources, fvAudio, fvPicture, fvVideo } = state
+
+  const { computeLogin } = nuxeo
+  const { computeResources } = fvResources
+  const { computeSharedAudios } = fvAudio
+  const { computeSharedPictures } = fvPicture
+  const { computeSharedVideos } = fvVideo
+
+  return {
+    computeLogin,
+    computeResources,
+    computeSharedAudios,
+    computeSharedPictures,
+    computeSharedVideos,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResources,
+  fetchSharedAudios,
+  fetchSharedPictures,
+  fetchSharedVideos,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SelectMediaComponent)

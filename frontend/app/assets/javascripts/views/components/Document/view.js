@@ -14,74 +14,41 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
+import Immutable from 'immutable'
 
-import ConfGlobal from 'conf/local.js'
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+import { fetchDocument } from 'providers/redux/reducers/document'
+
+import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
-import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
-import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
-import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
-import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
-
-import ImageGallery from 'react-image-gallery'
-
-import { Link } from 'provide-page'
-
-//import Header from 'views/pages/explore/dialect/header';
-//import PageHeader from 'views/pages/explore/dialect/page-header';
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
-
-import Dialog from 'material-ui/lib/dialog'
-
-import Avatar from 'material-ui/lib/avatar'
-import Card from 'material-ui/lib/card/card'
-import CardActions from 'material-ui/lib/card/card-actions'
-import CardHeader from 'material-ui/lib/card/card-header'
-import CardMedia from 'material-ui/lib/card/card-media'
-import CardTitle from 'material-ui/lib/card/card-title'
-import FlatButton from 'material-ui/lib/flat-button'
-import CardText from 'material-ui/lib/card/card-text'
-import Divider from 'material-ui/lib/divider'
-
-import ListUI from 'material-ui/lib/lists/list'
-import ListItem from 'material-ui/lib/lists/list-item'
-
-import Toolbar from 'material-ui/lib/toolbar/toolbar'
-import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
-import ToolbarSeparator from 'material-ui/lib/toolbar/toolbar-separator'
-import FontIcon from 'material-ui/lib/font-icon'
-import RaisedButton from 'material-ui/lib/raised-button'
-
-import Tabs from 'material-ui/lib/tabs/tabs'
-import Tab from 'material-ui/lib/tabs/tab'
-
-import CircularProgress from 'material-ui/lib/circular-progress'
 
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
+
+const { array, func, object, string } = PropTypes
+
 /**
  * View word entry
  */
-@provide
-export default class View extends Component {
+export class View extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    fetchDocument: PropTypes.func.isRequired,
-    computeDocument: PropTypes.object.isRequired,
-    id: PropTypes.string.isRequired,
+    id: string.isRequired,
+    // REDUX: reducers/state
+    computeDocument: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
+    fetchDocument: func.isRequired,
   }
 
   constructor(props, context) {
@@ -104,7 +71,7 @@ export default class View extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(/*nextProps*/) {
     /*if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
           this.fetchData(nextProps);
         }
@@ -155,6 +122,7 @@ export default class View extends Component {
                   </a>
                 )
                 break
+              default: // NOTE: do nothing
             }
 
             return (
@@ -173,3 +141,30 @@ export default class View extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { document, navigation, windowPath } = state
+
+  const { properties } = navigation
+  const { computeDocument } = document
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDocument,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDocument,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(View)

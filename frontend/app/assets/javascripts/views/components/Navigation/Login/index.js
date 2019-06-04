@@ -14,40 +14,34 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
+import selectn from 'selectn'
+import { isMobile } from 'react-device-detect'
 
 import NavigationHelpers from 'common/NavigationHelpers'
-
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-
-// Components
-import Popover from 'material-ui/lib/popover/popover'
-import FlatButton from 'material-ui/lib/flat-button'
-import IconButton from 'material-ui/lib/icon-button'
-import RaisedButton from 'material-ui/lib/raised-button'
-import TextField from 'material-ui/lib/text-field'
-
-import ActionExitToAppIcon from 'material-ui/lib/svg-icons/action/exit-to-app'
-
-import CircularProgress from 'material-ui/lib/circular-progress'
-
-import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect'
 import IntlService from 'views/services/intl'
 
-@provide
-export default class Login extends Component {
+const { func, object, string } = PropTypes
+
+export class Login extends Component {
   intl = IntlService.instance
 
   static propTypes = {
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    properties: PropTypes.object.isRequired,
-    label: PropTypes.string.isRequired,
-    routeParams: PropTypes.object,
+    label: string.isRequired,
+    routeParams: object,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(/* prevProps */) {
     //if (prevProps.userStore.currentUser !== this.props.userStore.currentUser) {
     //  this._handleClose();
     //}
@@ -97,17 +91,8 @@ export default class Login extends Component {
   }
 
   render() {
-    const themePalette = this.props.properties.theme.palette.rawTheme.palette
-    const TextFieldStyle = {
-      border: '1px solid',
-      borderColor: '#a2291d',
-      width: '100%',
-      paddingLeft: '5px',
-      height: '34px',
-      lineHeight: '10px',
-      fontSize: '14px',
-    }
-
+    // TODO: `loginFeedbackMessage` is not being used
+    // eslint-disable-next-line
     let loginFeedbackMessage = ''
 
     if (this.props.computeLogin.isFetching) {
@@ -131,18 +116,19 @@ export default class Login extends Component {
           {selectn('response.properties.firstName', this.props.computeLogin)}
         </div>
       )
-    } else {
-      if (this.state.loginAttempted) {
-        loginFeedbackMessage = this.intl.translate({
-          key: 'pages.users.login.incorrect_username_password',
-          default: 'Username or password incorrect',
-          case: 'first',
-        })
-        if (this.props.computeLogin.isError) {
-          loginFeedbackMessage = this.props.computeLogin.error
-        }
+    }
+    if (this.state.loginAttempted) {
+      loginFeedbackMessage = this.intl.translate({
+        key: 'pages.users.login.incorrect_username_password',
+        default: 'Username or password incorrect',
+        case: 'first',
+      })
+      if (this.props.computeLogin.isError) {
+        loginFeedbackMessage = this.props.computeLogin.error
       }
     }
+
+    // console.log('NOTE: no-unused-vars', loginFeedbackMessage)
 
     return (
       <div style={{ display: 'inline-block', padding: '0 0 0 10px' }}>
@@ -153,3 +139,26 @@ export default class Login extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation, nuxeo } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+
+  return {
+    computeLogin,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Login)

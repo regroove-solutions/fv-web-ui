@@ -14,9 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createPhrase } from 'providers/redux/reducers/fvPhrase'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import t from 'tcomb-form'
 
@@ -26,8 +33,6 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 import IntlService from 'views/services/intl'
@@ -36,20 +41,23 @@ const intl = IntlService.instance
 /**
  * Create phrase entry
  */
-@provide
-export default class PageDialectPhrasesCreate extends Component {
+
+const { bool, array, func, object, string } = PropTypes
+export class PageDialectPhrasesCreate extends Component {
   static propTypes = {
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    createPhrase: PropTypes.func.isRequired,
-    computePhrase: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    embedded: PropTypes.bool,
-    onDocumentCreated: PropTypes.func,
+    embedded: bool,
+    onDocumentCreated: func,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computePhrase: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    createPhrase: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -80,9 +88,10 @@ export default class PageDialectPhrasesCreate extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    let currentPhrase, nextPhrase
+    let currentPhrase
+    let nextPhrase
 
-    if (this.state.phrasePath != null) {
+    if (this.state.phrasePath !== null) {
       currentPhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath)
       nextPhrase = ProviderHelpers.getEntry(nextProps.computePhrase, this.state.phrasePath)
     }
@@ -109,36 +118,34 @@ export default class PageDialectPhrasesCreate extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.windowPath != this.props.windowPath:
         return true
-        break
 
       case newProps.computeDialect2 != this.props.computeDialect2:
         return true
-        break
 
       case newProps.computePhrase != this.props.computePhrase:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _onRequestSaveForm(e) {
     // Prevent default behaviour
     e.preventDefault()
 
-    let formValue = this.refs['form_phrase_create'].getValue()
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_phrase_create.getValue()
 
     //let properties = '';
-    let properties = {}
+    const properties = {}
 
-    for (let key in formValue) {
+    for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] != '') {
+        if (formValue[key] && formValue[key] !== '') {
           //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
           properties[key] = formValue[key]
         }
@@ -151,7 +158,7 @@ export default class PageDialectPhrasesCreate extends Component {
 
     // Passed validation
     if (formValue) {
-      let now = Date.now()
+      const now = Date.now()
       this.props.createPhrase(
         this.props.routeParams.dialect_path + '/Dictionary',
         {
@@ -173,7 +180,7 @@ export default class PageDialectPhrasesCreate extends Component {
   }
 
   render() {
-    let FVPhraseOptions = Object.assign({}, selectn('FVPhrase', options))
+    const FVPhraseOptions = Object.assign({}, selectn('FVPhrase', options))
 
     const computeEntities = Immutable.fromJS([
       {
@@ -186,7 +193,7 @@ export default class PageDialectPhrasesCreate extends Component {
       },
     ])
 
-    const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath)
+    // const computePhrase = ProviderHelpers.getEntry(this.props.computePhrase, this.state.phrasePath)
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
     // Set default value on form
@@ -194,14 +201,14 @@ export default class PageDialectPhrasesCreate extends Component {
       selectn('fields.fv:definitions.item.fields.language.attrs', FVPhraseOptions) &&
       selectn('response.properties.fvdialect:dominant_language', computeDialect2)
     ) {
-      FVPhraseOptions['fields']['fv:definitions']['item']['fields']['language']['attrs']['defaultValue'] = selectn(
+      FVPhraseOptions.fields['fv:definitions'].item.fields.language.attrs.defaultValue = selectn(
         'response.properties.fvdialect:dominant_language',
         computeDialect2
       )
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <h1>
           {intl.trans('', 'Add New Phrase to ' + selectn('response.title', computeDialect2), null, [
             selectn('response.title', computeDialect2),
@@ -212,7 +219,7 @@ export default class PageDialectPhrasesCreate extends Component {
           <div className={classNames('col-xs-8', 'col-md-10')}>
             <form onSubmit={this._onRequestSaveForm}>
               <t.form.Form
-                ref="form_phrase_create"
+                ref="form_phrase_create" // TODO: DEPRECATED
                 type={t.struct(selectn('FVPhrase', fields))}
                 context={selectn('response', computeDialect2)}
                 value={this.state.formValue}
@@ -230,3 +237,32 @@ export default class PageDialectPhrasesCreate extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvPhrase, windowPath } = state
+
+  const { computePhrase } = fvPhrase
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computePhrase,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createPhrase,
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectPhrasesCreate)

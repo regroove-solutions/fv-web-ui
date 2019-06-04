@@ -13,9 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -30,8 +37,37 @@ const intl = IntlService.instance
 /**
  * List view for categories
  */
-@provide
+
+const { bool, array, func, number, object, string } = PropTypes
 class ListView extends DataListView {
+  static propTypes = {
+    action: func,
+    categoriesPath: string.isRequired,
+    data: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    DISABLED_SORT_COLS: array,
+    filter: object,
+    gridCols: number,
+    gridListView: bool,
+    routeParams: object.isRequired,
+    useDatatable: bool,
+
+    // REDUX: reducers/state
+    computeCategories: object.isRequired,
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCategories: func.isRequired,
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+  }
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'parent'],
     DEFAULT_PAGE: 1,
@@ -46,33 +82,6 @@ class ListView extends DataListView {
     useDatatable: false,
   }
 
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    fetchCategories: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    computeCategories: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    categoriesPath: PropTypes.string.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    gridCols: PropTypes.number,
-    action: PropTypes.func,
-
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
-    useDatatable: PropTypes.bool,
-  }
-
   constructor(props, context) {
     super(props, context)
 
@@ -81,12 +90,12 @@ class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('category', 'Category', 'first'),
-          render: (v, data, cellProps) => v,
+          render: (v /*, data, cellProps*/) => v,
         },
         {
           name: 'parent',
           title: intl.trans('views.pages.explore.dialect.learn.words.parent_category', 'Parent Category', 'words'),
-          render: (v, data, cellProps) => {
+          render: (v, data /*, cellProps*/) => {
             const parentCategory = selectn('contextParameters.parentDoc.title', data)
             return parentCategory === 'Shared Categories' ? '' : parentCategory
           },
@@ -210,4 +219,35 @@ class ListView extends DataListView {
     )
   }
 }
-export default ListView
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCategory, fvDialect, navigation, nuxeo, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeCategories } = fvCategory
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeCategories,
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCategories,
+  fetchDialect2,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ListView)

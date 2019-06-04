@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-import t from 'tcomb-form'
+import Immutable from 'immutable'
 
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchLink, updateLink } from 'providers/redux/reducers/fvLink'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
+import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -28,10 +32,6 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
@@ -41,23 +41,25 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class Edit extends Component {
+const { array, func, object, string } = PropTypes
+export class Edit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    fetchLink: PropTypes.func.isRequired,
-    computeLink: PropTypes.object.isRequired,
-    updateLink: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    routeParams: PropTypes.object.isRequired,
-    link: PropTypes.object,
-    value: PropTypes.string,
-    onDocumentCreated: PropTypes.func,
-    cancelMethod: PropTypes.func,
+    dialect: object,
+    routeParams: object.isRequired,
+    link: object,
+    value: string,
+    onDocumentCreated: func,
+    cancelMethod: func,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLink: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    fetchLink: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateLink: func.isRequired,
   }
 
   constructor(props, context) {
@@ -88,9 +90,10 @@ export default class Edit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentLink, nextLink
+    let currentLink
+    let nextLink
 
-    if (this.state.linkPath != null) {
+    if (this.state.linkPath !== null) {
       currentLink = ProviderHelpers.getEntry(this.props.computeLink, this.state.linkPath)
       nextLink = ProviderHelpers.getEntry(nextProps.computeLink, this.state.linkPath)
     }
@@ -106,36 +109,32 @@ export default class Edit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
-    let previousLink = this.props.computeLink
-    let nextLink = newProps.computeLink
+  shouldComponentUpdate(newProps /*, newState*/) {
+    const previousLink = this.props.computeLink
+    const nextLink = newProps.computeLink
 
-    let previousDialect = this.props.computeDialect2
-    let nextDialect = newProps.computeDialect2
+    const previousDialect = this.props.computeDialect2
+    const nextDialect = newProps.computeDialect2
 
     switch (true) {
       case newProps.routeParams.link != this.props.routeParams.link:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case typeof nextLink.equals === 'function' && nextLink.equals(previousLink) === false:
         return true
-        break
 
       case typeof nextDialect.equals === 'function' && nextDialect.equals(previousDialect) === false:
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _handleSave(link, formValue) {
-    let newDocument = new Document(link.response, {
+    const newDocument = new Document(link.response, {
       repository: link.response._repository,
       nuxeo: link.response._nuxeo,
     })
@@ -180,7 +179,7 @@ export default class Edit extends Component {
 
     // Additional context (in order to store origin), and initial filter value
     if (selectn('response', computeDialect2) && selectn('response', computeLink)) {
-      let providedFilter =
+      const providedFilter =
         selectn('response.properties.fv-link:definitions[0].translation', computeLink) ||
         selectn('response.properties.fv:literal_translation[0].translation', computeLink)
       context = Object.assign(selectn('response', computeDialect2), {
@@ -219,3 +218,32 @@ export default class Edit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvLink, windowPath } = state
+
+  const { computeLink } = fvLink
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLink,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  fetchLink,
+  pushWindowPath,
+  replaceWindowPath,
+  updateLink,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Edit)

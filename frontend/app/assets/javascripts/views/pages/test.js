@@ -14,54 +14,42 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 
-import provide from 'react-redux-provide'
-import selectn from 'selectn'
-//import QueryString from 'query-string';
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchPortal } from 'providers/redux/reducers/fvPortal'
+import { fetchSharedPictures } from 'providers/redux/reducers/fvPicture'
+import { fetchWord } from 'providers/redux/reducers/fvWord'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
-// Operations
-import DirectoryOperations from 'operations/DirectoryOperations'
-
-import GridList from 'material-ui/lib/grid-list/grid-list'
-import GridTile from 'material-ui/lib/grid-list/grid-tile'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
-import ProviderHelpers from 'common/ProviderHelpers'
-
-import { RaisedButton } from 'material-ui'
-
-import MediaList from 'views/components/Browsing/media-list'
-import withPagination from 'views/hoc/grid-list/with-pagination'
-import withFilter from 'views/hoc/grid-list/with-filter'
-
-//import elasticsearch from 'elasticsearch';
-
 const DefaultFetcherParams = { filters: { 'properties.dc:title': '', dialect: '78086057-9c34-48f7-995f-9dc3b313231b' } }
-
-const FilteredPaginatedMediaList = withFilter(withPagination(MediaList, 10), 'SharedPictures', DefaultFetcherParams)
 
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class Test extends Component {
+
+const { func, object } = PropTypes
+export class Test extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchPortal: PropTypes.func.isRequired,
-    computePortal: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    fetchSharedPictures: PropTypes.func.isRequired,
-    computeSharedPictures: PropTypes.object.isRequired,
-    fetchWord: PropTypes.func.isRequired,
-    computeWord: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computePortal: object.isRequired,
+    computeSharedPictures: object.isRequired,
+    computeWord: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchPortal: func.isRequired,
+    fetchSharedPictures: func.isRequired,
+    fetchWord: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-      muiTheme: React.PropTypes.object.isRequired
+      muiTheme: React.object.isRequired
   };*/
 
   constructor(props, context) {
@@ -111,7 +99,7 @@ export default class Test extends Component {
             "filtered": {
               "filter": {
                   "bool": {
-                      "must": 
+                      "must":
                           [
                               {
                                 "term": {
@@ -163,7 +151,7 @@ export default class Test extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(/*nextProps*/) {
     //if (nextProps.windowPath !== this.props.windowPath || nextProps.routeParams.area != this.props.routeParams.area) {
     //  this.fetchData(nextProps);
     //}
@@ -193,7 +181,7 @@ export default class Test extends Component {
 
     /*let portalOperation = ProviderHelpers.getEntry(computePortal, '/FV/sections/Data/TestFamily/TestLanguage/PopoDialect');
     console.log(portalOperation);
-    
+
 
     if (!portalOperation || portalOperation.isFetching) {
       return <div><CircularProgress mode="indeterminate" size={5} /> {selectn('message', portalOperation)}</div>;
@@ -216,3 +204,33 @@ export default class Test extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPicture, fvPortal, fvWord, navigation } = state
+
+  const { properties } = navigation
+  const { computePortal } = fvPortal
+  const { computeSharedPictures } = fvPicture
+  const { computeWord } = fvWord
+
+  return {
+    computePortal,
+    computeSharedPictures,
+    computeWord,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchPortal,
+  fetchSharedPictures,
+  fetchWord,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Test)

@@ -15,7 +15,11 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import ReportsJson from './reports.json'
 import GeneralList from 'views/components/Browsing/general-list'
 import { CardView } from './list-view'
@@ -26,17 +30,20 @@ const FilteredCardList = withFilter(GeneralList)
 /**
  * Learn songs
  */
-@provide
-export default class ReportBrowser extends Component {
+
+const { array, bool, func, object, string } = PropTypes
+export class ReportBrowser extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    fullWidth: PropTypes.bool,
+    fullWidth: bool,
+    routeParams: object.isRequired,
+    style: object,
+    // REDUX: reducers/state
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -80,3 +87,28 @@ export default class ReportBrowser extends Component {
     return listView
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { navigation, nuxeo, windowPath } = state
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ReportBrowser)

@@ -18,7 +18,14 @@ import React, { PropTypes } from 'react'
 import Immutable, { Map } from 'immutable'
 
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+import { searchDocuments } from 'providers/redux/reducers/search'
+
 import selectn from 'selectn'
 
 import t from 'tcomb-form'
@@ -47,7 +54,34 @@ import NavigationHelpers from 'common/NavigationHelpers'
 const FiltersWithToggle = withToggle()
 const intl = IntlService.instance
 
+const { array, bool, func, number, object, string } = PropTypes
 export class Search extends DataListView {
+  static propTypes = {
+    action: func,
+    data: string,
+    DEFAULT_PAGE: number,
+    DEFAULT_PAGE_SIZE: number,
+    DEFAULT_SORT_COL: string,
+    DEFAULT_SORT_TYPE: string,
+    dialect: object,
+    DISABLED_SORT_COLS: array,
+    filter: object,
+    gridListView: bool,
+    routeParams: object.isRequired,
+
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    computeSearchDocuments: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchDialect2: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    searchDocuments: func.isRequired,
+  }
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'fv-word:categories', 'related_audio', 'related_pictures'],
     DEFAULT_PAGE: 1,
@@ -58,31 +92,6 @@ export class Search extends DataListView {
     dialect: null,
     filter: new Map(),
     gridListView: false,
-  }
-
-  static propTypes = {
-    properties: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    dialect: PropTypes.object,
-    searchDocuments: PropTypes.func.isRequired,
-    computeSearchDocuments: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    filter: PropTypes.object,
-    data: PropTypes.string,
-    gridListView: PropTypes.bool,
-    action: PropTypes.func,
-
-    DISABLED_SORT_COLS: PropTypes.array,
-    DEFAULT_PAGE: PropTypes.number,
-    DEFAULT_PAGE_SIZE: PropTypes.number,
-    DEFAULT_SORT_COL: PropTypes.string,
-    DEFAULT_SORT_TYPE: PropTypes.string,
   }
 
   constructor(props, context) {
@@ -274,14 +283,13 @@ export class Search extends DataListView {
                 >
                   <div className="fontAboriginalSans">
                     <t.form.Form
-                      ref="search_form"
+                      ref="search_form" // TODO: DEPRECATED
                       value={Object.assign({}, this.state.formValue, { searchTerm: this.props.routeParams.searchTerm })}
                       type={t.struct(selectn('Search', fields))}
                       options={selectn('Search', options)}
                     />
                   </div>
-                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary />{' '}
-                  &nbsp;
+                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary /> &nbsp;
                   <RaisedButton type="submit" label={intl.trans('search', 'Search', 'first')} primary />
                 </FiltersWithToggle>
               </form>
@@ -301,7 +309,7 @@ export class Search extends DataListView {
                 const entries = selectn('response.entries', computeSearchDocuments)
 
                 if (entries) {
-                  if (entries.length == 0) {
+                  if (entries.length === 0) {
                     return <div>Sorry, no results were found for this search.</div>
                   }
                   return (
@@ -333,4 +341,35 @@ export class Search extends DataListView {
   }
 }
 
-export default provide(Search)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, navigation, nuxeo, search, windowPath } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { computeSearchDocuments } = search
+  const { splitWindowPath, _windowPath } = windowPath
+
+  return {
+    computeDialect2,
+    computeLogin,
+    computeSearchDocuments,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchDialect2,
+  pushWindowPath,
+  replaceWindowPath,
+  searchDocuments,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Search)

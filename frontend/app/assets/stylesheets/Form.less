@@ -1,0 +1,45 @@
+
+.Form__group {
+    margin: 10px;
+    padding: 10px;
+    border: none;
+    background-color: rgba(0,0,0,0.025);
+}
+.Form__errorMessage {
+    font-weight: 400;
+    color: #212121;
+    background-color: #f9dede;
+    border-color: #f9dede;
+    border-left: 5px solid #e31c3d;
+    padding: 10px;
+}
+.Form__errorFeedback {
+    color: #212121;
+    background-color: #f9dede;
+    border-color: #f9dede;
+    border-left: 10px solid #e31c3d;
+    padding: 20px;
+    margin: 10px;
+}
+.Form__errorFeedbackItems {
+    margin: 0;
+}
+.Form__errorFeedbackItemLabel {
+    text-decoration: underline;
+    cursor: pointer;
+}
+.Form__sidebar {
+    display: flex
+}
+.Form__main {
+    flex-grow: 1;
+    flex-shrink: 0;
+}
+.Form__aside {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+    .FormRemoveButton + .FormMoveButtons {
+        padding-top: 10px
+    }
+}

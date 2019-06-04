@@ -14,11 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-import classNames from 'classnames'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { fetchResource, updateResource } from 'providers/redux/reducers/fvResources'
+import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
-import t from 'tcomb-form'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -29,34 +35,31 @@ import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import { Document } from 'nuxeo'
 
 // Views
-import RaisedButton from 'material-ui/lib/raised-button'
-import Paper from 'material-ui/lib/paper'
-import CircularProgress from 'material-ui/lib/circular-progress'
-
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
 import withForm from 'views/hoc/view/with-form'
-import IntlService from 'views/services/intl'
 
-const intl = IntlService.instance
 const EditViewWithForm = withForm(PromiseWrapper, true)
 
-@provide
-export default class PageDialectMediaEdit extends Component {
+const { array, func, object } = PropTypes
+export class PageDialectMediaEdit extends Component {
   static propTypes = {
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    replaceWindowPath: PropTypes.func.isRequired,
-    changeTitleParams: PropTypes.func.isRequired,
-    overrideBreadcrumbs: PropTypes.func.isRequired,
-    fetchResource: PropTypes.func.isRequired,
-    computeResource: PropTypes.object.isRequired,
-    updateResource: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
-    resource: PropTypes.object,
+    resource: object,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeResource: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTitleParams: func.isRequired,
+    fetchDialect2: func.isRequired,
+    fetchResource: func.isRequired,
+    overrideBreadcrumbs: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    updateResource: func.isRequired,
   }
 
   constructor(props, context) {
@@ -82,9 +85,10 @@ export default class PageDialectMediaEdit extends Component {
 
   // Refetch data on URL change
   componentWillReceiveProps(nextProps) {
-    let currentResource, nextResource
+    let currentResource
+    let nextResource
 
-    if (this._getResourcePath() != null) {
+    if (this._getResourcePath() !== null) {
       currentResource = ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath())
       nextResource = ProviderHelpers.getEntry(nextProps.computeResource, this._getResourcePath())
     }
@@ -102,32 +106,28 @@ export default class PageDialectMediaEdit extends Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps /*, newState*/) {
     switch (true) {
       case newProps.routeParams.media != this.props.routeParams.media:
         return true
-        break
 
       case newProps.routeParams.dialect_path != this.props.routeParams.dialect_path:
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computeResource, this._getResourcePath()) !=
         ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath()):
         return true
-        break
 
       case ProviderHelpers.getEntry(newProps.computeDialect2, this.props.routeParams.dialect_path) !=
         ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path):
         return true
-        break
+      default:
+        return false
     }
-
-    return false
   }
 
   _handleSave(phrase, formValue) {
-    let newDocument = new Document(phrase.response, {
+    const newDocument = new Document(phrase.response, {
       repository: phrase.response._repository,
       nuxeo: phrase.response._nuxeo,
     })
@@ -146,21 +146,18 @@ export default class PageDialectMediaEdit extends Component {
   }
 
   _getResourcePath(props = null) {
-    if (props == null) {
-      props = this.props
-    }
+    const _props = props === null ? this.props : props
 
-    if (StringHelpers.isUUID(props.routeParams.media)) {
-      return props.routeParams.media
-    } else {
-      return props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(props.routeParams.media)
+    if (StringHelpers.isUUID(_props.routeParams.media)) {
+      return _props.routeParams.media
     }
+    return _props.routeParams.dialect_path + '/Resources/' + StringHelpers.clean(_props.routeParams.media)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    let media = selectn('response', ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath()))
-    let title = selectn('properties.dc:title', media)
-    let uid = selectn('uid', media)
+  componentDidUpdate(/*prevProps, prevState*/) {
+    const media = selectn('response', ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath()))
+    const title = selectn('properties.dc:title', media)
+    const uid = selectn('uid', media)
 
     if (title && selectn('pageTitleParams.media', this.props.properties) != title) {
       this.props.changeTitleParams({ media: title })
@@ -185,7 +182,7 @@ export default class PageDialectMediaEdit extends Component {
     const computeResource = ProviderHelpers.getEntry(this.props.computeResource, this._getResourcePath())
     const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
-    let type = selectn('response.type', computeResource)
+    const type = selectn('response.type', computeResource)
 
     // Additional context (in order to store file content for display)
     if (selectn('response', computeDialect2) && selectn('response', computeResource)) {
@@ -203,7 +200,7 @@ export default class PageDialectMediaEdit extends Component {
         {(() => {
           if (type) {
             // Remove file upload for editing...
-            let modifiedFields = Immutable.fromJS(fields)
+            const modifiedFields = Immutable.fromJS(fields)
               .deleteIn([type, 'file'])
               .toJS()
 
@@ -228,3 +225,35 @@ export default class PageDialectMediaEdit extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, fvResources, navigation, windowPath } = state
+
+  const { computeResource } = fvResources
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+  const { properties } = navigation
+  return {
+    computeDialect2,
+    computeResource,
+    properties,
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTitleParams,
+  fetchDialect2,
+  fetchResource,
+  overrideBreadcrumbs,
+  pushWindowPath,
+  replaceWindowPath,
+  updateResource,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PageDialectMediaEdit)

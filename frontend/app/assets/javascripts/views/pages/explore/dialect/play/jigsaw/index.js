@@ -14,15 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import Immutable, { List, Map } from 'immutable'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchResources } from 'providers/redux/reducers/fvResources'
+import { fetchWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import Game from './wrapper'
@@ -32,14 +36,18 @@ const intl = IntlService.instance
 /**
  * Play games
  */
-@provide
-export default class Jigsaw extends Component {
+
+const { func, object } = PropTypes
+
+export class Jigsaw extends Component {
   static propTypes = {
-    fetchResources: PropTypes.func.isRequired,
-    computeResources: PropTypes.object.isRequired,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeResources: object.isRequired,
+    computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchResources: func.isRequired,
+    fetchWords: func.isRequired,
   }
 
   /**
@@ -61,14 +69,14 @@ export default class Jigsaw extends Component {
   _changeContent(pageIndex, pageCount) {
     let nextPage = pageIndex + 1
 
-    if (pageIndex == pageCount - 1) {
+    if (pageIndex === pageCount - 1) {
       nextPage = 0
     }
 
     this.fetchData(this.props, nextPage)
   }
 
-  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  fetchData(props, pageIndex /*, pageSize, sortOrder, sortBy*/) {
     props.fetchWords(
       props.routeParams.dialect_path + '/Dictionary',
       ' AND fv:available_in_childrens_archive = 1' +
@@ -99,12 +107,12 @@ export default class Jigsaw extends Component {
       },
     ])
 
-    const computeWords = ProviderHelpers.getEntry(
+    const _computeWords = ProviderHelpers.getEntry(
       this.props.computeWords,
       this.props.routeParams.dialect_path + '/Dictionary'
     )
 
-    let words = (selectn('response.entries', computeWords) || []).map(function(word, k) {
+    let words = (selectn('response.entries', _computeWords) || []).map((word) => {
       return {
         word: selectn('properties.dc:title', word),
         translation:
@@ -121,9 +129,9 @@ export default class Jigsaw extends Component {
       }
     })
 
-    if (selectn('success', computeWords)) {
+    if (selectn('success', _computeWords)) {
       // If no words found, use placeholders.
-      if (words.length == 0) {
+      if (words.length === 0) {
         words = [
           {
             word: 'Bear',
@@ -156,15 +164,15 @@ export default class Jigsaw extends Component {
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12" style={{ textAlign: 'center' }}>
             <a
               href="#"
               onClick={this._changeContent.bind(
                 this,
-                selectn('response.currentPageIndex', computeWords),
-                selectn('response.pageCount', computeWords)
+                selectn('response.currentPageIndex', _computeWords),
+                selectn('response.pageCount', _computeWords)
               )}
             >
               Load More Words!
@@ -172,7 +180,7 @@ export default class Jigsaw extends Component {
             {game}
             <small>
               {intl.trans('views.pages.explore.dialect.play.archive_contains', 'Archive contains', 'first')}
-              &nbsp; {selectn('response.resultsCount', computeWords)} &nbsp;
+              &nbsp; {selectn('response.resultsCount', _computeWords)} &nbsp;
               {intl.trans(
                 'views.pages.explore.dialect.play.words_that_met_game_requirements',
                 'words that met game requirements.'
@@ -184,3 +192,27 @@ export default class Jigsaw extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvResources, fvWord } = state
+
+  const { computeResources } = fvResources
+  const { computeWords } = fvWord
+
+  return {
+    computeResources,
+    computeWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchResources,
+  fetchWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Jigsaw)

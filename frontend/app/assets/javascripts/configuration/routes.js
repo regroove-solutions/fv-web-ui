@@ -260,6 +260,36 @@ const routes = [
     title: intl.translate({ key: 'home', default: 'Home', case: 'first' }),
     breadcrumbs: false,
     frontpage: true,
+    // redirects: [
+    //   {
+    //     // For any start page value other than a dialect, simple redirect to that start page
+    //     condition: (params) => {
+    //       return (
+    //         selectn('preferences.start_page', params.props) !== undefined &&
+    //         selectn('preferences.start_page', params.props) !== 'my_dialect' &&
+    //         selectn('preferences.start_page', params.props) !== 'my_kids_dialect'
+    //       )
+    //     },
+    //     target: (params) => {
+    //       return UIHelpers.getPreferenceVal('start_page', params.props.preferences)
+    //     },
+    //   },
+    //   {
+    //     // Redirecting to a dialect (requires dialect_path to be provided)
+    //     condition: (params) => {
+    //       return selectn('preferences.primary_dialect_path', params.props) !== undefined
+    //     },
+    //     target: (params) => {
+    //       const startPage = selectn('preferences.start_page', params.props)
+    //       // const primary_dialect_path = selectn('preferences.primary_dialect_path', params.props)
+    //       return (
+    //         '/' +
+    //         (startPage === 'my_kids_dialect' ? 'kids' : 'explore') +
+    //         selectn('preferences.primary_dialect_path', params.props)
+    //       )
+    //     },
+    //   },
+    // ],
   },
   {
     id: 'dynamic_content_page',
@@ -1176,6 +1206,84 @@ const routes = [
       }) +
       ' | {$dialect_name}',
     page: <Pages.PageDialectWordsCreate />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'learn',
+      'words',
+      'create2',
+    ],
+    title:
+      intl.translate({
+        key: 'create',
+        default: 'Create',
+        case: 'words',
+      }) +
+      ', ' +
+      intl.translate({
+        key: 'words',
+        default: 'Words',
+        case: 'words',
+      }) +
+      ', {$dialect_name}',
+    page: <Pages.CreateV2 />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'audio',
+    ],
+    title: 'Create Audio, {$dialect_name}',
+    page: <Pages.CreateAudio />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'recorder',
+    ],
+    title: 'Create Recorder, {$dialect_name}',
+    page: <Pages.CreateRecorder />,
+    extractPaths: true,
+  },
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'edit',
+      'recorder',
+      new paramMatch('contributorId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Edit Recorder, {$dialect_name}',
+    page: <Pages.EditRecorder />,
     extractPaths: true,
   },
   {

@@ -1,11 +1,19 @@
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
 import classNames from 'classnames'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchSharedAudios } from 'providers/redux/reducers/fvAudio'
+import { fetchSharedCategories } from 'providers/redux/reducers/fvCategory'
+import { fetchSharedContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchSharedLinks } from 'providers/redux/reducers/fvLink'
+import { fetchSharedPhrases } from 'providers/redux/reducers/fvPhrase'
+import { fetchSharedWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 import Autosuggest from 'react-autosuggest'
 
-import RefreshIndicator from 'material-ui/lib/refresh-indicator'
 import LinearProgress from 'material-ui/lib/linear-progress'
 import IntlService from 'views/services/intl'
 
@@ -21,32 +29,34 @@ const theme = {
 let suggestionThrottle
 
 const intl = IntlService.instance
+const { func, object, string } = PropTypes
 
-@provide
-export default class AutoSuggestComponent extends Component {
+export class AutoSuggestComponent extends Component {
   static propTypes = {
-    fetchSharedAudios: PropTypes.func.isRequired,
-    computeSharedAudios: PropTypes.object.isRequired,
-    fetchSharedWords: PropTypes.func.isRequired,
-    computeSharedWords: PropTypes.object.isRequired,
-    fetchSharedPhrases: PropTypes.func.isRequired,
-    computeSharedPhrases: PropTypes.object.isRequired,
-    fetchSharedCategories: PropTypes.func.isRequired,
-    computeSharedCategories: PropTypes.object.isRequired,
-    fetchSharedContributors: PropTypes.func.isRequired,
-    computeSharedContributors: PropTypes.object.isRequired,
-    fetchSharedLinks: PropTypes.func.isRequired,
-    computeSharedLinks: PropTypes.object.isRequired,
-    dialect: PropTypes.object.isRequired,
-    onChange: PropTypes.func.isRequired,
-    value: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired,
-    provider: PropTypes.object,
-    locals: PropTypes.object,
+    dialect: object.isRequired,
+    locals: object,
+    onChange: func.isRequired,
+    provider: object,
+    type: string.isRequired,
+    value: string.isRequired,
+    // REDUX: reducers/state
+    computeSharedAudios: object.isRequired,
+    computeSharedCategories: object.isRequired,
+    computeSharedContributors: object.isRequired,
+    computeSharedLinks: object.isRequired,
+    computeSharedPhrases: object.isRequired,
+    computeSharedWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchSharedAudios: func.isRequired,
+    fetchSharedCategories: func.isRequired,
+    fetchSharedContributors: func.isRequired,
+    fetchSharedLinks: func.isRequired,
+    fetchSharedPhrases: func.isRequired,
+    fetchSharedWords: func.isRequired,
   }
 
   static contextTypes = {
-    muiTheme: React.PropTypes.object,
+    muiTheme: React.object,
   }
 
   shouldRenderSuggestions(value) {
@@ -63,28 +73,36 @@ export default class AutoSuggestComponent extends Component {
     switch (this.props.type) {
       case 'FVWord':
         return (
-          <a href="javascript:void(0);">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+            }}
+          >
             {suggestion.title}{' '}
             {suggestion.properties['fv-word:part_of_speech']
               ? '(' + suggestion.properties['fv-word:part_of_speech'] + ')'
               : ''}
           </a>
         )
-        break
 
       case 'FVContributor':
         return (
-          <a href="javascript:void(0);">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+            }}
+          >
             {suggestion.title}{' '}
             {suggestion.properties['dc:description'] ? '(' + suggestion.properties['dc:description'] + ')' : ''}
           </a>
         )
-        break
 
-      case 'FVCategory':
-        let breadcrumb = []
+      case 'FVCategory': {
+        const breadcrumb = []
 
-        selectn('contextParameters.breadcrumb.entries', suggestion).map(function(entry, i) {
+        selectn('contextParameters.breadcrumb.entries', suggestion).map((entry, i) => {
           if (entry.type === 'FVCategory') {
             let shared = ''
 
@@ -99,12 +117,28 @@ export default class AutoSuggestComponent extends Component {
           }
         })
 
-        return <a href="javascript:void(0);">{breadcrumb}</a>
-        break
-
+        return (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+            }}
+          >
+            {breadcrumb}
+          </a>
+        )
+      }
       default:
-        return <a href="javascript:void(0);">{suggestion.title}</a>
-        break
+        return (
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault()
+            }}
+          >
+            {suggestion.title}
+          </a>
+        )
     }
   }
 
@@ -141,7 +175,7 @@ export default class AutoSuggestComponent extends Component {
     }
 
     suggestionThrottle = setTimeout(
-      function() {
+      function suggestionThrottleTimeout() {
         switch (this.props.type) {
           case 'FVAudio':
             this.props.fetchSharedAudios(
@@ -150,7 +184,7 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.uid]
+                queryParams: [value, this.props.dialect.uid],
               }
             )
             break
@@ -161,7 +195,7 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.uid]
+                queryParams: [value, this.props.dialect.uid],
               }
             )
             break
@@ -172,7 +206,7 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.uid]
+                queryParams: [value, this.props.dialect.uid],
               }
             )
             break
@@ -183,7 +217,7 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.path + '/' + this.props.provider.folder]
+                queryParams: [value, this.props.dialect.path + '/' + this.props.provider.folder],
               }
             )
             break
@@ -194,7 +228,7 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.uid]
+                queryParams: [value, this.props.dialect.uid],
               }
             )
             break
@@ -205,17 +239,18 @@ export default class AutoSuggestComponent extends Component {
               {
                 currentPageIndex: 0,
                 pageSize: 15,
-                queryParams: [value, this.props.dialect.uid]
+                queryParams: [value, this.props.dialect.uid],
               }
             )
             break
+          default: // NOTE: do nothing
         }
       }.bind(this),
       750
     )
   }
 
-  onChange(event, { newValue, method }) {
+  onChange(event, { newValue /*, method */ }) {
     this.setState({
       value: newValue,
     })
@@ -235,32 +270,27 @@ export default class AutoSuggestComponent extends Component {
     switch (this.props.type) {
       case 'FVAudio':
         return this.props.computeSharedAudios
-        break
 
       case 'FVWord':
         return this.props.computeSharedWords
-        break
 
       case 'FVPhrase':
         return this.props.computeSharedPhrases
-        break
 
       case 'FVCategory':
         return this.props.computeSharedCategories
-        break
 
       case 'FVContributor':
         return this.props.computeSharedContributors
-        break
 
       case 'FVLink':
         return this.props.computeSharedLinks
-        break
+      default: // NOTE: do nothing
     }
   }
 
   render() {
-    const { value, isLoading } = this.state
+    const { value /*, isLoading */ } = this.state
     const inputProps = {
       placeholder: intl.trans(
         'views.components.editor.start_typing_for_suggestions',
@@ -271,15 +301,15 @@ export default class AutoSuggestComponent extends Component {
       onChange: this.onChange,
     }
 
-    const status = this.getComputeType().isFetching
-      ? intl.trans('loading', 'Loading', 'first')
-      : intl.trans('ready', 'Ready', 'first')
+    // const status = this.getComputeType().isFetching
+    //   ? intl.trans('loading', 'Loading', 'first')
+    //   : intl.trans('ready', 'Ready', 'first')
 
     return (
       <div className="row">
         <div className="col-xs-12">
           <Autosuggest
-            ref="suggestion_widget"
+            ref="suggestion_widget" // TODO: deprecated
             theme={theme}
             suggestions={this.getComputeType().response.entries || []}
             shouldRenderSuggestions={this.shouldRenderSuggestions}
@@ -298,3 +328,39 @@ export default class AutoSuggestComponent extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvAudio, fvCategory, fvContributor, fvLink, fvPhrase, fvWord } = state
+
+  const { computeSharedAudios } = fvAudio
+  const { computeSharedCategories } = fvCategory
+  const { computeSharedContributors } = fvContributor
+  const { computeSharedLinks } = fvLink
+  const { computeSharedPhrases } = fvPhrase
+  const { computeSharedWords } = fvWord
+
+  return {
+    computeSharedAudios,
+    computeSharedCategories,
+    computeSharedContributors,
+    computeSharedLinks,
+    computeSharedPhrases,
+    computeSharedWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchSharedAudios,
+  fetchSharedCategories,
+  fetchSharedContributors,
+  fetchSharedLinks,
+  fetchSharedPhrases,
+  fetchSharedWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AutoSuggestComponent)

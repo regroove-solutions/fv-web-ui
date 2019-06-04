@@ -14,15 +14,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import ReactDOM from 'react-dom'
-import Immutable, { List, Map } from 'immutable'
-import provide from 'react-redux-provide'
+import Immutable from 'immutable'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchCharacters } from 'providers/redux/reducers/fvCharacter'
+import { fetchWords } from 'providers/redux/reducers/fvWord'
+
 import selectn from 'selectn'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
 import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
@@ -33,14 +37,17 @@ const intl = IntlService.instance
 /**
  * Play games
  */
-@provide
-export default class Concentration extends Component {
+
+const { func, object } = PropTypes
+export class Concentration extends Component {
   static propTypes = {
-    fetchCharacters: PropTypes.func.isRequired,
-    computeCharacters: PropTypes.object.isRequired,
-    fetchWords: PropTypes.func.isRequired,
-    computeWords: PropTypes.object.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computeCharacters: object.isRequired,
+    computeWords: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchCharacters: func.isRequired,
+    fetchWords: func.isRequired,
   }
 
   /**
@@ -62,7 +69,7 @@ export default class Concentration extends Component {
   _changeContent(pageIndex, pageCount) {
     let nextPage = pageIndex + 1
 
-    if (pageIndex == pageCount - 1) {
+    if (pageIndex === pageCount - 1) {
       nextPage = 0
     }
 
@@ -72,7 +79,7 @@ export default class Concentration extends Component {
   /**
    * Fetch list of characters
    */
-  fetchData(props, pageIndex, pageSize, sortOrder, sortBy) {
+  fetchData(props, pageIndex /*, pageSize, sortOrder, sortBy*/) {
     props.fetchCharacters(
       props.routeParams.dialect_path + '/Alphabet',
       '&currentPageIndex=0' + '&pageSize=100' + '&sortOrder=asc' + '&sortBy=fvcharacter:alphabet_order'
@@ -109,7 +116,7 @@ export default class Concentration extends Component {
       this.props.routeParams.dialect_path + '/Dictionary'
     )
 
-    const word_array = (selectn('response.entries', computeWords) || []).map(function(word, k) {
+    const wordArray = (selectn('response.entries', computeWords) || []).map((word) => {
       return {
         word: selectn('properties.dc:title', word),
         translation:
@@ -124,12 +131,12 @@ export default class Concentration extends Component {
       }
     })
 
-    if (word_array.length > 0) {
-      game = <Game cards={word_array} />
+    if (wordArray.length > 0) {
+      game = <Game cards={wordArray} />
     }
 
     return (
-      <PromiseWrapper renderOnError={true} computeEntities={computeEntities}>
+      <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className="row">
           <div className="col-xs-12" style={{ textAlign: 'center' }}>
             <a
@@ -157,3 +164,27 @@ export default class Concentration extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvCharacter, fvWord } = state
+
+  const { computeCharacters } = fvCharacter
+  const { computeWords } = fvWord
+
+  return {
+    computeCharacters,
+    computeWords,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchCharacters,
+  fetchWords,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Concentration)

@@ -15,7 +15,13 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 // import ReactDOM from 'react-dom'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+import { changeTheme } from 'providers/redux/reducers/navigation'
+import { nuxeoConnect, getCurrentUser } from 'providers/redux/reducers/nuxeo'
+import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -107,31 +113,39 @@ const getPreferences = function getPreferences(login, dialect) {
   return flattenedPreferences
 }
 
-@provide
+const { array, func, object, string } = PropTypes
 class AppWrapper extends Component {
   intl = IntlService.instance
   intlBaseKey = 'views'
 
   static propTypes = {
-    connect: PropTypes.func.isRequired,
-    getCurrentUser: PropTypes.func.isRequired,
-    fetchDialect2: PropTypes.func.isRequired,
-    computeDialect2: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    windowPath: PropTypes.string.isRequired,
-    splitWindowPath: PropTypes.array.isRequired,
-    changeTheme: PropTypes.func.isRequired,
-    properties: PropTypes.object.isRequired,
+    // REDUX: actions/dispatch/func
+    changeTheme: func.isRequired,
+    fetchDialect2: func.isRequired,
+    getCurrentUser: func.isRequired,
+    nuxeoConnect: func.isRequired,
+    // REDUX: reducers/state
+    computeDialect2: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    splitWindowPath: array.isRequired,
+    windowPath: string.isRequired,
   }
 
   static childContextTypes = {
     muiTheme: React.PropTypes.object,
   }
 
+  // TODO: SEE IF THIS IS AN ISSUE AFTER SWITCH TO REDUX
   // react-redux-provide will pass context such as providers (Note: this is only needed for debugging the store atm)
   static contextTypes = {
     providers: PropTypes.object,
   }
+
+  // TODO: The legacy context API will be removed in a future major version.
+  // TODO: Use the new context API introduced with version 16.3.
+  // TODO: The legacy API will continue working for all 16.x releases.
+  // via: https://reactjs.org/docs/legacy-context.html
 
   /**
    * Pass essential context to all children
@@ -148,16 +162,13 @@ class AppWrapper extends Component {
     super(props, context)
 
     // Connect to Nuxeo
-    this.props.connect()
+    this.props.nuxeoConnect()
     this.props.getCurrentUser()
 
     this.state = {
       adminGuideStarted: false,
       dialect: null,
     }
-
-    // Bind methods to 'this'
-    ;['_startAdminGuideAssist'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   // Force update of theme if out of sync
@@ -168,13 +179,58 @@ class AppWrapper extends Component {
     }
   }
 
+  render() {
+    const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
+
+    const warnings = {}
+
+    const preferences = getPreferences(this.props.computeLogin, selectn('response', _computeDialect2))
+
+    return (
+      <div
+        id="AppWrapper"
+        style={{
+          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
+          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
+        }}
+      >
+        <AppFrontController preferences={preferences} warnings={warnings} />
+
+        {/*<AuthorizationFilter filter={{
+                role: ['Everything'],
+                entity: selectn('response.entries[0]', dialects),
+                login: this.props.computeLogin
+            }}>
+                <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
+
+                    {this.intl.translate({
+                        key: 'super_admin_tools',
+                        default: 'Super Admin Tools',
+                        case: 'words'
+                    })}: <FlatButton onClick={this._startAdminGuideAssist.bind(this.props.windowPath)}
+                                     disabled={this.state.adminGuideStarted} label={this.intl.translate({
+                    key: 'admin_guide_assist',
+                    default: 'Admin Guide Assist', case: 'words'
+                })}/>
+                    {(this.state.adminGuideStarted) ? this.intl.translate({
+                        key: 'only_one_tour_per_page',
+                        default: 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'',
+                        case: 'first'
+                    }) : ''}
+
+                </div>
+            </AuthorizationFilter>*/}
+      </div>
+    )
+  }
+
   // Changing a theme manually...
   /*_changeTheme(event) {
       let index = event.nativeEvent.target.selectedIndex;
       this.props.changeTheme(event.target[index].value);
     }*/
 
-  _startAdminGuideAssist() {
+  _startAdminGuideAssist = () => {
     const doms = document.querySelectorAll('[data-component-id]')
 
     const tour = new Shepherd.Tour({
@@ -230,51 +286,35 @@ class AppWrapper extends Component {
 
     tour.start()
   }
+}
 
-  render() {
-    const computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.state.dialect)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, navigation, nuxeo, windowPath } = state
 
-    const warnings = {}
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath, _windowPath } = windowPath
 
-    const preferences = getPreferences(this.props.computeLogin, selectn('response', computeDialect2))
-
-    return (
-      <div
-        id="AppWrapper"
-        style={{
-          backgroundColor: selectn('theme.palette.basePalette.wrapper.backgroundColor', this.props.properties),
-          fontSize: UIHelpers.getPreferenceVal('font_size', preferences),
-        }}
-      >
-        <AppFrontController preferences={preferences} warnings={warnings} />
-
-        {/*<AuthorizationFilter filter={{
-                role: ['Everything'],
-                entity: selectn('response.entries[0]', dialects),
-                login: this.props.computeLogin
-            }}>
-                <div className="row" style={{backgroundColor: '#406f85', textAlign: 'center', color: '#8caab8'}}>
-
-                    {this.intl.translate({
-                        key: 'super_admin_tools',
-                        default: 'Super Admin Tools',
-                        case: 'words'
-                    })}: <FlatButton onClick={this._startAdminGuideAssist.bind(this.props.windowPath)}
-                                     disabled={this.state.adminGuideStarted} label={this.intl.translate({
-                    key: 'admin_guide_assist',
-                    default: 'Admin Guide Assist', case: 'words'
-                })}/>
-                    {(this.state.adminGuideStarted) ? this.intl.translate({
-                        key: 'only_one_tour_per_page',
-                        default: 'You can only run one tour per page. Navigate to another page and remember to hit \'Refresh\'',
-                        case: 'first'
-                    }) : ''}
-
-                </div>
-            </AuthorizationFilter>*/}
-      </div>
-    )
+  return {
+    computeDialect2,
+    computeLogin,
+    properties,
+    splitWindowPath,
+    windowPath: _windowPath,
   }
 }
 
-export default AppWrapper
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  changeTheme,
+  fetchDialect2,
+  nuxeoConnect,
+  getCurrentUser,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AppWrapper)

@@ -16,7 +16,12 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 import classNames from 'classnames'
 import IntlService from 'views/services/intl'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import NavigationHelpers from 'common/NavigationHelpers'
 
 const intl = IntlService.instance
@@ -24,11 +29,14 @@ const intl = IntlService.instance
 /**
  * Play games
  */
+const { array, func, object } = PropTypes
 export class Play extends Component {
   static propTypes = {
-    routeParams: PropTypes.object,
-    splitWindowPath: PropTypes.array.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
+    routeParams: object,
+    // REDUX: reducers/state
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   constructor(props, context) {
@@ -38,8 +46,7 @@ export class Play extends Component {
   navigate = (event) => {
     event.preventDefault()
     const anchorPath = event.currentTarget.getAttribute('href')
-    const { splitWindowPath, pushWindowPath } = this.props
-    NavigationHelpers.navigateForward(splitWindowPath, [anchorPath], pushWindowPath)
+    NavigationHelpers.navigateForward(this.props.splitWindowPath, [anchorPath], this.props.pushWindowPath)
   }
 
   render() {
@@ -103,4 +110,24 @@ export class Play extends Component {
     )
   }
 }
-export default provide(Play)
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { windowPath } = state
+
+  const { splitWindowPath } = windowPath
+
+  return {
+    splitWindowPath,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Play)

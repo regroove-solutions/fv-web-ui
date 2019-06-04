@@ -14,21 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
-
 import ConfGlobal from 'conf/local.js'
 
-import provide from 'react-redux-provide'
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { fetchPortals } from 'providers/redux/reducers/fvPortal'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 import selectn from 'selectn'
 import classNames from 'classnames'
 
 import CircularProgress from 'material-ui/lib/circular-progress'
-
-import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
-
 import PortalListDialects from 'views/components/Browsing/portal-list-dialects'
-import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 // Operations
 // import DirectoryOperations from "operations/DirectoryOperations"
@@ -48,19 +47,23 @@ const intl = IntlService.instance
 /**
  * Explore Archive page shows all the families in the archive
  */
-@provide
-export default class ExploreDialects extends Component {
+
+const { func, object } = PropTypes
+
+export class ExploreDialects extends Component {
   static propTypes = {
-    properties: PropTypes.object.isRequired,
-    fetchPortals: PropTypes.func.isRequired,
-    computePortals: PropTypes.object.isRequired,
-    computeLogin: PropTypes.object.isRequired,
-    pushWindowPath: PropTypes.func.isRequired,
-    routeParams: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
+    // REDUX: reducers/state
+    computePortals: object.isRequired,
+    computeLogin: object.isRequired,
+    properties: object.isRequired,
+    // REDUX: actions/dispatch/func
+    fetchPortals: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
 
   /*static contextTypes = {
-        muiTheme: React.PropTypes.object.isRequired
+        muiTheme: React.object.isRequired
     };*/
 
   constructor(props, context) {
@@ -91,8 +94,8 @@ export default class ExploreDialects extends Component {
   }
 
   render() {
-    let introText1,
-      introText2 = ''
+    let introText1
+    let introText2 = ''
 
     // TODO: determine which of the following can be moved to componentDidMount()
     // TODO: no need to re-declare/fetch data that doesn't change between renders
@@ -100,7 +103,7 @@ export default class ExploreDialects extends Component {
     const portalsEntries = selectn('response.entries', this.props.computePortals) || []
     // Sort based on dialect name (all FVPortals have dc:title 'Portal')
     const sortedPortals = portalsEntries.sort(this._portalEntriesSort)
-    
+
     const isLoggedIn = this.props.computeLogin.success && this.props.computeLogin.isConnected
 
     const portalListProps = {
@@ -122,8 +125,8 @@ export default class ExploreDialects extends Component {
         <p>
           <a href={NavigationHelpers.generateStaticURL('/explore/FV/sections/Data')}>
             Click here to view all publicly available portals
-          </a>{' '}
-          or click on "Public View" (top right).
+          </a>
+          {'or click on "Public View" (top right).'}
         </p>
       )
     }
@@ -136,11 +139,13 @@ export default class ExploreDialects extends Component {
               <h1>{intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'title' })}</h1>
             </div>
             {introText1}
-            {(this.props.computePortals && this.props.computePortals.isFetching) ? 
+            {this.props.computePortals && this.props.computePortals.isFetching ? (
               <div>
-              <CircularProgress mode="indeterminate" style={{ verticalAlign: 'middle' }} size={1} />{' '}
-                Loading
-              </div> : <PortalListDialects {...portalListProps} />}
+                <CircularProgress mode="indeterminate" style={{ verticalAlign: 'middle' }} size={1} /> Loading
+              </div>
+            ) : (
+              <PortalListDialects {...portalListProps} />
+            )}
             {introText2}
           </div>
         </div>
@@ -179,3 +184,29 @@ export default class ExploreDialects extends Component {
     return 0
   }
 }
+
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvPortal, navigation, nuxeo } = state
+
+  const { properties } = navigation
+  const { computeLogin } = nuxeo
+  const { computePortals } = fvPortal
+
+  return {
+    computeLogin,
+    computePortals,
+    properties,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  fetchPortals,
+  pushWindowPath,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ExploreDialects)
