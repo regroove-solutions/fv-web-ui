@@ -19,7 +19,12 @@ import * as yup from 'yup'
 // import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createAudio } from 'providers/redux/reducers/fvAudio'
+
 const intl = IntlService.instance
 const { func, object, number, string } = PropTypes
 export class FormRelatedPhraseCreateNew extends React.Component {
@@ -40,8 +45,9 @@ export class FormRelatedPhraseCreateNew extends React.Component {
 
     DIALECT_PATH: string,
     refPhrase: func,
-    // NOTE: COMING FROM REDUX/PROVIDER
+    // REDUX: reducers/state
     computeAudio: object.isRequired,
+    // REDUX: actions/dispatch/func
     createAudio: func.isRequired,
   }
   static defaultProps = {
@@ -397,4 +403,23 @@ export class FormRelatedPhraseCreateNew extends React.Component {
   }
 }
 
-export default provide(FormRelatedPhraseCreateNew)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvAudio } = state
+
+  const { computeAudio } = fvAudio
+
+  return {
+    computeAudio,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createAudio,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRelatedPhraseCreateNew)
