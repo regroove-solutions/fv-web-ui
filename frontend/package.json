@@ -39,7 +39,8 @@
     "ignore": [
       "/build/",
       "/cypress/",
-      "**/__tests__/"
+      "**/__tests__/",
+      "**/__mocks__/*"
     ]
   },
   "husky": {
