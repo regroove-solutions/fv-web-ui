@@ -16,7 +16,12 @@ import IntlService from 'views/services/intl'
 import Preview from 'views/components/Editor/Preview'
 // see about dropping:
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
+import { createVideo } from 'providers/redux/reducers/fvVideo'
+
 const intl = IntlService.instance
 const { array, func, object, number, string, element } = PropTypes
 export class FormRelatedVideo extends React.Component {
@@ -60,11 +65,12 @@ export class FormRelatedVideo extends React.Component {
     DEFAULT_SORT_TYPE: string,
     DIALECT_PATH: string.isRequired,
     selectMediaComponent: element.isRequired,
-    // NOTE: COMING FROM REDUX/PROVIDER
-    computeVideo: object.isRequired,
-    createVideo: func.isRequired,
     // NOTE: COMING FROM PARENT COMPONENT, NOT REDUX/PROVIDER
     computeDialectFromParent: object.isRequired,
+    // REDUX: reducers/state
+    computeVideo: object.isRequired,
+    // REDUX: actions/dispatch/func
+    createVideo: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRelatedVideo',
@@ -534,4 +540,23 @@ export class FormRelatedVideo extends React.Component {
   }
 }
 
-export default provide(FormRelatedVideo)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvVideo } = state
+
+  const { computeVideo } = fvVideo
+
+  return {
+    computeVideo,
+  }
+}
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createVideo,
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(FormRelatedVideo)
