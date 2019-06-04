@@ -6,10 +6,9 @@ import RecorderStatesSuccessDefault from './states/successDefault'
 import RecorderStatesDefault from './states/default'
 import RecorderStatesErrorBoundary from './states/errorBoundary'
 
-// import provide from 'react-redux-provide'
-// import { Provider } from 'react-redux'
-// import store from './store'
+// REDUX
 import { connect } from 'react-redux'
+// REDUX: actions/dispatch/func
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
 import { fetchDialect } from 'providers/redux/reducers/fvDialect'
@@ -41,19 +40,18 @@ export class CreateRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
-    // Built-in `react-redux-provide`
-    splitWindowPath: array.isRequired, // TODO: need to recreate after dropping `react-redux-provide`
-    pushWindowPath: func.isRequired, // TODO: need to recreate after dropping `react-redux-provide`
-    // FVContributor
+    // REDUX: reducers/state
     computeContributor: object.isRequired,
     computeContributors: object.isRequired,
     computeCreateContributor: object,
-    createContributor: func.isRequired,
-    fetchContributors: func.isRequired,
-    // FVDialect
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
+    splitWindowPath: array.isRequired,
+    // REDUX: actions/dispatch/func
+    createContributor: func.isRequired,
+    fetchContributors: func.isRequired,
     fetchDialect: func.isRequired,
+    pushWindowPath: func.isRequired,
   }
   static defaultProps = {
     className: 'FormRecorder',
@@ -261,21 +259,31 @@ export class CreateRecorder extends React.Component {
   }
 }
 
-// export default provide(CreateRecorder)
-
+// REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  // console.log('! mapStateToProps', state) // eslint-disable-line
-  const { windowPath, fvDialect, fvContributor } = state
+  const { fvDialect, fvContributor, windowPath } = state
+
+  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+  const { computeDialect, computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+
   return {
-    splitWindowPath: windowPath.splitWindowPath,
-    computeContributor: fvContributor.computeContributor,
-    computeContributors: fvContributor.computeContributors,
-    computeDialect: fvDialect.computeDialect,
-    computeDialect2: fvDialect.computeDialect2,
+    computeContributor,
+    computeContributors,
+    computeCreateContributor,
+    computeDialect,
+    computeDialect2,
+    splitWindowPath,
   }
 }
 
-const mapDispatchToProps = { createContributor, fetchContributors, fetchDialect, pushWindowPath }
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  createContributor,
+  fetchContributors,
+  fetchDialect,
+  pushWindowPath,
+}
 
 export default connect(
   mapStateToProps,
