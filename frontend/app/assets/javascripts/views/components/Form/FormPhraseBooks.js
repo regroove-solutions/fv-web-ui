@@ -5,33 +5,16 @@ import { getIndexOfElementById, removeItem, moveItemDown, moveItemUp } from 'vie
 import BrowseComponent from 'views/components/Editor/BrowseComponent'
 import ProviderHelpers from 'common/ProviderHelpers'
 import selectn from 'selectn'
-import provide from 'react-redux-provide'
+
+// REDUX
+import { connect } from 'react-redux'
+
 const { array, string, object, func } = PropTypes
 
 export class FormPhraseBooks extends React.Component {
   STATE_LOADING = 0
   STATE_DEFAULT = 1
   STATE_CREATE = 2
-
-  static defaultProps = {
-    className: 'FormPhraseBooks',
-    idDescribedbyItemBrowse: 'describedbyItemBrowse',
-    idDescribedByItemMove: 'describedByItemMove',
-    name: 'FormPhraseBooks',
-    textDescribedbyItemBrowse: 'Select a Phrase Book from previously created Phrase Books',
-    textDescribedByItemMove:
-      "If you are adding multiple Phrase Books, you can change the position of the Phrase Book with the 'Move Phrase Book up' and 'Move Phrase Book down' buttons",
-    textLegendItems: 'Phrase Books',
-    textBtnAddItem: 'Add Phrase Book',
-    textLegendItem: 'Phrase Book',
-    textBtnRemoveItem: 'Remove Phrase Book',
-    textBtnMoveItemUp: 'Move Phrase Book up',
-    textBtnMoveItemDown: 'Move Phrase Book down',
-    textBtnCreateItem: 'Create new Phrase Book',
-    textBtnSelectExistingItems: 'Select from existing Phrase Books',
-    textLabelItemSearch: 'Search existing Phrase Books',
-    handleItemsUpdate: () => {},
-  }
 
   static propTypes = {
     name: string.isRequired,
@@ -51,9 +34,29 @@ export class FormPhraseBooks extends React.Component {
     textBtnSelectExistingItems: string,
     textLabelItemSearch: string,
     handleItemsUpdate: func,
-    // Redux/Provider
+    // REDUX: reducers/state
     computeDialect: object.isRequired,
     splitWindowPath: array.isRequired,
+  }
+
+  static defaultProps = {
+    className: 'FormPhraseBooks',
+    idDescribedbyItemBrowse: 'describedbyItemBrowse',
+    idDescribedByItemMove: 'describedByItemMove',
+    name: 'FormPhraseBooks',
+    textDescribedbyItemBrowse: 'Select a Phrase Book from previously created Phrase Books',
+    textDescribedByItemMove:
+      "If you are adding multiple Phrase Books, you can change the position of the Phrase Book with the 'Move Phrase Book up' and 'Move Phrase Book down' buttons",
+    textLegendItems: 'Phrase Books',
+    textBtnAddItem: 'Add Phrase Book',
+    textLegendItem: 'Phrase Book',
+    textBtnRemoveItem: 'Remove Phrase Book',
+    textBtnMoveItemUp: 'Move Phrase Book up',
+    textBtnMoveItemDown: 'Move Phrase Book down',
+    textBtnCreateItem: 'Create new Phrase Book',
+    textBtnSelectExistingItems: 'Select from existing Phrase Books',
+    textLabelItemSearch: 'Search existing Phrase Books',
+    handleItemsUpdate: () => {},
   }
 
   state = {
@@ -306,4 +309,20 @@ export class FormPhraseBooks extends React.Component {
   }
 }
 
-export default provide(FormPhraseBooks)
+// REDUX: reducers/state
+const mapStateToProps = (state /*, ownProps*/) => {
+  const { fvDialect, windowPath } = state
+
+  const { computeDialect } = fvDialect
+  const { splitWindowPath } = windowPath
+
+  return {
+    computeDialect,
+    splitWindowPath,
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(FormPhraseBooks)
