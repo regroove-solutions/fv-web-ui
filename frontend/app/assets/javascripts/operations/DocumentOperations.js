@@ -26,7 +26,7 @@ export default class DocumentOperations {
    * Get a single document of a certain type based on a path and title match
    * This document may or may not contain children
    */
-  static getDocument(pathOrUid = '', type, headers = {}, params = {}) {
+  static getDocument(pathOrUid = '', type, headers = {} /*params = {}*/) {
     const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
@@ -80,7 +80,7 @@ export default class DocumentOperations {
         .then((doc) => {
           resolve(doc)
         })
-        .catch((error) => {
+        .catch((/*error*/) => {
           reject(
             IntlService.instance.translate({
               key: 'operations.could_not_publish_document',
@@ -97,7 +97,7 @@ export default class DocumentOperations {
    * Update a document
    */
   static updateDocument(doc, headers = {}) {
-    const properties = BaseOperations.getProperties()
+    // const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
       doc
@@ -106,11 +106,12 @@ export default class DocumentOperations {
           if (newDoc) {
             resolve(newDoc)
           } else {
+            // TODO: `type` is not defined
             reject(
               IntlService.instance.translate({
                 key: 'operations.no_found',
-                params: [type],
-                default: `No ${type} found`,
+                params: [type], // eslint-disable-line
+                default: `No ${type} found`, // eslint-disable-line
                 case: 'first',
                 append: '.',
               })
@@ -274,7 +275,7 @@ export default class DocumentOperations {
                     resolve(newDoc)
                   }
                 })
-                .catch((error) => {
+                .catch((/*error*/) => {
                   reject(
                     IntlService.instance.translate({
                       key: 'operations.could_not_create_document',
@@ -285,18 +286,19 @@ export default class DocumentOperations {
                   )
                 })
             } else {
+              // TODO: `type` is not defined
               reject(
                 IntlService.instance.translate({
                   key: 'operations.no_found',
-                  params: [type],
-                  default: `No ${type} found`,
+                  params: [type], // eslint-disable-line
+                  default: `No ${type} found`, // eslint-disable-line
                   case: 'first',
                   append: '.',
                 })
               )
             }
           })
-          .catch((error) => {
+          .catch((/*error*/) => {
             reject(
               IntlService.instance.translate({
                 key: 'operations.could_not_upload_file',
@@ -318,7 +320,7 @@ export default class DocumentOperations {
     const client = this.client
     const selectDefault = this.selectDefault
 
-    id = StringHelpers.clean(id)
+    const _id = StringHelpers.clean(id)
 
     // Initialize an empty document from type
     const documentType = this.documentType
@@ -328,18 +330,20 @@ export default class DocumentOperations {
       // reject the promise
       (resolve, reject) => {
         const defaultParams = {
-          query: `SELECT * FROM ${documentType.prototype.entityTypeName} WHERE (ecm:uuid='${id}' AND ${selectDefault})`,
+          query: `SELECT * FROM ${
+            documentType.prototype.entityTypeName
+          } WHERE (ecm:uuid='${_id}' AND ${selectDefault})`,
         }
 
         const defaultHeaders = {}
 
-        params = Object.assign(defaultParams, params)
-        headers = Object.assign(defaultHeaders, headers)
+        const _params = Object.assign(defaultParams, params)
+        const _headers = Object.assign(defaultHeaders, headers)
 
         client
           .operation('Document.Query')
-          .params(params)
-          .execute(headers)
+          .params(_params)
+          .execute(_headers)
           .then((response) => {
             if (response.entries.length > 0) {
               resolve(new documentType(response.entries[0]))
@@ -367,7 +371,7 @@ export default class DocumentOperations {
     // Initialize and empty document list from type
     const documentList = new this.documentTypePlural(null)
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve /*, reject*/) => {
       const defaultParams = {
         query: ` SELECT * FROM ${documentList.model.prototype.entityTypeName}  WHERE (fva:dialect = '${dialect.get(
           'id'
@@ -378,13 +382,13 @@ export default class DocumentOperations {
         'enrichers.document': 'parentDoc',
       }
 
-      params = Object.assign(defaultParams, params)
-      headers = Object.assign(defaultHeaders, headers)
+      const _params = Object.assign(defaultParams, params)
+      const _headers = Object.assign(defaultHeaders, headers)
 
       client
         .operation('Document.Query')
-        .params(params)
-        .execute(headers)
+        .params(_params)
+        .execute(_headers)
         .then((response) => {
           documentList.add(response.entries)
           resolve(documentList.toJSON())
@@ -398,7 +402,7 @@ export default class DocumentOperations {
   /**
    * Executes an operation on the server
    */
-  static executeOperation(input, operationName, operationParams, headers = {}, params = {}) {
+  static executeOperation(input, operationName, operationParams, headers = {} /*, params = {}*/) {
     const sanitizeKeys = ['dialectPath']
 
     const properties = BaseOperations.getProperties()
@@ -450,11 +454,11 @@ export default class DocumentOperations {
         query: `SELECT * FROM FVCharacter WHERE (ecm:path STARTSWITH '${cleanedDialectPath}' AND ecm:isTrashed = 0) ORDER BY fvcharacter:alphabet_order ASC`,
       }
 
-      params = Object.assign(defaultParams, params)
+      const _params = Object.assign(defaultParams, params)
 
       properties.client
         .operation('Document.Query')
-        .params(params)
+        .params(_params)
         .execute(headers)
         .then((results) => {
           resolve(results)
@@ -474,11 +478,11 @@ export default class DocumentOperations {
         query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${cleanedDialectPath}' AND ecm:isTrashed = 0)${queryAppend} ORDER BY dc:title ASC`,
       }
 
-      params = Object.assign(defaultParams, params)
+      const _params = Object.assign(defaultParams, params)
 
       properties.client
         .operation('Document.Query')
-        .params(params)
+        .params(_params)
         .execute(headers)
         .then((results) => {
           resolve(results)
@@ -488,7 +492,7 @@ export default class DocumentOperations {
         })
     })
   }
-
+  // eslint-disable-next-line
   static searchDocuments(queryParam, queryPath, docTypes, headers = {}, params = {}) {
     const properties = BaseOperations.getProperties()
 
@@ -497,11 +501,11 @@ export default class DocumentOperations {
         query: `SELECT * FROM Document WHERE (ecm:path STARTSWITH '${queryPath}' AND ecm:isTrashed = 0) AND ecm:primaryType IN (${docTypes}) AND ecm:fulltext LIKE '${queryParam}' ORDER BY dc:title ASC`,
       }
 
-      params = Object.assign(defaultParams, params)
+      const _params = Object.assign(defaultParams, params)
 
       properties.client
         .operation('Document.Query')
-        .params(params)
+        .params(_params)
         .execute({ headers: { 'enrichers.document': 'ancestry' } })
         .then((results) => {
           // Get the ancestry information out of the contextParameters and store it at the object root

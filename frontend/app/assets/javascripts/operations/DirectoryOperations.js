@@ -18,7 +18,7 @@ import StringHelpers from 'common/StringHelpers'
 
 import request from 'request'
 
-import Nuxeo from 'nuxeo'
+// import Nuxeo from 'nuxeo'
 
 import BaseOperations from 'operations/BaseOperations'
 import IntlService from 'views/services/intl'
@@ -143,18 +143,18 @@ export default class DirectoryOperations {
 
     /*
       WORKAROUND: DY @ 17-04-2019:
-      
-      This is a workaround for elasticsearch returning no results for queries that start with 
+
+      This is a workaround for elasticsearch returning no results for queries that start with
       Instead of querying elasticsearch, do a database query in this occurence.
-      
+
       TODO: Figure out what elasticsearch configuration is appropriate here.
 
       starts_with_query is set in learn/words/list-view, and learn/phrases/list-view
     */
-    let endPointToUse = 'Document.EnrichedQuery';
+    let endPointToUse = 'Document.EnrichedQuery'
 
-    if (nxqlQueryParams && nxqlQueryParams.hasOwnProperty("starts_with_query")) {
-      endPointToUse = 'Document.Query';
+    if (nxqlQueryParams && nxqlQueryParams.hasOwnProperty('starts_with_query')) {
+      endPointToUse = 'Document.Query'
     }
 
     return new Promise((resolve, reject) => {
@@ -190,12 +190,11 @@ export default class DirectoryOperations {
 
   static getDocumentsViaPageProvider(
     pageProvider = '',
-    type = "Document", // eslint-disable-line
+    type = 'Document', // eslint-disable-line
     headers = null,
     params = null
   ) {
-
-    let queryParams = []; 
+    // const queryParams = []
 
     const defaultParams = { pageProvider: pageProvider }
     const defaultHeaders = {}

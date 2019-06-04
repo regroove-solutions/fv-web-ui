@@ -1,3 +1,4 @@
+/* globals ENV_CONTEXT_PATH, ENV_WEB_URL, ENV_NUXEO_URL */
 /*
 Copyright 2016 First People's Cultural Council
 

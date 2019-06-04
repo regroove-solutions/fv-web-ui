@@ -1,3 +1,4 @@
+/* global _paq */
 /*
 Copyright 2016 First People's Cultural Council
 
@@ -14,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import ConfGlobal from 'conf/local.js'
+// import ConfGlobal from 'conf/local.js'
 import selectn from 'selectn'
 
 /*var _paq = {
@@ -23,7 +24,7 @@ import selectn from 'selectn'
   }
 }*/
 
-const hasAnalytics = function() {
+const hasAnalytics = () => {
   if (typeof _paq !== 'undefined') {
     return true
   }
@@ -35,9 +36,9 @@ export default {
   trackPageView(payload) {
     if (hasAnalytics()) {
       // For now track in set timeout with slight delay to capture correct page title
-      setTimeout(function() {
+      setTimeout(() => {
         // Only process if piwik code available and do not track page views for search results
-        if (selectn('pageurl', payload).indexOf('/search/') == -1) {
+        if (selectn('pageurl', payload).indexOf('/search/') === -1) {
           _paq.push(['setReferrerUrl', selectn('referrer', payload)])
           _paq.push(['setCustomUrl', selectn('pageurl', payload)])
           _paq.push(['setDocumentTitle', document.title])
@@ -48,7 +49,7 @@ export default {
           _paq.push(['trackPageView'])
 
           // make Matomo aware of newly added content
-          var content = document.getElementById('pageContainer')
+          const content = document.getElementById('pageContainer')
           _paq.push(['MediaAnalytics::scanForMedia', content])
           _paq.push(['FormAnalytics::scanForForms', content])
           _paq.push(['trackContentImpressionsWithinNode', content])
