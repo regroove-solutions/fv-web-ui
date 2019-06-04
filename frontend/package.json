@@ -75,7 +75,6 @@
     "object-assign": "~2.1.1",
     "phaser-ce": "^2.7.3",
     "pretty-hrtime": "~0.2.1",
-    "provide-page": "~0.2.2",
     "provide-theme": "~1.0.0",
     "react": "~0.14.7",
     "react-autosuggest": "~8.0.0",
