@@ -115,14 +115,20 @@ export class AppFrontController extends Component {
   }
 
   _getInitialState() {
-    const routes = Immutable.fromJS(ConfRoutes)
+    let routes = Immutable.fromJS(ConfRoutes)
     const contextPath = ConfGlobal.contextPath.split('/').filter((v) => v !== '')
 
+    // Add context path to PATH and ALIAS properties if it is set (usually applies in DEV environment)
+    if (contextPath && contextPath.length > 0) {
+      routes = routes.map(function(route) {
+        let newRoute = route.set('path', List(contextPath).concat(route.get('path')))
+        newRoute = newRoute.set('alias', List(contextPath).concat(route.get('alias')))
+        return newRoute
+      })
+    }
+
     return {
-      routes:
-        contextPath && contextPath.length > 0
-          ? routes.map((route) => (route ? route.set('path', List(contextPath).concat(route.get('path'))) : route))
-          : routes,
+      routes: routes,
       matchedPage: null,
       matchedRouteParams: {},
       warningsDismissed: false,
