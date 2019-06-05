@@ -82,20 +82,22 @@ export class PageHome extends Component {
     ProviderHelpers.fetchIfMissing('currentUser', this.props.fetchUserStartpage, this.props.computeUserStartpage)
   }
 
-  componentWillReceiveProps(nextProps) {
-    // Redirect user to their start page if they are members of a single dialect, or have one defined
+  componentDidUpdate() {
+    /*
+    Redirect user to their start page if they:
+    - are members of a single dialect
+    - have one defined,
+    - are not an admin
+    */
 
     // If user is accessing /home directly, do not redirect.
     if (this.props.windowPath.indexOf('/home') !== -1) {
       return
     }
-
-    const computeUserStartPagePrev = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
-    const computeUserStartPageNext = ProviderHelpers.getEntry(nextProps.computeUserStartpage, 'currentUser')
-
-    const startPage = selectn('response.value', computeUserStartPageNext)
-
-    if (!selectn('success', computeUserStartPagePrev) && selectn('success', computeUserStartPageNext) && startPage) {
+    const _computeUserStartpage = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
+    const startPage = selectn('response.value', _computeUserStartpage)
+    const isAdmin = ProviderHelpers.isAdmin(this.props.computeLogin)
+    if (startPage && isAdmin === false) {
       window.location = startPage
     }
   }
