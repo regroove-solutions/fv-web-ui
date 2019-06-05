@@ -19,7 +19,7 @@ import classNames from 'classnames'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { changefetchUser } from 'providers/redux/reducers/fvUser'
+import { fetchUser } from 'providers/redux/reducers/fvUser'
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
@@ -227,7 +227,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  changefetchUser,
+  fetchUser,
   pushWindowPath,
   replaceWindowPath,
 }
