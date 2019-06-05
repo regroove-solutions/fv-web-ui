@@ -60,8 +60,9 @@
       // Alloy editor configuration
       window.ALLOYEDITOR_BASEPATH = window.CKEDITOR_BASEPATH = "assets/libraries/alloyeditor/"
     </script>
-
-    <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <noscript>
+      <link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    </noscript>
   </head>
 
   <body id="body">
@@ -92,7 +93,15 @@
       <!-- /#page-wrapper -->
     </div>
 
-    <!-- Matomo -->
+    <script type="text/javascript">
+      const linkNew = document.createElement('link');
+      linkNew.rel = 'stylesheet';
+      linkNew.href = '//fonts.googleapis.com/icon?family=Material+Icons';
+      const linkExisting = document.getElementsByTagName('link')[0];
+      linkExisting.parentNode.insertBefore(linkNew, linkExisting);
+    </script>
+
+<!-- Matomo -->
     <% if (process.env.NODE_ENV == 'production') { %>
 		<script type="text/javascript">
       var _paq = _paq || [];
