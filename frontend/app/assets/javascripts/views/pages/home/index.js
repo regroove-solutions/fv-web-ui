@@ -97,7 +97,7 @@ export class PageHome extends Component {
     const _computeUserStartpage = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
     const startPage = selectn('response.value', _computeUserStartpage)
     const isAdmin = ProviderHelpers.isAdmin(this.props.computeLogin)
-    if (startPage && isAdmin === false) {
+    if (startPage && isAdmin === false && window.location.href !== startPage) {
       window.location = startPage
     }
   }
