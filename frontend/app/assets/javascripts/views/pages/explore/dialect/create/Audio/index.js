@@ -176,7 +176,7 @@ export class CreateAudio extends React.Component {
           className={this.props.groupName}
           id={this._clean('fv:source')}
           name="fv:source"
-          textInfo={copy.contributorsText}
+          textDescription={copy.contributorsText}
           handleItemsUpdate={(data) => {
             this.setState({ createItemContributors: data })
           }}
@@ -188,7 +188,7 @@ export class CreateAudio extends React.Component {
           className={this.props.groupName}
           id={this._clean('fvm:recorder')}
           name="fvm:recorder"
-          textInfo={copy.recordersText}
+          textDescription={copy.recordersText}
           handleItemsUpdate={(data) => {
             this.setState({ createItemRecorders: data })
           }}
@@ -284,7 +284,7 @@ export class CreateAudio extends React.Component {
     // const pathOrId = `${DIALECT_PATH}/Resources/${createItemName}.${timestamp}`
     // this.setState({ pathOrId })
   }
-  _onRequestSaveForm = async() => {
+  _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
       toParse,

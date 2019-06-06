@@ -312,7 +312,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
           {/* Contributors --------------- */}
           <FormContributors
             className="Form__group"
-            textInfo="Contributors who helped create this record."
+            textDescription="Contributors who helped create this record."
             name="fv:source"
           />
           {/* IN CHILDREN'S ARCHIVE --------------- */}
@@ -341,7 +341,7 @@ the 'Move Category up' and 'Move Category down' buttons`}
     newProps.fetchDialect2(newProps.routeParams.dialect_path)
   }
 
-  _onRequestSaveForm = async() => {
+  _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
       toParse,
