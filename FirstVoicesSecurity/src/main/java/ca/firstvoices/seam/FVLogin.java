@@ -59,7 +59,7 @@ public class FVLogin extends StartupHelper {
             }
             // Otherwise, send to default redirect path
             else {
-                redirectTo = fvUserProfileService.getDefaultDialectRedirectPath(documentManager, currentUser, NUXEO_URL);
+                redirectTo = fvUserProfileService.getDefaultDialectRedirectPath(documentManager, currentUser, NUXEO_URL, true);
             }
         }
         try {
