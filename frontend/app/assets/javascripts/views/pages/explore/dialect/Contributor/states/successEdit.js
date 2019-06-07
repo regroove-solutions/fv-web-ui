@@ -1,24 +1,26 @@
 import React from 'react'
-import copy from '../internationalization'
-
 import { PropTypes } from 'react'
 const { string, object, func } = PropTypes
-export class RecorderStatesSuccessEdit extends React.Component {
+export class ContributorStateSuccessEdit extends React.Component {
   static propTypes = {
     className: string,
+    copy: object,
     formData: object,
     handleClick: func,
   }
   static defaultProps = {
     className: 'FormRecorder',
+    copy: {
+      edit: {},
+    },
   }
   render() {
-    const { className, formData, handleClick } = this.props
+    const { className, copy, formData, handleClick } = this.props
 
     const name = formData['dc:title']
     const description = formData['dc:description']
     return (
-      <div className={className}>
+      <div className={`${className} Contributor Contributor--successEdit`}>
         <h1>{copy.edit.success.title}</h1>
         <p>{copy.edit.success.review}</p>
         <dl>
@@ -40,4 +42,4 @@ export class RecorderStatesSuccessEdit extends React.Component {
   }
 }
 
-export default RecorderStatesSuccessEdit
+export default ContributorStateSuccessEdit

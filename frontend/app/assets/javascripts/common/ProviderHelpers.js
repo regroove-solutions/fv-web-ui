@@ -329,7 +329,7 @@ function toJSKeepId(js) {
     .map(toJSKeepId)
     .toMap()
 }
-
+// prettier-ignore
 export default {
   fetchIfMissing,
   filtersToNXQL,
@@ -348,8 +348,9 @@ export default {
   switchWorkspaceSectionKeys,
   toJSKeepId,
   regex: {
+    NUMBER: '([0-9]+)\??$',
     QUERY_PARAMS: /\?(.*)/,
-    ANYTHING_BUT_SLASH: '([^/]*)',
+    ANYTHING_BUT_SLASH: '([^/]*)\??$', // eslint-disable-line
     ANY_LANGUAGE_CODE: '(en|fr)',
     WORKSPACE_OR_SECTION: '(sections|Workspaces)',
     KIDS_OR_DEFAULT: '(kids|explore)',

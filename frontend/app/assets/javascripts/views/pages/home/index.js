@@ -162,9 +162,10 @@ export class PageHome extends Component {
 
     // Compute User Registration Tasks
     ;(selectn('response.entries', _computeUserStartpage) || []).map(
-      function computeUserStartPageMap(dialect) {
+      function computeUserStartPageMap(dialect, index) {
         const tableRow = (
           <RaisedButton
+            key={index}
             label={'Access ' + selectn('properties.dc:title', dialect)}
             primary
             onClick={this._onNavigateRequest.bind(
@@ -184,6 +185,7 @@ export class PageHome extends Component {
     if (accessButtons.length === 0) {
       accessButtons[0] = (
         <RaisedButton
+          key={0}
           label={
             this.intl.translate({
               key: 'get_started!',

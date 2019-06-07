@@ -10,22 +10,25 @@ jest.mock('providers/redux/reducers/rest')
 jest.mock('common/NavigationHelpers')
 
 // Component to test
-import { CreateRecorder } from '..'
+import { Phrasebook } from '../create'
 const props = {
-  pushWindowPath: () => {},
-  createContributor: () => {},
-  fetchDialect: () => {},
-  fetchContributors: () => {},
-  computeContributors: {},
-  splitWindowPath: [],
+  // REDUX: reducers/state
+  routeParams: {},
+  computeCategories: {},
+  computeCreateCategory: {},
+  computeCategory: {},
   computeDialect: {},
   computeDialect2: {},
-  computeContributor: {},
+  splitWindowPath: [],
+  // REDUX: actions/dispatch/func
+  fetchCategories: () => {},
+  fetchDialect: () => {},
+  pushWindowPath: () => {},
 }
 
-describe('Recorder > Create', () => {
+describe('Phrase Book > Create', () => {
   test('Accessibility', async() => {
-    const html = ReactDOMServer.renderToString(<CreateRecorder {...props} />)
+    const html = ReactDOMServer.renderToString(<Phrasebook {...props} />)
     const results = await axe(html)
     expect(results).toHaveNoViolations()
   })

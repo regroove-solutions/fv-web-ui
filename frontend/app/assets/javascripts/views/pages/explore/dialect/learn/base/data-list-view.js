@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import { Component, PropTypes } from 'react'
 import selectn from 'selectn'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
@@ -77,42 +77,42 @@ export default class DataListView extends Component {
 
   // Refetch data on URL change
   // TODO: At minimum, migrate to `getDerivedStateFromProps()` or https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.controlViaURL) {
+  componentDidUpdate(prevProps) {
+    if (this.props.controlViaURL) {
       if (
-        nextProps.routeParams.page !== this.props.routeParams.page ||
-        nextProps.routeParams.pageSize !== this.props.routeParams.pageSize
+        this.props.routeParams.page !== prevProps.routeParams.page ||
+        this.props.routeParams.pageSize !== prevProps.routeParams.pageSize
       ) {
         this._fetchListViewData(
-          nextProps,
-          nextProps.DEFAULT_PAGE,
-          nextProps.DEFAULT_PAGE_SIZE,
-          nextProps.DEFAULT_SORT_TYPE,
-          nextProps.DEFAULT_SORT_COL
+          this.props,
+          this.props.DEFAULT_PAGE,
+          this.props.DEFAULT_PAGE_SIZE,
+          this.props.DEFAULT_SORT_TYPE,
+          this.props.DEFAULT_SORT_COL
         )
-        this._resetPagination(nextProps)
+        this._resetPagination(this.props)
       }
     } else {
-      if (nextProps.windowPath !== this.props.windowPath) {
-        this.fetchData(nextProps)
+      if (this.props.windowPath !== prevProps.windowPath) {
+        this.fetchData(this.props)
       }
     }
 
-    if (nextProps.routeParams.area !== this.props.routeParams.area) {
-      this._resetColumns(nextProps)
-      this._resetPagination(nextProps)
+    if (this.props.routeParams.area !== prevProps.routeParams.area) {
+      this._resetColumns(this.props)
+      this._resetPagination(this.props)
     }
 
     if (
-      this.props.filter.has('currentAppliedFilter') &&
-      !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))
+      prevProps.filter.has('currentAppliedFilter') &&
+      !prevProps.filter.get('currentAppliedFilter').equals(this.props.filter.get('currentAppliedFilter'))
     ) {
       this._fetchListViewData(
-        nextProps,
-        nextProps.DEFAULT_PAGE,
-        nextProps.DEFAULT_PAGE_SIZE,
-        nextProps.DEFAULT_SORT_TYPE,
-        nextProps.DEFAULT_SORT_COL
+        this.props,
+        this.props.DEFAULT_PAGE,
+        this.props.DEFAULT_PAGE_SIZE,
+        this.props.DEFAULT_SORT_TYPE,
+        this.props.DEFAULT_SORT_COL
       )
     }
   }

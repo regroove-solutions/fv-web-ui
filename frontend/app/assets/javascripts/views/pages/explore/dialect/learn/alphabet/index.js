@@ -195,13 +195,7 @@ export class PageDialectLearnAlphabet extends PageDialectLearnBase {
 
     const isSection = this.props.routeParams.area === 'sections'
 
-    const alphabetListView = (
-      <AlphabetListView
-        pagination={false}
-        routeParams={this.props.routeParams}
-        dialect={selectn('response', _computeDialect2)}
-      />
-    )
+    const alphabetListView = <AlphabetListView pagination={false} dialect={selectn('response', _computeDialect2)} />
 
     if (this.props.print) {
       return (

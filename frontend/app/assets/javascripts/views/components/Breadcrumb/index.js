@@ -18,6 +18,8 @@ import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
 
+import '!style-loader!css-loader!./styles.css'
+
 const { array, func, string, object } = PropTypes
 
 const intl = IntlService.instance

@@ -19,7 +19,7 @@ export default class Checkbox extends React.Component {
     className: string,
     selected: bool,
     handleChange: func,
-    value: oneOfType(string, bool),
+    value: oneOfType([string, bool]),
     error: object,
     setRef: func,
   }

@@ -1,0 +1,11 @@
+.AppFrontController__inner {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.AppFrontController__content {
+  flex-grow: 1;
+}
+.AppFrontController__footer {
+  align-self: flex-end;
+}

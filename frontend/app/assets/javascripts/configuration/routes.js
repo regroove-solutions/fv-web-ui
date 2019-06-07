@@ -111,7 +111,7 @@ const PAGE_NOT_FOUND_BODY = (
 
 // Regex helper
 const ANYTHING_BUT_SLASH = new RegExp(ProviderHelpers.regex.ANYTHING_BUT_SLASH)
-const NUMBER = new RegExp('([0-9]+)')
+const NUMBER = new RegExp(ProviderHelpers.regex.NUMBER)
 const WORKSPACE_OR_SECTION = new RegExp(ProviderHelpers.regex.WORKSPACE_OR_SECTION)
 //const ANY_LANGUAGE_CODE = new RegExp(ProviderHelpers.regex.ANY_LANGUAGE_CODE)
 const KIDS_OR_DEFAULT = new paramMatch('theme', RegExp(ProviderHelpers.regex.KIDS_OR_DEFAULT))
@@ -1253,6 +1253,59 @@ const routes = [
     page: <Pages.CreateAudio />,
     extractPaths: true,
   },
+  // RECORDER
+  // --------------------------------------------------
+  // Recorder > Browse
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'recorders',
+    ],
+    title: 'Browse Recorders, {$dialect_name}',
+    page: <Pages.RecorderBrowse />,
+    extractPaths: true,
+  },
+  // Recorder > Browse (pagination)
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'recorders',
+      ...PAGINATION_PATH,
+    ],
+    title: 'Browse Recorders, {$dialect_name}',
+    page: <Pages.RecorderBrowse hasPagination />,
+    extractPaths: true,
+  },
+  // Recorder > Detail
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'recorder',
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Recorder Detail, {$dialect_name}',
+    page: <Pages.RecorderDetail />,
+    extractPaths: true,
+  },
+  // Recorder > Create
   {
     path: [
       KIDS_OR_DEFAULT,
@@ -1266,9 +1319,10 @@ const routes = [
       'recorder',
     ],
     title: 'Create Recorder, {$dialect_name}',
-    page: <Pages.CreateRecorder />,
+    page: <Pages.RecorderCreate />,
     extractPaths: true,
   },
+  // Recorder > Edit
   {
     path: [
       KIDS_OR_DEFAULT,
@@ -1280,12 +1334,217 @@ const routes = [
       ANYTHING_BUT_SLASH,
       'edit',
       'recorder',
-      new paramMatch('contributorId', ANYTHING_BUT_SLASH),
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
     ],
     title: 'Edit Recorder, {$dialect_name}',
-    page: <Pages.EditRecorder />,
+    page: <Pages.RecorderEdit />,
     extractPaths: true,
   },
+  // CONTRIBUTOR
+  // --------------------------------------------------
+  // Contributor > Browse
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'contributors',
+    ],
+    title: 'Browse Contributors, {$dialect_name}',
+    page: <Pages.ContributorBrowse />,
+    extractPaths: true,
+  },
+  // Contributor > Browse (pagination)
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'contributors',
+      ...PAGINATION_PATH,
+    ],
+    title: 'Browse Contributors, {$dialect_name}',
+    page: <Pages.ContributorBrowse hasPagination />,
+    extractPaths: true,
+  },
+  // Contributor > Detail
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'contributor',
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Contributor Detail, {$dialect_name}',
+    page: <Pages.ContributorDetail />,
+    extractPaths: true,
+  },
+  // Contributor > Create
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'contributor',
+    ],
+    title: 'Create Contributor, {$dialect_name}',
+    page: <Pages.ContributorCreate />,
+    extractPaths: true,
+  },
+  // Contributor > Edit
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'edit',
+      'contributor',
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Edit Contributor, {$dialect_name}',
+    page: <Pages.ContributorEdit />,
+    extractPaths: true,
+  },
+
+  // PHRASEBOOK
+  // --------------------------------------------------
+  // Phrasebook > Browse
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'phrasebooks',
+    ],
+    title: 'Browse Phrasebooks, {$dialect_name}',
+    page: <Pages.PhrasebookBrowse />,
+    extractPaths: true,
+  },
+  // Phrasebook > Browse (pagination)
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'phrasebooks',
+      ...PAGINATION_PATH,
+    ],
+    title: 'Browse Phrasebooks, {$dialect_name}',
+    page: <Pages.PhrasebookBrowse hasPagination />,
+    extractPaths: true,
+  },
+  // Phrasebook > Detail
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'phrasebook',
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Phrasebook Detail, {$dialect_name}',
+    page: <Pages.PhrasebookDetail />,
+    extractPaths: true,
+  },
+  // Phrasebook > Create
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'create',
+      'phrasebook',
+    ],
+    title: 'Create Phrasebook, {$dialect_name}',
+    page: <Pages.PhrasebookCreate />,
+    extractPaths: true,
+  },
+  // Phrasebook > Create V1
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'learn',
+      'phrasebooks',
+      'create',
+    ],
+    title:
+      intl.translate({
+        key: 'create',
+        default: 'Create',
+        case: 'words',
+      }) +
+      ' | ' +
+      intl.translate({
+        key: 'phrase_book',
+        default: 'Phrase Book',
+        case: 'words',
+      }) +
+      ' | {$dialect_name}',
+    page: <Pages.PageDialectPhraseBooksCreate />,
+  },
+  // Phrasebook > Edit
+  {
+    path: [
+      KIDS_OR_DEFAULT,
+      'FV',
+      'Workspaces',
+      'Data',
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      ANYTHING_BUT_SLASH,
+      'edit',
+      'phrasebook',
+      new paramMatch('itemId', ANYTHING_BUT_SLASH),
+    ],
+    title: 'Edit Phrasebook, {$dialect_name}',
+    page: <Pages.PhrasebookEdit />,
+    extractPaths: true,
+  },
+
   {
     path: [
       KIDS_OR_DEFAULT,
@@ -1993,34 +2252,6 @@ const routes = [
       ' | {$dialect_name}',
     page: <Pages.PageDialectCategoryCreate />,
     extractPaths: true,
-  },
-  {
-    path: [
-      KIDS_OR_DEFAULT,
-      'FV',
-      'Workspaces',
-      'Data',
-      ANYTHING_BUT_SLASH,
-      ANYTHING_BUT_SLASH,
-      ANYTHING_BUT_SLASH,
-      'learn',
-      'phrasebooks',
-      'create',
-    ],
-    title:
-      intl.translate({
-        key: 'create',
-        default: 'Create',
-        case: 'words',
-      }) +
-      ' | ' +
-      intl.translate({
-        key: 'phrase_book',
-        default: 'Phrase Book',
-        case: 'words',
-      }) +
-      ' | {$dialect_name}',
-    page: <Pages.PageDialectPhraseBooksCreate />,
   },
   {
     path: ['404-page-not-found'],

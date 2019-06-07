@@ -13,29 +13,34 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import { PropTypes } from 'react'
 import { List, Map } from 'immutable'
 // import classNames from 'classnames'
 import selectn from 'selectn'
 
 import IntlService from 'views/services/intl'
 
+const { array, func, instanceOf, number, object, oneOfType, string } = PropTypes
+
 export default class DictionaryList extends Component {
   static propTypes = {
-    items: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    filteredItems: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    fields: PropTypes.instanceOf(Map),
-    columns: PropTypes.array.isRequired,
-    type: PropTypes.string,
-    theme: PropTypes.string,
-    action: PropTypes.func,
-    cols: PropTypes.number,
-    cellHeight: PropTypes.number,
-    wrapperStyle: PropTypes.object,
-    style: PropTypes.object,
+    action: func,
+    cellHeight: number,
+    cols: number,
+    columns: array.isRequired,
+    cssModifier: string,
+    fields: instanceOf(Map),
+    filteredItems: oneOfType([array, instanceOf(List)]),
+    items: oneOfType([array, instanceOf(List)]),
+    style: object,
+    type: string,
+    theme: string,
+    wrapperStyle: object,
   }
 
   static defaultProps = {
+    cssModifier: '',
     columns: [],
     cols: 3,
     cellHeight: 210,
@@ -74,7 +79,7 @@ export default class DictionaryList extends Component {
 
     const columnHeaders = this._getColumnHeaders()
     return (
-      <table className="DictionaryList data-table fontAboriginalSans">
+      <table className={`DictionaryList data-table fontAboriginalSans ${this.props.cssModifier}`}>
         <tbody>
           <tr>{columnHeaders}</tr>
 

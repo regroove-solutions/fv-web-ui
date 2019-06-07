@@ -13,7 +13,7 @@ import copy from './internationalization'
 const validForm = yup.object().shape({
   'dc:title': yup
     .string()
-    .label(copy.default.name)
+    .label(copy.create.name)
     .required(copy.validation.name),
   'dc:description': yup.string(),
 })

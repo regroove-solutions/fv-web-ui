@@ -1,0 +1,47 @@
+.Phrasebook {
+  margin-bottom: 7rem;
+  max-width: 750px;
+}
+.Phrasebook__successContent {
+  display: flex;
+}
+.Phrasebook__successReview {
+  flex-grow: 1;
+}
+.Phrasebook__successMore {
+  flex-grow: 1;
+}
+.Phrasebook__successLinks {
+  list-style-type: none;
+  padding: 0;
+}
+
+.Phrasebook .Text,
+.Phrasebook .Textarea {
+  margin-bottom: 3.5rem;
+}
+
+.Phrasebook__heading {
+  font-size: 3rem;
+}
+.Phrasebook .delete {
+  padding-left: 3.2rem;
+}
+.Phrasebook--detail .Phrasebook__heading {
+  font-size: 1.8rem;
+  font-weight: 100;
+  margin: 0 0 2rem 0;
+}
+
+.Phrasebook__main {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+.Phrasebook__mainInner {
+  padding: 3rem;
+}
+.Phrasebook--detail {
+  margin-right: -15px;
+  margin-left: -15px;
+}

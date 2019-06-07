@@ -13,6 +13,7 @@ import {
   LOAD_NAVIGATION_STARTED,
   LOAD_NAVIGATION_SUCCESS,
   LOAD_NAVIGATION_ERROR,
+  SET_ROUTE_PARAMS,
 } from './actionTypes'
 
 import ThemeManager from 'material-ui/lib/styles/theme-manager'
@@ -123,6 +124,58 @@ export const navigationReducer = combineReducers({
           menuVisible: !state.menuVisible,
         }
 
+      default:
+        return state
+    }
+  },
+
+  route(
+    state = {
+      routeParams: {},
+      matchedPage: undefined,
+      search: {
+        pageSize: '10', // using strings since these values are pulled from the url bar
+        page: '1', // using strings since these values are pulled from the url bar
+        sortBy: 'dc:title',
+        sortOrder: 'asc',
+      },
+    },
+    action = {}
+  ) {
+    switch (action.type) {
+      case SET_ROUTE_PARAMS: {
+        const { matchedRouteParams = {}, matchedPage, search } = action
+
+        // Ensure search defaults:
+        const _search = Object.assign(
+          {},
+          {
+            sortBy: 'dc:title',
+            sortOrder: 'asc',
+          },
+          search
+        )
+        // Ensure pagination defaults:
+        const _matchedRouteParams = {
+          ...matchedRouteParams,
+        }
+        _matchedRouteParams.page = (_matchedRouteParams.page || '1').split('?')[0]
+        const _routeParams = Object.assign(
+          {},
+          {
+            pageSize: '10', // using strings since these values are pulled from the url bar
+            page: '1', // using strings since these values are pulled from the url bar
+          },
+          _matchedRouteParams
+        )
+
+        return {
+          ...state,
+          routeParams: _routeParams,
+          matchedPage,
+          search: _search,
+        }
+      }
       default:
         return state
     }

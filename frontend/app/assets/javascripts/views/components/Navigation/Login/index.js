@@ -26,6 +26,8 @@ import { isMobile } from 'react-device-detect'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 
+import '!style-loader!css-loader!./styles.css'
+
 const { func, object, string } = PropTypes
 
 export class Login extends Component {
@@ -97,7 +99,7 @@ export class Login extends Component {
 
     if (this.props.computeLogin.isFetching) {
       return (
-        <div style={{ display: 'inline-block', paddingRight: '10px', color: '#fff' }}>
+        <div className="Login Login--busy">
           {this.intl.translate({
             key: 'views.components.navigation.processing_request',
             default: 'Processing request',
@@ -111,7 +113,7 @@ export class Login extends Component {
     // Handle success (anonymous or actual)
     if (this.props.computeLogin.success && this.props.computeLogin.isConnected) {
       return (
-        <div className="hidden-xs" style={{ display: 'inline-block', paddingRight: '15px' }}>
+        <div className="Login Login--welcome hidden-xs">
           {this.intl.translate({ key: 'general.welcome', default: 'WELCOME', case: 'upper' })},{' '}
           {selectn('response.properties.firstName', this.props.computeLogin)}
         </div>
@@ -131,7 +133,7 @@ export class Login extends Component {
     // console.log('NOTE: no-unused-vars', loginFeedbackMessage)
 
     return (
-      <div style={{ display: 'inline-block', padding: '0 0 0 10px' }}>
+      <div className="Login Login--signIn">
         <a className="nav_link" href={NavigationHelpers.getBaseURL() + 'logout'}>
           SIGN IN
         </a>

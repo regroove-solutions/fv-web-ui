@@ -16,6 +16,17 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 62.5%; /* font-size 1em = 10px on default browser settings */
+  background-color: #0d6c80;
+}
+body {
+  font-family: @font-family;
+  font-weight: 400;
+  font-size: 1.8rem;
+  line-height: 2.4rem;;
+}
+
 // Variables
 @primary-color: #b40000;
 @primary-header-color: #666666;
@@ -24,13 +35,6 @@
 @font-family: Arial, sans-serif;
 @font-family-aboriginal-sans: "Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium,
   Code2001;
-
-body {
-  font-family: @font-family;
-  font-weight: 400;
-  font-size: 18px;
-  line-height: 24px;
-}
 
 // FONTS
 
@@ -124,7 +128,7 @@ body {
 }
 
 .version {
-  font-size: 14px;
+  font-size: 1.4rem;;
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
   position: absolute;
   bottom: 10px;
@@ -154,6 +158,46 @@ body {
   text-decoration: none;
 }
 
+._btn {
+  padding: 1.2rem;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+  border: 2px solid transparent;
+}
+._btn--primary {
+  color: #fff;
+  background-color: #0793eb;
+  border-color: #0793eb;
+}
+._btn--primary:hover,
+._btn--primary:active {
+  background-color: #0571b5;
+  border-color: #0571b5;
+}
+._btn--secondary {
+  background-color: #fff;
+  color: #06588c;
+  border-color: #06588c;
+}
+._btn--secondary:hover {
+  color: #fff;
+  background-color: #06588c;
+  border-color: #06588c;
+}
+/*
+._btn--destructive {
+  background-color: #ffdc3f;
+  color: rgb(51,51,51);
+    border-color: #ffdc3f;
+}
+._btn--destructive:hover {
+  background-color: #ffdc3f;
+    border-color: #ffdc3f;
+}*/
+
 // Styling on warning for users on IE7 or below
 .browsehappy {
   text-align: center;
@@ -166,47 +210,47 @@ body {
 .display {
   // font-family: Arial, sans-serif;
   font-weight: 900;
-  font-size: 26px;
+  font-size: 2.6rem;;
   line-height: 34px;
 }
 
 h1 {
   // font-family: Arial, sans-serif;
   font-weight: 900;
-  font-size: 24px;
+  font-size: 2.4rem;
   color: @primary-header-color;
-  line-height: 24px;
+  line-height: 2.4rem;
 }
 
 h2 {
   // font-family: Arial, sans-serif;
   font-weight: 700;
-  font-size: 21px;
+  font-size: 2.1rem;
   color: @primary-header-color;
-  line-height: 24px;
+  line-height: 2.4rem;
 }
 
 h3 {
   // font-family: Arial, sans-serif;
   font-weight: 700;
-  font-size: 18px;
-  line-height: 21px;
+  font-size: 1.8rem;
+  line-height: 2.1rem;
   color: @primary-header-color;
 }
 
 h4 {
   // font-family: Arial, sans-serif;
   font-weight: 500;
-  font-size: 17px;
-  line-height: 21px;
+  font-size: 1.7rem;
+  line-height: 2.1rem;
   color: @primary-header-color;
 }
 
 h6 {
   // font-family: Arial, sans-serif;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
+  font-size: 1.4rem;
+  line-height: 1.6rem;
   color: @primary-header-color;
 }
 
@@ -316,13 +360,14 @@ form.editableComponentForm {
 .footer {
   width: 100%;
   min-height: 147px;
-  background-color: #6492a8;
+  background-color: #0d6c80;//6492a8;
   background-repeat: repeat-x;
-  background-position: bottom center;
+  background-position: top center;
+  background-size: cover;
   background-image: url("assets/images/footer-background.png");
   border: 0;
   padding-top: 15px;
-  margin-top: 30px;
+  // margin-top: 30px;
   color: #ffffff;
 
   a {
@@ -332,7 +377,7 @@ form.editableComponentForm {
 
 // Navigation
 .nav_link {
-  font-size: 14px;
+  font-size: 1.4rem;
   color: #fff;
 
   &:visited {
@@ -599,7 +644,7 @@ video {
   margin: 10px 0;
   padding: 10px 0;
   right: 0;
-  font-size: 18px;
+  font-size: 1.8rem;
 
   .dib-body-row {
     div {
@@ -615,7 +660,7 @@ video {
 
 .dialect-greeting-container {
   width: 100%;
-  font-size: 20px;
+  font-size: 2rem;
 }
 
 .dialect-navigation {
@@ -686,7 +731,7 @@ video {
 
   .pagination-page {
     height: 43px;
-    font-size: 20px;
+    font-size: 2rem;
     width: 45px;
     text-align: center;
     padding: 6px 0 !important;
@@ -747,36 +792,6 @@ video {
   }
 }
 
-.breadcrumb {
-  margin: 0;
-  background-color: transparent;
-  padding-left: 20px;
-  text-transform: capitalize;
-
-  a {
-    color: #353b40;
-    text-decoration: none;
-  }
-  a:hover,
-  a:focus {
-    text-decoration: underline;
-  }
-
-  > li.active {
-    color: #000;
-  }
-  > li + li:before {
-    content: "/\00a0";
-    padding: 0 0 0 5px;
-    color: #ccc;
-  }
-}
-
-@media (max-width: @small-screen) {
-  .breadcrumb{
-    display:none;
-  }
-}
 
 .admin-guide-step {
   width: 300px;
@@ -849,7 +864,7 @@ audio::-webkit-media-controls-enclosure {
   // Common
 
   h1 {
-    font-size: 1.4em;
+    // font-size: 1.4em;
   }
 
   // Navigation
@@ -1018,7 +1033,7 @@ audio::-webkit-media-controls-enclosure {
   background-color: #ff4081;
   box-shadow: 0 1px 6px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.12);
 
-  font-size: 14px;
+  font-size: 1.4rem;
   letter-spacing: 0;
   text-transform: uppercase;
   font-weight: 500;

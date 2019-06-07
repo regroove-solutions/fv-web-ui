@@ -22,200 +22,9 @@ import BaseOperations from 'operations/BaseOperations'
 import IntlService from 'views/services/intl'
 
 export default class DocumentOperations {
-  /**
-   * Get a single document of a certain type based on a path and title match
-   * This document may or may not contain children
-   */
-  static getDocument(pathOrUid = '', type, headers = {} /*params = {}*/) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .repository()
-        .fetch(pathOrUid, headers)
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((error) => {
-          if (error.hasOwnProperty('response')) {
-            error.response.json().then((jsonError) => {
-              if (jsonError.hasOwnProperty('status') && jsonError.status == '404') {
-                jsonError.message =
-                  jsonError.message +
-                  ' (404 - ' +
-                  IntlService.instance.translate({
-                    key: 'operations.document_not_found',
-                    default: 'Document not found',
-                  }) +
-                  ')'
-              }
-
-              reject(StringHelpers.extractErrorMessage(jsonError))
-            })
-          } else {
-            return reject(
-              error ||
-                IntlService.instance.translate({
-                  key: 'operations.could_not_access_server',
-                  default: 'Could not access server',
-                })
-            )
-          }
-        })
-    })
-  }
-
-  /**
-   * Publish a document
-   */
-  static publishDocument(pathOrUid = '', params = {}) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .operation('Document.PublishToSection')
-        .params(params)
-        .input(pathOrUid)
-        .execute()
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((/*error*/) => {
-          reject(
-            IntlService.instance.translate({
-              key: 'operations.could_not_publish_document',
-              default: 'Could not publish document',
-              case: 'first',
-              append: '.',
-            })
-          )
-        })
-    })
-  }
-
-  /**
-   * Update a document
-   */
-  static updateDocument(doc, headers = {}) {
-    // const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      doc
-        .save(headers)
-        .then((newDoc) => {
-          if (newDoc) {
-            resolve(newDoc)
-          } else {
-            // TODO: `type` is not defined
-            reject(
-              IntlService.instance.translate({
-                key: 'operations.no_found',
-                params: [type], // eslint-disable-line
-                default: `No ${type} found`, // eslint-disable-line
-                case: 'first',
-                append: '.',
-              })
-            )
-          }
-        })
-        .catch((error) => {
-          error.response.json().then((jsonError) => {
-            reject(StringHelpers.extractErrorMessage(jsonError))
-          })
-        })
-    })
-  }
-
-  /**
-   * Disable document
-   */
-  static disableDocument(pathOrUid) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .operation('FVDisableDocument')
-        .input(pathOrUid)
-        .execute()
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((error) => {
-          error.response.json().then((jsonError) => {
-            reject(StringHelpers.extractErrorMessage(jsonError))
-          })
-        })
-    })
-  }
-
-  /**
-   * Enable document
-   */
-  static enableDocument(pathOrUid) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .operation('FVEnableDocument')
-        .input(pathOrUid)
-        .execute()
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((error) => {
-          error.response.json().then((jsonError) => {
-            reject(StringHelpers.extractErrorMessage(jsonError))
-          })
-        })
-    })
-  }
-
-  /**
-   * Publish dialect
-   */
-  static publishDialect(pathOrUid) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .operation('FVPublishDialect')
-        .input(pathOrUid)
-        .execute()
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((error) => {
-          error.response.json().then((jsonError) => {
-            reject(StringHelpers.extractErrorMessage(jsonError))
-          })
-        })
-    })
-  }
-
-  /**
-   * Unpublish dialect
-   */
-  static unpublishDialect(pathOrUid) {
-    const properties = BaseOperations.getProperties()
-
-    return new Promise((resolve, reject) => {
-      properties.client
-        .operation('FVUnpublishDialect')
-        .input(pathOrUid)
-        .execute()
-        .then((doc) => {
-          resolve(doc)
-        })
-        .catch((error) => {
-          error.response.json().then((jsonError) => {
-            reject(StringHelpers.extractErrorMessage(jsonError))
-          })
-        })
-    })
-  }
-
-  /**
-   * Create a document
+  /*
+   * createDocument
+   * --------------------------------------
    */
   static createDocument(parentDocPathOrId, docParams) {
     const properties = BaseOperations.getProperties()
@@ -235,10 +44,12 @@ export default class DocumentOperations {
     })
   }
 
-  /**
+  /*
+   * createDocumentWithBlob
+   * --------------------------------------
    * Create a document with a file attached
    */
-  static createDocumentWithBlob(parentDoc, docParams, file) {
+  static createDocumentWithBlob(parentDoc, docParams, file, xpath = 'file:content') {
     const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
@@ -268,6 +79,7 @@ export default class DocumentOperations {
                     properties.client
                       .operation('Blob.AttachOnDocument')
                       .param('document', newDoc.uid)
+                      .param('xpath', xpath)
                       .input(res.blob)
                       .execute({ schemas: ['dublincore', 'file'] })
 
@@ -311,8 +123,211 @@ export default class DocumentOperations {
       }
     })
   }
+  /*
+   * disableDocument
+   * --------------------------------------
+   */
+  static disableDocument(pathOrUid) {
+    const properties = BaseOperations.getProperties()
 
-  /**
+    return new Promise((resolve, reject) => {
+      properties.client
+        .operation('FVDisableDocument')
+        .input(pathOrUid)
+        .execute()
+        .then((doc) => {
+          resolve(doc)
+        })
+        .catch((error) => {
+          error.response.json().then((jsonError) => {
+            reject(StringHelpers.extractErrorMessage(jsonError))
+          })
+        })
+    })
+  }
+
+  /*
+   * enableDocument
+   * --------------------------------------
+   */
+  static enableDocument(pathOrUid) {
+    const properties = BaseOperations.getProperties()
+
+    return new Promise((resolve, reject) => {
+      properties.client
+        .operation('FVEnableDocument')
+        .input(pathOrUid)
+        .execute()
+        .then((doc) => {
+          resolve(doc)
+        })
+        .catch((error) => {
+          error.response.json().then((jsonError) => {
+            reject(StringHelpers.extractErrorMessage(jsonError))
+          })
+        })
+    })
+  }
+  /*
+   * executeOperation
+   * --------------------------------------
+   * Executes an operation on the server
+   */
+  static executeOperation(input, operationName, operationParams, headers = {} /*, params = {}*/) {
+    const sanitizeKeys = ['dialectPath']
+
+    const properties = BaseOperations.getProperties()
+
+    for (const paramKey in operationParams) {
+      if (sanitizeKeys.indexOf(paramKey) !== -1) {
+        operationParams[paramKey] = StringHelpers.clean(operationParams[paramKey])
+      }
+    }
+
+    return new Promise((resolve, reject) => {
+      let operation = properties.client.operation(operationName)
+
+      if (input) {
+        operation = operation.input(input)
+      }
+
+      operation
+        .params(operationParams)
+        .execute(headers)
+        .then((response) => {
+          resolve(response)
+        })
+        .catch((error) => {
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then((jsonError) => {
+              reject(StringHelpers.extractErrorMessage(jsonError))
+            })
+          } else {
+            return reject(
+              error ||
+                IntlService.instance.translate({
+                  key: 'operations.could_not_execute_operation',
+                  default: 'Could not execute operation ' + operationName,
+                  params: [IntlService.instance.searchAndReplace(operationName, { prepend: '"', append: '"' })],
+                })
+            )
+          }
+        })
+    })
+  }
+
+  /*
+   * getCharactersByDialect
+   * --------------------------------------
+   */
+  static getCharactersByDialect(path, headers = {}, params = {}) {
+    const properties = BaseOperations.getProperties()
+    const cleanedDialectPath = StringHelpers.clean(path)
+
+    return new Promise((resolve, reject) => {
+      const defaultParams = {
+        query: `SELECT * FROM FVCharacter WHERE (ecm:path STARTSWITH '${cleanedDialectPath}' AND ecm:isTrashed = 0) ORDER BY fvcharacter:alphabet_order ASC`,
+      }
+
+      const _params = Object.assign(defaultParams, params)
+
+      properties.client
+        .operation('Document.Query')
+        .params(_params)
+        .execute(headers)
+        .then((results) => {
+          resolve(results)
+        })
+        .catch((error) => {
+          reject(error)
+        })
+    })
+  }
+
+  /*
+   * getDocument
+   * --------------------------------------
+   * Get a single document of a certain type based on a path and title match
+   * This document may or may not contain children
+   */
+  static getDocument(pathOrUid = '', type, headers = {} /*params = {}*/) {
+    const properties = BaseOperations.getProperties()
+
+    return new Promise((resolve, reject) => {
+      properties.client
+        .repository()
+        .fetch(pathOrUid, headers)
+        .then((doc) => {
+          resolve(doc)
+        })
+        .catch((error) => {
+          if (error.hasOwnProperty('response')) {
+            error.response.json().then((jsonError) => {
+              if (jsonError.hasOwnProperty('status') && jsonError.status == '404') {
+                jsonError.message =
+                  jsonError.message +
+                  ' (404 - ' +
+                  IntlService.instance.translate({
+                    key: 'operations.document_not_found',
+                    default: 'Document not found',
+                  }) +
+                  ')'
+              }
+
+              reject(StringHelpers.extractErrorMessage(jsonError))
+            })
+          } else {
+            return reject(
+              error ||
+                IntlService.instance.translate({
+                  key: 'operations.could_not_access_server',
+                  default: 'Could not access server',
+                })
+            )
+          }
+        })
+    })
+  }
+
+  /*
+   * getDocumentsByDialect
+   * --------------------------------------
+   */
+  getDocumentsByDialect(client, dialect, query = null, headers = null, params = null) {
+    // Initialize and empty document list from type
+    const documentList = new this.documentTypePlural(null)
+
+    return new Promise((resolve /*, reject*/) => {
+      const defaultParams = {
+        query: ` SELECT * FROM ${documentList.model.prototype.entityTypeName}  WHERE (fva:dialect = '${dialect.get(
+          'id'
+        )}' AND ecm:isTrashed = 0) ${query ? `AND ${query}` : ''} ORDER BY dc:title`,
+      }
+
+      const defaultHeaders = {
+        'enrichers.document': 'parentDoc',
+      }
+
+      const _params = Object.assign(defaultParams, params)
+      const _headers = Object.assign(defaultHeaders, headers)
+
+      client
+        .operation('Document.Query')
+        .params(_params)
+        .execute(_headers)
+        .then((response) => {
+          documentList.add(response.entries)
+          resolve(documentList.toJSON())
+        })
+        .catch((error) => {
+          throw error
+        })
+    })
+  }
+
+  /*
+   * getDocumentByID
+   * --------------------------------------
    * Get a single document by ID
    */
   getDocumentByID(id, headers = null, params = null) {
@@ -367,108 +382,154 @@ export default class DocumentOperations {
     )
   }
 
-  getDocumentsByDialect(client, dialect, query = null, headers = null, params = null) {
-    // Initialize and empty document list from type
-    const documentList = new this.documentTypePlural(null)
+  /*
+   * publishDialect
+   * --------------------------------------
+   */
+  static publishDialect(pathOrUid) {
+    const properties = BaseOperations.getProperties()
 
-    return new Promise((resolve /*, reject*/) => {
-      const defaultParams = {
-        query: ` SELECT * FROM ${documentList.model.prototype.entityTypeName}  WHERE (fva:dialect = '${dialect.get(
-          'id'
-        )}' AND ecm:isTrashed = 0) ${query ? `AND ${query}` : ''} ORDER BY dc:title`,
-      }
-
-      const defaultHeaders = {
-        'enrichers.document': 'parentDoc',
-      }
-
-      const _params = Object.assign(defaultParams, params)
-      const _headers = Object.assign(defaultHeaders, headers)
-
-      client
-        .operation('Document.Query')
-        .params(_params)
-        .execute(_headers)
-        .then((response) => {
-          documentList.add(response.entries)
-          resolve(documentList.toJSON())
+    return new Promise((resolve, reject) => {
+      properties.client
+        .operation('FVPublishDialect')
+        .input(pathOrUid)
+        .execute()
+        .then((doc) => {
+          resolve(doc)
         })
         .catch((error) => {
-          throw error
+          error.response.json().then((jsonError) => {
+            reject(StringHelpers.extractErrorMessage(jsonError))
+          })
         })
     })
   }
 
-  /**
-   * Executes an operation on the server
+  /*
+   * publishDocument
+   * --------------------------------------
    */
-  static executeOperation(input, operationName, operationParams, headers = {} /*, params = {}*/) {
-    const sanitizeKeys = ['dialectPath']
-
+  static publishDocument(pathOrUid = '', params = {}) {
     const properties = BaseOperations.getProperties()
 
-    for (const paramKey in operationParams) {
-      if (sanitizeKeys.indexOf(paramKey) !== -1) {
-        operationParams[paramKey] = StringHelpers.clean(operationParams[paramKey])
-      }
-    }
+    return new Promise((resolve, reject) => {
+      properties.client
+        .operation('Document.PublishToSection')
+        .params(params)
+        .input(pathOrUid)
+        .execute()
+        .then((doc) => {
+          resolve(doc)
+        })
+        .catch((/*error*/) => {
+          reject(
+            IntlService.instance.translate({
+              key: 'operations.could_not_publish_document',
+              default: 'Could not publish document',
+              case: 'first',
+              append: '.',
+            })
+          )
+        })
+    })
+  }
+
+  /*
+   * unpublishDialect
+   * --------------------------------------
+   */
+  static unpublishDialect(pathOrUid) {
+    const properties = BaseOperations.getProperties()
 
     return new Promise((resolve, reject) => {
-      let operation = properties.client.operation(operationName)
-
-      if (input) {
-        operation = operation.input(input)
-      }
-
-      operation
-        .params(operationParams)
-        .execute(headers)
-        .then((response) => {
-          resolve(response)
+      properties.client
+        .operation('FVUnpublishDialect')
+        .input(pathOrUid)
+        .execute()
+        .then((doc) => {
+          resolve(doc)
         })
         .catch((error) => {
-          if (error.hasOwnProperty('response')) {
-            error.response.json().then((jsonError) => {
-              reject(StringHelpers.extractErrorMessage(jsonError))
-            })
-          } else {
-            return reject(
-              error ||
-                IntlService.instance.translate({
-                  key: 'operations.could_not_execute_operation',
-                  default: 'Could not execute operation ' + operationName,
-                  params: [IntlService.instance.searchAndReplace(operationName, { prepend: '"', append: '"' })],
+          error.response.json().then((jsonError) => {
+            reject(StringHelpers.extractErrorMessage(jsonError))
+          })
+        })
+    })
+  }
+
+  /*
+   * updateDocument
+   * --------------------------------------
+   */
+  static updateDocument(doc, headers = {}, file, xpath = 'file:content') {
+    const properties = BaseOperations.getProperties()
+
+    return new Promise((resolve, reject) => {
+      doc
+        .save(headers)
+        .then((newDoc) => {
+          if (newDoc) {
+            // ================================
+            if (file) {
+              const blob = new Nuxeo.Blob({
+                content: file,
+                name: file.name,
+                mimeType: file.type,
+                size: file.size,
+              })
+
+              properties.client
+                .batchUpload()
+                .upload(blob)
+                .then((res) => {
+                  properties.client
+                    .operation('Blob.AttachOnDocument')
+                    .param('document', newDoc.uid)
+                    .param('xpath', xpath)
+                    .input(res.blob)
+                    .execute({ schemas: ['dublincore', 'file'] })
+                  resolve(newDoc)
                 })
+                .catch((/*error*/) => {
+                  reject(
+                    IntlService.instance.translate({
+                      key: 'operations.could_not_update_document',
+                      default: 'Could not update document',
+                      case: 'first',
+                      append: '.',
+                    })
+                  )
+                })
+            } else {
+              resolve(newDoc)
+            }
+
+            // ================================
+          } else {
+            // TODO: `type` is not defined
+            reject(
+              IntlService.instance.translate({
+                key: 'operations.no_found',
+                params: [type], // eslint-disable-line
+                default: `No ${type} found`, // eslint-disable-line
+                case: 'first',
+                append: '.',
+              })
             )
           }
         })
-    })
-  }
-
-  static getCharactersByDialect(path, headers = {}, params = {}) {
-    const properties = BaseOperations.getProperties()
-    const cleanedDialectPath = StringHelpers.clean(path)
-
-    return new Promise((resolve, reject) => {
-      const defaultParams = {
-        query: `SELECT * FROM FVCharacter WHERE (ecm:path STARTSWITH '${cleanedDialectPath}' AND ecm:isTrashed = 0) ORDER BY fvcharacter:alphabet_order ASC`,
-      }
-
-      const _params = Object.assign(defaultParams, params)
-
-      properties.client
-        .operation('Document.Query')
-        .params(_params)
-        .execute(headers)
-        .then((results) => {
-          resolve(results)
-        })
         .catch((error) => {
-          reject(error)
+          error.response.json().then((jsonError) => {
+            reject(StringHelpers.extractErrorMessage(jsonError))
+          })
         })
     })
   }
 
+  /*
+   * queryDocumentsByDialect
+   * --------------------------------------
+   */
   static queryDocumentsByDialect(path, queryAppend, headers = {}, params = {}) {
     const properties = BaseOperations.getProperties()
     const cleanedDialectPath = StringHelpers.clean(path)
@@ -492,6 +553,11 @@ export default class DocumentOperations {
         })
     })
   }
+
+  /*
+   * searchDocuments
+   * --------------------------------------
+   */
   // eslint-disable-next-line
   static searchDocuments(queryParam, queryPath, docTypes, headers = {}, params = {}) {
     const properties = BaseOperations.getProperties()

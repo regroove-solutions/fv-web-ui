@@ -1,20 +1,22 @@
 import React from 'react'
 import { PropTypes } from 'react'
-import ProviderHelpers from 'common/ProviderHelpers'
-import RecorderStatesUnavailable from './states/unavailable'
-import RecorderStatesSuccessDefault from './states/successDefault'
-import RecorderStatesDefault from './states/default'
-import RecorderStatesErrorBoundary from './states/errorBoundary'
+// import ProviderHelpers from 'common/ProviderHelpers'
+import StateUnavailable from './states/unavailable'
+import StateSuccessDefault from './states/successCreate'
+import StateCreate from './states/create'
+import StateErrorBoundary from './states/errorBoundary'
+
+// Immutable
+import Immutable, { Map } from 'immutable' // eslint-disable-line
 
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
-import { createContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { createCategory, fetchCategories } from 'providers/redux/reducers/fvCategory'
 import { fetchDialect } from 'providers/redux/reducers/fvDialect'
 
 import { getFormData, handleSubmit } from 'common/FormHelpers'
-import validator from './validation'
 
 import {
   STATE_UNAVAILABLE,
@@ -28,11 +30,16 @@ import {
   DEFAULT_SORT_COL,
   DEFAULT_SORT_TYPE,
 } from 'common/Constants'
+
+import '!style-loader!css-loader!./Phrasebook.css'
+
 const { array, element, func, number, object, string } = PropTypes
 
-export class CreateRecorder extends React.Component {
+let categoriesPath = undefined
+export class Phrasebook extends React.Component {
   static propTypes = {
     className: string,
+    copy: object,
     groupName: string,
     breadcrumb: element,
     DEFAULT_PAGE: number,
@@ -40,22 +47,23 @@ export class CreateRecorder extends React.Component {
     DEFAULT_LANGUAGE: string,
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
+    validator: object,
     // REDUX: reducers/state
-    computeContributor: object.isRequired,
-    computeContributors: object.isRequired,
-    computeCreateContributor: object,
+    routeParams: object.isRequired,
+    computeCategories: object.isRequired,
+    computeCreateCategory: object,
+    computeCategory: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
     splitWindowPath: array.isRequired,
     // REDUX: actions/dispatch/func
-    createContributor: func.isRequired,
-    fetchContributors: func.isRequired,
+    fetchCategories: func.isRequired,
     fetchDialect: func.isRequired,
     pushWindowPath: func.isRequired,
   }
   static defaultProps = {
-    className: 'FormRecorder',
-    groupName: 'Form__group',
+    className: 'FormPhrasebook',
+    groupName: '',
     breadcrumb: null,
     DEFAULT_PAGE,
     DEFAULT_PAGE_SIZE,
@@ -81,31 +89,55 @@ export class CreateRecorder extends React.Component {
   }
 
   async componentDidMount() {
-    // Do any loading here...
-    const { computeDialect } = this.props
+    const { routeParams /*, filter*/ } = this.props
+    const { pageSize, page } = routeParams
 
-    // USING this.DIALECT_PATH instead of setting state
-    // this.setState({ dialectPath: dialectPath })
-    this.DIALECT_PATH = ProviderHelpers.getDialectPathFromURLArray(this.props.splitWindowPath)
-    this.CONTRIBUTOR_PATH = `${this.DIALECT_PATH}/Contributors`
+    const copy = this.props.copy
+      ? this.props.copy
+      : await import(/* webpackChunkName: "PhrasebookInternationalization" */ './internationalization').then(
+          (_copy) => {
+            return _copy.default
+          }
+        )
+
+    categoriesPath = `${routeParams.dialect_path}/Phrase Books/`
+
     // Get data for computeDialect
-    if (!computeDialect.success) {
-      await this.props.fetchDialect('/' + this.DIALECT_PATH)
+    await this.props.fetchDialect('/' + this.props.routeParams.dialect_path)
+    if (this.props.computeDialect.isError && this.props.computeDialect.error) {
+      this.setState({
+        componentState: STATE_ERROR_BOUNDARY,
+        copy,
+        errorMessage: this.props.computeDialect.error,
+      })
+      return
     }
 
     let currentAppliedFilter = '' // eslint-disable-line
+    // TODO: ASK DANIEL ABOUT `filter` & `filter.currentAppliedFilter`
     // if (filter.has('currentAppliedFilter')) {
     //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
     // }
-    await this.props.fetchContributors(
-      this.CONTRIBUTOR_PATH,
-      `${currentAppliedFilter}&currentPageIndex=${this.props.DEFAULT_PAGE - 1}&pageSize=${
-        this.props.DEFAULT_PAGE_SIZE
-      }&sortOrder=${this.props.DEFAULT_SORT_TYPE}&sortBy=${this.props.DEFAULT_SORT_COL}`
+
+    await this.props.fetchCategories(
+      categoriesPath,
+      `${currentAppliedFilter}&currentPageIndex=${page - 1}&pageSize=${pageSize}&sortOrder=${
+        this.props.DEFAULT_SORT_TYPE
+      }&sortBy=${this.props.DEFAULT_SORT_COL}`
     )
+
+    const validator = this.props.validator
+      ? this.props.validator
+      : await import(/* webpackChunkName: "PhrasebookValidator" */ './validator').then((_validator) => {
+          return _validator.default
+        })
+
     // Flip to ready state...
     this.setState({
       componentState: STATE_DEFAULT,
+      copy,
+      validator,
+      errorMessage: undefined,
     })
   }
   render() {
@@ -117,7 +149,7 @@ export class CreateRecorder extends React.Component {
       }
 
       case STATE_DEFAULT: {
-        content = this._stateGetDefault()
+        content = this._stateGetCreate()
         break
       }
       case STATE_ERROR: {
@@ -135,18 +167,18 @@ export class CreateRecorder extends React.Component {
       default:
         content = <div>{/* Shouldn't get here */}</div>
     }
-    // return <Provider store={store}>{content}</Provider>
+
     return content
   }
 
   _stateGetUnavailable = () => {
     const { className } = this.props
-    return <RecorderStatesUnavailable className={className} />
+    return <StateUnavailable className={className} copy={this.state.copy} />
   }
   _stateGetErrorBoundary = () => {
-    return <RecorderStatesErrorBoundary />
+    return <StateErrorBoundary errorMessage={this.state.errorMessage} copy={this.state.copy} />
   }
-  _stateGetDefault = () => {
+  _stateGetCreate = () => {
     const { className, breadcrumb, groupName } = this.props
     const { errors, isBusy } = this.state
     //   isFetching || isSuccess
@@ -155,8 +187,9 @@ export class CreateRecorder extends React.Component {
     // const isFetching = false
     // const formStatus = isFetching ? <div className="alert alert-info">{'Uploading... Please be patient...'}</div> : null
     return (
-      <RecorderStatesDefault
+      <StateCreate
         className={className}
+        copy={this.state.copy}
         groupName={groupName}
         breadcrumb={breadcrumb}
         errors={errors}
@@ -169,17 +202,18 @@ export class CreateRecorder extends React.Component {
     )
   }
   _stateGetError = () => {
-    // default state handles errors, just call it...
-    return this._stateGetDefault()
+    // _stateGetCreate() also handles errors, so just call it...
+    return this._stateGetCreate()
   }
   _stateGetSuccess = () => {
     const { className } = this.props
-    const { formData } = this.state
-
+    const { formData, itemUid } = this.state
     return (
-      <RecorderStatesSuccessDefault
+      <StateSuccessDefault
         className={className}
+        copy={this.state.copy}
         formData={formData}
+        itemUid={itemUid}
         handleClick={() => {
           this.setState({
             componentState: STATE_DEFAULT,
@@ -189,20 +223,27 @@ export class CreateRecorder extends React.Component {
       />
     )
   }
-  async _handleCreateItemSubmit(formData) {
+
+  _handleCreateItemSubmit = async (formData) => {
     // Submit here
     const now = Date.now()
     const name = formData['dc:title']
-    const results = await this.props.createContributor(
-      `${this.DIALECT_PATH}/Contributors`,
+
+    const results = await this.props.createCategory(
+      `${this.props.routeParams.dialect_path}/Phrase Books`, // parentDoc:
       {
-        type: 'FVContributor',
+        // docParams:
+        type: 'FVCategory',
         name: name,
-        properties: formData,
+        properties: {
+          'dc:description': formData['dc:description'],
+          'dc:title': formData['dc:title'],
+        },
       },
       null,
       now
     )
+
     if (results.success === false) {
       this.setState({
         componentState: STATE_ERROR_BOUNDARY,
@@ -210,11 +251,7 @@ export class CreateRecorder extends React.Component {
       return
     }
 
-    const item = ProviderHelpers.getEntry(
-      this.props.computeContributor,
-      `${this.DIALECT_PATH}/Contributors/${name}.${now}`
-    )
-    const response = item.response || {}
+    const response = results ? results.response : {}
 
     if (response && response.uid) {
       this.setState({
@@ -222,6 +259,7 @@ export class CreateRecorder extends React.Component {
         formData,
         itemUid: response.uid,
         componentState: STATE_SUCCESS,
+        categoryPath: `${this.props.routeParams.dialect_path}/Categories/${formData['dc:title']}.${now}`,
       })
     } else {
       this.setState({
@@ -229,7 +267,7 @@ export class CreateRecorder extends React.Component {
       })
     }
   }
-  _onRequestSaveForm = async() => {
+  _onRequestSaveForm = async () => {
     const formData = getFormData({
       formReference: this.form,
     })
@@ -251,7 +289,7 @@ export class CreateRecorder extends React.Component {
     }
 
     handleSubmit({
-      validator,
+      validator: this.state.validator,
       formData,
       valid,
       invalid,
@@ -261,16 +299,16 @@ export class CreateRecorder extends React.Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvDialect, fvContributor, windowPath } = state
-
-  const { computeContributor, computeContributors, computeCreateContributor } = fvContributor
+  const { fvCategory, fvDialect, windowPath, navigation } = state
+  const { computeCategories, computeCreateCategory, computeCategory } = fvCategory
   const { computeDialect, computeDialect2 } = fvDialect
   const { splitWindowPath } = windowPath
-
+  const { route } = navigation
   return {
-    computeContributor,
-    computeContributors,
-    computeCreateContributor,
+    computeCategories,
+    computeCreateCategory,
+    computeCategory,
+    routeParams: route.routeParams,
     computeDialect,
     computeDialect2,
     splitWindowPath,
@@ -279,8 +317,8 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  createContributor,
-  fetchContributors,
+  createCategory,
+  fetchCategories,
   fetchDialect,
   pushWindowPath,
 }
@@ -288,4 +326,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(CreateRecorder)
+)(Phrasebook)

@@ -2,3 +2,4 @@
 __mocks__
 libraries
 vendor
+jsconfig.json

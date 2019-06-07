@@ -155,9 +155,9 @@ export class DialectLearn extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (prevProps.windowPath !== this.props.windowPath) {
+      this.fetchData(this.props)
     }
 
     // if (selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {

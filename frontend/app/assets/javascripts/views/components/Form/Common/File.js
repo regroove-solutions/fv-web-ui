@@ -3,13 +3,6 @@ import { PropTypes } from 'react'
 const { string, func, object } = PropTypes
 
 export default class File extends React.Component {
-  static defaultProps = {
-    className: 'Text',
-    value: '',
-    handleChange: () => {},
-    error: {},
-  }
-
   static propTypes = {
     id: string.isRequired,
     labelText: string.isRequired,
@@ -19,6 +12,13 @@ export default class File extends React.Component {
     value: string,
     handleChange: func,
     error: object,
+  }
+
+  static defaultProps = {
+    className: 'Text',
+    value: '',
+    handleChange: () => {},
+    error: {},
   }
 
   state = {
@@ -34,7 +34,7 @@ export default class File extends React.Component {
     const { message } = this.props.error
     const { className, ariaDescribedby, id, labelText, name } = this.props
     return (
-      <div className={`${className} File ${message && 'Form__error'}`}>
+      <div className={`${className} File ${message ? 'Form__error' : ''}`}>
         <label className={`${className}__label File__label`} htmlFor={id}>
           {labelText}
         </label>

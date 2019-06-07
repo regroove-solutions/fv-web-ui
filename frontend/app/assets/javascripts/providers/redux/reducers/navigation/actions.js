@@ -11,6 +11,7 @@ import {
   LOAD_NAVIGATION_STARTED,
   LOAD_NAVIGATION_SUCCESS,
   LOAD_NAVIGATION_ERROR,
+  SET_ROUTE_PARAMS,
 } from './actionTypes'
 
 import DirectoryOperations from 'operations/DirectoryOperations'
@@ -117,4 +118,17 @@ export const overrideBreadcrumbs = (breadcrumbs) => {
 
 export const updatePageProperties = (pageProperties) => {
   return { type: PAGE_PROPERTIES, pageProperties }
+}
+
+export const setRouteParams = (
+  data = {
+    matchedPage: undefined,
+    matchedRouteParams: undefined,
+    search: {},
+  }
+) => {
+  return {
+    type: SET_ROUTE_PARAMS,
+    ...data,
+  }
 }

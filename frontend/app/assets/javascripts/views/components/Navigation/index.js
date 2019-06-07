@@ -62,7 +62,11 @@ import IntlService from 'views/services/intl'
 // import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
+
+import '!style-loader!css-loader!./styles.css'
+
 const { array, func, object, string, bool } = PropTypes
+
 export class Navigation extends Component {
   intl = IntlService.instance
 
@@ -140,8 +144,8 @@ export class Navigation extends Component {
     })
   }
 
-  componentWillReceiveProps(newProps) {
-    // if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
+  componentDidUpdate(prevProps) {
+    // if (this.props.computeLogin != prevProps.computeLogin && this.props.computeLogin.isConnected) {
     //     this.props.countTotalTasks('count_total_tasks', {
     //         'query': 'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')',
     //         'language': 'nxql',
@@ -150,16 +154,16 @@ export class Navigation extends Component {
     // }
 
     const USER_LOG_IN_STATUS_CHANGED =
-      newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected &&
-      newProps.computeLogin.isConnected !== undefined &&
-      this.props.computeLogin.isConnected !== undefined
+      this.props.computeLogin.isConnected !== prevProps.computeLogin.isConnected &&
+      this.props.computeLogin.isConnected !== undefined &&
+      prevProps.computeLogin.isConnected !== undefined
 
-    if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
-      this._setExplorePath(newProps)
+    if (USER_LOG_IN_STATUS_CHANGED || this.props.routeParams.area != prevProps.routeParams.area) {
+      this._setExplorePath(this.props)
     }
 
     // Remove popover upon navigation
-    if (newProps.windowPath !== this.props.windowPath) {
+    if (this.props.windowPath !== prevProps.windowPath) {
       this.setState({
         searchContextPopoverOpen: false,
       })
@@ -327,7 +331,7 @@ export class Navigation extends Component {
     const dialectLink = '/explore' + this.props.routeParams.dialect_path
     const hrefPath = NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)
     return (
-      <div>
+      <div className="Navigation">
         <AppBar
           title={
             <span className="hidden-xs">
@@ -351,13 +355,15 @@ export class Navigation extends Component {
                 {this.intl.trans('choose_lang', 'Choose a Language', 'first')}
               </Link> */}
               <a
+                className="Navigation__link"
                 href={hrefPath}
                 onClick={(e) => {
                   e.preventDefault()
                   NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
                 }}
               >
-                {this.intl.trans('choose_lang', 'Choose a Language', 'first')}
+                {/* {this.intl.trans('choose_lang', 'Choose a Language', 'first')} */}
+                {this.intl.translate({ key: 'general.explore', default: 'Explore Languages', case: 'title' })}
               </a>
             </div>
 
@@ -404,7 +410,7 @@ export class Navigation extends Component {
                   </IconButton>
                 </Badge> */}
 
-                <a href={NavigationHelpers.generateStaticURL('/tasks')} className="nav_link">
+                <a href={NavigationHelpers.generateStaticURL('/tasks')} className="Navigation__link nav_link">
                   View My Tasks
                 </a>
 

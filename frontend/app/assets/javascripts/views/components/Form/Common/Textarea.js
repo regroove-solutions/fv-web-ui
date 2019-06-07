@@ -1,16 +1,11 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, func, object } = PropTypes
+
+import '!style-loader!css-loader!./Textarea.css'
+
+const { bool, string, func, object } = PropTypes
 
 export default class Textarea extends React.Component {
-  static defaultProps = {
-    className: 'Textarea',
-    value: '',
-    handleChange: () => {},
-    error: {},
-    setRef: () => {},
-  }
-
   static propTypes = {
     id: string.isRequired,
     labelText: string.isRequired,
@@ -21,31 +16,78 @@ export default class Textarea extends React.Component {
     handleChange: func,
     error: object,
     setRef: func,
+    wysiwyg: bool,
+  }
+  static defaultProps = {
+    className: 'Textarea',
+    value: '',
+    handleChange: () => {},
+    error: {},
+    setRef: () => {},
+    wysiwyg: false,
   }
 
   state = {
     value: this.props.value,
+    TextElement: null,
   }
 
+  async componentDidMount() {
+    const { ariaDescribedby, className, id, name, setRef } = this.props
+
+    const textComponent = this.props.wysiwyg ? (
+      await import(/* webpackChunkName: "Editor" */ 'views/components/Editor').then((_module) => {
+        const Editor = _module.default
+        return (
+          <Editor
+            aria-describedby={ariaDescribedby}
+            className={`${className} Textarea__textarea`}
+            id={id}
+            initialValue={this.state.value}
+            name={name}
+            onChange={(content, delta, source, editor) => {
+              this._handleChange(content, delta, source, editor)
+            }}
+            setRef={setRef}
+          />
+        )
+      })
+    ) : (
+      <textarea
+        aria-describedby={ariaDescribedby}
+        className={`${className} Textarea__textarea`}
+        defaultValue={this.state.value}
+        id={id}
+        name={name}
+        onChange={this._handleChange}
+        ref={setRef}
+      />
+    )
+    this.setState({
+      TextElement: textComponent,
+    })
+  }
   render() {
     const { message } = this.props.error
-    const { ariaDescribedby, className, id, labelText, name, setRef } = this.props
+    const { className, id, labelText, wysiwyg } = this.props
+    const { TextElement } = this.state
+
+    const labelClickHandler = wysiwyg
+      ? () => {
+          if (this.state.wysiwygRef) {
+            this.state.wysiwygRef.focus()
+          }
+        }
+      : () => {}
+
     return (
-      <div className={`${className} Textarea ${message && 'Form__error'}`}>
-        <label className={`${className}__label Textarea__label`} htmlFor={id}>
+      <div className={`${className} Textarea ${message ? 'Form__error' : ''}`}>
+        <label onClick={labelClickHandler} className={`${className} Textarea__label`} htmlFor={id}>
           {labelText}
         </label>
-        <textarea
-          aria-describedby={ariaDescribedby}
-          className={`${className}__textarea Textarea__textarea`}
-          id={id}
-          name={name}
-          defaultValue={this.state.value}
-          onChange={this._handleChange}
-          ref={setRef}
-        />
+        {TextElement}
         {message && (
-          <label className="Form__errorMessage" htmlFor={id}>
+          <label onClick={labelClickHandler} className="Form__errorMessage" htmlFor={id}>
             {message}
           </label>
         )}

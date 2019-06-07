@@ -71,8 +71,8 @@ export class View extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(/*nextProps*/) {
-    /*if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+  // componentWillReceiveProps(/*nextProps*/) {
+  /*if (nextProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
           this.fetchData(nextProps);
         }
         else if (nextProps.routeParams.word !== this.props.routeParams.word) {
@@ -81,7 +81,7 @@ export class View extends Component {
         else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
           this.fetchData(nextProps);
         }*/
-  }
+  // }
 
   // Fetch data on initial render
   componentDidMount() {
