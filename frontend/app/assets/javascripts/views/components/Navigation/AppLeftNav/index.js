@@ -1,12 +1,9 @@
 /*
 Copyright 2016 First People's Cultural Council
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import Immutable, { is, Map } from 'immutable'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
@@ -97,7 +94,7 @@ export class AppLeftNav extends Component {
     }
   }
 
-  componentWillReceiveProps() {
+  componentDidUpdate() {
     /**
      * If the user is connected, display modified routes (splitting Explore path)
      */
@@ -146,13 +143,13 @@ export class AppLeftNav extends Component {
 
       const newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems)
 
-      let newState = this.state.routes.set(exploreEntry[0], newExploreEntry)
+      let newStateRoutes = this.state.routes.set(exploreEntry[0], newExploreEntry)
 
       // Insert Tasks after explore
-      const currentTasksEntry = newState.findEntry((value) => value.get('id') === 'tasks')
+      const currentTasksEntry = newStateRoutes.findEntry((value) => value.get('id') === 'tasks')
 
       if (currentTasksEntry === null) {
-        newState = newState.insert(
+        newStateRoutes = newStateRoutes.insert(
           exploreEntry[0],
           new Map({
             id: 'tasks',
@@ -161,10 +158,29 @@ export class AppLeftNav extends Component {
           })
         )
       }
-      this.setState({ routes: newState })
+
+      // NOTE: below triggers infinite loop
+      // this.setState({ routes: newStateRoutes })
+
+      /* NOTE:
+      Had a hard time working with Immutable to determine if newStateRoutes !== this.state.routes
+      Opted for converting from Immutable > JS and
+      checking if `nestedItems` exists in the array that has id='explore'
+      */
+      const routesCurrent = this.state.routes.toJS()
+      const routesCurrentExplore = routesCurrent.filter((entry) => {
+        return entry.id === 'explore'
+      })
+      if (routesCurrentExplore[0].nestedItems === undefined) {
+        this.setState({ routes: newStateRoutes })
+      }
     } else {
+      // NOTE: added test to prevent infinite loop
       // If user logged out, revert to initial state
-      this.setState(this._getInitialState())
+      const initialState = this._getInitialState()
+      if (is(initialState.routes, this.state.routes) === false) {
+        this.setState(initialState)
+      }
     }
   }
 
@@ -192,13 +208,13 @@ export class AppLeftNav extends Component {
     const entries = selectn('response.entries', this.props.computeLoadNavigation)
     this.additionalEntries = entries
       ? entries.map((d) => (
-        <ListItem
-          className="2"
-          key={selectn('uid', d)}
-          value={NavigationHelpers.generateStaticURL('/content/' + selectn('properties.fvpage:url', d))}
-          primaryText={selectn('properties.dc:title', d)}
-        />
-      ))
+          <ListItem
+            className="2"
+            key={selectn('uid', d)}
+            value={NavigationHelpers.generateStaticURL('/content/' + selectn('properties.fvpage:url', d))}
+            primaryText={selectn('properties.dc:title', d)}
+          />
+        ))
       : null
 
     return (

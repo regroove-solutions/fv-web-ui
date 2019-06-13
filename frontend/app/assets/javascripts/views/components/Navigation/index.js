@@ -1,12 +1,9 @@
 /*
 Copyright 2016 First People's Cultural Council
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -140,8 +137,8 @@ export class Navigation extends Component {
     })
   }
 
-  componentWillReceiveProps(newProps) {
-    // if (newProps.computeLogin != this.props.computeLogin && newProps.computeLogin.isConnected) {
+  componentDidUpdate(prevProps) {
+    // if (this.props.computeLogin != prevProps.computeLogin && this.props.computeLogin.isConnected) {
     //     this.props.countTotalTasks('count_total_tasks', {
     //         'query': 'SELECT COUNT(ecm:uuid) FROM TaskDoc, FVUserRegistration WHERE (ecm:currentLifeCycleState = \'opened\' OR ecm:currentLifeCycleState = \'created\')',
     //         'language': 'nxql',
@@ -150,16 +147,16 @@ export class Navigation extends Component {
     // }
 
     const USER_LOG_IN_STATUS_CHANGED =
-      newProps.computeLogin.isConnected !== this.props.computeLogin.isConnected &&
-      newProps.computeLogin.isConnected !== undefined &&
-      this.props.computeLogin.isConnected !== undefined
+      this.props.computeLogin.isConnected !== prevProps.computeLogin.isConnected &&
+      this.props.computeLogin.isConnected !== undefined &&
+      prevProps.computeLogin.isConnected !== undefined
 
-    if (USER_LOG_IN_STATUS_CHANGED || newProps.routeParams.area != this.props.routeParams.area) {
-      this._setExplorePath(newProps)
+    if (USER_LOG_IN_STATUS_CHANGED || this.props.routeParams.area != prevProps.routeParams.area) {
+      this._setExplorePath(this.props)
     }
 
     // Remove popover upon navigation
-    if (newProps.windowPath !== this.props.windowPath) {
+    if (this.props.windowPath !== prevProps.windowPath) {
       this.setState({
         searchContextPopoverOpen: false,
       })
@@ -459,7 +456,6 @@ export class Navigation extends Component {
                                 }.bind(this))}
                                 </tbody>
                             </table>
-
                         </div>
                     </div>
                 </div>

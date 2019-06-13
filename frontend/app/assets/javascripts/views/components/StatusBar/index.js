@@ -1,6 +1,5 @@
 import React from 'react'
 import Snackbar from 'material-ui/lib/snackbar'
-import RaisedButton from 'material-ui/lib/raised-button'
 
 export default class StatusBar extends React.Component {
   constructor(props) {
@@ -16,11 +15,13 @@ export default class StatusBar extends React.Component {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      open: true,
-    })
-  }
+  // componentDidUpdate() {
+  // if (this.state.open !== true) {
+  //   this.setState({
+  //     open: true,
+  //   })
+  // }
+  // }
 
   render() {
     if (this.props.message) {
