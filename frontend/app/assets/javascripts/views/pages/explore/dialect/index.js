@@ -123,16 +123,10 @@ export class ExploreDialect extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    //console.log(JSON.stringify(nextProps, null, '\t'));
-
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (prevProps.windowPath !== this.props.windowPath) {
+      this.fetchData(this.props)
     }
-
-    // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-    //     this.fetchData(nextProps);
-    // }
   }
 
   _onNavigateRequest(path, e) {
