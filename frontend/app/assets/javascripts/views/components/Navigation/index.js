@@ -349,6 +349,7 @@ export class Navigation extends Component {
               </Link> */}
               <a
                 href={hrefPath}
+                className="nav_link hidden-xs"
                 onClick={(e) => {
                   e.preventDefault()
                   NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
