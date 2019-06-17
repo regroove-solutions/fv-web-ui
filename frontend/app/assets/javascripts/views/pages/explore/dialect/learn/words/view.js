@@ -385,13 +385,6 @@ export class DialectViewWord extends Component {
       const phraseDefinitions = selectn('fv:definitions', phrase)
       const hrefPath = NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')
       const phraseLink = (
-        // <Link
-        //   className="DialectViewRelatedPhrasesPhrase"
-        //   key={selectn('uid', phrase)}
-        //   href={NavigationHelpers.generateUIDPath(theme, phrase, 'phrases')}
-        // >
-        //   {selectn('dc:title', phrase)}
-        // </Link>
         <a
           key={selectn('uid', phrase)}
           href={hrefPath}
@@ -400,7 +393,7 @@ export class DialectViewWord extends Component {
             NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
           }}
         >
-          COPY
+          {selectn('dc:title', phrase)}
         </a>
       )
 
