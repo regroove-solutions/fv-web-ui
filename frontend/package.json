@@ -14,6 +14,8 @@
     "lint-staged:test": "jest --bail --findRelatedTests",
     "production": "webpack --color --progress --mode production --config build/webpack.production.js",
     "start": "webpack-dev-server --color --progress --mode development --config build/webpack.development.js",
+    "startPreprod": "npm run start -- --env.NUXEO_URL=\"https://preprod.firstvoices.com/nuxeo/\"",
+    "startDev": "npm run start -- --env.NUXEO_URL=\"https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/\"",
     "test": "jest",
     "test:update": "jest -u",
     "test:coverage": "jest --coverage",
