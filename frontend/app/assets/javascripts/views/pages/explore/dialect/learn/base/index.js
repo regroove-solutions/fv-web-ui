@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { Set } from 'immutable'
+import React, { Component, PropTypes } from 'react' // eslint-disable-line
+import Immutable, { Set } from 'immutable' // eslint-disable-line
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -50,7 +50,7 @@ export default class PageDialectLearnBase extends Component {
     console.warn('The `class` that `extends` `PageDialectLearnBase` must define a `fetchData` function')
   }
 
-  _onNavigateRequest(path, absolute = false) {
+  _onNavigateRequest(path /*, absolute = false*/) {
     if (this.props.hasPagination) {
       NavigationHelpers.navigateForward(
         this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length - 2),
@@ -92,9 +92,9 @@ export default class PageDialectLearnBase extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (this.props.windowPath !== prevProps.windowPath) {
+      this.fetchData(this.props)
     }
   }
 
@@ -193,8 +193,8 @@ export default class PageDialectLearnBase extends Component {
     }
 
     if (selected) {
-      const { checkedFacetUid: selectedCheckedFacetUid, childrenIds: selectedChildrenIds } = selected
-      const selectedChildrenIdsList = new Set(selectedChildrenIds)
+      const { checkedFacetUid: selectedCheckedFacetUid /*, childrenIds: selectedChildrenIds */ } = selected
+      // const selectedChildrenIdsList = new Set(selectedChildrenIds)
       newList = newList.add(selectedCheckedFacetUid)
 
       // Note: This is now handled by the operation("Document.EnrichedQuery") and enrichment=category_children - on back-end

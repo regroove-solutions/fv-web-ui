@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import selectn from 'selectn'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
@@ -40,13 +40,12 @@ export default class DataListView extends Component {
     }
   }
 
-  static defaultProps = {}
   static propTypes = {
     controlViaURL: PropTypes.any, // TODO: set appropriate propType
     routeParams: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_PAGE: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_PAGE_SIZE: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_SORT_TYPE: PropTypes.any, // TODO: set appropriate propType
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_TYPE: PropTypes.string,
     DEFAULT_SORT_COL: PropTypes.any, // TODO: set appropriate propType
     windowPath: PropTypes.any, // TODO: set appropriate propType
     filter: PropTypes.any, // TODO: set appropriate propType
@@ -55,6 +54,15 @@ export default class DataListView extends Component {
     onPaginationReset: PropTypes.any, // TODO: set appropriate propType
     DISABLED_SORT_COLS: PropTypes.any, // TODO: set appropriate propType
     onPagePropertiesChange: PropTypes.any, // TODO: set appropriate propType
+  }
+
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'related_audio'],
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 100,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
+    DEFAULT_SORT_TYPE: 'asc',
   }
 
   // NOTE: The `class` that `extends` `DataListView` must define a `fetchData` function
@@ -77,42 +85,42 @@ export default class DataListView extends Component {
 
   // Refetch data on URL change
   // TODO: At minimum, migrate to `getDerivedStateFromProps()` or https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.controlViaURL) {
+  componentDidUpdate(prevProps) {
+    if (this.props.controlViaURL) {
       if (
-        nextProps.routeParams.page !== this.props.routeParams.page ||
-        nextProps.routeParams.pageSize !== this.props.routeParams.pageSize
+        this.props.routeParams.page !== prevProps.routeParams.page ||
+        this.props.routeParams.pageSize !== prevProps.routeParams.pageSize
       ) {
         this._fetchListViewData(
-          nextProps,
-          nextProps.DEFAULT_PAGE,
-          nextProps.DEFAULT_PAGE_SIZE,
-          nextProps.DEFAULT_SORT_TYPE,
-          nextProps.DEFAULT_SORT_COL
+          this.props,
+          this.props.DEFAULT_PAGE,
+          this.props.DEFAULT_PAGE_SIZE,
+          this.props.DEFAULT_SORT_TYPE,
+          this.props.DEFAULT_SORT_COL
         )
-        this._resetPagination(nextProps)
+        this._resetPagination(this.props)
       }
     } else {
-      if (nextProps.windowPath !== this.props.windowPath) {
-        this.fetchData(nextProps)
+      if (this.props.windowPath !== prevProps.windowPath) {
+        this.fetchData(this.props)
       }
     }
 
-    if (nextProps.routeParams.area !== this.props.routeParams.area) {
-      this._resetColumns(nextProps)
-      this._resetPagination(nextProps)
+    if (this.props.routeParams.area !== prevProps.routeParams.area) {
+      this._resetColumns(this.props)
+      this._resetPagination(this.props)
     }
 
     if (
-      this.props.filter.has('currentAppliedFilter') &&
-      !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))
+      prevProps.filter.has('currentAppliedFilter') &&
+      !prevProps.filter.get('currentAppliedFilter').equals(this.props.filter.get('currentAppliedFilter'))
     ) {
       this._fetchListViewData(
-        nextProps,
-        nextProps.DEFAULT_PAGE,
-        nextProps.DEFAULT_PAGE_SIZE,
-        nextProps.DEFAULT_SORT_TYPE,
-        nextProps.DEFAULT_SORT_COL
+        this.props,
+        this.props.DEFAULT_PAGE,
+        this.props.DEFAULT_PAGE_SIZE,
+        this.props.DEFAULT_SORT_TYPE,
+        this.props.DEFAULT_SORT_COL
       )
     }
   }

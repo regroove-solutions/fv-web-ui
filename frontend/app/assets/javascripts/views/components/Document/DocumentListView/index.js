@@ -77,8 +77,8 @@ export default class DocumentListView extends Component {
 
   intl = IntlService.instance
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data !== this.props.data) {
+  componentDidUpdate(prevProps) {
+    if (this.props.data !== prevProps.data) {
       this.setState({
         page: 1,
       })

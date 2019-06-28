@@ -47,9 +47,7 @@ export default class DictionaryList extends Component {
 
   constructor(props, context) {
     super(props, context)
-    ;['_getColumnClassNames', '_getColumnHeaders'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-  componentWillMount() {
+
     this._columnClassNames = this._getColumnClassNames()
   }
 
@@ -106,7 +104,7 @@ export default class DictionaryList extends Component {
 
   _columnClassNames = []
 
-  _getColumnClassNames() {
+  _getColumnClassNames = () => {
     const { columns } = this.props
     return columns.map((currentValue) => {
       const name = selectn('name', currentValue)
@@ -139,7 +137,7 @@ export default class DictionaryList extends Component {
       return className
     })
   }
-  _getColumnHeaders() {
+  _getColumnHeaders = () => {
     const { columns } = this.props
     return columns.map((column, i) => {
       const text = selectn('title', column)
