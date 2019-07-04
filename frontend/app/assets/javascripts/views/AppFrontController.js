@@ -262,6 +262,8 @@ export class AppFrontController extends Component {
       const { windowPath } = postStateEventState
       // NOTE: windowPath === postStateEvent.state.windowPath
       this.props.updateWindowPath(windowPath)
+    } else {
+      this.props.updateWindowPath(window.location.pathname)
     }
   }
 
