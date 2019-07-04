@@ -7,6 +7,7 @@ const copy = {
   },
   create: {
     description: 'Contributor biography',
+    btnBack: '< Back',
     name: 'Contributor name',
     submit: 'Create new contributor',
     title: 'Create a new contributor',
@@ -21,6 +22,7 @@ const copy = {
   },
   edit: {
     description: 'Contributor biography',
+    btnBack: '< Back',
     name: 'Contributor name',
     submit: 'Edit contributor',
     btnDelete: 'Delete contributor',

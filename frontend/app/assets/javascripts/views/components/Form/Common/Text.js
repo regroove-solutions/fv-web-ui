@@ -8,6 +8,7 @@ const { bool, string, func, object } = PropTypes
 export default class Text extends React.Component {
   static propTypes = {
     id: string.isRequired,
+    isRequired: bool,
     labelText: string.isRequired,
     name: string.isRequired,
     ariaDescribedby: string,
@@ -20,6 +21,7 @@ export default class Text extends React.Component {
   }
   static defaultProps = {
     className: 'Text',
+    isRequired: false,
     value: '',
     handleChange: () => {},
     error: {},
@@ -83,7 +85,7 @@ export default class Text extends React.Component {
     return (
       <div className={`${className} Text ${message ? 'Form__error Text--error' : ''}`}>
         <label onClick={labelClickHandler} className="Text__label" htmlFor={id}>
-          {labelText}
+          {labelText} {this.props.isRequired ? '*' : ''}
         </label>
         {TextElement}
         {message && (

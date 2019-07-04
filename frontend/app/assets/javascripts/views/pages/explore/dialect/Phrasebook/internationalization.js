@@ -5,6 +5,7 @@ const copy = {
     title: 'Phrase Book',
   },
   create: {
+    btnBack: '< Back',
     description: 'Phrase Book description',
     name: 'Phrase Book name',
     submit: 'Create new phrase book',
@@ -21,6 +22,7 @@ const copy = {
     },
   },
   edit: {
+    btnBack: '< Back',
     description: 'Phrase Book description',
     name: 'Phrase Book name',
     submit: 'Edit phrase book',

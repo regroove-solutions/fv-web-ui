@@ -78,8 +78,60 @@ export class ContributorStateCreate extends React.Component {
         encType="multipart/form-data"
       >
         {breadcrumb}
-        <h1 className="Contributor__heading">{_copy.title}</h1>
 
+        <div className="Contributor__btnHeader">
+          <button
+            className="_btn _btn--secondary Contributor__btnBack"
+            type="button"
+            onClick={() => {
+              window.history.back()
+            }}
+          >
+            {_copy.btnBack}
+          </button>
+          {/* BTN: Delete contributor ------------- */}
+          {isEdit && (
+            <div className={`delete delete--reversed ${this.state.deleting ? 'delete--confirmation' : ''}`}>
+              <div className={'deleteInitiate'}>
+                <button
+                  className="_btn _btn--secondary deleteConfirmation__initiate"
+                  ref={(_element) => {
+                    this.btnDeleteInitiate = _element
+                  }}
+                  disabled={isBusy}
+                  onClick={this._deleteContributorInitiate}
+                  type="button"
+                >
+                  {_copy.btnDelete}
+                </button>
+              </div>
+              <div className={'deleteConfirmation'}>
+                <button
+                  className="_btn _btn--secondary deleteConfirmation__deny"
+                  ref={(_element) => {
+                    this.btnDeleteDeny = _element
+                  }}
+                  disabled={isBusy}
+                  onClick={this._deleteContributorDeny}
+                  type="button"
+                >
+                  {_copy.btnDeleteDeny}
+                </button>
+                <button
+                  className="_btn _btn--destructive deleteConfirmation__confirm"
+                  disabled={isBusy}
+                  onClick={this._deleteContributorConfirm}
+                  type="button"
+                >
+                  {_copy.btnDeleteConfirm}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <h1 className="Contributor__heading">{_copy.title}</h1>
+        <p>All fields with an asterisk are required.</p>
         {/* Name ------------- */}
         <Text
           className={groupName}
@@ -88,6 +140,7 @@ export class ContributorStateCreate extends React.Component {
           value={valueName}
           error={getError({ errors, fieldName: 'dc:title' })}
           labelText={_copy.name}
+          isRequired
         />
 
         {/* Description ------------- */}
@@ -134,46 +187,6 @@ export class ContributorStateCreate extends React.Component {
           <button className="_btn _btn--primary" disabled={isBusy} type="submit">
             {_copy.submit}
           </button>
-
-          {/* BTN: Delete contributor ------------- */}
-          {isEdit && (
-            <div className={`delete ${this.state.deleting ? 'delete--confirmation' : ''}`}>
-              <div className={'deleteInitiate'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__initiate"
-                  ref={(_element) => {
-                    this.btnDeleteInitiate = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteContributorInitiate}
-                  type="button"
-                >
-                  {_copy.btnDelete}
-                </button>
-              </div>
-              <div className={'deleteConfirmation'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__deny"
-                  ref={(_element) => {
-                    this.btnDeleteDeny = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteContributorDeny}
-                  type="button"
-                >
-                  {_copy.btnDeleteDeny}
-                </button>
-                <button
-                  className="_btn _btn--destructive deleteConfirmation__confirm"
-                  disabled={isBusy}
-                  onClick={this._deleteContributorConfirm}
-                  type="button"
-                >
-                  {_copy.btnDeleteConfirm}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </form>
     )

@@ -6,6 +6,7 @@ const copy = {
     profilePhoto: 'Recorder Photo',
   },
   create: {
+    btnBack: '< Back',
     description: 'Recorder description',
     name: 'Recorder name',
     submit: 'Create new recorder',
@@ -20,6 +21,7 @@ const copy = {
     },
   },
   edit: {
+    btnBack: '< Back',
     description: 'Recorder description',
     name: 'Recorder name',
     submit: 'Edit recorder',

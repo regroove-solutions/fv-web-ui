@@ -25,7 +25,8 @@ export class ContributorStateSuccessEdit extends React.Component {
         <p>{copy.edit.success.review}</p>
         <dl>
           <dt>{name || copy.edit.success.noName}</dt>
-          <dd>{description || ''}</dd>
+          {/* <dd>{description || ''}</dd> */}
+          <dd dangerouslySetInnerHTML={{ __html: description || '' }} />
         </dl>
         <p>{copy.edit.success.thanks}</p>
         <a
