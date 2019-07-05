@@ -10,8 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { Component, PropTypes } from 'react'
-import { Set } from 'immutable'
+import React, { Component, PropTypes } from 'react' // eslint-disable-line
+import Immutable, { Set } from 'immutable' // eslint-disable-line
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'

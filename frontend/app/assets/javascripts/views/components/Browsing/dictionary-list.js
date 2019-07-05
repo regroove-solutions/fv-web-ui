@@ -47,6 +47,8 @@ export default class DictionaryList extends Component {
 
   constructor(props, context) {
     super(props, context)
+
+    this._columnClassNames = this._getColumnClassNames()
   }
   // componentDidMount() {
   //   this._columnClassNames = this._getColumnClassNames()

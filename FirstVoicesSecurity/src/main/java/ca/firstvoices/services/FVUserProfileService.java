@@ -30,7 +30,8 @@ public interface FVUserProfileService extends Serializable {
      * @param documentManager
      * @param currentUser
      * @param baseURL
+     * @param defaultHome - whether to return the home page by default if no match found, or empty string
      * @return
      */
-    String getDefaultDialectRedirectPath(CoreSession documentManager, NuxeoPrincipal currentUser, String baseURL);
+    String getDefaultDialectRedirectPath(CoreSession documentManager, NuxeoPrincipal currentUser, String baseURL, Boolean defaultHome);
 }

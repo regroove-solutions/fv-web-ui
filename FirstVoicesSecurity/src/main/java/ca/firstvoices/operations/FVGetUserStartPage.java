@@ -24,6 +24,7 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
+import org.nuxeo.ecm.automation.core.annotations.Param;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
 import org.nuxeo.ecm.platform.ui.web.util.BaseURL;
@@ -48,6 +49,12 @@ public class FVGetUserStartPage {
     @Context
     protected OperationContext ctx;
 
+    /**
+     * Determines whether the home page is returned if no specific start page found or an empty string
+     */
+    @Param(name = "defaultHome")
+    protected Boolean defaultHome = true;
+
     @OperationMethod
     public String run() {
 
@@ -58,7 +65,7 @@ public class FVGetUserStartPage {
                 VirtualHostHelper.getContextPath(request));
 
     	NuxeoPrincipal currentUser = (NuxeoPrincipal) session.getPrincipal();
-		return fvUserProfileService.getDefaultDialectRedirectPath(session, currentUser, baseURL);
+		return fvUserProfileService.getDefaultDialectRedirectPath(session, currentUser, baseURL, defaultHome);
     }
 
 }

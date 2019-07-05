@@ -53,7 +53,7 @@ public class FVUserProfileServiceImpl implements FVUserProfileService {
         return dialects;
     }
 
-    public String getDefaultDialectRedirectPath(CoreSession documentManager, NuxeoPrincipal currentUser, String baseURL) {
+    public String getDefaultDialectRedirectPath(CoreSession documentManager, NuxeoPrincipal currentUser, String baseURL, Boolean defaultHome) {
         String primary_dialect_path = null;
         String primary_dialect_short_url = null;
         String userPreferences = (String) currentUser.getModel().getPropertyValue("user:preferences");
@@ -116,6 +116,10 @@ public class FVUserProfileServiceImpl implements FVUserProfileService {
         } else if (primary_dialect_path != null) {
             // must encode only Dialect..
             finalPath = fvContextPath + "/explore" + primary_dialect_path;
+        }
+
+        if (finalPath == null && !defaultHome) {
+            return null;
         }
 
         return Arrays.asList(baseURL, finalPath == null ? fvContextPath : finalPath)

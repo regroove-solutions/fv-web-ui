@@ -60,15 +60,19 @@ public class TestUserPreferences extends AbstractFVTest {
         assertNotNull(testUser);
 
         // test redirection when user does not have preferences set up and is part of the global membership
-        String redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL);
+        String redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL, true);
         assertEquals(NUXEO_URL + FV_CONTEXT_PATH, redirectionUrl);
+
+        // test redirection when user does not have preferences set up and we DON'T want to redirect to the home page
+        String redirectionUrlNoHomePage = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL, false);
+        assertNull(redirectionUrlNoHomePage);
 
         // add a dialect but the dialect does not have a short url
         String json = new FVUserPreferencesSetup().createDefaultUserPreferencesWithDialectID(dialectDoc.getId());
         assertNotNull(json);
         testUser.setPropertyValue("user:preferences", json);
         userManager.updateUser(testUser);
-        redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL);
+        redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL, true);
 
         assertEquals(NUXEO_URL + "app/explore/Family/Language/Dialect", redirectionUrl);
 
@@ -76,7 +80,7 @@ public class TestUserPreferences extends AbstractFVTest {
         dialectDoc.setPropertyValue("fvdialect:short_url", "dialect");
         dialectDoc = session.saveDocument(dialectDoc);
 
-        redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL);
+        redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL, true);
 
         assertEquals(NUXEO_URL+ "app/sections/dialect", redirectionUrl);
 
@@ -91,7 +95,7 @@ public class TestUserPreferences extends AbstractFVTest {
                 dialectDoc.getId());
         testUser.setPropertyValue("user:preferences", json);
         userManager.updateUser(testUser);
-        String redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL);
+        String redirectionUrl = fvUserProfileService.getDefaultDialectRedirectPath(session, userManager.getPrincipal("test@test.com"), NUXEO_URL, true);
         assertEquals(NUXEO_URL + "app/explore/Family/Language/Dialect", redirectionUrl);
     }
 
