@@ -1,16 +1,8 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, bool, func, oneOfType, object } = PropTypes
+const { string, number, bool, func, oneOfType, object } = PropTypes
 
 export default class Checkbox extends React.Component {
-  static defaultProps = {
-    className: 'Checkbox',
-    value: true,
-    handleChange: () => {},
-    error: {},
-    setRef: () => {},
-  }
-
   static propTypes = {
     id: string.isRequired,
     labelText: string.isRequired,
@@ -19,9 +11,16 @@ export default class Checkbox extends React.Component {
     className: string,
     selected: bool,
     handleChange: func,
-    value: oneOfType([string, bool]),
+    value: oneOfType([number, string, bool]),
     error: object,
     setRef: func,
+  }
+  static defaultProps = {
+    className: 'Checkbox',
+    value: true,
+    handleChange: () => {},
+    error: {},
+    setRef: () => {},
   }
 
   state = {
@@ -32,7 +31,7 @@ export default class Checkbox extends React.Component {
     const { className, ariaDescribedby, id, labelText, name, value, setRef } = this.props
     const { message } = this.props.error
     return (
-      <div className={`${className} Checkbox ${message && 'Form__error'}`}>
+      <div className={`${className} Checkbox ${message ? 'Form__error' : ''}`}>
         <input
           aria-describedby={ariaDescribedby}
           className={`${className}__text Checkbox__text`}
@@ -60,7 +59,7 @@ export default class Checkbox extends React.Component {
   _handleChange = () => {
     const newValue = !this.state.selected
     this.setState({ selected: newValue }, () => {
-      this.props.handleChange(newValue)
+      this.props.handleChange(newValue, this.props.value)
     })
   }
 }
