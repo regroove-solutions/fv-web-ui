@@ -5,7 +5,7 @@ import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { fetchCategory, fetchCategories } from 'providers/redux/reducers/fvCategory'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 
@@ -33,14 +33,14 @@ export class PhrasebookDetail extends React.Component {
     onDocumentCreated: func,
     validator: object,
     // REDUX: reducers/state
-    computeContributor: object.isRequired,
+    computeCategory: object.isRequired,
     routeParams: object.isRequired,
     // REDUX: actions/dispatch/func
-    fetchContributor: func.isRequired,
-    fetchContributors: func.isRequired,
+    fetchCategory: func.isRequired,
+    fetchCategories: func.isRequired,
   }
   static defaultProps = {
-    className: 'Contributor',
+    className: 'Phrasebook',
   }
 
   state = {
@@ -49,7 +49,7 @@ export class PhrasebookDetail extends React.Component {
   async componentDidMount() {
     const copy = this.props.copy
       ? this.props.copy
-      : await import(/* webpackChunkName: "ContributorDetailsInternationalization" */ './internationalization').then(
+      : await import(/* webpackChunkName: "PhrasebookDetailInternationalization" */ './internationalization').then(
           (_copy) => {
             return _copy.default
           }
@@ -82,23 +82,22 @@ export class PhrasebookDetail extends React.Component {
     // Do any loading here...
     const { routeParams } = this.props
     const { itemId } = routeParams
-    await this.props.fetchContributor(itemId)
-    const contributor = await this._getContributor()
+    await this.props.fetchCategory(itemId)
+    const item = await this._getItem()
 
-    if (contributor.isError) {
+    if (item.isError) {
       this.setState({
         componentState: STATE_ERROR_BOUNDARY,
-        errorMessage: contributor.message,
+        errorMessage: item.message,
         ...addToState,
       })
     } else {
       this.setState({
         componentState: STATE_DEFAULT,
-        valueName: contributor.name,
-        valueDescription: contributor.description,
-        valuePhotoName: contributor.photoName,
-        valuePhotoData: contributor.photoData,
-        contributor: contributor.data,
+        valueName: item.name,
+        valueDescription: item.description,
+        isTrashed: item.isTrashed,
+        item: item.data,
         ...addToState,
       })
     }
@@ -112,63 +111,54 @@ export class PhrasebookDetail extends React.Component {
   }
   _stateGetDetail = () => {
     const { className, groupName } = this.props
-    const { isBusy, valueDescription, valueName, valuePhotoName, valuePhotoData } = this.state
+    const { isBusy, valueDescription, valueName, isTrashed } = this.state
     return (
       <StateDetail
         copy={this.state.copy}
         className={className}
         groupName={groupName}
         isBusy={isBusy}
+        isTrashed={isTrashed}
         valueName={valueName}
         valueDescription={valueDescription}
-        valuePhotoName={valuePhotoName}
-        valuePhotoData={valuePhotoData}
       />
     )
   }
-  _getContributor = async () => {
-    const { computeContributor, routeParams } = this.props
+  _getItem = async () => {
+    const { computeCategory, routeParams } = this.props
     const { itemId } = routeParams
     // Extract data from immutable:
-    const _computeContributor = await ProviderHelpers.getEntry(computeContributor, itemId)
-    if (_computeContributor.success) {
+    const _computeCategory = await ProviderHelpers.getEntry(computeCategory, itemId)
+    if (_computeCategory.success) {
       // Extract data from object:
-      const name = selectn(['response', 'properties', 'dc:title'], _computeContributor)
-      const description = selectn(['response', 'properties', 'dc:description'], _computeContributor)
-      const photoName = selectn(
-        ['response', 'properties', 'fvcontributor:profile_picture', 'name'],
-        _computeContributor
-      )
-      const photoData = selectn(
-        ['response', 'properties', 'fvcontributor:profile_picture', 'data'],
-        _computeContributor
-      )
-
+      const name = selectn(['response', 'properties', 'dc:title'], _computeCategory)
+      const description = selectn(['response', 'properties', 'dc:description'], _computeCategory)
+      const isTrashed = selectn(['response', 'isTrashed'], _computeCategory) || false
       // Respond...
-      return { name, description, photoName, photoData, data: _computeContributor }
+      return { isTrashed, name, description, data: _computeCategory }
     }
-    return { isError: _computeContributor.isError, message: _computeContributor.message }
+    return { isError: _computeCategory.isError, message: _computeCategory.message }
   }
 }
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvContributor, navigation } = state
+  const { fvCategory, navigation } = state
 
-  const { computeContributor } = fvContributor
+  const { computeCategory } = fvCategory
 
   const { route } = navigation
 
   return {
-    computeContributor,
+    computeCategory,
     routeParams: route.routeParams,
   }
 }
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
-  fetchContributor,
-  fetchContributors,
+  fetchCategory,
+  fetchCategories,
 }
 
 export default connect(

@@ -14,7 +14,7 @@ import {
   createCategory,
   deleteCategory,
   fetchCategory,
-  fetchCategorys,
+  fetchCategories,
   updateCategory,
 } from 'providers/redux/reducers/fvCategory'
 import { fetchDialect, fetchDialect2 } from 'providers/redux/reducers/fvDialect'
@@ -60,7 +60,7 @@ export class PhrasebookEdit extends React.Component {
     createUrl: string,
     // REDUX: reducers/state
     computeCategory: object.isRequired,
-    computeCategorys: object.isRequired,
+    computeCategories: object.isRequired,
     computeCreateCategory: object,
     computeDialect: object.isRequired,
     computeDialect2: object.isRequired,
@@ -70,7 +70,7 @@ export class PhrasebookEdit extends React.Component {
     createCategory: func.isRequired,
     deleteCategory: func.isRequired,
     fetchCategory: func.isRequired,
-    fetchCategorys: func.isRequired,
+    fetchCategories: func.isRequired,
     fetchDialect: func.isRequired,
     fetchDialect2: func.isRequired,
     pushWindowPath: func.isRequired,
@@ -155,21 +155,22 @@ export class PhrasebookEdit extends React.Component {
     const { itemId } = routeParams
 
     await this.props.fetchCategory(itemId)
-    const contributor = await this._getCategory()
+    const item = await this._getItem()
 
-    if (contributor.isError) {
+    if (item.isError) {
       this.setState({
         componentState: STATE_ERROR_BOUNDARY,
-        errorMessage: contributor.message,
+        errorMessage: item.message,
         ...addToState,
       })
     } else {
       this.setState({
         errorMessage: undefined,
         componentState: STATE_DEFAULT,
-        valueName: contributor.name,
-        valueDescription: contributor.description,
-        contributor: contributor.data,
+        valueName: item.name,
+        valueDescription: item.description,
+        isTrashed: item.isTrashed,
+        item: item.data,
         ...this._commonInitialState,
         ...addToState,
       })
@@ -187,7 +188,7 @@ export class PhrasebookEdit extends React.Component {
   }
   _stateGetEdit = () => {
     const { className, breadcrumb, groupName } = this.props
-    const { errors, isBusy, valueDescription, valueName, valuePhotoName, valuePhotoData } = this.state
+    const { errors, isBusy, isTrashed, valueDescription, valueName } = this.state
     return (
       <StateEdit
         copy={this.state.copy}
@@ -196,9 +197,10 @@ export class PhrasebookEdit extends React.Component {
         breadcrumb={breadcrumb}
         errors={errors}
         isBusy={isBusy}
+        isTrashed={isTrashed}
         isEdit
-        deleteSelf={() => {
-          // this.props.deleteCategory(this.state.contributor.id)
+        deleteItem={() => {
+          this.props.deleteCategory(this.state.item.id)
           this.setState({
             componentState: STATE_SUCCESS_DELETE,
           })
@@ -209,8 +211,6 @@ export class PhrasebookEdit extends React.Component {
         setFormRef={this.setFormRef}
         valueName={valueName}
         valueDescription={valueDescription}
-        valuePhotoName={valuePhotoName}
-        valuePhotoData={valuePhotoData}
       />
     )
   }
@@ -238,17 +238,17 @@ export class PhrasebookEdit extends React.Component {
     const { createUrl, className, routeParams } = this.props
     const { formData } = this.state
     const { theme, dialect_path } = routeParams
-    const _createUrl = createUrl || `/${theme}${dialect_path}/create/contributor`
+    const _createUrl = createUrl || `/${theme}${dialect_path}/create/phrasebook`
     return (
       <StateSuccessDelete createUrl={_createUrl} className={className} copy={this.state.copy} formData={formData} />
     )
   }
   async _handleCreateItemSubmit(formData) {
-    const { contributor } = this.state
+    const { item } = this.state
 
-    const newDocument = new Document(contributor.response, {
-      repository: contributor.response._repository,
-      nuxeo: contributor.response._nuxeo,
+    const newDocument = new Document(item.response, {
+      repository: item.response._repository,
+      nuxeo: item.response._nuxeo,
     })
 
     // Set new value property on document
@@ -302,7 +302,7 @@ export class PhrasebookEdit extends React.Component {
       invalid,
     })
   }
-  _getCategory = async () => {
+  _getItem = async () => {
     const { computeCategory, routeParams } = this.props
     const { itemId } = routeParams
     // Extract data from immutable:
@@ -311,12 +311,14 @@ export class PhrasebookEdit extends React.Component {
       // Extract data from object:
       const name = selectn(['response', 'properties', 'dc:title'], _computeCategory)
       const description = selectn(['response', 'properties', 'dc:description'], _computeCategory)
+      const isTrashed = selectn(['response', 'isTrashed'], _computeCategory)
 
       // Respond...
       return {
         isError: _computeCategory.isError,
         name,
         description,
+        isTrashed,
         data: _computeCategory,
       }
     }
@@ -328,14 +330,14 @@ export class PhrasebookEdit extends React.Component {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvCategory, fvDialect, navigation, windowPath } = state
 
-  const { computeCategory, computeCategorys, computeCreateCategory } = fvCategory
+  const { computeCategory, computeCategories, computeCreateCategory } = fvCategory
   const { computeDialect, computeDialect2 } = fvDialect
   const { splitWindowPath } = windowPath
   const { route } = navigation
 
   return {
     computeCategory,
-    computeCategorys,
+    computeCategories,
     computeCreateCategory,
     computeDialect,
     computeDialect2,
@@ -349,7 +351,7 @@ const mapDispatchToProps = {
   createCategory,
   deleteCategory,
   fetchCategory,
-  fetchCategorys,
+  fetchCategories,
   fetchDialect,
   fetchDialect2,
   pushWindowPath,

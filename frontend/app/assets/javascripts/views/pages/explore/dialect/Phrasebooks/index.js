@@ -23,13 +23,16 @@ import Immutable, { Map } from 'immutable' // eslint-disable-line
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchCategories } from 'providers/redux/reducers/fvCategory'
+import { deleteCategory, fetchCategories } from 'providers/redux/reducers/fvCategory'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
+
+import PhrasebookDelete from 'views/components/Confirmation'
+
 import { STATE_UNAVAILABLE } from 'common/Constants'
 
 import '!style-loader!css-loader!./styles.css'
@@ -76,7 +79,6 @@ export class Phrasebooks extends Component {
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
     fetchCategories: func.isRequired,
-    fetchDialect: func.isRequired,
     pushWindowPath: func.isRequired,
   }
 
@@ -104,21 +106,13 @@ export class Phrasebooks extends Component {
         th: '',
       },
     },
+    deletedUids: [],
   }
-
-  //   fetchData(newProps) {
-  //     const dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
-  //     this.setState({ dialectPath: dialectPath })
-
-  //     if (!this.props.computeDialect.success) {
-  //       newProps.fetchDialect('/' + dialectPath)
-  //     }
-  //   }
 
   async componentDidMount() {
     const copy = this.props.copy
       ? this.props.copy
-      : await import(/* webpackChunkName: "ContributorsInternationalization" */ './internationalization').then(
+      : await import(/* webpackChunkName: "PhrasebooksInternationalization" */ './internationalization').then(
           (_copy) => {
             return _copy.default
           }
@@ -142,18 +136,18 @@ export class Phrasebooks extends Component {
 
     return (
       <DocumentListView
-        cssModifier="DictionaryList--contributors"
+        cssModifier="DictionaryList--phrasebooks"
         sortInfo={this.sortInfo.uiSortOrder} // TODO: NOT USED?
         className="browseDataGrid"
         columns={this._getColumns()}
-        data={_computeCategories}
+        data={this._filterDeletedUids()}
         dialect={selectn('response', _computeDialect2)}
         gridCols={4}
         gridListView={false}
         page={Number(page)}
         pageSize={Number(pageSize)}
         refetcher={this.handleRefetch}
-        type="FVContributor"
+        type="FVCategory"
       />
     )
   }
@@ -161,6 +155,36 @@ export class Phrasebooks extends Component {
     uiSortOrder: [],
     currentSortCols: this.props.DEFAULT_SORT_COL,
     currentSortType: this.props.DEFAULT_SORT_TYPE,
+  }
+  _deleteItem = async (uid) => {
+    /* NOTE: save uid to state */
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, uid],
+      },
+      () => {
+        this.props.deleteCategory(uid)
+      }
+    )
+  }
+  _filterDeletedUids = () => {
+    const { deletedUids } = this.state
+    if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
+      const _entries = _computeCategories.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      const filteredComputeCategories = Object.assign({}, _computeCategories)
+      filteredComputeCategories.response.entries = filtered
+      return filteredComputeCategories
+    }
+    return _computeCategories
   }
   _getColumns = () => {
     const { copy } = this.state
@@ -174,7 +198,7 @@ export class Phrasebooks extends Component {
           return (
             <button
               type="button"
-              className="Contributors__colSort"
+              className="Phrasebooks__colSort"
               onClick={() => {
                 this._sortCol({
                   // sortBy: 'fv:custom_order',
@@ -208,7 +232,7 @@ export class Phrasebooks extends Component {
         title: () => {
           return (
             <button
-              className="Contributors__colSort"
+              className="Phrasebooks__colSort"
               onClick={() => {
                 this._sortCol({
                   sortBy: 'dc:description',
@@ -226,22 +250,41 @@ export class Phrasebooks extends Component {
         },
       },
       {
-        name: 'edit',
+        name: 'actions',
         title: copy.actions.th,
         render: (v, data /*, cellProps*/) => {
           const uid = data.uid
           const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/phrasebook/${uid}`
 
           return (
-            <a
-              href={url}
-              onClick={(e) => {
-                e.preventDefault()
-                NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
-              }}
-            >
-              {copy.actions.edit}
-            </a>
+            <ul className="Phrasebooks__actions">
+              <li className="Phrasebooks__actionContainer Phrasebooks__actionDelete">
+                <PhrasebookDelete
+                  reverse
+                  compact
+                  copy={{
+                    isConfirmOrDenyTitle: copy.isConfirmOrDenyTitle,
+                    btnInitiate: copy.btnInitiate,
+                    btnDeny: copy.btnDeny,
+                    btnConfirm: copy.btnConfirm,
+                  }}
+                  confirmationAction={() => {
+                    this._deleteItem(uid)
+                  }}
+                />
+              </li>
+              <li className="Phrasebooks__actionContainer">
+                <a
+                  href={url}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+                  }}
+                >
+                  {copy.actions.edit}
+                </a>
+              </li>
+            </ul>
           )
         },
       },
@@ -338,6 +381,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   fetchCategories,
+  deleteCategory,
   pushWindowPath,
 }
 

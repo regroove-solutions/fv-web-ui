@@ -4,16 +4,19 @@ import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
 import StringHelpers from 'common/StringHelpers'
 import { getError, getErrorFeedback } from 'common/FormHelpers'
+import PhrasebookDelete from 'views/components/Confirmation'
 const { string, element, array, bool, func, object } = PropTypes
 export class PhrasebookStateCreate extends React.Component {
   static propTypes = {
     className: string,
     copy: object,
+    deleteItem: func,
     groupName: string,
     breadcrumb: element,
     errors: array,
     isBusy: bool,
     isEdit: bool,
+    isTrashed: bool,
     deleteSelf: func,
     onRequestSaveForm: func,
     setFormRef: func,
@@ -24,11 +27,13 @@ export class PhrasebookStateCreate extends React.Component {
   }
   static defaultProps = {
     className: '',
+    deleteItem: () => {},
     groupName: '',
     breadcrumb: null,
     errors: [],
     isBusy: false,
     isEdit: false,
+    isTrashed: false,
     deleteSelf: () => {},
     onRequestSaveForm: () => {},
     setFormRef: () => {},
@@ -59,6 +64,7 @@ export class PhrasebookStateCreate extends React.Component {
       errors,
       isBusy,
       isEdit,
+      isTrashed,
       onRequestSaveForm,
       setFormRef,
     } = this.props
@@ -73,7 +79,38 @@ export class PhrasebookStateCreate extends React.Component {
         }}
       >
         {breadcrumb}
+
+        <div className="Contributor__btnHeader">
+          <button
+            className="_btn _btn--secondary Contributor__btnBack"
+            type="button"
+            onClick={() => {
+              window.history.back()
+            }}
+          >
+            {_copy.btnBack}
+          </button>
+          {/* BTN: Delete contributor ------------- */}
+          {isEdit && !isTrashed ? (
+            <PhrasebookDelete
+              confirmationAction={this.props.deleteItem}
+              className="Phrasebook__delete"
+              reverse
+              copy={{
+                isConfirmOrDenyTitle: _copy.isConfirmOrDenyTitle,
+                btnInitiate: _copy.btnInitiate,
+                btnDeny: _copy.btnDeny,
+                btnConfirm: _copy.btnConfirm,
+              }}
+            />
+          ) : null}
+        </div>
+
+        {isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null}
+
         <h1 className="Phrasebook__heading">{_copy.title}</h1>
+
+        <p>{_copy.requiredNotice}</p>
 
         {/* Name ------------- */}
         <Text
@@ -83,6 +120,7 @@ export class PhrasebookStateCreate extends React.Component {
           value={valueName}
           error={getError({ errors, fieldName: 'dc:title' })}
           labelText={_copy.name}
+          disabled={isTrashed}
         />
 
         {/* Description ------------- */}
@@ -94,91 +132,22 @@ export class PhrasebookStateCreate extends React.Component {
           value={valueDescription}
           error={getError({ errors, fieldName: 'dc:description' })}
           wysiwyg
+          disabled={isTrashed}
         />
 
-        {/* {formStatus} */}
         {getErrorFeedback({ errors })}
+
         <div className="Contributor__btn-container">
           {/* BTN: Create ------------- */}
-          <button className="_btn _btn--primary" disabled={isBusy} type="submit">
+          <button className="_btn _btn--primary" disabled={isBusy || isTrashed} type="submit">
             {_copy.submit}
           </button>
-
-          {/* BTN: Delete contributor ------------- */}
-          {isEdit && (
-            <div className={`delete ${this.state.deleting ? 'delete--confirmation' : ''}`}>
-              <div className={'deleteInitiate'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__initiate"
-                  ref={(_element) => {
-                    this.btnDeleteInitiate = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteSelfInitiate}
-                  type="button"
-                >
-                  {_copy.btnDelete}
-                </button>
-              </div>
-              <div className={'deleteConfirmation'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__deny"
-                  ref={(_element) => {
-                    this.btnDeleteDeny = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteSelfDeny}
-                  type="button"
-                >
-                  {_copy.btnDeleteDeny}
-                </button>
-                <button
-                  className="_btn _btn--destructive deleteConfirmation__confirm"
-                  disabled={isBusy}
-                  onClick={this._deleteSelfConfirm}
-                  type="button"
-                >
-                  {_copy.btnDeleteConfirm}
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </form>
     )
   }
   _clean = (name) => {
     return StringHelpers.clean(name, 'CLEAN_ID')
-  }
-  _deleteSelfInitiate = () => {
-    this.setState(
-      {
-        deleting: true,
-      },
-      () => {
-        this.btnDeleteDeny.focus()
-      }
-    )
-  }
-  _deleteSelfConfirm = () => {
-    this.setState(
-      {
-        deleting: false,
-      },
-      () => {
-        this.props.deleteSelf()
-      }
-    )
-  }
-  _deleteSelfDeny = () => {
-    this.setState(
-      {
-        deleting: false,
-      },
-      () => {
-        this.btnDeleteInitiate.focus()
-      }
-    )
   }
 }
 

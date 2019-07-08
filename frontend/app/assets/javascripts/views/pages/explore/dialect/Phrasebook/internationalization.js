@@ -1,5 +1,6 @@
 const copy = {
   detail: {
+    isTrashed: 'This phrase book has been deleted',
     description: 'Phrase Book description',
     name: 'Phrase Book name',
     title: 'Phrase Book',
@@ -7,9 +8,14 @@ const copy = {
   create: {
     btnBack: '< Back',
     description: 'Phrase Book description',
-    name: 'Phrase Book name',
+    name: 'Phrase Book name *',
+    requiredNotice: 'All fields with an asterisk are required',
     submit: 'Create new phrase book',
     title: 'Create a new phrase book',
+    isConfirmOrDenyTitle: 'Delete phrase book?',
+    btnInitiate: 'Delete',
+    btnDeny: 'No, do not delete the phrase book',
+    btnConfirm: 'Yes, delete the phrase book',
     success: {
       createAnother: 'Create a new phrase book',
       detailView: 'Detail page',
@@ -23,13 +29,14 @@ const copy = {
   },
   edit: {
     btnBack: '< Back',
+    btnConfirm: 'Yes, delete the phrase book',
+    btnDeny: 'No, do not delete the phrase book',
+    btnInitiate: 'Delete',
     description: 'Phrase Book description',
-    name: 'Phrase Book name',
-    submit: 'Edit phrase book',
-    btnDelete: 'Delete phrase book',
-    btnDeleteConfirm: 'Yes, delete phrase book',
-    btnDeleteDeny: 'No, do not delete phrase book',
-    title: 'Edit a phrase book',
+    isConfirmOrDenyTitle: 'Delete phrase book?',
+    isTrashed: 'This phrase book has been deleted and can not be edited',
+    name: 'Phrase Book name *',
+    requiredNotice: 'All fields with an asterisk are required',
     success: {
       createAnother: 'Create a new phrase book',
       noName: '(No name)',
@@ -40,6 +47,8 @@ const copy = {
     successDelete: {
       title: 'We deleted the phrase book',
     },
+    submit: 'Edit phrase book',
+    title: 'Edit a phrase book',
   },
   errorBoundary: {
     explanation: "Sorry about this, but we can't create any new phrase books at the moment.",
