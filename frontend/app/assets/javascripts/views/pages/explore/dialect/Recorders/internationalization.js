@@ -1,7 +1,8 @@
 const copy = {
-  edit: {
-    th: 'Edit Recorder',
-    tdLink: 'Edit',
+  actions: {
+    th: '',
+    edit: 'Edit',
+    delete: 'Delete',
   },
   title: {
     th: 'Recorder',

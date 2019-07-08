@@ -196,8 +196,8 @@ export class EditContributor extends React.Component {
         errors={errors}
         isBusy={isBusy}
         isEdit
-        deleteContributor={() => {
-          // this.props.deleteContributor(this.state.contributor.id)
+        deleteItem={() => {
+          this.props.deleteContributor(this.state.contributor.id)
           this.setState({
             componentState: STATE_SUCCESS_DELETE,
           })

@@ -1,12 +1,14 @@
 import React from 'react'
 import { PropTypes } from 'react'
 import Image from 'views/components/Image'
+import { bool } from 'prop-types'
 const { string, element, object } = PropTypes
 export class ContributorStateDetail extends React.Component {
   static propTypes = {
     className: string,
     copy: object,
     breadcrumb: element,
+    isTrashed: bool,
     valueName: string,
     valueDescription: string,
     valuePhotoName: string,
@@ -15,6 +17,7 @@ export class ContributorStateDetail extends React.Component {
   static defaultProps = {
     className: '',
     breadcrumb: null,
+    isTrashed: false,
     valueName: '',
     valueDescription: '',
     valuePhotoName: '',
@@ -24,17 +27,31 @@ export class ContributorStateDetail extends React.Component {
     },
   }
   render() {
-    const { className, copy, valueName, valueDescription, valuePhotoName, valuePhotoData, breadcrumb } = this.props
+    const {
+      className,
+      copy,
+      isTrashed,
+      valueName,
+      valueDescription,
+      valuePhotoName,
+      valuePhotoData,
+      breadcrumb,
+    } = this.props
     const _copy = copy.detail
+
+    const contributorDeleted = isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null
     return (
       <div className={`${className} Contributor Contributor--detail`}>
         <div className="Contributor__content">
           <div className="Contributor__main">
             <div className="Contributor__mainInner">
+              {contributorDeleted}
+
               <header>
                 {breadcrumb}
                 <h1 className="Contributor__heading">{_copy.title}</h1>
               </header>
+
               {/* Name ------------- */}
               <h2 className="visually-hidden">{_copy.name}</h2>
               <p className="Contributor__name">{valueName}</p>

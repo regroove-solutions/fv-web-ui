@@ -5,6 +5,7 @@ import File from 'views/components/Form/Common/File'
 import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
 import StringHelpers from 'common/StringHelpers'
+import ContributorDelete from 'views/components/Confirmation'
 import { getError, getErrorFeedback } from 'common/FormHelpers'
 const { string, element, array, bool, func, object } = PropTypes
 export class ContributorStateCreate extends React.Component {
@@ -16,7 +17,7 @@ export class ContributorStateCreate extends React.Component {
     errors: array,
     isBusy: bool,
     isEdit: bool,
-    deleteContributor: func,
+    deleteItem: func,
     onRequestSaveForm: func,
     setFormRef: func,
     valueName: string,
@@ -31,7 +32,7 @@ export class ContributorStateCreate extends React.Component {
     errors: [],
     isBusy: false,
     isEdit: false,
-    deleteContributor: () => {},
+    deleteItem: () => {},
     onRequestSaveForm: () => {},
     setFormRef: () => {},
     valueName: '',
@@ -67,6 +68,7 @@ export class ContributorStateCreate extends React.Component {
       setFormRef,
     } = this.props
     const _copy = isEdit ? copy.edit : copy.create
+
     return (
       <form
         className={`${className} Contributor Contributor--create`}
@@ -90,44 +92,19 @@ export class ContributorStateCreate extends React.Component {
             {_copy.btnBack}
           </button>
           {/* BTN: Delete contributor ------------- */}
-          {isEdit && (
-            <div className={`delete delete--reversed ${this.state.deleting ? 'delete--confirmation' : ''}`}>
-              <div className={'deleteInitiate'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__initiate"
-                  ref={(_element) => {
-                    this.btnDeleteInitiate = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteContributorInitiate}
-                  type="button"
-                >
-                  {_copy.btnDelete}
-                </button>
-              </div>
-              <div className={'deleteConfirmation'}>
-                <button
-                  className="_btn _btn--secondary deleteConfirmation__deny"
-                  ref={(_element) => {
-                    this.btnDeleteDeny = _element
-                  }}
-                  disabled={isBusy}
-                  onClick={this._deleteContributorDeny}
-                  type="button"
-                >
-                  {_copy.btnDeleteDeny}
-                </button>
-                <button
-                  className="_btn _btn--destructive deleteConfirmation__confirm"
-                  disabled={isBusy}
-                  onClick={this._deleteContributorConfirm}
-                  type="button"
-                >
-                  {_copy.btnDeleteConfirm}
-                </button>
-              </div>
-            </div>
-          )}
+          {isEdit ? (
+            <ContributorDelete
+              confirmationAction={this.props.deleteItem}
+              className="Contributor__delete"
+              reverse
+              copy={{
+                isConfirmOrDenyTitle: _copy.isConfirmOrDenyTitle,
+                btnInitiate: _copy.btnInitiate,
+                btnDeny: _copy.btnDeny,
+                btnConfirm: _copy.btnConfirm,
+              }}
+            />
+          ) : null}
         </div>
 
         <h1 className="Contributor__heading">{_copy.title}</h1>
@@ -155,16 +132,12 @@ export class ContributorStateCreate extends React.Component {
         />
 
         {/* File --------------- */}
-        <div className={`${className}__photo`} style={{ display: 'flex' }}>
+        <div className={`${groupName} Contributor__photoGroup`}>
           {valuePhotoData && (
             <div className={groupName}>
-              <dl>
-                <dt>{_copy.profilePhotoCurrent}</dt>
-                <dd>{valuePhotoName}</dd>
-                <dd>
-                  <img src={valuePhotoData} alt={`Photo representing '${valueName}'`} />
-                </dd>
-              </dl>
+              <h2>{_copy.profilePhotoCurrent}</h2>
+              <p>{valuePhotoName}</p>
+              <img className="Contributor__photo" src={valuePhotoData} alt={`Photo representing '${valueName}'`} />
             </div>
           )}
           <File
@@ -193,36 +166,6 @@ export class ContributorStateCreate extends React.Component {
   }
   _clean = (name) => {
     return StringHelpers.clean(name, 'CLEAN_ID')
-  }
-  _deleteContributorInitiate = () => {
-    this.setState(
-      {
-        deleting: true,
-      },
-      () => {
-        this.btnDeleteDeny.focus()
-      }
-    )
-  }
-  _deleteContributorConfirm = () => {
-    this.setState(
-      {
-        deleting: false,
-      },
-      () => {
-        this.props.deleteContributor()
-      }
-    )
-  }
-  _deleteContributorDeny = () => {
-    this.setState(
-      {
-        deleting: false,
-      },
-      () => {
-        this.btnDeleteInitiate.focus()
-      }
-    )
   }
 }
 

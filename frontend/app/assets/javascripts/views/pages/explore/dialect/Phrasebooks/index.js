@@ -92,9 +92,10 @@ export class Phrasebooks extends Component {
   state = {
     componentState: STATE_UNAVAILABLE,
     copy: {
-      edit: {
+      actions: {
         th: '',
-        tdLink: '',
+        edit: '',
+        delete: '',
       },
       title: {
         th: '',
@@ -168,26 +169,6 @@ export class Phrasebooks extends Component {
 
     return [
       {
-        name: 'edit',
-        title: copy.edit.th,
-        render: (v, data /*, cellProps*/) => {
-          const uid = data.uid
-          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/phrasebook/${uid}`
-
-          return (
-            <a
-              href={url}
-              onClick={(e) => {
-                e.preventDefault()
-                NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
-              }}
-            >
-              {copy.edit.tdLink}
-            </a>
-          )
-        },
-      },
-      {
         name: 'title',
         title: () => {
           return (
@@ -242,6 +223,26 @@ export class Phrasebooks extends Component {
         render: (v, data /*, cellProps*/) => {
           const bio = selectn('properties.dc:description', data) || '-'
           return <div dangerouslySetInnerHTML={{ __html: bio }} />
+        },
+      },
+      {
+        name: 'edit',
+        title: copy.actions.th,
+        render: (v, data /*, cellProps*/) => {
+          const uid = data.uid
+          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/phrasebook/${uid}`
+
+          return (
+            <a
+              href={url}
+              onClick={(e) => {
+                e.preventDefault()
+                NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+              }}
+            >
+              {copy.actions.edit}
+            </a>
+          )
         },
       },
     ]

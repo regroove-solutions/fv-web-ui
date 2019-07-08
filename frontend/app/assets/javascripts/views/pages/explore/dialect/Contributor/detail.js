@@ -98,6 +98,7 @@ export class Contributor extends React.Component {
         valueDescription: contributor.description,
         valuePhotoName: contributor.photoName,
         valuePhotoData: contributor.photoData,
+        isTrashed: contributor.isTrashed,
         contributor: contributor.data,
         ...addToState,
       })
@@ -112,7 +113,7 @@ export class Contributor extends React.Component {
   }
   _stateGetDetail = () => {
     const { className, groupName } = this.props
-    const { isBusy, valueDescription, valueName, valuePhotoName, valuePhotoData } = this.state
+    const { isBusy, valueDescription, valueName, valuePhotoName, valuePhotoData, isTrashed } = this.state
     return (
       <StateDetail
         copy={this.state.copy}
@@ -120,6 +121,7 @@ export class Contributor extends React.Component {
         groupName={groupName}
         isBusy={isBusy}
         valueName={valueName}
+        isTrashed={isTrashed}
         valueDescription={valueDescription}
         valuePhotoName={valuePhotoName}
         valuePhotoData={valuePhotoData}
@@ -144,8 +146,9 @@ export class Contributor extends React.Component {
         _computeContributor
       )
 
+      const isTrashed = selectn(['response', 'isTrashed'], _computeContributor) || false
       // Respond...
-      return { name, description, photoName, photoData, data: _computeContributor }
+      return { isTrashed, name, description, photoName, photoData, data: _computeContributor }
     }
     return { isError: _computeContributor.isError, message: _computeContributor.message }
   }

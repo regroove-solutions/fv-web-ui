@@ -20,7 +20,7 @@ import selectn from 'selectn'
 // REDUX
 import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
-import { fetchContributors } from 'providers/redux/reducers/fvContributor'
+import { deleteContributor, fetchContributors } from 'providers/redux/reducers/fvContributor'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import NavigationHelpers from 'common/NavigationHelpers'
@@ -28,8 +28,8 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 import { STATE_UNAVAILABLE } from 'common/Constants'
-
-import '!style-loader!css-loader!./styles.css'
+import ContributorDelete from 'views/components/Confirmation'
+import '!style-loader!css-loader!./Contributors.css'
 
 let contributorsPath = undefined
 let _computeContributors = undefined
@@ -61,6 +61,7 @@ export class Contributors extends Component {
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
     editUrl: string,
+    copy: object,
     // REDUX: reducers/state
     routeParams: object.isRequired,
     computeContributors: object.isRequired,
@@ -86,9 +87,10 @@ export class Contributors extends Component {
   state = {
     componentState: STATE_UNAVAILABLE,
     copy: {
-      edit: {
+      actions: {
         th: '',
-        tdLink: '',
+        edit: '',
+        delete: '',
       },
       title: {
         th: '',
@@ -97,6 +99,7 @@ export class Contributors extends Component {
         th: '',
       },
     },
+    deletedUids: [],
   }
 
   //   fetchData(newProps) {
@@ -132,14 +135,13 @@ export class Contributors extends Component {
   render() {
     const { routeParams } = this.props
     const { pageSize, page } = routeParams
-
     return (
       <DocumentListView
         cssModifier="DictionaryList--contributors"
         sortInfo={this.sortInfo.uiSortOrder} // TODO: NOT USED?
         className="browseDataGrid"
         columns={this._getColumns()}
-        data={_computeContributors}
+        data={this._filterDeletedUids()}
         dialect={selectn('response', _computeDialect2)}
         gridCols={4}
         gridListView={false}
@@ -159,28 +161,6 @@ export class Contributors extends Component {
     const { copy } = this.state
     return [
       {
-        name: 'edit',
-        title: copy.edit.th,
-        render: (v, data /*, cellProps*/) => {
-          const { routeParams, editUrl } = this.props
-          const { theme, dialect_path } = routeParams
-          const uid = data.uid
-          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/contributor/${uid}`
-
-          return (
-            <a
-              href={url}
-              onClick={(e) => {
-                e.preventDefault()
-                NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
-              }}
-            >
-              {copy.edit.tdLink}
-            </a>
-          )
-        },
-      },
-      {
         name: 'title',
         title: () => {
           return (
@@ -198,8 +178,23 @@ export class Contributors extends Component {
             </button>
           )
         },
-        render: (v /*, data, cellProps*/) => {
-          return v
+        render: (value, data) => {
+          const { routeParams, editUrl } = this.props
+          const { theme, dialect_path } = routeParams
+          const uid = data.uid
+          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/contributor/${uid}`
+
+          return (
+            <a
+              href={url}
+              onClick={(e) => {
+                e.preventDefault()
+                NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+              }}
+            >
+              {value}
+            </a>
+          )
         },
       },
       {
@@ -224,7 +219,78 @@ export class Contributors extends Component {
           return <div dangerouslySetInnerHTML={{ __html: bio }} />
         },
       },
+      {
+        name: 'actions',
+        title: copy.actions.th,
+        render: (v, data) => {
+          const { routeParams, editUrl } = this.props
+          const { theme, dialect_path } = routeParams
+          const uid = data.uid
+          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/contributor/${uid}`
+
+          return (
+            <ul className="Contributors__actions">
+              <li className="Contributors__actionContainer Contributors__actionDelete">
+                <ContributorDelete
+                  reverse
+                  compact
+                  copy={{
+                    isConfirmOrDenyTitle: copy.isConfirmOrDenyTitle,
+                    btnInitiate: copy.btnInitiate,
+                    btnDeny: copy.btnDeny,
+                    btnConfirm: copy.btnConfirm,
+                  }}
+                  confirmationAction={() => {
+                    this._deleteItem(uid)
+                  }}
+                />
+              </li>
+              <li className="Contributors__actionContainer">
+                <a
+                  href={url}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+                  }}
+                >
+                  {copy.actions.edit}
+                </a>
+              </li>
+            </ul>
+          )
+        },
+      },
     ]
+  }
+  _deleteItem = async (uid) => {
+    /* NOTE: save uid to state */
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, uid],
+      },
+      () => {
+        this.props.deleteContributor(uid)
+      }
+    )
+  }
+  _filterDeletedUids = () => {
+    const { deletedUids } = this.state
+    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
+      const _entries = _computeContributors.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      const filteredComputeContributors = Object.assign({}, _computeContributors)
+      filteredComputeContributors.response.entries = filtered
+      return filteredComputeContributors
+    }
+    return _computeContributors
   }
   _getIcon = (field) => {
     const { search } = this.props
@@ -312,6 +378,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
 // REDUX: actions/dispatch/func
 const mapDispatchToProps = {
+  deleteContributor,
   fetchContributors,
   pushWindowPath,
 }

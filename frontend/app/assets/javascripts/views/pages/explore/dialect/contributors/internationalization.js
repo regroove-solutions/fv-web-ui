@@ -1,7 +1,11 @@
 const copy = {
-  edit: {
-    th: 'Edit Contributor',
-    tdLink: 'Edit',
+  isConfirmOrDenyTitle: 'Delete Contributor?',
+  btnInitiate: 'Delete',
+  btnDeny: 'No, do not delete',
+  btnConfirm: 'Yes, delete contributor',
+  actions: {
+    th: '',
+    edit: 'Edit Contributor',
   },
   title: {
     th: 'Contributor',
