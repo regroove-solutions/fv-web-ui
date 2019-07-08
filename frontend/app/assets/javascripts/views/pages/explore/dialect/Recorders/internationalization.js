@@ -1,4 +1,8 @@
 const copy = {
+  isConfirmOrDenyTitle: 'Delete recorder?',
+  btnInitiate: 'Delete',
+  btnDeny: 'No, do not delete',
+  btnConfirm: 'Yes, delete the recorder',
   actions: {
     th: '',
     edit: 'Edit',
