@@ -155,7 +155,7 @@ export class EditContributor extends React.Component {
     const { itemId } = routeParams
 
     await this.props.fetchContributor(itemId)
-    const contributor = await this._getContributor()
+    const contributor = await this._getItem()
 
     if (contributor.isError) {
       this.setState({
@@ -168,6 +168,7 @@ export class EditContributor extends React.Component {
         errorMessage: undefined,
         componentState: STATE_DEFAULT,
         valueName: contributor.name,
+        isTrashed: contributor.isTrashed,
         valueDescription: contributor.description,
         valuePhotoName: contributor.photoName,
         valuePhotoData: contributor.photoData,
@@ -186,7 +187,7 @@ export class EditContributor extends React.Component {
   }
   _stateGetEdit = () => {
     const { className, breadcrumb, groupName } = this.props
-    const { errors, isBusy, valueDescription, valueName, valuePhotoName, valuePhotoData } = this.state
+    const { errors, isBusy, isTrashed, valueDescription, valueName, valuePhotoName, valuePhotoData } = this.state
     return (
       <StateEdit
         copy={this.state.copy}
@@ -195,6 +196,7 @@ export class EditContributor extends React.Component {
         breadcrumb={breadcrumb}
         errors={errors}
         isBusy={isBusy}
+        isTrashed={isTrashed}
         isEdit
         deleteItem={() => {
           this.props.deleteContributor(this.state.contributor.id)
@@ -275,51 +277,6 @@ export class EditContributor extends React.Component {
         componentState: STATE_ERROR_BOUNDARY,
       })
     }
-
-    // if (onDocumentCreated) {
-    //   const _onDocumentCreated = await onDocumentCreated(newDocument)
-    // }
-
-    // this.setState({ formValue: formValue })
-
-    // // Submit here
-    // const now = Date.now()
-    // const name = formData['dc:title']
-    // const results = await this.props.createContributor(
-    //   `${this.DIALECT_PATH}/Contributors`,
-    //   {
-    //     type: 'FVContributor',
-    //     name: name,
-    //     properties: formData,
-    //   },
-    //   null,
-    //   now
-    // )
-    // if (results.success === false) {
-    //   this.setState({
-    //     componentState: STATE_ERROR_BOUNDARY,
-    //   })
-    //   return
-    // }
-
-    // const item = ProviderHelpers.getEntry(
-    //   this.props.computeContributor,
-    //   `${this.DIALECT_PATH}/Contributors/${name}.${now}`
-    // )
-    // const response = item.response || {}
-
-    // if (response && response.uid) {
-    //   this.setState({
-    //     errors: [],
-    //     formData,
-    //     itemUid: response.uid,
-    //     componentState: STATE_SUCCESS,
-    //   })
-    // } else {
-    //   this.setState({
-    //     componentState: STATE_ERROR_BOUNDARY,
-    //   })
-    // }
   }
   _onRequestSaveForm = async () => {
     const formData = getFormData({
@@ -349,7 +306,7 @@ export class EditContributor extends React.Component {
       invalid,
     })
   }
-  _getContributor = async () => {
+  _getItem = async () => {
     const { computeContributor, routeParams } = this.props
     const { itemId } = routeParams
     // Extract data from immutable:
@@ -366,10 +323,12 @@ export class EditContributor extends React.Component {
         ['response', 'properties', 'fvcontributor:profile_picture', 'data'],
         _computeContributor
       )
+      const isTrashed = selectn(['response', 'isTrashed'], _computeContributor)
 
       // Respond...
       return {
         isError: _computeContributor.isError,
+        isTrashed,
         name,
         description,
         photoName,

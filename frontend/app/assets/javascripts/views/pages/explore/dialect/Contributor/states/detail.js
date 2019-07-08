@@ -39,13 +39,13 @@ export class ContributorStateDetail extends React.Component {
     } = this.props
     const _copy = copy.detail
 
-    const contributorDeleted = isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null
+    const itemDeleted = isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null
     return (
       <div className={`${className} Contributor Contributor--detail`}>
         <div className="Contributor__content">
           <div className="Contributor__main">
             <div className="Contributor__mainInner">
-              {contributorDeleted}
+              {itemDeleted}
 
               <header>
                 {breadcrumb}

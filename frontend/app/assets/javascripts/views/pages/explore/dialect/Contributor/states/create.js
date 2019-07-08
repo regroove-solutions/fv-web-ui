@@ -17,6 +17,7 @@ export class ContributorStateCreate extends React.Component {
     errors: array,
     isBusy: bool,
     isEdit: bool,
+    isTrashed: bool,
     deleteItem: func,
     onRequestSaveForm: func,
     setFormRef: func,
@@ -32,6 +33,7 @@ export class ContributorStateCreate extends React.Component {
     errors: [],
     isBusy: false,
     isEdit: false,
+    isTrashed: false,
     deleteItem: () => {},
     onRequestSaveForm: () => {},
     setFormRef: () => {},
@@ -63,6 +65,7 @@ export class ContributorStateCreate extends React.Component {
       breadcrumb,
       errors,
       isBusy,
+      isTrashed,
       isEdit,
       onRequestSaveForm,
       setFormRef,
@@ -92,7 +95,7 @@ export class ContributorStateCreate extends React.Component {
             {_copy.btnBack}
           </button>
           {/* BTN: Delete contributor ------------- */}
-          {isEdit ? (
+          {isEdit && !isTrashed ? (
             <ContributorDelete
               confirmationAction={this.props.deleteItem}
               className="Contributor__delete"
@@ -107,27 +110,33 @@ export class ContributorStateCreate extends React.Component {
           ) : null}
         </div>
 
+        {isTrashed ? <div className="alert alert-danger">{_copy.isTrashed}</div> : null}
+
         <h1 className="Contributor__heading">{_copy.title}</h1>
-        <p>All fields with an asterisk are required.</p>
+
+        <p>{_copy.requiredNotice}</p>
+
         {/* Name ------------- */}
         <Text
           className={groupName}
+          disabled={isTrashed}
+          error={getError({ errors, fieldName: 'dc:title' })}
           id={this._clean('dc:title')}
+          isRequired
+          labelText={_copy.name}
           name="dc:title"
           value={valueName}
-          error={getError({ errors, fieldName: 'dc:title' })}
-          labelText={_copy.name}
-          isRequired
         />
 
         {/* Description ------------- */}
         <Textarea
           className={groupName}
+          disabled={isTrashed}
+          error={getError({ errors, fieldName: 'dc:description' })}
           id={this._clean('dc:description')}
           labelText={_copy.description}
           name="dc:description"
           value={valueDescription}
-          error={getError({ errors, fieldName: 'dc:description' })}
           wysiwyg
         />
 
@@ -142,22 +151,22 @@ export class ContributorStateCreate extends React.Component {
           )}
           <File
             className={groupName}
+            disabled={isTrashed}
+            handleChange={(data) => {
+              this.setState({ createItemFile: data })
+            }}
             id={this._clean('fvcontributor:profile_picture')}
             labelText={valuePhotoData ? _copy.profilePhotoExists : _copy.profilePhoto}
             name="fvcontributor:profile_picture"
             value=""
-            handleChange={(data) => {
-              this.setState({ createItemFile: data })
-            }}
           />
         </div>
 
-        {/* {formStatus} */}
         {getErrorFeedback({ errors })}
 
         <div className="Contributor__btn-container">
           {/* BTN: Create contributor ------------- */}
-          <button className="_btn _btn--primary" disabled={isBusy} type="submit">
+          <button className="_btn _btn--primary" disabled={isBusy || isTrashed} type="submit">
             {_copy.submit}
           </button>
         </div>
