@@ -1,62 +1,9 @@
-.deleteConfirmation {
-  display: none;
-}
-.delete--confirmation .deleteConfirmation {
-  display: flex;
-}
-.delete--reversed.delete--confirmation .deleteConfirmation {
-  flex-direction: row-reverse;
-}
-.delete--confirmation .deleteInitiate {
-  display: none;
-}
-.deleteConfirmation__initiate {
-  border: 2px solid #fff;
-  background-color: #fff;
-  border-color: #fff;
-  color: #06588c;
-}
-.deleteConfirmation__deny {
-  border-radius: 4px 0 0 4px;
-  border: 2px solid #06588c;
-  border-right-width: 1px;
-  color: #06588c;
-  background-color: #fff;
-}
-.delete--reversed .deleteConfirmation__deny {
-  border-radius: 0 4px 4px 0;
-  border-left-width: 1px;
-  border-right-width: 2px;
-}
-.deleteConfirmation__deny:active,
-.deleteConfirmation__deny:hover {
-  /* border-radius: 4px 0 0 4px; */
-  color: #fff;
-  background-color: #06588c;
-  border-color: #06588c;
-}
-.deleteConfirmation__confirm {
-  border-radius: 0 4px 4px 0;
-  border: 2px solid #06588c;
-  border-left-width: 1px;
-  color: #06588c;
-}
-.delete--reversed .deleteConfirmation__confirm {
-  border-radius: 4px 0 0 4px;
-  border-right-width: 1px;
-  border-left-width: 2px;
-}
-.deleteConfirmation__confirm:active,
-.deleteConfirmation__confirm:hover {
-  /* border-radius: 0 4px 4px 0; */
-  color: #06588c;
-  background-color: #ffdc3f;
-}
-
+/* BLOCK */
 .Contributor {
   margin-bottom: 7rem;
   max-width: 750px;
 }
+/* ELEMENT */
 .Contributor__btnBack {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -73,16 +20,15 @@
 .Contributor .File {
   margin-bottom: 3.5rem;
 }
-.FormContributor__photo .File {
+.Contributor .File {
   flex-grow: 1;
 }
 
 .Contributor__btn-container {
   display: flex;
 }
-.Contributor__btn-container .delete {
-  align-self: flex-end;
-  padding-left: 3.2rem;
+.Contributor__delete {
+  margin-left: auto;
 }
 
 .Contributor__content {
@@ -125,6 +71,8 @@
   font-size: 1.8rem;
   margin: 0 0 1rem 0;
 }
+.Contributor__photoGroup {
+}
 .Contributor__photo {
   width: 100%;
   height: auto;
@@ -133,11 +81,13 @@
   font-size: 1rem;
 }
 
+/* MODIFIER */
 .Contributor--create {
 }
 .Contributor--detail {
   margin-right: -15px;
   margin-left: -15px;
+  max-width: 100%;
 }
 .Contributor--errorBoundary {
 }
