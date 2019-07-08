@@ -159,6 +159,8 @@ export class Contributors extends Component {
   }
   _getColumns = () => {
     const { copy } = this.state
+    const { routeParams, editUrl } = this.props
+    const { theme, dialect_path } = routeParams
     return [
       {
         name: 'title',
@@ -179,8 +181,6 @@ export class Contributors extends Component {
           )
         },
         render: (value, data) => {
-          const { routeParams, editUrl } = this.props
-          const { theme, dialect_path } = routeParams
           const uid = data.uid
           const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/contributor/${uid}`
 
@@ -223,8 +223,6 @@ export class Contributors extends Component {
         name: 'actions',
         title: copy.actions.th,
         render: (v, data) => {
-          const { routeParams, editUrl } = this.props
-          const { theme, dialect_path } = routeParams
           const uid = data.uid
           const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/edit/contributor/${uid}`
 
