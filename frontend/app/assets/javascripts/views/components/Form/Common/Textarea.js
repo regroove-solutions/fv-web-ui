@@ -7,23 +7,25 @@ const { bool, string, func, object } = PropTypes
 
 export default class Textarea extends React.Component {
   static propTypes = {
+    ariaDescribedby: string,
+    className: string,
+    disabled: bool,
+    error: object,
+    handleChange: func,
     id: string.isRequired,
     labelText: string.isRequired,
     name: string.isRequired,
-    ariaDescribedby: string,
-    className: string,
-    value: string,
-    handleChange: func,
-    error: object,
     setRef: func,
+    value: string,
     wysiwyg: bool,
   }
   static defaultProps = {
     className: 'Textarea',
-    value: '',
-    handleChange: () => {},
+    disabled: false,
     error: {},
+    handleChange: () => {},
     setRef: () => {},
+    value: '',
     wysiwyg: false,
   }
 
@@ -33,7 +35,7 @@ export default class Textarea extends React.Component {
   }
 
   async componentDidMount() {
-    const { ariaDescribedby, className, id, name, setRef } = this.props
+    const { ariaDescribedby, className, disabled, id, name, setRef } = this.props
 
     const textComponent = this.props.wysiwyg ? (
       await import(/* webpackChunkName: "Editor" */ 'views/components/Editor').then((_module) => {
@@ -42,6 +44,7 @@ export default class Textarea extends React.Component {
           <Editor
             aria-describedby={ariaDescribedby}
             className={`${className} Textarea__textarea`}
+            disabled={disabled}
             id={id}
             initialValue={this.state.value}
             name={name}
@@ -56,6 +59,7 @@ export default class Textarea extends React.Component {
       <textarea
         aria-describedby={ariaDescribedby}
         className={`${className} Textarea__textarea`}
+        disabled={disabled}
         defaultValue={this.state.value}
         id={id}
         name={name}

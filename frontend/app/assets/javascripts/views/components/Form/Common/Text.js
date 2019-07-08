@@ -7,25 +7,27 @@ const { bool, string, func, object } = PropTypes
 
 export default class Text extends React.Component {
   static propTypes = {
+    ariaDescribedby: string,
+    className: string,
+    disabled: bool,
+    error: object,
+    handleChange: func,
     id: string.isRequired,
     isRequired: bool,
     labelText: string.isRequired,
     name: string.isRequired,
-    ariaDescribedby: string,
-    className: string,
-    value: string,
-    handleChange: func,
-    error: object,
     setRef: func,
+    value: string,
     wysiwyg: bool,
   }
   static defaultProps = {
     className: 'Text',
-    isRequired: false,
-    value: '',
-    handleChange: () => {},
+    disabled: false,
     error: {},
+    handleChange: () => {},
+    isRequired: false,
     setRef: () => {},
+    value: '',
     wysiwyg: false,
   }
 
@@ -35,7 +37,7 @@ export default class Text extends React.Component {
   }
 
   async componentDidMount() {
-    const { ariaDescribedby, id, name, setRef } = this.props
+    const { ariaDescribedby, disabled, id, name, setRef } = this.props
 
     const textComponent = this.props.wysiwyg ? (
       await import(/* webpackChunkName: "Editor" */ 'views/components/Editor').then((_module) => {
@@ -44,6 +46,7 @@ export default class Text extends React.Component {
           <Editor
             aria-describedby={ariaDescribedby}
             className="Text__text"
+            disabled={disabled}
             id={id}
             initialValue={this.state.value}
             name={name}
@@ -58,6 +61,7 @@ export default class Text extends React.Component {
       <input
         aria-describedby={ariaDescribedby}
         className="Text__text"
+        disabled={disabled}
         id={id}
         name={name}
         defaultValue={this.state.value}

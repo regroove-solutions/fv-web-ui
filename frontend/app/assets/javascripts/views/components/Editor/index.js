@@ -3,12 +3,13 @@ import { PropTypes } from 'react'
 import ReactQuill from 'react-quill'
 import '!style-loader!css-loader!react-quill/dist/quill.snow.css'
 import '!style-loader!css-loader!./styles.css'
-const { string, func } = PropTypes
+const { bool, string, func } = PropTypes
 
 export class Editor extends Component {
   static propTypes = {
     ariaDescribedby: string,
     className: string,
+    disabled: bool,
     id: string,
     initialValue: string,
     name: string,
@@ -19,6 +20,7 @@ export class Editor extends Component {
   static defaultProps = {
     ariaDescribedby: '',
     className: '',
+    disabled: false,
     id: '',
     initialValue: '',
     name: '',
@@ -37,7 +39,7 @@ export class Editor extends Component {
   }
 
   render() {
-    const { ariaDescribedby, id, name, setRef } = this.props
+    const { ariaDescribedby, disabled, id, name, setRef } = this.props
     return (
       <div>
         <input
@@ -53,6 +55,7 @@ export class Editor extends Component {
           ref={setRef}
         />
         <ReactQuill
+          readOnly={disabled}
           aria-describedby={ariaDescribedby} // TODO: check if this works
           value={this.state.text}
           onChange={this.handleChange}
