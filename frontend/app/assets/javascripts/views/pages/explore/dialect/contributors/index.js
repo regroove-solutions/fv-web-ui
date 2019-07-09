@@ -29,6 +29,10 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 import { STATE_UNAVAILABLE } from 'common/Constants'
 import ContributorDelete from 'views/components/Confirmation'
+
+import ContributorsSelected from './ContributorsSelected'
+import Checkbox from 'views/components/Form/Common/Checkbox'
+
 import '!style-loader!css-loader!./Contributors.css'
 
 let contributorsPath = undefined
@@ -92,6 +96,10 @@ export class Contributors extends Component {
         edit: '',
         delete: '',
       },
+      batch: {
+        select: '',
+        deselect: '',
+      },
       title: {
         th: '',
       },
@@ -100,6 +108,7 @@ export class Contributors extends Component {
       },
     },
     deletedUids: [],
+    selected: [],
   }
 
   //   fetchData(newProps) {
@@ -135,13 +144,14 @@ export class Contributors extends Component {
   render() {
     const { routeParams } = this.props
     const { pageSize, page } = routeParams
+
     return (
       <DocumentListView
         cssModifier="DictionaryList--contributors"
         sortInfo={this.sortInfo.uiSortOrder} // TODO: NOT USED?
         className="browseDataGrid"
         columns={this._getColumns()}
-        data={this._filterDeletedUids()}
+        data={this._filterDeletedData()}
         dialect={selectn('response', _computeDialect2)}
         gridCols={4}
         gridListView={false}
@@ -161,7 +171,54 @@ export class Contributors extends Component {
     const { copy } = this.state
     const { routeParams, editUrl } = this.props
     const { theme, dialect_path } = routeParams
+
     return [
+      {
+        name: 'batch',
+        title: () => {
+          const allItems = this._getAllItems()
+          // All items selected, show deselect
+          if (allItems.length === this.state.selected.length && allItems.length !== 0) {
+            return (
+              <button className="_btn _btn--compact" type="button" onClick={this._selectNone}>
+                {copy.batch.deselect}
+              </button>
+            )
+          }
+          // show select
+          return (
+            <button className="_btn _btn--compact" type="button" onClick={this._selectAll}>
+              {copy.batch.select}
+            </button>
+          )
+        },
+        footer: () => {
+          return {
+            colSpan: 4,
+            element: (
+              <ContributorsSelected
+                confirmationAction={this._deleteSelected}
+                selected={this.state.selected}
+                copy={copy.contributorsSelected}
+              />
+            ),
+          }
+        },
+        render: (value, data) => {
+          const uid = data.uid
+          const isSelected = this._isSelected(uid)
+          return (
+            <Checkbox
+              selected={isSelected}
+              id={uid}
+              value={uid}
+              name="batch"
+              labelText=""
+              handleChange={this._toggleCheckbox}
+            />
+          )
+        },
+      },
       {
         name: 'title',
         title: () => {
@@ -260,6 +317,22 @@ export class Contributors extends Component {
       },
     ]
   }
+  _deleteSelected = async () => {
+    const { selected } = this.state
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, ...selected],
+      },
+      () => {
+        selected.forEach(async (uid) => {
+          await this.props.deleteContributor(uid)
+        })
+        this.setState({
+          selected: [],
+        })
+      }
+    )
+  }
   _deleteItem = async (uid) => {
     /* NOTE: save uid to state */
     this.setState(
@@ -268,10 +341,29 @@ export class Contributors extends Component {
       },
       () => {
         this.props.deleteContributor(uid)
+        this._toggleCheckbox(false, uid)
       }
     )
   }
+
   _filterDeletedUids = () => {
+    const { deletedUids } = this.state
+    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
+      const _entries = _computeContributors.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      return filtered
+    }
+    return []
+  }
+  _filterDeletedData = () => {
     const { deletedUids } = this.state
     if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
       const _entries = _computeContributors.response.entries
@@ -341,6 +433,25 @@ export class Contributors extends Component {
     }
     return false
   }
+  _getAllItems = () => {
+    const filteredData = this._filterDeletedUids()
+    const uids = filteredData.reduce((accumulator, item) => {
+      return [...accumulator, item.uid]
+    }, [])
+    return uids
+  }
+  _selectAll = () => {
+    const uids = this._getAllItems()
+
+    this.setState({
+      selected: uids,
+    })
+  }
+  _selectNone = () => {
+    this.setState({
+      selected: [],
+    })
+  }
   _sortCol = (arg) => {
     const { routeParams, search } = this.props
     const { theme, dialect_path, pageSize } = routeParams
@@ -350,6 +461,30 @@ export class Contributors extends Component {
       sortOrder === 'asc' ? 'desc' : 'asc'
     }`
     NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+  }
+  _isSelected = (uid) => {
+    const exists = this.state.selected.find((selectedUid) => {
+      return selectedUid === uid
+    })
+    return exists ? true : false
+  }
+  _toggleCheckbox = (checked, uid) => {
+    let selected = [...this.state.selected]
+
+    const exists = this._isSelected(uid)
+    if (checked && !exists) {
+      selected.push(uid)
+    }
+    // remove if exists
+    if (!checked && exists) {
+      selected = selected.filter((selectedUid) => {
+        return selectedUid !== uid
+      })
+    }
+
+    this.setState({
+      selected,
+    })
   }
 }
 
