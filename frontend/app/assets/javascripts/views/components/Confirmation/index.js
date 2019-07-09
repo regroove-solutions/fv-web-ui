@@ -85,9 +85,12 @@ export class Confirmation extends React.Component {
     const classNameCompact = compact ? 'Confirmation--compact' : ''
     const classNameBtnCompact = compact ? '_btn--compact' : ''
     const classNameReverse = reverse ? 'Confirmation--reverse' : ''
+    const classNameDisabled = disabled ? 'Confirmation--disabled' : ''
 
     return (
-      <div className={`Confirmation ${className} ${classNameReverse} ${classNameCompact} ${classNameComponentState}`}>
+      <div
+        className={`Confirmation ${className} ${classNameReverse} ${classNameCompact} ${classNameDisabled} ${classNameComponentState}`}
+      >
         <div className={'Confirmation__initiate'}>
           <button
             className={`Confirmation__btnInitiate _btn _btn--secondary ${classNameBtnCompact}`}
