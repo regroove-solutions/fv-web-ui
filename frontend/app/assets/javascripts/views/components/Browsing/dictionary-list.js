@@ -164,16 +164,17 @@ export default class DictionaryList extends Component {
     const { columns } = this.props
     let willUpdate = false
     const tds = columns.map((column, i) => {
-      const text = selectn('footer', column)
-      if (text && !willUpdate) {
+      const footerData = selectn('footer', column) || {}
+      if (footerData && !willUpdate) {
         willUpdate = true
       }
       const className = this._columnClassNames[i] || ''
-      return (
-        <td key={i} className={`${className} DictionaryList__footer`}>
-          {text}
+      const cellData = footerData.element ? (
+        <td key={i} className={`${className} DictionaryList__footer`} colSpan={footerData.colSpan || 1}>
+          {footerData.element}
         </td>
-      )
+      ) : null
+      return cellData
     })
     return willUpdate ? tds : null
   }
