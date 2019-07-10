@@ -4,10 +4,10 @@ const copy = {
   btnDeny: 'No, do not delete',
   btnConfirm: 'Yes, delete the phrase book',
   itemsSelected: {
-    isConfirmOrDenyTitle: 'Delete selected contributors?',
-    btnInitiate: 'Delete selected contributors',
-    btnDeny: 'No, do not delete selected contributors',
-    btnConfirm: 'Yes, delete selected contributors',
+    isConfirmOrDenyTitle: 'Delete selected phrase books?',
+    btnInitiate: 'Delete selected phrase books',
+    btnDeny: 'No, do not delete selected phrase books',
+    btnConfirm: 'Yes, delete selected phrase books',
   },
   actions: {
     th: '',

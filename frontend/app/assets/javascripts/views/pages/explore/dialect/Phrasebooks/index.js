@@ -32,6 +32,8 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
 import PhrasebookDelete from 'views/components/Confirmation'
+import PhrasebooksSelected from 'views/pages/explore/dialect/Contributors/ContributorsSelected'
+import Checkbox from 'views/components/Form/Common/Checkbox'
 
 import { STATE_UNAVAILABLE } from 'common/Constants'
 
@@ -99,6 +101,10 @@ export class Phrasebooks extends Component {
         edit: '',
         delete: '',
       },
+      batch: {
+        select: '',
+        deselect: '',
+      },
       title: {
         th: '',
       },
@@ -107,6 +113,7 @@ export class Phrasebooks extends Component {
       },
     },
     deletedUids: [],
+    selected: [],
   }
 
   async componentDidMount() {
@@ -120,6 +127,7 @@ export class Phrasebooks extends Component {
 
     this._getData({ copy })
   }
+
   async componentDidUpdate(prevProps) {
     const { computeCategories, computeDialect2, routeParams } = this.props
 
@@ -133,14 +141,13 @@ export class Phrasebooks extends Component {
   render() {
     const { routeParams } = this.props
     const { pageSize, page } = routeParams
-
     return (
       <DocumentListView
         cssModifier="DictionaryList--phrasebooks"
         sortInfo={this.sortInfo.uiSortOrder} // TODO: NOT USED?
         className="browseDataGrid"
         columns={this._getColumns()}
-        data={this._filterDeletedUids()}
+        data={this._filterDeletedData()}
         dialect={selectn('response', _computeDialect2)}
         gridCols={4}
         gridListView={false}
@@ -151,11 +158,20 @@ export class Phrasebooks extends Component {
       />
     )
   }
+
+  handleRefetch = (componentProps, page, pageSize) => {
+    const { routeParams } = this.props
+    const { theme, dialect_path } = routeParams
+    const url = `/${theme}${dialect_path}/phrasebooks/${pageSize}/${page}${window.location.search}`
+    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+  }
+
   sortInfo = {
     uiSortOrder: [],
     currentSortCols: this.props.DEFAULT_SORT_COL,
     currentSortType: this.props.DEFAULT_SORT_TYPE,
   }
+
   _deleteItem = async (uid) => {
     /* NOTE: save uid to state */
     this.setState(
@@ -164,10 +180,29 @@ export class Phrasebooks extends Component {
       },
       () => {
         this.props.deleteCategory(uid)
+        this._toggleCheckbox(false, uid)
       }
     )
   }
-  _filterDeletedUids = () => {
+
+  _deleteSelected = async () => {
+    const { selected } = this.state
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, ...selected],
+      },
+      () => {
+        selected.forEach(async (uid) => {
+          await this.props.deleteCategory(uid)
+        })
+        this.setState({
+          selected: [],
+        })
+      }
+    )
+  }
+
+  _filterDeletedData = () => {
     const { deletedUids } = this.state
     if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
       const _entries = _computeCategories.response.entries
@@ -186,12 +221,86 @@ export class Phrasebooks extends Component {
     }
     return _computeCategories
   }
+
+  _filterDeletedUids = () => {
+    const { deletedUids } = this.state
+    if (_computeCategories && _computeCategories.isFetching === false && _computeCategories.success) {
+      const _entries = _computeCategories.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      return filtered
+    }
+    return []
+  }
+
+  _getAllItems = () => {
+    const filteredData = this._filterDeletedUids()
+
+    const uids = filteredData.reduce((accumulator, item) => {
+      return [...accumulator, item.uid]
+    }, [])
+    return uids
+  }
+
   _getColumns = () => {
     const { copy } = this.state
     const { routeParams, editUrl } = this.props
     const { theme, dialect_path } = routeParams
 
     return [
+      {
+        name: 'batch',
+        title: () => {
+          const allItems = this._getAllItems()
+          // All items selected, show deselect
+          if (allItems.length === this.state.selected.length && allItems.length !== 0) {
+            return (
+              <button className="_btn _btn--compact" type="button" onClick={this._selectNone}>
+                {copy.batch.deselect}
+              </button>
+            )
+          }
+          // show select
+          return (
+            <button className="_btn _btn--compact" type="button" onClick={this._selectAll}>
+              {copy.batch.select}
+            </button>
+          )
+        },
+        footer: () => {
+          return {
+            colSpan: 4,
+            element: (
+              <PhrasebooksSelected
+                confirmationAction={this._deleteSelected}
+                selected={this.state.selected}
+                copy={copy.itemsSelected}
+              />
+            ),
+          }
+        },
+        render: (value, data) => {
+          const uid = data.uid
+          const isSelected = this._isSelected(uid)
+          return (
+            <Checkbox
+              selected={isSelected}
+              id={uid}
+              value={uid}
+              name="batch"
+              labelText=""
+              handleChange={this._toggleCheckbox}
+            />
+          )
+        },
+      },
       {
         name: 'title',
         title: () => {
@@ -290,15 +399,7 @@ export class Phrasebooks extends Component {
       },
     ]
   }
-  _getIcon = (field) => {
-    const { search } = this.props
-    const { sortOrder, sortBy } = search
 
-    if (sortBy === field) {
-      return sortOrder === 'asc' ? iconSortAsc : iconSortDesc
-    }
-    return iconUnsorted
-  }
   _getData = async (addToState) => {
     const { routeParams, search /*, filter*/ } = this.props
     const { pageSize, page } = routeParams
@@ -325,12 +426,24 @@ export class Phrasebooks extends Component {
       ...addToState,
     })
   }
-  handleRefetch = (componentProps, page, pageSize) => {
-    const { routeParams } = this.props
-    const { theme, dialect_path } = routeParams
-    const url = `/${theme}${dialect_path}/phrasebooks/${pageSize}/${page}${window.location.search}`
-    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+
+  _getIcon = (field) => {
+    const { search } = this.props
+    const { sortOrder, sortBy } = search
+
+    if (sortBy === field) {
+      return sortOrder === 'asc' ? iconSortAsc : iconSortDesc
+    }
+    return iconUnsorted
   }
+
+  _isSelected = (uid) => {
+    const exists = this.state.selected.find((selectedUid) => {
+      return selectedUid === uid
+    })
+    return exists ? true : false
+  }
+
   _paginationHasUpdated = (prevProps) => {
     const { routeParams, search } = this.props
     const { pageSize, page } = routeParams
@@ -345,6 +458,21 @@ export class Phrasebooks extends Component {
     }
     return false
   }
+
+  _selectAll = () => {
+    const uids = this._getAllItems()
+
+    this.setState({
+      selected: uids,
+    })
+  }
+
+  _selectNone = () => {
+    this.setState({
+      selected: [],
+    })
+  }
+
   _sortCol = (arg) => {
     const { routeParams, search } = this.props
     const { theme, dialect_path, pageSize } = routeParams
@@ -354,6 +482,25 @@ export class Phrasebooks extends Component {
       sortOrder === 'asc' ? 'desc' : 'asc'
     }`
     NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+  }
+
+  _toggleCheckbox = (checked, uid) => {
+    let selected = [...this.state.selected]
+
+    const exists = this._isSelected(uid)
+    if (checked && !exists) {
+      selected.push(uid)
+    }
+    // remove if exists
+    if (!checked && exists) {
+      selected = selected.filter((selectedUid) => {
+        return selectedUid !== uid
+      })
+    }
+
+    this.setState({
+      selected,
+    })
   }
 }
 
