@@ -13,8 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import React, { PropTypes } from 'react'
+import Immutable, { Map } from 'immutable'
 import provide from 'react-redux-provide'
 import selectn from 'selectn'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
@@ -33,8 +33,7 @@ const intl = IntlService.instance
 /**
  * List view for alphabet
  */
-@provide
-export default class ListView extends DataListView {
+export class ListView extends DataListView {
   static defaultProps = {
     DISABLED_SORT_COLS: ['state', 'related_audio'],
     DEFAULT_PAGE: 1,
@@ -81,7 +80,7 @@ export default class ListView extends DataListView {
         {
           name: 'title',
           title: intl.trans('character', 'Character', 'first'),
-          render: (v, data, cellProps) => v,
+          render: (v) => v,
           sortName: 'fvcharacter:alphabet_order',
         },
         {
@@ -98,10 +97,9 @@ export default class ListView extends DataListView {
           name: 'related_words',
           title: intl.trans('related_words', 'Related Words', 'words'),
           render: (v, data, cellProps) =>
-            UIHelpers.renderComplexArrayRow(
-              selectn('contextParameters.character.' + cellProps.name, data),
-              (entry, i) => <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>
-            ),
+            UIHelpers.renderComplexArrayRow(selectn('contextParameters.character.' + cellProps.name, data), (entry) => (
+              <li key={selectn('uid', entry)}>{selectn('dc:title', entry)}</li>
+            )),
           sortName: 'fv:literal_translation/0/translation',
         },
         {
@@ -135,12 +133,13 @@ export default class ListView extends DataListView {
 
     // Reduce the number of columns displayed for mobile
     if (UIHelpers.isViewSize('xs')) {
-      this.state.columns = this.state.columns.filter((v, k) => ['title', 'related_words'].indexOf(v.name) != -1)
+      this.state.columns = this.state.columns.filter((v) => ['title', 'related_words'].indexOf(v.name) != -1)
       this.state.hideStateColumn = true
     }
 
     // Bind methods to 'this'
     ;[
+      // eslint-disable-line
       '_onNavigateRequest',
       '_onEntryNavigateRequest',
       '_handleRefetch',
@@ -150,14 +149,14 @@ export default class ListView extends DataListView {
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.routeParams.dialect_path !== this.props.routeParams.dialect_path) {
+      ProviderHelpers.fetchIfMissing(this.props.routeParams.dialect_path, this.props.fetchDialect2)
+    }
+  }
+
   // NOTE: DataListView calls `fetchData`
   fetchData(newProps) {
-    ProviderHelpers.fetchIfMissing(newProps.routeParams.dialect_path, newProps.fetchDialect2)
-
-    // if (newProps.dialect == null) {
-    //     newProps.fetchDialect2(newProps.routeParams.dialect_path);
-    // }
-
     this._fetchListViewData(
       newProps,
       newProps.DEFAULT_PAGE,
@@ -236,3 +235,5 @@ export default class ListView extends DataListView {
     )
   }
 }
+
+export default provide(ListView)
