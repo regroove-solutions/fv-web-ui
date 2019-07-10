@@ -3,7 +3,7 @@ const copy = {
   btnInitiate: 'Delete',
   btnDeny: 'No, do not delete',
   btnConfirm: 'Yes, delete contributor',
-  contributorsSelected: {
+  itemsSelected: {
     isConfirmOrDenyTitle: 'Delete selected contributors?',
     btnInitiate: 'Delete selected contributors',
     btnDeny: 'No, do not delete selected contributors',
