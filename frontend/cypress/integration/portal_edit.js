@@ -5,7 +5,6 @@ describe('Authentication', () => {
     // export ADMIN_PASSWORD='THE_PASSWORD'
 
     // Login
-    cy.log('--- LOGIN ---')
     cy.login()
 
     cy.visit(

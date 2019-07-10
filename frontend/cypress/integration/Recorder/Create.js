@@ -3,7 +3,6 @@ import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/cr
 describe('Recorder', () => {
   it('Create', () => {
     // Login
-    cy.log('--- LOGIN ---')
     cy.login()
 
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
