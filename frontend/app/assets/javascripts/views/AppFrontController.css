@@ -9,3 +9,10 @@
 .AppFrontController__footer {
   align-self: flex-end;
 }
+.AppFrontController__waypoint {
+  display: flex;
+  flex-direction: row;
+}
+.AppFrontController__breadcrumb {
+  margin-right: auto;
+}

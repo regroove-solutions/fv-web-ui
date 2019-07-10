@@ -23,7 +23,7 @@ import StringHelpers from 'common/StringHelpers'
 
 import FlatButton from 'material-ui/lib/flat-button'
 import Navigation from 'views/components/Navigation'
-import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher'
+import WorkspaceSwitcher from 'views/components/Navigation/WorkspaceSwitcher'
 import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
 import Breadcrumb from 'views/components/Breadcrumb'
@@ -280,7 +280,7 @@ export class AppFrontController extends Component {
       matchedPage.get('disableWorkspaceSectionNav') !== true &&
       !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
     ) {
-      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
+      _workspaceSwitcher = <WorkspaceSwitcher className="AppFrontController__workspaceSwitcher" area={area} />
     }
     const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
     const findReplace = overrideBreadcrumbs
@@ -289,16 +289,16 @@ export class AppFrontController extends Component {
     return (
       <div>
         <div className="breadcrumbContainer row">
-          <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
-            {_workspaceSwitcher}
+          <div className="AppFrontController__waypoint clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
             <Breadcrumb
-              className="pull-left"
+              className="AppFrontController__breadcrumb"
               matchedPage={matchedPage}
               routes={routes}
               routeParams={routeParams}
               // splitWindowPath={splitWindowPath}
               findReplace={findReplace}
             />
+            {_workspaceSwitcher}
           </div>
         </div>
         <div className={'page-' + theme + '-theme'}>{reactElement}</div>
@@ -401,6 +401,8 @@ export class AppFrontController extends Component {
           _routeParams.theme === 'explore'
         ) {
           newTheme = 'workspace'
+          // Note: Also updating routeParams.area
+          _routeParams.area = 'Workspace'
         }
 
         if (props.properties.theme.id !== newTheme) {
@@ -411,12 +413,10 @@ export class AppFrontController extends Component {
         //   app/assets/javascripts/providers/redux/reducers/navigation/reducer.js
         // props.changeTheme('default')
       }
-
       const matchReturn = {
         matchedPage,
         matchedRouteParams: _routeParams,
       }
-
       // Load help
       //props.loadGuide(props.windowPath, matchReturn);
 
