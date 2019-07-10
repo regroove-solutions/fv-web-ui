@@ -87,6 +87,10 @@ export class Contributors extends Component {
     DEFAULT_LANGUAGE: 'english',
     DEFAULT_SORT_COL: 'dc:title',
     DEFAULT_SORT_TYPE: 'asc',
+    fetchContributors: () => {},
+    createContributor: () => {},
+    fetchDialect: () => {},
+    pushWindowPath: () => {},
   }
   state = {
     componentState: STATE_UNAVAILABLE,
@@ -111,15 +115,6 @@ export class Contributors extends Component {
     selected: [],
   }
 
-  //   fetchData(newProps) {
-  //     const dialectPath = ProviderHelpers.getDialectPathFromURLArray(newProps.splitWindowPath)
-  //     this.setState({ dialectPath: dialectPath })
-
-  //     if (!this.props.computeDialect.success) {
-  //       newProps.fetchDialect('/' + dialectPath)
-  //     }
-  //   }
-
   async componentDidMount() {
     const copy = this.props.copy
       ? this.props.copy
@@ -129,8 +124,9 @@ export class Contributors extends Component {
           }
         )
 
-    this._getData({ copy })
+    await this._getData({ copy })
   }
+
   async componentDidUpdate(prevProps) {
     const { computeContributors, computeDialect2, routeParams } = this.props
 
@@ -162,11 +158,96 @@ export class Contributors extends Component {
       />
     )
   }
+
+  handleRefetch = (componentProps, page, pageSize) => {
+    const { routeParams } = this.props
+    const { theme, dialect_path } = routeParams
+    const url = `/${theme}${dialect_path}/contributors/${pageSize}/${page}${window.location.search}`
+    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+  }
+
   sortInfo = {
     uiSortOrder: [],
     currentSortCols: this.props.DEFAULT_SORT_COL,
     currentSortType: this.props.DEFAULT_SORT_TYPE,
   }
+
+  _deleteItem = async (uid) => {
+    /* NOTE: save uid to state */
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, uid],
+      },
+      () => {
+        this.props.deleteContributor(uid)
+        this._toggleCheckbox(false, uid)
+      }
+    )
+  }
+
+  _deleteSelected = async () => {
+    const { selected } = this.state
+    this.setState(
+      {
+        deletedUids: [...this.state.deletedUids, ...selected],
+      },
+      () => {
+        selected.forEach(async (uid) => {
+          await this.props.deleteContributor(uid)
+        })
+        this.setState({
+          selected: [],
+        })
+      }
+    )
+  }
+
+  _filterDeletedData = () => {
+    const { deletedUids } = this.state
+    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
+      const _entries = _computeContributors.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      const filteredComputeContributors = Object.assign({}, _computeContributors)
+      filteredComputeContributors.response.entries = filtered
+      return filteredComputeContributors
+    }
+    return _computeContributors
+  }
+
+  _filterDeletedUids = () => {
+    const { deletedUids } = this.state
+    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
+      const _entries = _computeContributors.response.entries
+      const filtered = _entries.reduce((accumulator, entry) => {
+        const isDeleted = deletedUids.find((uid) => {
+          return uid === entry.uid
+        })
+        if (isDeleted === undefined) {
+          return [...accumulator, entry]
+        }
+        return accumulator
+      }, [])
+      return filtered
+    }
+    return []
+  }
+
+  _getAllItems = () => {
+    const filteredData = this._filterDeletedUids()
+    const uids = filteredData.reduce((accumulator, item) => {
+      return [...accumulator, item.uid]
+    }, [])
+    return uids
+  }
+
   _getColumns = () => {
     const { copy } = this.state
     const { routeParams, editUrl } = this.props
@@ -199,7 +280,7 @@ export class Contributors extends Component {
               <ContributorsSelected
                 confirmationAction={this._deleteSelected}
                 selected={this.state.selected}
-                copy={copy.contributorsSelected}
+                copy={copy.itemsSelected}
               />
             ),
           }
@@ -317,80 +398,7 @@ export class Contributors extends Component {
       },
     ]
   }
-  _deleteSelected = async () => {
-    const { selected } = this.state
-    this.setState(
-      {
-        deletedUids: [...this.state.deletedUids, ...selected],
-      },
-      () => {
-        selected.forEach(async (uid) => {
-          await this.props.deleteContributor(uid)
-        })
-        this.setState({
-          selected: [],
-        })
-      }
-    )
-  }
-  _deleteItem = async (uid) => {
-    /* NOTE: save uid to state */
-    this.setState(
-      {
-        deletedUids: [...this.state.deletedUids, uid],
-      },
-      () => {
-        this.props.deleteContributor(uid)
-        this._toggleCheckbox(false, uid)
-      }
-    )
-  }
 
-  _filterDeletedUids = () => {
-    const { deletedUids } = this.state
-    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
-      const _entries = _computeContributors.response.entries
-      const filtered = _entries.reduce((accumulator, entry) => {
-        const isDeleted = deletedUids.find((uid) => {
-          return uid === entry.uid
-        })
-        if (isDeleted === undefined) {
-          return [...accumulator, entry]
-        }
-        return accumulator
-      }, [])
-      return filtered
-    }
-    return []
-  }
-  _filterDeletedData = () => {
-    const { deletedUids } = this.state
-    if (_computeContributors && _computeContributors.isFetching === false && _computeContributors.success) {
-      const _entries = _computeContributors.response.entries
-      const filtered = _entries.reduce((accumulator, entry) => {
-        const isDeleted = deletedUids.find((uid) => {
-          return uid === entry.uid
-        })
-        if (isDeleted === undefined) {
-          return [...accumulator, entry]
-        }
-        return accumulator
-      }, [])
-      const filteredComputeContributors = Object.assign({}, _computeContributors)
-      filteredComputeContributors.response.entries = filtered
-      return filteredComputeContributors
-    }
-    return _computeContributors
-  }
-  _getIcon = (field) => {
-    const { search } = this.props
-    const { sortOrder, sortBy } = search
-
-    if (sortBy === field) {
-      return sortOrder === 'asc' ? iconSortAsc : iconSortDesc
-    }
-    return iconUnsorted
-  }
   _getData = async (addToState) => {
     const { routeParams, search } = this.props
     const { pageSize, page } = routeParams
@@ -413,12 +421,24 @@ export class Contributors extends Component {
       ...addToState,
     })
   }
-  handleRefetch = (componentProps, page, pageSize) => {
-    const { routeParams } = this.props
-    const { theme, dialect_path } = routeParams
-    const url = `/${theme}${dialect_path}/contributors/${pageSize}/${page}${window.location.search}`
-    NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
+
+  _getIcon = (field) => {
+    const { search } = this.props
+    const { sortOrder, sortBy } = search
+
+    if (sortBy === field) {
+      return sortOrder === 'asc' ? iconSortAsc : iconSortDesc
+    }
+    return iconUnsorted
   }
+
+  _isSelected = (uid) => {
+    const exists = this.state.selected.find((selectedUid) => {
+      return selectedUid === uid
+    })
+    return exists ? true : false
+  }
+
   _paginationHasUpdated = (prevProps) => {
     const { routeParams, search } = this.props
     const { pageSize, page } = routeParams
@@ -433,13 +453,7 @@ export class Contributors extends Component {
     }
     return false
   }
-  _getAllItems = () => {
-    const filteredData = this._filterDeletedUids()
-    const uids = filteredData.reduce((accumulator, item) => {
-      return [...accumulator, item.uid]
-    }, [])
-    return uids
-  }
+
   _selectAll = () => {
     const uids = this._getAllItems()
 
@@ -447,11 +461,13 @@ export class Contributors extends Component {
       selected: uids,
     })
   }
+
   _selectNone = () => {
     this.setState({
       selected: [],
     })
   }
+
   _sortCol = (arg) => {
     const { routeParams, search } = this.props
     const { theme, dialect_path, pageSize } = routeParams
@@ -462,12 +478,7 @@ export class Contributors extends Component {
     }`
     NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
   }
-  _isSelected = (uid) => {
-    const exists = this.state.selected.find((selectedUid) => {
-      return selectedUid === uid
-    })
-    return exists ? true : false
-  }
+
   _toggleCheckbox = (checked, uid) => {
     let selected = [...this.state.selected]
 
