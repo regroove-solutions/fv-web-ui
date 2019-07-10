@@ -1,16 +1,10 @@
 import React from 'react'
 import { PropTypes } from 'react'
-const { string, func, object } = PropTypes
+const { bool, string, func, object } = PropTypes
 
 export default class File extends React.Component {
-  static defaultProps = {
-    className: 'Text',
-    value: '',
-    handleChange: () => {},
-    error: {},
-  }
-
   static propTypes = {
+    disabled: bool,
     id: string.isRequired,
     labelText: string.isRequired,
     name: string.isRequired,
@@ -19,6 +13,14 @@ export default class File extends React.Component {
     value: string,
     handleChange: func,
     error: object,
+  }
+
+  static defaultProps = {
+    className: 'Text',
+    disabled: false,
+    value: '',
+    handleChange: () => {},
+    error: {},
   }
 
   state = {
@@ -32,15 +34,16 @@ export default class File extends React.Component {
 
   render() {
     const { message } = this.props.error
-    const { className, ariaDescribedby, id, labelText, name } = this.props
+    const { ariaDescribedby, className, disabled, id, labelText, name } = this.props
     return (
-      <div className={`${className} File ${message && 'Form__error'}`}>
+      <div className={`${className} File ${message ? 'Form__error' : ''}`}>
         <label className={`${className}__label File__label`} htmlFor={id}>
           {labelText}
         </label>
         <input
           aria-describedby={ariaDescribedby}
           className={`${className}__text File__input`}
+          disabled={disabled}
           id={id}
           name={name}
           onChange={() => {

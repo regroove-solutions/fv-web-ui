@@ -275,7 +275,6 @@ class PageDialectLearnWords extends PageDialectLearnBase {
               <AlphabetListView
                 dialect={selectn('response', computePortal)}
                 handleClick={this.handleAlphabetClick}
-                routeParams={this.props.routeParams}
                 letter={this.state.searchByAlphabet}
               />
 

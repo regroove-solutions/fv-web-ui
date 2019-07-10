@@ -13,29 +13,34 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
+import { PropTypes } from 'react'
 import { List, Map } from 'immutable'
 // import classNames from 'classnames'
 import selectn from 'selectn'
 
 import IntlService from 'views/services/intl'
 
+const { array, func, instanceOf, number, object, oneOfType, string } = PropTypes
+
 export default class DictionaryList extends Component {
   static propTypes = {
-    items: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    filteredItems: PropTypes.oneOfType([PropTypes.array, PropTypes.instanceOf(List)]),
-    fields: PropTypes.instanceOf(Map),
-    columns: PropTypes.array.isRequired,
-    type: PropTypes.string,
-    theme: PropTypes.string,
-    action: PropTypes.func,
-    cols: PropTypes.number,
-    cellHeight: PropTypes.number,
-    wrapperStyle: PropTypes.object,
-    style: PropTypes.object,
+    action: func,
+    cellHeight: number,
+    cols: number,
+    columns: array.isRequired,
+    cssModifier: string,
+    fields: instanceOf(Map),
+    filteredItems: oneOfType([array, instanceOf(List)]),
+    items: oneOfType([array, instanceOf(List)]),
+    style: object,
+    type: string,
+    theme: string,
+    wrapperStyle: object,
   }
 
   static defaultProps = {
+    cssModifier: '',
     columns: [],
     cols: 3,
     cellHeight: 210,
@@ -63,7 +68,7 @@ export default class DictionaryList extends Component {
 
     if (selectn('length', items) === 0) {
       return (
-        <div style={{ margin: '20px 0' }}>
+        <div className={`DictionaryList DictionaryList--noData  ${this.props.cssModifier}`}>
           {this.intl.translate({
             key: 'no_results_found',
             default: 'No Results Found',
@@ -75,20 +80,19 @@ export default class DictionaryList extends Component {
     }
 
     const columnHeaders = this._getColumnHeaders()
+    const columnFooter = this._getColumnFooter()
+    const trFooter = columnFooter ? (
+      <tr className="DictionaryList__row DictionaryList__row--footer">{columnFooter}</tr>
+    ) : null
     return (
-      <table className="DictionaryList data-table fontAboriginalSans">
+      <table className={`DictionaryList data-table fontAboriginalSans ${this.props.cssModifier}`}>
         <tbody>
-          <tr>{columnHeaders}</tr>
+          <tr className="DictionaryList__row DictionaryList__row--header">{columnHeaders}</tr>
 
           {(items || []).map((item, i) => (
             <tr
               key={i}
-              className="DictionaryListRow"
-              style={{
-                borderBottom: '1px dotted #a8a8a8',
-                margin: '10px',
-                background: i % 2 ? '#f2f7ff' : '#ffffff',
-              }}
+              className={`DictionaryList__row ${i % 2 ? 'DictionaryList__row--b' : 'DictionaryList__row--a'}`}
             >
               {(columns || []).map((column, j) => {
                 const cellValue = selectn(column.name, item)
@@ -96,13 +100,15 @@ export default class DictionaryList extends Component {
                   typeof column.render === 'function' ? column.render(cellValue, item, column) : cellValue
                 const className = this._columnClassNames[j] || ''
                 return (
-                  <td key={j} className={className} align="left">
+                  <td key={j} className={className}>
                     {cellRender}
                   </td>
                 )
               })}
             </tr>
           ))}
+
+          {trFooter}
         </tbody>
       </table>
     )
@@ -114,31 +120,32 @@ export default class DictionaryList extends Component {
     const { columns } = this.props
     return columns.map((currentValue) => {
       const name = selectn('name', currentValue)
-      // title
-      // fv:definitions
-      // related_audio
-      // related_pictures
-      // fv-word:part_of_speech
       const prefix = 'DictionaryList'
       let className = ''
       switch (name) {
         case 'title':
-          className = `${prefix}Title ${prefix}Data`
+          className = `${prefix}__data ${prefix}__data--title `
+          break
+        case 'footer':
+          className = `${prefix}__data ${prefix}__data--footer `
           break
         case 'fv:definitions':
-          className = `${prefix}Definitions ${prefix}Data`
+          className = `${prefix}__data ${prefix}__data--definitions `
           break
         case 'related_audio':
-          className = `${prefix}Audio ${prefix}Data PrintHide`
+          className = `${prefix}__data ${prefix}__data--audio  PrintHide`
           break
         case 'related_pictures':
-          className = `${prefix}Pictures ${prefix}Data PrintHide`
+          className = `${prefix}__data ${prefix}__data--pictures  PrintHide`
           break
         case 'fv-word:part_of_speech':
-          className = `${prefix}Speech ${prefix}Data`
+          className = `${prefix}__data ${prefix}__data--speech `
+          break
+        case 'dc:description':
+          className = `${prefix}__data ${prefix}__data--description `
           break
         default:
-          className = `${prefix}Data`
+          className = `${prefix}__data ${prefix}__data--${name}`
       }
       return className
     })
@@ -149,10 +156,28 @@ export default class DictionaryList extends Component {
       const text = selectn('title', column)
       const className = this._columnClassNames[i] || ''
       return (
-        <th key={i} align="left" className={className}>
+        <th key={i} className={`${className} DictionaryList__header`}>
           {text}
         </th>
       )
     })
+  }
+  _getColumnFooter = () => {
+    const { columns } = this.props
+    let willUpdate = false
+    const tds = columns.map((column, i) => {
+      const footerData = selectn('footer', column) || {}
+      if (footerData && !willUpdate) {
+        willUpdate = true
+      }
+      const className = this._columnClassNames[i] || ''
+      const cellData = footerData.element ? (
+        <td key={i} className={`${className} DictionaryList__footer`} colSpan={footerData.colSpan || 1}>
+          {footerData.element}
+        </td>
+      ) : null
+      return cellData
+    })
+    return willUpdate ? tds : null
   }
 }

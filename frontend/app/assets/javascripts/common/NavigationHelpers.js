@@ -230,3 +230,23 @@ export const appendPathArrayAfterLandmark = ({ pathArray, splitWindowPath, landm
   })
   return toReturn
 }
+
+export const getSearchObject = () => {
+  let searchParams = window.location.search || '?'
+  searchParams = searchParams.replace(/^\?/, '')
+  const searchSplit = searchParams.split('&')
+  const search = {}
+  searchSplit.forEach((item) => {
+    if (item !== '' && /=/.test(item)) {
+      const propValue = item.split('=')
+      search[propValue[0]] = propValue[1]
+    }
+  })
+  return Object.assign(
+    {
+      sortBy: 'dc:title',
+      sortOrder: 'asc',
+    },
+    search
+  )
+}

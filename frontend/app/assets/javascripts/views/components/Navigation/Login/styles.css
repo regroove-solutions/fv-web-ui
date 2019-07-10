@@ -1,0 +1,16 @@
+.Login {
+  font-size: 1.4rem;
+}
+.Login--busy {
+  color: #fff;
+  display: inline-block;
+  padding-right: 10px;
+}
+.Login--welcome {
+  display: inline-block;
+  padding-right: 15px;
+}
+.Login--signIn {
+  display: inline-block;
+  padding: 0 0 0 10px;
+}

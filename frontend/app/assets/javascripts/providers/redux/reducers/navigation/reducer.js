@@ -13,6 +13,7 @@ import {
   LOAD_NAVIGATION_STARTED,
   LOAD_NAVIGATION_SUCCESS,
   LOAD_NAVIGATION_ERROR,
+  SET_ROUTE_PARAMS,
 } from './actionTypes'
 
 import ThemeManager from 'material-ui/lib/styles/theme-manager'
@@ -23,7 +24,18 @@ const initialStateProperties = {
   domain: ConfGlobal.domain,
   theme: { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' },
 }
-
+const DEFAULT_ROUTE_PARAMS = {
+  pageSize: '10', // using strings since these values are pulled from the url bar
+  page: '1', // using strings since these values are pulled from the url bar
+  theme: 'explore',
+  area: 'sections',
+}
+const DEFAULT_SEARCH = {
+  pageSize: '10', // using strings since these values are pulled from the url bar
+  page: '1', // using strings since these values are pulled from the url bar
+  sortBy: 'dc:title',
+  sortOrder: 'asc',
+}
 export const navigationReducer = combineReducers({
   computeNavigateTo(state = { path: null }, action = {}) {
     switch (action.type) {
@@ -123,6 +135,39 @@ export const navigationReducer = combineReducers({
           menuVisible: !state.menuVisible,
         }
 
+      default:
+        return state
+    }
+  },
+
+  route(
+    state = {
+      routeParams: DEFAULT_ROUTE_PARAMS,
+      matchedPage: undefined,
+      search: DEFAULT_SEARCH,
+    },
+    action = {}
+  ) {
+    switch (action.type) {
+      case SET_ROUTE_PARAMS: {
+        const { matchedRouteParams = {}, matchedPage, search } = action
+
+        // routeParams defaults: pagination, theme, area
+        const _matchedRouteParams = {
+          ...matchedRouteParams,
+        }
+        _matchedRouteParams.page = (_matchedRouteParams.page || '1').split('?')[0]
+        const _routeParams = Object.assign({}, DEFAULT_ROUTE_PARAMS, _matchedRouteParams)
+        // search defaults: sortBy, sortOrder
+        const _search = Object.assign({}, DEFAULT_SEARCH, search)
+
+        return {
+          ...state,
+          routeParams: _routeParams,
+          matchedPage,
+          search: _search,
+        }
+      }
       default:
         return state
     }

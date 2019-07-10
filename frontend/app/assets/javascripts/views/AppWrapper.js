@@ -113,7 +113,7 @@ const getPreferences = function getPreferences(login, dialect) {
   return flattenedPreferences
 }
 
-const { array, func, object, string } = PropTypes
+const { func, object, string } = PropTypes
 class AppWrapper extends Component {
   intl = IntlService.instance
   intlBaseKey = 'views'
@@ -128,7 +128,6 @@ class AppWrapper extends Component {
     computeDialect2: object.isRequired,
     computeLogin: object.isRequired,
     properties: object.isRequired,
-    splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
   }
 
@@ -173,9 +172,9 @@ class AppWrapper extends Component {
 
   // Force update of theme if out of sync
   // This is a fix that may be unecessary in future versions of Material-UI, React, Reat-redux-provide
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.properties.theme.id != this.props.properties.theme.id) {
-      nextProps.changeTheme(nextProps.properties.theme.id)
+  componentDidUpdate(prevProps) {
+    if (prevProps.properties.theme.id !== this.props.properties.theme.id) {
+      this.props.changeTheme(this.props.properties.theme.id)
     }
   }
 
@@ -260,7 +259,7 @@ class AppWrapper extends Component {
       //  console.log(xpath);
       //}
 
-      if (xpath != null) {
+      if (xpath !== null) {
         tour.addStep('step' + i, {
           title: 'Element xPath',
           text: xpath + '<textarea>' + dom.textContent + '</textarea>',
@@ -295,13 +294,12 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { properties } = navigation
   const { computeLogin } = nuxeo
   const { computeDialect2 } = fvDialect
-  const { splitWindowPath, _windowPath } = windowPath
+  const { _windowPath } = windowPath
 
   return {
     computeDialect2,
     computeLogin,
     properties,
-    splitWindowPath,
     windowPath: _windowPath,
   }
 }

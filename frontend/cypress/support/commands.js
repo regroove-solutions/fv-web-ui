@@ -17,7 +17,7 @@ Cypress.Commands.add('login', () => {
   expect(Cypress.env('ADMIN_PASSWORD')).not.to.be.undefined
   const login = 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/startup'
   // Login
-  cy.log('--- LOGIN ---')
+  cy.log('--- LOGGING IN ---')
   cy.request({
     method: 'POST',
     url: login,
@@ -32,6 +32,7 @@ Cypress.Commands.add('login', () => {
       Submit: 'Log+In',
     },
   })
+  cy.log('--- SHOULD BE LOGGED IN ---')
 })
 //
 //
@@ -45,3 +46,31 @@ Cypress.Commands.add('login', () => {
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+// Create contributor
+Cypress.Commands.add('createContributor', () => {
+  cy.log('--- Running createContributor ---')
+  return cy.request({
+    method: 'POST',
+    url: 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Contributors',
+    body: {
+      'entity-type': 'document',
+      'type': 'FVContributor',
+      'name': 'AAA cy.createContributor() > dc:title [CY]',
+      'properties': {'dc:description': '<p>AAA cy.createContributor() > dc:description [CY]</p>', 'dc:title': 'AAA cy.createContributor() > dc:title [CY]'},
+    },
+  })
+})
+// Delete contributor
+Cypress.Commands.add('deleteContributor', (uid) => {
+  cy.log('--- Running deleteContributor ---')
+  return cy.request({
+    method: 'POST',
+    url: 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/api/v1/automation/Document.Trash',
+    body: {
+      'params': {},
+      'context': {},
+      'input': uid,
+    },
+  })
+})

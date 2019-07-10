@@ -3,8 +3,9 @@ import { PropTypes } from 'react'
 import Immutable, { List } from 'immutable'
 
 import { connect } from 'react-redux'
-import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
-import { changeTheme } from 'providers/redux/reducers/navigation'
+// REDUX: actions/dispatch/func
+import { pushWindowPath, replaceWindowPath, updateWindowPath } from 'providers/redux/reducers/windowPath'
+import { changeTheme, setRouteParams } from 'providers/redux/reducers/navigation'
 
 import selectn from 'selectn'
 
@@ -14,6 +15,7 @@ import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { matchPath } from 'conf/routes'
 
 import ProviderHelpers from 'common/ProviderHelpers'
+import { getSearchObject } from 'common/NavigationHelpers'
 import { Redirector } from './Redirector'
 // import UIHelpers from 'common/UIHelpers'
 import StringHelpers from 'common/StringHelpers'
@@ -21,7 +23,7 @@ import StringHelpers from 'common/StringHelpers'
 
 import FlatButton from 'material-ui/lib/flat-button'
 import Navigation from 'views/components/Navigation'
-import WorkspaceSwitcher from 'views/components/Navigation/workspace-switcher'
+import WorkspaceSwitcher from 'views/components/Navigation/WorkspaceSwitcher'
 import KidsNavigation from 'views/components/Kids/navigation'
 import Footer from 'views/components/Navigation/Footer'
 import Breadcrumb from 'views/components/Breadcrumb'
@@ -30,7 +32,9 @@ import IntlService from 'views/services/intl'
 
 import { PageError } from 'views/pages'
 
-const { array, func, object, string } = PropTypes
+import '!style-loader!css-loader!./AppFrontController.css'
+
+const { any, array, func, object, string } = PropTypes
 
 const intl = IntlService.instance
 
@@ -73,20 +77,28 @@ export class AppFrontController extends Component {
   static propTypes = {
     warnings: object.isRequired,
 
-    // REDUX: actions
-    changeTheme: func.isRequired,
-    pushWindowPath: func.isRequired,
-    replaceWindowPath: func.isRequired,
-
     // loadGuide: func.isRequired,
     // loadNavigation: func.isRequired
 
-    // REDUX: reducers
+    // REDUX: reducers/state
     computeDialect2: object.isRequired,
     computeLogin: object.isRequired,
     properties: object.isRequired,
+    routeParams: object.isRequired,
+    search: object.isRequired,
+    matchedPage: any,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
+    // REDUX: actions/dispatch/func
+    updateWindowPath: func.isRequired,
+    setRouteParams: func.isRequired,
+    changeTheme: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+  }
+
+  static defaultProps = {
+    matchedPage: undefined,
   }
 
   constructor(props, context) {
@@ -116,19 +128,31 @@ export class AppFrontController extends Component {
     // - window path changes
     // - logged in
     const pathChanged = prevProps.windowPath !== this.props.windowPath
-    const loggedIn = prevProps.computeLogin != this.props.computeLogin
+    // const loggedIn = prevProps.computeLogin != this.props.computeLogin
+    const prevCl = prevProps.computeLogin
+    const curCl = this.props.computeLogin
+    const loggedIn = prevCl.isFetching !== curCl.isFetching || prevCl.success !== curCl.success
 
-    if (pathChanged || loggedIn) {
+    const { sortOrder: newSortOrder, sortBy: newSortBy } = this.props.search
+    const { sortOrder: prevSortOrder, sortBy: prevSortBy } = prevProps.search
+    const windowLocationSearch = getSearchObject()
+    const windowLocationSearchSortOrder = windowLocationSearch.sortOrder
+    const windowLocationSearchSortBy = windowLocationSearch.sortBy
+
+    const sortOrderChanged = newSortOrder !== prevSortOrder || windowLocationSearchSortOrder != newSortOrder
+    const sortByChanged = newSortBy !== prevSortBy || windowLocationSearchSortBy != newSortBy
+
+    if (pathChanged || loggedIn || sortOrderChanged || sortByChanged) {
       this._route(this.props)
     }
   }
 
   render() {
-    const { matchedPage, matchedRouteParams } = this.state
+    const { matchedPage, routeParams } = this.props
 
     // NOTE: Due to the switch from `componentWillMount` to `componentDidMount`
     // `render` runs before we are ready, hence the empty div being returned
-    if (matchedPage === null) {
+    if (matchedPage === undefined) {
       return <div />
     }
 
@@ -137,8 +161,8 @@ export class AppFrontController extends Component {
 
     let page
 
-    let navigation = <Navigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
-    const theme = matchedRouteParams.hasOwnProperty('theme') ? matchedRouteParams.theme : 'default'
+    let navigation = <Navigation frontpage={isFrontPage} routeParams={routeParams} />
+    const theme = routeParams.hasOwnProperty('theme') ? routeParams.theme : 'default'
     // prettier-ignore
     const print = matchedPage
       ? matchedPage
@@ -149,7 +173,7 @@ export class AppFrontController extends Component {
 
     let footer = <Footer className={'footer-' + theme + '-theme'} />
 
-    const clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: matchedRouteParams })
+    const clonedElement = React.cloneElement(matchedPage.get('page').toJS(), { routeParams: routeParams })
 
     // For print view return page only
     if (print) {
@@ -160,7 +184,7 @@ export class AppFrontController extends Component {
     // TODO: Make more generic if additional themes are added in the future.
     if (theme === 'kids') {
       page = clonedElement
-      navigation = <KidsNavigation frontpage={isFrontPage} routeParams={matchedRouteParams} />
+      navigation = <KidsNavigation frontpage={isFrontPage} routeParams={routeParams} />
     } else {
       // Without breadcrumbs
       if (matchedPage.get('breadcrumbs') === false) {
@@ -198,13 +222,16 @@ export class AppFrontController extends Component {
             )
           }
         })}
-
-        <div id="pageNavigation" className="row">
-          {navigation}
-        </div>
-        <div id="pageContainer">{page}</div>
-        <div id="pageFooter" className="row">
-          {footer}
+        <div className="AppFrontController__inner">
+          <div id="pageNavigation" className="AppFrontController__navigation row">
+            {navigation}
+          </div>
+          <div id="pageContainer" className="AppFrontController__content">
+            {page}
+          </div>
+          <div id="pageFooter" className="AppFrontController__footer row">
+            {footer}
+          </div>
         </div>
       </div>
     )
@@ -225,14 +252,19 @@ export class AppFrontController extends Component {
 
     return {
       routes,
-      matchedPage: null,
-      matchedRouteParams: {},
       warningsDismissed: false,
     }
   }
 
-  _handleHistoryEvent = () => {
-    this.props.pushWindowPath(window.location.pathname)
+  _handleHistoryEvent = (postStateEvent) => {
+    const { state: postStateEventState } = postStateEvent
+    if (postStateEventState) {
+      const { windowPath } = postStateEventState
+      // NOTE: windowPath === postStateEvent.state.windowPath
+      this.props.updateWindowPath(windowPath)
+    } else {
+      this.props.updateWindowPath(window.location.pathname)
+    }
   }
 
   _renderWithBreadcrumb = (reactElement, matchedPage, props, theme) => {
@@ -248,7 +280,7 @@ export class AppFrontController extends Component {
       matchedPage.get('disableWorkspaceSectionNav') !== true &&
       !ProviderHelpers.isSiteMember(selectn('response.properties.groups', computeLogin))
     ) {
-      _workspaceSwitcher = <WorkspaceSwitcher area={area} />
+      _workspaceSwitcher = <WorkspaceSwitcher className="AppFrontController__workspaceSwitcher" area={area} />
     }
     const overrideBreadcrumbs = selectn('props.properties.breadcrumbs', this)
     const findReplace = overrideBreadcrumbs
@@ -257,16 +289,16 @@ export class AppFrontController extends Component {
     return (
       <div>
         <div className="breadcrumbContainer row">
-          <div className="clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
-            {_workspaceSwitcher}
+          <div className="AppFrontController__waypoint clearfix" style={{ backgroundColor: themePalette.accent4Color }}>
             <Breadcrumb
-              className="pull-left"
+              className="AppFrontController__breadcrumb"
               matchedPage={matchedPage}
               routes={routes}
               routeParams={routeParams}
               // splitWindowPath={splitWindowPath}
               findReplace={findReplace}
             />
+            {_workspaceSwitcher}
           </div>
         </div>
         <div className={'page-' + theme + '-theme'}>{reactElement}</div>
@@ -281,11 +313,10 @@ export class AppFrontController extends Component {
    */
   _route = (props, routesOverride = null) => {
     let matchedPage = null
-    let matchedRouteParams = {}
+    let _routeParams = {}
     const pathArray = props.splitWindowPath
 
     const routes = routesOverride || this.state.routes
-
     routes.forEach((value) => {
       const matchTest = matchPath(value.get('path'), pathArray)
       const matchAlias = matchPath(value.get('alias'), pathArray)
@@ -325,7 +356,7 @@ export class AppFrontController extends Component {
         }
 
         matchedPage = value
-        matchedRouteParams = routeParams
+        _routeParams = routeParams
 
         // Break out of forEach
         return false
@@ -360,16 +391,18 @@ export class AppFrontController extends Component {
       }
 
       // Switch themes based on route params
-      if (matchedRouteParams.hasOwnProperty('theme')) {
-        let newTheme = matchedRouteParams.theme
+      if (_routeParams.hasOwnProperty('theme')) {
+        let newTheme = _routeParams.theme
 
         // Switch to workspace theme if available
         if (
-          ((matchedRouteParams.hasOwnProperty('area') && matchedRouteParams.area === 'Workspaces') ||
+          ((_routeParams.hasOwnProperty('area') && _routeParams.area === 'Workspaces') ||
             matchedPage.get('path').indexOf('Workspaces') !== -1) &&
-          matchedRouteParams.theme === 'explore'
+          _routeParams.theme === 'explore'
         ) {
           newTheme = 'workspace'
+          // Note: Also updating routeParams.area
+          _routeParams.area = 'Workspace'
         }
 
         if (props.properties.theme.id !== newTheme) {
@@ -380,22 +413,23 @@ export class AppFrontController extends Component {
         //   app/assets/javascripts/providers/redux/reducers/navigation/reducer.js
         // props.changeTheme('default')
       }
-
       const matchReturn = {
-        matchedPage: matchedPage,
-        matchedRouteParams: matchedRouteParams,
+        matchedPage,
+        matchedRouteParams: _routeParams,
       }
-
       // Load help
       //props.loadGuide(props.windowPath, matchReturn);
 
       // Load Navigation
       //props.loadNavigation();
 
-      this.setState(matchReturn)
+      // this.setState(matchReturn)
+      this.props.setRouteParams({
+        ...matchReturn,
+        search: getSearchObject(),
+      })
       return
     }
-
     // No match found (i.e. 404)
     const notFoundPage = Immutable.fromJS({
       title: PAGE_NOT_FOUND_TITLE,
@@ -404,10 +438,14 @@ export class AppFrontController extends Component {
 
     const matchReturn = {
       matchedPage: notFoundPage,
-      matchedRouteParams: matchedRouteParams,
+      matchedRouteParams: _routeParams,
     }
 
-    this.setState(matchReturn)
+    // this.setState(matchReturn)
+    this.props.setRouteParams({
+      ...matchReturn,
+      search: getSearchObject(),
+    })
   }
 
   /**
@@ -420,14 +458,14 @@ export class AppFrontController extends Component {
     let title = this.props.properties.title
 
     if (
-      this.state.matchedPage &&
-      this.state.matchedPage.has('title') &&
-      this.state.matchedPage.get('title') &&
-      this.state.matchedPage.get('title') !== document.title
+      this.props.matchedPage &&
+      this.props.matchedPage.has('title') &&
+      this.props.matchedPage.get('title') &&
+      this.props.matchedPage.get('title') !== document.title
     ) {
-      const combinedRouteParams = Object.assign({}, this.state.matchedRouteParams, pageTitleParams)
+      const combinedRouteParams = Object.assign({}, this.props.routeParams, pageTitleParams)
 
-      title = this.state.matchedPage.get('title')
+      title = this.props.matchedPage.get('title')
       Object.keys(combinedRouteParams).forEach((route) => {
         title = title.replace('{$' + route + '}', StringHelpers.toTitleCase(combinedRouteParams[route]))
       })
@@ -450,28 +488,33 @@ export class AppFrontController extends Component {
     document.title = title
   }
 }
-
+// REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvDialect, navigation, nuxeo, windowPath } = state
 
-  const { properties } = navigation
+  const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computeDialect2 } = fvDialect
   const { splitWindowPath, _windowPath } = windowPath
-
   return {
     computeDialect2,
     computeLogin,
     properties,
+    routeParams: route.routeParams,
+    matchedPage: route.matchedPage,
+    search: route.search,
     splitWindowPath,
     windowPath: _windowPath,
   }
 }
 
+// REDUX: actions/dispatch/func
 const mapDispatchToProps = {
   pushWindowPath,
   replaceWindowPath,
   changeTheme,
+  setRouteParams,
+  updateWindowPath,
 }
 
 export default connect(

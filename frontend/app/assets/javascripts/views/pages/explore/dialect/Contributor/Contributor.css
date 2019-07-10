@@ -1,0 +1,101 @@
+/* BLOCK */
+.Contributor {
+  margin-bottom: 7rem;
+  max-width: 750px;
+}
+/* ELEMENT */
+.Contributor__btnBack {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.Contributor__btnHeader {
+  display: flex;
+  margin-left: -1.6rem;
+}
+.Contributor__btnHeader .delete {
+  margin-left: auto;
+}
+.Contributor .Text,
+.Contributor .Textarea,
+.Contributor .File {
+  margin-bottom: 3.5rem;
+}
+.Contributor .File {
+  flex-grow: 1;
+}
+
+.Contributor__btn-container {
+  display: flex;
+}
+.Contributor__delete {
+  margin-left: auto;
+}
+
+.Contributor__content {
+  display: flex;
+  /* flex-direction: row-reverse; */
+}
+.Contributor__graphic {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.Contributor__graphicInner {
+  text-align: center;
+  /* padding: 5vw; */
+}
+.Contributor__main {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+.Contributor__mainInner {
+  padding: 3rem;
+  /* min-width: 40rem; */
+}
+
+.Contributor__heading {
+  font-size: 3rem;
+}
+.Contributor--detail .Contributor__heading {
+  font-size: 1.8rem;
+  font-weight: 100;
+  margin: 0 0 2rem 0;
+}
+.Contributor__name {
+  font-size: 2.4rem;
+  margin: 0 0 2rem 0;
+}
+.Contributor__description {
+  font-size: 1.8rem;
+  margin: 0 0 1rem 0;
+}
+.Contributor__photoGroup {
+}
+.Contributor__photo {
+  width: 100%;
+  height: auto;
+}
+.Contributor__photoFilename {
+  font-size: 1rem;
+}
+
+/* MODIFIER */
+.Contributor--create {
+}
+.Contributor--detail {
+  margin-right: -15px;
+  margin-left: -15px;
+  max-width: 100%;
+}
+.Contributor--errorBoundary {
+}
+.Contributor--successCreate {
+}
+.Contributor--successDelete {
+}
+.Contributor--successEdit {
+}
+.Contributor--unavailable {
+}

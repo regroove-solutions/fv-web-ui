@@ -5,13 +5,14 @@ import RaisedButton from 'material-ui/lib/raised-button'
 
 import PageDialectPhrasesCreate from 'views/pages/explore/dialect/learn/phrases/create'
 import PageDialectCategoryCreate from 'views/pages/explore/dialect/category/create'
-import PageDialectContributorsCreate from 'views/pages/explore/dialect/contributors/create'
-import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/phrasebooks/create'
+
+import PageDialectContributorsCreate from 'views/pages/explore/dialect/Contributor/createV1'
+import PageDialectPhraseBooksCreate from 'views/pages/explore/dialect/Phrasebook/createV1'
 import PageDialectLinksCreate from 'views/pages/explore/dialect/links/create'
 
 import PageDialectLinksEdit from 'views/pages/explore/dialect/links/edit'
-import PageDialectContributorEdit from 'views/pages/explore/dialect/contributors/edit'
-import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/phrasebooks/edit'
+import PageDialectContributorEdit from 'views/pages/explore/dialect/Contributor/editV1'
+import PageDialectPhraseBooksEdit from 'views/pages/explore/dialect/Phrasebook/editV1'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
@@ -161,6 +162,7 @@ export default class DialogCreateForm extends React.Component {
           )
         }
         break
+      default: // NOTE: do nothing
     }
 
     // Show Create New button, unless otherwise specified
@@ -173,7 +175,12 @@ export default class DialogCreateForm extends React.Component {
     }
 
     const actions = [
-      <FlatButton label={intl.trans('cancel', 'Cancel', 'first')} secondary onClick={this.handleClose} />,
+      <FlatButton
+        key="FlatButton0"
+        label={intl.trans('cancel', 'Cancel', 'first')}
+        secondary
+        onClick={this.handleClose}
+      />,
     ]
 
     return (
