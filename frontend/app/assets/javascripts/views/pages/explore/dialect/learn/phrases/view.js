@@ -15,7 +15,6 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
-import classNames from 'classnames'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -32,21 +31,20 @@ import {
   publishPhrase,
   unpublishPhrase,
 } from 'providers/redux/reducers/fvPhrase'
-import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
 import { fetchDialect2 } from 'providers/redux/reducers/fvDialect'
+import { changeTitleParams, overrideBreadcrumbs } from 'providers/redux/reducers/navigation'
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import selectn from 'selectn'
 
-import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
+import NavigationHelpers from 'common/NavigationHelpers'
 
 import Preview from 'views/components/Editor/Preview'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import MetadataPanel from 'views/pages/explore/dialect/learn/base/metadata-panel'
 import MediaPanel from 'views/pages/explore/dialect/learn/base/media-panel'
-import SubViewTranslation from 'views/pages/explore/dialect/learn/base/subview-translation'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 import Tab from 'material-ui/lib/tabs/tab'
 
@@ -99,19 +97,19 @@ export class DialectViewPhrase extends Component {
       computeEntities: undefined,
       deleteDialogOpen: false,
     }
-
     // Bind methods to 'this'
     ;[
-      // '_getAudio',
+      '_getAcknowledgement',
+      '_getAudio',
       '_getCulturalNotes',
       '_getDefinitions',
-      // '_getPhotos',
-      // '_getPhrases',
-      // '_getPronounciation',
-      '_getTabs',
-      // '_getVideos',
+      '_getLiteralTranslations',
+      '_getPhotos',
+      '_getPhraseBooks',
       '_getPhrasePath',
-      // '_groupBy',
+      '_getTabs',
+      '_getVideos',
+      '_groupBy',
       '_onNavigateRequest',
     ].forEach((method) => (this[method] = this[method].bind(this)))
   }
@@ -128,9 +126,6 @@ export class DialectViewPhrase extends Component {
     } else if (nextProps.routeParams.phrase !== this.props.routeParams.phrase) {
       this.fetchData(nextProps)
     }
-    // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-    //     this.fetchData(nextProps);
-    // }
   }
 
   // Fetch data on initial render
@@ -183,67 +178,6 @@ export class DialectViewPhrase extends Component {
     const dialectClassName = getDialectClassname(computeDialect2)
     const title = selectn('response.title', computePhrase)
 
-    // Photos
-    const photos = []
-    const photosThumbnails = []
-    const photoData = selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []
-    photoData.map((picture, key) => {
-      const image = {
-        original: selectn('views[2].url', picture),
-        thumbnail: selectn('views[0].url', picture) || 'assets/images/cover.png',
-        description: picture['dc:description'],
-        key: key,
-        id: picture.uid,
-        object: picture,
-      }
-      photos.push(image)
-      photosThumbnails.push(
-        <img
-          key={picture.uid}
-          src={selectn('views[0].url', picture) || 'assets/images/cover.png'}
-          alt={selectn('title', picture)}
-          style={{ margin: '15px', maxWidth: '150px' }}
-        />
-      )
-    })
-
-    // Videos
-    const videos = []
-    const videoThumbnails = []
-    const videoData = selectn('response.contextParameters.phrase.related_videos', computePhrase) || []
-    videoData.map((video, key) => {
-      const vid = {
-        original: NavigationHelpers.getBaseURL() + video.path,
-        thumbnail: selectn('views[0].url', video) || 'assets/images/cover.png',
-        description: video['dc:description'],
-        key: key,
-        id: video.uid,
-        object: video,
-      }
-      videos.push(vid)
-      videoThumbnails.push(
-        <video
-          key={video.uid}
-          src={NavigationHelpers.getBaseURL() + video.path}
-          controls
-          style={{ margin: '15px', maxWidth: '150px' }}
-        />
-      )
-    })
-
-    // Categories
-    const phrase_books = []
-    const phraseBookData = selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []
-    phraseBookData.map((phrase_book, key) => {
-      phrase_books.push(<span key={key}>{selectn('dc:title', phrase_book)}</span>)
-    })
-    // Cultural notes
-    const cultural_notes = []
-    const culturalNotesData = selectn('response.properties.fv:cultural_note', computePhrase) || []
-    culturalNotesData.map((cultural_note, key) => {
-      cultural_notes.push(<div key={key}>{intl.searchAndReplace(cultural_note)}</div>)
-    })
-
     /**
      * Generate definitions body
      */
@@ -268,58 +202,51 @@ export class DialectViewPhrase extends Component {
         computeEntities={computeEntities || Immutable.List()}
         {...this.props}
       >
-        <div className="row" style={{ marginTop: '15px' }}>
-          <div className={classNames('col-xs-12', 'col-md-7')}>
-            <div>
-              <div className="DialectViewWordContentPrimary">
-                <div className="DialectViewWordTitleAudio">
-                  <h2 className={`DialectViewWordTitle ${dialectClassName}`}>
-                    {title} {this._getAudio(computePhrase)}
-                  </h2>
-                </div>
-                {this._getDefinitions(computePhrase)}
-                {this._getCulturalNotes(computePhrase)}
-                {/* {this._getLiteralTranslations(computePhrase)}
-                {this._getPronounciation(computePhrase, computeDialect2)} */}
+        <main className="DialectViewWord" id="contentMain">
+          <div className="DialectViewWordGroup">
+            <div className="DialectViewWordContentPrimary">
+              <div className="DialectViewWordTitleAudio">
+                <h2 className={`DialectViewWordTitle ${dialectClassName}`}>
+                  {title} {this._getAudio(computePhrase)}
+                </h2>
               </div>
+              {this._getDefinitions(computePhrase)}
+              {this._getCulturalNotes(computePhrase)}
+              {this._getLiteralTranslations(computePhrase)}
+            </div>
 
-              {(() => {
-                if (phrase_books.length > 0) {
-                  return (
-                    <span>
-                      <strong>{intl.trans('phrase_books', 'Phrase Books', 'words')}</strong>: {phrase_books}
-                    </span>
-                  )
-                }
-              })()}
+            <aside className="DialectViewWordContentSecondary">
+              {this._getPhotos(computePhrase)}
+              {this._getVideos(computePhrase)}
+              {this._getPhraseBooks(computePhrase)}
 
-              <SubViewTranslation
-                group={selectn('response.properties.fv:literal_translation', computePhrase)}
-                groupByElement="language"
-                groupValue="translation"
-              >
-                <p>
-                  <strong>{intl.trans('literal_translations', 'Literal Translations', 'words')}:</strong>
-                </p>
-              </SubViewTranslation>
-
-              <hr />
+              {/* METADATA PANEL */}
 
               {selectn('response', computePhrase) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} />
-              ) : (
-                ''
-              )}
-            </div>
-          </div>
+              ) : null}
 
-          <div className={classNames('col-xs-12', 'col-md-3')}>
-            <MediaPanel label={intl.trans('photo_s', 'PHOTO(s)', 'upper')} type="FVPicture" items={photos} />
-            <MediaPanel label={intl.trans('video_s', 'VIDEO(s)', 'upper')} type="FVVideo" items={videos} />
+              {this._getAcknowledgement(computePhrase)}
+            </aside>
           </div>
-        </div>
+        </main>
       </DetailsViewWithActions>
     )
+  }
+
+  _getAcknowledgement(computePhrase) {
+    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computePhrase)
+    if (acknowledgement && acknowledgement !== '') {
+      return (
+        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
+          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
+          <div className="DialectViewWordContentItemGroup">
+            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
+          </div>
+        </div>
+      )
+    }
+    return null
   }
 
   _getAudio(computePhrase) {
@@ -381,11 +308,73 @@ export class DialectViewPhrase extends Component {
     ) : null
   }
 
-  _getPhrasePath(props = this.props) {
-    if (StringHelpers.isUUID(props.routeParams.phrase)) {
-      return props.routeParams.phrase
+  _getLiteralTranslations(computePhrase) {
+    const literalTranslations = selectn('response.properties.fv:literal_translation', computePhrase)
+    let _literalTranslations = []
+    if (literalTranslations) {
+      const groupedLiteralTranslations = this._groupBy(literalTranslations)
+
+      for (const property in groupedLiteralTranslations) {
+        if (groupedLiteralTranslations.hasOwnProperty(property)) {
+          const literalTranslation = groupedLiteralTranslations[property]
+          _literalTranslations = literalTranslation.map((entry, index) => {
+            return (
+              <div key={index} className="DialectViewWordLiteralTranslationSet">
+                <h4 className="DialectViewWordLiteralTranslationLanguage">{entry.language}</h4>
+                <p className="DialectViewWordLiteralTranslationEntry">{entry.translation}</p>
+              </div>
+            )
+          })
+        }
+      }
     }
-    return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase)
+    return _literalTranslations.length > 0 ? (
+      <div className="DialectViewWordContentItem DialectViewWordLiteralTranslation">
+        <h3 className="DialectViewWordContentItemTitle">
+          {intl.trans(
+            'views.pages.explore.dialect.learn.phrases.literal_translations',
+            'Literal Translations',
+            'first'
+          )}
+        </h3>
+        <div className="DialectViewWordContentItemGroup">{_literalTranslations}</div>
+      </div>
+    ) : null
+  }
+
+  _getPhotos(computePhrase) {
+    const photos = []
+    ;(selectn('response.contextParameters.phrase.related_pictures', computePhrase) || []).map((picture, key) => {
+      const image = {
+        original: selectn('views[2].url', picture),
+        thumbnail: selectn('views[0].url', picture) || 'assets/images/cover.png',
+        description: picture['dc:description'],
+        key: key,
+        id: picture.uid,
+        object: picture,
+      }
+      photos.push(image)
+    })
+
+    return photos.length > 0 ? (
+      <div className="DialectViewWordContentItem DialectViewWordPhoto">
+        <h4 className="DialectViewWordContentItemTitle">{intl.trans('photo_s', 'PHOTO(S)', 'first')}</h4>
+        <MediaPanel type="FVPicture" items={photos} />
+      </div>
+    ) : null
+  }
+
+  _getPhraseBooks(computePhrase) {
+    const _phbook = selectn('response.contextParameters.phrase.phrase_books', computePhrase) || []
+    const phraseBooks = _phbook.map((phraseBook, key) => {
+      return <li key={key}>{selectn('dc:title', phraseBook)}</li>
+    })
+    return phraseBooks.length > 0 ? (
+      <div className="DialectViewWordContentItem DialectViewWordCategory">
+        <h4 className="DialectViewWordContentItemTitle">{intl.trans('phrase books', 'Phrase Books', 'first')}</h4>
+        <ul>{phraseBooks}</ul>
+      </div>
+    ) : null
   }
 
   _getTabs(computePhrase) {
@@ -447,6 +436,34 @@ export class DialectViewPhrase extends Component {
     return tabs
   }
 
+  _getVideos(computePhrase) {
+    const videos = []
+    ;(selectn('response.contextParameters.phrase.related_videos', computePhrase) || []).map((video, key) => {
+      const vid = {
+        original: NavigationHelpers.getBaseURL() + video.path,
+        thumbnail: selectn('views[0].url', video) || 'assets/images/cover.png',
+        description: video['dc:description'],
+        key: key,
+        id: video.uid,
+        object: video,
+      }
+      videos.push(vid)
+    })
+    return videos.length > 0 ? (
+      <div className="DialectViewWordContentItem DialectViewWordVideo">
+        <h4 className="DialectViewWordContentItemTitle">{intl.trans('video_s', 'VIDEO(S)', 'first')}</h4>
+        <MediaPanel type="FVVideo" items={videos} />
+      </div>
+    ) : null
+  }
+
+  _getPhrasePath(props = this.props) {
+    if (StringHelpers.isUUID(props.routeParams.phrase)) {
+      return props.routeParams.phrase
+    }
+    return props.routeParams.dialect_path + '/Dictionary/' + StringHelpers.clean(props.routeParams.phrase)
+  }
+
   // Thanks: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_groupby
   _groupBy(arrOfObj, property = 'language') {
     const _arrOfObj = [...arrOfObj]
@@ -465,8 +482,8 @@ const mapStateToProps = (state /*, ownProps*/) => {
 
   const { properties } = navigation
   const { computeLogin } = nuxeo
-  const { computeDialect2 } = fvDialect
   const { computePhrase } = fvPhrase
+  const { computeDialect2 } = fvDialect
   const { splitWindowPath, _windowPath } = windowPath
 
   return {

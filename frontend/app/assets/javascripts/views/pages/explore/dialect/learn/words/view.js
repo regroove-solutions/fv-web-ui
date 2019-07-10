@@ -98,6 +98,7 @@ export class DialectViewWord extends Component {
       computeEntities: undefined,
     }
     ;[
+      '_getAcknowledgement',
       '_getAudio',
       '_getCategories',
       '_getCulturalNotes',
@@ -241,6 +242,21 @@ export class DialectViewWord extends Component {
     )
   }
 
+  _getAcknowledgement(computeWord) {
+    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
+    if (acknowledgement && acknowledgement !== '') {
+      return (
+        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
+          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
+          <div className="DialectViewWordContentItemGroup">
+            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
+          </div>
+        </div>
+      )
+    }
+    return null
+  }
+
   _getAudio(computeWord) {
     const audios = []
     ;(selectn('response.contextParameters.word.related_audio', computeWord) || []).map((audio) => {
@@ -260,12 +276,12 @@ export class DialectViewWord extends Component {
   _getCategories(computeWord) {
     const _cat = selectn('response.contextParameters.word.categories', computeWord) || []
     const categories = _cat.map((category, key) => {
-      return <span key={key}>{selectn('dc:title', category)}</span>
+      return <li key={key}>{selectn('dc:title', category)}</li>
     })
     return categories.length > 0 ? (
       <div className="DialectViewWordContentItem DialectViewWordCategory">
         <h4 className="DialectViewWordContentItemTitle">{intl.trans('categories', 'Categories', 'first')}</h4>
-        <p>{categories}</p>
+        <ul>{categories}</ul>
       </div>
     ) : null
   }
@@ -290,11 +306,11 @@ export class DialectViewWord extends Component {
 
     let _definitions = []
     if (definitions) {
-      const groupedDefinitiona = this._groupBy(definitions)
+      const groupedDefinitions = this._groupBy(definitions)
 
-      for (const property in groupedDefinitiona) {
-        if (groupedDefinitiona.hasOwnProperty(property)) {
-          const definition = groupedDefinitiona[property]
+      for (const property in groupedDefinitions) {
+        if (groupedDefinitions.hasOwnProperty(property)) {
+          const definition = groupedDefinitions[property]
           _definitions = definition.map((entry, index) => {
             return (
               <div key={index} className="DialectViewWordDefinitionSet">
@@ -433,21 +449,6 @@ export class DialectViewWord extends Component {
           <h3 className="DialectViewWordContentItemTitle">{intl.trans('pronunciation', 'Pronunciation', 'first')}</h3>
           <div className="DialectViewWordContentItemGroup">
             <div className={dialectClassName}>{pronunciation}</div>
-          </div>
-        </div>
-      )
-    }
-    return null
-  }
-
-  _getAcknowledgement(computeWord) {
-    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
-    if (acknowledgement && acknowledgement !== '') {
-      return (
-        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
-          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
-          <div className="DialectViewWordContentItemGroup">
-            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
           </div>
         </div>
       )
