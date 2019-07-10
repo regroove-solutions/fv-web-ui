@@ -16,10 +16,11 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react'
 
 import ContributorDelete from 'views/components/Confirmation'
+import _copy from './ContributorsSelectedInternationalization'
 
 const { array, func, object } = PropTypes
 
-export class Contributors extends Component {
+export class ContributorsSelected extends Component {
   static propTypes = {
     selected: array,
     copy: object,
@@ -29,23 +30,7 @@ export class Contributors extends Component {
   static defaultProps = {
     selected: [],
     confirmationAction: () => {},
-  }
-
-  state = {
-    copy: {},
-  }
-
-  async componentDidMount() {
-    const copy = this.props.copy
-      ? this.props.copy
-      : await import(/* webpackChunkName: "ContributorsSelectedInternationalization" */ './ContributorsSelectedInternationalization').then(
-          (_module) => {
-            return _module.default
-          }
-        )
-    this.setState({
-      copy,
-    })
+    copy: _copy,
   }
 
   render() {
@@ -54,11 +39,11 @@ export class Contributors extends Component {
         confirmationAction={this.props.confirmationAction}
         className="Contributor__delete"
         compact
-        copy={this.state.copy}
+        copy={this.props.copy}
         disabled={this.props.selected.length === 0}
       />
     )
   }
 }
 
-export default Contributors
+export default ContributorsSelected
