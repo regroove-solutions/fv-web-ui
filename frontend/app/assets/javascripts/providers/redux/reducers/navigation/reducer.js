@@ -24,7 +24,18 @@ const initialStateProperties = {
   domain: ConfGlobal.domain,
   theme: { palette: ThemeManager.getMuiTheme(FirstVoicesTheme), id: 'default' },
 }
-
+const DEFAULT_ROUTE_PARAMS = {
+  pageSize: '10', // using strings since these values are pulled from the url bar
+  page: '1', // using strings since these values are pulled from the url bar
+  theme: 'explore',
+  area: 'sections',
+}
+const DEFAULT_SEARCH = {
+  pageSize: '10', // using strings since these values are pulled from the url bar
+  page: '1', // using strings since these values are pulled from the url bar
+  sortBy: 'dc:title',
+  sortOrder: 'asc',
+}
 export const navigationReducer = combineReducers({
   computeNavigateTo(state = { path: null }, action = {}) {
     switch (action.type) {
@@ -131,14 +142,9 @@ export const navigationReducer = combineReducers({
 
   route(
     state = {
-      routeParams: {},
+      routeParams: DEFAULT_ROUTE_PARAMS,
       matchedPage: undefined,
-      search: {
-        pageSize: '10', // using strings since these values are pulled from the url bar
-        page: '1', // using strings since these values are pulled from the url bar
-        sortBy: 'dc:title',
-        sortOrder: 'asc',
-      },
+      search: DEFAULT_SEARCH,
     },
     action = {}
   ) {
@@ -146,28 +152,14 @@ export const navigationReducer = combineReducers({
       case SET_ROUTE_PARAMS: {
         const { matchedRouteParams = {}, matchedPage, search } = action
 
-        // Ensure search defaults:
-        const _search = Object.assign(
-          {},
-          {
-            sortBy: 'dc:title',
-            sortOrder: 'asc',
-          },
-          search
-        )
-        // Ensure pagination defaults:
+        // routeParams defaults: pagination, theme, area
         const _matchedRouteParams = {
           ...matchedRouteParams,
         }
         _matchedRouteParams.page = (_matchedRouteParams.page || '1').split('?')[0]
-        const _routeParams = Object.assign(
-          {},
-          {
-            pageSize: '10', // using strings since these values are pulled from the url bar
-            page: '1', // using strings since these values are pulled from the url bar
-          },
-          _matchedRouteParams
-        )
+        const _routeParams = Object.assign({}, DEFAULT_ROUTE_PARAMS, _matchedRouteParams)
+        // search defaults: sortBy, sortOrder
+        const _search = Object.assign({}, DEFAULT_SEARCH, search)
 
         return {
           ...state,
