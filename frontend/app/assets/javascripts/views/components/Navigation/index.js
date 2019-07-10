@@ -73,16 +73,8 @@ export class Navigation extends Component {
 
   static propTypes = {
     frontpage: bool,
-    routeParams: object, // TODO: is this redux, provide, ...?
-
-    // REDUX: actions/dispatch/func
-    loadNavigation: func.isRequired,
-    pushWindowPath: func.isRequired,
-    replaceWindowPath: func.isRequired,
-    toggleMenuAction: func.isRequired,
-    // countTotalTasks: func.isRequired,
-
     // REDUX: reducers/state
+    routeParams: object.isRequired,
     computeDialect2: object,
     computeLoadNavigation: object.isRequired,
     computeLogin: object.isRequired,
@@ -92,6 +84,13 @@ export class Navigation extends Component {
     windowPath: string.isRequired,
     // computeCountTotalTasks: object.isRequired,
     // computeLoadGuide: object.isRequired,
+
+    // REDUX: actions/dispatch/func
+    loadNavigation: func.isRequired,
+    pushWindowPath: func.isRequired,
+    replaceWindowPath: func.isRequired,
+    toggleMenuAction: func.isRequired,
+    // countTotalTasks: func.isRequired,
   }
 
   constructor(props, context) {
@@ -155,7 +154,7 @@ export class Navigation extends Component {
       this.props.computeLogin.isConnected !== undefined &&
       prevProps.computeLogin.isConnected !== undefined
 
-    if (USER_LOG_IN_STATUS_CHANGED || this.props.routeParams.area != prevProps.routeParams.area) {
+    if (USER_LOG_IN_STATUS_CHANGED || this.props.routeParams.area !== prevProps.routeParams.area) {
       this._setExplorePath(this.props)
     }
 
@@ -307,23 +306,26 @@ export class Navigation extends Component {
   render() {
     const themePalette = this.props.properties.theme.palette.rawTheme.palette
     const isDialect = this.props.routeParams.hasOwnProperty('dialect_path')
-    // const isFrontPage = this.props.frontpage
-
-    // const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
       this.props.routeParams.dialect_path + '/Portal'
     )
-    const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
 
+    // NOTE: TBD, looks like work in progress. There's related jsx
+    // const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
     // const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
-
     //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     const portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal)
-    const portalTitle =
-      selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
-      selectn('response.properties.dc:title', computeDialect)
+    const avatarSrc = UIHelpers.getThumbnail(portalLogo, 'Thumbnail')
+
+    // V1:
+    // const computeDialect = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
+    // const portalTitle =
+    //   selectn('response.contextParameters.ancestry.dialect.dc:title', computePortal) ||
+    //   selectn('response.properties.dc:title', computeDialect)
+    // V2:
+    const portalTitle = this.props.routeParams.dialect_name || ''
 
     const dialectLink = '/explore' + this.props.routeParams.dialect_path
     const hrefPath = NavigationHelpers.generateDynamicURL('page_explore_dialects', this.props.routeParams)
@@ -352,9 +354,8 @@ export class Navigation extends Component {
                 {this.intl.trans('choose_lang', 'Choose a Language', 'first')}
               </Link> */}
               <a
-                className="Navigation__link"
                 href={hrefPath}
-                className="nav_link hidden-xs"
+                className="Navigation__link nav_link hidden-xs"
                 onClick={(e) => {
                   e.preventDefault()
                   NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
@@ -696,7 +697,7 @@ export class Navigation extends Component {
                   NavigationHelpers.navigate(dialectLink, this.props.pushWindowPath, false)
                 }}
               >
-                <Avatar src={UIHelpers.getThumbnail(portalLogo, 'Thumbnail')} size={50} />
+                <Avatar src={avatarSrc} size={50} />
                 <span className="NavigationDialectName fontAboriginalSans">
                   {this.intl.searchAndReplace(portalTitle)}
                 </span>
@@ -716,12 +717,13 @@ const mapStateToProps = (state /*, ownProps*/) => {
   const { fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
 
   const { computeDialect2 } = fvDialect
-  const { computeLoadNavigation, properties } = navigation
+  const { computeLoadNavigation, properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computePortal } = fvPortal
   const { splitWindowPath, _windowPath } = windowPath
 
   return {
+    routeParams: route.routeParams,
     computeDialect2,
     computeLoadNavigation,
     computeLogin,
