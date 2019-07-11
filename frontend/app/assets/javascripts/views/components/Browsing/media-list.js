@@ -124,21 +124,20 @@ export default class MediaList extends Component {
                 titlePosition: fileTypeTilePosition,
               })
             }
-
+            // NOTE: is `size` a string? should it be cast via Number(size)?
+            const size = selectn('properties.common:size', tile)
+            const subtitle = size ? (
+              <span>
+                <strong>{`${Math.round(size * 0.001)} KB`}</strong>
+              </span>
+            ) : null
             return (
               <GridTile
                 onClick={action.bind(this, tile)}
                 key={tile.uid}
                 title={<a href={NavigationHelpers.generateUIDPath(this.props.theme, tile, 'media')}>{tile.title}</a>}
                 titlePosition={fileTypeTilePosition}
-                subtitle={
-                  <span>
-                    <strong>
-                      {/*tile.properties['dc:description']*/}
-                      {Math.round(selectn('properties.common:size', tile) * 0.001)} KB
-                    </strong>
-                  </span>
-                }
+                subtitle={subtitle}
               >
                 {this._getMediaPreview(tile)}
               </GridTile>
