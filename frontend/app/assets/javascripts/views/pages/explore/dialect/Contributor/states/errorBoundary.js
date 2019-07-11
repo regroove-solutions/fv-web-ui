@@ -25,7 +25,7 @@ export class ContributorStateErrorBoundary extends React.Component {
     )
     return (
       <div className={`${className} Contributor Contributor--errorBoundary`}>
-        <h1>{copy.errorBoundary.title}</h1>
+        <h1 className="Contributor__heading">{copy.errorBoundary.title}</h1>
         {contents}
       </div>
     )

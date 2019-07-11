@@ -54,7 +54,7 @@ const copy = {
     explanation: "Sorry about this, but we can't create any new phrase books at the moment.",
     explanationEdit: "Sorry about this, but we can't edit any new phrase books at the moment.",
     optimism: 'The issue should be fixed shortly.',
-    title: 'We ran into an issue',
+    title: 'We encountered a problem',
   },
   loading: 'Loading',
   validation: {
