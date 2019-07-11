@@ -202,11 +202,11 @@ export class DialectViewPhrase extends Component {
         computeEntities={computeEntities || Immutable.List()}
         {...this.props}
       >
-        <main className="DialectViewWord" id="contentMain">
-          <div className="DialectViewWordGroup">
-            <div className="DialectViewWordContentPrimary">
-              <div className="DialectViewWordTitleAudio">
-                <h2 className={`DialectViewWordTitle ${dialectClassName}`}>
+        <main className="DialectViewWordPhrase" id="contentMain">
+          <div className="DialectViewWordPhraseGroup">
+            <div className="DialectViewWordPhraseContentPrimary">
+              <div className="DialectViewWordPhraseTitleAudio">
+                <h2 className={`DialectViewWordPhraseTitle ${dialectClassName}`}>
                   {title} {this._getAudio(computePhrase)}
                 </h2>
               </div>
@@ -215,7 +215,7 @@ export class DialectViewPhrase extends Component {
               {this._getLiteralTranslations(computePhrase)}
             </div>
 
-            <aside className="DialectViewWordContentSecondary">
+            <aside className="DialectViewWordPhraseContentSecondary">
               {this._getPhotos(computePhrase)}
               {this._getVideos(computePhrase)}
               {this._getPhraseBooks(computePhrase)}
@@ -238,9 +238,9 @@ export class DialectViewPhrase extends Component {
     const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computePhrase)
     if (acknowledgement && acknowledgement !== '') {
       return (
-        <div className="DialectViewWordContentItem DialectViewWordAcknowledgement">
-          <h3 className="DialectViewWordContentItemTitle">Acknowledgement / Data Usage</h3>
-          <div className="DialectViewWordContentItemGroup">
+        <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseAcknowledgement">
+          <h3 className="DialectViewWordPhraseContentItemTitle">Acknowledgement / Data Usage</h3>
+          <div className="DialectViewWordPhraseContentItemGroup">
             <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
           </div>
         </div>
@@ -262,7 +262,7 @@ export class DialectViewPhrase extends Component {
         />
       )
     })
-    return audios.length > 0 ? <div className="DialectViewWordAudio">{audios}</div> : null
+    return audios.length > 0 ? <div className="DialectViewWordPhraseAudio">{audios}</div> : null
   }
 
   _getCulturalNotes(computePhrase) {
@@ -271,11 +271,11 @@ export class DialectViewPhrase extends Component {
       return <div key={key}>{intl.searchAndReplace(culturalNote)}</div>
     })
     return culturalNotes.length > 0 ? (
-      <div className="DialectViewPhraseContentItem DialectViewWordCulturalNote">
-        <h3 className="DialectViewWordContentItemTitle">
+      <div className="DialectViewPhraseContentItem DialectViewWordPhraseCulturalNote">
+        <h3 className="DialectViewWordPhraseContentItemTitle">
           {intl.trans('views.pages.explore.dialect.learn.phrases.cultural_notes', 'Cultural Notes', 'first')}
         </h3>
-        <div className="DialectViewWordContentItemGroup">{culturalNotes}</div>
+        <div className="DialectViewWordPhraseContentItemGroup">{culturalNotes}</div>
       </div>
     ) : null
   }
@@ -292,9 +292,9 @@ export class DialectViewPhrase extends Component {
           const definition = groupedDefinitions[property]
           _definitions = definition.map((entry, index) => {
             return (
-              <div key={index} className="DialectViewWordDefinitionSet">
-                <h4 className="DialectViewWordDefinitionLanguage">{entry.language}</h4>
-                <p className="DialectViewWordDefinitionEntry">{entry.translation}</p>
+              <div key={index} className="DialectViewWordPhraseDefinitionSet">
+                <h4 className="DialectViewWordPhraseDefinitionLanguage">{entry.language}</h4>
+                <p className="DialectViewWordPhraseDefinitionEntry">{entry.translation}</p>
               </div>
             )
           })
@@ -302,8 +302,8 @@ export class DialectViewPhrase extends Component {
       }
     }
     return _definitions.length > 0 ? (
-      <div className="DialectViewWordContentItem DialectViewWordDefinition">
-        <div className="DialectViewWordContentItemGroup">{_definitions}</div>
+      <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseDefinition">
+        <div className="DialectViewWordPhraseContentItemGroup">{_definitions}</div>
       </div>
     ) : null
   }
@@ -319,9 +319,9 @@ export class DialectViewPhrase extends Component {
           const literalTranslation = groupedLiteralTranslations[property]
           _literalTranslations = literalTranslation.map((entry, index) => {
             return (
-              <div key={index} className="DialectViewWordLiteralTranslationSet">
-                <h4 className="DialectViewWordLiteralTranslationLanguage">{entry.language}</h4>
-                <p className="DialectViewWordLiteralTranslationEntry">{entry.translation}</p>
+              <div key={index} className="DialectViewWordPhraseLiteralTranslationSet">
+                <h4 className="DialectViewWordPhraseLiteralTranslationLanguage">{entry.language}</h4>
+                <p className="DialectViewWordPhraseLiteralTranslationEntry">{entry.translation}</p>
               </div>
             )
           })
@@ -329,15 +329,15 @@ export class DialectViewPhrase extends Component {
       }
     }
     return _literalTranslations.length > 0 ? (
-      <div className="DialectViewWordContentItem DialectViewWordLiteralTranslation">
-        <h3 className="DialectViewWordContentItemTitle">
+      <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseLiteralTranslation">
+        <h3 className="DialectViewWordPhraseContentItemTitle">
           {intl.trans(
             'views.pages.explore.dialect.learn.phrases.literal_translations',
             'Literal Translations',
             'first'
           )}
         </h3>
-        <div className="DialectViewWordContentItemGroup">{_literalTranslations}</div>
+        <div className="DialectViewWordPhraseContentItemGroup">{_literalTranslations}</div>
       </div>
     ) : null
   }
@@ -357,8 +357,8 @@ export class DialectViewPhrase extends Component {
     })
 
     return photos.length > 0 ? (
-      <div className="DialectViewWordContentItem DialectViewWordPhoto">
-        <h4 className="DialectViewWordContentItemTitle">{intl.trans('photo_s', 'PHOTO(S)', 'first')}</h4>
+      <div className="DialectViewWordPhraseContentItem DialectViewWordPhrasePhoto">
+        <h4 className="DialectViewWordPhraseContentItemTitle">{intl.trans('photo_s', 'PHOTO(S)', 'first')}</h4>
         <MediaPanel type="FVPicture" items={photos} />
       </div>
     ) : null
@@ -370,8 +370,8 @@ export class DialectViewPhrase extends Component {
       return <li key={key}>{selectn('dc:title', phraseBook)}</li>
     })
     return phraseBooks.length > 0 ? (
-      <div className="DialectViewWordContentItem DialectViewWordCategory">
-        <h4 className="DialectViewWordContentItemTitle">{intl.trans('phrase books', 'Phrase Books', 'first')}</h4>
+      <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseCategory">
+        <h4 className="DialectViewWordPhraseContentItemTitle">{intl.trans('phrase books', 'Phrase Books', 'first')}</h4>
         <ul>{phraseBooks}</ul>
       </div>
     ) : null
@@ -450,8 +450,8 @@ export class DialectViewPhrase extends Component {
       videos.push(vid)
     })
     return videos.length > 0 ? (
-      <div className="DialectViewWordContentItem DialectViewWordVideo">
-        <h4 className="DialectViewWordContentItemTitle">{intl.trans('video_s', 'VIDEO(S)', 'first')}</h4>
+      <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseVideo">
+        <h4 className="DialectViewWordPhraseContentItemTitle">{intl.trans('video_s', 'VIDEO(S)', 'first')}</h4>
         <MediaPanel type="FVVideo" items={videos} />
       </div>
     ) : null
