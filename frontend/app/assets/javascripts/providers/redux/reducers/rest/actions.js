@@ -208,6 +208,13 @@ export const fetch = (key, type, properties = {}) => {
 
 /*
  * query
+ *
+ * Initial call:
+ *  query(key, type, properties)
+ *
+ * Subsequent calls:
+ *  query(pathOrId, queryAppend, messageStart, messageSuccess, messageError)
+ *
  * --------------------------------------
  */
 export const query = (key, type, properties = {}) => {
