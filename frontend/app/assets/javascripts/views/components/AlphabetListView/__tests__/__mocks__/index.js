@@ -1,8 +1,9 @@
 import Immutable, { List, Map } from 'immutable' // eslint-disable-line
+import { SECTIONS } from 'common/Constants'
 module.exports = {
   routeParams: Map({
     theme: 'explore',
-    area: 'sections',
+    area: SECTIONS,
     dialect_name: 'Denek’éh_Kaska',
     dialect_path: '/FV/sections/Data/Athabascan/Kaska/Denek’éh_Kaska',
     language_name: 'Kaska',

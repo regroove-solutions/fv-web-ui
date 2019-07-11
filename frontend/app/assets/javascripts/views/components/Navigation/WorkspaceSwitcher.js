@@ -27,6 +27,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
 
 import IntlService from 'views/services/intl'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 import '!style-loader!css-loader!./WorkspaceSwitcher.css'
 
@@ -84,11 +85,11 @@ export class WorkspaceSwitcher extends Component {
   }
 
   _isSection = () => {
-    return this.props.routeParams.area === 'sections'
+    return this.props.routeParams.area === SECTIONS
   }
 
   _toggleWorkspaceSections = (path) => {
-    return this._isSection() ? path.replace('sections', 'Workspaces') : path.replace('Workspaces', 'sections')
+    return this._isSection() ? path.replace(SECTIONS, WORKSPACES) : path.replace(WORKSPACES, SECTIONS)
   }
 
   componentDidUpdate(prevProps) {

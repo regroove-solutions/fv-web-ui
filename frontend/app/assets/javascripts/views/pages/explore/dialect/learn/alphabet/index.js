@@ -48,7 +48,7 @@ import Header from 'views/pages/explore/dialect/header'
 import ToolbarNavigation from 'views/pages/explore/dialect/learn/base/toolbar-navigation'
 import LearningSidebar from 'views/pages/explore/dialect/learn/base/learning-sidebar'
 import IntlService from 'views/services/intl'
-
+import { SECTIONS } from 'common/Constants'
 const intl = IntlService.instance
 const { any, array, bool, func, object, string } = PropTypes
 class AlphabetGridTile extends Component {
@@ -193,7 +193,7 @@ export class PageDialectLearnAlphabet extends PageDialectLearnBase {
       this.props.routeParams.dialect_path + '/Alphabet'
     )
 
-    const isSection = this.props.routeParams.area === 'sections'
+    const isSection = this.props.routeParams.area === SECTIONS
 
     const alphabetListView = <AlphabetListView pagination={false} dialect={selectn('response', _computeDialect2)} />
 

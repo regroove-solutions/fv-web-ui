@@ -60,6 +60,8 @@ import IntlService from 'views/services/intl'
 import ToolbarTitle from 'material-ui/lib/toolbar/toolbar-title'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
 
+import { WORKSPACES, SECTIONS } from 'common/Constants'
+
 import '!style-loader!css-loader!./styles.css'
 
 const { array, func, object, string, bool } = PropTypes
@@ -127,9 +129,9 @@ export class Navigation extends Component {
 
     if (!fetchPath) {
       if (selectn('isConnected', props.computeLogin)) {
-        fetchPath = 'Workspaces'
+        fetchPath = WORKSPACES
       } else {
-        fetchPath = 'sections'
+        fetchPath = SECTIONS
       }
     }
 

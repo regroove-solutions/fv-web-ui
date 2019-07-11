@@ -72,7 +72,6 @@ export class ServiceShortURL extends Component {
       nextProps.computeDialect2ByShortURL,
       '/FV/' + nextProps.routeParams.area
     )
-    // const isSection = nextProps.routeParams.area === 'sections'
 
     let appendPath = ''
 

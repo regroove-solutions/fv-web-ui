@@ -7,7 +7,7 @@ import IntlService from 'views/services/intl'
 
 import * as Pages from 'views/pages'
 import { ServiceShortURL } from 'views/services'
-
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 const intl = IntlService.instance
 
 /**
@@ -122,7 +122,7 @@ const WORKSPACE_TO_SECTION_REDIRECT = {
     return selectn('isConnected', params.props.computeLogin) === false && NavigationHelpers.isWorkspace(params.props)
   },
   target: (params) => {
-    return '/' + params.props.splitWindowPath.join('/').replace('Workspaces', 'sections')
+    return '/' + params.props.splitWindowPath.join('/').replace(WORKSPACES, SECTIONS)
   },
 }
 
@@ -294,13 +294,13 @@ const routes = [
   {
     id: 'dynamic_content_page',
     path: ['content', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
-    page: <Pages.PageContent area="sections" />,
+    page: <Pages.PageContent area={SECTIONS} />,
     title: '{$pageTitle} | ' + intl.translate({ key: 'pages', default: 'Pages', case: 'first' }),
     breadcrumbs: false,
   },
   {
     path: ['content-preview', new paramMatch('friendly_url', ANYTHING_BUT_SLASH)],
-    page: <Pages.PageContent area="Workspaces" />,
+    page: <Pages.PageContent area={WORKSPACES} />,
     title: '{$pageTitle} | ' + intl.translate({ key: 'pages', default: 'Pages', case: 'first' }),
     breadcrumbs: false,
   },
@@ -539,7 +539,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -620,7 +620,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1031,7 +1031,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1083,7 +1083,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1126,7 +1126,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1183,7 +1183,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1212,7 +1212,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1241,7 +1241,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1260,7 +1260,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1276,7 +1276,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1293,7 +1293,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1310,7 +1310,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1327,7 +1327,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1347,7 +1347,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1363,7 +1363,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1380,7 +1380,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1397,7 +1397,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1414,7 +1414,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1435,7 +1435,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1451,7 +1451,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1468,7 +1468,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1485,7 +1485,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1502,7 +1502,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1531,7 +1531,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1574,7 +1574,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1635,7 +1635,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1689,7 +1689,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1811,7 +1811,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1850,7 +1850,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1923,7 +1923,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -1963,7 +1963,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -2009,7 +2009,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -2135,7 +2135,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -2181,7 +2181,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,
@@ -2228,7 +2228,7 @@ const routes = [
     path: [
       KIDS_OR_DEFAULT,
       'FV',
-      'Workspaces',
+      WORKSPACES,
       'Data',
       ANYTHING_BUT_SLASH,
       ANYTHING_BUT_SLASH,

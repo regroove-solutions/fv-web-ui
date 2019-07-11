@@ -17,7 +17,7 @@ limitations under the License.
 import selectn from 'selectn'
 import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { paramMatch } from 'conf/routes'
-
+import { SECTIONS } from 'common/Constants'
 const arrayPopImmutable = (array, sizeToPop = 1) => {
   return array.slice(0, array.length - sizeToPop)
 }
@@ -54,7 +54,7 @@ const AddForwardSlash = (path) => {
  */
 const DefaultRouteParams = {
   theme: 'explore',
-  area: 'sections',
+  area: SECTIONS,
 }
 
 export default {

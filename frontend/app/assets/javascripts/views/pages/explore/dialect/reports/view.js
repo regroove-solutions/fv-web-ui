@@ -41,8 +41,10 @@ import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 import SongsStoriesListViewAlt from 'views/pages/explore/dialect/learn/songs-stories/list-view-alt'
 
 import ReportBrowser from './browse-view'
-import IntlService from 'views/services/intl'
 
+import { WORKSPACES, SECTIONS } from 'common/Constants'
+
+import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 
 const { func, object, string } = PropTypes
@@ -118,7 +120,7 @@ export class PageDialectReportsView extends PageDialectLearnBase {
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path)
+    this.props.pushWindowPath(this.props.windowPath.replace(SECTIONS, WORKSPACES) + '/' + path)
   }
   // NOTE: PageDialectLearnBase calls `fetchData`
   fetchData(newProps) {

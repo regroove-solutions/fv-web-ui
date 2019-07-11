@@ -28,6 +28,7 @@ import classNames from 'classnames'
 import CircularProgress from 'material-ui/lib/circular-progress'
 import NavigationHelpers from 'common/NavigationHelpers'
 import PortalListDialects from 'views/components/Browsing/portal-list-dialects'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 // Operations
 // import DirectoryOperations from "operations/DirectoryOperations"
@@ -116,7 +117,7 @@ export class ExploreDialects extends Component {
       items: sortedPortals,
     }
 
-    if (this.props.routeParams.area == 'Workspaces') {
+    if (this.props.routeParams.area === WORKSPACES) {
       if (isLoggedIn) {
         introText1 = <p>You are part of the following Workspaces (community portals):</p>
       }
@@ -163,7 +164,7 @@ export class ExploreDialects extends Component {
 
   _getQueryPath(props = this.props) {
     // Perform an API query for sections
-    if (props.routeParams.area == 'sections') {
+    if (props.routeParams.area === SECTIONS) {
       // From s3 (static) (NOTE: when fetchPortals is fully switched remove headers from FVPortal to save OPTIONS call)
       return ConfGlobal.apiURL + 's3dialects/?area=' + props.routeParams.area
 

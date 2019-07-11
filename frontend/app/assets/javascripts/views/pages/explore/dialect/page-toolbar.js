@@ -39,6 +39,7 @@ import MenuItem from 'material-ui/lib/menus/menu-item'
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 import IntlService from 'views/services/intl'
 
@@ -440,7 +441,7 @@ export class PageToolbar extends Component {
                     primary
                     onClick={this.props.handleNavigateRequest.bind(
                       this,
-                      this.props.windowPath.replace('sections', 'Workspaces') + '/edit'
+                      this.props.windowPath.replace(SECTIONS, WORKSPACES) + '/edit'
                     )}
                   />
                 </AuthorizationFilter>

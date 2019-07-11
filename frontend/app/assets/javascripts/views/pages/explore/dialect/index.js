@@ -17,6 +17,7 @@ import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
 import classNames from 'classnames'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -135,7 +136,7 @@ export class ExploreDialect extends Component {
   }
 
   _onSwitchAreaRequest(e, index, value) {
-    this._onNavigateRequest(this.props.windowPath.replace(value == 'sections' ? 'Workspaces' : 'sections', value))
+    this._onNavigateRequest(this.props.windowPath.replace(value === SECTIONS ? WORKSPACES : SECTIONS, value))
   }
 
   /**
@@ -178,7 +179,7 @@ export class ExploreDialect extends Component {
     )
     this.props.publishDialectOnly(
       this.props.routeParams.dialect_path,
-      { target: this.props.routeParams.language_path.replace('Workspaces', 'sections') },
+      { target: this.props.routeParams.language_path.replace(WORKSPACES, SECTIONS) },
       null,
       null
     )
@@ -261,7 +262,7 @@ export class ExploreDialect extends Component {
       this.props.routeParams.dialect_path + '/Portal'
     )
 
-    const isSection = this.props.routeParams.area === 'sections'
+    const isSection = this.props.routeParams.area === SECTIONS
     const isKidsTheme = this.props.routeParams.theme === 'kids'
 
     // Render kids view
@@ -307,7 +308,7 @@ export class ExploreDialect extends Component {
     }
     const dialectClassName = getDialectClassname(computeDialect2)
     let toolbar = null
-    if (this.props.routeParams.area === 'Workspaces') {
+    if (this.props.routeParams.area === WORKSPACES) {
       if (selectn('response', computeDialect2)) {
         toolbar = (
           <PageToolbar

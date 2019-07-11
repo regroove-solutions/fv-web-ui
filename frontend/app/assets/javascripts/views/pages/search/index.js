@@ -50,7 +50,7 @@ import DocumentListView from 'views/components/Document/DocumentListView'
 import withToggle from 'views/hoc/view/with-toggle'
 import IntlService from 'views/services/intl'
 import NavigationHelpers from 'common/NavigationHelpers'
-
+import { SECTIONS } from 'common/Constants'
 const FiltersWithToggle = withToggle()
 const intl = IntlService.instance
 
@@ -141,7 +141,7 @@ export class Search extends DataListView {
       // const documentTypeFilter = `'${formValue.documentTypes.join("','")}'`
       props.searchDocuments(
         this._getQueryPath(props),
-        (props.routeParams.area === 'sections' ? ' AND ecm:isLatestVersion = 1' : ' ') +
+        (props.routeParams.area === SECTIONS ? ' AND ecm:isLatestVersion = 1' : ' ') +
           ' AND ecm:primaryType IN (' +
           documentTypeFilter +
           ')' +
@@ -203,7 +203,7 @@ export class Search extends DataListView {
       props.routeParams.dialect_path ||
       props.routeParams.language_path ||
       props.routeParams.language_family_path ||
-      `/${props.properties.domain}/${props.routeParams.area || 'sections'}/Data`
+      `/${props.properties.domain}/${props.routeParams.area || SECTIONS}/Data`
     )
   }
 

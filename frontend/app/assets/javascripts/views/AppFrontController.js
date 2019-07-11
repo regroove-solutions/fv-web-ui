@@ -13,6 +13,7 @@ import classNames from 'classnames'
 
 import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { matchPath } from 'conf/routes'
+import { WORKSPACES } from 'common/Constants'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import { getSearchObject } from 'common/NavigationHelpers'
@@ -396,13 +397,13 @@ export class AppFrontController extends Component {
 
         // Switch to workspace theme if available
         if (
-          ((_routeParams.hasOwnProperty('area') && _routeParams.area === 'Workspaces') ||
-            matchedPage.get('path').indexOf('Workspaces') !== -1) &&
+          ((_routeParams.hasOwnProperty('area') && _routeParams.area === WORKSPACES) ||
+            matchedPage.get('path').indexOf(WORKSPACES) !== -1) &&
           _routeParams.theme === 'explore'
         ) {
           newTheme = 'workspace'
           // Note: Also updating routeParams.area
-          _routeParams.area = 'Workspace'
+          _routeParams.area = WORKSPACES
         }
 
         if (props.properties.theme.id !== newTheme) {

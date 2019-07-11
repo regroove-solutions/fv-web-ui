@@ -14,6 +14,7 @@ import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import selectn from 'selectn'
 import NavigationHelpers from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 const intl = IntlService.instance
 
@@ -123,7 +124,7 @@ export default class DataListView extends Component {
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path)
+    this.props.pushWindowPath(this.props.windowPath.replace(SECTIONS, WORKSPACES) + '/' + path)
   }
 
   _handleRefetch(dataGridProps, page, pageSize) {
@@ -234,7 +235,7 @@ export default class DataListView extends Component {
 
     // Toggle 'state' column for section/workspaces view
     if (this.state.hasOwnProperty('columns')) {
-      if (props.routeParams.area === 'sections') {
+      if (props.routeParams.area === SECTIONS) {
         const stateCol = this.state.columns.findIndex((item) => item.name === 'state')
 
         this.state.columns.splice(stateCol, 1)

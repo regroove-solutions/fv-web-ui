@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import ConfGlobal from 'conf/local.js'
+import { SECTIONS } from 'common/Constants'
 import {
   TOGGLE_MENU,
   NAVIGATE_PAGE,
@@ -28,7 +29,7 @@ const DEFAULT_ROUTE_PARAMS = {
   pageSize: '10', // using strings since these values are pulled from the url bar
   page: '1', // using strings since these values are pulled from the url bar
   theme: 'explore',
-  area: 'sections',
+  area: SECTIONS,
 }
 const DEFAULT_SEARCH = {
   pageSize: '10', // using strings since these values are pulled from the url bar
