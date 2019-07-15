@@ -17,7 +17,7 @@ limitations under the License.
 import Immutable from 'immutable'
 import StringHelpers from './StringHelpers'
 import selectn from 'selectn'
-
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 // Used by replaceAllWorkspaceSectionKeys() & switchWorkspaceSectionKeys()
 const proxiesKeys = [
   {
@@ -278,6 +278,7 @@ function isStartsWithQuery(currentAppliedFilter) {
 }
 
 function replaceAllWorkspaceSectionKeys(string, area) {
+  // TODO: is this related to values found in Redux > navigation.route.routeParams.area === 'sections' || 'Workspaces' ?
   const searchKey = area === 'sections' ? 'workspace' : 'section'
   const replaceKey = area === 'sections' ? 'section' : 'workspace'
   let _string = string
@@ -293,7 +294,7 @@ function switchWorkspaceSectionKeys(workspaceKey, area) {
   })
 
   if (row) {
-    if (area == 'sections') {
+    if (area === SECTIONS) {
       return row.section
     }
     return row.workspace
@@ -329,7 +330,7 @@ function toJSKeepId(js) {
     .map(toJSKeepId)
     .toMap()
 }
-
+// prettier-ignore
 export default {
   fetchIfMissing,
   filtersToNXQL,
@@ -348,10 +349,11 @@ export default {
   switchWorkspaceSectionKeys,
   toJSKeepId,
   regex: {
+    NUMBER: '([0-9]+)\??$',
     QUERY_PARAMS: /\?(.*)/,
-    ANYTHING_BUT_SLASH: '([^/]*)',
+    ANYTHING_BUT_SLASH: '([^/]*)\??$', // eslint-disable-line
     ANY_LANGUAGE_CODE: '(en|fr)',
-    WORKSPACE_OR_SECTION: '(sections|Workspaces)',
+    WORKSPACE_OR_SECTION: `(${SECTIONS}|${WORKSPACES})`,
     KIDS_OR_DEFAULT: '(kids|explore)',
   },
   userRegistrationRoles: [

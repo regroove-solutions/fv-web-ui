@@ -117,6 +117,8 @@ const ResourcesFields = {
         case: 'words',
       }),
       nxql: " dc:contributors IN ('${value}')",
+      // NOTE: ValuedCheckboxFactory could be related to an issue in setting the checkbox via `formValues` prop - see FW-205
+      // It triggers an error when the checkbox is clicked
       factory: ValuedCheckboxFactory,
     },
     'fvm:origin': {

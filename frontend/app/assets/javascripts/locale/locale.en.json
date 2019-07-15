@@ -1053,6 +1053,7 @@
   "operations": {
     "could_not_access_server": "Could not access server",
     "could_not_create_document": "Could not create document",
+    "could_not_update_document": "Could not update document",
     "could_not_create_new_user": "Could not create new user",
     "could_not_execute_operation_x": "Could not execute operation %s",
     "could_not_publish_document": "Could not publish document",

@@ -1,13 +1,12 @@
-import React, { Component, PropTypes } from 'react'
+import React from 'react'
 import t from 'tcomb-form'
 
-function renderLabel(locals) {
-  return ''
-}
-
 function renderInput(locals) {
-  const onChange = function(event) {
+  const onChange = (event) => {
     if (event.target.checked) {
+      // NOTE: on dialect media browsing page locals.context === undefined,
+      // so accessing `locals.context[locals.attrs.name]` triggers an error.
+      // It's not clear to me what `locals.context[locals.attrs.name]` should be doing.
       locals.onChange(locals.context[locals.attrs.name])
     } else {
       locals.onChange(null)
@@ -22,6 +21,9 @@ function renderInput(locals) {
         id={'virtual-keyboard-helper-' + locals.attrs.name}
         value={locals.context}
         onChange={onChange}
+        // NOTE: would this be better?
+        // onChange={locals.onChange}
+        // name={locals.attrs.name}
       />
       <span>&nbsp;</span>
       <span>{locals.label}</span>

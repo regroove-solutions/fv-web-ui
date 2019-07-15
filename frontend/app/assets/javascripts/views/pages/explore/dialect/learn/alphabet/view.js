@@ -43,7 +43,10 @@ import Tab from 'material-ui/lib/tabs/tab'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 
+import { WORKSPACES } from 'common/Constants'
+
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
+
 import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 /**
@@ -194,7 +197,7 @@ export class View extends Component {
     return (
       <PromiseWrapper computeEntities={computeEntities}>
         {(() => {
-          if (this.props.routeParams.area === 'Workspaces') {
+          if (this.props.routeParams.area === WORKSPACES) {
             if (selectn('response', computeCharacter))
               return (
                 <PageToolbar
@@ -231,17 +234,17 @@ export class View extends Component {
                                   'response.contextParameters.character.related_audio.length',
                                   computeCharacter
                                 ) === 0 ? (
-                                    <span>
-                                      {intl.trans(
-                                        'views.pages.explore.dialect.learn.words.no_audio_yet',
-                                        'No audio is available yet',
-                                        'first'
-                                      )}
+                                  <span>
+                                    {intl.trans(
+                                      'views.pages.explore.dialect.learn.words.no_audio_yet',
+                                      'No audio is available yet',
+                                      'first'
+                                    )}
                                     .
-                                    </span>
-                                  ) : (
-                                    ''
-                                  )}
+                                  </span>
+                                ) : (
+                                  ''
+                                )}
 
                                 {(
                                   selectn('response.contextParameters.character.related_audio', computeCharacter) || []
@@ -346,11 +349,11 @@ export class View extends Component {
                       UIHelpers.isViewSize('xs')
                         ? intl.trans('words', 'Words', 'first')
                         : intl.trans(
-                          'views.pages.explore.dialect.learn.alphabet.words_starting_with_x',
-                          'Words Starting with ' + selectn('response.title', computeCharacter),
-                          'words',
-                          [selectn('response.title', computeCharacter)]
-                        )
+                            'views.pages.explore.dialect.learn.alphabet.words_starting_with_x',
+                            'Words Starting with ' + selectn('response.title', computeCharacter),
+                            'words',
+                            [selectn('response.title', computeCharacter)]
+                          )
                     }
                     id="find_words"
                   >
@@ -379,11 +382,11 @@ export class View extends Component {
                       UIHelpers.isViewSize('xs')
                         ? intl.trans('phrases', 'Phrases', 'first')
                         : intl.trans(
-                          'views.pages.explore.dialect.learn.alphabet.phrases_starting_with_x',
-                          'Phrases Starting with ' + selectn('response.title', computeCharacter),
-                          'words',
-                          [selectn('response.title', computeCharacter)]
-                        )
+                            'views.pages.explore.dialect.learn.alphabet.phrases_starting_with_x',
+                            'Phrases Starting with ' + selectn('response.title', computeCharacter),
+                            'words',
+                            [selectn('response.title', computeCharacter)]
+                          )
                     }
                     id="find_phrases"
                   >

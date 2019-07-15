@@ -30,7 +30,7 @@ const intl = IntlService.instance
  * Sidebar for learning page
  */
 const { bool, object } = PropTypes
-export class ToolbarNavigation extends Component {
+export class LearningSidebar extends Component {
   static propTypes = {
     dialect: object.isRequired,
     isSection: bool.isRequired,
@@ -159,4 +159,4 @@ const mapStateToProps = (state /*, ownProps*/) => {
 export default connect(
   mapStateToProps,
   null
-)(ToolbarNavigation)
+)(LearningSidebar)

@@ -73,7 +73,7 @@ import CardHeader from 'material-ui/lib/card/card-header'
 import CardText from 'material-ui/lib/card/card-text'
 import IntlService from 'views/services/intl'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 const intl = IntlService.instance
 /**
  * Learn portion of the dialect portal
@@ -178,7 +178,7 @@ export class DialectLearn extends Component {
   _publishChangesAction() {
     this.props.publishDialectOnly(
       this.props.routeParams.dialect_path,
-      { target: this.props.routeParams.language_path.replace('Workspaces', 'sections') },
+      { target: this.props.routeParams.language_path.replace(WORKSPACES, SECTIONS) },
       null,
       'Portal published successfully!'
     )
@@ -304,7 +304,7 @@ export class DialectLearn extends Component {
     )
     //const computeUserModifiedWords = ProviderHelpers.getEntry(this.props.computeUserModifiedWords, this.props.routeParams.dialect_path);
 
-    const isSection = this.props.routeParams.area === 'sections'
+    const isSection = this.props.routeParams.area === SECTIONS
 
     const {
       computeLogin,
@@ -338,7 +338,7 @@ export class DialectLearn extends Component {
     return (
       <PromiseWrapper computeEntities={computeEntities}>
         {(() => {
-          if (this.props.routeParams.area === 'Workspaces') {
+          if (this.props.routeParams.area === WORKSPACES) {
             if (selectn('response', computeDialect2))
               return (
                 <PageToolbar

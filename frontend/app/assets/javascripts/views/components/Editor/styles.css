@@ -1,0 +1,24 @@
+.quill {
+  background-color: #f5f7f9;
+}
+.ql-container.ql-snow {
+  border: none;
+  border-radius: 4px;
+}
+.ql-editor {
+  background-color: #f5f7f9;
+  padding: 1.6rem;
+  border-radius: 4px;
+  font-size: 1.8rem;
+}
+.ql-editor:focus,
+.ql-editor:active {
+  background-color: #d8effc;
+}
+.ql-toolbar.ql-snow {
+  background-color: #fff;
+  border-color: #eaeaea;
+}
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border-radius: 0 0 4px 4px;
+}

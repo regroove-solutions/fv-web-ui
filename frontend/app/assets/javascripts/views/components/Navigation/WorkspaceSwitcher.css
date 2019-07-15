@@ -1,0 +1,37 @@
+/* BLOCK */
+.WorkspaceSwitcher {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  list-style-type: none;
+}
+/* ELEMENT */
+.WorkspaceSwitcher__itemContainer {
+  margin-left: 10px;
+  border-radius: 0;
+}
+
+.WorkspaceSwitcher__item {
+  border-radius: 4px 4px 0 0;
+  color: #000;
+  display: flex;
+  height: 100%;
+  align-items: center;
+  padding: 10px 15px;
+}
+.WorkspaceSwitcher__item:hover,
+.WorkspaceSwitcher__item:focus {
+  background-color: #dcdcdc;
+  cursor: pointer;
+  color: #000;
+}
+
+/* MODIFIER */
+.WorkspaceSwitcher__itemContainer--active {
+  border-bottom: 4px solid #a7a7a7;
+}
+.WorkspaceSwitcher__itemContainer--active .WorkspaceSwitcher__item {
+  color: #000;
+  background-color: transparent;
+  padding-bottom: 5px;
+}

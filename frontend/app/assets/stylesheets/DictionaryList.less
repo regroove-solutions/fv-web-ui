@@ -1,24 +1,46 @@
-.DictionaryListData,
-.data-table td.DictionaryListData {
+/* ELEMENT */
+.DictionaryList__data,
+.data-table td.DictionaryList__data {
   font-size: 1.6rem;
   padding: 0 10px;
 }
+.DictionaryList__row {
+  border-bottom: 1px dotted #a8a8a8;
+  background: #fff;
+}
+.DictionaryList__footer,
+.DictionaryList .DictionaryList__data.DictionaryList__footer {
+  background: linear-gradient(to bottom, #e6e6e6 100%, #efefef 13%, #f7f7f7 0%);
+  border-top: 1px solid #a8a8a8;
+  padding: 10px;
+  font-weight: 700;
+}
 
-.DictionaryListTitle,
-.DictionaryListData.DictionaryListTitle,
-.data-table td.DictionaryListTitle {
+/* MODIFIER */
+.DictionaryList--noData {
+  margin: 20px 0;
+}
+.DictionaryList__row--a {
+  background: #fff
+}
+.DictionaryList__row--b {
+  background: #f2f7ff
+}
+.DictionaryList__data--title,
+.DictionaryList__data.DictionaryList__data--title,
+.data-table td.DictionaryList__data--title {
   text-align: center;
   padding: 10px;
 }
 
-// .DictionaryListTitle a {
+// .DictionaryList__data--title a {
 //   text-decoration: none;
 //   border-bottom: 1px solid;
 //   padding-bottom: 1px;
 // }
 
 // Note: text-decoration 'underline' will obscure some indigenous fonts that have a diacritic under a letter
-.DictionaryListTitle a {
+.DictionaryList__data--title a {
   border-bottom: none;
   text-align: center;
   text-decoration: none;
@@ -32,19 +54,27 @@
   font-size: 2rem;
   line-height: 1.3;
 }
-.DictionaryListTitle a:hover {
+.DictionaryList__data--title a:hover {
   background-color: #fbe8e8;
   color: #820000;
   border-color: #820000;
   box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1), 0 5px 5px rgba(0, 0, 0, 0.04);
 }
 
-.DictionaryListDefinitions {
+.DictionaryList__data--definitions {
   font-size: 1.6rem;
 }
-.DictionaryListAudio {
+.DictionaryList__data--audio {
 }
-.DictionaryListPictures {
+.DictionaryList__data--pictures {
 }
-.DictionaryListSpeech {
+.DictionaryList__data--speech {
+}
+
+.DictionaryList--contributors {
+  .DictionaryList__data--title,
+  .DictionaryList__data.DictionaryList__data--title,
+  .data-table td.DictionaryList__data--title {
+    text-align: left;
+  }
 }

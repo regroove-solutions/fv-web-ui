@@ -17,6 +17,8 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
+import { SECTIONS } from 'common/Constants'
+import '!style-loader!css-loader!./styles.css'
 
 const { array, func, string, object } = PropTypes
 
@@ -131,7 +133,7 @@ export class Breadcrumb extends Component {
               value.get('redirects').forEach((redirectValue) => {
                 if (redirectValue.get('condition')({ props: this.props })) {
                   hrefPath = redirectValue.get('target')({ props: this.props })
-                  hrefPath = hrefPath.replace('sections', routeParams.area || splitPath[2] || 'sections')
+                  hrefPath = hrefPath.replace(SECTIONS, routeParams.area || splitPath[2] || SECTIONS)
 
                   return false
                 }

@@ -1,0 +1,7 @@
+.Navigation {
+  font-size: 1.4rem;
+}
+.Navigation__link,
+.Navigation__link:visited {
+  color: #fff;
+}

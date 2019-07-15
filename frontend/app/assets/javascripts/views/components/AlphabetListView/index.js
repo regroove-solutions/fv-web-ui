@@ -20,10 +20,10 @@ export class AlphabetListView extends Component {
     dialect: any,
     handleClick: func,
     letter: PropTypes.string,
-    routeParams: object.isRequired,
     // REDUX: reducers/state
     computeCharacters: PropTypes.object.isRequired,
     computePortal: PropTypes.object.isRequired,
+    routeParams: object.isRequired,
     splitWindowPath: PropTypes.array.isRequired,
     // REDUX: actions/dispatch/func
     fetchCharacters: PropTypes.func.isRequired,
@@ -183,15 +183,17 @@ export class AlphabetListView extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvCharacter, fvPortal, windowPath } = state
+  const { fvCharacter, fvPortal, navigation, windowPath } = state
 
   const { computeCharacters } = fvCharacter
   const { computePortal } = fvPortal
+  const { route } = navigation
   const { splitWindowPath } = windowPath
 
   return {
     computeCharacters,
     computePortal,
+    routeParams: route.routeParams,
     splitWindowPath,
   }
 }

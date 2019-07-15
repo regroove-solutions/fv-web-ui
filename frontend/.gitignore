@@ -4,3 +4,4 @@ target/
 .settings/
 yarn-error.log
 coverage
+cypress/integration/__cypress__/

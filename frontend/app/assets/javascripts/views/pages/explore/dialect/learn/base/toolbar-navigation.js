@@ -56,7 +56,6 @@ export class ToolbarNavigation extends Component {
 
   constructor(props, context) {
     super(props, context)
-    ;['_onNavigateRequest', '_getNavigationURL'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   componentDidMount() {
@@ -79,17 +78,16 @@ export class ToolbarNavigation extends Component {
     // this.props.fetchResultSet('count_phrases', {'query': 'SELECT COUNT(ecm:uuid) FROM FVPhrase WHERE ecm:path STARTSWITH "' + this.props.routeParams.dialect_path + '/Dictionary" AND ecm:isTrashed = 0'});
   }
 
-  _onNavigateRequest(pathArray, e) {
+  _onNavigateRequest = (pathArray, e) => {
+    e.preventDefault()
     if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] === 'learn') {
       NavigationHelpers.navigateForward(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     } else {
       NavigationHelpers.navigateForwardReplace(this.props.splitWindowPath, pathArray, this.props.pushWindowPath)
     }
-
-    e.preventDefault()
   }
 
-  _getNavigationURL(path) {
+  _getNavigationURL = (path) => {
     if (this.props.splitWindowPath[this.props.splitWindowPath.length - 1] === 'learn') {
       return this.props.windowPath + '/' + path
     }

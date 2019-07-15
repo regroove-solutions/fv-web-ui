@@ -10,8 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-
+import React, { Component } from 'react'
+import { PropTypes } from 'react'
 import selectn from 'selectn'
 import GridView from 'views/pages/explore/dialect/learn/base/grid-view'
 import DictionaryList from 'views/components/Browsing/dictionary-list'
@@ -27,31 +27,35 @@ import IntlService from 'views/services/intl'
 const GridViewWithPagination = withPagination(GridView, 8)
 const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 10, sortBy: 'fv:custom_order', sortOrder: 'asc' }
 
+const { any, bool, func, number, string } = PropTypes
+
 export default class DocumentListView extends Component {
   static propTypes = {
-    columns: PropTypes.any, // TODO: set appropriate propType
-    data: PropTypes.any, // TODO: set appropriate propType
-    dialect: PropTypes.any, // TODO: set appropriate propType
-    disablePageSize: PropTypes.any, // TODO: set appropriate propType
-    gridCols: PropTypes.any, // TODO: set appropriate propType
-    gridListTile: PropTypes.any, // TODO: set appropriate propType
-    gridListView: PropTypes.any, // TODO: set appropriate propType
-    gridViewProps: PropTypes.any, // TODO: set appropriate propType
-    onSelectionChange: PropTypes.func,
-    onSortChange: PropTypes.any, // TODO: set appropriate propType
-    page: PropTypes.number,
-    pageSize: PropTypes.number,
-    pagination: PropTypes.bool,
-    refetcher: PropTypes.func,
-    renderSimpleTable: PropTypes.any, // TODO: set appropriate propType
-    sortInfo: PropTypes.any, // TODO: set appropriate propType
-    type: PropTypes.any, // TODO: set appropriate propType
-    flashcard: PropTypes.bool,
-    flashcardTitle: PropTypes.string,
-    usePrevResponse: PropTypes.bool,
+    cssModifier: string,
+    columns: any, // TODO: set appropriate propType
+    data: any, // TODO: set appropriate propType
+    dialect: any, // TODO: set appropriate propType
+    disablePageSize: any, // TODO: set appropriate propType
+    gridCols: any, // TODO: set appropriate propType
+    gridListTile: any, // TODO: set appropriate propType
+    gridListView: any, // TODO: set appropriate propType
+    gridViewProps: any, // TODO: set appropriate propType
+    onSelectionChange: func,
+    onSortChange: any, // TODO: set appropriate propType
+    page: number,
+    pageSize: number,
+    pagination: bool,
+    refetcher: func,
+    renderSimpleTable: any, // TODO: set appropriate propType
+    sortInfo: any, // TODO: set appropriate propType
+    type: any, // TODO: set appropriate propType
+    flashcard: bool,
+    flashcardTitle: string,
+    usePrevResponse: bool,
   }
 
   static defaultProps = {
+    cssModifier: '',
     data: {},
     pagination: true,
     usePrevResponse: false,
@@ -66,10 +70,6 @@ export default class DocumentListView extends Component {
     this.state = {
       selectedId: null,
     }
-
-    // Bind methods to 'this'
-    // eslint-disable-next-line
-    ;['_gridListFetcher'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   intl = IntlService.instance
@@ -85,9 +85,11 @@ export default class DocumentListView extends Component {
   render() {
     const {
       columns,
+      cssModifier,
       data,
       dialect,
       disablePageSize,
+      flashcardTitle,
       gridCols,
       gridListTile,
       gridListView,
@@ -98,19 +100,20 @@ export default class DocumentListView extends Component {
     } = this.props
 
     let gridViewProps = {
+      cssModifier,
       style: { overflowY: 'auto', maxHeight: '50vh' },
       cols: gridCols,
       cellHeight: 160,
       fetcher: this._gridListFetcher,
-      type: type,
-      pagination: pagination,
+      type,
+      pagination,
       fetcherParams: { currentPageIndex: page, pageSize: pageSize },
       metadata: selectn('response', data),
-      gridListTile: gridListTile,
-      disablePageSize: disablePageSize,
-      dialect: dialect,
+      gridListTile,
+      disablePageSize,
+      dialect,
       items: selectn('response.entries', data),
-      flashcardTitle: this.props.flashcardTitle,
+      flashcardTitle,
     }
 
     if (gridListView) {
@@ -128,7 +131,7 @@ export default class DocumentListView extends Component {
     return <FilteredPaginatedDictionaryList {...gridViewProps} columns={columns} />
   }
 
-  _gridListFetcher(fetcherParams) {
+  _gridListFetcher = (fetcherParams) => {
     this.props.refetcher(this.props, fetcherParams.currentPageIndex, fetcherParams.pageSize)
   }
 }

@@ -1,0 +1,28 @@
+.Text__text {
+  background-color: #f5f7f9;
+  padding: 1.6rem;
+  border: none;
+  border-radius: 4px;
+}
+.Text__text:active,
+.Text__text:focus {
+  background-color: #d8effc;
+}
+.Text--error .Text__label {
+  color: #e31c3d;
+}
+.Text--error .Text__text {
+  background-color: #fddfe2;
+  color: #464646;
+}
+
+/*
+active
+d8effc
+
+Error
+fddfe2
+
+Select Highlight
+0793eb
+*/

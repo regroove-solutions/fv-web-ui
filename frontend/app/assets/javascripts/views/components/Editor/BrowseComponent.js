@@ -41,6 +41,7 @@ import CategoriesListView from 'views/pages/explore/dialect/learn/words/categori
 import ContributorsListView from 'views/pages/explore/dialect/learn/base/contributors-list-view'
 import LinksListView from 'views/pages/explore/dialect/learn/base/links-list-view'
 import IntlService from 'views/services/intl'
+import { WORKSPACES } from 'common/Constants'
 
 const intl = IntlService.instance
 const DefaultFetcherParams = {
@@ -133,8 +134,8 @@ export class BrowseComponent extends React.Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -191,7 +192,7 @@ export class BrowseComponent extends React.Component {
             }
             routeParams={{
               theme: 'explore',
-              area: 'Workspaces',
+              area: WORKSPACES,
               dialect_path: dialectPath,
             }}
           />
@@ -212,7 +213,7 @@ export class BrowseComponent extends React.Component {
             dialect={dialect}
             routeParams={{
               theme: 'explore',
-              area: 'Workspaces',
+              area: WORKSPACES,
               dialect_path: dialectPath,
             }}
           />
@@ -233,7 +234,7 @@ export class BrowseComponent extends React.Component {
             dialect={dialect}
             routeParams={{
               theme: 'explore',
-              area: 'Workspaces',
+              area: WORKSPACES,
               dialect_path: dialectPath,
             }}
           />
