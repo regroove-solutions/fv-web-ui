@@ -27,7 +27,7 @@ limitations under the License.
 
   <!-- deleting node_modules may be overkill for now? -->
   <target name="clean" description="Clean npm and bower dependencies">
-    <!-- DY: For quicker build, skip deleting node_modules.
+    <!-- DY: For quicker build, skip deleting node_modules. -->
     <!-- Deleting node_modules provides the least risk of remaining artifcats in node_modlues. Should be default -->
     <delete dir="node_modules" />
     <delete includeEmptyDirs="yes" failonerror="false">
@@ -45,7 +45,7 @@ limitations under the License.
     <exec executable="${cmd.npm}" failonerror="true">
       <!-- <arg value="copy:nuxeo" /> -->
       <arg value="run" />
-      <arg value="production"/>
+      <arg value="build:production"/>
       <arg value="--"/> 
     </exec>
   	
