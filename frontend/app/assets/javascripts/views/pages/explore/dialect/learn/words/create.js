@@ -57,21 +57,9 @@ export class PageDialectWordsCreate extends Component {
     pushWindowPath: func.isRequired,
     replaceWindowPath: func.isRequired,
   }
-
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = {
-      formValue: null,
-      wordPath: null,
-    }
-
-    // Bind methods to 'this'
-    ;['_onRequestSaveForm'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
-  fetchData(newProps) {
-    newProps.fetchDialect2(newProps.routeParams.dialect_path)
+  state = {
+    formValue: null,
+    wordPath: null,
   }
 
   // Fetch data on initial render
@@ -80,24 +68,23 @@ export class PageDialectWordsCreate extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    let currentWord
-    let nextWord
+  componentDidUpdate(prevProps) {
+    const previousWord = ProviderHelpers.getEntry(prevProps.computeWord, this.state.wordPath)
+    const currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
 
-    if (this.state.wordPath === null) {
-      currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
-      nextWord = ProviderHelpers.getEntry(nextProps.computeWord, this.state.wordPath)
-    }
-
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+    // TODO: is fetchData necessary?
+    if (this.props.windowPath !== prevProps.windowPath) {
+      this.fetchData(this.props)
     }
 
     // 'Redirect' on success
-    if (selectn('success', currentWord) != selectn('success', nextWord) && selectn('success', nextWord) === true) {
+    if (
+      selectn('success', previousWord) != selectn('success', currentWord) &&
+      selectn('success', currentWord) === true
+    ) {
       NavigationHelpers.navigate(
-        NavigationHelpers.generateUIDPath(nextProps.routeParams.theme, selectn('response', nextWord), 'words'),
-        nextProps.replaceWindowPath,
+        NavigationHelpers.generateUIDPath(this.props.routeParams.theme, selectn('response', currentWord), 'words'),
+        this.props.replaceWindowPath,
         true
       )
     }
@@ -115,52 +102,6 @@ export class PageDialectWordsCreate extends Component {
         return true
       default:
         return false
-    }
-  }
-
-  _onRequestSaveForm(e) {
-    // Prevent default behaviour
-    e.preventDefault()
-
-    // TODO: this.refs DEPRECATED
-    const formValue = this.refs.form_word_create.getValue()
-
-    //let properties = '';
-    const properties = {}
-
-    for (const key in formValue) {
-      if (formValue.hasOwnProperty(key) && key) {
-        if (formValue[key] && formValue[key] !== '') {
-          //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
-          properties[key] = formValue[key]
-        }
-      }
-    }
-
-    this.setState({
-      formValue: properties,
-    })
-
-    // Passed validation
-    if (formValue) {
-      const now = Date.now()
-      this.props.createWord(
-        this.props.routeParams.dialect_path + '/Dictionary',
-        {
-          type: 'FVWord',
-          name: now.toString(),
-          properties: properties,
-        },
-        null,
-        now
-      )
-
-      this.setState({
-        wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
-      })
-    } else {
-      //let firstError = this.refs["form_word_create"].validate().firstError();
-      window.scrollTo(0, 0)
     }
   }
 
@@ -222,6 +163,54 @@ export class PageDialectWordsCreate extends Component {
         </div>
       </PromiseWrapper>
     )
+  }
+  fetchData = (newProps) => {
+    newProps.fetchDialect2(newProps.routeParams.dialect_path)
+  }
+  _onRequestSaveForm = (e) => {
+    // Prevent default behaviour
+    e.preventDefault()
+
+    // TODO: this.refs DEPRECATED
+    const formValue = this.refs.form_word_create.getValue()
+
+    //let properties = '';
+    const properties = {}
+
+    for (const key in formValue) {
+      if (formValue.hasOwnProperty(key) && key) {
+        if (formValue[key] && formValue[key] !== '') {
+          //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+          properties[key] = formValue[key]
+        }
+      }
+    }
+
+    this.setState({
+      formValue: properties,
+    })
+
+    // Passed validation
+    if (formValue) {
+      const now = Date.now()
+      this.props.createWord(
+        this.props.routeParams.dialect_path + '/Dictionary',
+        {
+          type: 'FVWord',
+          name: now.toString(),
+          properties: properties,
+        },
+        null,
+        now
+      )
+
+      this.setState({
+        wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
+      })
+    } else {
+      //let firstError = this.refs["form_word_create"].validate().firstError();
+      window.scrollTo(0, 0)
+    }
   }
 }
 
