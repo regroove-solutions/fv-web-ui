@@ -25,8 +25,6 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 import UIHelpers from 'common/UIHelpers'
 
-import Shepherd from 'tether-shepherd'
-
 // Components
 import AppBar from 'material-ui/lib/app-bar'
 
@@ -100,8 +98,6 @@ export class Navigation extends Component {
 
     this.state = {
       searchBarVisibleInMobile: false,
-      guidePopoverOpen: false,
-      guidePopoverAnchorEl: null,
       searchContextPopoverOpen: false,
       searchContextPopoverAnchorEl: null,
       searchLocal: true,
@@ -118,7 +114,6 @@ export class Navigation extends Component {
       'handleChangeRequestLeftNav',
       'handleRequestChangeList',
       '_handleNavigationSearchSubmit',
-      '_startTour',
       '_removePopoverUnlessOptionSelected',
       '_handleOpenMenuRequest',
     ].forEach((method) => (this[method] = this[method].bind(this)))
@@ -213,27 +208,6 @@ export class Navigation extends Component {
     })
   }
 
-  _startTour(tourContent) {
-    this.setState({ guidePopoverOpen: false })
-
-    const newTour = new Shepherd.Tour({
-      defaults: {
-        classes: 'shepherd-theme-arrows',
-      },
-    })
-    ;(selectn('properties.fvguide:steps', tourContent) || []).map((step, i) => {
-      newTour.addStep('step' + i, {
-        title: this.intl.searchAndReplace(selectn('title', step)),
-        text: this.intl.searchAndReplace(selectn('text', step)),
-        attachTo: selectn('attachTo', step),
-        advanceOn: selectn('advanceOn', step),
-        showCancelLink: selectn('showCancelLink', step),
-      })
-    })
-
-    newTour.start()
-  }
-
   _handleNavigationSearchSubmit(e) {
     // If search bar is not visible, this button should show it
     // TODO: this.refs DEPRECATED
@@ -316,7 +290,6 @@ export class Navigation extends Component {
     // NOTE: TBD, looks like work in progress. There's related jsx
     // const computeCountTotalTasks = ProviderHelpers.getEntry(this.props.computeCountTotalTasks, "count_total_tasks")
     // const userTaskCount = selectn("response.entries[0].COUNT(ecm:uuid)", computeCountTotalTasks) || 0
-    //const guideCount = selectn('response.resultsCount', this.props.computeLoadGuide) || 0;
 
     const portalLogo = selectn('response.contextParameters.portal.fv-portal:logo', computePortal)
     const avatarSrc = UIHelpers.getThumbnail(portalLogo, 'Thumbnail')
@@ -414,62 +387,8 @@ export class Navigation extends Component {
                 <a href={NavigationHelpers.generateStaticURL('/tasks')} className="Navigation__link nav_link">
                   View My Tasks
                 </a>
-
-                {/*<Badge
-                  badgeContent={guideCount}
-                  style={{top: '8px', left: '-15px', padding: '0 0 12px 12px'}}
-                  badgeStyle={{top: '12px',left: '42px', width: '15px', height: '15px', borderRadius: '25%', visibility: (guideCount == 0) ? 'hidden' : 'visible'}}
-                  primary={true}
-                >
-                  <IconButton iconStyle={{fill: '#fff'}} onClick={(e) => this.setState({guidePopoverOpen: !this.state.guidePopoverOpen, guidePopoverAnchorEl: e.target})} disabled={(guideCount == 0) ? true : false}>
-                    <ActionHelp />
-                  </IconButton>
-                </Badge>*/}
               </span>
             </AuthenticationFilter>
-
-            {/*<Popover
-                open={this.state.guidePopoverOpen}
-                anchorEl={this.state.guidePopoverAnchorEl}
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                targetOrigin={{horizontal: 'left', vertical: 'top'}}
-            >
-                <div>
-                    <div className={classNames('panel', 'panel-default')} style={{marginBottom: 0}}>
-                        <div className="panel-heading">
-                            <h3 className="panel-title">{this.intl.translate({
-                                key: 'views.components.navigation.interactive_guides',
-                                default: 'Interactive Guides',
-                                case: 'words'
-                            })}</h3>
-                        </div>
-                        <div className="panel-body">
-                            <p>{this.intl.translate({
-                                key: 'views.components.navigation.learn_how_to_use_this_page',
-                                default: 'Learn how to use this page quickly and efficiently',
-                                case: 'first',
-                                append: ':'
-                            })}</p>
-                            <table>
-                                <tbody>
-                                {(selectn('response.entries', this.props.computeLoadGuide) || []).map(function (guide, i) {
-                                    return <tr key={'guide' + i}>
-                                        <td>{selectn('properties.dc:title', guide)}<br/>{selectn('properties.dc:description', guide)}
-                                        </td>
-                                        <td><RaisedButton onClick={this._startTour.bind(this, guide)}
-                                                            primary={false} label={this.intl.translate({
-                                            key: 'views.components.navigation.launch_guide',
-                                            default: 'Launch Guide',
-                                            case: 'words'
-                                        })}/></td>
-                                    </tr>;
-                                }.bind(this))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </Popover>*/}
 
             <ToolbarSeparator
               className="search-bar-seperator"

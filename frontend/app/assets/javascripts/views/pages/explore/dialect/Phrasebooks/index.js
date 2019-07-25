@@ -32,7 +32,7 @@ import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
 import PhrasebookDelete from 'views/components/Confirmation'
-import PhrasebooksSelected from 'views/pages/explore/dialect/Contributors/ContributorsSelected'
+import PhrasebooksSelected from 'views/pages/explore/dialect/contributors/ContributorsSelected'
 import Checkbox from 'views/components/Form/Common/Checkbox'
 
 import { STATE_UNAVAILABLE } from 'common/Constants'
