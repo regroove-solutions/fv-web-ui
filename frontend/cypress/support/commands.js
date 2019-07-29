@@ -21,16 +21,34 @@ import 'cypress-testing-library/add-commands'
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 
+
 // Login
+// Defaults:
+// cy.login({
+//   userName: 'ADMIN_USERNAME',
+//   userPassword: 'ADMIN_PASSWORD',
+//   url: 'https://preprod.firstvoices.com/nuxeo/startup',
+//   body: {
+//     user_name: obj.userName,
+//     user_password: obj.userPassword,
+//     language: 'en',
+//     requestedUrl: 'nxstartup.faces',
+//     forceAnonymousLogin: true,
+//     form_submitted_marker: undefined,
+//     Submit: 'Log+In',
+//   },
+// })
 Cypress.Commands.add('login', (obj = {}) => {
-  // NB: Cypress drops the `CYPRESS__` prefix when using:
-  expect(Cypress.env('ADMIN_USERNAME')).not.to.be.undefined
-  expect(Cypress.env('ADMIN_PASSWORD')).not.to.be.undefined
+  // NOTE: Cypress drops the `CYPRESS__` prefix when using environment variables set in your bash file
+  const userName = Cypress.env(obj.userName || 'ADMIN_USERNAME')
+  const userPassword = Cypress.env(obj.userPassword || 'ADMIN_PASSWORD')
+  expect(userName).not.to.be.undefined
+  expect(userPassword).not.to.be.undefined
 
   const url = obj.url || 'https://preprod.firstvoices.com/nuxeo/startup'
   const body = obj.body || {
-    user_name: Cypress.env('ADMIN_USERNAME'),
-    user_password: Cypress.env('ADMIN_PASSWORD'),
+    user_name: userName,
+    user_password: userPassword,
     language: 'en',
     requestedUrl: 'nxstartup.faces',
     forceAnonymousLogin: true,
