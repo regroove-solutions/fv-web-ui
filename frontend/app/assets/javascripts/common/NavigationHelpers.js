@@ -216,14 +216,26 @@ If not found, returns `undefined`
 
 */
 export const appendPathArrayAfterLandmark = ({ pathArray, splitWindowPath, landmarkArray = ['words', 'phrases'] }) => {
-  const _splitWindowPath = [...splitWindowPath].reverse()
   let toReturn = undefined
+
+  if (!splitWindowPath) {
+    return toReturn
+  }
+
+  const _splitWindowPath = [...splitWindowPath].reverse()
+
   landmarkArray.some((landmarkValue) => {
     const indexLandmark = _splitWindowPath.indexOf(landmarkValue)
     if (indexLandmark !== -1) {
       const cut = _splitWindowPath.slice(indexLandmark)
       cut.reverse()
-      toReturn = [...cut, ...pathArray].join('/')
+
+      if (pathArray) {
+        toReturn = [...cut, ...pathArray].join('/')
+      } else {
+        // if there is no pathArray just return the shorter splitWindowPath
+        toReturn = [...cut].join('/')
+      }
       return true
     }
     return false
