@@ -31,9 +31,9 @@
     RewriteRule .*/forgotpassword/ /app/evergreen/forgotpassword/ [L]
   </extension>
 
-  <!--  IE Legacy code -->
+  <!--  Serve IE11 (Trident 7.0) legacy code -->
   <extension target="rewrite#RULE">
-    RewriteCond  %{HTTP_USER_AGENT} "MSIE [1-11]" [NC]
+    RewriteCond %{HTTP_USER_AGENT} ".*Trident/7.*"
     RewriteRule ^/app/(.*) /app/legacy/ [L]
   </extension>
 
