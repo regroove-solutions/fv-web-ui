@@ -971,6 +971,7 @@
     "zip_postal_code": "zip/postal code"
   },
   "models": {
+    "acknowledgement": "Acknowledgement and Data Usage",
     "about_dialect": "About Dialect",
     "attached_to_word_phrase": "Attached to a Word/Phrase",
     "available_in_childrens_archive": "Available in Children's Archive",

@@ -223,6 +223,7 @@ export class DialectViewWord extends Component {
               {this._getVideos(computeWord)}
               {this._getCategories(computeWord)}
               {this._getPartsOfSpeech(computeWord)}
+              {this._getAcknowledgement(computeWord)}
 
               {/* <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseAdditionalInformation">
                 <h4 className="DialectViewWordPhraseContentItemTitle">X Additional information</h4>
@@ -233,8 +234,6 @@ export class DialectViewWord extends Component {
               {selectn('response', computeWord) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computeWord} />
               ) : null}
-
-              {this._getAcknowledgement(computeWord)}
             </aside>
           </div>
         </main>
@@ -246,10 +245,12 @@ export class DialectViewWord extends Component {
     const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
     if (acknowledgement && acknowledgement !== '') {
       return (
-        <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseAcknowledgement">
-          <h3 className="DialectViewWordPhraseContentItemTitle">Acknowledgement / Data Usage</h3>
+        <div className="DialectViewWordPhraseContentItem">
+          <h4 className="DialectViewWordPhraseContentItemTitle">
+            {intl.trans('acknowledgement', 'Acknowledgement', 'first')}
+          </h4>
           <div className="DialectViewWordPhraseContentItemGroup">
-            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
+            <div>{acknowledgement}</div>
           </div>
         </div>
       )
@@ -364,11 +365,13 @@ export class DialectViewWord extends Component {
 
     if (partOfSpeech) {
       return (
-        <div className="DialectViewWordPhraseContentItem DialectViewWordPhrasePartOfSpeech">
+        <div className="DialectViewWordPhraseContentItem">
           <h4 className="DialectViewWordPhraseContentItemTitle">
             {intl.trans('part_of_speech', 'Part of Speech', 'first')}
           </h4>
-          <p>{partOfSpeech}</p>
+          <div className="DialectViewWordPhraseContentItemGroup">
+            <div>{partOfSpeech}</div>
+          </div>
         </div>
       )
     }

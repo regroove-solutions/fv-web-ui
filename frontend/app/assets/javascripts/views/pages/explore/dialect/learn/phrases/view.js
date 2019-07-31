@@ -219,14 +219,12 @@ export class DialectViewPhrase extends Component {
               {this._getPhotos(computePhrase)}
               {this._getVideos(computePhrase)}
               {this._getPhraseBooks(computePhrase)}
+              {this._getAcknowledgement(computePhrase)}
 
               {/* METADATA PANEL */}
-
               {selectn('response', computePhrase) ? (
                 <MetadataPanel properties={this.props.properties} computeEntity={computePhrase} />
               ) : null}
-
-              {this._getAcknowledgement(computePhrase)}
             </aside>
           </div>
         </main>
@@ -235,13 +233,15 @@ export class DialectViewPhrase extends Component {
   }
 
   _getAcknowledgement(computePhrase) {
-    const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computePhrase)
+    const acknowledgement = selectn('response.properties.fv-phrase:acknowledgement', computePhrase)
     if (acknowledgement && acknowledgement !== '') {
       return (
-        <div className="DialectViewWordPhraseContentItem DialectViewWordPhraseAcknowledgement">
-          <h3 className="DialectViewWordPhraseContentItemTitle">Acknowledgement / Data Usage</h3>
+        <div className="DialectViewWordPhraseContentItem">
+          <h4 className="DialectViewWordPhraseContentItemTitle">
+            {intl.trans('acknowledgement', 'Acknowledgement', 'first')}
+          </h4>
           <div className="DialectViewWordPhraseContentItemGroup">
-            <div dangerouslySetInnerHTML={{ __html: acknowledgement }} />
+            <div>{acknowledgement}</div>
           </div>
         </div>
       )
