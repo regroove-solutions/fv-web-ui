@@ -46,21 +46,10 @@ export class AppLeftNav extends Component {
     pushWindowPath: func.isRequired,
   }
 
-  intl = IntlService.instance
-
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = this._getInitialState()
-
-    // Bind methods to 'this'
-    ;['_onNavigateRequest', '_onRequestChange'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
   /**
    * Initial state
    */
-  _getInitialState() {
+  _getInitialState = () => {
     const routes = Immutable.fromJS([
       {
         id: 'home',
@@ -93,6 +82,9 @@ export class AppLeftNav extends Component {
       routes: routes,
     }
   }
+
+  intl = IntlService.instance
+  state = this._getInitialState()
 
   componentDidUpdate() {
     /**
@@ -184,26 +176,6 @@ export class AppLeftNav extends Component {
     }
   }
 
-  _onNavigateRequest(event, path) {
-    if (path === null) {
-      return
-    }
-    if (path === 'logout') {
-      window.location.href = NavigationHelpers.getBaseURL() + 'logout'
-    } else {
-      // Request to navigate to
-      this.props.pushWindowPath(path)
-    }
-
-    // Close side-menu
-    this.props.toggleMenuAction()
-  }
-
-  _onRequestChange() {
-    // Close side-menu
-    this.props.toggleMenuAction()
-  }
-
   render() {
     const entries = selectn('response.entries', this.props.computeLoadNavigation)
     this.additionalEntries = entries
@@ -290,6 +262,25 @@ export class AppLeftNav extends Component {
         })()}
       </LeftNav>
     )
+  }
+
+  _onNavigateRequest = (event, path) => {
+    if (path === null) {
+      return
+    }
+    if (path === 'logout') {
+      window.location.href = NavigationHelpers.getBaseURL() + 'logout'
+    } else {
+      NavigationHelpers.navigate(path, this.props.pushWindowPath, false)
+    }
+
+    // Close side-menu
+    this.props.toggleMenuAction()
+  }
+
+  _onRequestChange = () => {
+    // Close side-menu
+    this.props.toggleMenuAction()
   }
 }
 
