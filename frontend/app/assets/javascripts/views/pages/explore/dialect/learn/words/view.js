@@ -97,23 +97,6 @@ export class DialectViewWord extends Component {
       computeDialect2: undefined,
       computeEntities: undefined,
     }
-    ;[
-      '_getAcknowledgement',
-      '_getAudio',
-      '_getCategories',
-      '_getCulturalNotes',
-      '_getDefinitions',
-      '_getLiteralTranslations',
-      '_getPartsOfSpeech',
-      '_getPhotos',
-      '_getPhrases',
-      '_getPronounciation',
-      '_getTabs',
-      '_getVideos',
-      '_getWordPath',
-      '_groupBy',
-      '_onNavigateRequest',
-    ].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
   async fetchData(newProps) {
@@ -241,7 +224,7 @@ export class DialectViewWord extends Component {
     )
   }
 
-  _getAcknowledgement(computeWord) {
+  _getAcknowledgement = (computeWord) => {
     const acknowledgement = selectn('response.properties.fv-word:acknowledgement', computeWord)
     if (acknowledgement && acknowledgement !== '') {
       return (
@@ -258,7 +241,7 @@ export class DialectViewWord extends Component {
     return null
   }
 
-  _getAudio(computeWord) {
+  _getAudio = (computeWord) => {
     const audios = []
     ;(selectn('response.contextParameters.word.related_audio', computeWord) || []).map((audio) => {
       audios.push(
@@ -274,7 +257,7 @@ export class DialectViewWord extends Component {
     return audios.length > 0 ? <div className="DialectViewWordPhraseAudio">{audios}</div> : null
   }
 
-  _getCategories(computeWord) {
+  _getCategories = (computeWord) => {
     const _cat = selectn('response.contextParameters.word.categories', computeWord) || []
     const categories = _cat.map((category, key) => {
       return <li key={key}>{selectn('dc:title', category)}</li>
@@ -287,7 +270,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getCulturalNotes(computeWord) {
+  _getCulturalNotes = (computeWord) => {
     const _cultNote = selectn('response.properties.fv:cultural_note', computeWord) || []
     const culturalNotes = _cultNote.map((culturalNote, key) => {
       return <div key={key}>{intl.searchAndReplace(culturalNote)}</div>
@@ -302,7 +285,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getDefinitions(computeWord) {
+  _getDefinitions = (computeWord) => {
     const definitions = selectn('response.properties.fv:definitions', computeWord)
 
     let _definitions = []
@@ -330,7 +313,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getLiteralTranslations(computeWord) {
+  _getLiteralTranslations = (computeWord) => {
     const literalTranslations = selectn('response.properties.fv:literal_translation', computeWord)
     let _literalTranslations = []
     if (literalTranslations) {
@@ -360,7 +343,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getPartsOfSpeech(computeWord) {
+  _getPartsOfSpeech = (computeWord) => {
     const partOfSpeech = selectn('response.contextParameters.word.part_of_speech', computeWord)
 
     if (partOfSpeech) {
@@ -377,7 +360,7 @@ export class DialectViewWord extends Component {
     }
   }
 
-  _getPhotos(computeWord) {
+  _getPhotos = (computeWord) => {
     const photos = []
     ;(selectn('response.contextParameters.word.related_pictures', computeWord) || []).map((picture, key) => {
       const image = {
@@ -399,7 +382,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getPhrases(computeWord) {
+  _getPhrases = (computeWord) => {
     const phrases = []
     const theme = this.props.routeParams.theme
     ;(selectn('response.contextParameters.word.related_phrases', computeWord) || []).map((phrase, key) => {
@@ -447,7 +430,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getPronounciation(computeWord, computeDialect2) {
+  _getPronounciation = (computeWord, computeDialect2) => {
     const pronunciation = selectn('response.properties.fv-word:pronunciation', computeWord)
     if (pronunciation && pronunciation !== '') {
       const dialectClassName = getDialectClassname(computeDialect2)
@@ -465,7 +448,7 @@ export class DialectViewWord extends Component {
     return null
   }
 
-  _getTabs(computeWord) {
+  _getTabs = (computeWord) => {
     const tabs = []
 
     // Photos
@@ -572,7 +555,7 @@ export class DialectViewWord extends Component {
     return tabs
   }
 
-  _getVideos(computeWord) {
+  _getVideos = (computeWord) => {
     const videos = []
     ;(selectn('response.contextParameters.word.related_videos', computeWord) || []).map((video, key) => {
       const vid = {
@@ -593,7 +576,7 @@ export class DialectViewWord extends Component {
     ) : null
   }
 
-  _getWordPath(props = this.props) {
+  _getWordPath = (props = this.props) => {
     if (StringHelpers.isUUID(props.routeParams.word)) {
       return props.routeParams.word
     }
@@ -601,13 +584,13 @@ export class DialectViewWord extends Component {
   }
 
   // Thanks: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_groupby
-  _groupBy(arrOfObj, property = 'language') {
+  _groupBy = (arrOfObj, property = 'language') => {
     const _arrOfObj = [...arrOfObj]
     // eslint-disable-next-line
     return _arrOfObj.reduce((r, v, i, a, k = v[property]) => ((r[k] || (r[k] = [])).push(v), r), {})
   }
 
-  _onNavigateRequest(path) {
+  _onNavigateRequest = (path) => {
     this.props.pushWindowPath(path)
   }
 }
