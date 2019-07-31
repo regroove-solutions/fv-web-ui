@@ -28,7 +28,7 @@ limitations under the License.
   <target name="clean" description="Clean npm and bower dependencies">
     <!-- DY: For quicker build, skip deleting node_modules -->
     <!-- DY: For lowest risk of artifacts remaining in node_modlues - re-enable delete -->
-    <delete dir="node_modules" />
+    <!-- <delete dir="node_modules" /> -->
     <delete includeEmptyDirs="yes" failonerror="false">
       <fileset dir="bower_components" defaultexcludes="no" followsymlinks="false" />
     </delete>
@@ -41,10 +41,20 @@ limitations under the License.
   </target>
 
   <target name="build" depends="npmInstall">
+
+    <!-- run prod build for evergreen -->
     <exec executable="${cmd.npm}" failonerror="true">
       <!-- <arg value="copy:nuxeo" /> -->
       <arg value="run" />
       <arg value="production"/>
+      <arg value="--"/> 
+    </exec>
+
+    <!-- run prod build for legacy browsers -->
+    <exec executable="${cmd.npm}" failonerror="true">
+      <!-- <arg value="copy:nuxeo" /> -->
+      <arg value="run" />
+      <arg value="production:legacy"/>
       <arg value="--"/> 
     </exec>
   	
