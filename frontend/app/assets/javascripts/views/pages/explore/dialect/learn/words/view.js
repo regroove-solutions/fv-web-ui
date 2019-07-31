@@ -203,7 +203,7 @@ export class DialectViewWord extends Component {
         computeEntities={computeEntities || Immutable.List()}
         {...this.props}
       >
-        <main className="DialectViewWordPhrase" id="contentMain">
+        <div className="DialectViewWordPhrase" id="contentMain">
           <div className="DialectViewWordPhraseGroup">
             <div className="DialectViewWordPhraseContentPrimary">
               <div className="DialectViewWordPhraseTitleAudio">
@@ -236,7 +236,7 @@ export class DialectViewWord extends Component {
               ) : null}
             </aside>
           </div>
-        </main>
+        </div>
       </DetailsViewWithActions>
     )
   }
