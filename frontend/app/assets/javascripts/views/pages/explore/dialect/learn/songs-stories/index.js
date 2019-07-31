@@ -30,12 +30,11 @@ import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
 import StringHelpers from 'common/StringHelpers'
-import NavigationHelpers, { appendPathArrayAfterLandmark } from 'common/NavigationHelpers'
+import NavigationHelpers, { appendPathArrayAfterLandmark, routeHasChanged } from 'common/NavigationHelpers'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
 // import RaisedButton from 'material-ui/lib/raised-button'
-
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import GeneralList from 'views/components/Browsing/general-list'
@@ -84,7 +83,14 @@ export class PageDialectLearnStoriesAndSongs extends Component {
 
   // Refetch data on URL change
   componentDidUpdate(prevProps) {
-    if (this.props.windowPath !== prevProps.windowPath) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
       this.fetchData(this.props)
     }
   }

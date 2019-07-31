@@ -12,7 +12,7 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import selectn from 'selectn'
-import NavigationHelpers, { hasPagination } from 'common/NavigationHelpers'
+import NavigationHelpers, { hasPagination, routeHasChanged } from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
 import { WORKSPACES, SECTIONS } from 'common/Constants'
 
@@ -99,7 +99,14 @@ export default class DataListView extends Component {
         this._resetPagination(this.props)
       }
     } else {
-      if (this.props.windowPath !== prevProps.windowPath) {
+      if (
+        routeHasChanged({
+          prevWindowPath: prevProps.windowPath,
+          curWindowPath: this.props.windowPath,
+          prevRouteParams: prevProps.routeParams,
+          curRouteParams: this.props.routeParams,
+        })
+      ) {
         this.fetchData(this.props)
       }
     }

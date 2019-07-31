@@ -14,7 +14,7 @@ import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import Immutable, { Set } from 'immutable' // eslint-disable-line
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers, { hasPagination } from 'common/NavigationHelpers'
+import NavigationHelpers, { hasPagination, routeHasChanged } from 'common/NavigationHelpers'
 /**
  * Learn Base Page
  * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
@@ -89,7 +89,14 @@ export default class PageDialectLearnBase extends Component {
 
   // Refetch data on URL change
   componentDidUpdate(prevProps) {
-    if (this.props.windowPath !== prevProps.windowPath) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
       this.fetchData(this.props)
     }
   }

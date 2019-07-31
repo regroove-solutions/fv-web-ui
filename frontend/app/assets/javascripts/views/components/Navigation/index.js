@@ -22,7 +22,7 @@ import { loadNavigation, toggleMenuAction } from 'providers/redux/reducers/navig
 import { pushWindowPath, replaceWindowPath } from 'providers/redux/reducers/windowPath'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { routeHasChanged } from 'common/NavigationHelpers'
 import UIHelpers from 'common/UIHelpers'
 
 // Components
@@ -156,7 +156,14 @@ export class Navigation extends Component {
     }
 
     // Remove popover upon navigation
-    if (this.props.windowPath !== prevProps.windowPath) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
       this.setState({
         searchContextPopoverOpen: false,
       })

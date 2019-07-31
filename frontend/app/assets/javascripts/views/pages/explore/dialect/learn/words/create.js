@@ -28,7 +28,7 @@ import selectn from 'selectn'
 import t from 'tcomb-form'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { routeHasChanged } from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
@@ -73,7 +73,14 @@ export class PageDialectWordsCreate extends Component {
     const currentWord = ProviderHelpers.getEntry(this.props.computeWord, this.state.wordPath)
 
     // TODO: is fetchData necessary?
-    if (this.props.windowPath !== prevProps.windowPath) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
       this.fetchData(this.props)
     }
 

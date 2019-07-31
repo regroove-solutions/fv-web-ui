@@ -17,6 +17,7 @@ limitations under the License.
 import selectn from 'selectn'
 import ConfGlobal from 'conf/local.js'
 import ConfRoutes, { paramMatch } from 'conf/routes'
+import Immutable, { is } from 'immutable'
 import { SECTIONS } from 'common/Constants'
 const arrayPopImmutable = (array, sizeToPop = 1) => {
   return array.slice(0, array.length - sizeToPop)
@@ -282,4 +283,22 @@ export const hasPagination = (arr = []) => {
   }
 
   return _arr
+}
+/*
+routeHasChanged({
+  prevWindowPath,
+  curWindowPath,
+  prevRouteParams,
+  curRouteParams
+})
+*/
+export const routeHasChanged = (obj = {}) => {
+  const { prevWindowPath, curWindowPath, prevRouteParams, curRouteParams } = obj
+  // Note: the following Prevents infinite loops
+  if (curRouteParams === undefined) {
+    return false
+  }
+  const immutablePrevRouteParams = Immutable.fromJS(prevRouteParams)
+  const immutableCurRouteParams = Immutable.fromJS(curRouteParams)
+  return prevWindowPath !== curWindowPath || is(immutablePrevRouteParams, immutableCurRouteParams) === false
 }
