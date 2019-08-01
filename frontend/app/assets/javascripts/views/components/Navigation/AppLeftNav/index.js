@@ -25,12 +25,11 @@ import selectn from 'selectn'
 
 import { Divider, List, ListItem, LeftNav, AppBar } from 'material-ui/lib'
 
-import IconButton from 'material-ui/lib/icon-button'
+// import IconButton from 'material-ui/lib/icon-button'
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close'
-
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance'
 import IntlService from 'views/services/intl'
-
+import '!style-loader!css-loader!./AppLeftNav.css'
 const SelectableList = SelectableContainerEnhance(List)
 
 const { func, object } = PropTypes
@@ -87,6 +86,9 @@ export class AppLeftNav extends Component {
   state = this._getInitialState()
 
   componentDidUpdate() {
+    if (this.props.computeToggleMenuAction.menuVisible) {
+      this.AppLeftNavClose.focus()
+    }
     /**
      * If the user is connected, display modified routes (splitting Explore path)
      */
@@ -198,9 +200,18 @@ export class AppLeftNav extends Component {
       >
         <AppBar
           iconElementLeft={
-            <IconButton onClick={this._onRequestChange}>
-              <NavigationClose />
-            </IconButton>
+            <button
+              type="button"
+              className="AppLeftNav__close"
+              data-testid="AppLeftNav__close"
+              onClick={this._onRequestChange}
+              ref={(_element) => {
+                this.AppLeftNavClose = _element
+              }}
+            >
+              <NavigationClose className="AppLeftNav__closeIcon" />
+              <span className="visually-hidden">Menu close</span>
+            </button>
           }
           title={
             <img src="assets/images/logo.png" style={{ padding: '0 0 5px 0' }} alt={this.props.properties.title} />

@@ -1,11 +1,4 @@
-.Navigation {
-  font-size: 1.4rem;
-}
-.Navigation__link,
-.Navigation__link:visited {
-  color: #fff;
-}
-.Navigation__open {
+.AppLeftNav__close {
   background-color: transparent;
   border: none;
   display: flex;
@@ -16,6 +9,6 @@
   height: 48px;
   width: 48px;
 }
-.Navigation__openIcon {
+.AppLeftNav__closeIcon {
   fill: #fff !important;
 }
