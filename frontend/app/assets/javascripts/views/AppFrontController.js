@@ -228,7 +228,7 @@ export class AppFrontController extends Component {
           <div id="pageNavigation" className="AppFrontController__navigation row">
             {navigation}
           </div>
-          <div id="pageContainer" className="AppFrontController__content">
+          <div id="pageContainer" data-testid="pageContainer" className="AppFrontController__content">
             {page}
           </div>
           <div id="pageFooter" className="AppFrontController__footer row">
