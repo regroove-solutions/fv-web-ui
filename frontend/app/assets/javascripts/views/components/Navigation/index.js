@@ -82,7 +82,7 @@ export class Navigation extends Component {
     properties: object.isRequired,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
-    computeToggleMenuAction: object.isRequired,
+    // computeToggleMenuAction: object.isRequired,
     // computeCountTotalTasks: object.isRequired,
     // computeLoadGuide: object.isRequired,
 
