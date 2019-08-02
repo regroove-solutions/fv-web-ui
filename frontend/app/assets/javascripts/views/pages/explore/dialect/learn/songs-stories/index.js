@@ -46,8 +46,7 @@ import IntlService from 'views/services/intl'
 const intl = IntlService.instance
 const DEFAULT_LANGUAGE = 'english'
 
-const FilteredCardList = withFilter(GeneralList)
-
+let FilteredCardList = null
 /**
  * Learn songs
  */
@@ -55,7 +54,6 @@ const FilteredCardList = withFilter(GeneralList)
 const { array, func, object, string } = PropTypes
 export class PageDialectLearnStoriesAndSongs extends Component {
   static propTypes = {
-    routeParams: object.isRequired,
     typeFilter: string,
     typePlural: string,
     // REDUX: reducers/state
@@ -64,6 +62,7 @@ export class PageDialectLearnStoriesAndSongs extends Component {
     computeLogin: object.isRequired,
     computePortal: object.isRequired,
     properties: object.isRequired,
+    routeParams: object.isRequired,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
@@ -77,12 +76,13 @@ export class PageDialectLearnStoriesAndSongs extends Component {
   }
 
   // Fetch data on initial render
-  componentDidMount() {
-    this.fetchData(this.props)
+  async componentDidMount() {
+    FilteredCardList = withFilter(GeneralList, { 'properties.fvbook:type': this.props.typeFilter })
+    await this.fetchData(this.props)
   }
 
   // Refetch data on URL change
-  componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps) {
     if (
       routeHasChanged({
         prevWindowPath: prevProps.windowPath,
@@ -91,7 +91,7 @@ export class PageDialectLearnStoriesAndSongs extends Component {
         curRouteParams: this.props.routeParams,
       })
     ) {
-      this.fetchData(this.props)
+      await this.fetchData(this.props)
     }
   }
 
@@ -128,10 +128,12 @@ export class PageDialectLearnStoriesAndSongs extends Component {
       action: this._onEntryNavigateRequest,
     }
 
-    let listView = <FilteredCardList {...listProps} />
+    let listView = null
 
     if (isKidsTheme) {
       listView = <GeneralList {...listProps} cols={3} theme={this.props.routeParams.theme} />
+    } else {
+      listView = FilteredCardList ? <FilteredCardList {...listProps} /> : null
     }
     const dialectClassName = getDialectClassname(computeDialect2)
 
@@ -214,7 +216,7 @@ export class PageDialectLearnStoriesAndSongs extends Component {
 const mapStateToProps = (state /*, ownProps*/) => {
   const { fvBook, fvDialect, fvPortal, navigation, nuxeo, windowPath } = state
 
-  const { properties } = navigation
+  const { properties, route } = navigation
   const { computeLogin } = nuxeo
   const { computeBooks } = fvBook
   const { computeDialect2 } = fvDialect
@@ -227,6 +229,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeLogin,
     computePortal,
     properties,
+    routeParams: route.routeParams,
     splitWindowPath,
     windowPath: _windowPath,
   }
