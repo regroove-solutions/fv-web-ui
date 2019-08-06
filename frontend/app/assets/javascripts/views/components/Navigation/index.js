@@ -106,6 +106,7 @@ export class Navigation extends Component {
       userRegistrationTasksPath: '/management/registrationRequests/',
       pathOrId: '/' + props.properties.domain + '/' + selectn('routeParams.area', props),
       locale: this.intl.locale,
+      searchValue: '',
     }
   }
 
@@ -301,6 +302,10 @@ export class Navigation extends Component {
                 onFocus={(e) =>
                   this.setState({ searchContextPopoverOpen: true, searchContextPopoverAnchorEl: e.target })
                 }
+                onChange={(e) => {
+                  this.setState({ searchValue: e.target.value })
+                }}
+                value={this.state.searchValue}
                 className={getDialectClassname()}
                 onEnterKeyDown={this._handleNavigationSearchSubmit}
                 name="searchbox"
@@ -554,8 +559,8 @@ export class Navigation extends Component {
         searchBarVisibleInMobile: false,
         searchContextPopoverOpen: false,
       })
-      // TODO: this.refs DEPRECATED
-      const searchQueryParam = this.refs.navigationSearchField.getValue()
+
+      const searchQueryParam = this.state.searchValue
       const path = '/' + this.props.splitWindowPath.join('/')
       let queryPath = ''
 
@@ -574,8 +579,7 @@ export class Navigation extends Component {
       }
 
       // Clear out the input field
-      // TODO: this.refs DEPRECATED
-      this.refs.navigationSearchField.setValue('')
+      this.setState({ searchValue: '' })
 
       if (searchQueryParam && searchQueryParam !== '') {
         const finalPath = NavigationHelpers.generateStaticURL(queryPath + '/search/' + searchQueryParam)
