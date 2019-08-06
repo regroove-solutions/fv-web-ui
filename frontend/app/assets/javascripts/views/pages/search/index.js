@@ -139,8 +139,7 @@ export class Search extends DataListView {
 
   _fetchListViewData(props = this.props, pageIndex, pageSize, sortOrder, sortBy, formValue = this.state.formValue) {
     if (props.routeParams.searchTerm && props.routeParams.searchTerm !== '') {
-      const documentTypeFilter = "'" + formValue.documentTypes.join("','") + "'"
-      // const documentTypeFilter = `'${formValue.documentTypes.join("','")}'`
+      const documentTypeFilter = "'" + (formValue.documentTypes || []).join("','") + "'"
       props.searchDocuments(
         this._getQueryPath(props),
         (props.routeParams.area === SECTIONS ? ' AND ecm:isLatestVersion = 1' : ' ') +
@@ -168,7 +167,6 @@ export class Search extends DataListView {
       e.preventDefault()
     }
 
-    //let form = this.refs["search_form"];
     const form = this.refs.search_form
 
     const properties = FormHelpers.getProperties(form)
@@ -299,7 +297,6 @@ export class Search extends DataListView {
                     >
                       {intl.trans('reset', 'Reset', 'first')}
                     </button>
-                    &nbsp;
                     <button type="submit" className="Search__btn RaisedButton RaisedButton--primary">
                       {intl.trans('search', 'Search', 'first')}
                     </button>
@@ -323,7 +320,22 @@ export class Search extends DataListView {
 
                 if (entries) {
                   if (entries.length === 0) {
-                    return <div>Sorry, no results were found for this search.</div>
+                    const suggestDocumentTypes =
+                      this.state.formValue.documentTypes === undefined ? (
+                        <div className="alert alert-info">
+                          <span>
+                            {
+                              "Tip: Try searching again with a selected 'Document type'. Click the '+ ADD NEW' button if there are none displayed."
+                            }
+                          </span>
+                        </div>
+                      ) : null
+                    return (
+                      <div>
+                        <p>Sorry, no results were found for this search.</p>
+                        {suggestDocumentTypes}
+                      </div>
+                    )
                   }
                   return (
                     <DocumentListView
