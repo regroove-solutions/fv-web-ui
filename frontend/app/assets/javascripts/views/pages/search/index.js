@@ -33,7 +33,7 @@ import t from 'tcomb-form'
 import fields from 'models/schemas/filter-fields'
 import options from 'models/schemas/filter-options'
 
-import RaisedButton from 'material-ui/lib/raised-button'
+// import RaisedButton from 'material-ui/lib/raised-button'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import ProviderHelpers from 'common/ProviderHelpers'
@@ -51,6 +51,8 @@ import withToggle from 'views/hoc/view/with-toggle'
 import IntlService from 'views/services/intl'
 import NavigationHelpers from 'common/NavigationHelpers'
 import { SECTIONS } from 'common/Constants'
+import '!style-loader!css-loader!./Search.css'
+
 const FiltersWithToggle = withToggle()
 const intl = IntlService.instance
 
@@ -272,7 +274,7 @@ export class Search extends DataListView {
     })
 
     return (
-      <div>
+      <div className="Search">
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-3')}>
             <div className="col-xs-12">
@@ -289,8 +291,19 @@ export class Search extends DataListView {
                       options={selectn('Search', options)}
                     />
                   </div>
-                  <RaisedButton onClick={this._onReset} label={intl.trans('reset', 'Reset', 'first')} primary /> &nbsp;
-                  <RaisedButton type="submit" label={intl.trans('search', 'Search', 'first')} primary />
+                  <div className="Search__btnGroup">
+                    <button
+                      type="button"
+                      className="Search__btn RaisedButton RaisedButton--primary"
+                      onClick={this._onReset}
+                    >
+                      {intl.trans('reset', 'Reset', 'first')}
+                    </button>
+                    &nbsp;
+                    <button type="submit" className="Search__btn RaisedButton RaisedButton--primary">
+                      {intl.trans('search', 'Search', 'first')}
+                    </button>
+                  </div>
                 </FiltersWithToggle>
               </form>
             </div>
