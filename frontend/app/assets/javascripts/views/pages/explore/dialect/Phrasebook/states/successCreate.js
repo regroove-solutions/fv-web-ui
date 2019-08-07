@@ -80,7 +80,7 @@ export class PhrasebookStateSuccessCreate extends React.Component {
                     handleClick()
                   }}
                 >
-                  {copy.create.success.linkCreateAnother}
+                  {copy.create.success.createAnother}
                 </a>
               </li>
 
