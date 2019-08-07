@@ -39,7 +39,8 @@ import 'cypress-testing-library/add-commands'
 //   },
 // })
 Cypress.Commands.add('login', (obj = {}) => {
-  // NOTE: Cypress drops the `CYPRESS__` prefix when using environment variables set in your bash file
+  cy.log('Confirming environment variables are set...')
+  // NOTE: Cypress drops the `CYPRESS_` prefix when using environment variables set in your bash file
   const userName = Cypress.env(obj.userName || 'ADMIN_USERNAME')
   const userPassword = Cypress.env(obj.userPassword || 'ADMIN_PASSWORD')
   expect(userName).not.to.be.undefined
