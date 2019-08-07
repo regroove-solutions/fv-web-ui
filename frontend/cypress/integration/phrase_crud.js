@@ -1,4 +1,4 @@
-describe('Phrase', () => {
+describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
   const host = 'http://0.0.0.0:3001'
   const page = `${host}/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases`
   // const waitLong = 5000
@@ -280,15 +280,16 @@ describe('Phrase', () => {
 
     cy.getByText('delete phrase', { exact: false }).click()
     cy.wait(waitShort)
+
+    // TODO: need more reliable hook
     cy.getByText('Deleting phrase', { exact: false })
-      // TODO: need more reliable hook
       .parent()
       .within(() => {
         cy.getByText('Delete')
-          .parents('button:first')
           .click()
       })
     cy.wait(waitShort)
     cy.getByText('Delete phrase success', { exact: false }).should('exist')
+    cy.log('Test complete')
   })
 })

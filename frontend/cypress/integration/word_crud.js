@@ -1,4 +1,4 @@
-describe('Word', () => {
+describe('word_crud.js > PageDialectWordsCreate', () => {
   const host = 'http://0.0.0.0:3001'
   const create =
     'https://preprod.firstvoices.com/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
@@ -216,13 +216,13 @@ describe('Word', () => {
 
       cy.getByText('delete word', { exact: false }).click()
       cy.wait(waitShort)
+
+      // TODO: need more reliable hook
       cy.getByText('Deleting word', { exact: false })
         .parent()
         .within(() => {
-          const btn = cy.get('button').eq(1)
-          btn.click()
-          // TODO: dialog requires 2 clicks for some reason
-          btn.click()
+          cy.getByText('Delete')
+            .click()
         })
       cy.wait(waitShort)
       cy.getByText('Delete word success', { exact: false }).should('exist')
