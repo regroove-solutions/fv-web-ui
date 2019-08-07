@@ -3,7 +3,7 @@
 
 import 'cypress-testing-library/add-commands'
 
-describe('Navigation', () => {
+describe('Navigation.js > Navigation', () => {
   it('FW-266: Navigation: clicking between "Get Started", "Contribute", & "FirstVoices Apps" loads incorrect page content', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.visit('http://0.0.0.0:3001/nuxeo/app/')

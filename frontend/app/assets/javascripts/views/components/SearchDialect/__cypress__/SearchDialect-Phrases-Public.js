@@ -3,7 +3,7 @@
 import 'cypress-testing-library/add-commands'
 import testSearchPhrases from '../../../app/assets/javascripts/views/components/SearchDialect/__cypress__/common/testSearchPhrases.js'
 
-describe('SearchDialectPhrasesPublic', () => {
+describe('SearchDialectPhrases-Public.js > SearchDialect', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')

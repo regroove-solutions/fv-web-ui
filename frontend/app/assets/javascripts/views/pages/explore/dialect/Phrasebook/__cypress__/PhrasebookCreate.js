@@ -6,7 +6,7 @@ import 'cypress-testing-library/add-commands'
 // TODO: ENABLE WEBPACK ALIASES IN CYPRESS TESTS!
 // import copy from '/views/pages/explore/dialect/Phrasebook/internationalization'
 import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Phrasebook/internationalization.js'
-describe('Phrase book', () => {
+describe('PhrasebookCreate.js > Phrasebook', () => {
   it('Create', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Login

@@ -7,7 +7,7 @@ import 'cypress-testing-library/add-commands'
 // import copy from '/views/pages/explore/dialect/Contributor/internationalization'
 import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Contributor/internationalization.js'
 
-describe('Contributor', () => {
+describe('ContributorCreate.js > Contributor', () => {
   it('Create', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Login

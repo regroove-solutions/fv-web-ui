@@ -7,7 +7,7 @@ import 'cypress-testing-library/add-commands'
 // import copy from '/views/pages/explore/dialect/Recorder/internationalization'
 import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Recorder/internationalization.js'
 
-describe('Recorder', () => {
+describe('RecorderCreate.js > RecorderCreate', () => {
   it('Create', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Login

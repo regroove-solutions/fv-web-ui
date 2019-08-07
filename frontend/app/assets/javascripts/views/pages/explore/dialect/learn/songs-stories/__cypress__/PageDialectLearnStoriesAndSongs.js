@@ -1,5 +1,5 @@
 import 'cypress-testing-library/add-commands'
-describe('PageDialectLearnStoriesAndSongs', () => {
+describe('PageDialectLearnStoriesAndSongs.js > PageDialectLearnStoriesAndSongs', () => {
   it('FW-257: On the Browse > Songs page, the user can click a button to get to Create Song page', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.login({

@@ -4,7 +4,7 @@ import 'cypress-testing-library/add-commands'
 import testSearch from '../../../app/assets/javascripts/views/components/SearchDialect/__cypress__/common/testSearch.js'
 import testSearchWords from '../../../app/assets/javascripts/views/components/SearchDialect/__cypress__/common/testSearchWords.js'
 
-describe('SearchDialectPrivate', () => {
+describe('SearchDialect-Words-Private.js > SearchDialect', () => {
   it('Should redirect with anon user, no redirect with member', () => {
     cy.log('Trying to access private section with anon user')
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Haisla/Haisla/Haisla/learn/words')

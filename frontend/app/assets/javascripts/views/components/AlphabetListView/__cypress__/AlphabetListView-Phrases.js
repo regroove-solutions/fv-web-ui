@@ -1,5 +1,5 @@
 import 'cypress-testing-library/add-commands'
-describe('AlphabetListView - Phrases', () => {
+describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')

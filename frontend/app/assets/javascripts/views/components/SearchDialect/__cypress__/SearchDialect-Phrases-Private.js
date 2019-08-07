@@ -3,7 +3,7 @@
 import 'cypress-testing-library/add-commands'
 import testSearchPhrases from '../../../app/assets/javascripts/views/components/SearchDialect/__cypress__/common/testSearchPhrases.js'
 
-describe('SearchDialectPhrasesPrivate', () => {
+describe('SearchDialectPhrases-Private.js > SearchDialect', () => {
   it('Should redirect with anon user, no redirect with member', () => {
     cy.log('Trying to access private section with anon user')
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')

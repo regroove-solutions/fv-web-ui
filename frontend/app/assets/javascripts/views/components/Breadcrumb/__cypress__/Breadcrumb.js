@@ -3,7 +3,7 @@
 
 import 'cypress-testing-library/add-commands'
 
-describe('Breadcrumb', () => {
+describe('Breadcrumb.js > Breadcrumb', () => {
   it('FW-235: Breadcrumb link to home page from Photo Gallery broken', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.visit(

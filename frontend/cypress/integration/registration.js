@@ -1,4 +1,4 @@
-describe('Registration', () => {
+describe('registration.js > Register', () => {
   it('Should invalidate and revalidate', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     cy.visit('http://localhost:3001/nuxeo/app/register')

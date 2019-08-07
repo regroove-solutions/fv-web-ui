@@ -1,4 +1,4 @@
-describe('Authentication', () => {
+describe('portal_edit.js > ExploreDialect', () => {
   it('Update Dialect Home >  About Us', () => {
     cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Note: need to set environment variables in your bash_profile, eg:
@@ -11,7 +11,6 @@ describe('Authentication', () => {
     cy.visit(
       "http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Demonstration/%7BDemonstration%7D/Alex's%20Demo"
     )
-    cy.get('#pageNavigation').contains('FPCCAdmin')
 
     const updateMessage = `PORTAL UPDATE (${new Date()})`
     cy.getByText('ABOUT US')
