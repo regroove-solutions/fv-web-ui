@@ -8,7 +8,6 @@ import 'cypress-testing-library/add-commands'
 import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Phrasebook/internationalization.js'
 describe('PhrasebookCreate.js > Phrasebook', () => {
   it('Create', () => {
-    cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Login
     cy.login()
 
@@ -41,6 +40,5 @@ describe('PhrasebookCreate.js > Phrasebook', () => {
 
     // Error should be displayed
     cy.getByLabelText(copy.validation.name)
-    cy.log('Test complete')
   })
 })

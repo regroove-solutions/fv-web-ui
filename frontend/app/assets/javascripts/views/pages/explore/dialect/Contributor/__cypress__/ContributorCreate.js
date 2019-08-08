@@ -9,7 +9,6 @@ import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Co
 
 describe('ContributorCreate.js > Contributor', () => {
   it('Create', () => {
-    cy.log('NOTE: Test expects to be run with `npm run startPreprod`')
     // Login
     cy.login()
     cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/contributor')
@@ -41,6 +40,5 @@ describe('ContributorCreate.js > Contributor', () => {
 
     // Error should be displayed
     cy.getByLabelText(copy.validation.name)
-    cy.log('Test complete')
   })
 })
