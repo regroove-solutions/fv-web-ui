@@ -60,6 +60,7 @@ export default class Login extends Component {
       open: false,
       loginAttempted: false,
       loginAttemptCleared: false,
+      loginLinkElement: null
     }
 
     this.anchorEl = null
@@ -69,14 +70,23 @@ export default class Login extends Component {
   _handleOpen(event) {
     event.preventDefault()
 
-    if (isMobile) {
-      this._onNavigateRequest('login')
-      return
-    }
-
     this.setState({
+      loginLinkElement: event.currentTarget,
       open: true,
     })
+
+    var _this = this;
+
+    window.addEventListener('click', function (event) {
+
+      // If the clicked element doesn't have the right selector, bail
+      if (event.target.matches('.nav_link')) return;
+    
+      _this.setState({
+        open: false,
+      })
+    
+    }, false);
   }
 
   _handleClose() {
@@ -146,9 +156,20 @@ export default class Login extends Component {
 
     return (
       <div style={{ display: 'inline-block', padding: '0 0 0 10px' }}>
-        <a className="nav_link" href={NavigationHelpers.getBaseURL() + 'logout'}>
+        <a className="nav_link" onClick={this._handleOpen} style={{padding: '10px'}}>
           SIGN IN
         </a>
+        
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.loginLinkElement}
+          anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
+          targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+        >
+          <div style={{ width: '300px', padding: '5px', border: '1px solid #000', fontSize: '0.9em' }}>
+            We are upgrading our system. Login and registration are currently disabled and are expected to be resumed on Monday. Thank you for your patience. 
+          </div>
+        </Popover>
       </div>
     )
   }
