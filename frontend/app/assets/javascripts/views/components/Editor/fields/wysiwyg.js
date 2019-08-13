@@ -1,22 +1,25 @@
-import React, { Component, PropTypes } from 'react'
+import React /*, { Component, PropTypes }*/ from 'react'
 import t from 'tcomb-form'
-import classNames from 'classnames'
-import AlloyEditorComponent from 'views/components/Editor/AlloyEditorComponent'
-
+import Editor from 'views/components/Editor'
+import selectn from 'selectn'
 /**
- * Custom textarea field for tcomb-form that uses alloy-editor
+ * Custom textarea field for tcomb-form that uses Quill
  */
 function renderTextarea(locals) {
-  const onContentChange = function(value) {
-    locals.onChange(value)
-  }
-
+  const dataTestId = selectn(['attrs', 'dataTestId'], locals) || 'wysiwyg'
+  const id = selectn(['attrs', 'idAlt'], locals) || selectn(['attrs', 'id'], locals) || 'wysiwygId'
+  const name = selectn(['attrs', 'nameAlt'], locals) || selectn(['attrs', 'name'], locals) || 'wysiwygName'
   return (
-    <AlloyEditorComponent
-      content={locals.value}
-      onContentChange={onContentChange}
-      container={'editable' + locals.label.replace(' ', '_')}
-    />
+    <div data-testid={dataTestId}>
+      <Editor
+        id={id}
+        initialValue={locals.value}
+        name={name}
+        onChange={(content /*, delta, source, editor*/) => {
+          locals.onChange(content)
+        }}
+      />
+    </div>
   )
 }
 

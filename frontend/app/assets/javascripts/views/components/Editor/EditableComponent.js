@@ -14,9 +14,12 @@ import { Document } from 'nuxeo'
 import fields from 'models/schemas/fields'
 import options from 'models/schemas/options'
 
-import IconButton from 'material-ui/lib/icon-button'
+// import IconButton from 'material-ui/lib/icon-button'
 import CircularProgress from 'material-ui/lib/circular-progress'
 import IntlService from 'views/services/intl'
+import IconEdit from 'material-ui/lib/svg-icons/editor/mode-edit'
+
+import '!style-loader!css-loader!./EditableComponent.css'
 
 const intl = IntlService.instance
 
@@ -50,10 +53,11 @@ const { array, bool, func, object, string } = PropTypes
 
 class EditableComponent extends Component {
   static propTypes = {
+    className: string,
+    dataTestid: string,
     accessDenied: bool, // NOTE: not certain being used
     computeEntity: object.isRequired,
     context: object,
-    className: string,
     isSection: bool,
     options: array, // NOTE: not certain being used
     previewType: string,
@@ -64,21 +68,34 @@ class EditableComponent extends Component {
   }
 
   static defaultProps = {
-    accessDenied: false,
     className: '',
+    accessDenied: false,
     showPreview: false,
   }
 
-  constructor(props, context) {
-    super(props, context)
+  state = {
+    editModeEnabled: false,
+    savedValue: null,
+  }
 
-    this.state = {
-      editModeEnabled: false,
-      savedValue: null,
-    }
+  shouldComponentUpdate(newProps, newState) {
+    if (newState != this.state || newProps.computeEntity.response != this.props.computeEntity.response) return true
 
-    // Bind methods to 'this'
-    ;['_onEditRequest', '_onRequestSaveField'].forEach((method) => (this[method] = this[method].bind(this)))
+    if (newProps.options != null) return true
+
+    return false
+  }
+
+  render() {
+    return (
+      <div
+        data-testid={this.props.dataTestid}
+        className={`EditableComponent ${this.props.className ? this.props.className : ''}`}
+      >
+        {this._editableElement()}
+        <StatusBar message={selectn('message', this.props.computeEntity)} />
+      </div>
+    )
   }
 
   /**
@@ -101,6 +118,8 @@ class EditableComponent extends Component {
 
     // Get all options for type from entity field definition
     const fieldFormOptions = selectn(entity.type, options)
+
+    let toReturn = null
 
     // Handle edit mode
     if (this.state.editModeEnabled && !this.props.accessDenied) {
@@ -131,8 +150,8 @@ class EditableComponent extends Component {
           // Set default value to current value
           fieldFormValues[property] = currentValue
 
-          return (
-            <form className="editableComponentForm" onSubmit={(e) => this._onRequestSaveField(e, property)}>
+          toReturn = (
+            <form className="EditableComponent__form" onSubmit={(e) => this._onRequestSaveField(e, property)}>
               <t.form.Form
                 ref={'form_' + property}
                 value={fieldFormValues}
@@ -140,45 +159,56 @@ class EditableComponent extends Component {
                 context={selectn('response', this.props.context) || selectn('response', this.props.computeEntity)}
                 options={fieldFormOptions}
               />
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" className="EditableComponent__btnSave FlatButton FlatButton--primary">
                 {intl.trans('save', 'Save', 'first')}
               </button>
             </form>
           )
         }
       }
+    } else {
+      // Render regular field if not in edit mode
+      /*
+      <IconButton
+            iconClassName="material-icons"
+            iconStyle={{ fontSize: '20px' }}
+            style={{
+              verticalAlign: '-4px',
+              margin: '0 5px 0 -5px',
+              padding: '0px 5px',
+              height: '22px',
+              width: '22px',
+              display: this.props.accessDenied ? 'none' : 'inline-block',
+            }}
+            onClick={this._onEditRequest.bind(this, property)}
+            tooltip={intl.trans('edit', 'Edit', 'first')}
+          >
+            mode_edit
+          </IconButton>
+          */
+      const editButton = this.props.accessDenied ? null : (
+        <button
+          type="button"
+          className={'EditableComponent__btnEdit FlatButton FlatButton--compact'}
+          data-testid="EditableComponent__edit"
+          onClick={(e) => {
+            e.preventDefault()
+            this._onEditRequest()
+          }}
+        >
+          <IconEdit className="FlatButton__icon" title={intl.trans('edit', 'Edit', 'first')} />
+          <span className="FlatButton__label">{intl.trans('edit', 'Edit', 'first')}</span>
+        </button>
+      )
+      toReturn = (
+        <div>
+          {RenderRegular(currentValue, this.props.showPreview, this.props.previewType)}
+          {editButton}
+        </div>
+      )
     }
 
-    // Render regular field if not in edit mode
-    return (
-      <div>
-        {RenderRegular(currentValue, this.props.showPreview, this.props.previewType)}
-        <IconButton
-          iconClassName="material-icons"
-          iconStyle={{ fontSize: '20px' }}
-          style={{
-            verticalAlign: '-4px',
-            margin: '0 5px 0 -5px',
-            padding: '0px 5px',
-            height: '22px',
-            width: '22px',
-            display: this.props.accessDenied ? 'none' : 'inline-block',
-          }}
-          onClick={this._onEditRequest.bind(this, property)}
-          tooltip={intl.trans('edit', 'Edit', 'first')}
-        >
-          mode_edit
-        </IconButton>
-      </div>
-    )
-  }
-
-  shouldComponentUpdate(newProps, newState) {
-    if (newState != this.state || newProps.computeEntity.response != this.props.computeEntity.response) return true
-
-    if (newProps.options != null) return true
-
-    return false
+    return toReturn
   }
 
   _onRequestSaveField(e, property) {
@@ -218,18 +248,12 @@ class EditableComponent extends Component {
       editModeEnabled: true,
     })
   }
-
-  render() {
-    return (
-      <div className={this.props.className}>
-        {this._editableElement()} <StatusBar message={selectn('message', this.props.computeEntity)} />
-      </div>
-    )
-  }
 }
 
 export class EditableComponentHelper extends Component {
   static propTypes = {
+    className: string,
+    dataTestid: string,
     entity: object,
     isSection: bool,
     previewType: string,
@@ -237,9 +261,13 @@ export class EditableComponentHelper extends Component {
     showPreview: bool,
     sectionProperty: string,
   }
+  defaultProps = {
+    className: '',
+  }
   render() {
+    let toReturn = null
     if (this.props.isSection) {
-      return (
+      toReturn = (
         <div>
           {RenderRegular(
             selectn(this.props.sectionProperty || 'properties.' + this.props.property, this.props.entity),
@@ -249,9 +277,12 @@ export class EditableComponentHelper extends Component {
           )}
         </div>
       )
+    } else {
+      toReturn = <EditableComponent {...this.props} />
     }
-
-    return <EditableComponent {...this.props} />
+    return (
+      <div className={`EditableComponentHelper ${this.props.className ? this.props.className : ''}`}>{toReturn}</div>
+    )
   }
 }
 
