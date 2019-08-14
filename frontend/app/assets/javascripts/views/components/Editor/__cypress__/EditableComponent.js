@@ -10,7 +10,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     const updateMessage2 = `${updateMessage} 2`
     const updateMessage3 = `${updateMessage} 3`
     cy.login({
-      url: 'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/startup',
+      url: 'https://dev.firstvoices.com/nuxeo/startup',
     })
 
     cy.log('■□□□ 1/5')
