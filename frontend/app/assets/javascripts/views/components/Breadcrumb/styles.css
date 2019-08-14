@@ -3,7 +3,7 @@
   padding: 1.5rem;
   margin: 0;
   background-color: transparent;
-  text-transform: capitalize;
+  /* text-transform: capitalize; */
 }
 .Breadcrumb a {
   color: #353b40;
