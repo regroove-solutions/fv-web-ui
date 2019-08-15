@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable from 'immutable'
+import Immutable, { is } from 'immutable'
 import classNames from 'classnames'
 
 // REDUX
@@ -106,6 +106,24 @@ export class PageDialectStoriesAndSongsCreate extends Component {
     }
   }
 
+  // NOTE: Annoyingly, this fixes FW-316
+  // Note: Suspect <button>s within <t.form.Form> trigger a rerender when clicked
+  shouldComponentUpdate(newProps, newState) {
+    switch (true) {
+      case this.state.componentState != newState.componentState:
+        return true
+      case newProps.windowPath != this.props.windowPath:
+        return true
+
+      case is(newProps.computeDialect2, this.props.computeDialect2) === false:
+        return true
+
+      case is(newProps.computeBook, this.props.computeBook) === false:
+        return true
+      default:
+        return false
+    }
+  }
   render() {
     const content = this._getContent()
     return content
@@ -243,7 +261,7 @@ export class PageDialectStoriesAndSongsCreate extends Component {
 
           <div className="row" style={{ marginTop: '15px' }}>
             <div className={classNames('col-xs-8', 'col-md-10')}>
-              <form onSubmit={this._onRequestSaveForm}>
+              <form className="PageDialectStoriesAndSongsCreate__form" onSubmit={this._onRequestSaveForm}>
                 <t.form.Form
                   ref="form_book_create" // TODO: DEPRECATED
                   type={t.struct(selectn('FVBook', fields))}
