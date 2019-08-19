@@ -61,6 +61,7 @@ export default function withPagination(ComposedFilter, pageSize = 10, pageRange 
       this.setState({ currentPageSize: currentPageSize })
     }
 
+    // TODO: Is `return false` intended?
     shouldComponentUpdate() {
       return false
     }
