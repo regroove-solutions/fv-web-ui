@@ -1,6 +1,4 @@
 describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
-  const host = 'http://0.0.0.0:3001'
-  const page = `${host}/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases`
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
@@ -21,7 +19,7 @@ describe('phrase_crud.js > PageDialectPhrasesCreate', () => {
     const titleCreate = `${testPrefix} > CREATE: Phrase (${nowCreate})`
     const titleUpdate = `${testPrefix} > UPDATE: Phrase (${nowCreate})`
 
-    cy.visit(page)
+    cy.visit('/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
     cy.getByText('create new phrase', { exact: false }).click()
     cy.getByText('Add New Phrase to Dene').should('exist')
 

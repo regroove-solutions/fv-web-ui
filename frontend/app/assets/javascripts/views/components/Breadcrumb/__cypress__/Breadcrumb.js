@@ -5,9 +5,7 @@ import 'cypress-testing-library/add-commands'
 
 describe('Breadcrumb.js > Breadcrumb', () => {
   it('FW-235: Breadcrumb link to home page from Photo Gallery broken', () => {
-    cy.visit(
-      'http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Wakashan/Nuu%C4%8Daan%CC%93u%C9%AB/Ehattesaht%20Nuchatlaht/gallery'
-    )
+    cy.visit('/explore/FV/sections/Data/Wakashan/Nuu%C4%8Daan%CC%93u%C9%AB/Ehattesaht%20Nuchatlaht/gallery')
     cy.getByTestId('pageContainer').within(() => {
       cy.log('Confirm on gallery page')
       cy.queryByText('Ehattesaht nuchatlaht galleries', { exact: false }).should('exist')

@@ -12,7 +12,7 @@ describe('RecorderCreate.js > RecorderCreate', () => {
     // Login
     cy.login()
 
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

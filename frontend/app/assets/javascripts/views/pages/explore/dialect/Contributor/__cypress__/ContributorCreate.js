@@ -11,7 +11,7 @@ describe('ContributorCreateDelete.js > Contributor', () => {
   it('Create', () => {
     // Login
     cy.login()
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/contributor')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/contributor')
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

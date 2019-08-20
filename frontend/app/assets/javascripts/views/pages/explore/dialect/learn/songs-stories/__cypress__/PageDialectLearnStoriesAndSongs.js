@@ -6,7 +6,7 @@ describe('PageDialectLearnStoriesAndSongs.js > PageDialectLearnStoriesAndSongs',
       userPassword: 'SENCOTEN_PASSWORD',
     })
     cy.visit(
-      'http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/THE%20SEN%C4%86O%C5%A6EN%20LANGUAGE/SEN%C4%86O%C5%A6EN/SEN%C4%86O%C5%A6EN/learn/songs'
+      '/explore/FV/Workspaces/Data/THE%20SEN%C4%86O%C5%A6EN%20LANGUAGE/SEN%C4%86O%C5%A6EN/SEN%C4%86O%C5%A6EN/learn/songs'
     )
 
     cy.getByText('create song book', { exact: false }).click()
@@ -19,7 +19,7 @@ describe('PageDialectLearnStoriesAndSongs.js > PageDialectLearnStoriesAndSongs',
       userPassword: 'SENCOTEN_PASSWORD',
     })
     cy.visit(
-      'http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/THE%20SEN%C4%86O%C5%A6EN%20LANGUAGE/SEN%C4%86O%C5%A6EN/SEN%C4%86O%C5%A6EN/learn/stories'
+      '/explore/FV/Workspaces/Data/THE%20SEN%C4%86O%C5%A6EN%20LANGUAGE/SEN%C4%86O%C5%A6EN/SEN%C4%86O%C5%A6EN/learn/stories'
     )
 
     cy.getByText('create story book', { exact: false }).click()

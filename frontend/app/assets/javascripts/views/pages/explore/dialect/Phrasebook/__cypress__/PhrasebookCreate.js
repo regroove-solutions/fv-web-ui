@@ -11,7 +11,7 @@ describe('PhrasebookCreateDelete.js > Phrasebook', () => {
     // Login
     cy.login()
 
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/phrasebook')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/phrasebook')
     cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data

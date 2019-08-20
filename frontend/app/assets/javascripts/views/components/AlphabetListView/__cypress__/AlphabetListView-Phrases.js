@@ -1,7 +1,7 @@
 import 'cypress-testing-library/add-commands'
 describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')
+    cy.visit('/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')
 
     const letter = 'b'
     const unselectedColor = 'rgb(60, 52, 52)'
@@ -57,7 +57,7 @@ describe('AlphabetListView-Phrases.js > AlphabetListView', () => {
 
   it('Direct link', () => {
     cy.log('Direct visit a url with a letter selected')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases/alphabet/b')
+    cy.visit('/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases/alphabet/b')
     // Message & "Stop Browsing" button displayed; a letter is selected
     cy.log('Ensure message & "Stop Browsing" button is displayed and a letter is selected')
     cy.getByText(/showing phrases that start with the letter/i).should('exist')

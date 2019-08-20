@@ -1,7 +1,7 @@
 import 'cypress-testing-library/add-commands'
 describe('AlphabetListView-Words.js > AlphabetListView', () => {
   it('Select letter with enough results for pagination, confirm has data, navigate to next page, confirm has data', () => {
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Haisla/Haisla/Haisla/learn/words')
+    cy.visit('/explore/FV/sections/Data/Haisla/Haisla/Haisla/learn/words')
 
     const letter = 'k̓'
     const unselectedColor = 'rgb(60, 52, 52)'
@@ -57,9 +57,7 @@ describe('AlphabetListView-Words.js > AlphabetListView', () => {
 
   it('Direct link: displays message, selected letter, & stop browsing buton', () => {
     cy.log('Direct visit a url with a letter selected')
-    cy.visit(
-      'http://0.0.0.0:3001/nuxeo/app/explore/FV/sections/Data/Haisla/Haisla/Haisla/learn/words/alphabet/k%CC%93%C2%B0'
-    )
+    cy.visit('/explore/FV/sections/Data/Haisla/Haisla/Haisla/learn/words/alphabet/k%CC%93%C2%B0')
     // Message & "Stop Browsing" button displayed; a letter is selected
     cy.log('Ensure message & "Stop Browsing" button is displayed and a letter is selected')
     cy.getByText(/showing words that start with the letter/i).should('exist')

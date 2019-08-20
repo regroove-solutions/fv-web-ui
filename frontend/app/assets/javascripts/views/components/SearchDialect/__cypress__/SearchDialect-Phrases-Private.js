@@ -6,12 +6,12 @@ import testSearchPhrases from '../../../app/assets/javascripts/views/components/
 describe('SearchDialectPhrases-Private.js > SearchDialect', () => {
   it('Should redirect with anon user, no redirect with member', () => {
     cy.log('Trying to access private section with anon user')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
     cy.wait(500)
     cy.location('pathname').should('eq', '/nuxeo/app/explore/FV/sections/Data/Athabascan/Dene/Dene/learn/phrases')
     cy.log('Trying to access private section with registered user')
     cy.login()
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
     cy.wait(500)
     cy.location('pathname').should('eq', '/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/phrases')
 

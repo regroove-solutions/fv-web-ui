@@ -1,8 +1,6 @@
 describe('word_crud.js > PageDialectWordsCreate', () => {
-  const host = 'http://0.0.0.0:3001'
   const create =
     'https://preprod.firstvoices.com/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
-  const prefix = '/nuxeo/app'
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
@@ -35,8 +33,7 @@ describe('word_crud.js > PageDialectWordsCreate', () => {
       url: create,
       body: word,
     }).then((response) => {
-      const page = `${host}${prefix}/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`
-      cy.visit(page)
+      cy.visit(`/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`)
 
       // Read
       cy.log('--- READ ---')

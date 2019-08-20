@@ -14,7 +14,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     })
 
     cy.log('■□□□ 1/5')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene')
 
     cy.getByTestId('EditableComponent__fv-portal-about').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -48,7 +48,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     })
 
     cy.log('■■□□□ 2/5')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn')
 
     cy.getByTestId('EditableComponent__dc-description').within(() => {
       cy.getByTestId('EditableComponent__edit').click()
@@ -66,7 +66,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage).should('exist')
 
     cy.log('■■■□□ 3/5')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/edit')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/edit')
 
     /*
       Portal introduction
@@ -94,7 +94,7 @@ describe('EditableComponent.js > EditableComponent', () => {
     cy.getByText(updateMessage2).should('exist')
 
     cy.log('■■■■□ 4/5')
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/stories')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/stories')
     cy.getByText('Create Story Book', { exact: false }).click()
 
     cy.wait(500)
