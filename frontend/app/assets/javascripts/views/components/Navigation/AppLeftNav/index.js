@@ -198,57 +198,58 @@ export class AppLeftNav extends Component {
         open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
       >
-        <AppBar
-          iconElementLeft={
-            <button
-              type="button"
-              className="AppLeftNav__close"
-              data-testid="AppLeftNav__close"
-              onClick={this._onRequestChange}
-              ref={(_element) => {
-                this.AppLeftNavClose = _element
-              }}
-            >
-              <NavigationClose className="AppLeftNav__closeIcon" />
-              <span className="visually-hidden">Menu close</span>
-            </button>
-          }
-          title={
-            <img src="assets/images/logo.png" style={{ padding: '0 0 5px 0' }} alt={this.props.properties.title} />
-          }
-        />
-
-        <SelectableList
-          valueLink={{
-            value: location.pathname,
-            requestChange: this._onNavigateRequest,
-          }}
-        >
-          {this.state.routes.map((d) => (
-            <ListItem
-              className="1"
-              key={d.get('id')}
-              value={d.get('path')}
-              nestedItems={d.get('nestedItems')}
-              primaryText={d.get('label')}
-            />
-          ))}
-
-          {this.additionalEntries}
-        </SelectableList>
-
-        <Divider />
-
-        {(() => {
-          if (selectn('isConnected', this.props.computeLogin)) {
-            return (
-              <SelectableList
-                valueLink={{
-                  value: location.pathname,
-                  requestChange: this._onNavigateRequest,
+        <div data-testid="LeftNav">
+          <AppBar
+            iconElementLeft={
+              <button
+                type="button"
+                className="AppLeftNav__close"
+                data-testid="AppLeftNav__close"
+                onClick={this._onRequestChange}
+                ref={(_element) => {
+                  this.AppLeftNavClose = _element
                 }}
               >
-                {/* <ListItem
+                <NavigationClose className="AppLeftNav__closeIcon" />
+                <span className="visually-hidden">Menu close</span>
+              </button>
+            }
+            title={
+              <img src="assets/images/logo.png" style={{ padding: '0 0 5px 0' }} alt={this.props.properties.title} />
+            }
+          />
+
+          <SelectableList
+            valueLink={{
+              value: location.pathname,
+              requestChange: this._onNavigateRequest,
+            }}
+          >
+            {this.state.routes.map((d) => (
+              <ListItem
+                className="1"
+                key={d.get('id')}
+                value={d.get('path')}
+                nestedItems={d.get('nestedItems')}
+                primaryText={d.get('label')}
+              />
+            ))}
+
+            {this.additionalEntries}
+          </SelectableList>
+
+          <Divider />
+
+          {(() => {
+            if (selectn('isConnected', this.props.computeLogin)) {
+              return (
+                <SelectableList
+                  valueLink={{
+                    value: location.pathname,
+                    requestChange: this._onNavigateRequest,
+                  }}
+                >
+                  {/* <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
@@ -258,19 +259,20 @@ export class AppLeftNav extends Component {
                   })}
                 /> */}
 
-                <ListItem
-                  key="sign-out"
-                  value={'logout'}
-                  primaryText={this.intl.translate({
-                    key: 'sign_out',
-                    default: 'Sign Out',
-                    case: 'words',
-                  })}
-                />
-              </SelectableList>
-            )
-          }
-        })()}
+                  <ListItem
+                    key="sign-out"
+                    value={'logout'}
+                    primaryText={this.intl.translate({
+                      key: 'sign_out',
+                      default: 'Sign Out',
+                      case: 'words',
+                    })}
+                  />
+                </SelectableList>
+              )
+            }
+          })()}
+        </div>
       </LeftNav>
     )
   }

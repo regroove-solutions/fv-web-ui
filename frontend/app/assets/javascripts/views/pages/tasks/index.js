@@ -151,7 +151,7 @@ export class Tasks extends React.Component {
             <span className="Tasks__taskType">{intl.searchAndReplace(task.name)}</span>
           </TableRowColumn>
           <TableRowColumn>
-            <div className="Tasks__approveRejectContainer">
+            <div data-testid="Tasks__approveRejectContainer" className="Tasks__approveRejectContainer">
               <button
                 type="button"
                 className="RaisedButton RaisedButton--primary"
