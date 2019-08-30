@@ -74,14 +74,14 @@ class Answer extends React.Component {
 
     return (
       <div className="col-xs-6">
-        <RaisedButton
-          style={{ width: '100%' }}
-          labelColor={labelColor}
+        <button
+          className="_btn _btn--secondary QuizAnswer__btn"
+          style={{ color: labelColor, backgroundColor: backgroundColor }}
           disabled={disabled}
-          backgroundColor={backgroundColor}
           onClick={this.props.onSelect.bind(this, data, correct)}
-          label={data ? selectn('word', data) : 'Loading...'}
-        />
+        >
+          {data ? selectn('word', data) : 'Loading...'}
+        </button>
       </div>
     )
   }
@@ -290,7 +290,7 @@ export class Quiz extends Component {
     }
 
     // Seperate all correct answers from all wrong answers
-    (selectn('response.entries', computeWords) || []).forEach(
+    ;(selectn('response.entries', computeWords) || []).forEach(
       function computeWordForEach(v, i) {
         // If word is a correct answer
         if (this.state.questionsOrder.includes(i)) {
@@ -438,9 +438,9 @@ export class Quiz extends Component {
             {answers.map((answer, i) => {
               return isCorrect && !answer.props.correct
                 ? React.cloneElement(answer, {
-                  disabled: true,
-                  key: i,
-                })
+                    disabled: true,
+                    key: i,
+                  })
                 : answer
             })}
           </div>
