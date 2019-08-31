@@ -26,7 +26,7 @@ limitations under the License.
   </condition>
 
   <target name="clean" description="Clean npm and bower dependencies">
-    <!-- DY: For quicker build, skip deleting node_modules.
+    <!-- DY: For quicker build, skip deleting node_modules. -->
     <!-- Deleting node_modules provides the least risk of remaining artifcats in node_modlues. Should be default -->
     <delete dir="node_modules" />
     <delete includeEmptyDirs="yes" failonerror="false">
