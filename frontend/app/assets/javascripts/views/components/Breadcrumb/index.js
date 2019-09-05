@@ -191,7 +191,9 @@ export class Breadcrumb extends Component {
                 e.preventDefault()
                 NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
               }}
-            >{`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))}`}</a>
+            >
+              {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'), { case: 'lower' })}`}
+            </a>
           </li>
         )
       }
