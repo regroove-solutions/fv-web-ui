@@ -65,6 +65,7 @@ export class Contributors extends Component {
     DEFAULT_SORT_COL: string,
     DEFAULT_SORT_TYPE: string,
     editUrl: string,
+    detailUrl: string,
     copy: object,
     btnCreate: element,
     // REDUX: reducers/state
@@ -271,7 +272,7 @@ export class Contributors extends Component {
 
   _getColumns = () => {
     const { copy } = this.state
-    const { routeParams, editUrl } = this.props
+    const { routeParams, editUrl, detailUrl } = this.props
     const { theme, dialect_path } = routeParams
 
     return [
@@ -341,7 +342,7 @@ export class Contributors extends Component {
         },
         render: (value, data) => {
           const uid = data.uid
-          const url = editUrl ? `${editUrl}/${uid}` : `/${theme}${dialect_path}/contributor/${uid}`
+          const url = detailUrl ? `${detailUrl}/${uid}` : `/${theme}${dialect_path}/contributor/${uid}`
 
           return (
             <a
