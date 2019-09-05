@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable from 'immutable'
+import Immutable, { is } from 'immutable'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -82,6 +82,19 @@ export class ExploreDialectEdit extends Component {
     if (this.props.routeParams.dialect_path !== prevProps.routeParams.dialect_path) {
       this.fetchData()
     }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const { componentState: nextComponentState, errorMessage: nextErrorMessage } = nextState
+    const { componentState: thisComponentState, errorMessage: thisErrorMessage } = this.state
+
+    if (thisComponentState !== nextComponentState || thisErrorMessage !== nextErrorMessage) {
+      return true
+    }
+    if (is(nextProps.computePortal, this.props.computePortal) === false) {
+      return true
+    }
+    return false
   }
 
   render() {
