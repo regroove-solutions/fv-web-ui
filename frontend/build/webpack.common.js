@@ -15,21 +15,22 @@ const sourceScriptsDirectory = path.resolve(sourceAssetsDirectory, 'javascripts'
 const sourceStylesDirectory = path.resolve(sourceAssetsDirectory, 'stylesheets')
 const sourceImagesDirectory = path.resolve(sourceAssetsDirectory, 'images')
 const sourceFontsDirectory = path.resolve(sourceAssetsDirectory, 'fonts')
-const sourceLibrariesDirectory = path.resolve(sourceAssetsDirectory, 'libraries')
 const sourceFaviconsDirectory = path.resolve(sourceAssetsDirectory, 'favicons')
 const sourceGamesDirectory = path.resolve(sourceAssetsDirectory, 'games')
 
 // Output Directories
 const outputAssetsDirectory = 'assets'
-const outputDirectory = path.resolve(frontEndRootDirectory, 'public')
+const outputDirectory = path.resolve(frontEndRootDirectory, 'public', 'evergreen')
+const outputDirectoryLegacy = path.resolve(frontEndRootDirectory, 'public', 'legacy')
 const outputScriptsDirectory = path.join(outputAssetsDirectory, 'javascripts')
 const outputFontsDirectory = path.join(outputAssetsDirectory, 'fonts')
 const outputImagesDirectory = path.join(outputAssetsDirectory, 'images')
 const outputStylesDirectory = path.join(outputAssetsDirectory, 'styles')
-const outputLibrariesDirectory = path.join(outputAssetsDirectory, 'libraries')
 const outputGamesDirectory = path.join(outputAssetsDirectory, 'games')
 
 // Plugins
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const WarningsToErrorsPlugin = require('warnings-to-errors-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
@@ -104,7 +105,7 @@ module.exports = env => ({
    */
   entry: {
     app: path.resolve(sourceScriptsDirectory, 'app.js'),
-    // createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/create.js'),
+    // createWord: path.resolve(sourceScriptsDirectory, 'views/pages/explore/dialect/learn/words/Create'),
     game_libs: ['pixi', 'p2', 'phaser'],
   },
 
@@ -148,7 +149,7 @@ module.exports = env => ({
   output: {
     filename: path.join(outputScriptsDirectory, '[name].[hash].js'),
     chunkFilename: path.join(outputScriptsDirectory, '[name].[hash].js'),
-    path: outputDirectory,
+    path: env && env.legacy ? outputDirectoryLegacy : outputDirectory,
     publicPath: '',
   },
 
@@ -156,11 +157,14 @@ module.exports = env => ({
    * Plugins
    */
   plugins: [
-    new CleanWebpackPlugin([outputDirectory], { root: rootDirectory }),
+    new CaseSensitivePathsPlugin({debug: true}),
+    new WarningsToErrorsPlugin(),
+    new CleanWebpackPlugin([env && env.legacy ? outputDirectoryLegacy : outputDirectory], { root: rootDirectory }),
     new HtmlWebpackPlugin({
       template: path.resolve(frontEndRootDirectory, 'index.html'),
       templateParameters: {
         VERSION: gitRevisionPlugin.version(),
+        IS_LEGACY: env && env.legacy ? true : false,
       },
     }),
     new MiniCssExtractPlugin({
@@ -170,8 +174,7 @@ module.exports = env => ({
     new CopyPlugin([
       { from: sourceFontsDirectory, to: outputFontsDirectory },
       { from: sourceImagesDirectory, to: outputImagesDirectory },
-      { from: sourceLibrariesDirectory, to: outputLibrariesDirectory },
-      { from: sourceFaviconsDirectory, to: outputDirectory },
+      { from: sourceFaviconsDirectory, to: env && env.legacy ? outputDirectoryLegacy : outputDirectory },
       { from: sourceGamesDirectory, to: outputGamesDirectory },
     ]),
     new webpack.DefinePlugin({
@@ -192,12 +195,11 @@ module.exports = env => ({
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules\/(?!@fpcc)/,
+        exclude: env && env.legacy ? /node_modules\/(?!@fpcc|nuxeo)/ : /node_modules\/(?!@fpcc)/,
         options: {
           cacheDirectory: true,
           presets: ['@babel/preset-env', '@babel/preset-react'],
           plugins: [
-            ['transform-react-jsx-component-data-ids'],
             ['@babel/plugin-syntax-dynamic-import'],
             ['@babel/plugin-proposal-decorators', { legacy: true }],
             ['@babel/plugin-proposal-class-properties', { loose: true }],

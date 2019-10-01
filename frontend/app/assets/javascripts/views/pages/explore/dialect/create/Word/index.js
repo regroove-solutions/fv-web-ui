@@ -309,6 +309,18 @@ the 'Move Category up' and 'Move Category down' buttons`}
             />
             <span id="describedByReference">Origin of record (person, book, etc).</span>
           </div>
+          {/* ACKNOWLEDGEMENT --------------- */}
+          <div className="Form__group">
+            <Text
+              className=""
+              id="CreateWord__Acknowledgement"
+              labelText="Acknowledgement"
+              name="fv-word:acknowledgement"
+              ariaDescribedby="describedByAcknowledgement"
+              value=""
+            />
+            <span id="describedByAcknowledgement">Acknowledgement or Data Usage</span>
+          </div>
           {/* Contributors --------------- */}
           <FormContributors
             className="Form__group"

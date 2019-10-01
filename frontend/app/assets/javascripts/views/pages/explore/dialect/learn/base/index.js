@@ -1,24 +1,20 @@
 /*
 Copyright 2016 First People's Cultural Council
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { Set } from 'immutable'
+import React, { Component, PropTypes } from 'react' // eslint-disable-line
+import Immutable, { Set } from 'immutable' // eslint-disable-line
 import selectn from 'selectn'
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from 'common/NavigationHelpers'
-
+import NavigationHelpers, { hasPagination, routeHasChanged } from 'common/NavigationHelpers'
 /**
  * Learn Base Page
  * TODO: Convert to composition vs. inheritance https://facebook.github.io/react/docs/composition-vs-inheritance.html
@@ -50,7 +46,7 @@ export default class PageDialectLearnBase extends Component {
     console.warn('The `class` that `extends` `PageDialectLearnBase` must define a `fetchData` function')
   }
 
-  _onNavigateRequest(path, absolute = false) {
+  _onNavigateRequest(path /*, absolute = false*/) {
     if (this.props.hasPagination) {
       NavigationHelpers.navigateForward(
         this.props.splitWindowPath.slice(0, this.props.splitWindowPath.length - 2),
@@ -92,9 +88,16 @@ export default class PageDialectLearnBase extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
+      this.fetchData(this.props)
     }
   }
 
@@ -166,7 +169,7 @@ export default class PageDialectLearnBase extends Component {
     this.setState({ filterInfo: newFilter })
   }
 
-  handleDialectFilterList(facetField, selected, unselected, type = 'words') {
+  handleDialectFilterList(facetField, selected, unselected, type = 'words', resetUrlPagination = true) {
     const categoriesOrPhraseBook = type === 'words' ? 'categories' : 'phraseBook'
     const currentDialectFilterIds = this.state.filterInfo.get('currentCategoryFilterIds')
     let dialectFilter = ''
@@ -193,8 +196,8 @@ export default class PageDialectLearnBase extends Component {
     }
 
     if (selected) {
-      const { checkedFacetUid: selectedCheckedFacetUid, childrenIds: selectedChildrenIds } = selected
-      const selectedChildrenIdsList = new Set(selectedChildrenIds)
+      const { checkedFacetUid: selectedCheckedFacetUid /*, childrenIds: selectedChildrenIds */ } = selected
+      // const selectedChildrenIdsList = new Set(selectedChildrenIds)
       newList = newList.add(selectedCheckedFacetUid)
 
       // Note: This is now handled by the operation("Document.EnrichedQuery") and enrichment=category_children - on back-end
@@ -244,7 +247,9 @@ export default class PageDialectLearnBase extends Component {
 
     // When facets change, pagination should be reset.
     // In these pages (words/phrase), list views are controlled via URL
-    this._resetURLPagination()
+    if (resetUrlPagination === true) {
+      this._resetURLPagination()
+    }
 
     this.setState({ filterInfo: newFilter })
   }
@@ -256,15 +261,20 @@ export default class PageDialectLearnBase extends Component {
   }
 
   _resetURLPagination(pageSize = null) {
-    const newPageSize = pageSize || selectn('pageSize', this.props.routeParams)
+    const urlPage = 1
+    const urlPageSize = pageSize || this.props.routeParams.pageSize || 10
 
-    // If URL pagination exists, reset
-    if (newPageSize) {
+    const hasPaginationUrl = hasPagination(this.props.splitWindowPath)
+    if (hasPaginationUrl) {
+      // Replace them
       NavigationHelpers.navigateForwardReplaceMultiple(
         this.props.splitWindowPath,
-        [newPageSize.toString(), 1],
+        [urlPageSize, urlPage],
         this.props.pushWindowPath
       )
+    } else {
+      // No pagination in url (eg: .../learn/words), append `urlPage` & `urlPageSize`
+      NavigationHelpers.navigateForward(this.props.splitWindowPath, [urlPageSize, urlPage], this.props.pushWindowPath)
     }
   }
 }

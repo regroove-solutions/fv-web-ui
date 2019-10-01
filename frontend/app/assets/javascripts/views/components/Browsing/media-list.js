@@ -22,10 +22,14 @@ import GridTile from 'material-ui/lib/grid-list/grid-tile'
 import UIHelpers from 'common/UIHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
+// REDUX
+import { connect } from 'react-redux'
+import { pushWindowPath } from 'providers/redux/reducers/windowPath'
+
 const defaultStyle = { width: '100%', overflowY: 'auto', marginBottom: 24 }
 
 const { array, func, instanceOf, number, object, oneOfType, string } = PropTypes
-export default class MediaList extends Component {
+export class MediaList extends Component {
   static propTypes = {
     action: func,
     cellHeight: number,
@@ -36,6 +40,8 @@ export default class MediaList extends Component {
     style: object,
     theme: string,
     type: string,
+    // REDUX: actions/dispatch/func
+    pushWindowPath: func.isRequired,
   }
 
   static defaultProps = {
@@ -124,21 +130,32 @@ export default class MediaList extends Component {
                 titlePosition: fileTypeTilePosition,
               })
             }
+            // NOTE: is `size` a string? should it be cast via Number(size)?
+            const size = selectn('properties.common:size', tile)
+            const subtitle = size ? (
+              <span>
+                <strong>{`${Math.round(size * 0.001)} KB`}</strong>
+              </span>
+            ) : null
 
+            const href = NavigationHelpers.generateUIDPath(this.props.theme, tile, 'media')
             return (
               <GridTile
                 onClick={action.bind(this, tile)}
                 key={tile.uid}
-                title={<a href={NavigationHelpers.generateUIDPath(this.props.theme, tile, 'media')}>{tile.title}</a>}
-                titlePosition={fileTypeTilePosition}
-                subtitle={
-                  <span>
-                    <strong>
-                      {/*tile.properties['dc:description']*/}
-                      {Math.round(selectn('properties.common:size', tile) * 0.001)} KB
-                    </strong>
-                  </span>
+                title={
+                  <a
+                    href={href}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      NavigationHelpers.navigate(href, this.props.pushWindowPath, false)
+                    }}
+                  >
+                    {tile.title}
+                  </a>
                 }
+                titlePosition={fileTypeTilePosition}
+                subtitle={subtitle}
               >
                 {this._getMediaPreview(tile)}
               </GridTile>
@@ -149,3 +166,23 @@ export default class MediaList extends Component {
     )
   }
 }
+
+// REDUX: reducers/state
+// const mapStateToProps = (state /*, ownProps*/) => {
+//   const { windowPath } = state
+//   const { splitWindowPath } = windowPath
+
+//   return {
+//     splitWindowPath,
+//   }
+// }
+
+// REDUX: actions/dispatch/func
+const mapDispatchToProps = {
+  pushWindowPath,
+}
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(MediaList)

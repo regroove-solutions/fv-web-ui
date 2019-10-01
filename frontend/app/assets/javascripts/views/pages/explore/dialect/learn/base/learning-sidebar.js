@@ -30,7 +30,7 @@ const intl = IntlService.instance
  * Sidebar for learning page
  */
 const { bool, object } = PropTypes
-export class ToolbarNavigation extends Component {
+export class LearningSidebar extends Component {
   static propTypes = {
     dialect: object.isRequired,
     isSection: bool.isRequired,
@@ -66,6 +66,7 @@ export class ToolbarNavigation extends Component {
                       properties={properties}
                     />
                     <EditableComponentHelper
+                      dataTestid="EditableComponent__fvdialect-language_resources"
                       isSection={isSection}
                       computeEntity={dialect.compute}
                       updateEntity={dialect.update}
@@ -97,6 +98,7 @@ export class ToolbarNavigation extends Component {
                       properties={properties}
                     />
                     <EditableComponentHelper
+                      dataTestid="EditableComponent__fvdialect-keyboards"
                       isSection={isSection}
                       computeEntity={dialect.compute}
                       updateEntity={dialect.update}
@@ -128,6 +130,7 @@ export class ToolbarNavigation extends Component {
                       properties={properties}
                     />
                     <EditableComponentHelper
+                      dataTestid="EditableComponent__fvdialect-contact_information"
                       isSection={isSection}
                       computeEntity={dialect.compute}
                       updateEntity={dialect.update}
@@ -159,4 +162,4 @@ const mapStateToProps = (state /*, ownProps*/) => {
 export default connect(
   mapStateToProps,
   null
-)(ToolbarNavigation)
+)(LearningSidebar)

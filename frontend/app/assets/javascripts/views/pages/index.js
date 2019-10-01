@@ -69,28 +69,47 @@ import PageUsersProfile from './users/profile'
 import PageKidsHome from './kids/home'
 
 // EDIT
-import PageExploreDialectEdit from './explore/dialect/edit'
+import PageExploreDialectEdit from './explore/dialect/ExploreDialectEdit'
 import PageDialectGalleryEdit from './explore/dialect/gallery/edit'
 import PageDialectEditMedia from './explore/dialect/media/edit'
-import PageDialectWordEdit from './explore/dialect/learn/words/edit'
-import PageDialectPhraseEdit from './explore/dialect/learn/phrases/edit'
+import PageDialectWordEdit from './explore/dialect/learn/words/Edit'
+import PageDialectPhraseEdit from './explore/dialect/learn/phrases/Edit'
 import PageDialectBookEdit from './explore/dialect/learn/songs-stories/edit'
 import PageDialectBookEntryEdit from './explore/dialect/learn/songs-stories/entry/edit'
 import PageDialectAlphabetCharacterEdit from './explore/dialect/learn/alphabet/edit'
 
 // CREATE
-import { default as PageDialectWordsCreate } from './explore/dialect/learn/words/create'
+import { default as PageDialectWordsCreate } from './explore/dialect/learn/words/Create'
 import { default as CreateV2 } from './explore/dialect/create/Word'
 import { default as CreateAudio } from './explore/dialect/create/Audio'
-import { default as CreateRecorder } from './explore/dialect/create/Recorder'
-import { default as EditRecorder } from './explore/dialect/create/Recorder/edit'
-import { default as PageDialectPhrasesCreate } from './explore/dialect/learn/phrases/create'
+import { default as PageDialectPhrasesCreate } from './explore/dialect/learn/phrases/Create'
 import { default as PageDialectStoriesAndSongsCreate } from './explore/dialect/learn/songs-stories/create'
 import { default as PageDialectStoriesAndSongsBookEntryCreate } from './explore/dialect/learn/songs-stories/entry/create'
 import { default as PageDialectGalleryCreate } from './explore/dialect/gallery/create'
 import { default as PageDialectCategoryCreate } from './explore/dialect/category/create'
-import { default as PageDialectPhraseBooksCreate } from './explore/dialect/phrasebooks/create'
-import { default as PageDialectContributorsCreate } from './explore/dialect/contributors/create'
+
+// CONTRIBUTOR
+// ----------------------
+import ContributorBrowse from './explore/dialect/contributors' // Browse
+import { default as ContributorDetail } from './explore/dialect/Contributor/detail' // Detail
+import { default as ContributorCreateV1 } from './explore/dialect/Contributor/createV1' // Create V1
+import { default as ContributorCreate } from './explore/dialect/Contributor/create' // Create V2
+import { default as ContributorEdit } from './explore/dialect/Contributor/edit' // Edit
+
+// PHRASEBOOK
+// ----------------------
+import PhrasebookBrowse from './explore/dialect/Phrasebooks' // Browse
+import { default as PhrasebookDetail } from './explore/dialect/Phrasebook/detail' // Detail
+import { default as PageDialectPhraseBooksCreate } from './explore/dialect/Phrasebook/createV1' // Create V1
+import { default as PhrasebookCreate } from './explore/dialect/Phrasebook/create' // Create V2
+import { default as PhrasebookEdit } from './explore/dialect/Phrasebook/edit' // Edit
+
+// RECORDER
+// ----------------------
+import RecorderBrowse from './explore/dialect/Recorders' // Browse
+import { default as RecorderDetail } from './explore/dialect/Recorder/detail' // Detail
+import { default as RecorderCreate } from './explore/dialect/Recorder/create' // Create
+import { default as RecorderEdit } from './explore/dialect/Recorder/edit' // Edit
 
 export {
   PageTest,
@@ -149,17 +168,30 @@ export {
   PageDialectBookEntryEdit,
   PageDialectAlphabetCharacterEdit,
   PageDialectGalleryEdit,
-  EditRecorder,
   //CREATE
   PageDialectWordsCreate,
   CreateV2,
   CreateAudio,
-  CreateRecorder,
   PageDialectPhrasesCreate,
   PageDialectStoriesAndSongsCreate,
   PageDialectStoriesAndSongsBookEntryCreate,
   PageDialectGalleryCreate,
   PageDialectCategoryCreate,
+  // PHRASEBOOK
+  PhrasebookBrowse,
+  PhrasebookDetail,
   PageDialectPhraseBooksCreate,
-  PageDialectContributorsCreate,
+  PhrasebookCreate,
+  PhrasebookEdit,
+  // CONTRIBUTOR
+  ContributorBrowse,
+  ContributorDetail,
+  ContributorCreateV1,
+  ContributorCreate,
+  ContributorEdit,
+  // RECORDER
+  RecorderBrowse,
+  RecorderCreate,
+  RecorderDetail,
+  RecorderEdit,
 }

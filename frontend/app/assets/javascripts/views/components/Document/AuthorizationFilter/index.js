@@ -1,21 +1,22 @@
 import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import Immutable from 'immutable'
 import classNames from 'classnames'
 import selectn from 'selectn'
-
+import { SECTIONS } from 'common/Constants'
 function deepAssignPropsToChildren(children, cb) {
   return React.Children.map(children, (child) => {
     if (!React.isValidElement(child)) {
       return child
     }
+    let _child = child
 
     if (child.props.children) {
-      child = React.cloneElement(child, {
+      _child = React.cloneElement(child, {
         children: deepAssignPropsToChildren(child.props.children, cb),
       })
     }
 
-    return cb(child)
+    return cb(_child)
   })
 }
 
@@ -51,27 +52,26 @@ export default class AuthorizationFilter extends Component {
    */
   _renderHelper() {
     if (this.props.renderPartial) {
-      let children = deepAssignPropsToChildren(this.props.children, function(child) {
+      const children = deepAssignPropsToChildren(this.props.children, function(child) {
         return React.cloneElement(child, { accessDenied: true })
       })
       return <div>{children}</div>
-    } else {
-      return null
     }
+    return null
   }
 
   render() {
-    const { children, filter, hideFromSections, routeParams, ...other } = this.props
+    const { children, filter, hideFromSections, routeParams /*, ...other*/ } = this.props
 
-    let authErrorObj = (
+    const authErrorObj = (
       <div className={classNames('alert', 'alert-warning')} role="alert">
         You are not authorized to view this content.
       </div>
     )
 
-    let isSection = selectn('area', routeParams) == 'sections'
+    const isSection = selectn('area', routeParams) === SECTIONS
 
-    let currentUserEntityPermissions = selectn('contextParameters.permissions', filter.entity)
+    const currentUserEntityPermissions = selectn('contextParameters.permissions', filter.entity)
 
     if (hideFromSections && isSection) {
       return this.props.showAuthError ? authErrorObj : null
@@ -82,18 +82,18 @@ export default class AuthorizationFilter extends Component {
         return this._renderHelper()
       }
     } else if (filter.hasOwnProperty('role') && filter.hasOwnProperty('login')) {
-      let acls = selectn('contextParameters.acls', filter.entity)
+      const acls = selectn('contextParameters.acls', filter.entity)
 
       if (acls) {
-        let combinedAces = selectn('[0].aces', acls).concat(selectn('[1].aces', acls) || [])
-        let extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login))
+        const combinedAces = selectn('[0].aces', acls).concat(selectn('[1].aces', acls) || [])
+        const extendedUserGroups = Immutable.fromJS(selectn('response.extendedGroups', filter.login))
 
         if (!extendedUserGroups || extendedUserGroups.size === 0) {
           return this._renderHelper()
         }
 
         // Get the ACEs that match the required permissions
-        let filteredAceList = Immutable.fromJS(combinedAces).filter(function(entry) {
+        const filteredAceList = Immutable.fromJS(combinedAces).filter(function(entry) {
           return (
             filter.role.indexOf(entry.get('permission')) !== -1 &&
             entry.get('granted') &&
@@ -102,9 +102,9 @@ export default class AuthorizationFilter extends Component {
         })
 
         // Test ACEs against user's roles
-        let userHasRole = filteredAceList.findIndex(function(entry) {
+        const userHasRole = filteredAceList.findIndex(function(entry) {
           // Test each group/username against ACE
-          let hasRole = extendedUserGroups.findIndex(function(extendedGroupEntry) {
+          const hasRole = extendedUserGroups.findIndex(function(extendedGroupEntry) {
             return (
               entry.get('username') == extendedGroupEntry.get('name') ||
               entry.get('username') == selectn('response.id', filter.login)
@@ -124,7 +124,7 @@ export default class AuthorizationFilter extends Component {
       return this.props.showAuthError ? authErrorObj : null
     }
 
-    let combinedProps = { key: this.props.key, style: Object.assign({}, this.props.style, children.props.style) }
+    const combinedProps = { key: this.props.key, style: Object.assign({}, this.props.style, children.props.style) }
 
     return React.cloneElement(children, combinedProps)
   }

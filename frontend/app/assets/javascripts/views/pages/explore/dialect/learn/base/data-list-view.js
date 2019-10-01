@@ -1,22 +1,20 @@
 /*
 Copyright 2016 First People's Cultural Council
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
 http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, { Component, PropTypes } from 'react'
+import React, { Component, PropTypes } from 'react' // eslint-disable-line
 import selectn from 'selectn'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { hasPagination, routeHasChanged } from 'common/NavigationHelpers'
 import IntlService from 'views/services/intl'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 const intl = IntlService.instance
 
@@ -40,13 +38,12 @@ export default class DataListView extends Component {
     }
   }
 
-  static defaultProps = {}
   static propTypes = {
     controlViaURL: PropTypes.any, // TODO: set appropriate propType
     routeParams: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_PAGE: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_PAGE_SIZE: PropTypes.any, // TODO: set appropriate propType
-    DEFAULT_SORT_TYPE: PropTypes.any, // TODO: set appropriate propType
+    DEFAULT_PAGE: PropTypes.number,
+    DEFAULT_PAGE_SIZE: PropTypes.number,
+    DEFAULT_SORT_TYPE: PropTypes.string,
     DEFAULT_SORT_COL: PropTypes.any, // TODO: set appropriate propType
     windowPath: PropTypes.any, // TODO: set appropriate propType
     filter: PropTypes.any, // TODO: set appropriate propType
@@ -55,6 +52,15 @@ export default class DataListView extends Component {
     onPaginationReset: PropTypes.any, // TODO: set appropriate propType
     DISABLED_SORT_COLS: PropTypes.any, // TODO: set appropriate propType
     onPagePropertiesChange: PropTypes.any, // TODO: set appropriate propType
+  }
+
+  static defaultProps = {
+    DISABLED_SORT_COLS: ['state', 'related_audio'],
+    DEFAULT_PAGE: 1,
+    DEFAULT_PAGE_SIZE: 100,
+    DEFAULT_LANGUAGE: 'english',
+    DEFAULT_SORT_COL: 'fvcharacter:alphabet_order',
+    DEFAULT_SORT_TYPE: 'asc',
   }
 
   // NOTE: The `class` that `extends` `DataListView` must define a `fetchData` function
@@ -77,48 +83,55 @@ export default class DataListView extends Component {
 
   // Refetch data on URL change
   // TODO: At minimum, migrate to `getDerivedStateFromProps()` or https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.controlViaURL) {
+  componentDidUpdate(prevProps) {
+    if (this.props.controlViaURL) {
       if (
-        nextProps.routeParams.page !== this.props.routeParams.page ||
-        nextProps.routeParams.pageSize !== this.props.routeParams.pageSize
+        this.props.routeParams.page !== prevProps.routeParams.page ||
+        this.props.routeParams.pageSize !== prevProps.routeParams.pageSize
       ) {
         this._fetchListViewData(
-          nextProps,
-          nextProps.DEFAULT_PAGE,
-          nextProps.DEFAULT_PAGE_SIZE,
-          nextProps.DEFAULT_SORT_TYPE,
-          nextProps.DEFAULT_SORT_COL
+          this.props,
+          this.props.DEFAULT_PAGE,
+          this.props.DEFAULT_PAGE_SIZE,
+          this.props.DEFAULT_SORT_TYPE,
+          this.props.DEFAULT_SORT_COL
         )
-        this._resetPagination(nextProps)
+        this._resetPagination(this.props)
       }
     } else {
-      if (nextProps.windowPath !== this.props.windowPath) {
-        this.fetchData(nextProps)
+      if (
+        routeHasChanged({
+          prevWindowPath: prevProps.windowPath,
+          curWindowPath: this.props.windowPath,
+          prevRouteParams: prevProps.routeParams,
+          curRouteParams: this.props.routeParams,
+        })
+      ) {
+        this.fetchData(this.props)
       }
     }
 
-    if (nextProps.routeParams.area !== this.props.routeParams.area) {
-      this._resetColumns(nextProps)
-      this._resetPagination(nextProps)
+    if (this.props.routeParams.area !== prevProps.routeParams.area) {
+      this._resetColumns(this.props)
+      this._resetPagination(this.props)
     }
 
     if (
-      this.props.filter.has('currentAppliedFilter') &&
-      !this.props.filter.get('currentAppliedFilter').equals(nextProps.filter.get('currentAppliedFilter'))
+      prevProps.filter.has('currentAppliedFilter') &&
+      !prevProps.filter.get('currentAppliedFilter').equals(this.props.filter.get('currentAppliedFilter'))
     ) {
       this._fetchListViewData(
-        nextProps,
-        nextProps.DEFAULT_PAGE,
-        nextProps.DEFAULT_PAGE_SIZE,
-        nextProps.DEFAULT_SORT_TYPE,
-        nextProps.DEFAULT_SORT_COL
+        this.props,
+        this.props.DEFAULT_PAGE,
+        this.props.DEFAULT_PAGE_SIZE,
+        this.props.DEFAULT_SORT_TYPE,
+        this.props.DEFAULT_SORT_COL
       )
     }
   }
 
   _onNavigateRequest(path) {
-    this.props.pushWindowPath(this.props.windowPath.replace('sections', 'Workspaces') + '/' + path)
+    this.props.pushWindowPath(this.props.windowPath.replace(SECTIONS, WORKSPACES) + '/' + path)
   }
 
   _handleRefetch(dataGridProps, page, pageSize) {
@@ -140,13 +153,18 @@ export default class DataListView extends Component {
     if (!this.props.controlViaURL) {
       this._fetchListViewData(this.props, page, pageSize, sortInfo, currentSortCols)
     } else {
+      // TODO: Investigate why splitWindowPath could not be used (instead of this.props.routeParams)
+      // Note: routeParams is currently passed in via a parent component, not provided by Redux
       const _urlPage = selectn('page', this.props.routeParams)
       const _urlPageSize = selectn('pageSize', this.props.routeParams)
       const urlPage = _urlPage !== undefined ? parseInt(_urlPage, 10) : _urlPage
       const urlPageSize = _urlPageSize !== undefined ? parseInt(_urlPageSize, 10) : _urlPageSize
-      // If page and pageSize exist, and are different, replace them; otherwise - add them
-      if (urlPage && urlPageSize) {
+
+      const hasPaginationUrl = hasPagination(this.props.splitWindowPath)
+      if (hasPaginationUrl) {
+        // Replace pagination in url if present (eg: .../learn/words/10/1) and the incoming `page` || `pageSize` is different
         if (urlPage !== page || urlPageSize !== pageSize) {
+          // urlPageSize / page
           NavigationHelpers.navigateForwardReplaceMultiple(
             this.props.splitWindowPath,
             [pageSize, page],
@@ -154,6 +172,7 @@ export default class DataListView extends Component {
           )
         }
       } else {
+        // No pagination in url (eg: .../learn/words), append `page` & `pageSize`
         NavigationHelpers.navigateForward(this.props.splitWindowPath, [pageSize, page], this.props.pushWindowPath)
       }
 
@@ -229,7 +248,7 @@ export default class DataListView extends Component {
 
     // Toggle 'state' column for section/workspaces view
     if (this.state.hasOwnProperty('columns')) {
-      if (props.routeParams.area === 'sections') {
+      if (props.routeParams.area === SECTIONS) {
         const stateCol = this.state.columns.findIndex((item) => item.name === 'state')
 
         this.state.columns.splice(stateCol, 1)

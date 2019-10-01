@@ -1,8 +1,6 @@
-describe('Word', () => {
-  const host = 'http://0.0.0.0:3001'
+describe('word_crud.js > PageDialectWordsCreate', () => {
   const create =
-    'https://firstvoices-dev.apps.prod.nuxeo.io/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
-  const prefix = '/nuxeo/app'
+    'https://preprod.firstvoices.com/nuxeo/api/v1/path/FV/Workspaces/Data/Athabascan/Dene/Dene/Dictionary'
   // const waitLong = 5000
   const waitMedium = 2000
   const waitShort = 50
@@ -13,7 +11,6 @@ describe('Word', () => {
     // export ADMIN_PASSWORD='THE_PASSWORD'
 
     // Login
-    cy.log('--- LOGIN ---')
     cy.login()
 
     // Create
@@ -36,8 +33,7 @@ describe('Word', () => {
       url: create,
       body: word,
     }).then((response) => {
-      const page = `${host}${prefix}/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`
-      cy.visit(page)
+      cy.visit(`/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/learn/words/${response.body.uid}`)
 
       // Read
       cy.log('--- READ ---')
@@ -150,6 +146,7 @@ describe('Word', () => {
         .parent()
         .parent()
         .parent()
+        .parent()
         .within(() => {
           cy.getByLabelText('phrase', { exact: false }).type('UPDATE > PHRASE')
           cy.getByText('cancel', { exact: false }).click()
@@ -216,11 +213,12 @@ describe('Word', () => {
 
       cy.getByText('delete word', { exact: false }).click()
       cy.wait(waitShort)
+
+      // TODO: need more reliable hook
       cy.getByText('Deleting word', { exact: false })
         .parent()
         .within(() => {
-          cy.get('button')
-            .eq(1)
+          cy.getByText('Delete')
             .click()
         })
       cy.wait(waitShort)

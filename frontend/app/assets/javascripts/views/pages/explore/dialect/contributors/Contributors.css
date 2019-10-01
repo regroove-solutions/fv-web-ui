@@ -1,0 +1,33 @@
+.Contributors__colSort {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  flex-direction: row;
+  padding: 0;
+}
+.Contributors__actions {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 0;
+  padding: 0;
+}
+.Contributors__actionContainer {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+.Contributors__actionDelete {
+  margin-left: 2rem;
+}
+.Contributors__btnCreate {
+  margin: 0 0 2rem 0;
+}
+.Contributors__biographyStatus {
+  display: flex;
+  align-items: center;
+}
+.Contributors__biographyText {
+  display: inline-block;
+  margin: 5px;
+}

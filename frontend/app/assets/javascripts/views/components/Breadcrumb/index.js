@@ -14,9 +14,12 @@ import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
+import ProviderHelpers from 'common/ProviderHelpers'
 import Immutable from 'immutable'
 import IntlService from 'views/services/intl'
 import { matchPath } from 'conf/routes'
+import { SECTIONS } from 'common/Constants'
+import '!style-loader!css-loader!./styles.css'
 
 const { array, func, string, object } = PropTypes
 
@@ -28,11 +31,12 @@ export class Breadcrumb extends Component {
     className: string,
     findReplace: object, // Note: {find: '', replace: ''}
     matchedPage: object, // Note: Immutable Obj
-    routeParams: object,
     routes: object, // Note: Immutable Obj
     // REDUX: actions/dispatch/func
     pushWindowPath: func.isRequired,
     // REDUX: reducers/state
+    routeParams: object.isRequired,
+    computeDialect2: object.isRequired,
     splitWindowPath: array.isRequired, // NOTE: Parent component is passing in `splitWindowPath` as a prop, see if that breaks anything
   }
   static defaultProps = {
@@ -95,17 +99,52 @@ export class Breadcrumb extends Component {
         }
 
         const DialectHomePage = splitPathIndex === indexDialect ? intl.trans('home_page', 'Home Page') : ''
+        let hrefPath = '/' + splitPath.slice(0, splitPathIndex + 1).join('/')
 
-        // Last element (i.e. current page)
-        if (splitPathIndex === splitPath.length - 1) {
+        // First breadcrumb item
+        if (splitPathIndex === indexDialect) {
+          const _computeDialect2 = ProviderHelpers.getEntry(
+            this.props.computeDialect2,
+            this.props.routeParams.dialect_path
+          )
+          const dialectTitle =
+            _computeDialect2 && _computeDialect2.success
+              ? _computeDialect2.response.properties['dc:title']
+              : decodeURIComponent(pathTitle)
+
+          const breadcrumbItemTitle = `${dialectTitle} ${DialectHomePage}`
+          const breadcrumbItem =
+            splitPathIndex === splitPath.length - 1 ? (
+              breadcrumbItemTitle
+            ) : (
+              <a
+                key={splitPathIndex}
+                href={hrefPath}
+                onClick={(e) => {
+                  e.preventDefault()
+                  NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+                }}
+              >
+                {breadcrumbItemTitle}
+              </a>
+            )
+
           return (
-            <li key={splitPathIndex} className="active">
-              {`${decodeURIComponent(pathTitle)} ${DialectHomePage}`}
+            <li key={splitPathIndex} className={`${splitPathIndex === splitPath.length - 1 ? 'active' : ''}`}>
+              {breadcrumbItem}
             </li>
           )
         }
-        let hrefPath = '/' + splitPath.slice(0, splitPathIndex + 1).join('/')
+        // Last breadcrumb item (i.e. current page)
+        if (splitPathIndex === splitPath.length - 1) {
+          return (
+            <li key={splitPathIndex} className="active">
+              {decodeURIComponent(pathTitle)}
+            </li>
+          )
+        }
 
+        // Middle breadcrumb items
         /**
          * Replace breadcrumb entry with redirect value. Solved some rendering issues. Needs more robust solution though.
          */
@@ -131,7 +170,7 @@ export class Breadcrumb extends Component {
               value.get('redirects').forEach((redirectValue) => {
                 if (redirectValue.get('condition')({ props: this.props })) {
                   hrefPath = redirectValue.get('target')({ props: this.props })
-                  hrefPath = hrefPath.replace('sections', routeParams.area || splitPath[2] || 'sections')
+                  hrefPath = hrefPath.replace(SECTIONS, routeParams.area || splitPath[2] || SECTIONS)
 
                   return false
                 }
@@ -145,9 +184,6 @@ export class Breadcrumb extends Component {
 
         return (
           <li key={splitPathIndex}>
-            {/* <Link key={splitPathIndex} href={hrefPath}>
-              {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}
-            </Link> */}
             <a
               key={splitPathIndex}
               href={hrefPath}
@@ -155,7 +191,9 @@ export class Breadcrumb extends Component {
                 e.preventDefault()
                 NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
               }}
-            >{`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'))} ${DialectHomePage}`}</a>
+            >
+              {`${intl.searchAndReplace(decodeURIComponent(pathTitle).replace('&amp;', '&'), { case: 'lower' })}`}
+            </a>
           </li>
         )
       }
@@ -166,10 +204,14 @@ export class Breadcrumb extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { windowPath } = state
-  const { splitWindowPath } = windowPath
+  const { fvDialect, navigation, windowPath } = state
 
+  const { computeDialect2 } = fvDialect
+  const { splitWindowPath } = windowPath
+  const { route } = navigation
   return {
+    computeDialect2,
+    routeParams: route.routeParams,
     splitWindowPath,
   }
 }

@@ -971,6 +971,7 @@
     "zip_postal_code": "zip/postal code"
   },
   "models": {
+    "acknowledgement": "Acknowledgement and Data Usage",
     "about_dialect": "About Dialect",
     "attached_to_word_phrase": "Attached to a Word/Phrase",
     "available_in_childrens_archive": "Available in Children's Archive",
@@ -1053,6 +1054,7 @@
   "operations": {
     "could_not_access_server": "Could not access server",
     "could_not_create_document": "Could not create document",
+    "could_not_update_document": "Could not update document",
     "could_not_create_new_user": "Could not create new user",
     "could_not_execute_operation_x": "Could not execute operation %s",
     "could_not_publish_document": "Could not publish document",
@@ -1264,6 +1266,9 @@
             "words_featuring_with": "Words Featuring with"
           },
           "media_browser": "Media Browser",
+          "nav_contributors": "Contributors",
+          "nav_recorders": "Recorders",
+          "nav_phrase_books": "Phrase books",
           "more_options": "More Options",
           "name_of_archive": "Name of Archive",
           "photo_gallery": "Photo Gallery",

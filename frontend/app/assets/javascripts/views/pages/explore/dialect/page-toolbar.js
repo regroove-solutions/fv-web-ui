@@ -39,6 +39,7 @@ import MenuItem from 'material-ui/lib/menus/menu-item'
 import NavigationExpandMoreIcon from 'material-ui/lib/svg-icons/navigation/expand-more'
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 import IntlService from 'views/services/intl'
 
@@ -440,7 +441,7 @@ export class PageToolbar extends Component {
                     primary
                     onClick={this.props.handleNavigateRequest.bind(
                       this,
-                      this.props.windowPath.replace('sections', 'Workspaces') + '/edit'
+                      this.props.windowPath.replace(SECTIONS, WORKSPACES) + '/edit'
                     )}
                   />
                 </AuthorizationFilter>
@@ -480,6 +481,21 @@ export class PageToolbar extends Component {
                   onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/media')}
                   key="media"
                   primaryText={intl.trans('views.pages.explore.dialect.media_browser', 'Media Browser', 'words')}
+                />,
+                // <MenuItem
+                //   key="contributors"
+                //   primaryText={intl.trans('views.pages.explore.dialect.nav_contributors', 'Contributors', 'words')}
+                //   onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/contributors')}
+                // />,
+                // <MenuItem
+                //   key="recorders"
+                //   primaryText={intl.trans('views.pages.explore.dialect.nav_recorders', 'Recorders', 'words')}
+                //   onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/recorders')}
+                // />,
+                <MenuItem
+                  key="phrasebooks"
+                  primaryText={intl.trans('views.pages.explore.dialect.nav_phrase_books', 'Phrase books', 'words')}
+                  onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/phrasebooks')}
                 />,
               ]
 

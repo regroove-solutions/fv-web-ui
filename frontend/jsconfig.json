@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "baseUrl": "./",
+    "paths": {
+      "styles": ["./app/assets/stylesheets"],
+      "models": ["./app/assets/javascripts/models"],
+      "views": ["./app/assets/javascripts/views"],
+      "conf": ["./app/assets/javascripts/conf"],
+      "operations": ["./app/assets/javascripts/operations"],
+      "providers": ["./app/assets/javascripts/providers"],
+      "components": ["./app/assets/javascripts/components"],
+      "common": ["./app/assets/javascripts/common"],
+      "games": ["./app/assets/games"],
+      "images": ["./app/assets/images"]
+    }
+  }
+}

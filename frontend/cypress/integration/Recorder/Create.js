@@ -1,37 +1,37 @@
 import 'cypress-testing-library/add-commands'
-import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/create/Recorder/internationalization'
-describe('Recorder', () => {
+import copy from '../../../app/assets/javascripts/views/pages/explore/dialect/Recorder/internationalization'
+
+describe('Recorder/Create.js > RecorderCreate', () => {
   it('Create', () => {
     // Login
-    cy.log('--- LOGIN ---')
     cy.login()
 
-    cy.visit('http://0.0.0.0:3001/nuxeo/app/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
-    cy.queryByText(copy.default.title).should('exist')
+    cy.visit('/explore/FV/Workspaces/Data/Athabascan/Dene/Dene/create/recorder')
+    cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data
-    cy.getByText(copy.default.submit).click()
+    cy.getByText(copy.create.submit).click()
 
     // Error should be displayed
     cy.getByLabelText(copy.validation.name)
 
     // Fill in required field
-    cy.getByLabelText(copy.default.name).type('[CY] Recorder Name')
+    cy.getByLabelText(`${copy.create.name} *`).type('[CY] Recorder Name')
 
     // Resubmit
-    cy.getByText(copy.default.submit).click()
+    cy.getByText(copy.create.submit).click()
 
     // Should see success
-    cy.getByText(copy.default.success.title).should('exist')
+    cy.getByText(copy.create.success.title).should('exist')
 
     // Create another
-    cy.getByText(copy.default.success.createAnother).click()
+    cy.getByText(copy.create.success.linkCreateAnother).click()
 
     // Confirm
-    cy.queryByText(copy.default.title).should('exist')
+    cy.queryByText(copy.create.title).should('exist')
 
     // Submit w/no data
-    cy.getByText(copy.default.submit).click()
+    cy.getByText(copy.create.submit).click()
 
     // Error should be displayed
     cy.getByLabelText(copy.validation.name)

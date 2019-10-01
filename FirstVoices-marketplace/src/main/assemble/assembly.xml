@@ -31,6 +31,9 @@
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${outdir}/marketplace" />
     <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
+
+    <copy file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" tofile="${outdir}/${maven.project.artifactId}-latest.zip"/>
+
   </target>
 
 </project>

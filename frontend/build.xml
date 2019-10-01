@@ -25,10 +25,10 @@ limitations under the License.
     <os family="windows"/>
   </condition>
 
-  <!-- deleting node_modules may be overkill for now? -->
   <target name="clean" description="Clean npm and bower dependencies">
-    <!-- DY: For lowest risk of artifacts remaining in node_modlues - re-enable delete -->
-    <!-- <delete dir="node_modules" /> -->
+    <!-- DY: For quicker build, skip deleting node_modules. -->
+    <!-- Deleting node_modules provides the least risk of remaining artifcats in node_modlues. Should be default -->
+    <delete dir="node_modules" />
     <delete includeEmptyDirs="yes" failonerror="false">
       <fileset dir="bower_components" defaultexcludes="no" followsymlinks="false" />
     </delete>
@@ -41,13 +41,14 @@ limitations under the License.
   </target>
 
   <target name="build" depends="npmInstall">
+
+    <!-- run prod build for evergreen + legacy -->
     <exec executable="${cmd.npm}" failonerror="true">
       <!-- <arg value="copy:nuxeo" /> -->
       <arg value="run" />
-      <arg value="production"/>
+      <arg value="build:production"/>
       <arg value="--"/> 
     </exec>
-  	
     
     <copy todir="target/classes/nuxeo.war/app">
       <fileset dir="public"/>

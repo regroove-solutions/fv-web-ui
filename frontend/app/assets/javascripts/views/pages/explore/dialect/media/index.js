@@ -27,7 +27,7 @@ import { fetchPortal } from 'providers/redux/reducers/fvPortal'
 import selectn from 'selectn'
 
 import ProviderHelpers from 'common/ProviderHelpers'
-import NavigationHelpers from 'common/NavigationHelpers'
+import NavigationHelpers, { routeHasChanged } from 'common/NavigationHelpers'
 
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
@@ -47,11 +47,11 @@ const DefaultFetcherParams = { currentPageIndex: 1, pageSize: 20, filters: { 'pr
 const { array, func, object, string } = PropTypes
 export class DialectMedia extends Component {
   static propTypes = {
-    routeParams: object.isRequired,
     // REDUX: reducers/state
     computeLogin: object.isRequired,
     computePortal: object.isRequired,
     computeResources: object.isRequired,
+    routeParams: object.isRequired,
     splitWindowPath: array.isRequired,
     windowPath: string.isRequired,
     // REDUX: actions/dispatch/func
@@ -66,20 +66,28 @@ export class DialectMedia extends Component {
 
     this.state = {
       fetcherParams: DefaultFetcherParams,
+      formValues: {},
     }
   }
 
   // Fetch data on initial render
   componentDidMount() {
-    this.props.fetchPortal(this.props.routeParams.dialect_path + '/Portal')
+    this.props.fetchPortal(`${this.props.routeParams.dialect_path}/Portal`)
     this.fetchData(this.state.fetcherParams)
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      nextProps.fetchPortal(nextProps.routeParams.dialect_path + '/Portal')
-      this.fetchData(DefaultFetcherParams, nextProps)
+  componentDidUpdate(prevProps) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
+      this.props.fetchPortal(`${this.props.routeParams.dialect_path}/Portal`)
+      this.fetchData(DefaultFetcherParams, this.props)
     }
   }
   render() {
@@ -89,22 +97,22 @@ export class DialectMedia extends Component {
     )
     const computeEntities = Immutable.fromJS([
       {
-        id: this.props.routeParams.dialect_path + '/Portal',
+        id: `${this.props.routeParams.dialect_path}/Portal`,
         entity: this.props.computePortal,
       },
       {
-        id: this.props.routeParams.dialect_path + '/Resources',
+        id: `${this.props.routeParams.dialect_path}/Resources`,
         entity: this.props.computeResources,
       },
     ])
 
     const computePortal = ProviderHelpers.getEntry(
       this.props.computePortal,
-      this.props.routeParams.dialect_path + '/Portal'
+      `${this.props.routeParams.dialect_path}/Portal`
     )
     const computeResources = ProviderHelpers.getEntry(
       this.props.computeResources,
-      this.props.routeParams.dialect_path + '/Resources'
+      `${this.props.routeParams.dialect_path}/Resources`
     )
 
     return (
@@ -127,11 +135,11 @@ export class DialectMedia extends Component {
                 selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources)
               }
               theme={this.props.routeParams.theme}
-              // with-filter
+              formValues={this.state.formValues}
+              // For `with-filter`
               area={this.props.routeParams.area}
               filterOptionsKey="Resources"
-              initialValues={{ 'dc:contributors': selectn('response.properties.username', this.props.computeLogin) }}
-              // with-filter & with-pagination
+              // For `with-filter` & `with-pagination`
               fetcher={this.fetchData}
               fetcherParams={this.state.fetcherParams}
               metadata={selectn('response', computeResources) || selectn('response_prev', computeResources)}
@@ -141,20 +149,31 @@ export class DialectMedia extends Component {
       </PromiseWrapper>
     )
   }
-
+  _convertFetcherParamsToFormValues = (filters) => {
+    const toReturn = {}
+    for (const key in filters) {
+      toReturn[key] = filters[key].appliedFilter
+    }
+    return toReturn
+  }
   _onNavigateRequest = (media) => {
+    // V1
     this.props.pushWindowPath(
       NavigationHelpers.generateUIDPath(this.props.routeParams.theme || 'explore', media, 'media')
     )
+    // V2 - still reloads after page transition for some reason
+    // const hrefPath = NavigationHelpers.generateUIDPath(this.props.routeParams.theme || 'explore', media, 'media')
+    // NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
   }
 
-  fetchData = (fetcherParams, props = this.props) => {
+  fetchData = (fetcherParams) => {
     this.setState({
       fetcherParams: fetcherParams,
+      formValues: this._convertFetcherParamsToFormValues(fetcherParams.filters),
     })
-
-    props.fetchResources(
-      props.routeParams.dialect_path + '/Resources',
+    // NOTE: fetchResources(pathOrId, queryAppend, messageStart, messageSuccess, messageError)
+    this.props.fetchResources(
+      `${this.props.routeParams.dialect_path}/Resources`,
       ProviderHelpers.filtersToNXQL(fetcherParams.filters) +
         '&currentPageIndex=' +
         (fetcherParams.currentPageIndex - 1) +
@@ -166,8 +185,9 @@ export class DialectMedia extends Component {
 
 // REDUX: reducers/state
 const mapStateToProps = (state /*, ownProps*/) => {
-  const { fvPortal, fvResources, nuxeo, windowPath } = state
+  const { fvPortal, fvResources, navigation, nuxeo, windowPath } = state
 
+  const { route } = navigation
   const { computeLogin } = nuxeo
   const { computePortal } = fvPortal
   const { computeResources } = fvResources
@@ -177,6 +197,7 @@ const mapStateToProps = (state /*, ownProps*/) => {
     computeLogin,
     computePortal,
     computeResources,
+    routeParams: route.routeParams,
     splitWindowPath,
     windowPath: _windowPath,
   }

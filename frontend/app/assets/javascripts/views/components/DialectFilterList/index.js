@@ -120,7 +120,6 @@ export class DialectFilterList extends Component {
   componentWillUnmount() {
     this._isMounted = false
     window.removeEventListener('popstate', this._handleHistoryEvent)
-
     const { lastCheckedUid, lastCheckedChildrenUids, lastCheckedParentFacetUid } = this.state
     // 'uncheck' previous
     if (lastCheckedUid) {
@@ -129,7 +128,7 @@ export class DialectFilterList extends Component {
         childrenIds: lastCheckedChildrenUids,
         parentFacetUid: lastCheckedParentFacetUid,
       }
-      this.props.handleDialectFilterList(this.props.facetField, undefined, unselected, this.props.type)
+      this.props.handleDialectFilterList(this.props.facetField, undefined, unselected, this.props.type, false)
     }
   }
 
@@ -156,7 +155,7 @@ export class DialectFilterList extends Component {
 
   render() {
     return (
-      <div className="DialectFilterList">
+      <div className="DialectFilterList" data-testid="DialectFilterList">
         <h2>{this.title}</h2>
         <ul className="DialectFilterListList">{this.state.listItems}</ul>
       </div>

@@ -9,7 +9,7 @@ import {
   FV_CATEGORY_FETCH_ALL_SUCCESS,
   FV_CATEGORY_FETCH_ALL_ERROR,
 } from './actionTypes'
-import { fetch, update, query, create } from 'providers/redux/reducers/rest'
+import { _delete, fetch, update, query, create } from 'providers/redux/reducers/rest'
 import DirectoryOperations from 'operations/DirectoryOperations'
 
 /*
@@ -103,8 +103,22 @@ export const fetchCategories = query('FV_CATEGORIES', 'FVCategory', {
   headers: { 'enrichers.document': 'ancestry, parentDoc, breadcrumb, children' },
 })
 
+/*
+ * createCategory
+ * --------------------------------------
+ */
 export const createCategory = create('FV_CATEGORY', 'FVCategory')
 
+/*
+ * deleteCategory
+ * --------------------------------------
+ */
+export const deleteCategory = _delete('FV_CATEGORY')
+
+/*
+ * updateCategory
+ * --------------------------------------
+ */
 export const updateCategory = update(
   'FV_CATEGORY',
   'FVCategory',

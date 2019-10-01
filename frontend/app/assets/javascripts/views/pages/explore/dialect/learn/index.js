@@ -52,7 +52,7 @@ import {
 import { fetchPortal, updatePortal } from 'providers/redux/reducers/fvPortal'
 
 import selectn from 'selectn'
-
+import { routeHasChanged } from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 import Header from 'views/pages/explore/dialect/header'
@@ -73,7 +73,7 @@ import CardHeader from 'material-ui/lib/card/card-header'
 import CardText from 'material-ui/lib/card/card-text'
 import IntlService from 'views/services/intl'
 import { getDialectClassname } from 'views/pages/explore/dialect/helpers'
-
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 const intl = IntlService.instance
 /**
  * Learn portion of the dialect portal
@@ -155,9 +155,16 @@ export class DialectLearn extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
+      this.fetchData(this.props)
     }
 
     // if (selectn("response.properties.username", this.props.computeLogin) != selectn("response.properties.username", nextProps.computeLogin)) {
@@ -178,7 +185,7 @@ export class DialectLearn extends Component {
   _publishChangesAction() {
     this.props.publishDialectOnly(
       this.props.routeParams.dialect_path,
-      { target: this.props.routeParams.language_path.replace('Workspaces', 'sections') },
+      { target: this.props.routeParams.language_path.replace(WORKSPACES, SECTIONS) },
       null,
       'Portal published successfully!'
     )
@@ -304,7 +311,7 @@ export class DialectLearn extends Component {
     )
     //const computeUserModifiedWords = ProviderHelpers.getEntry(this.props.computeUserModifiedWords, this.props.routeParams.dialect_path);
 
-    const isSection = this.props.routeParams.area === 'sections'
+    const isSection = this.props.routeParams.area === SECTIONS
 
     const {
       computeLogin,
@@ -338,7 +345,7 @@ export class DialectLearn extends Component {
     return (
       <PromiseWrapper computeEntities={computeEntities}>
         {(() => {
-          if (this.props.routeParams.area === 'Workspaces') {
+          if (this.props.routeParams.area === WORKSPACES) {
             if (selectn('response', computeDialect2))
               return (
                 <PageToolbar
@@ -379,6 +386,7 @@ export class DialectLearn extends Component {
                 renderPartial
               >
                 <EditableComponentHelper
+                  dataTestid="EditableComponent__dc-description"
                   isSection={isSection}
                   computeEntity={computeDialect2}
                   updateEntity={this.props.updateDialect2}

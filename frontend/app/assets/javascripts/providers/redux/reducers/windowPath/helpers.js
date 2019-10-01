@@ -3,6 +3,6 @@
 // "splitWindowPath - Basically windowPath.split('/'), shifted since the first item is always empty. So for example, when your windowPath is /foo/bar, this will be ['foo', 'bar']. This exists as a convenience to reduce boilerplate when rendering your routes."
 export const splitPath = (path) => path.replace(/^\//, '').split('/')
 
-// Provide-page uses canUseDOM fomr 'exenv'
+// Provide-page uses canUseDOM from 'exenv'
 // https://github.com/JedWatson/exenv/blob/master/index.js
 export const canUseDOM = !!(typeof window !== 'undefined' && window.document && window.document.createElement)

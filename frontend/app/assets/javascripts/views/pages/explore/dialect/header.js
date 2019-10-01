@@ -14,24 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-
 import NavigationHelpers from 'common/NavigationHelpers'
 import selectn from 'selectn'
 import classNames from 'classnames'
-
-import FlatButton from 'material-ui/lib/flat-button'
-import FontIcon from 'material-ui/lib/font-icon'
-
 import PageStats from 'views/pages/explore/dialect/page-stats'
-
-import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 import AuthenticationFilter from 'views/components/Document/AuthenticationFilter'
-
-import { EditableComponentHelper } from 'views/components/Editor/EditableComponent'
-
-import IntlService from 'views/services/intl'
-
-const intl = IntlService.instance
+// import { SECTIONS } from 'common/Constants'
 
 /**
  * Header for dialect pages
@@ -59,7 +47,7 @@ export default class Header extends Component {
   }
 
   render() {
-    const { portal, login, dialect, routeParams, showStats } = this.props
+    const { portal, login, routeParams, showStats } = this.props
 
     const backgroundImage = selectn(
       'response.contextParameters.portal.fv-portal:background_top_image.path',
@@ -82,7 +70,7 @@ export default class Header extends Component {
       backgroundRepeat: 'no-repeat',
     }
 
-    const isSection = routeParams.area === 'sections'
+    // const isSection = routeParams.area === SECTIONS
 
     return (
       <div className="Header row" style={portalBackgroundStyles}>

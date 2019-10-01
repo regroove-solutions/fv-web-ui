@@ -225,6 +225,7 @@ const options = {
       'fv-word:categories',
       'fv:cultural_note',
       'fv:reference',
+      'fv-word:acknowledgement',
       'fv:source',
       'fv:available_in_childrens_archive',
       'fv-word:available_in_games',
@@ -298,9 +299,11 @@ const options = {
       'fv-word:part_of_speech': {
         label: intl.trans('views.pages.search.part_of_speech', 'Part of Speech', 'first'),
         factory: SelectFactory,
+        nullOption: { value: '', text: 'Choose the part of speech:' },
         attrs: {
           directory: 'parts_of_speech',
           fancy: false,
+          placeholder: true,
         },
       },
       'fv-word:pronunciation': {
@@ -407,6 +410,11 @@ const options = {
         help: <i>{intl.trans('models.origin_of_record', 'Origin of record (person, book, etc)', 'first')}.</i>,
         factory: VirtualKeyboardFactory,
       },
+      'fv-word:acknowledgement': {
+        label: intl.trans('acknowledgement', 'Acknowledgement', 'first'),
+        help: <i>{intl.trans('models.acknowledgement', 'Acknowledgement or Data Usage', 'first')}.</i>,
+        factory: VirtualKeyboardFactory,
+      },
       'fv:source': {
         label: intl.trans('source', 'Source', 'first'),
         help: (
@@ -448,6 +456,7 @@ const options = {
       'fv:related_videos',
       'fv:cultural_note',
       'fv:reference',
+      'fv-phrase:acknowledgement',
       'fv:source',
       'fv:available_in_childrens_archive',
     ],
@@ -562,6 +571,10 @@ const options = {
         label: intl.trans('reference', 'Reference', 'first'),
         help: <i>{intl.trans('models.origin_of_record', 'Origin of record (person, book, etc)', 'first')}</i>,
       },
+      'fv-phrase:acknowledgement': {
+        label: intl.trans('acknowledgement', 'Acknowledgement', 'first'),
+        help: <i>{intl.trans('models.acknowledgement', 'Acknowledgement or Data Usage', 'first')}</i>,
+      },
       'fv:source': {
         label: intl.trans('source', 'Source', 'first'),
         help: (
@@ -641,6 +654,7 @@ const options = {
         factory: WysiwygFactory,
         attrs: {
           placeholder: intl.trans('models.enter_book_introduction', 'Enter Book Introduction Here', 'first'),
+          dataTestId: 'wysiwyg-fvbook_introduction',
         },
       },
       'fvbook:introduction_literal_translation': {
@@ -651,6 +665,9 @@ const options = {
               label: intl.trans('translation', 'Translation', 'first'),
               type: 'textarea',
               factory: WysiwygFactory,
+              attrs: {
+                dataTestId: 'wysiwyg-fvbook_introduction_linteral_translation',
+              },
             },
             language: {
               label: intl.trans('language', 'Language', 'first'),
@@ -745,6 +762,10 @@ const options = {
         label: intl.trans('models.page_content', 'Page Content', 'first'),
         type: 'textarea',
         factory: WysiwygFactory,
+
+        attrs: {
+          dataTestId: 'wysiwyg-dc_title',
+        },
       },
       'fvbookentry:dominant_language_text': {
         label: 'Dominant Language Text',
@@ -959,6 +980,9 @@ const options = {
         type: 'textarea',
         factory: WysiwygFactory,
         attrs: {
+          dataTestId: 'wysiwyg-fv-portal_about',
+          idAlt: 'fv-portal_about',
+          nameAlt: 'fv-portal:about',
           placeholder: intl.trans('models.enter_portal_description', 'Enter portal description here', 'first'),
         },
       },
@@ -967,6 +991,9 @@ const options = {
         type: 'textarea',
         factory: WysiwygFactory,
         help: intl.trans('models.news_tip', 'Tip: Use * to start a bullet list!', 'first'),
+        attrs: {
+          dataTestId: 'wysiwyg-fv-portal_news',
+        },
       },
       'fv-portal:background_top_image': {
         label: intl.trans('models.background_image', 'Background Image', 'first'),
@@ -1019,6 +1046,9 @@ const options = {
         label: intl.trans('models.about_dialect', 'About Dialect', 'first'),
         type: 'textarea',
         factory: WysiwygFactory,
+        attrs: {
+          dataTestId: 'wysiwyg-dc_description',
+        },
       },
       'fvdialect:country': {
         label: intl.trans('country', 'Country', 'first'),
@@ -1070,6 +1100,9 @@ const options = {
         label: intl.trans('contact_info', 'Contact Information', 'first'),
         type: 'textarea',
         factory: WysiwygFactory,
+        attrs: {
+          dataTestId: 'wysiwyg-fvdialect_contact_information',
+        },
       },
     },
     i18n: i18nExt,
@@ -1095,6 +1128,11 @@ const options = {
           factory: MediaFactory,
           type: 'FVAudio',
         },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_audio', 'Add Audio', 'first')}`,
+          remove: <span data-testid="removeAudio">X</span>,
+        },
       },
       'fvcharacter:related_words': {
         label: intl.trans('featured_words', 'Featured Words', 'first'),
@@ -1104,6 +1142,10 @@ const options = {
           attrs: {
             disableCreateNewButton: true,
           },
+        },
+        i18n: {
+          ...i18nExt,
+          add: `+ ${intl.trans('add_words', 'Add Words', 'first')}`,
         },
       },
     },

@@ -17,6 +17,7 @@ import React, { Component, PropTypes } from 'react'
 import Immutable from 'immutable'
 
 import classNames from 'classnames'
+import { WORKSPACES, SECTIONS } from 'common/Constants'
 
 // REDUX
 import { connect } from 'react-redux'
@@ -44,6 +45,7 @@ import PageToolbar from 'views/pages/explore/dialect/page-toolbar'
 import GridView from 'views/pages/explore/dialect/learn/base/grid-view'
 import TextHeader from 'views/components/Document/Typography/text-header'
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
+import { routeHasChanged } from 'common/NavigationHelpers'
 import Kids from './kids'
 
 import IntlService from 'views/services/intl'
@@ -123,16 +125,17 @@ export class ExploreDialect extends Component {
   }
 
   // Refetch data on URL change
-  componentWillReceiveProps(nextProps) {
-    //console.log(JSON.stringify(nextProps, null, '\t'));
-
-    if (nextProps.windowPath !== this.props.windowPath) {
-      this.fetchData(nextProps)
+  componentDidUpdate(prevProps) {
+    if (
+      routeHasChanged({
+        prevWindowPath: prevProps.windowPath,
+        curWindowPath: this.props.windowPath,
+        prevRouteParams: prevProps.routeParams,
+        curRouteParams: this.props.routeParams,
+      })
+    ) {
+      this.fetchData(this.props)
     }
-
-    // else if (nextProps.computeLogin.success !== this.props.computeLogin.success) {
-    //     this.fetchData(nextProps);
-    // }
   }
 
   _onNavigateRequest(path, e) {
@@ -141,7 +144,7 @@ export class ExploreDialect extends Component {
   }
 
   _onSwitchAreaRequest(e, index, value) {
-    this._onNavigateRequest(this.props.windowPath.replace(value == 'sections' ? 'Workspaces' : 'sections', value))
+    this._onNavigateRequest(this.props.windowPath.replace(value === SECTIONS ? WORKSPACES : SECTIONS, value))
   }
 
   /**
@@ -184,7 +187,7 @@ export class ExploreDialect extends Component {
     )
     this.props.publishDialectOnly(
       this.props.routeParams.dialect_path,
-      { target: this.props.routeParams.language_path.replace('Workspaces', 'sections') },
+      { target: this.props.routeParams.language_path.replace(WORKSPACES, SECTIONS) },
       null,
       null
     )
@@ -267,7 +270,7 @@ export class ExploreDialect extends Component {
       this.props.routeParams.dialect_path + '/Portal'
     )
 
-    const isSection = this.props.routeParams.area === 'sections'
+    const isSection = this.props.routeParams.area === SECTIONS
     const isKidsTheme = this.props.routeParams.theme === 'kids'
 
     // Render kids view
@@ -313,7 +316,7 @@ export class ExploreDialect extends Component {
     }
     const dialectClassName = getDialectClassname(computeDialect2)
     let toolbar = null
-    if (this.props.routeParams.area === 'Workspaces') {
+    if (this.props.routeParams.area === WORKSPACES) {
       if (selectn('response', computeDialect2)) {
         toolbar = (
           <PageToolbar
@@ -355,6 +358,7 @@ export class ExploreDialect extends Component {
             renderPartial
           >
             <EditableComponentHelper
+              dataTestid="EditableComponent__fv-portal-greeting"
               className="fv-portal-greeting"
               isSection={isSection}
               computeEntity={computePortal}
@@ -378,6 +382,7 @@ export class ExploreDialect extends Component {
           <div>
             <h3>{intl.trans('news', 'News', 'first')}</h3>
             <EditableComponentHelper
+              dataTestid="EditableComponent__fv-portal-news"
               isSection={isSection}
               computeEntity={computePortal}
               updateEntity={updatePortal}
@@ -447,6 +452,7 @@ export class ExploreDialect extends Component {
                 renderPartial
               >
                 <EditableComponentHelper
+                  dataTestid="EditableComponent__fv-portal-about"
                   className="fv-portal-about"
                   isSection={isSection}
                   computeEntity={computePortal}
@@ -507,6 +513,7 @@ export class ExploreDialect extends Component {
                           properties={this.props.properties}
                         />
                         <EditableComponentHelper
+                          dataTestid="EditableComponent__fv-portal-related_links"
                           isSection={isSection}
                           computeEntity={computePortal}
                           updateEntity={updatePortal}
@@ -539,6 +546,7 @@ export class ExploreDialect extends Component {
                     renderPartial
                   >
                     <EditableComponentHelper
+                    dataTestid="EditableComponent__dc-title"
                       isSection={isSection}
                       computeEntity={computeDialect2}
                       updateEntity={updateDialect2}
@@ -554,6 +562,8 @@ export class ExploreDialect extends Component {
                         renderPartial
                       >
                         <EditableComponentHelper
+                          className="EditableComponent--inline"
+                          dataTestid="EditableComponent__fv-dialect-country"
                           isSection={isSection}
                           computeEntity={computeDialect2}
                           updateEntity={updateDialect2}
@@ -569,6 +579,8 @@ export class ExploreDialect extends Component {
                         renderPartial
                       >
                         <EditableComponentHelper
+                          className="EditableComponent--inline"
+                          dataTestid="EditableComponent__fv-dialect-region"
                           isSection={isSection}
                           computeEntity={computeDialect2}
                           updateEntity={updateDialect2}

@@ -75,19 +75,22 @@ export class PageHome extends Component {
     ;['_onNavigateRequest', '_getBlockByArea'].forEach((method) => (this[method] = this[method].bind(this)))
   }
 
-  componentDidMount() {
-    this.props.queryPage(this.state.pagePath, " AND fvpage:url LIKE '/home/'" + '&sortOrder=ASC' + '&sortBy=dc:title')
-
+  async componentDidMount() {
+    await this.props.queryPage(
+      this.state.pagePath,
+      " AND fvpage:url LIKE '/home/'" + '&sortOrder=ASC' + '&sortBy=dc:title'
+    )
     // Get user start page
-    ProviderHelpers.fetchIfMissing('currentUser', this.props.fetchUserStartpage, this.props.computeUserStartpage)
+    await this.props.fetchUserStartpage('currentUser', {
+      defaultHome: false,
+    })
   }
 
   componentDidUpdate() {
     /*
     Redirect user to their start page if they:
     - are members of a single dialect
-    - have one defined,
-    - are not an admin
+    - have one defined
     */
 
     // If user is accessing /home directly, do not redirect.
@@ -96,8 +99,7 @@ export class PageHome extends Component {
     }
     const _computeUserStartpage = ProviderHelpers.getEntry(this.props.computeUserStartpage, 'currentUser')
     const startPage = selectn('response.value', _computeUserStartpage)
-    const isAdmin = ProviderHelpers.isAdmin(this.props.computeLogin)
-    if (startPage && isAdmin === false) {
+    if (startPage) {
       window.location = startPage
     }
   }
@@ -162,9 +164,10 @@ export class PageHome extends Component {
 
     // Compute User Registration Tasks
     ;(selectn('response.entries', _computeUserStartpage) || []).map(
-      function computeUserStartPageMap(dialect) {
+      function computeUserStartPageMap(dialect, index) {
         const tableRow = (
           <RaisedButton
+            key={index}
             label={'Access ' + selectn('properties.dc:title', dialect)}
             primary
             onClick={this._onNavigateRequest.bind(
@@ -184,6 +187,7 @@ export class PageHome extends Component {
     if (accessButtons.length === 0) {
       accessButtons[0] = (
         <RaisedButton
+          key={0}
           label={
             this.intl.translate({
               key: 'get_started!',

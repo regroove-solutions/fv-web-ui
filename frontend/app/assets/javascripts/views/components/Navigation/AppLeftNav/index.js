@@ -1,12 +1,9 @@
 /*
 Copyright 2016 First People's Cultural Council
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
-
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react'
-import Immutable, { Map } from 'immutable'
+import Immutable, { is, Map } from 'immutable'
 
 import NavigationHelpers from 'common/NavigationHelpers'
 
@@ -28,12 +25,11 @@ import selectn from 'selectn'
 
 import { Divider, List, ListItem, LeftNav, AppBar } from 'material-ui/lib'
 
-import IconButton from 'material-ui/lib/icon-button'
+// import IconButton from 'material-ui/lib/icon-button'
 import NavigationClose from 'material-ui/lib/svg-icons/navigation/close'
-
 import { SelectableContainerEnhance } from 'material-ui/lib/hoc/selectable-enhance'
 import IntlService from 'views/services/intl'
-
+import '!style-loader!css-loader!./AppLeftNav.css'
 const SelectableList = SelectableContainerEnhance(List)
 
 const { func, object } = PropTypes
@@ -49,21 +45,10 @@ export class AppLeftNav extends Component {
     pushWindowPath: func.isRequired,
   }
 
-  intl = IntlService.instance
-
-  constructor(props, context) {
-    super(props, context)
-
-    this.state = this._getInitialState()
-
-    // Bind methods to 'this'
-    ;['_onNavigateRequest', '_onRequestChange'].forEach((method) => (this[method] = this[method].bind(this)))
-  }
-
   /**
    * Initial state
    */
-  _getInitialState() {
+  _getInitialState = () => {
     const routes = Immutable.fromJS([
       {
         id: 'home',
@@ -97,7 +82,13 @@ export class AppLeftNav extends Component {
     }
   }
 
-  componentWillReceiveProps() {
+  intl = IntlService.instance
+  state = this._getInitialState()
+
+  componentDidUpdate() {
+    if (this.props.computeToggleMenuAction.menuVisible) {
+      this.AppLeftNavClose.focus()
+    }
     /**
      * If the user is connected, display modified routes (splitting Explore path)
      */
@@ -146,13 +137,13 @@ export class AppLeftNav extends Component {
 
       const newExploreEntry = exploreEntry[1].set('path', null).set('nestedItems', nestedItems)
 
-      let newState = this.state.routes.set(exploreEntry[0], newExploreEntry)
+      let newStateRoutes = this.state.routes.set(exploreEntry[0], newExploreEntry)
 
       // Insert Tasks after explore
-      const currentTasksEntry = newState.findEntry((value) => value.get('id') === 'tasks')
+      const currentTasksEntry = newStateRoutes.findEntry((value) => value.get('id') === 'tasks')
 
       if (currentTasksEntry === null) {
-        newState = newState.insert(
+        newStateRoutes = newStateRoutes.insert(
           exploreEntry[0],
           new Map({
             id: 'tasks',
@@ -161,44 +152,43 @@ export class AppLeftNav extends Component {
           })
         )
       }
-      this.setState({ routes: newState })
+
+      // NOTE: below triggers infinite loop
+      // this.setState({ routes: newStateRoutes })
+
+      /* NOTE:
+      Had a hard time working with Immutable to determine if newStateRoutes !== this.state.routes
+      Opted for converting from Immutable > JS and
+      checking if `nestedItems` exists in the array that has id='explore'
+      */
+      const routesCurrent = this.state.routes.toJS()
+      const routesCurrentExplore = routesCurrent.filter((entry) => {
+        return entry.id === 'explore'
+      })
+      if (routesCurrentExplore[0].nestedItems === undefined) {
+        this.setState({ routes: newStateRoutes })
+      }
     } else {
+      // NOTE: added test to prevent infinite loop
       // If user logged out, revert to initial state
-      this.setState(this._getInitialState())
+      const initialState = this._getInitialState()
+      if (is(initialState.routes, this.state.routes) === false) {
+        this.setState(initialState)
+      }
     }
-  }
-
-  _onNavigateRequest(event, path) {
-    if (path === null) {
-      return
-    }
-    if (path === 'logout') {
-      window.location.href = NavigationHelpers.getBaseURL() + 'logout'
-    } else {
-      // Request to navigate to
-      this.props.pushWindowPath(path)
-    }
-
-    // Close side-menu
-    this.props.toggleMenuAction()
-  }
-
-  _onRequestChange() {
-    // Close side-menu
-    this.props.toggleMenuAction()
   }
 
   render() {
     const entries = selectn('response.entries', this.props.computeLoadNavigation)
     this.additionalEntries = entries
       ? entries.map((d) => (
-        <ListItem
-          className="2"
-          key={selectn('uid', d)}
-          value={NavigationHelpers.generateStaticURL('/content/' + selectn('properties.fvpage:url', d))}
-          primaryText={selectn('properties.dc:title', d)}
-        />
-      ))
+          <ListItem
+            className="2"
+            key={selectn('uid', d)}
+            value={NavigationHelpers.generateStaticURL('/content/' + selectn('properties.fvpage:url', d))}
+            primaryText={selectn('properties.dc:title', d)}
+          />
+        ))
       : null
 
     return (
@@ -208,48 +198,58 @@ export class AppLeftNav extends Component {
         open={this.props.computeToggleMenuAction.menuVisible}
         onRequestChange={this._onRequestChange}
       >
-        <AppBar
-          iconElementLeft={
-            <IconButton onClick={this._onRequestChange}>
-              <NavigationClose />
-            </IconButton>
-          }
-          title={
-            <img src="assets/images/logo.png" style={{ padding: '0 0 5px 0' }} alt={this.props.properties.title} />
-          }
-        />
-
-        <SelectableList
-          valueLink={{
-            value: location.pathname,
-            requestChange: this._onNavigateRequest,
-          }}
-        >
-          {this.state.routes.map((d) => (
-            <ListItem
-              className="1"
-              key={d.get('id')}
-              value={d.get('path')}
-              nestedItems={d.get('nestedItems')}
-              primaryText={d.get('label')}
-            />
-          ))}
-
-          {this.additionalEntries}
-        </SelectableList>
-
-        <Divider />
-
-        {(() => {
-          if (selectn('isConnected', this.props.computeLogin)) {
-            return (
-              <SelectableList
-                valueLink={{
-                  value: location.pathname,
-                  requestChange: this._onNavigateRequest,
+        <div data-testid="LeftNav">
+          <AppBar
+            iconElementLeft={
+              <button
+                type="button"
+                className="AppLeftNav__close"
+                data-testid="AppLeftNav__close"
+                onClick={this._onRequestChange}
+                ref={(_element) => {
+                  this.AppLeftNavClose = _element
                 }}
               >
-                {/* <ListItem
+                <NavigationClose className="AppLeftNav__closeIcon" />
+                <span className="visually-hidden">Menu close</span>
+              </button>
+            }
+            title={
+              <img src="assets/images/logo.png" style={{ padding: '0 0 5px 0' }} alt={this.props.properties.title} />
+            }
+          />
+
+          <SelectableList
+            valueLink={{
+              value: location.pathname,
+              requestChange: this._onNavigateRequest,
+            }}
+          >
+            {this.state.routes.map((d) => (
+              <ListItem
+                className="1"
+                key={d.get('id')}
+                value={d.get('path')}
+                nestedItems={d.get('nestedItems')}
+                primaryText={d.get('label')}
+              />
+            ))}
+
+            {this.additionalEntries}
+          </SelectableList>
+
+          <Divider />
+
+          {(() => {
+            if (selectn('isConnected', this.props.computeLogin)) {
+              return (
+                <SelectableList
+                  valueLink={{
+                    value: location.pathname,
+                    requestChange: this._onNavigateRequest,
+                  }}
+                >
+                  {/* <ListItem
                   key="profile"
                   value="/profile/"
                   primaryText={this.intl.translate({
@@ -259,21 +259,41 @@ export class AppLeftNav extends Component {
                   })}
                 /> */}
 
-                <ListItem
-                  key="sign-out"
-                  value={'logout'}
-                  primaryText={this.intl.translate({
-                    key: 'sign_out',
-                    default: 'Sign Out',
-                    case: 'words',
-                  })}
-                />
-              </SelectableList>
-            )
-          }
-        })()}
+                  <ListItem
+                    key="sign-out"
+                    value={'logout'}
+                    primaryText={this.intl.translate({
+                      key: 'sign_out',
+                      default: 'Sign Out',
+                      case: 'words',
+                    })}
+                  />
+                </SelectableList>
+              )
+            }
+          })()}
+        </div>
       </LeftNav>
     )
+  }
+
+  _onNavigateRequest = (event, path) => {
+    if (path === null) {
+      return
+    }
+    if (path === 'logout') {
+      window.location.href = NavigationHelpers.getBaseURL() + 'logout'
+    } else {
+      NavigationHelpers.navigate(path, this.props.pushWindowPath, false)
+    }
+
+    // Close side-menu
+    this.props.toggleMenuAction()
+  }
+
+  _onRequestChange = () => {
+    // Close side-menu
+    this.props.toggleMenuAction()
   }
 }
 

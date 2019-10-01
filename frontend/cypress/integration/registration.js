@@ -1,6 +1,6 @@
-describe('Registration', () => {
+describe('registration.js > Register', () => {
   it('Should invalidate and revalidate', () => {
-    cy.visit('http://localhost:3001/nuxeo/app/register')
+    cy.visit('/register')
 
     // trigger validation
     cy.get('#pageContainer')

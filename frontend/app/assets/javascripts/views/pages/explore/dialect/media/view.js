@@ -63,6 +63,8 @@ import Tab from 'material-ui/lib/tabs/tab'
 import WordListView from 'views/pages/explore/dialect/learn/words/list-view'
 import PhraseListView from 'views/pages/explore/dialect/learn/phrases/list-view'
 
+import { WORKSPACES } from 'common/Constants'
+
 import '!style-loader!css-loader!react-image-gallery/build/image-gallery.css'
 import IntlService from 'views/services/intl'
 
@@ -170,19 +172,21 @@ export class View extends Component {
      * Generate definitions body
      */
     const computeResourceType = selectn('response.type', computeResource)
-    const preview = computeResourceType ? (
-      <Preview
-        style={{ width: 'auto' }}
-        initiallyExpanded
-        metadataListStyles={{ maxHeight: 'initial' }}
-        expandedValue={selectn('response', computeResource)}
-        type={computeResourceType}
-      />
-    ) : null
+    const expandedValue = selectn('response', computeResource)
+    const preview =
+      computeResourceType && expandedValue ? (
+        <Preview
+          style={{ width: 'auto' }}
+          initiallyExpanded
+          metadataListStyles={{ maxHeight: 'initial' }}
+          expandedValue={expandedValue}
+          type={computeResourceType}
+        />
+      ) : null
     return (
       <PromiseWrapper computeEntities={_computeEntities}>
         {(() => {
-          if (this.props.routeParams.area === 'Workspaces') {
+          if (this.props.routeParams.area === WORKSPACES) {
             if (selectn('response', computeResource))
               return (
                 <PageToolbar
