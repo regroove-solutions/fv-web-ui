@@ -166,6 +166,12 @@ export class Wordscramble extends Component {
         {(selectn('response.entries', computePhrases) || [])
           .filter((phrase) => selectn('properties.dc:title', phrase).indexOf(' ') > 0)
           .map((phrase, i) => {
+            console.log('?', {
+              original: selectn('properties.dc:title', phrase),
+              translation: selectn('properties.fv:definitions[0].translation', phrase),
+              audio: selectn('contextParameters.phrase.related_audio[0].path', phrase),
+              picture: selectn('contextParameters.phrase.related_pictures[0]', phrase),
+            })
             return (
               <Scramble
                 key={i}
@@ -306,6 +312,7 @@ export class Scramble extends Component {
             {this.state.selected.map((word, index) => {
               return (
                 <RaisedButton
+                  labelStyle={{ textTransform: 'none' }}
                   key={index}
                   style={{ backgroundColor: '#a7fba5' }}
                   label={word}
@@ -353,7 +360,13 @@ export class Scramble extends Component {
               disabled = true
             }
             return (
-              <RaisedButton disabled={disabled} label={word} key={index} onMouseUp={this.selectWord.bind(this, word)} />
+              <RaisedButton
+                labelStyle={{ textTransform: 'none' }}
+                disabled={disabled}
+                label={word}
+                key={index}
+                onMouseUp={this.selectWord.bind(this, word)}
+              />
             )
           })}
           {this.state.complete ? (
