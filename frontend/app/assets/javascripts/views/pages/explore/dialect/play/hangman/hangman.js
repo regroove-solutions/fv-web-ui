@@ -125,25 +125,28 @@ export default class HangmanGame extends Component {
    * Prepare puzzle
    * breaks up puzzle into letters
    */
+  escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+  }
   preparePuzzle(props) {
-    var puzzle = props.puzzle
-    var letters = props.alphabet
-    var letterCount = letters.length
-    var letterRegexStr = ''
+    const puzzle = props.puzzle
+    const letters = props.alphabet
+    const letterCount = letters.length
+    let letterRegexStr = ''
 
-    for (var i = 0; i < letterCount; i++) {
-      letterRegexStr += '(' + letters[i] + ')|'
+    for (let i = 0; i < letterCount; i++) {
+      letterRegexStr += '(' + this.escapeRegExp(letters[i]) + ')|'
     }
 
-    var letterRegex = new RegExp(letterRegexStr, 'g')
+    const letterRegex = new RegExp(letterRegexStr, 'g')
 
-    var puzzleParts = puzzle.split(letterRegex).filter((l) => {
+    const puzzleParts = puzzle.split(letterRegex).filter((l) => {
       return l !== undefined && l.length !== 0
     })
 
     let word = []
 
-    let words = []
+    const words = []
 
     puzzleParts.map((letter, index, parts) => {
       if (letter === ' ') {
@@ -175,12 +178,12 @@ export default class HangmanGame extends Component {
   guessLetter(letter) {
     let guessesLeft = this.state.guessesLeft
 
-    let guessedLetters = this.state.guessedLetters
+    const guessedLetters = this.state.guessedLetters
 
     let succeeded = this.state.succeeded
 
     if (guessesLeft > 0 && succeeded === false) {
-      let puzzle = this.state.puzzle
+      const puzzle = this.state.puzzle
 
       if (guessedLetters.indexOf(letter) === -1) {
         guessedLetters.push(letter)
@@ -322,13 +325,13 @@ export default class HangmanGame extends Component {
 
         <div style={{ margin: '15px 0' }}>
           <RaisedButton
-            secondary={true}
+            secondary
             onClick={this.props.newPuzzle}
             label={intl.trans('views.pages.explore.dialect.play.hangman.new_puzzle', 'New Puzzle', 'words')}
             style={{ marginRight: '10px' }}
           />
           <RaisedButton
-            primary={true}
+            primary
             onMouseDown={this.restart}
             label={intl.trans('views.pages.explore.dialect.play.hangman.restart', 'Restart', 'words')}
           />
@@ -412,7 +415,7 @@ class Letter extends Component {
 }
 
 const seconds2time = (seconds) => {
-  let hours = Math.floor(seconds / 3600)
+  const hours = Math.floor(seconds / 3600)
   let minutes = Math.floor((seconds - hours * 3600) / 60)
   seconds = seconds - hours * 3600 - minutes * 60
   let time = ''
