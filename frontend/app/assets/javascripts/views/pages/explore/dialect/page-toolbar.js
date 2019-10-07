@@ -267,7 +267,11 @@ export class PageToolbar extends Component {
                       disabled={documentPublished}
                       name="enabled"
                       value="enabled"
-                      label={intl.trans('enabled', 'Enabled', 'first')}
+                      label={
+                        documentEnabled || documentPublished
+                          ? intl.trans('enabled', 'Enabled', 'first')
+                          : intl.trans('enable', 'Enable', 'first')
+                      }
                     />
                   </div>
                 </AuthorizationFilter>
@@ -297,7 +301,11 @@ export class PageToolbar extends Component {
                         disabled={!documentEnabled && !documentPublished}
                         name="published"
                         value="published"
-                        label={intl.trans('published', 'Published', 'first')}
+                        label={
+                          documentPublished
+                            ? intl.trans('published', 'Published', 'first')
+                            : intl.trans('publish', 'Publish', 'first')
+                        }
                       />
                     </div>
                   </AuthorizationFilter>
