@@ -100,7 +100,7 @@ export default class HangmanGame extends Component {
     return {
       puzzle: this.preparePuzzle(props),
       guessesLeft: 7,
-      alphabet: this.prepareAlphabet(props),
+      alphabet: this.props.alphabet,
       guessedLetters: [],
       succeeded: false,
       failed: false,
@@ -153,7 +153,7 @@ export default class HangmanGame extends Component {
         words.push(word)
         word = []
       } else {
-        word.push({ letter: letter.toUpperCase(), found: false })
+        word.push({ letter, found: false })
       }
       if (index === parts.length - 1) {
         words.push(word)
