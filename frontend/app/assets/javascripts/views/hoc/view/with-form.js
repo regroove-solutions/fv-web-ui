@@ -219,7 +219,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
           </div>
 
           <div className={classNames('hidden-xs', 'col-md-3')}>
-            <div style={{ marginTop: '25px' }} className={classNames('panel', 'panel-primary')}>
+            <div style={{ marginTop: '25px', clear: 'both' }} className={classNames('panel', 'panel-primary')}>
               <div className="panel-heading">Metadata</div>
 
               <ul className="list-group">
