@@ -1,5 +1,8 @@
 import React from 'react'
 import { PropTypes } from 'react'
+
+import RaisedButton from 'material-ui/lib/raised-button'
+
 import Text from 'views/components/Form/Common/Text'
 import Textarea from 'views/components/Form/Common/Textarea'
 import StringHelpers from 'common/StringHelpers'
@@ -139,9 +142,18 @@ export class PhrasebookStateCreate extends React.Component {
 
         <div className="Phrasebook__btn-container">
           {/* BTN: Create ------------- */}
-          <button className="_btn _btn--primary" disabled={isBusy || isTrashed} type="submit">
+          {/* <button className="_btn _btn--primary" disabled={isBusy || isTrashed} type="submit">
             {_copy.submit}
-          </button>
+          </button> */}
+          <RaisedButton
+            disabled={isBusy || isTrashed}
+            label={_copy.submit}
+            onClick={(e) => {
+              e.preventDefault()
+              onRequestSaveForm()
+            }}
+            primary
+          />
         </div>
       </form>
     )

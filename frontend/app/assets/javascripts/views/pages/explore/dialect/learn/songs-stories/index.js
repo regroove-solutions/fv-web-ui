@@ -34,7 +34,7 @@ import NavigationHelpers, { appendPathArrayAfterLandmark, routeHasChanged } from
 
 import AuthorizationFilter from 'views/components/Document/AuthorizationFilter'
 
-// import RaisedButton from 'material-ui/lib/raised-button'
+import RaisedButton from 'material-ui/lib/raised-button'
 import PromiseWrapper from 'views/components/Document/PromiseWrapper'
 
 import GeneralList from 'views/components/Browsing/general-list'
@@ -142,6 +142,8 @@ export class PageDialectLearnStoriesAndSongs extends Component {
       splitWindowPath: this.props.splitWindowPath,
       landmarkArray: this.props.typeFilter === 'story' ? ['stories'] : ['songs'],
     })}`
+
+    const themePalette = this.props.properties.theme.palette.rawTheme.palette
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper', { hidden: isKidsTheme })}>
@@ -153,8 +155,25 @@ export class PageDialectLearnStoriesAndSongs extends Component {
                 login: this.props.computeLogin,
               }}
             >
-              <a
+              <RaisedButton
+                label={intl.trans(
+                  'views.pages.explore.dialect.learn.songs_stories.create_x_book',
+                  'Create ' + this.props.typeFilter + ' Book',
+                  'words',
+                  [this.props.typeFilter]
+                )}
+                // style={{ marginRight: '5px', marginLeft: '0' }}
+                onClick={(e) => {
+                  e.preventDefault()
+                  NavigationHelpers.navigate(hrefPath, this.props.pushWindowPath, false)
+                }}
+                primary
+              />
+              {/* <a
                 className="_btn _btn--primary"
+                style={{
+                  backgroundColor: themePalette.primary1Color,
+                }}
                 href={hrefPath}
                 onClick={(e) => {
                   e.preventDefault()
@@ -167,7 +186,7 @@ export class PageDialectLearnStoriesAndSongs extends Component {
                   'words',
                   [this.props.typeFilter]
                 )}
-              </a>
+              </a> */}
             </AuthorizationFilter>
           </div>
         </div>
