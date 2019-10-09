@@ -38,6 +38,7 @@ import RadioButtonGroup from 'material-ui/lib/radio-button-group'
 
 import DropDownMenu from 'material-ui/lib/DropDownMenu'
 import FlatButton from 'material-ui/lib/flat-button'
+import RaisedButton from 'material-ui/lib/raised-button'
 import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
 import IconButton from 'material-ui/lib/icon-button'
@@ -277,7 +278,10 @@ export class Navigation extends Component {
             />
 
             <div
-              style={{ background: themePalette.primary1Color, display: 'inline-block' }}
+              style={{
+                background: this.state.searchBarVisibleInMobile ? themePalette.primary1Color : 'transparent',
+                display: 'inline-block',
+              }}
               className={classNames({
                 'hidden-xs': !this.state.searchBarVisibleInMobile,
                 'search-bar-mobile': this.state.searchBarVisibleInMobile,
@@ -286,13 +290,13 @@ export class Navigation extends Component {
               <TextField
                 underlineStyle={{ width: '79%' }}
                 style={{
-                  marginLeft: this.state.searchBarVisibleInMobile ? '15px' : '30px',
+                  marginLeft: this.state.searchBarVisibleInMobile ? '0' : '30px',
                   fontSize: '15px',
                   backgroundColor: '#fff',
                   paddingLeft: '10px',
                   lineHeight: '1.5',
-                  width: this.state.searchBarVisibleInMobile ? '214px' : 'inherit',
-                  paddingRight: this.state.searchBarVisibleInMobile ? '0' : '40px',
+                  width: this.state.searchBarVisibleInMobile ? '80vw' : 'inherit',
+                  paddingRight: this.state.searchBarVisibleInMobile ? '10px' : '40px',
                   fontFamily:
                     '"Aboriginal Sans", "Aboriginal Serif", "Lucida Grande", "Lucida Sans Unicode", Gentium, Code2001',
                 }}
@@ -310,16 +314,34 @@ export class Navigation extends Component {
                 onEnterKeyDown={this._handleNavigationSearchSubmit}
                 name="searchbox"
               />
-              <FlatButton
-                className={classNames({ hidden: !this.state.searchBarVisibleInMobile })}
-                style={{ color: themePalette.alternateTextColor }}
-                label={this.intl.translate({ key: 'general.cancel', default: 'Cancel', case: 'first' })}
-                onClick={(e) => {
-                  this.setState({ searchBarVisibleInMobile: false })
-                  e.preventDefault()
-                }}
-              />
+              <div className="search__btns">
+                <RaisedButton
+                  className={classNames({ hidden: !this.state.searchBarVisibleInMobile })}
+                  labelColor="#fff"
+                  backgroundColor={themePalette.primary2Color}
+                  label={this.intl.translate({ key: 'general.search', default: 'Search', case: 'first' })}
+                  onClick={(e) => {
+                    this._handleNavigationSearchSubmit(e)
+                  }}
+                />
+                <RaisedButton
+                  className={classNames({ hidden: !this.state.searchBarVisibleInMobile })}
+                  labelColor="#fff"
+                  backgroundColor={themePalette.primary2Color}
+                  label={this.intl.translate({ key: 'general.cancel', default: 'Cancel', case: 'first' })}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    this.setState({ searchBarVisibleInMobile: false })
+                  }}
+                />
+              </div>
             </div>
+            <div
+              className="search_bg"
+              style={{
+                display: this.state.searchBarVisibleInMobile ? 'block' : 'none',
+              }}
+            />
 
             <IconButton
               onClick={this._handleNavigationSearchSubmit}

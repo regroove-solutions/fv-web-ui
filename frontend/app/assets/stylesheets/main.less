@@ -779,14 +779,20 @@ audio::-webkit-media-controls-enclosure {
 /**
 * Responsive design fixes
 */
+.search__btns { 
+  display: none;
+}
 .search-bar-mobile {
-  width: 100%;
+  background: #fff;
+  width: 100vw;
+  // height: 0vh;
   bottom: 0;
   left: 0;
   z-index: 99999;
   position: fixed;
-  border: 1px #e8e8e8 solid;
-  padding: 20px 0 10px 0;
+  border-top: 1px rgba(255,255,255,0.5) solid;
+  box-shadow: 0px -13px 20px 10px rgba(0, 0, 0, 0.3);
+  padding: 20px 0;
   text-align: center;
 
   span {
@@ -795,6 +801,27 @@ audio::-webkit-media-controls-enclosure {
     display: inline-block;
     padding-right: 20px;
   }
+  .search__btns {
+    display: flex;
+    justify-content: space-between;
+    width: 80vw;
+    margin: 0 auto;
+    flex-direction: row-reverse;
+    padding-top: 20px;
+  }
+  
+}
+.search_bg {
+  display: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
 }
 
 @media screen and (max-width: @mobile-xs-width) {
