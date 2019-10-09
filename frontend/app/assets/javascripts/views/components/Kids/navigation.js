@@ -182,7 +182,7 @@ export class KidsNavigation extends Component {
               </span>
             </a>
           }
-          showMenuIconButton
+          showMenuIconButton={false}
           // TODO: This doesn't seem to work
           onRightIconButtonTouchTap={() => {
             this.props.toggleMenuAction('AppLeftNav')
