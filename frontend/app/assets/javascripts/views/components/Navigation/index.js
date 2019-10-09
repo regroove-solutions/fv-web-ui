@@ -37,7 +37,6 @@ import RadioButton from 'material-ui/lib/radio-button'
 import RadioButtonGroup from 'material-ui/lib/radio-button-group'
 
 import DropDownMenu from 'material-ui/lib/DropDownMenu'
-import FlatButton from 'material-ui/lib/flat-button'
 import RaisedButton from 'material-ui/lib/raised-button'
 import Toolbar from 'material-ui/lib/toolbar/toolbar'
 import ToolbarGroup from 'material-ui/lib/toolbar/toolbar-group'
@@ -482,10 +481,10 @@ export class Navigation extends Component {
             <ToolbarSeparator className="locale-seperator" style={{ float: 'none', marginRight: 0, marginLeft: 0 }} />
 
             <IconButton
-              onClick={this._handleDisplayLocaleOptions}
+              onClick={this._toggleDisplayLocaleOptions}
               iconClassName="material-icons"
               style={{ position: 'relative', top: '7px', padding: '0', left: 0 }}
-              iconStyle={{ fontSize: '24px', padding: '3px', borderRadius: '20px', color: '#FFFFFF' }}
+              iconStyle={{ fontSize: '24px', borderRadius: '20px', color: '#FFFFFF' }}
             >
               settings
             </IconButton>
@@ -503,6 +502,13 @@ export class Navigation extends Component {
               <MenuItem value="fr" primaryText="Français" />
               {/*<MenuItem value="sp" primaryText="Español" />*/}
             </DropDownMenu>
+            <IconButton
+              iconClassName="material-icons"
+              onClick={this._toggleDisplayLocaleOptions}
+              iconStyle={{ fontSize: '24px', borderRadius: '20px', color: '#FFFFFF' }}
+            >
+              clear
+            </IconButton>
           </ToolbarGroup>
         </Toolbar>
 
@@ -610,9 +616,9 @@ export class Navigation extends Component {
     }
   }
 
-  _handleDisplayLocaleOptions = () => {
+  _toggleDisplayLocaleOptions = () => {
     this.setState({
-      localePopoverOpen: true,
+      localePopoverOpen: !this.state.localePopoverOpen,
     })
   }
 
