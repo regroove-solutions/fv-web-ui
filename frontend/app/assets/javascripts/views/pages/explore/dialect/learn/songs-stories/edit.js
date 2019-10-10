@@ -95,7 +95,6 @@ export class PageDialectBookEdit extends Component {
   componentDidUpdate(prevProps) {
     let currentBook
     let nextBook
-
     if (this._getBookPath() !== null) {
       currentBook = ProviderHelpers.getEntry(prevProps.computeBook, this._getBookPath())
       nextBook = ProviderHelpers.getEntry(this.props.computeBook, this._getBookPath())
@@ -268,6 +267,7 @@ export class PageDialectBookEdit extends Component {
       })
     }
 
+    const title = selectn('response.properties.dc:title', _computeBook)
     return (
       <AuthenticationFilter
         login={this.props.computeLogin}
@@ -278,14 +278,16 @@ export class PageDialectBookEdit extends Component {
         <div>
           <Tabs>
             <Tab label={intl.trans('book', 'Book', 'first')}>
-              <h1>
-                {intl.trans(
-                  'views.pages.explore.dialect.learn.songs_stories.edit_x_book',
-                  'Edit ' + selectn('response.properties.dc:title', _computeBook) + ' Book',
-                  'words',
-                  [selectn('response.properties.dc:title', _computeBook)]
-                )}
-              </h1>
+              {title && (
+                <h1>
+                  {intl.trans(
+                    'views.pages.explore.dialect.learn.songs_stories.edit_x_book',
+                    'Edit ' + title + ' Book',
+                    'words',
+                    [title]
+                  )}
+                </h1>
+              )}
               <EditViewWithForm
                 computeEntities={computeEntities}
                 initialValues={context}
@@ -301,11 +303,7 @@ export class PageDialectBookEdit extends Component {
               />
             </Tab>
             <Tab label={intl.trans('pages', 'Pages', 'first')}>
-              <h1>
-                {intl.trans('', 'Edit ' + selectn('response.properties.dc:title', _computeBook) + ' pages', 'first', [
-                  selectn('response.properties.dc:title', _computeBook),
-                ])}
-              </h1>
+              {title & <h1>{intl.trans('', 'Edit ' + title + ' pages', 'first', [title])}</h1>}
               <BookEntryList
                 reorder
                 sortOrderChanged={this._storeSortOrder}
