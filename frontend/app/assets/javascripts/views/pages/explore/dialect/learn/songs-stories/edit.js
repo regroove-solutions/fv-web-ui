@@ -52,6 +52,7 @@ import options from 'models/schemas/options'
 
 import withForm from 'views/hoc/view/with-form'
 import IntlService from 'views/services/intl'
+import { string } from 'prop-types'
 
 const intl = IntlService.instance
 const DEFAULT_LANGUAGE = 'english'
@@ -64,6 +65,7 @@ const { array, func, object } = PropTypes
 export class PageDialectBookEdit extends Component {
   static propTypes = {
     book: object,
+    typePlural: string,
     // REDUX: reducers/state
     routeParams: object.isRequired,
     computeLogin: object.isRequired,
@@ -106,7 +108,11 @@ export class PageDialectBookEdit extends Component {
     ) {
       // 'Redirect' on success
       NavigationHelpers.navigate(
-        NavigationHelpers.generateUIDPath(this.props.routeParams.theme, selectn('response', nextBook), 'songs-stories'),
+        NavigationHelpers.generateUIDPath(
+          this.props.routeParams.theme,
+          selectn('response', nextBook),
+          this.props.typePlural.toLowerCase()
+        ),
         this.props.replaceWindowPath,
         true
       )
@@ -162,7 +168,7 @@ export class PageDialectBookEdit extends Component {
     }
     return content
   }
-  fetchData = async () => {
+  fetchData = async() => {
     await this.props.fetchDialect2(this.props.routeParams.dialect_path)
 
     const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
