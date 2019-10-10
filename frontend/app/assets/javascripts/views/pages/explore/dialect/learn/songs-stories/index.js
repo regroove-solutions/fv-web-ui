@@ -143,7 +143,7 @@ export class PageDialectLearnStoriesAndSongs extends Component {
       landmarkArray: this.props.typeFilter === 'story' ? ['stories'] : ['songs'],
     })}`
 
-    const themePalette = this.props.properties.theme.palette.rawTheme.palette
+    // const themePalette = this.props.properties.theme.palette.rawTheme.palette
     return (
       <PromiseWrapper renderOnError computeEntities={computeEntities}>
         <div className={classNames('row', 'row-create-wrapper', { hidden: isKidsTheme })}>
@@ -154,6 +154,8 @@ export class PageDialectLearnStoriesAndSongs extends Component {
                 entity: selectn('response', computeDialect2),
                 login: this.props.computeLogin,
               }}
+              hideFromSections
+              routeParams={this.props.routeParams}
             >
               <RaisedButton
                 label={intl.trans(
