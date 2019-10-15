@@ -48,7 +48,6 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
         showCancelWarning: false,
         saved: false,
       }
-      ;['_onRequestSaveForm', '_onRequestCancelForm'].forEach((method) => (this[method] = this[method].bind(this)))
     }
 
     _getComputeItem(props) {
@@ -59,7 +58,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
       return ProviderHelpers.getEntry(item.get('entity'), itemId)
     }
 
-    _onRequestSaveForm(portal, e) {
+    _onRequestSaveForm = (e, portal) => {
       // Prevent default behaviour
       e.preventDefault()
 
@@ -78,7 +77,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
       }
     }
 
-    _onRequestCancelForm(e, force = false) {
+    _onRequestCancelForm = (e, force = false) => {
       if (force) {
         if (this.props.cancelMethod) {
           this.props.cancelMethod()
@@ -124,28 +123,37 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
     render() {
       const { initialValues, fields, options, type } = this.props
       const computeItem = this._getComputeItem(this.props)
-
       return (
         <div className="row">
           <div className={classNames('col-xs-12', 'col-md-9')}>
             <ComposedFilter renderOnError {...this.props} {...this.state}>
               <div className="form-horizontal" style={{ padding: '0 15px' }}>
-                <form onSubmit={this._onRequestSaveForm.bind(this, computeItem)}>
+                <form
+                  onSubmit={(e) => {
+                    this._onRequestSaveForm(e, computeItem)
+                  }}
+                >
                   <div data-testid="withForm__btnGroup1" className="form-group" style={{ textAlign: 'right' }}>
                     <FlatButton
-                      onClick={this._onRequestCancelForm}
+                      onClick={(e) => {
+                        this._onRequestCancelForm(e)
+                      }}
                       style={{ marginRight: '10px' }}
                       label={intl.trans('cancel', 'Cancel', 'first')}
                     />
                     {/* <RaisedButton
-                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      onClick={(e)=>{
+                        this._onRequestSaveForm(e, computeItem)
+                      }}
                       primary
                       label={intl.trans('save', 'Save', 'first')}
                     /> */}
 
                     <button
                       type="submit"
-                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      onClick={(e) => {
+                        this._onRequestSaveForm(e, computeItem)
+                      }}
                       className="RaisedButton RaisedButton--primary"
                     >
                       {intl.trans('save', 'Save', 'first')}
@@ -166,18 +174,24 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
 
                   <div data-testid="withForm__btnGroup2" className="form-group" style={{ textAlign: 'right' }}>
                     <FlatButton
-                      onClick={this._onRequestCancelForm}
+                      onClick={(e) => {
+                        this._onRequestCancelForm(e)
+                      }}
                       style={{ marginRight: '10px' }}
                       label={intl.trans('cancel', 'Cancel', 'first')}
                     />
                     {/* <RaisedButton
-                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      onClick={(e)=>{
+                        this._onRequestSaveForm(e, computeItem)
+                      }}
                       primary
                       label={intl.trans('save', 'Save', 'first')}
                     /> */}
                     <button
                       type="submit"
-                      onClick={this._onRequestSaveForm.bind(this, computeItem)}
+                      onClick={(e) => {
+                        this._onRequestSaveForm(e, computeItem)
+                      }}
                       className="RaisedButton RaisedButton--primary"
                     >
                       {intl.trans('save', 'Save', 'first')}
@@ -202,7 +216,9 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                         />
                         <FlatButton
                           style={confirmationButtonsStyle}
-                          onClick={this._onRequestCancelForm.bind(this, true)}
+                          onClick={(e) => {
+                            this._onRequestCancelForm(e, true)
+                          }}
                           label={intl.trans('yes', 'Yes', 'first') + '!'}
                         />
                         <FlatButton
