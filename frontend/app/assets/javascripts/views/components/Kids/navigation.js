@@ -163,10 +163,8 @@ export class KidsNavigation extends Component {
     ) : (
       ''
     )
-
-    const homeURL = !this.props.routeParams.dialect_path
-      ? NavigationHelpers.generateStaticURL('/kids')
-      : NavigationHelpers.generateStaticURL('/kids' + this.props.routeParams.dialect_path)
+    const homeURL = NavigationHelpers.generateStaticURL('/kids' + this.props.routeParams.dialect_path)
+    const showHome = this.props.routeParams.dialect_path !== undefined && homeURL !== window.location.pathname
 
     return (
       <div className="Navigation">
@@ -202,15 +200,17 @@ export class KidsNavigation extends Component {
               keyboard_backspace
             </IconButton>
 
-            <IconButton
-              onClick={this._onNavigateRequest.bind(this, homeURL)}
-              style={{ paddingTop: 0, top: '8px', left: '-10px' }}
-              iconClassName="material-icons"
-              tooltipPosition="bottom-left"
-              tooltip={intl.trans('home', 'Home', 'first')}
-            >
-              home
-            </IconButton>
+            {showHome && (
+              <IconButton
+                onClick={this._onNavigateRequest.bind(this, homeURL)}
+                style={{ paddingTop: 0, top: '8px', left: '-10px' }}
+                iconClassName="material-icons"
+                tooltipPosition="bottom-left"
+                tooltip={intl.trans('home', 'Home', 'first')}
+              >
+                home
+              </IconButton>
+            )}
 
             <IconButton
               onClick={this._onNavigateRequest.bind(
