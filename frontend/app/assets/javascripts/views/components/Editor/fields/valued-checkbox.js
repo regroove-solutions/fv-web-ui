@@ -14,7 +14,7 @@ function renderInput(locals) {
     <label style={{ fontWeight: 'normal' }}>
       <input
         type="checkbox"
-        ref="valued_checkbox"
+        ref="valued_checkbox" // TODO: FW-572
         id={'virtual-keyboard-helper-' + locals.attrs.name}
         value={locals.context[locals.attrs.name]}
         name={locals.attrs.name}
@@ -33,6 +33,7 @@ export default class ValuedCheckboxFactory extends t.form.Textbox {
    * Manually reset element
    */
   forceReset() {
+    // TODO: FW-572
     this.refs.valued_checkbox.checked = false
   }
 

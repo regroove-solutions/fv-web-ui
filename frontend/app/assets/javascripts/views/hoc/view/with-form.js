@@ -1,29 +1,25 @@
-// TODO: REMOVE ESLINT DISABLE
-/* eslint-disable */
-import React, { Component, PropTypes } from 'react'
-import Immutable, { List, Map } from 'immutable'
+import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { List } from 'immutable'
 import classNames from 'classnames'
 import selectn from 'selectn'
 
 import t from 'tcomb-form'
 
-import fields from 'models/schemas/filter-fields'
-import options from 'models/schemas/filter-options'
-
 import ProviderHelpers from 'common/ProviderHelpers'
-import StringHelpers from 'common/StringHelpers'
 import NavigationHelpers from 'common/NavigationHelpers'
 
-import { RaisedButton, FlatButton, Popover } from 'material-ui'
+import { Popover } from '@material-ui/core'
+import Button from '@material-ui/core/Button'
 import IntlService from 'views/services/intl'
 
 const intl = IntlService.instance
-const confirmationButtonsStyle = { padding: '0', marginLeft: '5px', minWidth: 'auto', border: '1px solid gray' }
+const confirmationButtonsStyle = { padding: '4px', marginLeft: '5px', border: '1px solid gray' }
 
-export default function withForm(ComposedFilter, publishWarningEnabled = false) {
+export default function withForm(ComposedFilter /*, publishWarningEnabled = false*/) {
   class ViewWithForm extends Component {
     static propTypes = {
-      routeParams: PropTypes.object,
+      // routeParams: PropTypes.object,
       initialValues: PropTypes.object,
       fields: PropTypes.object.isRequired,
       options: PropTypes.object.isRequired,
@@ -53,7 +49,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
     _getComputeItem(props) {
       const { computeEntities, itemId } = props
 
-      const item = computeEntities.find((value, key) => value.get('id') === itemId)
+      const item = computeEntities.find((value /*, key*/) => value.get('id') === itemId)
 
       return ProviderHelpers.getEntry(item.get('entity'), itemId)
     }
@@ -61,8 +57,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
     _onRequestSaveForm = (e, portal) => {
       // Prevent default behaviour
       e.preventDefault()
-
-      const formValue = this.refs['form_' + this.props.type].getValue()
+      const formValue = this['form_' + this.props.type].getValue()
 
       // Passed validation
       if (formValue) {
@@ -114,7 +109,7 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
             NavigationHelpers.navigateUp(this.props.currentPath, this.props.navigationMethod)
           } else if (nextWordWasCreated) {
             //navigateForwardReplace
-            //nextProps.replaceWindowPath('/' + nextProps.routeParams.theme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
+            //nextProps.replaceWindowPath('/' + nextProps.routeParams.siteTheme + selectn('response.path', nextWord).replace('Dictionary', 'learn/words'));
           }
         }
       }
@@ -134,21 +129,9 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                   }}
                 >
                   <div data-testid="withForm__btnGroup1" className="form-group" style={{ textAlign: 'right' }}>
-                    <FlatButton
-                      onClick={(e) => {
-                        this._onRequestCancelForm(e)
-                      }}
-                      style={{ marginRight: '10px' }}
-                      label={intl.trans('cancel', 'Cancel', 'first')}
-                    />
-                    {/* <RaisedButton
-                      onClick={(e)=>{
-                        this._onRequestSaveForm(e, computeItem)
-                      }}
-                      primary
-                      label={intl.trans('save', 'Save', 'first')}
-                    /> */}
-
+                    <Button variant="flat" onClick={this._onRequestCancelForm} style={{ marginRight: '10px' }}>
+                      {intl.trans('cancel', 'Cancel', 'first')}
+                    </Button>
                     <button
                       type="submit"
                       onClick={(e) => {
@@ -163,7 +146,9 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                   <hr />
 
                   <t.form.Form
-                    ref={'form_' + type}
+                    ref={(element) => {
+                      this['form_' + type] = element
+                    }}
                     type={t.struct(selectn(type, fields))}
                     context={initialValues}
                     value={this.state.formValue || selectn('response.properties', computeItem)}
@@ -173,20 +158,9 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                   <hr />
 
                   <div data-testid="withForm__btnGroup2" className="form-group" style={{ textAlign: 'right' }}>
-                    <FlatButton
-                      onClick={(e) => {
-                        this._onRequestCancelForm(e)
-                      }}
-                      style={{ marginRight: '10px' }}
-                      label={intl.trans('cancel', 'Cancel', 'first')}
-                    />
-                    {/* <RaisedButton
-                      onClick={(e)=>{
-                        this._onRequestSaveForm(e, computeItem)
-                      }}
-                      primary
-                      label={intl.trans('save', 'Save', 'first')}
-                    /> */}
+                    <Button variant="flat" onClick={this._onRequestCancelForm} style={{ marginRight: '10px' }}>
+                      {intl.trans('cancel', 'Cancel', 'first')}
+                    </Button>
                     <button
                       type="submit"
                       onClick={(e) => {
@@ -201,8 +175,8 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                       open={this.state.showCancelWarning}
                       anchorEl={this.state.cancelButtonEl}
                       anchorOrigin={{ horizontal: 'left', vertical: 'center' }}
-                      targetOrigin={{ horizontal: 'right', vertical: 'center' }}
-                      onRequestClose={() => this.setState({ showCancelWarning: false })}
+                      transformOrigin={{ horizontal: 'right', vertical: 'center' }}
+                      onClose={() => this.setState({ showCancelWarning: false })}
                     >
                       <div style={{ padding: '10px', margin: '0 15px', borderRadius: '5px' }}>
                         <span
@@ -214,18 +188,24 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
                             ),
                           }}
                         />
-                        <FlatButton
+                        <Button
+                          variant="flat"
+                          size="small"
                           style={confirmationButtonsStyle}
                           onClick={(e) => {
                             this._onRequestCancelForm(e, true)
                           }}
-                          label={intl.trans('yes', 'Yes', 'first') + '!'}
-                        />
-                        <FlatButton
+                        >
+                          {intl.trans('yes', 'Yes', 'first') + '!'}
+                        </Button>
+                        <Button
+                          variant="flat"
+                          size="small"
                           style={confirmationButtonsStyle}
                           onClick={() => this.setState({ showCancelWarning: false })}
-                          label={intl.trans('no', 'No', 'first') + '!'}
-                        />
+                        >
+                          {intl.trans('no', 'No', 'first') + '!'}
+                        </Button>
                       </div>
                     </Popover>
                   </div>
@@ -289,5 +269,3 @@ export default function withForm(ComposedFilter, publishWarningEnabled = false) 
 
   return ViewWithForm
 }
-// TODO: REMOVE ESLINT DISABLE
-/* eslint-enable */

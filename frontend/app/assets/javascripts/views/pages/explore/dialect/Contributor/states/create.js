@@ -1,7 +1,7 @@
 import React from 'react'
-import { PropTypes } from 'react'
+import PropTypes from 'prop-types'
 
-import RaisedButton from 'material-ui/lib/raised-button'
+import Button from '@material-ui/core/Button'
 
 // import copy from '../internationalization'
 import File from 'views/components/Form/Common/File'
@@ -172,15 +172,17 @@ export class ContributorStateCreate extends React.Component {
           {/* <button className="_btn _btn--primary" disabled={isBusy || isTrashed} type="submit">
             {_copy.submit}
           </button> */}
-          <RaisedButton
+          <Button
+            variant="contained"
+            color="primary"
             disabled={isBusy || isTrashed}
-            label={_copy.submit}
             onClick={(e) => {
               e.preventDefault()
               onRequestSaveForm()
             }}
-            primary
-          />
+          >
+            {_copy.submit}
+          </Button>
         </div>
       </form>
     )
