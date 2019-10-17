@@ -91,8 +91,8 @@ class SharedResourceGridTile extends Component {
     if (isDialectShared || isFVShared) {
       const tooltip = isDialectShared
         ? intl.trans('shared_from_x', 'Shared from ' + selectn('dc:title', resourceParentDialect), null, [
-          selectn('dc:title', resourceParentDialect),
-        ])
+            selectn('dc:title', resourceParentDialect),
+          ])
         : intl.trans('shared_from_x_collection', 'Shared from FirstVoices Collection', null, ['FirstVoices'])
       actionIcon = (
         <Tooltip title={tooltip}>
@@ -105,6 +105,7 @@ class SharedResourceGridTile extends Component {
       <GridListTile
         onClick={this.props.action ? this.props.action.bind(this, this.props.tile) : null}
         key={selectn('uid', tile)}
+        style={{ height: '154px', width: '20%', padding: '2px' }}
       >
         {this.props.preview}
         <GridListTileBar
@@ -149,8 +150,8 @@ class SelectMediaComponent extends Component {
     const providedTitleFilter = selectn('otherContext.providedFilter', this.props.dialect)
     const appliedParams = providedTitleFilter
       ? Object.assign({}, DefaultFetcherParams, {
-        filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
-      })
+          filters: { 'properties.dc:title': { appliedFilter: providedTitleFilter } },
+        })
       : DefaultFetcherParams
 
     this.state = {
@@ -195,9 +196,16 @@ class SelectMediaComponent extends Component {
     const computeResources = ProviderHelpers.getEntry(this.props.computeResources, '/FV/Workspaces/')
     const dialect = this.props.dialect
 
-    const SharedResourceGridTileWithDialect = () => {
-      return React.createElement(SharedResourceGridTile, { ...this.props, dialect })
+    // NOTE: this class within the render function strikes me as odd, but it works
+    // It is used by FilteredPaginatedMediaList (which is really MediaList/media-list.js)
+    // and MediaList is using it with `React.createElement(this.props.gridListTile ...`
+    // so it needs to be a class, function or tag name string and not an object
+    class SharedResourceGridTileWithDialect extends React.Component {
+      render() {
+        return React.createElement(SharedResourceGridTile, { ...this.props, dialect: dialect })
+      }
     }
+
     const items =
       selectn('response.entries', computeResources) || selectn('response_prev.entries', computeResources) || []
 
