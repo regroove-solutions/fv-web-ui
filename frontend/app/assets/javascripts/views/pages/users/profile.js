@@ -125,7 +125,6 @@ class Profile extends Component {
 
   _onRequestSaveForm(e) {
     e.preventDefault()
-    debugger
     const formValue = this.formUserEdit.current.getValue()
 
     const properties = {}
