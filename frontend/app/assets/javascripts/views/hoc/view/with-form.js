@@ -58,14 +58,28 @@ export default function withForm(ComposedFilter /*, publishWarningEnabled = fals
       // Prevent default behaviour
       e.preventDefault()
       const formValue = this['form_' + this.props.type].getValue()
-
+      const properties = {}
       // Passed validation
       if (formValue) {
-        this.props.saveMethod(portal, formValue)
+        for (const key in formValue) {
+          if (formValue.hasOwnProperty(key) && key) {
+            if (formValue[key] && formValue[key] !== '') {
+              // Filter out null values in an array
+              if (formValue[key] instanceof Array) {
+                const formValueKey = formValue[key].filter((item) => item !== null)
+                properties[key] = formValueKey
+              } else {
+                properties[key] = formValue[key]
+              }
+            }
+          }
+        }
+        // console.log('same?', {properties,formValue})
+        this.props.saveMethod(portal, properties)
 
         this.setState({
           saved: true,
-          formValue: formValue,
+          formValue: properties,
         })
       } else {
         window.scrollTo(0, 0)

@@ -134,7 +134,13 @@ export class PageDialectPhraseBooksCreate extends Component {
     for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
         if (formValue[key] && formValue[key] !== '') {
-          properties[key] = formValue[key]
+          // Filter out null values in an array
+          if (formValue[key] instanceof Array) {
+            const formValueKey = formValue[key].filter((item) => item !== null)
+            properties[key] = formValueKey
+          } else {
+            properties[key] = formValue[key]
+          }
         }
       }
     }

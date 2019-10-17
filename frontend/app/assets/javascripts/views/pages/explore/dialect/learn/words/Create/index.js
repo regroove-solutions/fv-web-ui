@@ -138,7 +138,7 @@ export class PageDialectWordsCreate extends Component {
     return content
   }
 
-  fetchData = async(addToState = {}) => {
+  fetchData = async (addToState = {}) => {
     await this.props.fetchDialect(`/${this.props.routeParams.dialect_path}`)
     await this.props.fetchDialect2(this.props.routeParams.dialect_path)
     const _computeDialect2 = ProviderHelpers.getEntry(this.props.computeDialect2, this.props.routeParams.dialect_path)
@@ -192,8 +192,14 @@ export class PageDialectWordsCreate extends Component {
     for (const key in formValue) {
       if (formValue.hasOwnProperty(key) && key) {
         if (formValue[key] && formValue[key] !== '') {
-          //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
-          properties[key] = formValue[key]
+          // Filter out null values in an array
+          if (formValue[key] instanceof Array) {
+            const formValueKey = formValue[key].filter((item) => item !== null)
+            properties[key] = formValueKey
+          } else {
+            //properties += key + '=' + ((formValue[key] instanceof Array) ? JSON.stringify(formValue[key]) : formValue[key]) + '\n';
+            properties[key] = formValue[key]
+          }
         }
       }
     }
@@ -215,7 +221,6 @@ export class PageDialectWordsCreate extends Component {
         null,
         now
       )
-
       this.setState({
         wordPath: this.props.routeParams.dialect_path + '/Dictionary/' + now.toString() + '.' + now,
       })
