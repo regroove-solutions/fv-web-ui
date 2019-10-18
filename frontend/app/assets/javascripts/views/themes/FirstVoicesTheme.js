@@ -45,6 +45,46 @@ export default {
     primary2Color: '#3a6880',
     accent4Color: '#e1e1e2',
   },
+  button: {
+    contained: {
+      color: 'red',
+      backgroundColor: 'black',
+      '&:hover': {
+        color: 'black',
+        backgroundColor: 'red',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'blue',
+        },
+        // NOTE:  the '&$disabled' rule below triggers a warning for some reason
+        // '&$disabled': {
+        //   backgroundColor: 'grey',
+        // },
+      },
+    },
+    containedPrimary: {
+      color: 'white',
+      backgroundColor: 'black',
+      '&:hover': {
+        color: 'black',
+        backgroundColor: 'white',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'yellow',
+        },
+      },
+    },
+    containedSecondary: {
+      color: 'blue',
+      backgroundColor: 'yellow',
+      '&:hover': {
+        color: 'yellow',
+        backgroundColor: 'blue',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'pink',
+        },
+      },
+    },
+  },
 }
-
-// Tip: https://cimdalli.github.io/mui-theme-generator/

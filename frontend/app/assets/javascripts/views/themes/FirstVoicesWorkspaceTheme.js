@@ -32,4 +32,46 @@ export default {
     primary1Color: teal[400],
     primary2Color: teal[700],
   },
+  button: {
+    contained: {
+      color: 'red',
+      backgroundColor: 'black',
+      // '&:hover': {
+      //   color: 'black',
+      //   backgroundColor: 'red',
+      //   // Reset on touch devices, it doesn't add specificity
+      //   '@media (hover: none)': {
+      //     backgroundColor: 'blue',
+      //   },
+      //   // NOTE:  the '&$disabled' rule below triggers a warning for some reason
+      //   // '&$disabled': {
+      //   //   backgroundColor: 'grey',
+      //   // },
+      // },
+    },
+    containedPrimary: {
+      color: '#000',
+      backgroundColor: '#FF5790',
+      '&:hover': {
+        color: '#222',
+        backgroundColor: '#ff87b0',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: '#ff87b0',
+        },
+      },
+    },
+    containedSecondary: {
+      color: '#000',
+      backgroundColor: '#26a69a',
+      '&:hover': {
+        color: '#2f2f2f',
+        backgroundColor: '#89cac2',
+        // Reset on touch devices, it doesn't add specificity
+        '@media (hover: none)': {
+          backgroundColor: 'pink',
+        },
+      },
+    },
+  },
 }
