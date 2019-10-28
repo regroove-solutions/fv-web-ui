@@ -34,18 +34,27 @@ import NavigationHelpers from 'common/NavigationHelpers'
 import ProviderHelpers from 'common/ProviderHelpers'
 import DocumentListView from 'views/components/Document/DocumentListView'
 
-import PhrasebookDelete from 'views/components/Confirmation'
-import PhrasebooksSelected from 'views/pages/explore/dialect/contributors/ContributorsSelected'
+import CategoryDelete from 'views/components/Confirmation'
+import CategoriesSelected from 'views/pages/explore/dialect/contributors/ContributorsSelected'
 import Checkbox from 'views/components/Form/Common/Checkbox'
 
 import { STATE_LOADING } from 'common/Constants'
 
 import '!style-loader!css-loader!./styles.css'
 
-let phrasebooksPath = undefined
+let categoriesPath = undefined
 let _computeCategories = undefined
 let _computeDialect2 = undefined
 const { array, func, number, object, string } = PropTypes
+// const categoryType = {
+//   title: { plural: 'Phrase Books', singular: 'Phrase Book' },
+//   label: { plural: 'phrasebooks', singular: 'phrasebook' },
+// }
+
+const categoryType = {
+  title: { plural: 'Categories', singular: 'Category' },
+  label: { plural: 'categories', singular: 'category' },
+}
 
 const iconUnsorted = (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -65,7 +74,7 @@ const iconSortDesc = (
     <path d="M0 0h24v24H0z" fill="none" />
   </svg>
 )
-export class Phrasebooks extends Component {
+export class Categories extends Component {
   static propTypes = {
     DEFAULT_PAGE: number,
     DEFAULT_PAGE_SIZE: number,
@@ -123,10 +132,10 @@ export class Phrasebooks extends Component {
     const copy = this.props.copy
       ? this.props.copy
       : await import(/* webpackChunkName: "PhrasebooksInternationalization" */ './internationalization').then(
-        (_copy) => {
-          return _copy.default
-        }
-      )
+          (_copy) => {
+            return _copy.default
+          }
+        )
 
     this._getData({ copy })
   }
@@ -137,7 +146,7 @@ export class Phrasebooks extends Component {
     if (this._paginationHasUpdated(prevProps)) {
       await this._getData()
     }
-    _computeCategories = ProviderHelpers.getEntry(computeCategories, phrasebooksPath)
+    _computeCategories = ProviderHelpers.getEntry(computeCategories, categoriesPath)
     _computeDialect2 = ProviderHelpers.getEntry(computeDialect2, routeParams.dialect_path)
   }
 
@@ -158,7 +167,7 @@ export class Phrasebooks extends Component {
             )
           }}
         >
-          Create a new phrase book
+          Create a new {categoryType.title.singular}
         </a> */}
         <Button
           variant="contained"
@@ -166,16 +175,16 @@ export class Phrasebooks extends Component {
           onClick={(e) => {
             e.preventDefault()
             NavigationHelpers.navigate(
-              `/${siteTheme}${dialect_path}/create/phrasebook`,
+              `/${siteTheme}${dialect_path}/create/${categoryType.label.singular}`,
               this.props.pushWindowPath,
               false
             )
           }}
         >
-          Create a new phrase book
+          Create a new {categoryType.title.singular}
         </Button>
         <DocumentListView
-          cssModifier="DictionaryList--phrasebooks"
+          cssModifier="DictionaryList--categories"
           sortInfo={this.sortInfo.uiSortOrder} // TODO: NOT USED?
           className="browseDataGrid"
           columns={this._getColumns()}
@@ -195,7 +204,7 @@ export class Phrasebooks extends Component {
   handleRefetch = (componentProps, page, pageSize) => {
     const { routeParams } = this.props
     const { siteTheme, dialect_path } = routeParams
-    const url = `/${siteTheme}${dialect_path}/phrasebooks/${pageSize}/${page}${window.location.search}`
+    const url = `/${siteTheme}${dialect_path}/${categoryType.label.plural}/${pageSize}/${page}${window.location.search}`
     NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
   }
 
@@ -205,7 +214,7 @@ export class Phrasebooks extends Component {
     currentSortType: this.props.DEFAULT_SORT_TYPE,
   }
 
-  _deleteItem = async(uid) => {
+  _deleteItem = async (uid) => {
     /* NOTE: save uid to state */
     this.setState(
       {
@@ -218,14 +227,14 @@ export class Phrasebooks extends Component {
     )
   }
 
-  _deleteSelected = async() => {
+  _deleteSelected = async () => {
     const { selected } = this.state
     this.setState(
       {
         deletedUids: [...this.state.deletedUids, ...selected],
       },
       () => {
-        selected.forEach(async(uid) => {
+        selected.forEach(async (uid) => {
           await this.props.deleteCategory(uid)
         })
         this.setState({
@@ -311,7 +320,7 @@ export class Phrasebooks extends Component {
           return {
             colSpan: 4,
             element: (
-              <PhrasebooksSelected
+              <CategoriesSelected
                 confirmationAction={this._deleteSelected}
                 selected={this.state.selected}
                 copy={copy.itemsSelected}
@@ -340,7 +349,7 @@ export class Phrasebooks extends Component {
           return (
             <button
               type="button"
-              className="Phrasebooks__colSort"
+              className="Categories__colSort"
               onClick={() => {
                 this._sortCol({
                   // sortBy: 'fv:custom_order',
@@ -355,7 +364,7 @@ export class Phrasebooks extends Component {
           )
         },
         render: (v, data /*, cellProps*/) => {
-          const phrasebookDetailUrl = `/${siteTheme}${dialect_path}/phrasebook/${data.uid || ''}`
+          const phrasebookDetailUrl = `/${siteTheme}${dialect_path}/${categoryType.label.singular}/${data.uid || ''}`
           return (
             <a
               href={phrasebookDetailUrl}
@@ -374,7 +383,7 @@ export class Phrasebooks extends Component {
         title: () => {
           return (
             <button
-              className="Phrasebooks__colSort"
+              className="Categories__colSort"
               onClick={() => {
                 this._sortCol({
                   sortBy: 'dc:description',
@@ -396,12 +405,14 @@ export class Phrasebooks extends Component {
         title: copy.actions.th,
         render: (v, data /*, cellProps*/) => {
           const uid = data.uid
-          const url = editUrl ? `${editUrl}/${uid}` : `/${siteTheme}${dialect_path}/edit/phrasebook/${uid}`
+          const url = editUrl
+            ? `${editUrl}/${uid}`
+            : `/${siteTheme}${dialect_path}/edit/${categoryType.label.singular}/${uid}`
 
           return (
-            <ul className="Phrasebooks__actions">
-              <li className="Phrasebooks__actionContainer Phrasebooks__actionDelete">
-                <PhrasebookDelete
+            <ul className="Categories__actions">
+              <li className="Categories__actionContainer Categories__actionDelete">
+                <CategoryDelete
                   reverse
                   compact
                   copy={{
@@ -415,7 +426,7 @@ export class Phrasebooks extends Component {
                   }}
                 />
               </li>
-              <li className="Phrasebooks__actionContainer">
+              <li className="Categories__actionContainer">
                 <a
                   href={url}
                   onClick={(e) => {
@@ -433,7 +444,7 @@ export class Phrasebooks extends Component {
     ]
   }
 
-  _getData = async(addToState) => {
+  _getData = async (addToState) => {
     const { routeParams, search /*, filter*/ } = this.props
     const { pageSize, page } = routeParams
     const { sortBy, sortOrder } = search
@@ -444,12 +455,12 @@ export class Phrasebooks extends Component {
     //   currentAppliedFilter = Object.values(filter.get('currentAppliedFilter').toJS()).join('')
     // }
 
-    phrasebooksPath = `${routeParams.dialect_path}/Phrase Books/`
+    categoriesPath = `${routeParams.dialect_path}/${categoryType.title.plural}/`
     // WORKAROUND: DY @ 17-04-2019 - Mark this query as a "starts with" query. See DirectoryOperations.js for note
     const startsWithQuery = ProviderHelpers.isStartsWithQuery(currentAppliedFilter)
 
     await this.props.fetchCategories(
-      phrasebooksPath,
+      categoriesPath,
       `${currentAppliedFilter}&currentPageIndex=${page -
         1}&pageSize=${pageSize}&sortOrder=${sortOrder}&sortBy=${sortBy}${startsWithQuery}`
     )
@@ -511,9 +522,9 @@ export class Phrasebooks extends Component {
     const { siteTheme, dialect_path, pageSize } = routeParams
     const { sortOrder } = search
 
-    const url = `/${siteTheme}${dialect_path}/phrasebooks/${pageSize}/1?sortBy=${arg.sortBy}&sortOrder=${
-      sortOrder === 'asc' ? 'desc' : 'asc'
-    }`
+    const url = `/${siteTheme}${dialect_path}/${categoryType.label.plural}/${pageSize}/1?sortBy=${
+      arg.sortBy
+    }&sortOrder=${sortOrder === 'asc' ? 'desc' : 'asc'}`
     NavigationHelpers.navigate(url, this.props.pushWindowPath, false)
   }
 
@@ -568,4 +579,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Phrasebooks)
+)(Categories)
