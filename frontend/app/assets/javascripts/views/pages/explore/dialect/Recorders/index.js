@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 // REDUX: actions/dispatch/func
 import { pushWindowPath } from 'providers/redux/reducers/windowPath'
 
-import Contributors from 'views/pages/explore/dialect/contributors'
+import Contributors from 'views/pages/explore/dialect/Contributors'
 import internationalization from './internationalization'
 import NavigationHelpers from 'common/NavigationHelpers'
 const { func, object, string } = PropTypes

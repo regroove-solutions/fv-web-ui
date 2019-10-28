@@ -48,8 +48,8 @@ let _computeDialect2 = undefined
 const { array, func, number, object, string } = PropTypes
 
 const categoryType = {
-  title: { plural: 'Phrase Books', singular: 'Phrase Book' },
-  label: { plural: 'phrasebooks', singular: 'phrasebook' },
+  title: { plural: 'Categories', singular: 'Category' },
+  label: { plural: 'categories', singular: 'category' },
 }
 
 const iconUnsorted = (
@@ -70,7 +70,7 @@ const iconSortDesc = (
     <path d="M0 0h24v24H0z" fill="none" />
   </svg>
 )
-export class Phrasebooks extends Component {
+export class Categories extends Component {
   static propTypes = {
     DEFAULT_PAGE: number,
     DEFAULT_PAGE_SIZE: number,
@@ -575,4 +575,4 @@ const mapDispatchToProps = {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Phrasebooks)
+)(Categories)

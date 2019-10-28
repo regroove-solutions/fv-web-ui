@@ -86,11 +86,18 @@ import { default as PageDialectPhrasesCreate } from './explore/dialect/learn/phr
 import { default as PageDialectStoriesAndSongsCreate } from './explore/dialect/learn/songs-stories/create'
 import { default as PageDialectStoriesAndSongsBookEntryCreate } from './explore/dialect/learn/songs-stories/entry/create'
 import { default as PageDialectGalleryCreate } from './explore/dialect/gallery/create'
-import { default as PageDialectCategoryCreate } from './explore/dialect/category/create'
+import { default as PageDialectCategoryCreate } from './explore/dialect/Category/createV1'
+
+// CATEGORY
+// ----------------------
+import CategoryBrowse from './explore/dialect/Categories' // Browse
+// import { default as CategoryDetail } from './explore/dialect/Category/detail' // Detail
+// import { default as CategoryCreate } from './explore/dialect/Category/create' // Create
+// import { default as CategoryEdit } from './explore/dialect/Category/edit' // Edit
 
 // CONTRIBUTOR
 // ----------------------
-import ContributorBrowse from './explore/dialect/contributors' // Browse
+import ContributorBrowse from './explore/dialect/Contributors' // Browse
 import { default as ContributorDetail } from './explore/dialect/Contributor/detail' // Detail
 import { default as ContributorCreateV1 } from './explore/dialect/Contributor/createV1' // Create V1
 import { default as ContributorCreate } from './explore/dialect/Contributor/create' // Create V2
@@ -177,6 +184,8 @@ export {
   PageDialectStoriesAndSongsBookEntryCreate,
   PageDialectGalleryCreate,
   PageDialectCategoryCreate,
+  // CATEGORY
+  CategoryBrowse,
   // PHRASEBOOK
   PhrasebookBrowse,
   PhrasebookDetail,

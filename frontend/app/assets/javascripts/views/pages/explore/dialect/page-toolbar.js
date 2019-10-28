@@ -421,6 +421,12 @@ export class PageToolbar extends Component {
         >
           {intl.trans('views.pages.explore.dialect.nav_phrase_books', 'Phrase books', 'words')}
         </MenuItem>,
+        <MenuItem
+          key="categories"
+          onClick={this.props.handleNavigateRequest.bind(this, this.props.windowPath + '/categories')}
+        >
+          {intl.trans('views.pages.explore.dialect.nav_categories', 'Categories', 'words')}
+        </MenuItem>,
       ]
 
       return (
